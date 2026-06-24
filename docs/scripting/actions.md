@@ -2,6 +2,8 @@
 
 All actions fail fast. If an action fails, later actions are not executed.
 
+While an action is connected to a page, CMG automatically accepts browser JavaScript dialogs and leave-page prompts. This includes alerts, confirms, prompts, and before-unload confirmation prompts that would otherwise block automation.
+
 ## `navigate`
 
 ```text

@@ -451,10 +451,50 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
             await session.SendCommand("session.new", writer =>
             {
                 writer.WriteStartObject("capabilities");
+                writer.WriteString("unhandledPromptBehavior", "accept");
                 writer.WriteEndObject();
             });
+            await session.EnableAutoPromptHandling();
+            await session.InstallAutoAcceptDialogs();
 
             return session;
+        }
+
+        public async Task EnableAutoPromptHandling()
+        {
+            await SendCommand("session.subscribe", writer =>
+            {
+                writer.WriteStartArray("events");
+                writer.WriteStringValue("browsingContext.userPromptOpened");
+                writer.WriteEndArray();
+            });
+        }
+
+        public async Task InstallAutoAcceptDialogs()
+        {
+            try
+            {
+                await SendCommand("script.addPreloadScript", writer =>
+                {
+                    writer.WriteString("functionDeclaration", BrowserDomScripts.AutoAcceptDialogsPreload());
+                });
+
+                foreach (var context in await GetTopLevelContexts())
+                {
+                    await SendCommand("script.evaluate", writer =>
+                    {
+                        writer.WriteString("expression", BrowserDomScripts.AutoAcceptDialogs());
+                        writer.WriteBoolean("awaitPromise", true);
+                        writer.WriteString("resultOwnership", "none");
+                        writer.WriteStartObject("target");
+                        writer.WriteString("context", context.Id);
+                        writer.WriteEndObject();
+                    });
+                }
+            }
+            catch (ChromeDevToolsException)
+            {
+            }
         }
 
         private static string NormalizeWebSocketUrl(string remoteDebuggingUrl)
@@ -529,6 +569,7 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
                     !responseId.TryGetInt32(out var responseCommandId) ||
                     responseCommandId != id)
                 {
+                    await HandleProtocolEvent(document.RootElement);
                     continue;
                 }
 
@@ -540,6 +581,42 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
 
                 return document.RootElement.Clone();
             }
+        }
+
+        private async Task HandleProtocolEvent(JsonElement root)
+        {
+            if (!TryReadString(root, "method", out var method) ||
+                !string.Equals(method, "browsingContext.userPromptOpened", StringComparison.Ordinal) ||
+                !TryReadString(root, ["params", "context"], out var context) ||
+                string.IsNullOrWhiteSpace(context))
+            {
+                return;
+            }
+
+            await SendCommandWithoutResponse("browsingContext.handleUserPrompt", writer =>
+            {
+                writer.WriteString("context", context);
+                writer.WriteBoolean("accept", true);
+            });
+        }
+
+        private async Task SendCommandWithoutResponse(string method, Action<Utf8JsonWriter>? writeParams = null)
+        {
+            var id = Interlocked.Increment(ref commandId);
+            using var commandStream = new MemoryStream();
+
+            await using (var writer = new Utf8JsonWriter(commandStream))
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("id", id);
+                writer.WriteString("method", method);
+                writer.WriteStartObject("params");
+                writeParams?.Invoke(writer);
+                writer.WriteEndObject();
+                writer.WriteEndObject();
+            }
+
+            await socket.SendAsync(commandStream.ToArray(), WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
         public async ValueTask DisposeAsync()

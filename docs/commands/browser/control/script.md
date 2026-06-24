@@ -25,6 +25,7 @@ cmg --firefox browser control script --file <path>
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
+- Browser JavaScript dialogs and leave-page prompts are automatically accepted while CMG is connected to the page, including alerts, confirms, prompts, and before-unload confirmation prompts.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
 - GIF pointer movement dispatches browser movement and hover events. This includes automatic pointer movement before `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`, not only drag movement.

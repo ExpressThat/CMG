@@ -4,6 +4,8 @@ Scripts stop on the first error.
 
 When `--gif <path>` is used, CMG still writes a partial GIF with the frames captured before the error, as long as recording had started.
 
+Browser JavaScript dialogs and leave-page prompts are automatically accepted while CMG is connected to a page. If a page repeatedly opens prompts, the action may still fail from timeout or a browser protocol error after CMG accepts the prompts it sees.
+
 ## Browser Not Running
 
 ```text

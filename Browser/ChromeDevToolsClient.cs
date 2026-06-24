@@ -165,6 +165,8 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
             var clip = await GetElementClip(session, selector);
             await EnsurePointInViewport(session, selector, clip.CenterX, clip.CenterY);
             await ClickAt(session, clip.CenterX, clip.CenterY);
+            await Task.Delay(50);
+            await TryAcceptJavaScriptDialog(session);
 
             return true;
         });
@@ -640,6 +642,24 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
         });
     }
 
+    private static async Task TryAcceptJavaScriptDialog(DevToolsSession session)
+    {
+        try
+        {
+            await session.SendCommand("Page.handleJavaScriptDialog", writer => writer.WriteBoolean("accept", true));
+            await session.SendCommand("Runtime.evaluate", writer =>
+            {
+                writer.WriteString(
+                    "expression",
+                    "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))");
+                writer.WriteBoolean("awaitPromise", true);
+            });
+        }
+        catch (ChromeDevToolsException)
+        {
+        }
+    }
+
     private static async Task EnsurePointInViewport(DevToolsSession session, string selector, double x, double y)
     {
         var response = await session.SendCommand("Runtime.evaluate", writer =>
@@ -948,7 +968,14 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
             var socket = new ClientWebSocket();
             await socket.ConnectAsync(webSocketDebuggerUrl, CancellationToken.None);
 
-            return new DevToolsSession(socket);
+            var session = new DevToolsSession(socket);
+            await session.EnableAutoDialogHandling();
+            return session;
+        }
+
+        public async Task EnableAutoDialogHandling()
+        {
+            await SendCommand("Page.enable");
         }
 
         public async Task ScrollElementIntoView(string selector)
@@ -994,6 +1021,7 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
                     !responseId.TryGetInt32(out var responseCommandId) ||
                     responseCommandId != id)
                 {
+                    await HandleProtocolEvent(document.RootElement);
                     continue;
                 }
 
@@ -1004,6 +1032,44 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
 
                 return document.RootElement.Clone();
             }
+        }
+
+        private async Task HandleProtocolEvent(JsonElement root)
+        {
+            if (!TryReadString(root, "method", out var method) ||
+                !string.Equals(method, "Page.javascriptDialogOpening", StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            await SendCommandWithoutResponse("Page.handleJavaScriptDialog", writer =>
+            {
+                writer.WriteBoolean("accept", true);
+            });
+        }
+
+        private async Task SendCommandWithoutResponse(string method, Action<Utf8JsonWriter>? writeParams = null)
+        {
+            var id = Interlocked.Increment(ref commandId);
+            using var commandStream = new MemoryStream();
+
+            await using (var writer = new Utf8JsonWriter(commandStream))
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("id", id);
+                writer.WriteString("method", method);
+
+                if (writeParams is not null)
+                {
+                    writer.WriteStartObject("params");
+                    writeParams(writer);
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndObject();
+            }
+
+            await socket.SendAsync(commandStream.ToArray(), WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
         public async ValueTask DisposeAsync()

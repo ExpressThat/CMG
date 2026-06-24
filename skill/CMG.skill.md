@@ -19,6 +19,7 @@ CMG is a command-line browser control tool intended to be called by AI agents.
 - For screenshots without `--output` or `output=`, expect `data:image/png;base64,...`.
 - For `getElement --screenshot`, the screenshot result is also a `data:image/png;base64,...` URL unless `--output` is used.
 - Use `waitForElement` before interacting with dynamic UI.
+- CMG automatically accepts browser JavaScript dialogs and leave-page prompts while connected to a page, including alerts, confirms, prompts, and unsaved-changes before-unload prompts.
 - User-like actions such as `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop` do not scroll automatically. Add explicit `scrollIntoView` steps before interacting with elements outside the current viewport. Screenshots are the exception and may scroll the selected element into view for capture.
 - Use `.cmgscript` block `dragAndDrop` when a drag needs intermediate `delay`, `hover`, or `waitForElement` steps.
 - In `--gif` scripts, all automatic virtual pointer movement dispatches browser mouse and pointer movement events, including movement before `click`, `type`, `clear`, `hover`, and `select`.
