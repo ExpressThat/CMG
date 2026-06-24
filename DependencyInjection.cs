@@ -1,4 +1,5 @@
 using CMG.Browser;
+using CMG.Browser.Scripting;
 using CMG.Commands;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,6 +18,8 @@ public static class DependencyInjection
         services.AddSingleton<IBrowserController, BrowserController>();
         services.AddSingleton<IBrowserControlService, BrowserControlService>();
         services.AddSingleton<ChromeDevToolsClient>();
+        services.AddSingleton<BrowserScriptParser>();
+        services.AddSingleton<BrowserScriptRunner>();
         services.AddSingleton<BrowserStateStore>();
 
         return services;

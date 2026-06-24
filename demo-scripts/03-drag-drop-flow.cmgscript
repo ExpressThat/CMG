@@ -1,0 +1,11 @@
+# Demonstrates custom drag and drop against the command queue.
+navigate "C:\Projects\CMG\index.html"
+waitForElement "#dropQueue" timeout=5000
+
+dragAndDrop "[data-command='browser launch']" "#dropQueue"
+assertText "#dropQueue" "browser launch"
+
+dragAndDrop "[data-command='browser close']" "#dropQueue"
+assertText "#dropQueue" "browser close"
+
+screenshot "#dragdrop" output="demo-output/drag-drop-section.png"

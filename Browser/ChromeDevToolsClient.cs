@@ -7,6 +7,7 @@ namespace CMG.Browser;
 public sealed class ChromeDevToolsClient
 {
     private static readonly TimeSpan CommandTimeout = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(100);
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector)
     {
@@ -98,12 +99,367 @@ public sealed class ChromeDevToolsClient
         });
     }
 
+    public void Navigate(string remoteDebuggingUrl, string target)
+    {
+        Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            await session.SendCommand("Page.navigate", writer => writer.WriteString("url", target));
+            await Task.Delay(500);
+
+            return true;
+        });
+    }
+
+    public void WaitForElement(string remoteDebuggingUrl, string selector, int timeoutMilliseconds)
+    {
+        Run(async () =>
+        {
+            var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeoutMilliseconds);
+
+            while (DateTimeOffset.UtcNow <= deadline)
+            {
+                if (await TryFindPageWithSelector(remoteDebuggingUrl, selector) is not null)
+                {
+                    return true;
+                }
+
+                await Task.Delay(PollInterval);
+            }
+
+            throw new ElementNotFoundException(selector);
+        });
+    }
+
+    public void Click(string remoteDebuggingUrl, string selector)
+    {
+        Run(async () =>
+        {
+            var pageTarget = await TryFindPageWithSelector(remoteDebuggingUrl, selector) ??
+                throw new ElementNotFoundException(selector);
+
+            await using var session = await DevToolsSession.Connect(pageTarget);
+            await session.ScrollElementIntoView(selector);
+
+            var clip = await GetElementClip(session, selector);
+            var x = clip.X + clip.Width / 2;
+            var y = clip.Y + clip.Height / 2;
+
+            await session.SendCommand("Input.dispatchMouseEvent", writer =>
+            {
+                writer.WriteString("type", "mousePressed");
+                writer.WriteNumber("x", x);
+                writer.WriteNumber("y", y);
+                writer.WriteString("button", "left");
+                writer.WriteNumber("clickCount", 1);
+            });
+
+            await session.SendCommand("Input.dispatchMouseEvent", writer =>
+            {
+                writer.WriteString("type", "mouseReleased");
+                writer.WriteNumber("x", x);
+                writer.WriteNumber("y", y);
+                writer.WriteString("button", "left");
+                writer.WriteNumber("clickCount", 1);
+            });
+
+            return true;
+        });
+    }
+
+    public void Type(string remoteDebuggingUrl, string selector, string text)
+    {
+        ExecuteElementScript(
+            remoteDebuggingUrl,
+            selector,
+            $"element.focus(); element.value = `${{element.value ?? ''}}{EscapeForJavaScriptTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
+    }
+
+    public void Clear(string remoteDebuggingUrl, string selector)
+    {
+        ExecuteElementScript(
+            remoteDebuggingUrl,
+            selector,
+            "element.focus(); element.value = ''; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;");
+    }
+
+    public void Press(string remoteDebuggingUrl, string key)
+    {
+        Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+
+            await session.SendCommand("Input.dispatchKeyEvent", writer =>
+            {
+                writer.WriteString("type", "keyDown");
+                writer.WriteString("key", key);
+            });
+
+            await session.SendCommand("Input.dispatchKeyEvent", writer =>
+            {
+                writer.WriteString("type", "keyUp");
+                writer.WriteString("key", key);
+            });
+
+            return true;
+        });
+    }
+
+    public void Hover(string remoteDebuggingUrl, string selector)
+    {
+        ExecuteElementScript(
+            remoteDebuggingUrl,
+            selector,
+            "const rect = element.getBoundingClientRect(); const options = { bubbles: true, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }; element.dispatchEvent(new MouseEvent('mouseover', options)); element.dispatchEvent(new MouseEvent('mousemove', options)); return true;");
+    }
+
+    public void ScrollElementIntoView(string remoteDebuggingUrl, string selector)
+    {
+        ExecuteElementScript(
+            remoteDebuggingUrl,
+            selector,
+            "element.scrollIntoView({ block: 'center', inline: 'center' }); return true;");
+    }
+
+    public void Select(string remoteDebuggingUrl, string selector, string value)
+    {
+        ExecuteElementScript(
+            remoteDebuggingUrl,
+            selector,
+            $"element.value = {ToJsonStringLiteral(value)}; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
+    }
+
+    public string GetElementText(string remoteDebuggingUrl, string selector)
+    {
+        return EvaluateElementScript(remoteDebuggingUrl, selector, "return element.innerText ?? element.textContent ?? '';");
+    }
+
+    public string Evaluate(string remoteDebuggingUrl, string expression)
+    {
+        return Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            var response = await session.SendCommand("Runtime.evaluate", writer =>
+            {
+                writer.WriteString("expression", expression);
+                writer.WriteBoolean("returnByValue", true);
+            });
+
+            if (!TryReadElement(response, ["result", "result"], out var result))
+            {
+                return string.Empty;
+            }
+
+            if (result.TryGetProperty("value", out var value))
+            {
+                return value.ValueKind is JsonValueKind.String ? value.GetString() ?? string.Empty : value.ToString();
+            }
+
+            return result.TryGetProperty("description", out var description) ? description.GetString() ?? string.Empty : string.Empty;
+        });
+    }
+
+    public void SetViewport(string remoteDebuggingUrl, int width, int height)
+    {
+        Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            await session.SendCommand("Emulation.setDeviceMetricsOverride", writer =>
+            {
+                writer.WriteNumber("width", width);
+                writer.WriteNumber("height", height);
+                writer.WriteNumber("deviceScaleFactor", 1);
+                writer.WriteBoolean("mobile", false);
+            });
+
+            return true;
+        });
+    }
+
+    public void DragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector)
+    {
+        Run(async () =>
+        {
+            var pageTarget = await TryFindPageWithSelector(remoteDebuggingUrl, sourceSelector) ??
+                throw new ElementNotFoundException(sourceSelector);
+
+            await using var session = await DevToolsSession.Connect(pageTarget);
+            var expression = BuildDragAndDropExpression(sourceSelector, targetSelector);
+            var response = await session.SendCommand("Runtime.evaluate", writer =>
+            {
+                writer.WriteString("expression", expression);
+                writer.WriteBoolean("returnByValue", true);
+            });
+
+            if (!TryReadBoolean(response, ["result", "result", "value"], out var success) || !success)
+            {
+                throw new ElementNotFoundException(targetSelector);
+            }
+
+            return true;
+        });
+    }
+
+    public byte[] GetPageScreenshot(string remoteDebuggingUrl)
+    {
+        return Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            var screenshot = await session.SendCommand("Page.captureScreenshot", writer => writer.WriteString("format", "png"));
+
+            if (!TryReadString(screenshot, "result", "data", out var data) || string.IsNullOrWhiteSpace(data))
+            {
+                throw new ChromeDevToolsException("Chrome did not return screenshot image data.");
+            }
+
+            return Convert.FromBase64String(data);
+        });
+    }
+
+    public IReadOnlyList<ChromePageTab> ListTabs(string remoteDebuggingUrl)
+    {
+        return Run(async () =>
+        {
+            var targets = await GetPageTargets(remoteDebuggingUrl);
+
+            return targets
+                .Select(target => new ChromePageTab(target.Id, target.Title, target.Url))
+                .ToArray();
+        });
+    }
+
+    public void ActivateTab(string remoteDebuggingUrl, int index)
+    {
+        Run(async () =>
+        {
+            var target = await GetPageTargetAt(remoteDebuggingUrl, index);
+            using var httpClient = new HttpClient { Timeout = CommandTimeout };
+            await httpClient.GetStringAsync($"{remoteDebuggingUrl.TrimEnd('/')}/json/activate/{target.Id}");
+
+            return true;
+        });
+    }
+
+    public void CloseTab(string remoteDebuggingUrl, int index)
+    {
+        Run(async () =>
+        {
+            var target = await GetPageTargetAt(remoteDebuggingUrl, index);
+            using var httpClient = new HttpClient { Timeout = CommandTimeout };
+            await httpClient.GetStringAsync($"{remoteDebuggingUrl.TrimEnd('/')}/json/close/{target.Id}");
+
+            return true;
+        });
+    }
+
     private static T Run<T>(Func<Task<T>> action)
     {
         return action().GetAwaiter().GetResult();
     }
 
+    private void ExecuteElementScript(string remoteDebuggingUrl, string selector, string body)
+    {
+        _ = EvaluateElementScript(remoteDebuggingUrl, selector, body);
+    }
+
+    private string EvaluateElementScript(string remoteDebuggingUrl, string selector, string body)
+    {
+        return Run(async () =>
+        {
+            var pageTarget = await TryFindPageWithSelector(remoteDebuggingUrl, selector) ??
+                throw new ElementNotFoundException(selector);
+
+            await using var session = await DevToolsSession.Connect(pageTarget);
+            await session.ScrollElementIntoView(selector);
+
+            var response = await session.SendCommand("Runtime.evaluate", writer =>
+            {
+                writer.WriteString("expression", BuildElementActionExpression(selector, body));
+                writer.WriteBoolean("returnByValue", true);
+            });
+
+            if (!TryReadElement(response, ["result", "result"], out var result))
+            {
+                return string.Empty;
+            }
+
+            if (result.TryGetProperty("value", out var value))
+            {
+                return value.ValueKind is JsonValueKind.String ? value.GetString() ?? string.Empty : value.ToString();
+            }
+
+            return result.TryGetProperty("description", out var description) ? description.GetString() ?? string.Empty : string.Empty;
+        });
+    }
+
+    private static async Task<ElementClip> GetElementClip(DevToolsSession session, string selector)
+    {
+        var document = await session.SendCommand("DOM.getDocument");
+        var rootNodeId = ReadInt32(document, "result", "root", "nodeId");
+
+        var query = await session.SendCommand("DOM.querySelector", writer =>
+        {
+            writer.WriteNumber("nodeId", rootNodeId);
+            writer.WriteString("selector", selector);
+        });
+
+        var nodeId = ReadInt32(query, "result", "nodeId");
+        if (nodeId is 0)
+        {
+            throw new ElementNotFoundException(selector);
+        }
+
+        var boxModel = await session.SendCommand("DOM.getBoxModel", writer =>
+        {
+            writer.WriteNumber("nodeId", nodeId);
+        });
+
+        var clip = ElementClip.FromBoxModel(boxModel);
+        if (clip.Width <= 0 || clip.Height <= 0)
+        {
+            throw new ChromeDevToolsException($"Element '{selector}' has no visible area.");
+        }
+
+        return clip;
+    }
+
+    private async Task<Uri?> TryFindPageWithSelector(string remoteDebuggingUrl, string selector)
+    {
+        var pageTargets = await GetPageWebSocketDebuggerUrls(remoteDebuggingUrl);
+
+        foreach (var pageTarget in pageTargets)
+        {
+            await using var session = await DevToolsSession.Connect(pageTarget);
+            var response = await session.SendCommand("Runtime.evaluate", writer =>
+            {
+                writer.WriteString("expression", $"Boolean(document.querySelector({ToJsonStringLiteral(selector)}))");
+                writer.WriteBoolean("returnByValue", true);
+            });
+
+            if (TryReadBoolean(response, ["result", "result", "value"], out var exists) && exists)
+            {
+                return pageTarget;
+            }
+        }
+
+        return null;
+    }
+
+    private static async Task<DevToolsSession> OpenPrimaryPageSession(string remoteDebuggingUrl)
+    {
+        var pageTargets = await GetPageWebSocketDebuggerUrls(remoteDebuggingUrl);
+
+        return await DevToolsSession.Connect(pageTargets[0]);
+    }
+
     private static async Task<IReadOnlyList<Uri>> GetPageWebSocketDebuggerUrls(string remoteDebuggingUrl)
+    {
+        return (await GetPageTargets(remoteDebuggingUrl))
+            .Select(target => target.WebSocketDebuggerUrl)
+            .ToArray();
+    }
+
+    private static async Task<IReadOnlyList<PageTarget>> GetPageTargets(string remoteDebuggingUrl)
     {
         using var httpClient = new HttpClient
         {
@@ -112,7 +468,7 @@ public sealed class ChromeDevToolsClient
 
         var targetsJson = await httpClient.GetStringAsync($"{remoteDebuggingUrl.TrimEnd('/')}/json");
         using var targets = JsonDocument.Parse(targetsJson);
-        var pageTargets = new List<Uri>();
+        var pageTargets = new List<PageTarget>();
 
         foreach (var target in targets.RootElement.EnumerateArray())
         {
@@ -123,9 +479,13 @@ public sealed class ChromeDevToolsClient
             }
 
             if (TryReadString(target, "webSocketDebuggerUrl", out var webSocketDebuggerUrl) &&
-                !string.IsNullOrWhiteSpace(webSocketDebuggerUrl))
+                !string.IsNullOrWhiteSpace(webSocketDebuggerUrl) &&
+                TryReadString(target, "id", out var id) &&
+                !string.IsNullOrWhiteSpace(id))
             {
-                pageTargets.Add(new Uri(webSocketDebuggerUrl));
+                _ = TryReadString(target, "title", out var title);
+                _ = TryReadString(target, "url", out var url);
+                pageTargets.Add(new PageTarget(id, title ?? string.Empty, url ?? string.Empty, new Uri(webSocketDebuggerUrl)));
             }
         }
 
@@ -137,9 +497,43 @@ public sealed class ChromeDevToolsClient
         return pageTargets;
     }
 
+    private static async Task<PageTarget> GetPageTargetAt(string remoteDebuggingUrl, int index)
+    {
+        var targets = await GetPageTargets(remoteDebuggingUrl);
+        if (index < 0 || index >= targets.Count)
+        {
+            throw new ChromeDevToolsException($"Tab index {index} does not exist. Available tab count: {targets.Count}.");
+        }
+
+        return targets[index];
+    }
+
     private static string BuildOuterHtmlExpression(string selector)
     {
         return $"(() => {{ const element = document.querySelector({ToJsonStringLiteral(selector)}); return element ? element.outerHTML : null; }})()";
+    }
+
+    private static string BuildElementActionExpression(string selector, string body)
+    {
+        return $"(() => {{ const element = document.querySelector({ToJsonStringLiteral(selector)}); if (!element) return null; {body} }})()";
+    }
+
+    private static string BuildDragAndDropExpression(string sourceSelector, string targetSelector)
+    {
+        return $$"""
+        (() => {
+          const source = document.querySelector({{ToJsonStringLiteral(sourceSelector)}});
+          const target = document.querySelector({{ToJsonStringLiteral(targetSelector)}});
+          if (!source || !target) return false;
+          const dataTransfer = new DataTransfer();
+          source.dispatchEvent(new DragEvent('dragstart', { bubbles: true, cancelable: true, dataTransfer }));
+          target.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true, dataTransfer }));
+          target.dispatchEvent(new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer }));
+          target.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer }));
+          source.dispatchEvent(new DragEvent('dragend', { bubbles: true, cancelable: true, dataTransfer }));
+          return true;
+        })()
+        """;
     }
 
     private static int ReadInt32(JsonElement root, params string[] path)
@@ -183,6 +577,19 @@ public sealed class ChromeDevToolsClient
         return true;
     }
 
+    private static bool TryReadBoolean(JsonElement root, IReadOnlyList<string> path, out bool value)
+    {
+        value = false;
+
+        if (!TryReadElement(root, path, out var element) || element.ValueKind is not JsonValueKind.True and not JsonValueKind.False)
+        {
+            return false;
+        }
+
+        value = element.GetBoolean();
+        return true;
+    }
+
     private static string ToJsonStringLiteral(string value)
     {
         using var stream = new MemoryStream();
@@ -193,6 +600,14 @@ public sealed class ChromeDevToolsClient
         }
 
         return Encoding.UTF8.GetString(stream.ToArray());
+    }
+
+    private static string EscapeForJavaScriptTemplate(string value)
+    {
+        return value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("`", "\\`", StringComparison.Ordinal)
+            .Replace("${", "\\${", StringComparison.Ordinal);
     }
 
     private static bool TryReadString(JsonElement root, string first, string second, out string? value)
@@ -384,3 +799,7 @@ public sealed class ElementNotFoundException : Exception
     {
     }
 }
+
+public sealed record ChromePageTab(string Id, string Title, string Url);
+
+internal sealed record PageTarget(string Id, string Title, string Url, Uri WebSocketDebuggerUrl);

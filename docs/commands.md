@@ -26,3 +26,5 @@ Command documentation is split by command group:
 
 - Group index files document group purpose, syntax, and subcommands.
 - Leaf command files document arguments, options, output, exit codes, and examples.
+
+Scripting documentation lives under [`scripting/`](scripting/index.md).

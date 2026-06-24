@@ -1,0 +1,15 @@
+# Demonstrates variables, viewport sizing, assertions, and JavaScript evaluation.
+set page "C:\Projects\CMG\index.html"
+set button "#openConfirmDialog"
+
+setViewport width=1100 height=800
+navigate "${page}"
+waitForElement "${button}" timeout=5000
+
+evaluate "document.title"
+assertText "h1" "CMG Browser Control Test Page"
+
+click "${button}"
+waitForElement "#confirmDialog[open]" timeout=5000
+screenshot "#confirmDialog" output="demo-output/confirm-dialog.png"
+click "#confirmDialog button[value='dismissed']"

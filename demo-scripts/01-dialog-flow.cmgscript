@@ -1,0 +1,19 @@
+# Opens the profile dialog, edits values, captures it, and closes it.
+set page "C:\Projects\CMG\index.html"
+set dialog "#profileDialog"
+
+navigate "${page}"
+waitForElement "#openProfileDialog" timeout=5000
+click "#openProfileDialog"
+waitForElement "${dialog}[open]" timeout=5000
+
+clear "#profileName"
+type "#profileName" "CMG Demo Profile"
+clear "#startupUrl"
+type "#startupUrl" "https://example.com/demo"
+
+screenshot "${dialog}" output="demo-output/profile-dialog.png"
+click "#profileDialog button[value='close']"
+delay 200
+waitForElement "#lastDialogAction" timeout=2000
+assertText "#lastDialogAction" "close"

@@ -1,0 +1,10 @@
+# Demonstrates tab listing, activation, keyboard input, and dialog dismissal.
+navigate "C:\Projects\CMG\index.html"
+waitForElement "#openProfileDialog" timeout=5000
+
+listTabs
+activateTab index=0
+click "#openProfileDialog"
+waitForElement "#profileDialog[open]" timeout=5000
+press "Tab"
+click "#profileDialog button[value='close']"

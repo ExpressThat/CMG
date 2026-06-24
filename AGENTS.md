@@ -22,6 +22,8 @@ Documentation structure:
 - `docs/commands/<group>/index.md`: command group documentation.
 - `docs/commands/<group>/<command>.md`: leaf command documentation.
 - For nested groups, add nested folders, for example `docs/commands/browser/control/index.md`.
+- Scripting language changes must also update `docs/scripting/`, including syntax, actions, examples, and errors.
+- When scripting examples change, keep `demo-scripts/` and `docs/scripting/examples.md` in sync.
 
 If a command is only scaffolded and does not perform real behavior yet, document that clearly.
 

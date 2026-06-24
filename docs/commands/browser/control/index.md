@@ -15,10 +15,12 @@ cmg browser control [command] [options]
 ## Subcommands
 
 - [`getElement`](getElement.md): Return HTML or a screenshot for a selected element.
+- [`script`](script.md): Run a `.cmgscript` browser automation script.
 
 ## Examples
 
 ```powershell
 cmg browser control --help
 cmg browser control getElement "h1" --html
+cmg browser control script --file flow.cmgscript
 ```

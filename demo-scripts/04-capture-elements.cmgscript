@@ -1,0 +1,7 @@
+# Captures HTML, an element screenshot, and a full page screenshot.
+navigate "C:\Projects\CMG\index.html"
+waitForElement "#openProfileDialog" timeout=5000
+
+html "#openProfileDialog"
+screenshot "#openProfileDialog" output="demo-output/open-profile-button.png"
+screenshotPage output="demo-output/full-page.png"

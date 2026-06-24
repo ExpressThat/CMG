@@ -2,6 +2,8 @@
 
 Start with the [command reference](commands.md).
 
+Runnable `.cmgscript` examples live in [`../demo-scripts/`](../demo-scripts/).
+
 ## Structure
 
 - `commands.md`: top-level command reference index.

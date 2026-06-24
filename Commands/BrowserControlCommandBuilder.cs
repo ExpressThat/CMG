@@ -25,6 +25,7 @@ public sealed class BrowserControlCommandBuilder
         });
 
         command.Subcommands.Add(BuildGetElementCommand());
+        command.Subcommands.Add(BuildScriptCommand());
 
         return command;
     }
@@ -68,6 +69,29 @@ public sealed class BrowserControlCommandBuilder
             var output = parseResult.GetValue(outputOption);
 
             return browserControlCommandHandler.GetElement(selector, html, screenshot, output);
+        });
+
+        return command;
+    }
+
+    private Command BuildScriptCommand()
+    {
+        var fileOption = new Option<string>("--file")
+        {
+            Description = "Path to a .cmgscript file, or '-' to read from stdin.",
+            Required = true
+        };
+
+        var command = new Command("script", "Run a .cmgscript browser automation script.")
+        {
+            fileOption
+        };
+
+        command.SetAction(parseResult =>
+        {
+            var file = parseResult.GetValue(fileOption) ?? string.Empty;
+
+            return browserControlCommandHandler.RunScript(file);
         });
 
         return command;

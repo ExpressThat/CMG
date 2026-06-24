@@ -1,0 +1,5 @@
+# Intentional failure demo.
+# This should stop with exit code 1 and a missing element error.
+navigate "C:\Projects\CMG\index.html"
+waitForElement "#thisElementDoesNotExist" timeout=500
+click "#thisLineWillNotRun"

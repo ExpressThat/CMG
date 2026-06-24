@@ -1,21 +1,28 @@
+using CMG.Browser.Scripting;
+
 namespace CMG.Browser;
 
 public interface IBrowserControlService
 {
     ElementResult GetElement(string selector, ElementOutputMode outputMode);
+
+    ScriptRunResult RunScript(string file);
 }
 
 public sealed class BrowserControlService : IBrowserControlService
 {
     private readonly BrowserStateStore stateStore;
     private readonly ChromeDevToolsClient devToolsClient;
+    private readonly BrowserScriptRunner scriptRunner;
 
     public BrowserControlService(
         BrowserStateStore stateStore,
-        ChromeDevToolsClient devToolsClient)
+        ChromeDevToolsClient devToolsClient,
+        BrowserScriptRunner scriptRunner)
     {
         this.stateStore = stateStore;
         this.devToolsClient = devToolsClient;
+        this.scriptRunner = scriptRunner;
     }
 
     public ElementResult GetElement(string selector, ElementOutputMode outputMode)
@@ -43,6 +50,22 @@ public sealed class BrowserControlService : IBrowserControlService
         {
             return ElementResult.Fail(exception.Message);
         }
+    }
+
+    public ScriptRunResult RunScript(string file)
+    {
+        if (file is not "-" && !File.Exists(file))
+        {
+            return ScriptRunResult.Fail($"Script file '{file}' was not found.");
+        }
+
+        var state = stateStore.Load();
+        if (state is null)
+        {
+            return ScriptRunResult.Fail("No CMG-controlled Chrome instance is running. Run 'cmg browser launch' first.");
+        }
+
+        return scriptRunner.Run(file, state.RemoteDebuggingUrl);
     }
 }
 
