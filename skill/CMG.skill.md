@@ -25,7 +25,7 @@ CMG is a command-line browser control tool intended to be called by AI agents.
 - In `--gif` scripts, all automatic virtual pointer movement dispatches browser mouse and pointer movement events, including movement before `click`, `type`, `clear`, `hover`, and `select`.
 - Use script-only `moveMouse "bottom"` plus `delay` inside a GIF `dragAndDrop` block when a page auto-scrolls while a dragged item is held near the viewport edge. For scrollable app containers, prefer `moveMouse selector=".content-area" edge=bottom inset=24`. CMG keeps page drag state active with pointer/mouse down, held move, and up events during block drags. `moveMouse` has no one-off CLI command and requires `--gif`.
 - CMG does not force `DataTransfer.effectAllowed`, `dropEffect`, or payloads during synthetic drags. The page's own `dragstart` handler should set those values; CMG preserves the page-set values through later drag events.
-- In GIF block drags, `drop "<selector>"` dispatches one `drop` event. CMG should not run a second fallback drop after the recorded drop completes.
+- In GIF drags, CMG uses one synthetic drag lifecycle and dispatches one `drop` event. CMG should not run a second native or fallback drop after the recorded drop completes.
 - Use `showMessageBar "message"` to place a visible centered caption bar near the top of the page while recording. It dynamically sizes to the message, supports multi-line captions, and appears above page dialogs.
 - During GIF drag recording, page-owned custom drag images take precedence. If the page does not call `DataTransfer.setDragImage()`, CMG shows a browser-default style preview bridge so the drag remains visible in the live browser and recorded GIF.
 

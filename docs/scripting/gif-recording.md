@@ -67,7 +67,7 @@ During recorded `dragAndDrop`, CMG moves the virtual pointer while recording fra
 
 CMG creates the `DataTransfer` object needed for synthetic drag events, then lets the page's own drag handlers set `effectAllowed`, `dropEffect`, and drag payloads. CMG does not force those values; it preserves page-set values through the recorded drag so `dragover` handlers can inspect them.
 
-For block `dragAndDrop { ... }` scripts, the `drop "<selector>"` child dispatches the single `drop` event. CMG does not run a second fallback drop after the recorded drop completes.
+Recorded GIF drags use one synthetic drag lifecycle and dispatch exactly one `drop` event. For block `dragAndDrop { ... }` scripts, the `drop "<selector>"` child dispatches that single `drop`. CMG does not also run a native or fallback drop after the recorded drop completes.
 
 If the page calls `DataTransfer.setDragImage()` during `dragstart`, CMG treats that as a site-owned custom drag image and does not add its own drag preview. Pages that render their own DOM-based drag ghost during drag events also continue to control their own visual behavior.
 

@@ -255,10 +255,7 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 2, 2);
         if (recorder is not null)
         {
-            recorder.RecordDragAndDrop(action.Arguments[0], action.Arguments[1], () =>
-            {
-                automationClient.DragAndDrop(remoteDebuggingUrl, action.Arguments[0], action.Arguments[1]);
-            });
+            recorder.RecordDragAndDrop(action.Arguments[0], action.Arguments[1]);
 
             return [];
         }

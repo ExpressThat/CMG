@@ -327,7 +327,7 @@ Rules:
 - The block must contain exactly one `drop`.
 - No actions are allowed after `drop`.
 - Other child actions fail with `Action '<name>' is not supported inside block dragAndDrop.`
-- With `--gif`, the block form dispatches exactly one `drop` event at the `drop "<selector>"` step.
+- With `--gif`, recorded drags use one synthetic drag lifecycle and dispatch exactly one `drop` event. The block form dispatches it at the `drop "<selector>"` step.
 - With `--gif`, CMG keeps the drag lifecycle active while the body runs so page-owned drag ghosts can stay visible.
 - With `--gif`, every automatic pointer movement dispatches browser movement and hover events, including movement before `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`.
 - With `--gif`, block drag bodies also dispatch DOM `pointerdown`/`mousedown`, held `pointermove`/`mousemove`, and `pointerup`/`mouseup` so page drag state and edge-autoscroll code can react while `moveMouse "bottom"` and `delay` run.

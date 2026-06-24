@@ -155,32 +155,19 @@ public sealed class ScriptGifRecorder : IDisposable
         MovePointerTo(ResolveMoveMouseTarget(action), dragging);
     }
 
-    public void RecordDragAndDrop(string sourceSelector, string targetSelector, Action drop)
+    public void RecordDragAndDrop(string sourceSelector, string targetSelector)
     {
         if (remoteDebuggingUrl is null)
         {
-            drop();
             return;
         }
 
         MoveToSelector(sourceSelector);
         CaptureHoldFrame();
 
-        var target = devToolsClient.GetElementCenter(remoteDebuggingUrl, targetSelector);
-        var path = pointer.MoveTo(target, ScriptRecordingOptions.MovementFrameCount).ToArray();
-
         devToolsClient.BeginPageDrag(remoteDebuggingUrl, sourceSelector, pointer.Position);
-
-        devToolsClient.MouseDragAndDrop(remoteDebuggingUrl, sourceSelector, targetSelector, path, point =>
-        {
-            pointer.Set(point);
-            devToolsClient.MovePageDrag(remoteDebuggingUrl, point);
-            devToolsClient.MoveDomCursor(remoteDebuggingUrl, point);
-            CaptureFrame(ScriptRecordingOptions.FrameDelayCentiseconds);
-        });
-
+        MoveDragToSelector(targetSelector);
         devToolsClient.EndPageDrag(remoteDebuggingUrl, pointer.Position);
-        drop();
         CapturePulseFrame();
         CaptureHoldFrame();
     }
