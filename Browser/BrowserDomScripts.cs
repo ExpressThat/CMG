@@ -342,6 +342,7 @@ public static class BrowserDomScripts
           const pointerOptions = { ...mouseOptions, pointerId: 1, pointerType: 'mouse', isPrimary: true };
           if (typeof PointerEvent === 'function') target.dispatchEvent(new PointerEvent('pointerup', pointerOptions));
           target.dispatchEvent(new MouseEvent('mouseup', mouseOptions));
+          target.dispatchEvent(new DragEvent('drop', eventOptions));
           state.source.dispatchEvent(new DragEvent('dragend', eventOptions));
           if (state.defaultGhost?.matches?.(':popover-open')) state.defaultGhost.hidePopover();
           state.defaultGhost?.remove();

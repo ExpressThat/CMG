@@ -67,6 +67,8 @@ During recorded `dragAndDrop`, CMG moves the virtual pointer while recording fra
 
 CMG creates the `DataTransfer` object needed for synthetic drag events, then lets the page's own drag handlers set `effectAllowed`, `dropEffect`, and drag payloads. CMG does not force those values; it preserves page-set values through the recorded drag so `dragover` handlers can inspect them.
 
+For block `dragAndDrop { ... }` scripts, the `drop "<selector>"` child dispatches the single `drop` event. CMG does not run a second fallback drop after the recorded drop completes.
+
 If the page calls `DataTransfer.setDragImage()` during `dragstart`, CMG treats that as a site-owned custom drag image and does not add its own drag preview. Pages that render their own DOM-based drag ghost during drag events also continue to control their own visual behavior.
 
 When the page does not call `DataTransfer.setDragImage()`, a manual browser drag would normally show the browser's generated default drag preview. Automation-driven drags do not reliably expose that native preview to the live browser view or page screenshots, so CMG adds a default-preview bridge by cloning the source element into the browser top layer while the drag is active. This is only used for the default-preview case; custom page drag images take precedence.

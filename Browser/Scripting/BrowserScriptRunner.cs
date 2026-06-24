@@ -330,7 +330,6 @@ public sealed partial class BrowserScriptRunner
             if (childName is "drop")
             {
                 recorder.DropDrag(child.Arguments[0]);
-                automationClient.DragAndDrop(remoteDebuggingUrl, sourceSelector, child.Arguments[0]);
                 return output;
             }
 
