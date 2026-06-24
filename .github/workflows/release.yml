@@ -1,0 +1,208 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version without the leading v, for manual draft releases."
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish-sign:
+    name: Publish and sign Windows executable
+    runs-on: windows-latest
+
+    env:
+      PROJECT_PATH: CMG.csproj
+      RID: win-x64
+      PUBLISH_DIR: artifacts\publish\win-x64
+      RELEASE_DIR: artifacts\release
+      RELEASE_PACKAGE_DIR: artifacts\package
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get release version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $version = "${{ inputs.version }}"
+          } else {
+            $version = "${{ github.ref_name }}".TrimStart("v")
+          }
+
+          if ($version -notmatch '^[0-9]+\.[0-9]+\.[0-9]+([-.+][0-9A-Za-z.-]+)?$') {
+            Write-Error "Version '$version' is not a supported semver value."
+            exit 1
+          }
+
+          "RELEASE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }} -r ${{ env.RID }}
+
+      - name: Publish native executable
+        run: >
+          dotnet publish ${{ env.PROJECT_PATH }}
+          --configuration Release
+          --framework net10.0
+          --runtime ${{ env.RID }}
+          --self-contained true
+          --output ${{ env.PUBLISH_DIR }}
+
+      - name: Azure login for signing
+        uses: azure/login@v3
+        with:
+          creds: >-
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+            }
+
+      - name: Sign executable with Azure Artifact Signing
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: ${{ secrets.AZURE_TRUSTED_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ secrets.AZURE_TRUSTED_SIGNING_ACCOUNT_NAME }}
+          certificate-profile-name: ${{ secrets.AZURE_TRUSTED_SIGNING_CERTIFICATE_PROFILE_NAME }}
+          files-folder: ${{ github.workspace }}\${{ env.PUBLISH_DIR }}
+          files-folder-filter: exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - name: Verify Authenticode signature
+        shell: pwsh
+        run: |
+          $exe = Join-Path $env:GITHUB_WORKSPACE "${{ env.PUBLISH_DIR }}\CMG.exe"
+          if (!(Test-Path $exe)) {
+            Write-Error "Expected executable was not found: $exe"
+            exit 1
+          }
+
+          $signature = Get-AuthenticodeSignature -FilePath $exe
+          $signature | Format-List | Out-String | Write-Host
+
+          if ($signature.Status -ne "Valid") {
+            Write-Error "CMG.exe signature status was '$($signature.Status)'."
+            exit 1
+          }
+
+      - name: Generate CMG.skill
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "${{ env.RELEASE_DIR }}" | Out-Null
+          $skillPath = Join-Path "${{ env.RELEASE_DIR }}" "CMG.skill"
+          Copy-Item -Path "skill/CMG.skill.md" -Destination $skillPath -Force
+
+          $contentFiles = @("README.md")
+
+          $contentFiles += Get-ChildItem -Path "docs" -Filter "*.md" -File -Recurse |
+            Sort-Object Name |
+            ForEach-Object { $_.FullName.Substring($env:GITHUB_WORKSPACE.Length + 1).Replace("\", "/") }
+
+          $contentFiles += Get-ChildItem -Path "." -Filter "README.md" -File -Recurse |
+            Where-Object {
+              $relative = $_.FullName.Substring($env:GITHUB_WORKSPACE.Length + 1)
+              $segments = $relative -split "[\\/]"
+              -not (@("bin", "obj", ".git", "demo-output", "artifacts") | Where-Object { $segments -contains $_ })
+            } |
+            Sort-Object FullName |
+            ForEach-Object { $_.FullName.Substring($env:GITHUB_WORKSPACE.Length + 1).Replace("\", "/") }
+
+          $contentFiles += Get-ChildItem -Path "demo-scripts" -Filter "*.cmgscript" -File |
+            Sort-Object Name |
+            ForEach-Object { $_.FullName.Substring($env:GITHUB_WORKSPACE.Length + 1).Replace("\", "/") }
+
+          foreach ($relativePath in ($contentFiles | Select-Object -Unique)) {
+            if (!(Test-Path $relativePath)) {
+              Write-Error "Required skill source file was not found: $relativePath"
+              exit 1
+            }
+
+            Add-Content -Path $skillPath -Value "`n---`n" -Encoding utf8NoBOM
+            Add-Content -Path $skillPath -Value "## Source: ``$relativePath``" -Encoding utf8NoBOM
+            Add-Content -Path $skillPath -Value "" -Encoding utf8NoBOM
+
+            $extension = [System.IO.Path]::GetExtension($relativePath)
+            if ($extension -eq ".cmgscript") {
+              Add-Content -Path $skillPath -Value '```text' -Encoding utf8NoBOM
+              Get-Content -Path $relativePath | Add-Content -Path $skillPath -Encoding utf8NoBOM
+              Add-Content -Path $skillPath -Value '```' -Encoding utf8NoBOM
+            } else {
+              Get-Content -Path $relativePath | Add-Content -Path $skillPath -Encoding utf8NoBOM
+            }
+          }
+
+      - name: Package release assets
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "${{ env.RELEASE_DIR }}" | Out-Null
+          Remove-Item -Path "${{ env.RELEASE_PACKAGE_DIR }}" -Recurse -Force -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path "${{ env.RELEASE_PACKAGE_DIR }}" | Out-Null
+
+          Copy-Item -Path "${{ env.PUBLISH_DIR }}\CMG.exe" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\CMG.exe" -Force
+          Copy-Item -Path "${{ env.RELEASE_DIR }}\CMG.skill" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\CMG.skill" -Force
+
+          $zipPath = Join-Path "${{ env.RELEASE_DIR }}" "cmg-${{ env.RELEASE_VERSION }}-win-x64.zip"
+          Compress-Archive -Path "${{ env.RELEASE_PACKAGE_DIR }}\*" -DestinationPath $zipPath -Force
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cmg-win-x64-release
+          path: artifacts/release/**
+          if-no-files-found: error
+
+  draft-release:
+    name: Draft GitHub release
+    runs-on: ubuntu-latest
+    needs: publish-sign
+
+    steps:
+      - name: Get release version
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            version="${{ inputs.version }}"
+            tag="v${version}"
+          else
+            tag="${GITHUB_REF_NAME}"
+            version="${tag#v}"
+          fi
+
+          echo "RELEASE_VERSION=${version}" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=${tag}" >> "$GITHUB_ENV"
+
+      - name: Download release artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cmg-win-x64-release
+          path: release-artifacts
+
+      - name: Create draft release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          draft: true
+          prerelease: ${{ contains(env.RELEASE_VERSION, '-') }}
+          name: CMG ${{ env.RELEASE_TAG }}
+          preserve_order: true
+          files: |
+            release-artifacts/cmg-${{ env.RELEASE_VERSION }}-win-x64.zip
