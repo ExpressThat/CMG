@@ -10,9 +10,11 @@ Start the CMG-controlled browser:
 dotnet run -- browser launch
 ```
 
-Use Firefox instead of Chrome:
+Use Chrome explicitly, Edge, or Firefox:
 
 ```powershell
+dotnet run -- --chrome browser launch
+dotnet run -- --edge browser launch
 dotnet run -- --firefox browser launch
 ```
 
@@ -22,9 +24,10 @@ Run a script:
 dotnet run -- browser control script --file demo-scripts\01-dialog-flow.cmgscript
 ```
 
-Run a demo script in Firefox:
+Run a demo script in Edge or Firefox:
 
 ```powershell
+dotnet run -- --edge browser control script --file demo-scripts\01-dialog-flow.cmgscript
 dotnet run -- --firefox browser control script --file demo-scripts\01-dialog-flow.cmgscript
 ```
 
@@ -44,6 +47,7 @@ Close the browser:
 
 ```powershell
 dotnet run -- browser close
+dotnet run -- --edge browser close
 dotnet run -- --firefox browser close
 ```
 

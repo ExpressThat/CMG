@@ -12,6 +12,7 @@ public interface IBrowserController
 public sealed class BrowserController : IBrowserController
 {
     private const int ChromeRemoteDebuggingPort = 9222;
+    private const int EdgeRemoteDebuggingPort = 9224;
     private const int FirefoxRemoteDebuggingPort = 9223;
     private readonly BrowserStateStore stateStore;
 
@@ -146,13 +147,23 @@ public sealed class BrowserController : IBrowserController
     }
 
     private static string? FindExecutable(BrowserKind browserKind) =>
-        browserKind is BrowserKind.Firefox ? FirefoxExecutableLocator.Find() : ChromeExecutableLocator.Find();
+        browserKind switch
+        {
+            BrowserKind.Edge => EdgeExecutableLocator.Find(),
+            BrowserKind.Firefox => FirefoxExecutableLocator.Find(),
+            _ => ChromeExecutableLocator.Find()
+        };
 
     private static int GetRemoteDebuggingPort(BrowserKind browserKind) =>
-        browserKind is BrowserKind.Firefox ? FirefoxRemoteDebuggingPort : ChromeRemoteDebuggingPort;
+        browserKind switch
+        {
+            BrowserKind.Edge => EdgeRemoteDebuggingPort,
+            BrowserKind.Firefox => FirefoxRemoteDebuggingPort,
+            _ => ChromeRemoteDebuggingPort
+        };
 
     private static string GetRemoteDebuggingUrl(BrowserKind browserKind, int remoteDebuggingPort) =>
-        browserKind is BrowserKind.Firefox
+        browserKind.UsesFirefoxBiDi()
             ? $"ws://127.0.0.1:{remoteDebuggingPort}/session"
             : $"http://127.0.0.1:{remoteDebuggingPort}";
 
@@ -162,7 +173,7 @@ public sealed class BrowserController : IBrowserController
         string userDataDirectory,
         IReadOnlyList<string> additionalArguments)
     {
-        return browserKind is BrowserKind.Firefox
+        return browserKind.UsesFirefoxBiDi()
             ? BuildFirefoxArguments(remoteDebuggingPort, userDataDirectory, additionalArguments)
             : BuildChromeArguments(remoteDebuggingPort, userDataDirectory, additionalArguments);
     }
@@ -216,7 +227,7 @@ public sealed class BrowserController : IBrowserController
 
     private static void WriteBrowserPreferences(BrowserKind browserKind, string userDataDirectory)
     {
-        if (browserKind is not BrowserKind.Firefox)
+        if (!browserKind.UsesFirefoxBiDi())
         {
             return;
         }

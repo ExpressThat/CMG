@@ -1,11 +1,13 @@
 # `browser control script`
 
-Runs a `.cmgscript` browser automation script against the selected CMG-controlled browser instance. Chrome is the default; use the top-level `--firefox` option for Firefox.
+Runs a `.cmgscript` browser automation script against the selected CMG-controlled browser instance. Chrome is the default. Use `--chrome` to select Chrome explicitly, `--edge` for Microsoft Edge, or `--firefox` for Firefox.
 
 ```powershell
 cmg browser control script --file <path>
 cmg browser control script --file -
 cmg browser control script --file <path> --gif <path>
+cmg --chrome browser control script --file <path>
+cmg --edge browser control script --file <path>
 cmg --firefox browser control script --file <path>
 ```
 
@@ -17,12 +19,12 @@ cmg --firefox browser control script --file <path>
 
 ## Behavior
 
-- Requires a browser started with [`browser launch`](../launch.md). For Firefox, use `cmg --firefox browser launch`.
+- Requires a browser started with [`browser launch`](../launch.md). For Edge, use `cmg --edge browser launch`. For Firefox, use `cmg --firefox browser launch`.
 - Executes actions in file order.
 - Stops on the first failed action.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
-- Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome, WebDriver BiDi for Firefox.
+- Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.

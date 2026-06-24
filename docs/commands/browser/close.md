@@ -1,9 +1,11 @@
 # `browser close`
 
-Closes the CMG-controlled browser instance. Chrome is the default; use the top-level `--firefox` option to close the Firefox instance.
+Closes the selected CMG-controlled browser instance. Chrome is the default. Use `--chrome` to select Chrome explicitly, `--edge` to close Edge, or `--firefox` to close Firefox.
 
 ```powershell
 cmg browser close
+cmg --chrome browser close
+cmg --edge browser close
 cmg --firefox browser close
 ```
 
@@ -37,5 +39,6 @@ No CMG-controlled Chrome instance is running.
 
 ```powershell
 cmg browser close
+cmg --edge browser close
 cmg --firefox browser close
 ```

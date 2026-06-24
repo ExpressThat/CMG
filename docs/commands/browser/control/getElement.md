@@ -63,8 +63,10 @@ Validation and runtime errors are written to stderr, including:
 
 ```powershell
 cmg browser launch https://example.com
+cmg --edge browser launch https://example.com
 cmg --firefox browser launch https://example.com
 cmg browser control getElement "h1" --html
+cmg --edge browser control getElement "h1" --html
 cmg browser control getElement "#hero" --screenshot
 cmg browser control getElement ".card" --screenshot --output card.png
 ```

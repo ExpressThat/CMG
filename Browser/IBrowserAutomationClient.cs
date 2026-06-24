@@ -82,5 +82,5 @@ public sealed class BrowserAutomationClientFactory
     }
 
     public IBrowserAutomationClient Create(BrowserKind browserKind) =>
-        browserKind is BrowserKind.Firefox ? firefoxBiDiClient : chromeDevToolsClient;
+        browserKind.UsesFirefoxBiDi() ? firefoxBiDiClient : chromeDevToolsClient;
 }

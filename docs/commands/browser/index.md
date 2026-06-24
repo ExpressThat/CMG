@@ -16,6 +16,8 @@ cmg browser [command] [options]
 
 ```powershell
 cmg browser launch
+cmg --chrome browser launch
+cmg --edge browser launch
 cmg --firefox browser launch
 cmg browser close
 cmg browser control --help

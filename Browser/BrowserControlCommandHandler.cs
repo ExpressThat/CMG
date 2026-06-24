@@ -22,6 +22,11 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
 
     public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output)
     {
+        if (!ValidateBrowserSelection(browserKind))
+        {
+            return 1;
+        }
+
         if (html == screenshot)
         {
             Console.Error.WriteLine("Specify exactly one output mode: --html or --screenshot.");
@@ -67,6 +72,11 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
 
     public int RunScript(BrowserKind browserKind, string file, FileInfo? gif)
     {
+        if (!ValidateBrowserSelection(browserKind))
+        {
+            return 1;
+        }
+
         var result = browserControlService.RunScript(browserKind, file, gif);
 
         return WriteScriptResult(result);
@@ -74,9 +84,25 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
 
     public int RunScriptAction(BrowserKind browserKind, string scriptLine)
     {
+        if (!ValidateBrowserSelection(browserKind))
+        {
+            return 1;
+        }
+
         var result = browserControlService.RunScriptAction(browserKind, scriptLine);
 
         return WriteScriptResult(result);
+    }
+
+    private static bool ValidateBrowserSelection(BrowserKind browserKind)
+    {
+        if (browserKind is not BrowserKind.InvalidSelection)
+        {
+            return true;
+        }
+
+        Console.Error.WriteLine("Use only one browser option: --chrome, --edge, or --firefox.");
+        return false;
     }
 
     private static int WriteScriptResult(ScriptRunResult result)

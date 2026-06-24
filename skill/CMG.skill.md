@@ -6,7 +6,8 @@ CMG is a command-line browser control tool intended to be called by AI agents.
 
 - Start a controlled browser with `cmg browser launch` before page control commands.
 - Close the controlled browser with `cmg browser close` when finished.
-- Chrome is the default browser. Use the top-level `--firefox` option before the command group to target Firefox, such as `cmg --firefox browser launch` and `cmg --firefox browser control script --file flow.cmgscript`.
+- Chrome is the default browser. `--chrome` is available but optional, `--edge` targets Microsoft Edge, and `--firefox` targets Firefox. Put the browser option before the command group, such as `cmg --edge browser launch` or `cmg --firefox browser control script --file flow.cmgscript`.
+- Use the same browser option for launch, control, and close commands within a flow. For example, an Edge flow should use `cmg --edge browser launch`, `cmg --edge browser control script --file flow.cmgscript`, and `cmg --edge browser close`.
 - Use `cmg browser control <action>` for one-off actions.
 - Use `cmg browser control script --file <path>` for multi-step flows.
 - Use `cmg browser control script --file -` to pipe a generated `.cmgscript` from stdin.

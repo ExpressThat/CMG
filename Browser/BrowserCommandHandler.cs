@@ -18,6 +18,12 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
 
     public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments)
     {
+        if (browserKind is BrowserKind.InvalidSelection)
+        {
+            Console.Error.WriteLine("Use only one browser option: --chrome, --edge, or --firefox.");
+            return 1;
+        }
+
         var result = browserController.Launch(browserKind, arguments);
 
         Console.WriteLine(result.Message);
@@ -32,6 +38,12 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
 
     public int Close(BrowserKind browserKind, IReadOnlyList<string> arguments)
     {
+        if (browserKind is BrowserKind.InvalidSelection)
+        {
+            Console.Error.WriteLine("Use only one browser option: --chrome, --edge, or --firefox.");
+            return 1;
+        }
+
         var result = browserController.Close(browserKind);
 
         Console.WriteLine(result.Message);

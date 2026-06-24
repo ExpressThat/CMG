@@ -32,7 +32,7 @@ public sealed class BrowserControlService : IBrowserControlService
         var state = stateStore.Load(browserKind);
         if (state is null)
         {
-            return ElementResult.Fail($"No CMG-controlled {browserKind.DisplayName()} instance is running. Run 'cmg {(browserKind is BrowserKind.Firefox ? "--firefox " : string.Empty)}browser launch' first.");
+            return ElementResult.Fail(BuildBrowserNotRunningMessage(browserKind));
         }
 
         var automationClient = automationClientFactory.Create(browserKind);
@@ -65,7 +65,7 @@ public sealed class BrowserControlService : IBrowserControlService
         var state = stateStore.Load(browserKind);
         if (state is null)
         {
-            return ScriptRunResult.Fail($"No CMG-controlled {browserKind.DisplayName()} instance is running. Run 'cmg {(browserKind is BrowserKind.Firefox ? "--firefox " : string.Empty)}browser launch' first.");
+            return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind));
         }
 
         return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif);
@@ -76,11 +76,14 @@ public sealed class BrowserControlService : IBrowserControlService
         var state = stateStore.Load(browserKind);
         if (state is null)
         {
-            return ScriptRunResult.Fail($"No CMG-controlled {browserKind.DisplayName()} instance is running. Run 'cmg {(browserKind is BrowserKind.Firefox ? "--firefox " : string.Empty)}browser launch' first.");
+            return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind));
         }
 
         return scriptRunner.RunText(scriptLine, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind));
     }
+
+    private static string BuildBrowserNotRunningMessage(BrowserKind browserKind) =>
+        $"No CMG-controlled {browserKind.DisplayName()} instance is running. Run 'cmg {browserKind.CommandOptionPrefix()}browser launch' first.";
 }
 
 public enum ElementOutputMode

@@ -18,9 +18,11 @@ cmg <command> [arguments] [options]
 
 ## Global Options
 
+- `--chrome`: Use Chrome. This is optional because Chrome is the default. Put this before the command group, for example `cmg --chrome browser launch`.
+- `--edge`: Use Microsoft Edge instead of the default Chrome browser. Put this before the command group, for example `cmg --edge browser launch`.
 - `--firefox`: Use Firefox instead of the default Chrome browser. Put this before the command group, for example `cmg --firefox browser launch`.
 
-Chrome is the default browser. Firefox support uses WebDriver BiDi and keeps separate launch state/profile data from Chrome.
+Chrome is the default browser. `--chrome`, `--edge`, and `--firefox` are mutually exclusive. Chrome and Edge use Chrome DevTools Protocol. Firefox support uses WebDriver BiDi. Each browser keeps separate launch state and profile data.
 
 ## Command Groups
 

@@ -16,18 +16,18 @@ public sealed class BrowserCommandBuilder
         this.browserControlCommandBuilder = browserControlCommandBuilder;
     }
 
-    public Command Build(Option<bool> firefoxOption)
+    public Command Build(BrowserSelectionOptions browserOptions)
     {
         var browserCommand = new Command("browser", "Browser lifecycle and capture commands.");
 
-        browserCommand.Subcommands.Add(BuildLaunchCommand(firefoxOption));
-        browserCommand.Subcommands.Add(BuildCloseCommand(firefoxOption));
-        browserCommand.Subcommands.Add(browserControlCommandBuilder.Build(firefoxOption));
+        browserCommand.Subcommands.Add(BuildLaunchCommand(browserOptions));
+        browserCommand.Subcommands.Add(BuildCloseCommand(browserOptions));
+        browserCommand.Subcommands.Add(browserControlCommandBuilder.Build(browserOptions));
 
         return browserCommand;
     }
 
-    private Command BuildLaunchCommand(Option<bool> firefoxOption)
+    private Command BuildLaunchCommand(BrowserSelectionOptions browserOptions)
     {
         var arguments = CreateTrailingArguments("Additional browser launch arguments.");
 
@@ -39,13 +39,13 @@ public sealed class BrowserCommandBuilder
         command.SetAction(parseResult =>
         {
             var values = parseResult.GetValue(arguments) ?? [];
-            return browserCommandHandler.Launch(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), values);
+            return browserCommandHandler.Launch(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), values);
         });
 
         return command;
     }
 
-    private Command BuildCloseCommand(Option<bool> firefoxOption)
+    private Command BuildCloseCommand(BrowserSelectionOptions browserOptions)
     {
         var arguments = CreateTrailingArguments("Additional browser close arguments.");
 
@@ -57,7 +57,7 @@ public sealed class BrowserCommandBuilder
         command.SetAction(parseResult =>
         {
             var values = parseResult.GetValue(arguments) ?? [];
-            return browserCommandHandler.Close(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), values);
+            return browserCommandHandler.Close(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), values);
         });
 
         return command;
@@ -72,3 +72,4 @@ public sealed class BrowserCommandBuilder
         };
     }
 }
+

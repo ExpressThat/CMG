@@ -8,8 +8,8 @@ cmg browser control [command] [options]
 
 ## Behavior
 
-- Contains commands that interact with the active page in the selected browser. Chrome uses Chrome DevTools Protocol; Firefox uses WebDriver BiDi.
-- Run [`browser launch`](../launch.md) before using control commands. For Firefox, include the top-level `--firefox` option on launch and control commands.
+- Contains commands that interact with the active page in the selected browser. Chrome and Edge use Chrome DevTools Protocol; Firefox uses WebDriver BiDi.
+- Run [`browser launch`](../launch.md) before using control commands. Include the same top-level browser option on launch and control commands when using `--edge` or `--firefox`.
 - Running `browser control` without a subcommand exits with `1`.
 
 ## Subcommands
@@ -43,6 +43,7 @@ cmg browser control [command] [options]
 
 ```powershell
 cmg browser control --help
+cmg --edge browser control --help
 cmg --firefox browser control --help
 cmg browser control getElement "h1" --html
 cmg browser control script --file flow.cmgscript
