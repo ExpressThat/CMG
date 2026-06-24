@@ -14,6 +14,7 @@ Use scripts when a single selector command is not enough and an agent needs to d
 - [Actions](actions.md)
 - [Examples](examples.md)
 - [Errors](errors.md)
+- [GIF Recording](gif-recording.md)
 
 Runnable examples live in [`../../demo-scripts/`](../../demo-scripts/).
 

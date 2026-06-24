@@ -1,0 +1,21 @@
+# Demonstrates the block form of dragAndDrop with intermediate drag actions.
+navigate "C:\Projects\CMG\index.html"
+waitForElement "#dropQueue" timeout=5000
+
+dragAndDrop "[data-command='browser launch']" {
+  delay 200
+  hover "#lastDialogAction"
+  delay 200
+  hover "#dropQueue"
+  drop "#dropQueue"
+}
+assertText "#dropQueue" "browser launch"
+
+dragAndDrop "[data-command='browser close']" {
+  hover "#dropQueue"
+  delay 300
+  drop "#dropQueue"
+}
+assertText "#dropQueue" "browser close"
+
+screenshot "#dragdrop" output="demo-output/complex-drag-drop-section.png"

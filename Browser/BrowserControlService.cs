@@ -6,7 +6,9 @@ public interface IBrowserControlService
 {
     ElementResult GetElement(string selector, ElementOutputMode outputMode);
 
-    ScriptRunResult RunScript(string file);
+    ScriptRunResult RunScript(string file, FileInfo? gif);
+
+    ScriptRunResult RunScriptAction(string scriptLine);
 }
 
 public sealed class BrowserControlService : IBrowserControlService
@@ -52,7 +54,7 @@ public sealed class BrowserControlService : IBrowserControlService
         }
     }
 
-    public ScriptRunResult RunScript(string file)
+    public ScriptRunResult RunScript(string file, FileInfo? gif)
     {
         if (file is not "-" && !File.Exists(file))
         {
@@ -65,7 +67,18 @@ public sealed class BrowserControlService : IBrowserControlService
             return ScriptRunResult.Fail("No CMG-controlled Chrome instance is running. Run 'cmg browser launch' first.");
         }
 
-        return scriptRunner.Run(file, state.RemoteDebuggingUrl);
+        return scriptRunner.Run(file, state.RemoteDebuggingUrl, gif);
+    }
+
+    public ScriptRunResult RunScriptAction(string scriptLine)
+    {
+        var state = stateStore.Load();
+        if (state is null)
+        {
+            return ScriptRunResult.Fail("No CMG-controlled Chrome instance is running. Run 'cmg browser launch' first.");
+        }
+
+        return scriptRunner.RunText(scriptLine, state.RemoteDebuggingUrl);
     }
 }
 

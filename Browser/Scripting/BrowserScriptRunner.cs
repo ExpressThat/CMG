@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Browser.Scripting;
 
@@ -15,7 +16,7 @@ public sealed partial class BrowserScriptRunner
         this.devToolsClient = devToolsClient;
     }
 
-    public ScriptRunResult Run(string file, string remoteDebuggingUrl)
+    public ScriptRunResult Run(string file, string remoteDebuggingUrl, FileInfo? gif)
     {
         var readResult = ReadScript(file);
         if (!readResult.Success)
@@ -23,7 +24,17 @@ public sealed partial class BrowserScriptRunner
             return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
         }
 
-        var parseResult = parser.Parse(readResult.Script ?? string.Empty);
+        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, gif);
+    }
+
+    public ScriptRunResult RunText(string script, string remoteDebuggingUrl)
+    {
+        return RunParsedScript(script, remoteDebuggingUrl, gif: null);
+    }
+
+    private ScriptRunResult RunParsedScript(string script, string remoteDebuggingUrl, FileInfo? gif)
+    {
+        var parseResult = parser.Parse(script);
         if (!parseResult.Success)
         {
             return ScriptRunResult.Fail(parseResult.Error ?? "Could not parse script.");
@@ -31,6 +42,11 @@ public sealed partial class BrowserScriptRunner
 
         var context = new ScriptExecutionContext();
         var output = new List<string>();
+        using var recorder = gif is null
+            ? null
+            : new ScriptGifRecorder(devToolsClient, new ScriptRecordingOptions(gif.FullName));
+
+        recorder?.Start(remoteDebuggingUrl);
 
         for (var index = 0; index < parseResult.Actions.Count; index++)
         {
@@ -39,17 +55,23 @@ public sealed partial class BrowserScriptRunner
 
             try
             {
-                var stepOutput = ExecuteAction(remoteDebuggingUrl, action, context);
+                recorder?.BeforeAction(action);
+                var stepOutput = ExecuteAction(remoteDebuggingUrl, action, context, recorder);
+                recorder?.AfterAction(action);
                 output.Add($"PASS {stepNumber:000} {action.Name} {FormatActionForLog(action)}".TrimEnd());
                 output.AddRange(stepOutput);
             }
             catch (Exception exception) when (exception is ScriptExecutionException or ChromeDevToolsException or ElementNotFoundException)
             {
+                FinishRecording(recorder, output);
+
                 return ScriptRunResult.Fail(
                     $"Line {action.LineNumber}: {action.Name} failed. {exception.Message}",
                     output);
             }
         }
+
+        FinishRecording(recorder, output);
 
         return ScriptRunResult.Ok(output);
     }
@@ -57,14 +79,20 @@ public sealed partial class BrowserScriptRunner
     private IReadOnlyList<string> ExecuteAction(
         string remoteDebuggingUrl,
         BrowserScriptAction action,
-        ScriptExecutionContext context)
+        ScriptExecutionContext context,
+        ScriptGifRecorder? recorder)
     {
+        if (action.Children.Count > 0 && !string.Equals(action.Name, "dragAndDrop", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ScriptExecutionException($"Action '{action.Name}' does not accept a block body.");
+        }
+
         return action.Name.ToLowerInvariant() switch
         {
             "navigate" => ExecuteNavigate(remoteDebuggingUrl, action),
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, action),
             "click" => ExecuteSelectorAction(action, selector => devToolsClient.Click(remoteDebuggingUrl, selector)),
-            "type" => ExecuteType(remoteDebuggingUrl, action),
+            "type" => ExecuteType(remoteDebuggingUrl, action, recorder),
             "clear" => ExecuteSelectorAction(action, selector => devToolsClient.Clear(remoteDebuggingUrl, selector)),
             "press" => ExecutePress(remoteDebuggingUrl, action),
             "hover" => ExecuteSelectorAction(action, selector => devToolsClient.Hover(remoteDebuggingUrl, selector)),
@@ -77,7 +105,7 @@ public sealed partial class BrowserScriptRunner
             "asserttext" => ExecuteAssertText(remoteDebuggingUrl, action),
             "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, action),
             "setviewport" => ExecuteSetViewport(remoteDebuggingUrl, action),
-            "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, action),
+            "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, action, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, action),
             "activatetab" => ExecuteActivateTab(remoteDebuggingUrl, action),
             "closetab" => ExecuteCloseTab(remoteDebuggingUrl, action),
@@ -108,10 +136,22 @@ public sealed partial class BrowserScriptRunner
         return [];
     }
 
-    private IReadOnlyList<string> ExecuteType(string remoteDebuggingUrl, BrowserScriptAction action)
+    private IReadOnlyList<string> ExecuteType(string remoteDebuggingUrl, BrowserScriptAction action, ScriptGifRecorder? recorder)
     {
         RequireArgumentCount(action, 2, 2);
-        devToolsClient.Type(remoteDebuggingUrl, action.Arguments[0], action.Arguments[1]);
+        if (recorder is null)
+        {
+            devToolsClient.Type(remoteDebuggingUrl, action.Arguments[0], action.Arguments[1]);
+            return [];
+        }
+
+        recorder.CaptureClickPulse();
+        devToolsClient.TypeProgressively(
+            remoteDebuggingUrl,
+            action.Arguments[0],
+            action.Arguments[1],
+            recorder.CaptureTypingFrame);
+
         return [];
     }
 
@@ -183,10 +223,150 @@ public sealed partial class BrowserScriptRunner
         return [];
     }
 
-    private IReadOnlyList<string> ExecuteDragAndDrop(string remoteDebuggingUrl, BrowserScriptAction action)
+    private IReadOnlyList<string> ExecuteDragAndDrop(string remoteDebuggingUrl, BrowserScriptAction action, ScriptGifRecorder? recorder)
     {
+        if (action.Children.Count > 0)
+        {
+            return ExecuteDragAndDropBlock(remoteDebuggingUrl, action, recorder);
+        }
+
         RequireArgumentCount(action, 2, 2);
+        if (recorder is not null)
+        {
+            recorder.RecordDragAndDrop(action.Arguments[0], action.Arguments[1], () =>
+            {
+                devToolsClient.DragAndDrop(remoteDebuggingUrl, action.Arguments[0], action.Arguments[1]);
+            });
+
+            return [];
+        }
+
         devToolsClient.DragAndDrop(remoteDebuggingUrl, action.Arguments[0], action.Arguments[1]);
+        return [];
+    }
+
+    private IReadOnlyList<string> ExecuteDragAndDropBlock(string remoteDebuggingUrl, BrowserScriptAction action, ScriptGifRecorder? recorder)
+    {
+        RequireArgumentCount(action, 1, 1);
+        if (action.Options.Count > 0)
+        {
+            throw new ScriptExecutionException("Block dragAndDrop does not accept options.");
+        }
+
+        var sourceSelector = action.Arguments[0];
+        BrowserScriptAction? dropAction = null;
+        var output = new List<string>();
+
+        foreach (var child in action.Children)
+        {
+            var childName = child.Name.ToLowerInvariant();
+            if (childName is "drop")
+            {
+                if (dropAction is not null)
+                {
+                    throw new ScriptExecutionException("Block dragAndDrop can contain only one drop action.");
+                }
+
+                RequireArgumentCount(child, 1, 1);
+                dropAction = child;
+                continue;
+            }
+
+            if (dropAction is not null)
+            {
+                throw new ScriptExecutionException("No actions are allowed after drop inside block dragAndDrop.");
+            }
+
+            ValidateDragBlockStep(child);
+        }
+
+        if (dropAction is null)
+        {
+            throw new ScriptExecutionException("Block dragAndDrop requires a drop action.");
+        }
+
+        if (recorder is null)
+        {
+            foreach (var child in action.Children)
+            {
+                if (string.Equals(child.Name, "drop", StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+
+                output.AddRange(ExecuteDragBlockStep(remoteDebuggingUrl, child));
+            }
+
+            devToolsClient.DragAndDrop(remoteDebuggingUrl, sourceSelector, dropAction.Arguments[0]);
+            return output;
+        }
+
+        recorder.BeginDrag(sourceSelector);
+        foreach (var child in action.Children)
+        {
+            var childName = child.Name.ToLowerInvariant();
+            if (childName is "drop")
+            {
+                recorder.DropDrag(child.Arguments[0]);
+                devToolsClient.DragAndDrop(remoteDebuggingUrl, sourceSelector, child.Arguments[0]);
+                return output;
+            }
+
+            output.AddRange(ExecuteDragBlockRecordedStep(remoteDebuggingUrl, child, recorder));
+        }
+
+        return output;
+    }
+
+    private static void ValidateDragBlockStep(BrowserScriptAction action)
+    {
+        _ = action.Name.ToLowerInvariant() switch
+        {
+            "delay" => true,
+            "hover" => true,
+            "scrollintoview" => true,
+            "waitforelement" => true,
+            _ => throw new ScriptExecutionException($"Action '{action.Name}' is not supported inside block dragAndDrop.")
+        };
+    }
+
+    private IReadOnlyList<string> ExecuteDragBlockStep(string remoteDebuggingUrl, BrowserScriptAction action)
+    {
+        return action.Name.ToLowerInvariant() switch
+        {
+            "delay" => ExecuteDelay(action),
+            "hover" => ExecuteSelectorAction(action, selector => devToolsClient.Hover(remoteDebuggingUrl, selector)),
+            "scrollintoview" => ExecuteSelectorAction(action, selector => devToolsClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
+            "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, action),
+            _ => throw new ScriptExecutionException($"Action '{action.Name}' is not supported inside block dragAndDrop.")
+        };
+    }
+
+    private IReadOnlyList<string> ExecuteDragBlockRecordedStep(string remoteDebuggingUrl, BrowserScriptAction action, ScriptGifRecorder recorder)
+    {
+        return action.Name.ToLowerInvariant() switch
+        {
+            "delay" => ExecuteRecordedDragDelay(action, recorder),
+            "hover" => ExecuteRecordedDragHover(action, recorder),
+            "scrollintoview" => ExecuteRecordedDragHover(action, recorder),
+            "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, action),
+            _ => throw new ScriptExecutionException($"Action '{action.Name}' is not supported inside block dragAndDrop.")
+        };
+    }
+
+    private static IReadOnlyList<string> ExecuteRecordedDragDelay(BrowserScriptAction action, ScriptGifRecorder recorder)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var milliseconds = ParsePositiveInt(action.Arguments[0], "delay");
+        Thread.Sleep(milliseconds);
+        recorder.DragDelay(milliseconds);
+        return [];
+    }
+
+    private static IReadOnlyList<string> ExecuteRecordedDragHover(BrowserScriptAction action, ScriptGifRecorder recorder)
+    {
+        RequireArgumentCount(action, 1, 1);
+        recorder.DragHover(action.Arguments[0]);
         return [];
     }
 
@@ -246,7 +426,8 @@ public sealed partial class BrowserScriptRunner
             Options = action.Options.ToDictionary(
                 pair => pair.Key,
                 pair => ExpandVariables(pair.Value, context),
-                StringComparer.OrdinalIgnoreCase)
+                StringComparer.OrdinalIgnoreCase),
+            Children = action.Children.Select(child => ExpandVariables(child, context)).ToArray()
         };
     }
 
@@ -343,6 +524,17 @@ public sealed partial class BrowserScriptRunner
     private static string QuoteForLog(string value)
     {
         return value.Contains(' ', StringComparison.Ordinal) ? $"\"{value}\"" : value;
+    }
+
+    private static void FinishRecording(ScriptGifRecorder? recorder, List<string> output)
+    {
+        if (recorder is null)
+        {
+            return;
+        }
+
+        recorder.Finish();
+        output.Add($"GIF {recorder.OutputPath}");
     }
 
     [GeneratedRegex(@"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")]

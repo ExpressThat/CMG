@@ -2,6 +2,8 @@
 
 Scripts stop on the first error.
 
+When `--gif <path>` is used, CMG still writes a partial GIF with the frames captured before the error, as long as recording had started.
+
 ## Browser Not Running
 
 ```text
@@ -33,6 +35,22 @@ Common causes:
 - Missing closing quote.
 - Using inline comments. Only full-line comments are supported.
 - Forgetting to quote arguments with spaces.
+- Opening a block without a closing `}`.
+- Closing a block with `}` when no block is open.
+
+## Invalid Block Action
+
+```text
+Line 4: dragAndDrop failed. Block dragAndDrop requires a drop action.
+```
+
+Complex `dragAndDrop` blocks must contain exactly one `drop` action and no actions after it.
+
+Unsupported child actions fail clearly:
+
+```text
+Line 4: dragAndDrop failed. Action 'type' is not supported inside block dragAndDrop.
+```
 
 ## Unknown Action
 

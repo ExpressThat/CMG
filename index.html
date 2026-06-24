@@ -275,6 +275,51 @@
       opacity: 0.58;
     }
 
+    .drag-ghost-preview {
+      position: fixed;
+      left: -1000px;
+      top: -1000px;
+      min-width: 240px;
+      max-width: 340px;
+      padding: 16px 18px;
+      border: 2px solid #17211f;
+      border-radius: 8px;
+      background: #fff7c2;
+      color: #17211f;
+      box-shadow: 0 18px 42px rgba(23, 33, 31, 0.26);
+      font-weight: 900;
+      letter-spacing: 0;
+      pointer-events: none;
+      transform: rotate(-2deg);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 80ms ease;
+    }
+
+    .drag-ghost-preview::before {
+      content: "SITE DRAG GHOST";
+      display: block;
+      margin-bottom: 6px;
+      color: #9a3412;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+    }
+
+    .drag-ghost-preview[data-command*="close"] {
+      background: #fee2e2;
+      border-color: #b42318;
+    }
+
+    .drag-ghost-preview[data-command*="getElement"] {
+      background: #dbeafe;
+      border-color: #1d4ed8;
+    }
+
+    .drag-ghost-preview.visible {
+      opacity: 0.9;
+      z-index: 50;
+    }
+
     .toast {
       position: fixed;
       right: 18px;
@@ -517,6 +562,42 @@
     const queue = document.querySelector('#dropQueue');
     const dropHint = document.querySelector('#dropHint');
     const initialItems = Array.from(palette.querySelectorAll('.drag-item')).map(item => item.outerHTML);
+    const dragGhostPreview = document.createElement('div');
+    dragGhostPreview.className = 'drag-ghost-preview';
+    dragGhostPreview.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(dragGhostPreview);
+
+    function configureDragGhost(command) {
+      dragGhostPreview.dataset.command = command;
+      dragGhostPreview.textContent = command;
+      dragGhostPreview.style.left = '-1000px';
+      dragGhostPreview.style.top = '-1000px';
+      dragGhostPreview.style.zIndex = '-1';
+      dragGhostPreview.classList.remove('visible');
+
+      return dragGhostPreview;
+    }
+
+    function positionDragGhost(event) {
+      if (!dragGhostPreview.dataset.command) return;
+
+      const x = event.clientX || 0;
+      const y = event.clientY || 0;
+      if (x <= 0 && y <= 0) return;
+
+      dragGhostPreview.style.left = `${x + 18}px`;
+      dragGhostPreview.style.top = `${y + 18}px`;
+      dragGhostPreview.style.zIndex = '50';
+      dragGhostPreview.classList.add('visible');
+    }
+
+    function hideDragGhost() {
+      dragGhostPreview.classList.remove('visible');
+      dragGhostPreview.style.left = '-1000px';
+      dragGhostPreview.style.top = '-1000px';
+      dragGhostPreview.style.zIndex = '-1';
+      dragGhostPreview.removeAttribute('data-command');
+    }
 
     document.addEventListener('dragstart', event => {
       const item = event.target.closest('.drag-item');
@@ -525,11 +606,17 @@
       item.setAttribute('aria-grabbed', 'true');
       event.dataTransfer.setData('text/plain', item.dataset.command);
       event.dataTransfer.effectAllowed = 'copy';
+      event.dataTransfer.setDragImage(configureDragGhost(item.dataset.command), 28, 24);
+      positionDragGhost(event);
     });
+
+    document.addEventListener('drag', positionDragGhost);
+    document.addEventListener('dragover', positionDragGhost);
 
     document.addEventListener('dragend', event => {
       const item = event.target.closest('.drag-item');
       if (item) item.setAttribute('aria-grabbed', 'false');
+      hideDragGhost();
     });
 
     queue.addEventListener('dragover', event => {
@@ -547,6 +634,7 @@
     queue.addEventListener('drop', event => {
       event.preventDefault();
       queue.classList.remove('drag-over');
+      hideDragGhost();
 
       const command = event.dataTransfer.getData('text/plain');
       if (!command) return;

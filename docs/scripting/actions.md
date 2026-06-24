@@ -219,6 +219,11 @@ Required options:
 
 ```text
 dragAndDrop "<sourceSelector>" "<targetSelector>"
+dragAndDrop "<sourceSelector>" {
+  delay 200
+  hover "<selector>"
+  drop "<targetSelector>"
+}
 ```
 
 Dispatches drag-and-drop DOM events from the source element to the target element.
@@ -227,6 +232,36 @@ Example:
 
 ```text
 dragAndDrop "[data-command='browser launch']" "#dropQueue"
+```
+
+The block form is the complex drag sequence. It has no inline target selector; the target is provided by the required `drop` child action.
+
+Allowed child actions:
+
+- `delay <milliseconds>`: Pause while the drag is active. With `--gif`, frames are captured during the hold.
+- `hover "<selector>"`: Move the active drag pointer to another element.
+- `scrollIntoView "<selector>"`: Scroll an element into view before continuing.
+- `waitForElement "<selector>" timeout=5000`: Wait for an element before continuing.
+- `drop "<selector>"`: Finish the drag on the target selector. Required exactly once.
+
+Rules:
+
+- The block form must have exactly one source selector argument.
+- The block must contain exactly one `drop`.
+- No actions are allowed after `drop`.
+- Other child actions fail with `Action '<name>' is not supported inside block dragAndDrop.`
+- With `--gif`, CMG keeps the drag lifecycle active while the body runs so page-owned drag ghosts can stay visible.
+
+Complex example:
+
+```text
+dragAndDrop "[data-command='browser launch']" {
+  delay 200
+  hover "#lastDialogAction"
+  delay 200
+  hover "#dropQueue"
+  drop "#dropQueue"
+}
 ```
 
 ## `listTabs`

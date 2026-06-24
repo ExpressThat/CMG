@@ -142,26 +142,7 @@ public sealed class ChromeDevToolsClient
             await session.ScrollElementIntoView(selector);
 
             var clip = await GetElementClip(session, selector);
-            var x = clip.X + clip.Width / 2;
-            var y = clip.Y + clip.Height / 2;
-
-            await session.SendCommand("Input.dispatchMouseEvent", writer =>
-            {
-                writer.WriteString("type", "mousePressed");
-                writer.WriteNumber("x", x);
-                writer.WriteNumber("y", y);
-                writer.WriteString("button", "left");
-                writer.WriteNumber("clickCount", 1);
-            });
-
-            await session.SendCommand("Input.dispatchMouseEvent", writer =>
-            {
-                writer.WriteString("type", "mouseReleased");
-                writer.WriteNumber("x", x);
-                writer.WriteNumber("y", y);
-                writer.WriteString("button", "left");
-                writer.WriteNumber("clickCount", 1);
-            });
+            await ClickAt(session, clip.CenterX, clip.CenterY);
 
             return true;
         });
@@ -173,6 +154,18 @@ public sealed class ChromeDevToolsClient
             remoteDebuggingUrl,
             selector,
             $"element.focus(); element.value = `${{element.value ?? ''}}{EscapeForJavaScriptTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
+    }
+
+    public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null)
+    {
+        Click(remoteDebuggingUrl, selector);
+
+        foreach (var character in text)
+        {
+            Type(remoteDebuggingUrl, selector, character.ToString());
+            afterCharacter?.Invoke();
+            Thread.Sleep(80);
+        }
     }
 
     public void Clear(string remoteDebuggingUrl, string selector)
@@ -300,6 +293,114 @@ public sealed class ChromeDevToolsClient
         });
     }
 
+    public void MouseDragAndDrop(
+        string remoteDebuggingUrl,
+        string sourceSelector,
+        string targetSelector,
+        IReadOnlyList<ElementPoint> path,
+        Action<ElementPoint>? afterMove = null)
+    {
+        Run(async () =>
+        {
+            var pageTarget = await TryFindPageWithSelector(remoteDebuggingUrl, sourceSelector) ??
+                throw new ElementNotFoundException(sourceSelector);
+
+            await using var session = await DevToolsSession.Connect(pageTarget);
+            await session.ScrollElementIntoView(sourceSelector);
+            await session.ScrollElementIntoView(targetSelector);
+
+            var source = await GetElementClip(session, sourceSelector);
+            _ = await GetElementClip(session, targetSelector);
+            var start = new ElementPoint(source.CenterX, source.CenterY);
+            var points = path.Count > 0 ? path : [start];
+
+            await DispatchMouseMove(session, start, buttons: 0);
+            await DispatchMousePressed(session, start);
+            afterMove?.Invoke(start);
+
+            foreach (var point in points)
+            {
+                await DispatchMouseMove(session, point, buttons: 1);
+                afterMove?.Invoke(point);
+            }
+
+            await DispatchMouseReleased(session, points[^1]);
+
+            return true;
+        });
+    }
+
+    public void BeginPageDrag(string remoteDebuggingUrl, string sourceSelector, ElementPoint point)
+    {
+        Evaluate(
+            remoteDebuggingUrl,
+            $$"""
+            (() => {
+              const source = document.querySelector({{ToJsonStringLiteral(sourceSelector)}});
+              if (!source) return false;
+              const dataTransfer = new DataTransfer();
+              window.__cmgRecordingDrag = { source, dataTransfer };
+              const eventOptions = {
+                bubbles: true,
+                cancelable: true,
+                clientX: {{point.X.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
+                clientY: {{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
+                dataTransfer
+              };
+              source.dispatchEvent(new DragEvent('dragstart', eventOptions));
+              source.dispatchEvent(new DragEvent('drag', eventOptions));
+              return true;
+            })()
+            """);
+    }
+
+    public void MovePageDrag(string remoteDebuggingUrl, ElementPoint point)
+    {
+        Evaluate(
+            remoteDebuggingUrl,
+            $$"""
+            (() => {
+              const state = window.__cmgRecordingDrag;
+              if (!state?.source || !state?.dataTransfer) return false;
+              const target = document.elementFromPoint(
+                {{point.X.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
+                {{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}}) || document.body;
+              const eventOptions = {
+                bubbles: true,
+                cancelable: true,
+                clientX: {{point.X.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
+                clientY: {{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
+                dataTransfer: state.dataTransfer
+              };
+              state.source.dispatchEvent(new DragEvent('drag', eventOptions));
+              target.dispatchEvent(new DragEvent('dragenter', eventOptions));
+              target.dispatchEvent(new DragEvent('dragover', eventOptions));
+              return true;
+            })()
+            """);
+    }
+
+    public void EndPageDrag(string remoteDebuggingUrl, ElementPoint point)
+    {
+        Evaluate(
+            remoteDebuggingUrl,
+            $$"""
+            (() => {
+              const state = window.__cmgRecordingDrag;
+              if (!state?.source || !state?.dataTransfer) return false;
+              state.source.dispatchEvent(new DragEvent('dragend', {
+                bubbles: true,
+                cancelable: true,
+                clientX: {{point.X.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
+                clientY: {{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
+                dataTransfer: state.dataTransfer
+              }));
+              delete window.__cmgRecordingDrag;
+              return true;
+            })()
+            """);
+    }
+
     public byte[] GetPageScreenshot(string remoteDebuggingUrl)
     {
         return Run(async () =>
@@ -314,6 +415,71 @@ public sealed class ChromeDevToolsClient
 
             return Convert.FromBase64String(data);
         });
+    }
+
+    public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector)
+    {
+        return Run(async () =>
+        {
+            var pageTarget = await TryFindPageWithSelector(remoteDebuggingUrl, selector) ??
+                throw new ElementNotFoundException(selector);
+
+            await using var session = await DevToolsSession.Connect(pageTarget);
+            await session.ScrollElementIntoView(selector);
+            var clip = await GetElementClip(session, selector);
+
+            return new ElementPoint(clip.CenterX, clip.CenterY);
+        });
+    }
+
+    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point)
+    {
+        Evaluate(
+            remoteDebuggingUrl,
+            $$"""
+            (() => {
+              let cursor = document.getElementById('__cmg_virtual_cursor');
+              if (!cursor) {
+                cursor = document.createElement('div');
+                cursor.id = '__cmg_virtual_cursor';
+                cursor.setAttribute('popover', 'manual');
+                cursor.style.all = 'initial';
+                cursor.style.position = 'fixed';
+                cursor.style.left = '0px';
+                cursor.style.top = '0px';
+                cursor.style.width = '26px';
+                cursor.style.height = '34px';
+                cursor.style.margin = '0';
+                cursor.style.padding = '0';
+                cursor.style.border = '0';
+                cursor.style.background = 'transparent';
+                cursor.style.overflow = 'visible';
+                cursor.style.color = 'transparent';
+                cursor.style.zIndex = '2147483647';
+                cursor.style.pointerEvents = 'none';
+                cursor.style.transform = 'translate(-3px, -3px)';
+                cursor.style.filter = 'drop-shadow(0 2px 3px rgba(0,0,0,.4))';
+                cursor.innerHTML = '<svg width="26" height="34" viewBox="0 0 26 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 2L22 19L13.2 20.1L9.2 31L3 2Z" fill="#fff" stroke="#111" stroke-width="2" stroke-linejoin="round"/><path d="M13.2 20.1L18.6 29.4" stroke="#111" stroke-width="2.5" stroke-linecap="round"/></svg>';
+                document.documentElement.appendChild(cursor);
+              }
+              cursor.style.left = '{{point.X.ToString(System.Globalization.CultureInfo.InvariantCulture)}}px';
+              cursor.style.top = '{{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}}px';
+              if (typeof cursor.showPopover === 'function') {
+                if (cursor.matches(':popover-open')) {
+                  cursor.hidePopover();
+                }
+                cursor.showPopover();
+              }
+              return true;
+            })()
+            """);
+    }
+
+    public void RemoveDomCursor(string remoteDebuggingUrl)
+    {
+        Evaluate(
+            remoteDebuggingUrl,
+            "(() => { const cursor = document.getElementById('__cmg_virtual_cursor'); if (cursor?.matches?.(':popover-open')) cursor.hidePopover(); cursor?.remove(); return true; })()");
     }
 
     public IReadOnlyList<ChromePageTab> ListTabs(string remoteDebuggingUrl)
@@ -421,6 +587,64 @@ public sealed class ChromeDevToolsClient
         }
 
         return clip;
+    }
+
+    private static async Task ClickAt(DevToolsSession session, double x, double y)
+    {
+        await session.SendCommand("Input.dispatchMouseEvent", writer =>
+        {
+            writer.WriteString("type", "mousePressed");
+            writer.WriteNumber("x", x);
+            writer.WriteNumber("y", y);
+            writer.WriteString("button", "left");
+            writer.WriteNumber("clickCount", 1);
+        });
+
+        await session.SendCommand("Input.dispatchMouseEvent", writer =>
+        {
+            writer.WriteString("type", "mouseReleased");
+            writer.WriteNumber("x", x);
+            writer.WriteNumber("y", y);
+            writer.WriteString("button", "left");
+            writer.WriteNumber("clickCount", 1);
+        });
+    }
+
+    private static Task DispatchMouseMove(DevToolsSession session, ElementPoint point, int buttons)
+    {
+        return session.SendCommand("Input.dispatchMouseEvent", writer =>
+        {
+            writer.WriteString("type", "mouseMoved");
+            writer.WriteNumber("x", point.X);
+            writer.WriteNumber("y", point.Y);
+            writer.WriteNumber("buttons", buttons);
+        });
+    }
+
+    private static Task DispatchMousePressed(DevToolsSession session, ElementPoint point)
+    {
+        return session.SendCommand("Input.dispatchMouseEvent", writer =>
+        {
+            writer.WriteString("type", "mousePressed");
+            writer.WriteNumber("x", point.X);
+            writer.WriteNumber("y", point.Y);
+            writer.WriteString("button", "left");
+            writer.WriteNumber("buttons", 1);
+            writer.WriteNumber("clickCount", 1);
+        });
+    }
+
+    private static Task DispatchMouseReleased(DevToolsSession session, ElementPoint point)
+    {
+        return session.SendCommand("Input.dispatchMouseEvent", writer =>
+        {
+            writer.WriteString("type", "mouseReleased");
+            writer.WriteNumber("x", point.X);
+            writer.WriteNumber("y", point.Y);
+            writer.WriteString("button", "left");
+            writer.WriteNumber("buttons", 0);
+            writer.WriteNumber("clickCount", 1);
+        });
     }
 
     private async Task<Uri?> TryFindPageWithSelector(string remoteDebuggingUrl, string selector)
@@ -756,6 +980,10 @@ public sealed class ChromeDevToolsClient
 
     private readonly record struct ElementClip(double X, double Y, double Width, double Height)
     {
+        public double CenterX => X + Width / 2;
+
+        public double CenterY => Y + Height / 2;
+
         public static ElementClip FromBoxModel(JsonElement boxModel)
         {
             if (!TryReadElement(boxModel, ["result", "model", "content"], out var content) ||
@@ -801,5 +1029,7 @@ public sealed class ElementNotFoundException : Exception
 }
 
 public sealed record ChromePageTab(string Id, string Title, string Url);
+
+public sealed record ElementPoint(double X, double Y);
 
 internal sealed record PageTarget(string Id, string Title, string Url, Uri WebSocketDebuggerUrl);

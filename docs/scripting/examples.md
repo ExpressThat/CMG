@@ -2,6 +2,12 @@
 
 Runnable demo scripts live in [`../../demo-scripts/`](../../demo-scripts/).
 
+Record a demo as a GIF:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\01-dialog-flow.cmgscript --gif demo-output\dialog-flow.gif
+```
+
 ## Dialog Flow
 
 ```text
@@ -47,6 +53,29 @@ navigate "C:\Projects\CMG\index.html"
 waitForElement "#dropQueue"
 dragAndDrop "[data-command='browser launch']" "#dropQueue"
 assertText "#dropQueue" "browser launch"
+```
+
+## Complex Drag And Drop
+
+```text
+navigate "C:\Projects\CMG\index.html"
+waitForElement "#dropQueue"
+
+dragAndDrop "[data-command='browser launch']" {
+  delay 200
+  hover "#lastDialogAction"
+  delay 200
+  hover "#dropQueue"
+  drop "#dropQueue"
+}
+
+assertText "#dropQueue" "browser launch"
+```
+
+Run the complete example:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\07-complex-drag-flow.cmgscript --gif demo-output\complex-drag.gif
 ```
 
 ## Stdin

@@ -1,10 +1,14 @@
+using CMG.Browser.Scripting;
+
 namespace CMG.Browser;
 
 public interface IBrowserControlCommandHandler
 {
     int GetElement(string selector, bool html, bool screenshot, FileInfo? output);
 
-    int RunScript(string file);
+    int RunScript(string file, FileInfo? gif);
+
+    int RunScriptAction(string scriptLine);
 }
 
 public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
@@ -61,10 +65,22 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         return 0;
     }
 
-    public int RunScript(string file)
+    public int RunScript(string file, FileInfo? gif)
     {
-        var result = browserControlService.RunScript(file);
+        var result = browserControlService.RunScript(file, gif);
 
+        return WriteScriptResult(result);
+    }
+
+    public int RunScriptAction(string scriptLine)
+    {
+        var result = browserControlService.RunScriptAction(scriptLine);
+
+        return WriteScriptResult(result);
+    }
+
+    private static int WriteScriptResult(ScriptRunResult result)
+    {
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);

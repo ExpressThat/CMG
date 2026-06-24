@@ -59,6 +59,36 @@ Only identifier-like keys are treated as options. CSS selectors that contain `=`
 
 Durations are milliseconds.
 
+## Blocks
+
+Some actions can take a nested block body:
+
+```text
+action positionalArgs... {
+  childAction positionalArgs...
+}
+```
+
+The opening `{` must be at the end of the parent action line. The closing `}` must be on its own line.
+
+For v1, block syntax is supported by the complex `dragAndDrop` action:
+
+```text
+dragAndDrop "[data-command='browser launch']" {
+  delay 200
+  hover "#lastDialogAction"
+  drop "#dropQueue"
+}
+```
+
+Rules:
+
+- Block bodies use the same quoting, option, and variable expansion rules as top-level actions.
+- Blank lines and full-line comments are allowed inside blocks.
+- Nested blocks are parsed, but only actions that explicitly document block support may use them.
+- `dragAndDrop` block bodies must contain exactly one `drop` action.
+- No actions are allowed after `drop` in a `dragAndDrop` block.
+
 ## Variables
 
 Set variables with:

@@ -4,10 +4,21 @@ public sealed class BrowserScriptParser
 {
     public ScriptParseResult Parse(string script)
     {
-        var actions = new List<BrowserScriptAction>();
         var lines = script.ReplaceLineEndings("\n").Split('\n');
+        var parseResult = ParseActions(lines, 0, stopAtBlockEnd: false);
+        if (!parseResult.Success)
+        {
+            return ScriptParseResult.Fail(parseResult.Error ?? "Could not parse script.");
+        }
 
-        for (var index = 0; index < lines.Length; index++)
+        return ScriptParseResult.Ok(parseResult.Actions);
+    }
+
+    private static ActionListParseResult ParseActions(string[] lines, int startIndex, bool stopAtBlockEnd)
+    {
+        var actions = new List<BrowserScriptAction>();
+
+        for (var index = startIndex; index < lines.Length; index++)
         {
             var lineNumber = index + 1;
             var rawLine = lines[index];
@@ -18,10 +29,35 @@ public sealed class BrowserScriptParser
                 continue;
             }
 
+            if (trimmed is "}")
+            {
+                if (!stopAtBlockEnd)
+                {
+                    return ActionListParseResult.Fail($"Line {lineNumber}: unexpected block close '}}'.");
+                }
+
+                return ActionListParseResult.Ok(actions, index);
+            }
+
+            var hasBlock = trimmed.EndsWith('{');
+            if (trimmed.Contains('}', StringComparison.Ordinal))
+            {
+                return ActionListParseResult.Fail($"Line {lineNumber}: unexpected block close '}}'.");
+            }
+
+            if (hasBlock)
+            {
+                trimmed = trimmed[..^1].TrimEnd();
+                if (trimmed.Length is 0)
+                {
+                    return ActionListParseResult.Fail($"Line {lineNumber}: block opener '{{' must follow an action.");
+                }
+            }
+
             var tokenResult = Tokenize(trimmed, lineNumber);
             if (!tokenResult.Success)
             {
-                return ScriptParseResult.Fail(tokenResult.Error ?? $"Line {lineNumber}: invalid syntax.");
+                return ActionListParseResult.Fail(tokenResult.Error ?? $"Line {lineNumber}: invalid syntax.");
             }
 
             var tokens = tokenResult.Tokens;
@@ -45,15 +81,34 @@ public sealed class BrowserScriptParser
                 positional.Add(token);
             }
 
+            IReadOnlyList<BrowserScriptAction> children = [];
+            if (hasBlock)
+            {
+                var childResult = ParseActions(lines, index + 1, stopAtBlockEnd: true);
+                if (!childResult.Success)
+                {
+                    return childResult;
+                }
+
+                children = childResult.Actions;
+                index = childResult.NextIndex;
+            }
+
             actions.Add(new BrowserScriptAction(
                 lineNumber,
                 rawLine,
                 tokens[0],
                 positional,
-                options));
+                options,
+                children));
         }
 
-        return ScriptParseResult.Ok(actions);
+        if (stopAtBlockEnd)
+        {
+            return ActionListParseResult.Fail($"Line {lines.Length}: missing block close '}}'.");
+        }
+
+        return ActionListParseResult.Ok(actions, lines.Length);
     }
 
     private static TokenizeResult Tokenize(string line, int lineNumber)
@@ -131,7 +186,8 @@ public sealed record BrowserScriptAction(
     string RawLine,
     string Name,
     IReadOnlyList<string> Arguments,
-    IReadOnlyDictionary<string, string> Options);
+    IReadOnlyDictionary<string, string> Options,
+    IReadOnlyList<BrowserScriptAction> Children);
 
 public sealed record ScriptParseResult(bool Success, IReadOnlyList<BrowserScriptAction> Actions, string? Error)
 {
@@ -145,4 +201,16 @@ internal sealed record TokenizeResult(bool Success, IReadOnlyList<string> Tokens
     public static TokenizeResult Ok(IReadOnlyList<string> tokens) => new(true, tokens, null);
 
     public static TokenizeResult Fail(string error) => new(false, [], error);
+}
+
+internal sealed record ActionListParseResult(
+    bool Success,
+    IReadOnlyList<BrowserScriptAction> Actions,
+    int NextIndex,
+    string? Error)
+{
+    public static ActionListParseResult Ok(IReadOnlyList<BrowserScriptAction> actions, int nextIndex) =>
+        new(true, actions, nextIndex, null);
+
+    public static ActionListParseResult Fail(string error) => new(false, [], 0, error);
 }
