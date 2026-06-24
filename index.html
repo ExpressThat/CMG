@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CMG Browser Control Test Page</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f2;
+      --ink: #17211f;
+      --muted: #5a6864;
+      --panel: #ffffff;
+      --line: #cfd8d3;
+      --accent: #0f766e;
+      --accent-dark: #0b5f58;
+      --danger: #b42318;
+      --warning: #9a6700;
+      --drop: #eef8f5;
+      --shadow: 0 12px 32px rgba(22, 33, 31, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    header {
+      padding: 32px clamp(20px, 4vw, 56px) 20px;
+      border-bottom: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      max-width: 860px;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      margin-bottom: 14px;
+    }
+
+    h3 {
+      font-size: 1rem;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    main {
+      width: min(1180px, calc(100% - 40px));
+      margin: 28px auto 56px;
+      display: grid;
+      gap: 24px;
+    }
+
+    section {
+      padding: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 6px;
+      padding: 0 16px;
+      background: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    button:hover {
+      background: var(--accent-dark);
+    }
+
+    button.secondary {
+      background: #26322f;
+    }
+
+    button.secondary:hover {
+      background: #111916;
+    }
+
+    button.subtle {
+      background: #e7ece9;
+      color: var(--ink);
+    }
+
+    button.subtle:hover {
+      background: #d9e2de;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      font-weight: 700;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus,
+    button:focus-visible,
+    .drop-zone:focus {
+      outline: 3px solid rgba(15, 118, 110, 0.24);
+      outline-offset: 2px;
+    }
+
+    .message {
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+
+    .message.error {
+      color: var(--danger);
+    }
+
+    .message.ok {
+      color: var(--accent-dark);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    dialog {
+      width: min(520px, calc(100% - 36px));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0;
+      box-shadow: 0 24px 80px rgba(23, 33, 31, 0.28);
+    }
+
+    dialog::backdrop {
+      background: rgba(23, 33, 31, 0.42);
+    }
+
+    .dialog-body {
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .dialog-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .dialog-title button {
+      width: 36px;
+      min-height: 36px;
+      padding: 0;
+      background: #e7ece9;
+      color: var(--ink);
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfa;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.35rem;
+    }
+
+    .drop-layout {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr);
+      gap: 18px;
+    }
+
+    .drop-zone {
+      min-height: 220px;
+      border: 2px dashed #7aa69f;
+      border-radius: 8px;
+      background: var(--drop);
+      padding: 18px;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+    }
+
+    .drop-zone.drag-over {
+      border-color: var(--accent);
+      background: #dff3ef;
+    }
+
+    .drag-item {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 11px 12px;
+      background: #ffffff;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 4px 12px rgba(23, 33, 31, 0.08);
+    }
+
+    .drag-item:active {
+      cursor: grabbing;
+    }
+
+    .drag-item[aria-grabbed="true"] {
+      opacity: 0.58;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      max-width: min(360px, calc(100% - 36px));
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: #26322f;
+      color: #ffffff;
+      box-shadow: var(--shadow);
+      transform: translateY(140%);
+      transition: transform 160ms ease;
+    }
+
+    .toast.visible {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 720px) {
+      .section-head,
+      .drop-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        display: grid;
+        align-items: start;
+      }
+
+      section {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CMG Browser Control Test Page</h1>
+    <p>Interactive targets for selector lookup, element screenshots, dialogs, validation, and drag-and-drop flows.</p>
+  </header>
+
+  <main>
+    <section id="dialogs">
+      <div class="section-head">
+        <div>
+          <h2>Dialogs</h2>
+          <p>Buttons open native dialogs with different content and form controls.</p>
+        </div>
+        <div class="actions">
+          <button id="openProfileDialog" type="button">Open profile dialog</button>
+          <button id="openConfirmDialog" class="secondary" type="button">Open confirm dialog</button>
+        </div>
+      </div>
+
+      <div class="status-row">
+        <div class="metric" id="dialogMetric">
+          <strong>0</strong>
+          <span>dialog actions</span>
+        </div>
+        <div class="metric">
+          <strong id="lastDialogAction">None</strong>
+          <span>last dialog result</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="validation">
+      <div class="section-head">
+        <div>
+          <h2>Custom Validation</h2>
+          <p>Inputs update custom validation text underneath as values change.</p>
+        </div>
+        <button id="submitValidation" type="button">Validate fields</button>
+      </div>
+
+      <div class="grid">
+        <label>
+          Project slug
+          <input id="projectSlug" name="projectSlug" autocomplete="off" placeholder="cmg-browser-tools">
+          <span id="projectSlugMessage" class="message">Use lowercase letters, numbers, and hyphens.</span>
+        </label>
+
+        <label>
+          Debug port
+          <input id="debugPort" name="debugPort" inputmode="numeric" placeholder="9222">
+          <span id="debugPortMessage" class="message">Choose a port from 1024 to 65535.</span>
+        </label>
+
+        <label>
+          Release note
+          <textarea id="releaseNote" name="releaseNote" placeholder="Added getElement command..."></textarea>
+          <span id="releaseNoteMessage" class="message">Write at least 20 characters.</span>
+        </label>
+      </div>
+    </section>
+
+    <section id="dragdrop">
+      <div class="section-head">
+        <div>
+          <h2>Custom Drag And Drop</h2>
+          <p>Drag command tiles into the run queue. The drop target has visual hover state and custom messaging.</p>
+        </div>
+        <button id="resetDragDrop" class="subtle" type="button">Reset queue</button>
+      </div>
+
+      <div class="drop-layout">
+        <div id="commandPalette" class="drop-zone" aria-label="Command palette">
+          <h3>Command palette</h3>
+          <div class="drag-item" draggable="true" data-command="browser launch">browser launch</div>
+          <div class="drag-item" draggable="true" data-command="browser control getElement --html">browser control getElement --html</div>
+          <div class="drag-item" draggable="true" data-command="browser close">browser close</div>
+        </div>
+
+        <div id="dropQueue" class="drop-zone" tabindex="0" aria-label="Run queue">
+          <h3>Run queue</h3>
+          <p id="dropHint">Drop command tiles here.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="profileDialog">
+    <form method="dialog" class="dialog-body">
+      <div class="dialog-title">
+        <div>
+          <h2>Edit Browser Profile</h2>
+          <p>Example modal content with inputs and close controls.</p>
+        </div>
+        <button value="close" aria-label="Close dialog">X</button>
+      </div>
+      <label>
+        Profile name
+        <input id="profileName" value="CMG Debug Profile">
+      </label>
+      <label>
+        Startup URL
+        <input id="startupUrl" value="https://example.com">
+      </label>
+      <div class="actions">
+        <button value="saved">Save</button>
+        <button class="subtle" value="cancelled">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="confirmDialog">
+    <form method="dialog" class="dialog-body">
+      <div>
+        <h2>Close Controlled Browser?</h2>
+        <p>This example confirmation dialog can be targeted by selector or screenshot commands.</p>
+      </div>
+      <div class="actions">
+        <button value="confirmed">Confirm</button>
+        <button class="subtle" value="dismissed">Dismiss</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const profileDialog = document.querySelector('#profileDialog');
+    const confirmDialog = document.querySelector('#confirmDialog');
+    const dialogMetric = document.querySelector('#dialogMetric strong');
+    const lastDialogAction = document.querySelector('#lastDialogAction');
+    const toast = document.querySelector('#toast');
+    let dialogActions = 0;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('visible');
+      window.clearTimeout(showToast.timeout);
+      showToast.timeout = window.setTimeout(() => toast.classList.remove('visible'), 2200);
+    }
+
+    function recordDialogAction(action) {
+      dialogActions += 1;
+      dialogMetric.textContent = dialogActions;
+      lastDialogAction.textContent = action || 'closed';
+      showToast(`Dialog result: ${action || 'closed'}`);
+    }
+
+    document.querySelector('#openProfileDialog').addEventListener('click', () => profileDialog.showModal());
+    document.querySelector('#openConfirmDialog').addEventListener('click', () => confirmDialog.showModal());
+    profileDialog.addEventListener('close', () => recordDialogAction(profileDialog.returnValue));
+    confirmDialog.addEventListener('close', () => recordDialogAction(confirmDialog.returnValue));
+
+    const validators = [
+      {
+        input: document.querySelector('#projectSlug'),
+        message: document.querySelector('#projectSlugMessage'),
+        validate(value) {
+          if (!value) return ['error', 'Project slug is required.'];
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) return ['error', 'Use lowercase words separated by single hyphens.'];
+          return ['ok', 'Slug looks good.'];
+        }
+      },
+      {
+        input: document.querySelector('#debugPort'),
+        message: document.querySelector('#debugPortMessage'),
+        validate(value) {
+          const port = Number(value);
+          if (!value) return ['error', 'Debug port is required.'];
+          if (!Number.isInteger(port)) return ['error', 'Debug port must be a whole number.'];
+          if (port < 1024 || port > 65535) return ['error', 'Use a port between 1024 and 65535.'];
+          return ['ok', 'Port is in range.'];
+        }
+      },
+      {
+        input: document.querySelector('#releaseNote'),
+        message: document.querySelector('#releaseNoteMessage'),
+        validate(value) {
+          if (value.trim().length < 20) return ['error', 'Add more detail so the release note is useful.'];
+          return ['ok', 'Release note has enough detail.'];
+        }
+      }
+    ];
+
+    function runValidation({ announce = false } = {}) {
+      let valid = true;
+      validators.forEach(({ input, message, validate }) => {
+        const [state, text] = validate(input.value.trim());
+        message.textContent = text;
+        message.className = `message ${state}`;
+        input.setCustomValidity(state === 'error' ? text : '');
+        valid = valid && state === 'ok';
+      });
+
+      if (announce) {
+        showToast(valid ? 'All fields are valid.' : 'Some fields need attention.');
+      }
+
+      return valid;
+    }
+
+    validators.forEach(({ input }) => input.addEventListener('input', () => runValidation()));
+    document.querySelector('#submitValidation').addEventListener('click', () => runValidation({ announce: true }));
+
+    const palette = document.querySelector('#commandPalette');
+    const queue = document.querySelector('#dropQueue');
+    const dropHint = document.querySelector('#dropHint');
+    const initialItems = Array.from(palette.querySelectorAll('.drag-item')).map(item => item.outerHTML);
+
+    document.addEventListener('dragstart', event => {
+      const item = event.target.closest('.drag-item');
+      if (!item) return;
+
+      item.setAttribute('aria-grabbed', 'true');
+      event.dataTransfer.setData('text/plain', item.dataset.command);
+      event.dataTransfer.effectAllowed = 'copy';
+    });
+
+    document.addEventListener('dragend', event => {
+      const item = event.target.closest('.drag-item');
+      if (item) item.setAttribute('aria-grabbed', 'false');
+    });
+
+    queue.addEventListener('dragover', event => {
+      event.preventDefault();
+      queue.classList.add('drag-over');
+      event.dataTransfer.dropEffect = 'copy';
+    });
+
+    queue.addEventListener('dragleave', event => {
+      if (!queue.contains(event.relatedTarget)) {
+        queue.classList.remove('drag-over');
+      }
+    });
+
+    queue.addEventListener('drop', event => {
+      event.preventDefault();
+      queue.classList.remove('drag-over');
+
+      const command = event.dataTransfer.getData('text/plain');
+      if (!command) return;
+
+      dropHint.hidden = true;
+      const item = document.createElement('div');
+      item.className = 'drag-item';
+      item.textContent = command;
+      item.dataset.command = command;
+      queue.appendChild(item);
+      showToast(`Queued: ${command}`);
+    });
+
+    document.querySelector('#resetDragDrop').addEventListener('click', () => {
+      palette.querySelectorAll('.drag-item').forEach(item => item.remove());
+      initialItems.forEach(html => palette.insertAdjacentHTML('beforeend', html));
+      queue.querySelectorAll('.drag-item').forEach(item => item.remove());
+      dropHint.hidden = false;
+      showToast('Queue reset.');
+    });
+  </script>
+</body>
+</html>
