@@ -19,8 +19,6 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
             {
                 await using var session = await DevToolsSession.Connect(pageTarget);
 
-                await session.ScrollElementIntoView(selector);
-
                 var response = await session.SendCommand("Runtime.evaluate", writer =>
                 {
                     writer.WriteString("expression", BuildOuterHtmlExpression(selector));
@@ -117,15 +115,21 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
         return new ElementClip(x, y, width, height);
     }
 
-    public void Navigate(string remoteDebuggingUrl, string target)
+    public string Navigate(string remoteDebuggingUrl, string target)
     {
-        Run(async () =>
+        return Run(async () =>
         {
             await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
-            await session.SendCommand("Page.navigate", writer => writer.WriteString("url", target));
+            var response = await session.SendCommand("Page.navigate", writer => writer.WriteString("url", target));
+            if (TryReadString(response, ["result", "errorText"], out var errorText) &&
+                !string.IsNullOrWhiteSpace(errorText))
+            {
+                throw new ChromeDevToolsException($"Navigation to '{target}' failed: {errorText}.");
+            }
+
             await WaitForPagePaint(session);
 
-            return true;
+            return await GetCurrentPageUrl(session);
         });
     }
 
@@ -157,9 +161,9 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
                 throw new ElementNotFoundException(selector);
 
             await using var session = await DevToolsSession.Connect(pageTarget);
-            await session.ScrollElementIntoView(selector);
 
             var clip = await GetElementClip(session, selector);
+            await EnsurePointInViewport(session, selector, clip.CenterX, clip.CenterY);
             await ClickAt(session, clip.CenterX, clip.CenterY);
 
             return true;
@@ -168,10 +172,11 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
 
     public void Type(string remoteDebuggingUrl, string selector, string text)
     {
+        _ = GetElementCenter(remoteDebuggingUrl, selector);
         ExecuteElementScript(
             remoteDebuggingUrl,
             selector,
-            $"element.focus(); element.value = `${{element.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
+            $"element.focus({{ preventScroll: true }}); element.value = `${{element.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
     }
 
     public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null)
@@ -188,10 +193,11 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
 
     public void Clear(string remoteDebuggingUrl, string selector)
     {
+        _ = GetElementCenter(remoteDebuggingUrl, selector);
         ExecuteElementScript(
             remoteDebuggingUrl,
             selector,
-            "element.focus(); element.value = ''; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;");
+            "element.focus({ preventScroll: true }); element.value = ''; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;");
     }
 
     public void Press(string remoteDebuggingUrl, string key)
@@ -218,6 +224,7 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
 
     public void Hover(string remoteDebuggingUrl, string selector)
     {
+        _ = GetElementCenter(remoteDebuggingUrl, selector);
         ExecuteElementScript(
             remoteDebuggingUrl,
             selector,
@@ -234,6 +241,7 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
 
     public void Select(string remoteDebuggingUrl, string selector, string value)
     {
+        _ = GetElementCenter(remoteDebuggingUrl, selector);
         ExecuteElementScript(
             remoteDebuggingUrl,
             selector,
@@ -305,6 +313,11 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
                 throw new ElementNotFoundException(sourceSelector);
 
             await using var session = await DevToolsSession.Connect(pageTarget);
+            var source = await GetElementClip(session, sourceSelector);
+            var target = await GetElementClip(session, targetSelector);
+            await EnsurePointInViewport(session, sourceSelector, source.CenterX, source.CenterY);
+            await EnsurePointInViewport(session, targetSelector, target.CenterX, target.CenterY);
+
             var expression = BrowserDomScripts.DragAndDrop(sourceSelector, targetSelector);
             var response = await session.SendCommand("Runtime.evaluate", writer =>
             {
@@ -334,11 +347,11 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
                 throw new ElementNotFoundException(sourceSelector);
 
             await using var session = await DevToolsSession.Connect(pageTarget);
-            await session.ScrollElementIntoView(sourceSelector);
-            await session.ScrollElementIntoView(targetSelector);
 
             var source = await GetElementClip(session, sourceSelector);
-            _ = await GetElementClip(session, targetSelector);
+            var target = await GetElementClip(session, targetSelector);
+            await EnsurePointInViewport(session, sourceSelector, source.CenterX, source.CenterY);
+            await EnsurePointInViewport(session, targetSelector, target.CenterX, target.CenterY);
             var start = new ElementPoint(source.CenterX, source.CenterY);
             var points = path.Count > 0 ? path : [start];
 
@@ -407,8 +420,8 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
                 throw new ElementNotFoundException(selector);
 
             await using var session = await DevToolsSession.Connect(pageTarget);
-            await session.ScrollElementIntoView(selector);
             var clip = await GetElementClip(session, selector);
+            await EnsurePointInViewport(session, selector, clip.CenterX, clip.CenterY);
 
             return new ElementPoint(clip.CenterX, clip.CenterY);
         });
@@ -478,7 +491,6 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
                 throw new ElementNotFoundException(selector);
 
             await using var session = await DevToolsSession.Connect(pageTarget);
-            await session.ScrollElementIntoView(selector);
 
             var response = await session.SendCommand("Runtime.evaluate", writer =>
             {
@@ -502,27 +514,40 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
 
     private static async Task<ElementClip> GetElementClip(DevToolsSession session, string selector)
     {
-        var document = await session.SendCommand("DOM.getDocument");
-        var rootNodeId = ReadInt32(document, "result", "root", "nodeId");
-
-        var query = await session.SendCommand("DOM.querySelector", writer =>
+        var response = await session.SendCommand("Runtime.evaluate", writer =>
         {
-            writer.WriteNumber("nodeId", rootNodeId);
-            writer.WriteString("selector", selector);
+            writer.WriteString(
+                "expression",
+                $$"""
+                (() => {
+                  const element = document.querySelector({{ToJsonStringLiteral(selector)}});
+                  if (!element) return null;
+                  const rect = element.getBoundingClientRect();
+                  return {
+                    x: rect.left,
+                    y: rect.top,
+                    width: rect.width,
+                    height: rect.height
+                  };
+                })()
+                """);
+            writer.WriteBoolean("returnByValue", true);
         });
 
-        var nodeId = ReadInt32(query, "result", "nodeId");
-        if (nodeId is 0)
+        if (!TryReadElement(response, ["result", "result", "value"], out var value) || value.ValueKind is JsonValueKind.Null)
         {
             throw new ElementNotFoundException(selector);
         }
 
-        var boxModel = await session.SendCommand("DOM.getBoxModel", writer =>
+        if (!TryReadDouble(value, "x", out var x) ||
+            !TryReadDouble(value, "y", out var y) ||
+            !TryReadDouble(value, "width", out var width) ||
+            !TryReadDouble(value, "height", out var height))
         {
-            writer.WriteNumber("nodeId", nodeId);
-        });
+            throw new ChromeDevToolsException($"Chrome did not return a viewport rectangle for element '{selector}'.");
+        }
 
-        var clip = ElementClip.FromBoxModel(boxModel);
+        var clip = new ElementClip(x, y, width, height);
         if (clip.Width <= 0 || clip.Height <= 0)
         {
             throw new ChromeDevToolsException($"Element '{selector}' has no visible area.");
@@ -561,6 +586,26 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
             writer.WriteString("button", "left");
             writer.WriteNumber("clickCount", 1);
         });
+    }
+
+    private static async Task EnsurePointInViewport(DevToolsSession session, string selector, double x, double y)
+    {
+        var response = await session.SendCommand("Runtime.evaluate", writer =>
+        {
+            writer.WriteString(
+                "expression",
+                $"(() => {{" +
+                $"const x = {x.ToString(System.Globalization.CultureInfo.InvariantCulture)};" +
+                $"const y = {y.ToString(System.Globalization.CultureInfo.InvariantCulture)};" +
+                "return x >= 0 && y >= 0 && x <= window.innerWidth && y <= window.innerHeight;" +
+                "})()");
+            writer.WriteBoolean("returnByValue", true);
+        });
+
+        if (!TryReadBoolean(response, ["result", "result", "value"], out var inViewport) || !inViewport)
+        {
+            throw new ChromeDevToolsException($"Element '{selector}' is outside the current viewport. Run scrollIntoView first if this movement should scroll the page.");
+        }
     }
 
     private static Task DispatchMouseMove(DevToolsSession session, ElementPoint point, int buttons)
@@ -655,6 +700,19 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
                 "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))");
             writer.WriteBoolean("awaitPromise", true);
         });
+    }
+
+    private static async Task<string> GetCurrentPageUrl(DevToolsSession session)
+    {
+        var response = await session.SendCommand("Runtime.evaluate", writer =>
+        {
+            writer.WriteString("expression", "location.href");
+            writer.WriteBoolean("returnByValue", true);
+        });
+
+        return TryReadString(response, ["result", "result", "value"], out var url) && url is not null
+            ? url
+            : string.Empty;
     }
 
     private static async Task<IReadOnlyList<Uri>> GetPageWebSocketDebuggerUrls(string remoteDebuggingUrl)

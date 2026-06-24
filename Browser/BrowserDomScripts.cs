@@ -24,8 +24,8 @@ public static class BrowserDomScripts
           if (!element) return null;
           const rect = element.getBoundingClientRect();
           return JSON.stringify({
-            x: Math.max(0, rect.left),
-            y: Math.max(0, rect.top),
+            x: rect.left,
+            y: rect.top,
             width: rect.width,
             height: rect.height
           });

@@ -32,7 +32,7 @@ public sealed class ScriptGifRecorder : IDisposable
 
         var name = action.Name.ToLowerInvariant();
 
-        if (name is "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "screenshot" or "html" or "asserttext")
+        if (name is "click" or "type" or "clear" or "hover" or "select")
         {
             if (action.Arguments.Count > 0)
             {

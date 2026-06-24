@@ -58,7 +58,9 @@ click "${button}"
 
 ```text
 navigate "C:\Projects\CMG\index.html"
+setViewport width=900 height=700
 waitForElement "#dropQueue"
+scrollIntoView "#dragdrop"
 dragAndDrop "[data-command='browser launch']" "#dropQueue"
 assertText "#dropQueue" "browser launch"
 ```
@@ -67,13 +69,14 @@ assertText "#dropQueue" "browser launch"
 
 ```text
 navigate "C:\Projects\CMG\index.html"
+setViewport width=900 height=700
 waitForElement "#dropQueue"
+scrollIntoView "#dragdrop"
 
 dragAndDrop "[data-command='browser launch']" {
   delay 200
-  hover "#lastDialogAction"
-  delay 200
   hover "#dropQueue"
+  delay 200
   drop "#dropQueue"
 }
 

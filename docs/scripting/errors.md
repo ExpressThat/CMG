@@ -38,6 +38,20 @@ Script file 'flow.cmgscript' was not found.
 
 Check the path passed to `--file`.
 
+## Navigation Failed
+
+Invalid URLs and missing path-like local targets fail the `navigate` action:
+
+```text
+Line 1: navigate failed. Cannot navigate to invalid URL
+```
+
+```text
+Line 1: navigate failed. Navigation target path 'C:\Projects\CMG\missing.html' was not found.
+```
+
+For local files, pass an existing path. For web pages, pass a valid URL including the scheme, such as `https://example.com`.
+
 ## Invalid Syntax
 
 ```text
@@ -81,6 +95,16 @@ Line 4: click failed. No element matched selector '#missing'.
 ```
 
 Use `waitForElement` before actions that require an element.
+
+## Element Outside Viewport
+
+User-like actions such as `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop` do not scroll automatically:
+
+```text
+Line 3: click failed. Element '#dropQueue' is outside the current viewport. Run scrollIntoView first if this movement should scroll the page.
+```
+
+Add an explicit `scrollIntoView "<selector>"` step before the action. For drag-and-drop, make sure the source and target can both fit in the current viewport, or use `setViewport` before scrolling.
 
 ## Failed Assertion
 

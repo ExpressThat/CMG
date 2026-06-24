@@ -115,8 +115,8 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> ExecuteNavigate(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
-        automationClient.Navigate(remoteDebuggingUrl, NormalizeNavigationTarget(action.Arguments[0]));
-        return [];
+        var finalUrl = automationClient.Navigate(remoteDebuggingUrl, NormalizeNavigationTarget(action.Arguments[0]));
+        return string.IsNullOrWhiteSpace(finalUrl) ? [] : [$"NAVIGATED {action.LineNumber:000} {finalUrl}"];
     }
 
     private static IReadOnlyList<string> ExecuteWaitForElement(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
@@ -477,8 +477,20 @@ public sealed partial class BrowserScriptRunner
             return new Uri(Path.GetFullPath(target)).AbsoluteUri;
         }
 
+        if (LooksLikeLocalPath(target))
+        {
+            throw new ScriptExecutionException($"Navigation target path '{target}' was not found.");
+        }
+
         return target;
     }
+
+    private static bool LooksLikeLocalPath(string target) =>
+        !target.Contains("://", StringComparison.Ordinal) &&
+        (Path.IsPathRooted(target) ||
+        target.StartsWith(".", StringComparison.Ordinal) ||
+        target.Contains(Path.DirectorySeparatorChar, StringComparison.Ordinal) ||
+        target.Contains(Path.AltDirectorySeparatorChar, StringComparison.Ordinal));
 
     private static void RequireArgumentCount(BrowserScriptAction action, int min, int max)
     {

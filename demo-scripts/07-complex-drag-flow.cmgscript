@@ -1,12 +1,13 @@
 # Demonstrates the block form of dragAndDrop with intermediate drag actions.
 navigate "C:\Projects\CMG\index.html"
+setViewport width=900 height=700
 waitForElement "#dropQueue" timeout=5000
+scrollIntoView "#dragdrop"
 
 dragAndDrop "[data-command='browser launch']" {
   delay 200
-  hover "#lastDialogAction"
-  delay 200
   hover "#dropQueue"
+  delay 200
   drop "#dropQueue"
 }
 assertText "#dropQueue" "browser launch"

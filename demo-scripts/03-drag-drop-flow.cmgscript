@@ -1,6 +1,8 @@
 # Demonstrates custom drag and drop against the command queue.
 navigate "C:\Projects\CMG\index.html"
+setViewport width=900 height=700
 waitForElement "#dropQueue" timeout=5000
+scrollIntoView "#dragdrop"
 
 dragAndDrop "[data-command='browser launch']" "#dropQueue"
 assertText "#dropQueue" "browser launch"

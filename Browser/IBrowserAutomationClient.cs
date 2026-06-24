@@ -6,7 +6,7 @@ public interface IBrowserAutomationClient
 
     byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector);
 
-    void Navigate(string remoteDebuggingUrl, string target);
+    string Navigate(string remoteDebuggingUrl, string target);
 
     void WaitForElement(string remoteDebuggingUrl, string selector, int timeoutMilliseconds);
 

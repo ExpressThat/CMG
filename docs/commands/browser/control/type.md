@@ -19,12 +19,12 @@ PASS 001 type #profileName "CMG Test Profile"
 
 ## Stderr
 
-Writes browser or missing-element errors.
+Writes browser, missing-element, or offscreen-element errors. `type` focuses without scrolling; run `scrollIntoView` first when the page should move.
 
 ## Exit Codes
 
 - `0`: Text was typed.
-- `1`: Browser is not running, no element matched, or the action failed.
+- `1`: Browser is not running, no element matched, the element is outside the current viewport, or the action failed.
 
 ## Example
 

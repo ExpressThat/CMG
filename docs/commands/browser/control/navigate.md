@@ -16,11 +16,12 @@ Writes the same one-action script log as `browser control script`:
 
 ```text
 PASS 001 navigate C:\Projects\CMG\index.html
+NAVIGATED 001 file:///C:/Projects/CMG/index.html
 ```
 
 ## Stderr
 
-Writes browser, parse, or action errors.
+Writes browser, parse, or action errors. Invalid browser URLs and missing local path targets fail with a non-zero exit code instead of logging a successful navigation.
 
 ## Exit Codes
 

@@ -10,6 +10,8 @@ navigate "<url-or-path>"
 
 Navigates the primary page target to a URL, data URL, or local file path.
 
+On success, stdout includes a `NAVIGATED <line> <final-url>` line after the `PASS` line. Local file paths must exist; missing path-like targets fail before the browser is asked to navigate.
+
 Example:
 
 ```text
@@ -40,7 +42,7 @@ waitForElement "#openProfileDialog" timeout=5000
 click "<selector>"
 ```
 
-Scrolls the element into view and clicks the element in the selected browser.
+Clicks the element in the selected browser. `click` does not scroll automatically; the element center must already be inside the current viewport. Use `scrollIntoView` first when the script should move the page.
 
 Example:
 
@@ -54,7 +56,7 @@ click "#openProfileDialog"
 type "<selector>" "text"
 ```
 
-Focuses the element, appends text to its current value, and dispatches `input` and `change` events.
+Focuses the element without scrolling, appends text to its current value, and dispatches `input` and `change` events. The element center must already be inside the current viewport. Use `scrollIntoView` first when the script should move the page.
 
 Example:
 
@@ -68,7 +70,7 @@ type "#profileName" "CMG Test Profile"
 clear "<selector>"
 ```
 
-Focuses the element, clears its value, and dispatches `input` and `change` events.
+Focuses the element without scrolling, clears its value, and dispatches `input` and `change` events. The element center must already be inside the current viewport. Use `scrollIntoView` first when the script should move the page.
 
 Example:
 
@@ -96,7 +98,7 @@ press "Escape"
 hover "<selector>"
 ```
 
-Dispatches mouseover and mousemove events at the element center.
+Dispatches mouseover and mousemove events at the element center. `hover` does not scroll automatically; the element center must already be inside the current viewport.
 
 Example:
 
@@ -124,7 +126,7 @@ scrollIntoView "#dragdrop"
 select "<selector>" "value"
 ```
 
-Sets a select-like element value and dispatches `input` and `change` events.
+Sets a select-like element value and dispatches `input` and `change` events. `select` does not scroll automatically; the element center must already be inside the current viewport.
 
 Example:
 
@@ -242,6 +244,8 @@ dragAndDrop "<sourceSelector>" {
 ```
 
 Dispatches drag-and-drop DOM events from the source element to the target element.
+
+Simple drag-and-drop does not scroll automatically. The source and target centers must both already be inside the current viewport. Use `scrollIntoView` and, when needed, a large enough viewport before dragging.
 
 Example:
 

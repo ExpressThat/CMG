@@ -35,6 +35,7 @@ Successful steps write a pass log:
 
 ```text
 PASS 001 navigate C:\Projects\CMG\index.html
+NAVIGATED 001 file:///C:/Projects/CMG/index.html
 PASS 002 waitForElement #openProfileDialog
 ```
 

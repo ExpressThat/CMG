@@ -21,7 +21,8 @@ cmg browser control getElement <selector> (--html | --screenshot) [--output <pat
 
 - Connects to the selected CMG browser automation endpoint.
 - Searches available page targets until the selector is found.
-- Scrolls the selected element into view before reading HTML or taking a screenshot.
+- `--html` reads the selected element without scrolling.
+- `--screenshot` scrolls the selected element into view before capture.
 - Exactly one output mode must be provided: `--html` or `--screenshot`.
 - Quote selectors such as `"#openProfileDialog"` in shells where `#` can start a comment.
 

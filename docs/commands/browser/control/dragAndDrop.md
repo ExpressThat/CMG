@@ -19,12 +19,12 @@ PASS 001 dragAndDrop "[data-command='browser launch']" #dropQueue
 
 ## Stderr
 
-Writes browser or missing-element errors.
+Writes browser, missing-element, or offscreen-element errors. `dragAndDrop` does not scroll automatically; the source and target centers must both already be inside the current viewport.
 
 ## Exit Codes
 
 - `0`: Drag-and-drop completed.
-- `1`: Browser is not running, no element matched, or the action failed.
+- `1`: Browser is not running, no element matched, either endpoint is outside the current viewport, or the action failed.
 
 ## Example
 

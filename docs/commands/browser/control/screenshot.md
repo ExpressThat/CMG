@@ -31,6 +31,8 @@ SCREENSHOT 001 data:image/png;base64,<base64-png-data>
 
 Writes browser or missing-element errors.
 
+Unlike user-like actions such as `click`, `type`, and `dragAndDrop`, `screenshot` scrolls the selected element into view before capture.
+
 ## Exit Codes
 
 - `0`: Screenshot was captured.

@@ -35,19 +35,25 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
             return DecodeScreenshot(response);
         });
 
-    public void Navigate(string remoteDebuggingUrl, string target) =>
+    public string Navigate(string remoteDebuggingUrl, string target) =>
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
             var context = await session.GetPrimaryContext();
-            await session.SendCommand("browsingContext.navigate", writer =>
+            var response = await session.SendCommand("browsingContext.navigate", writer =>
             {
                 writer.WriteString("context", context.Id);
                 writer.WriteString("url", target);
                 writer.WriteString("wait", "complete");
             });
 
-            return true;
+            if (TryReadString(response, ["result", "url"], out var url) &&
+                !string.IsNullOrWhiteSpace(url))
+            {
+                return url;
+            }
+
+            throw new ChromeDevToolsException($"Firefox did not return a final URL after navigating to '{target}'.");
         });
 
     public void WaitForElement(string remoteDebuggingUrl, string selector, int timeoutMilliseconds)
@@ -70,13 +76,13 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
     }
 
     public void Click(string remoteDebuggingUrl, string selector) =>
-        ExecuteElementScript(remoteDebuggingUrl, selector, "element.scrollIntoView({ block: 'center', inline: 'center' }); element.click(); return true;");
+        ExecuteVisibleElementScript(remoteDebuggingUrl, selector, "element.click(); return true;");
 
     public void Type(string remoteDebuggingUrl, string selector, string text) =>
-        ExecuteElementScript(
+        ExecuteVisibleElementScript(
             remoteDebuggingUrl,
             selector,
-            $"element.focus(); element.value = `${{element.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
+            $"element.focus({{ preventScroll: true }}); element.value = `${{element.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
 
     public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null)
     {
@@ -91,7 +97,7 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
     }
 
     public void Clear(string remoteDebuggingUrl, string selector) =>
-        ExecuteElementScript(remoteDebuggingUrl, selector, "element.focus(); element.value = ''; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;");
+        ExecuteVisibleElementScript(remoteDebuggingUrl, selector, "element.focus({ preventScroll: true }); element.value = ''; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;");
 
     public void Press(string remoteDebuggingUrl, string key) =>
         Evaluate(
@@ -99,13 +105,13 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
             $"(() => {{ const target = document.activeElement || document.body; const options = {{ key: {BrowserDomScripts.JsonString(key)}, bubbles: true, cancelable: true }}; target.dispatchEvent(new KeyboardEvent('keydown', options)); target.dispatchEvent(new KeyboardEvent('keyup', options)); return true; }})()");
 
     public void Hover(string remoteDebuggingUrl, string selector) =>
-        ExecuteElementScript(remoteDebuggingUrl, selector, "const rect = element.getBoundingClientRect(); const options = { bubbles: true, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }; element.dispatchEvent(new MouseEvent('mouseover', options)); element.dispatchEvent(new MouseEvent('mousemove', options)); return true;");
+        ExecuteVisibleElementScript(remoteDebuggingUrl, selector, "const rect = element.getBoundingClientRect(); const options = { bubbles: true, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }; element.dispatchEvent(new MouseEvent('mouseover', options)); element.dispatchEvent(new MouseEvent('mousemove', options)); return true;");
 
     public void ScrollElementIntoView(string remoteDebuggingUrl, string selector) =>
         ExecuteElementScript(remoteDebuggingUrl, selector, "element.scrollIntoView({ block: 'center', inline: 'center' }); return true;");
 
     public void Select(string remoteDebuggingUrl, string selector, string value) =>
-        ExecuteElementScript(remoteDebuggingUrl, selector, $"element.value = {BrowserDomScripts.JsonString(value)}; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
+        ExecuteVisibleElementScript(remoteDebuggingUrl, selector, $"element.value = {BrowserDomScripts.JsonString(value)}; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
 
     public void ShowMessageBar(string remoteDebuggingUrl, string message) =>
         Evaluate(remoteDebuggingUrl, BrowserDomScripts.ShowMessageBar(message));
@@ -143,7 +149,17 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
         });
 
     public void DragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector) =>
-        Evaluate(remoteDebuggingUrl, BrowserDomScripts.DragAndDrop(sourceSelector, targetSelector));
+        Run(async () =>
+        {
+            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            var context = await session.GetPrimaryContext();
+            var source = await GetElementRect(session, context.Id, sourceSelector);
+            var target = await GetElementRect(session, context.Id, targetSelector);
+            await EnsurePointInViewport(session, context.Id, sourceSelector, source.X + source.Width / 2, source.Y + source.Height / 2);
+            await EnsurePointInViewport(session, context.Id, targetSelector, target.X + target.Width / 2, target.Y + target.Height / 2);
+            _ = ReadScriptResultValue(await Evaluate(session, context.Id, BrowserDomScripts.DragAndDrop(sourceSelector, targetSelector)));
+            return true;
+        });
 
     public void MouseDragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector, IReadOnlyList<ElementPoint> path, Action<ElementPoint>? afterMove = null)
     {
@@ -189,8 +205,8 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
             var context = await session.GetPrimaryContext();
-            await Evaluate(session, context.Id, BrowserDomScripts.ScrollIntoView(selector));
             var rect = await GetElementRect(session, context.Id, selector);
+            await EnsurePointInViewport(session, context.Id, selector, rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
             return new ElementPoint(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
         });
 
@@ -241,6 +257,12 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
         }
     }
 
+    private void ExecuteVisibleElementScript(string remoteDebuggingUrl, string selector, string body)
+    {
+        _ = GetElementCenter(remoteDebuggingUrl, selector);
+        ExecuteElementScript(remoteDebuggingUrl, selector, body);
+    }
+
     private static async Task<JsonElement> Evaluate(FirefoxBiDiSession session, string contextId, string expression) =>
         await session.SendCommand("script.evaluate", writer =>
         {
@@ -270,6 +292,24 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
             root.GetProperty("y").GetDouble(),
             root.GetProperty("width").GetDouble(),
             root.GetProperty("height").GetDouble());
+    }
+
+    private static async Task EnsurePointInViewport(FirefoxBiDiSession session, string contextId, string selector, double x, double y)
+    {
+        var json = ReadScriptResultValue(await Evaluate(
+            session,
+            contextId,
+            "JSON.stringify({ width: window.innerWidth, height: window.innerHeight })"));
+
+        using var document = JsonDocument.Parse(json);
+        var root = document.RootElement;
+        var width = root.GetProperty("width").GetDouble();
+        var height = root.GetProperty("height").GetDouble();
+
+        if (x < 0 || y < 0 || x > width || y > height)
+        {
+            throw new ChromeDevToolsException($"Element '{selector}' is outside the current viewport. Run scrollIntoView first if this movement should scroll the page.");
+        }
     }
 
     private static string NonEmpty(string value, string selector) =>

@@ -18,12 +18,12 @@ PASS 001 click #openProfileDialog
 
 ## Stderr
 
-Writes browser or missing-element errors.
+Writes browser, missing-element, or offscreen-element errors. `click` does not scroll automatically; run `scrollIntoView` first when the page should move.
 
 ## Exit Codes
 
 - `0`: Click completed.
-- `1`: Browser is not running, no element matched, or the action failed.
+- `1`: Browser is not running, no element matched, the element is outside the current viewport, or the action failed.
 
 ## Example
 
