@@ -223,6 +223,20 @@ public static class BrowserDomScripts
           }
           window.__cmgRecordingDrag = { source, dataTransfer, defaultGhost: null };
           const eventOptions = { bubbles: true, cancelable: true, clientX: {{Invariant(point.X)}}, clientY: {{Invariant(point.Y)}}, dataTransfer };
+          const mouseOptions = { bubbles: true, cancelable: true, composed: true, clientX: eventOptions.clientX, clientY: eventOptions.clientY, screenX: eventOptions.clientX, screenY: eventOptions.clientY, button: 0, buttons: 1 };
+          const pointerOptions = { ...mouseOptions, pointerId: 1, pointerType: 'mouse', isPrimary: true };
+          const sendPointer = (element, type, options = pointerOptions) => {
+            if (typeof PointerEvent === 'function') element.dispatchEvent(new PointerEvent(type, options));
+          };
+          const sendMouse = (element, type, options = mouseOptions) => element.dispatchEvent(new MouseEvent(type, options));
+          sendPointer(source, 'pointerover');
+          sendPointer(source, 'pointerenter', { ...pointerOptions, bubbles: false });
+          sendMouse(source, 'mouseover');
+          sendMouse(source, 'mouseenter', { ...mouseOptions, bubbles: false });
+          sendPointer(source, 'pointermove');
+          sendMouse(source, 'mousemove');
+          sendPointer(source, 'pointerdown');
+          sendMouse(source, 'mousedown');
           source.dispatchEvent(new DragEvent('dragstart', eventOptions));
           if (!customDragImageSet) {
             const existing = document.getElementById('__cmg_default_drag_ghost');
@@ -274,6 +288,10 @@ public static class BrowserDomScripts
           if (!state?.source || !state?.dataTransfer) return false;
           const target = document.elementFromPoint({{Invariant(point.X)}}, {{Invariant(point.Y)}}) || document.body;
           const eventOptions = { bubbles: true, cancelable: true, clientX: {{Invariant(point.X)}}, clientY: {{Invariant(point.Y)}}, dataTransfer: state.dataTransfer };
+          const mouseOptions = { bubbles: true, cancelable: true, composed: true, clientX: eventOptions.clientX, clientY: eventOptions.clientY, screenX: eventOptions.clientX, screenY: eventOptions.clientY, button: 0, buttons: 1 };
+          const pointerOptions = { ...mouseOptions, pointerId: 1, pointerType: 'mouse', isPrimary: true };
+          if (typeof PointerEvent === 'function') target.dispatchEvent(new PointerEvent('pointermove', pointerOptions));
+          target.dispatchEvent(new MouseEvent('mousemove', mouseOptions));
           if (state.defaultGhost?.isConnected) {
             state.defaultGhost.style.left = `${eventOptions.clientX}px`;
             state.defaultGhost.style.top = `${eventOptions.clientY}px`;
@@ -294,7 +312,13 @@ public static class BrowserDomScripts
         (() => {
           const state = window.__cmgRecordingDrag;
           if (!state?.source || !state?.dataTransfer) return false;
-          state.source.dispatchEvent(new DragEvent('dragend', { bubbles: true, cancelable: true, clientX: {{Invariant(point.X)}}, clientY: {{Invariant(point.Y)}}, dataTransfer: state.dataTransfer }));
+          const target = document.elementFromPoint({{Invariant(point.X)}}, {{Invariant(point.Y)}}) || document.body;
+          const eventOptions = { bubbles: true, cancelable: true, clientX: {{Invariant(point.X)}}, clientY: {{Invariant(point.Y)}}, dataTransfer: state.dataTransfer };
+          const mouseOptions = { bubbles: true, cancelable: true, composed: true, clientX: eventOptions.clientX, clientY: eventOptions.clientY, screenX: eventOptions.clientX, screenY: eventOptions.clientY, button: 0, buttons: 0 };
+          const pointerOptions = { ...mouseOptions, pointerId: 1, pointerType: 'mouse', isPrimary: true };
+          if (typeof PointerEvent === 'function') target.dispatchEvent(new PointerEvent('pointerup', pointerOptions));
+          target.dispatchEvent(new MouseEvent('mouseup', mouseOptions));
+          state.source.dispatchEvent(new DragEvent('dragend', eventOptions));
           if (state.defaultGhost?.matches?.(':popover-open')) state.defaultGhost.hidePopover();
           state.defaultGhost?.remove();
           delete window.__cmgRecordingDrag;

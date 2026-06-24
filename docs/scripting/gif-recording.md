@@ -15,7 +15,7 @@ cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
 - Click actions show a pointer movement and click pulse.
 - Type actions move to the input, click/focus it, and capture frames as characters appear.
 - Drag-and-drop actions move from the source selector to the target selector while keeping the page drag lifecycle active, so pages can show their own native drag preview when one is available.
-- During a drag, pointer movement uses a pressed left mouse button state. `delay` inside a recorded drag repeatedly emits held movement and dragover events at the current pointer location.
+- During a block drag, CMG dispatches DOM `pointerdown`/`mousedown` at drag start, held `pointermove`/`mousemove` while moving or delaying, and `pointerup`/`mouseup` at drop. The Chrome/Edge pointer also moves through CDP. This lets page drag state and edge-autoscroll logic react without forcing Chrome into native drag mode.
 - Screenshot actions still scroll the selected element into view before capture.
 - Delay actions capture a hold frame.
 
@@ -42,7 +42,7 @@ moveMouse x=100 y=200
 
 Coordinates are viewport-relative CSS pixels. Aliases are inset from the viewport edge where needed: `center`, `top`, `bottom`, `left`, `right`, `topLeft`, `topRight`, `bottomLeft`, and `bottomRight`.
 
-Use `moveMouse "bottom"` with `delay` inside a `dragAndDrop` block when a page auto-scrolls while a dragged item is held near the lower viewport edge:
+Use `moveMouse "bottom"` with `delay` inside a `dragAndDrop` block when a page auto-scrolls while a dragged item is held near the lower viewport edge. CMG keeps the drag state active during the delay and repeatedly emits held pointer/mouse movement plus dragover events:
 
 ```text
 dragAndDrop ".card" {
