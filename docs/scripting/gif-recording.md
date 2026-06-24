@@ -11,9 +11,11 @@ cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
 - CMG captures the visible page viewport.
 - A frame is captured after visual actions. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
 - Click, type, clear, hover, select, and drag actions move the virtual pointer to the target selector when possible. User-like movement actions do not scroll automatically; add `scrollIntoView` steps when the pointer should move to content outside the current viewport.
+- Every GIF pointer movement dispatches browser movement and hover events while it moves. This includes automatic movement before `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`, not only explicit drag movement.
 - Click actions show a pointer movement and click pulse.
 - Type actions move to the input, click/focus it, and capture frames as characters appear.
 - Drag-and-drop actions move from the source selector to the target selector while keeping the page drag lifecycle active, so pages can show their own native drag preview when one is available.
+- During a drag, pointer movement uses a pressed left mouse button state. `delay` inside a recorded drag repeatedly emits held movement and dragover events at the current pointer location.
 - Screenshot actions still scroll the selected element into view before capture.
 - Delay actions capture a hold frame.
 
@@ -28,6 +30,29 @@ GIF recording uses one pointer:
 - The GIF captures this same injected pointer from the browser screenshot. CMG does not draw a second overlay pointer onto GIF frames.
 
 CMG removes the DOM cursor when recording ends.
+
+## `moveMouse`
+
+`moveMouse` is a script-only action for GIF runs. It has no one-off CLI equivalent.
+
+```text
+moveMouse "center"
+moveMouse x=100 y=200
+```
+
+Coordinates are viewport-relative CSS pixels. Aliases are inset from the viewport edge where needed: `center`, `top`, `bottom`, `left`, `right`, `topLeft`, `topRight`, `bottomLeft`, and `bottomRight`.
+
+Use `moveMouse "bottom"` with `delay` inside a `dragAndDrop` block when a page auto-scrolls while a dragged item is held near the lower viewport edge:
+
+```text
+dragAndDrop ".card" {
+  moveMouse "bottom"
+  delay 1500
+  moveMouse "bottom"
+  delay 1500
+  drop "#target"
+}
+```
 
 ## Drag Ghost
 
@@ -65,3 +90,4 @@ Timing is not configurable in v1.
 - GIF files can become large for long scripts.
 - Recording can make scripts run slower because screenshots are captured after each action.
 - GIF recording is supported only on `browser control script`.
+- `moveMouse` requires `--gif`; scripts without recording do not create or move a virtual mouse.

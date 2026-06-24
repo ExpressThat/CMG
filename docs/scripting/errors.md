@@ -106,6 +106,33 @@ Line 3: click failed. Element '#dropQueue' is outside the current viewport. Run 
 
 Add an explicit `scrollIntoView "<selector>"` step before the action. For drag-and-drop, make sure the source and target can both fit in the current viewport, or use `setViewport` before scrolling.
 
+## `moveMouse` Without GIF
+
+```text
+Line 3: moveMouse failed. moveMouse requires script GIF recording. Run the script with --gif <path>.
+```
+
+`moveMouse` exists only for `browser control script --gif` runs. It is not available as a one-off CLI command and does not run in non-GIF scripts.
+
+## Invalid `moveMouse` Target
+
+```text
+Line 3: moveMouse failed. Unknown moveMouse alias 'lower'. Supported aliases: center, top, bottom, left, right, topLeft, topRight, bottomLeft, bottomRight.
+```
+
+Use a supported alias or pass viewport-relative coordinates:
+
+```text
+moveMouse "bottom"
+moveMouse x=100 y=200
+```
+
+Coordinates outside the visible viewport fail:
+
+```text
+Line 3: moveMouse failed. moveMouse target (2000, 2000) is outside the current viewport 1280x720.
+```
+
 ## Failed Assertion
 
 ```text

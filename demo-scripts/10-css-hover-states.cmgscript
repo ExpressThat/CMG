@@ -1,0 +1,23 @@
+# Demonstrates that GIF pointer movement triggers real CSS :hover states.
+# Run with:
+# dotnet run -- browser control script --file demo-scripts\10-css-hover-states.cmgscript --gif demo-output\css-hover-states.gif
+
+set page C:\Projects\CMG\index.html
+navigate "${page}"
+setViewport width=900 height=700
+waitForElement "#hoverDemoCard"
+scrollIntoView "#hoverStates"
+showMessageBar "Moving the virtual pointer across CSS hover targets"
+moveMouse "center"
+delay 200
+hover "#hoverDemoCard"
+delay 400
+assertText "#hoverStateText" "Hover card active"
+evaluate "getComputedStyle(document.querySelector('#hoverDemoCard')).transform !== 'none'"
+screenshot "#hoverStates" output="demo-output\css-hover-card.png"
+hover "#hoverDemoButton"
+delay 300
+hover "#hoverDemoInput"
+delay 300
+showMessageBar "CSS hover states were triggered by browser mouse movement"
+screenshotPage output="demo-output\css-hover-page.png"

@@ -106,6 +106,54 @@ Example:
 hover "#openProfileDialog"
 ```
 
+## `moveMouse`
+
+```text
+moveMouse "center"
+moveMouse "bottom"
+moveMouse x=100 y=200
+```
+
+Moves the GIF virtual pointer to a viewport-relative position. `moveMouse` is script-only and requires `browser control script --gif <path>`; there is no one-off CLI `browser control moveMouse` command. Without `--gif`, the action fails.
+
+Coordinates are CSS pixels relative to the visible viewport. Alias targets use a small inset so the pointer remains inside the viewport.
+
+Supported aliases:
+
+- `center`
+- `top`
+- `bottom`
+- `left`
+- `right`
+- `topLeft`
+- `topRight`
+- `bottomLeft`
+- `bottomRight`
+
+Options:
+
+- `x`: Required when using coordinates.
+- `y`: Required when using coordinates.
+
+Examples:
+
+```text
+moveMouse "center"
+moveMouse x=240 y=320
+```
+
+Inside a GIF `dragAndDrop` block, `moveMouse` moves the held pointer and keeps drag movement events active. This is useful for page edge-autoscroll behavior:
+
+```text
+dragAndDrop ".card" {
+  moveMouse "bottom"
+  delay 1500
+  moveMouse "bottom"
+  delay 1500
+  drop "#target"
+}
+```
+
 ## `scrollIntoView`
 
 ```text
@@ -259,6 +307,7 @@ Allowed child actions:
 
 - `delay <milliseconds>`: Pause while the drag is active. With `--gif`, frames are captured during the hold.
 - `hover "<selector>"`: Move the active drag pointer to another element.
+- `moveMouse "<alias>"` or `moveMouse x=<pixels> y=<pixels>`: Move the active drag pointer to a viewport-relative position. Requires `--gif`.
 - `scrollIntoView "<selector>"`: Scroll an element into view before continuing.
 - `waitForElement "<selector>" timeout=5000`: Wait for an element before continuing.
 - `drop "<selector>"`: Finish the drag on the target selector. Required exactly once.
@@ -270,6 +319,7 @@ Rules:
 - No actions are allowed after `drop`.
 - Other child actions fail with `Action '<name>' is not supported inside block dragAndDrop.`
 - With `--gif`, CMG keeps the drag lifecycle active while the body runs so page-owned drag ghosts can stay visible.
+- With `--gif`, every automatic pointer movement dispatches browser movement and hover events, including movement before `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`.
 - If the page does not call `DataTransfer.setDragImage()`, CMG shows a default-preview bridge during the active drag so the live browser and GIF still show a browser-style default drag preview.
 
 Complex example:

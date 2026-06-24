@@ -103,6 +103,7 @@ public sealed partial class BrowserScriptRunner
             "asserttext" => ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
             "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, automationClient, action),
             "setviewport" => ExecuteSetViewport(remoteDebuggingUrl, automationClient, action),
+            "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),
             "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),
             "activatetab" => ExecuteActivateTab(remoteDebuggingUrl, automationClient, action),
@@ -228,6 +229,22 @@ public sealed partial class BrowserScriptRunner
         return [];
     }
 
+    private static IReadOnlyList<string> ExecuteMoveMouse(BrowserScriptAction action, ScriptGifRecorder? recorder, bool dragging)
+    {
+        if (recorder is null)
+        {
+            throw new ScriptExecutionException("moveMouse requires script GIF recording. Run the script with --gif <path>.");
+        }
+
+        if (action.Children.Count > 0)
+        {
+            throw new ScriptExecutionException("moveMouse does not accept a block body.");
+        }
+
+        recorder.MoveMouse(action, dragging);
+        return [];
+    }
+
     private static IReadOnlyList<string> ExecuteDragAndDrop(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action, ScriptGifRecorder? recorder)
     {
         if (action.Children.Count > 0)
@@ -329,6 +346,7 @@ public sealed partial class BrowserScriptRunner
         {
             "delay" => true,
             "hover" => true,
+            "movemouse" => true,
             "scrollintoview" => true,
             "waitforelement" => true,
             _ => throw new ScriptExecutionException($"Action '{action.Name}' is not supported inside block dragAndDrop.")
@@ -341,6 +359,7 @@ public sealed partial class BrowserScriptRunner
         {
             "delay" => ExecuteDelay(action),
             "hover" => ExecuteSelectorAction(action, selector => automationClient.Hover(remoteDebuggingUrl, selector)),
+            "movemouse" => ExecuteMoveMouse(action, recorder: null, dragging: true),
             "scrollintoview" => ExecuteSelectorAction(action, selector => automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             _ => throw new ScriptExecutionException($"Action '{action.Name}' is not supported inside block dragAndDrop.")
@@ -353,6 +372,7 @@ public sealed partial class BrowserScriptRunner
         {
             "delay" => ExecuteRecordedDragDelay(action, recorder),
             "hover" => ExecuteRecordedDragHover(action, recorder),
+            "movemouse" => ExecuteMoveMouse(action, recorder, dragging: true),
             "scrollintoview" => ExecuteRecordedDragHover(action, recorder),
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             _ => throw new ScriptExecutionException($"Action '{action.Name}' is not supported inside block dragAndDrop.")

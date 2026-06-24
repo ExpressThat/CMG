@@ -148,6 +148,17 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
             return true;
         });
 
+    public ViewportSize GetViewportSize(string remoteDebuggingUrl) =>
+        Run(async () =>
+        {
+            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            var context = await session.GetPrimaryContext();
+            var json = ReadScriptResultValue(await Evaluate(session, context.Id, "JSON.stringify({ width: window.innerWidth, height: window.innerHeight })"));
+            using var document = JsonDocument.Parse(json);
+            var root = document.RootElement;
+            return new ViewportSize(root.GetProperty("width").GetDouble(), root.GetProperty("height").GetDouble());
+        });
+
     public void DragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector) =>
         Run(async () =>
         {
@@ -163,9 +174,23 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
 
     public void MouseDragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector, IReadOnlyList<ElementPoint> path, Action<ElementPoint>? afterMove = null)
     {
-        foreach (var point in path)
+        if (path.Count is 0)
         {
-            afterMove?.Invoke(point);
+            return;
+        }
+
+        MouseDown(remoteDebuggingUrl, path[0]);
+        try
+        {
+            foreach (var point in path)
+            {
+                MoveMouse(remoteDebuggingUrl, point, buttons: 1);
+                afterMove?.Invoke(point);
+            }
+        }
+        finally
+        {
+            MouseUp(remoteDebuggingUrl, path[^1]);
         }
     }
 
@@ -180,6 +205,15 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
 
     public void RemoveDefaultDragGhost(string remoteDebuggingUrl) =>
         Evaluate(remoteDebuggingUrl, BrowserDomScripts.RemoveDefaultDragGhost());
+
+    public void MoveMouse(string remoteDebuggingUrl, ElementPoint point, int buttons) =>
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.MoveMouse(point, buttons));
+
+    public void MouseDown(string remoteDebuggingUrl, ElementPoint point) =>
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.MouseDown(point));
+
+    public void MouseUp(string remoteDebuggingUrl, ElementPoint point) =>
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.MouseUp(point));
 
     public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true) =>
         Run(async () =>

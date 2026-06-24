@@ -83,6 +83,7 @@ For v1, block syntax is supported by the complex `dragAndDrop` action:
 dragAndDrop "[data-command='browser launch']" {
   delay 200
   hover "#lastDialogAction"
+  moveMouse "bottom"
   drop "#dropQueue"
 }
 ```
@@ -93,6 +94,7 @@ Rules:
 - Blank lines and full-line comments are allowed inside blocks.
 - Nested blocks are parsed, but only actions that explicitly document block support may use them.
 - `dragAndDrop` block bodies must contain exactly one `drop` action.
+- `moveMouse` is allowed inside `dragAndDrop` blocks only when the script is run with `--gif`.
 - No actions are allowed after `drop` in a `dragAndDrop` block.
 
 ## Variables

@@ -1,0 +1,21 @@
+# Demonstrates GIF drag movement near the bottom of the viewport.
+# Run with:
+# dotnet run -- browser control script --file demo-scripts\09-drag-autoscroll.cmgscript --gif demo-output\drag-autoscroll.gif
+
+set page C:\Projects\CMG\index.html
+navigate "${page}"
+setViewport width=900 height=700
+waitForElement "#dropQueue"
+scrollIntoView "#dragdrop"
+
+dragAndDrop "[data-command='browser launch']" {
+  moveMouse "bottom"
+  delay 800
+  moveMouse "center"
+  delay 200
+  moveMouse "bottom"
+  delay 800
+  drop "#dropQueue"
+}
+
+assertText "#dropQueue" "browser launch"

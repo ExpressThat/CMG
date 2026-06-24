@@ -305,6 +305,28 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
         });
     }
 
+    public ViewportSize GetViewportSize(string remoteDebuggingUrl)
+    {
+        return Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            var response = await session.SendCommand("Runtime.evaluate", writer =>
+            {
+                writer.WriteString("expression", "({ width: window.innerWidth, height: window.innerHeight })");
+                writer.WriteBoolean("returnByValue", true);
+            });
+
+            if (!TryReadElement(response, ["result", "result", "value"], out var value) ||
+                !TryReadDouble(value, "width", out var width) ||
+                !TryReadDouble(value, "height", out var height))
+            {
+                throw new ChromeDevToolsException("Chrome did not return the current viewport size.");
+            }
+
+            return new ViewportSize(width, height);
+        });
+    }
+
     public void DragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector)
     {
         Run(async () =>
@@ -389,6 +411,36 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
     public void RemoveDefaultDragGhost(string remoteDebuggingUrl)
     {
         Evaluate(remoteDebuggingUrl, BrowserDomScripts.RemoveDefaultDragGhost());
+    }
+
+    public void MoveMouse(string remoteDebuggingUrl, ElementPoint point, int buttons)
+    {
+        Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            await DispatchMouseMove(session, point, buttons);
+            return true;
+        });
+    }
+
+    public void MouseDown(string remoteDebuggingUrl, ElementPoint point)
+    {
+        Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            await DispatchMousePressed(session, point);
+            return true;
+        });
+    }
+
+    public void MouseUp(string remoteDebuggingUrl, ElementPoint point)
+    {
+        Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            await DispatchMouseReleased(session, point);
+            return true;
+        });
     }
 
     public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true)
@@ -615,6 +667,7 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
             writer.WriteString("type", "mouseMoved");
             writer.WriteNumber("x", point.X);
             writer.WriteNumber("y", point.Y);
+            writer.WriteString("button", buttons is 0 ? "none" : "left");
             writer.WriteNumber("buttons", buttons);
         });
     }

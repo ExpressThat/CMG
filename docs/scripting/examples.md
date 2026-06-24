@@ -89,6 +89,79 @@ Run the complete example:
 dotnet run -- browser control script --file demo-scripts\07-complex-drag-flow.cmgscript --gif demo-output\complex-drag.gif
 ```
 
+## Drag Pointer Movement
+
+Use `moveMouse` during GIF recording to move a dragged item to a viewport-relative point. The pointer movement and delay dispatch browser mouse, pointer, drag, and dragover events.
+
+```text
+navigate "C:\Projects\CMG\index.html"
+setViewport width=900 height=700
+waitForElement "#dropQueue"
+scrollIntoView "#dragdrop"
+
+dragAndDrop "[data-command='browser launch']" {
+  moveMouse "center"
+  delay 200
+  hover "#dropQueue"
+  delay 200
+  drop "#dropQueue"
+}
+```
+
+Run the `moveMouse` demo with GIF recording:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\08-gif-move-mouse.cmgscript --gif demo-output\gif-move-mouse.gif
+```
+
+For pages that auto-scroll while a dragged item is held near the lower viewport edge, use `moveMouse "bottom"` with `delay` inside the drag block:
+
+```text
+navigate "C:\Projects\CMG\index.html"
+setViewport width=900 height=700
+waitForElement "#dropQueue"
+scrollIntoView "#dragdrop"
+
+dragAndDrop "[data-command='browser launch']" {
+  moveMouse "bottom"
+  delay 800
+  moveMouse "center"
+  delay 200
+  moveMouse "bottom"
+  delay 800
+  drop "#dropQueue"
+}
+```
+
+Run the bottom-edge drag demo with GIF recording:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\09-drag-autoscroll.cmgscript --gif demo-output\drag-autoscroll.gif
+```
+
+## CSS Hover States
+
+The virtual pointer in GIF mode triggers real browser hover state. This demo moves across elements with CSS `:hover` styling, asserts that the hover card received a browser hover event, and captures the visual state.
+
+```text
+navigate "C:\Projects\CMG\index.html"
+setViewport width=900 height=700
+waitForElement "#hoverDemoCard"
+scrollIntoView "#hoverStates"
+hover "#hoverDemoCard"
+assertText "#hoverStateText" "Hover card active"
+evaluate "getComputedStyle(document.querySelector('#hoverDemoCard')).transform !== 'none'"
+screenshot "#hoverStates" output="demo-output\css-hover-card.png"
+hover "#hoverDemoButton"
+hover "#hoverDemoInput"
+```
+
+Run it with GIF recording:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\10-css-hover-states.cmgscript --gif demo-output\css-hover-states.gif
+```
+
 ## Stdin
 
 ```powershell

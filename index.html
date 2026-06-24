@@ -109,10 +109,13 @@
       color: #ffffff;
       cursor: pointer;
       font-weight: 700;
+      transition: background 140ms ease, box-shadow 140ms ease, transform 140ms ease;
     }
 
     button:hover {
       background: var(--accent-dark);
+      box-shadow: 0 8px 18px rgba(15, 118, 110, 0.2);
+      transform: translateY(-1px);
     }
 
     button.secondary {
@@ -147,6 +150,14 @@
       padding: 10px 12px;
       background: #ffffff;
       color: var(--ink);
+      transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+    }
+
+    input:hover,
+    textarea:hover {
+      border-color: #7aa69f;
+      background: #fbfffd;
+      box-shadow: 0 6px 16px rgba(15, 118, 110, 0.1);
     }
 
     textarea {
@@ -228,6 +239,14 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcfa;
+      transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease, background 140ms ease;
+    }
+
+    .metric:hover {
+      border-color: var(--accent);
+      background: #eef8f5;
+      box-shadow: 0 10px 24px rgba(15, 118, 110, 0.14);
+      transform: translateY(-2px);
     }
 
     .metric strong {
@@ -257,6 +276,11 @@
       background: #dff3ef;
     }
 
+    .drop-zone:hover {
+      border-color: var(--accent-dark);
+      background: #e6f6f2;
+    }
+
     .drag-item {
       border: 1px solid var(--line);
       border-radius: 6px;
@@ -265,6 +289,14 @@
       cursor: grab;
       user-select: none;
       box-shadow: 0 4px 12px rgba(23, 33, 31, 0.08);
+      transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease, background 140ms ease;
+    }
+
+    .drag-item:hover {
+      border-color: var(--accent);
+      background: #f0fdfa;
+      box-shadow: 0 9px 20px rgba(15, 118, 110, 0.16);
+      transform: translateX(4px);
     }
 
     .drag-item:active {
@@ -320,6 +352,68 @@
       z-index: 50;
     }
 
+    .hover-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.2fr) minmax(220px, 0.8fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .hover-card {
+      min-height: 180px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: #fbfcfa;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease, background 140ms ease;
+    }
+
+    .hover-card:hover {
+      border-color: #1d4ed8;
+      background: #eff6ff;
+      box-shadow: 0 16px 32px rgba(29, 78, 216, 0.16);
+      transform: translateY(-3px);
+    }
+
+    .hover-card:hover .hover-badge {
+      background: #1d4ed8;
+      color: #ffffff;
+    }
+
+    .hover-card:hover .hover-arrow {
+      transform: translateX(8px);
+    }
+
+    .hover-badge {
+      width: max-content;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1e3a8a;
+      font-size: 0.82rem;
+      font-weight: 800;
+      transition: background 140ms ease, color 140ms ease;
+    }
+
+    .hover-arrow {
+      font-weight: 900;
+      color: #1d4ed8;
+      transition: transform 140ms ease;
+    }
+
+    .hover-side {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: #ffffff;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
     .toast {
       position: fixed;
       right: 18px;
@@ -340,7 +434,8 @@
 
     @media (max-width: 720px) {
       .section-head,
-      .drop-layout {
+      .drop-layout,
+      .hover-grid {
         grid-template-columns: 1fr;
       }
 
@@ -416,6 +511,36 @@
       </div>
     </section>
 
+    <section id="hoverStates">
+      <div class="section-head">
+        <div>
+          <h2>CSS Hover States</h2>
+          <p>Targets with visual hover styling for pointer movement and screenshot checks.</p>
+        </div>
+        <div class="metric" id="hoverMetric">
+          <strong id="hoverStateText">Idle</strong>
+          <span>current hover state</span>
+        </div>
+      </div>
+
+      <div class="hover-grid">
+        <div id="hoverDemoCard" class="hover-card" tabindex="0">
+          <span class="hover-badge">hover target</span>
+          <h3>Interactive hover card</h3>
+          <p>The card changes border, background, elevation, badge color, and arrow position while hovered.</p>
+          <span class="hover-arrow" aria-hidden="true">-&gt;</span>
+        </div>
+
+        <div class="hover-side">
+          <button id="hoverDemoButton" type="button">Hover button</button>
+          <label>
+            Hover input
+            <input id="hoverDemoInput" value="Move the pointer here">
+          </label>
+        </div>
+      </div>
+    </section>
+
     <section id="dragdrop">
       <div class="section-head">
         <div>
@@ -486,6 +611,8 @@
     const dialogMetric = document.querySelector('#dialogMetric strong');
     const lastDialogAction = document.querySelector('#lastDialogAction');
     const toast = document.querySelector('#toast');
+    const hoverDemoCard = document.querySelector('#hoverDemoCard');
+    const hoverStateText = document.querySelector('#hoverStateText');
     let dialogActions = 0;
 
     function showToast(message) {
@@ -506,6 +633,12 @@
     document.querySelector('#openConfirmDialog').addEventListener('click', () => confirmDialog.showModal());
     profileDialog.addEventListener('close', () => recordDialogAction(profileDialog.returnValue));
     confirmDialog.addEventListener('close', () => recordDialogAction(confirmDialog.returnValue));
+    hoverDemoCard.addEventListener('mouseenter', () => {
+      hoverStateText.textContent = 'Hover card active';
+    });
+    hoverDemoCard.addEventListener('mouseleave', () => {
+      hoverStateText.textContent = 'Idle';
+    });
 
     const validators = [
       {

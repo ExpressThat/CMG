@@ -1,0 +1,17 @@
+# Demonstrates GIF-only moveMouse.
+# Run with:
+# dotnet run -- browser control script --file demo-scripts\08-gif-move-mouse.cmgscript --gif demo-output\gif-move-mouse.gif
+
+set page C:\Projects\CMG\index.html
+navigate "${page}"
+setViewport width=900 height=700
+waitForElement "#openProfileDialog"
+showMessageBar "Moving the GIF pointer before opening the dialog"
+moveMouse "center"
+delay 200
+moveMouse x=120 y=120
+delay 200
+click "#openProfileDialog"
+waitForElement "#profileDialog[open]"
+showMessageBar "The pointer movement dispatched browser mouse events"
+screenshot "#profileDialog" output="demo-output\gif-move-mouse-dialog.png"

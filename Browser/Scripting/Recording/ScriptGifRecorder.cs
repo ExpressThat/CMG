@@ -2,6 +2,19 @@ namespace CMG.Browser.Scripting.Recording;
 
 public sealed class ScriptGifRecorder : IDisposable
 {
+    private static readonly string[] MouseAliases =
+    [
+        "center",
+        "top",
+        "bottom",
+        "left",
+        "right",
+        "topLeft",
+        "topRight",
+        "bottomLeft",
+        "bottomRight"
+    ];
+
     private readonly IBrowserAutomationClient devToolsClient;
     private readonly ScriptRecordingOptions options;
     private readonly GifFrameSink frameSink = new();
@@ -113,6 +126,7 @@ public sealed class ScriptGifRecorder : IDisposable
 
         for (var index = 0; index < frameCount; index++)
         {
+            devToolsClient.MoveMouse(remoteDebuggingUrl, pointer.Position, buttons: 1);
             devToolsClient.MovePageDrag(remoteDebuggingUrl, pointer.Position);
             CaptureFrame(ScriptRecordingOptions.FrameDelayCentiseconds);
         }
@@ -129,6 +143,16 @@ public sealed class ScriptGifRecorder : IDisposable
         devToolsClient.EndPageDrag(remoteDebuggingUrl, pointer.Position);
         CapturePulseFrame();
         CaptureHoldFrame();
+    }
+
+    public void MoveMouse(BrowserScriptAction action, bool dragging)
+    {
+        if (remoteDebuggingUrl is null)
+        {
+            return;
+        }
+
+        MovePointerTo(ResolveMoveMouseTarget(action), dragging);
     }
 
     public void RecordDragAndDrop(string sourceSelector, string targetSelector, Action drop)
@@ -185,11 +209,7 @@ public sealed class ScriptGifRecorder : IDisposable
 
         var target = devToolsClient.GetElementCenter(remoteDebuggingUrl, selector);
 
-        foreach (var point in pointer.MoveTo(target, ScriptRecordingOptions.MovementFrameCount))
-        {
-            devToolsClient.MoveDomCursor(remoteDebuggingUrl, point);
-            CaptureFrame(ScriptRecordingOptions.FrameDelayCentiseconds);
-        }
+        MovePointerTo(target, dragging: false);
     }
 
     private void MoveDragToSelector(string selector)
@@ -201,13 +221,98 @@ public sealed class ScriptGifRecorder : IDisposable
 
         var target = devToolsClient.GetElementCenter(remoteDebuggingUrl, selector);
 
+        MovePointerTo(target, dragging: true);
+    }
+
+    private void MovePointerTo(ElementPoint target, bool dragging)
+    {
+        if (remoteDebuggingUrl is null)
+        {
+            return;
+        }
+
         foreach (var point in pointer.MoveTo(target, ScriptRecordingOptions.MovementFrameCount))
         {
-            devToolsClient.MovePageDrag(remoteDebuggingUrl, point);
+            devToolsClient.MoveMouse(remoteDebuggingUrl, point, dragging ? 1 : 0);
+            if (dragging)
+            {
+                devToolsClient.MovePageDrag(remoteDebuggingUrl, point);
+            }
+
             devToolsClient.MoveDomCursor(remoteDebuggingUrl, point);
             CaptureFrame(ScriptRecordingOptions.FrameDelayCentiseconds);
         }
     }
+
+    private ElementPoint ResolveMoveMouseTarget(BrowserScriptAction action)
+    {
+        if (remoteDebuggingUrl is null)
+        {
+            return pointer.Position;
+        }
+
+        var hasAlias = action.Arguments.Count is 1;
+        var hasCoordinates = action.Options.ContainsKey("x") || action.Options.ContainsKey("y");
+
+        if (hasAlias == hasCoordinates)
+        {
+            throw new ScriptExecutionException("moveMouse requires either one alias argument or x=<pixels> y=<pixels> options.");
+        }
+
+        var viewport = devToolsClient.GetViewportSize(remoteDebuggingUrl);
+        var target = hasAlias
+            ? ResolveAlias(action.Arguments[0], viewport)
+            : new ElementPoint(ParseCoordinate(action, "x"), ParseCoordinate(action, "y"));
+
+        if (target.X < 0 || target.Y < 0 || target.X > viewport.Width || target.Y > viewport.Height)
+        {
+            throw new ScriptExecutionException(
+                $"moveMouse target ({FormatNumber(target.X)}, {FormatNumber(target.Y)}) is outside the current viewport {FormatNumber(viewport.Width)}x{FormatNumber(viewport.Height)}.");
+        }
+
+        return target;
+    }
+
+    private static ElementPoint ResolveAlias(string alias, ViewportSize viewport)
+    {
+        var inset = Math.Min(16, Math.Max(0, Math.Min(viewport.Width, viewport.Height) / 2));
+        var centerX = viewport.Width / 2;
+        var centerY = viewport.Height / 2;
+        var right = Math.Max(0, viewport.Width - inset);
+        var bottom = Math.Max(0, viewport.Height - inset);
+
+        return alias.ToLowerInvariant() switch
+        {
+            "center" => new ElementPoint(centerX, centerY),
+            "top" => new ElementPoint(centerX, inset),
+            "bottom" => new ElementPoint(centerX, bottom),
+            "left" => new ElementPoint(inset, centerY),
+            "right" => new ElementPoint(right, centerY),
+            "topleft" => new ElementPoint(inset, inset),
+            "topright" => new ElementPoint(right, inset),
+            "bottomleft" => new ElementPoint(inset, bottom),
+            "bottomright" => new ElementPoint(right, bottom),
+            _ => throw new ScriptExecutionException($"Unknown moveMouse alias '{alias}'. Supported aliases: {string.Join(", ", MouseAliases)}.")
+        };
+    }
+
+    private static double ParseCoordinate(BrowserScriptAction action, string name)
+    {
+        if (!action.Options.TryGetValue(name, out var value))
+        {
+            throw new ScriptExecutionException($"Missing required option '{name}'.");
+        }
+
+        if (!double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var number) || number < 0)
+        {
+            throw new ScriptExecutionException($"moveMouse option '{name}' must be a non-negative number.");
+        }
+
+        return number;
+    }
+
+    private static string FormatNumber(double value) =>
+        value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
 
     private void CaptureHoldFrame()
     {

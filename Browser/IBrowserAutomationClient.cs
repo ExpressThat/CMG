@@ -36,6 +36,8 @@ public interface IBrowserAutomationClient
 
     void SetViewport(string remoteDebuggingUrl, int width, int height);
 
+    ViewportSize GetViewportSize(string remoteDebuggingUrl);
+
     void DragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector);
 
     void MouseDragAndDrop(
@@ -52,6 +54,12 @@ public interface IBrowserAutomationClient
     void EndPageDrag(string remoteDebuggingUrl, ElementPoint point);
 
     void RemoveDefaultDragGhost(string remoteDebuggingUrl);
+
+    void MoveMouse(string remoteDebuggingUrl, ElementPoint point, int buttons);
+
+    void MouseDown(string remoteDebuggingUrl, ElementPoint point);
+
+    void MouseUp(string remoteDebuggingUrl, ElementPoint point);
 
     byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true);
 
@@ -84,3 +92,5 @@ public sealed class BrowserAutomationClientFactory
     public IBrowserAutomationClient Create(BrowserKind browserKind) =>
         browserKind.UsesFirefoxBiDi() ? firefoxBiDiClient : chromeDevToolsClient;
 }
+
+public sealed record ViewportSize(double Width, double Height);
