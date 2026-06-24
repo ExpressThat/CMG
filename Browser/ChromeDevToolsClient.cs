@@ -48,6 +48,7 @@ public sealed class ChromeDevToolsClient
                 await using var session = await DevToolsSession.Connect(pageTarget);
 
                 await session.ScrollElementIntoView(selector);
+                await PromoteMessageBar(session);
                 var clip = await GetElementPageClip(session, selector);
                 if (clip.Width <= 0 || clip.Height <= 0)
                 {
@@ -239,6 +240,82 @@ public sealed class ChromeDevToolsClient
             $"element.value = {ToJsonStringLiteral(value)}; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
     }
 
+    public void ShowMessageBar(string remoteDebuggingUrl, string message)
+    {
+        Evaluate(
+            remoteDebuggingUrl,
+            $$"""
+            (() => {
+              const promote = element => {
+                if (typeof element.showPopover === 'function') {
+                  if (element.matches(':popover-open')) {
+                    element.hidePopover();
+                  }
+                  element.showPopover();
+                }
+              };
+              let bar = document.getElementById('__cmg_message_bar');
+              if (!bar) {
+                bar = document.createElement('div');
+                bar.id = '__cmg_message_bar';
+                bar.setAttribute('popover', 'manual');
+                bar.setAttribute('role', 'status');
+                bar.setAttribute('aria-live', 'polite');
+                bar.style.all = 'initial';
+                bar.style.position = 'fixed';
+                bar.style.left = '50%';
+                bar.style.top = '12px';
+                bar.style.zIndex = '2147483646';
+                bar.style.width = 'max-content';
+                bar.style.maxWidth = 'min(760px, calc(100vw - 32px))';
+                bar.style.minHeight = '42px';
+                bar.style.margin = '0';
+                bar.style.padding = '10px 16px';
+                bar.style.border = '0';
+                bar.style.background = '#111827';
+                bar.style.color = '#ffffff';
+                bar.style.font = '600 14px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                bar.style.textAlign = 'center';
+                bar.style.boxShadow = '0 10px 28px rgba(0,0,0,.24)';
+                bar.style.boxSizing = 'border-box';
+                bar.style.pointerEvents = 'none';
+                bar.style.borderRadius = '8px';
+                bar.style.transform = 'translateX(-50%)';
+                bar.style.whiteSpace = 'pre-wrap';
+                bar.style.overflowWrap = 'anywhere';
+
+                const text = document.createElement('div');
+                text.id = '__cmg_message_bar_text';
+                bar.appendChild(text);
+
+                document.documentElement.appendChild(bar);
+              }
+
+              const text = document.getElementById('__cmg_message_bar_text');
+              text.textContent = {{ToJsonStringLiteral(message)}};
+              promote(bar);
+              return true;
+            })()
+            """);
+    }
+
+    public void PromoteMessageBar(string remoteDebuggingUrl)
+    {
+        Evaluate(
+            remoteDebuggingUrl,
+            """
+            (() => {
+              const bar = document.getElementById('__cmg_message_bar');
+              if (!bar || typeof bar.showPopover !== 'function') return true;
+              if (bar.matches(':popover-open')) {
+                bar.hidePopover();
+              }
+              bar.showPopover();
+              return true;
+            })()
+            """);
+    }
+
     public string GetElementText(string remoteDebuggingUrl, string selector)
     {
         return EvaluateElementScript(remoteDebuggingUrl, selector, "return element.innerText ?? element.textContent ?? '';");
@@ -356,7 +433,21 @@ public sealed class ChromeDevToolsClient
               const source = document.querySelector({{ToJsonStringLiteral(sourceSelector)}});
               if (!source) return false;
               const dataTransfer = new DataTransfer();
-              window.__cmgRecordingDrag = { source, dataTransfer };
+              let customDragImageSet = false;
+              const originalSetDragImage = dataTransfer.setDragImage?.bind(dataTransfer);
+              if (originalSetDragImage) {
+                try {
+                  Object.defineProperty(dataTransfer, 'setDragImage', {
+                    configurable: true,
+                    value: (...args) => {
+                      customDragImageSet = true;
+                      return originalSetDragImage(...args);
+                    }
+                  });
+                } catch {
+                }
+              }
+              window.__cmgRecordingDrag = { source, dataTransfer, defaultGhost: null };
               const eventOptions = {
                 bubbles: true,
                 cancelable: true,
@@ -365,6 +456,46 @@ public sealed class ChromeDevToolsClient
                 dataTransfer
               };
               source.dispatchEvent(new DragEvent('dragstart', eventOptions));
+              if (!customDragImageSet) {
+                const existing = document.getElementById('__cmg_default_drag_ghost');
+                existing?.remove();
+                const sourceRect = source.getBoundingClientRect();
+                const ghost = document.createElement('div');
+                ghost.id = '__cmg_default_drag_ghost';
+                ghost.setAttribute('popover', 'manual');
+                ghost.style.all = 'initial';
+                ghost.style.position = 'fixed';
+                ghost.style.left = `${eventOptions.clientX}px`;
+                ghost.style.top = `${eventOptions.clientY}px`;
+                ghost.style.zIndex = '2147483645';
+                ghost.style.width = `${Math.max(1, sourceRect.width)}px`;
+                ghost.style.height = `${Math.max(1, sourceRect.height)}px`;
+                ghost.style.margin = '0';
+                ghost.style.padding = '0';
+                ghost.style.border = '0';
+                ghost.style.background = 'transparent';
+                ghost.style.overflow = 'visible';
+                ghost.style.pointerEvents = 'none';
+                ghost.style.opacity = '.72';
+                ghost.style.transform = 'translate(-50%, -50%) rotate(-1deg)';
+                ghost.style.filter = 'drop-shadow(0 12px 18px rgba(0,0,0,.24))';
+                const clone = source.cloneNode(true);
+                clone.removeAttribute?.('id');
+                clone.removeAttribute?.('popover');
+                clone.style.pointerEvents = 'none';
+                clone.style.boxSizing = 'border-box';
+                clone.style.width = `${Math.max(1, sourceRect.width)}px`;
+                clone.style.height = `${Math.max(1, sourceRect.height)}px`;
+                clone.style.maxWidth = 'none';
+                clone.style.maxHeight = 'none';
+                clone.style.margin = '0';
+                ghost.appendChild(clone);
+                document.documentElement.appendChild(ghost);
+                if (typeof ghost.showPopover === 'function') {
+                  ghost.showPopover();
+                }
+                window.__cmgRecordingDrag.defaultGhost = ghost;
+              }
               source.dispatchEvent(new DragEvent('drag', eventOptions));
               return true;
             })()
@@ -389,6 +520,16 @@ public sealed class ChromeDevToolsClient
                 clientY: {{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
                 dataTransfer: state.dataTransfer
               };
+              if (state.defaultGhost?.isConnected) {
+                state.defaultGhost.style.left = `${eventOptions.clientX}px`;
+                state.defaultGhost.style.top = `${eventOptions.clientY}px`;
+                if (typeof state.defaultGhost.showPopover === 'function') {
+                  if (state.defaultGhost.matches(':popover-open')) {
+                    state.defaultGhost.hidePopover();
+                  }
+                  state.defaultGhost.showPopover();
+                }
+              }
               state.source.dispatchEvent(new DragEvent('drag', eventOptions));
               target.dispatchEvent(new DragEvent('dragenter', eventOptions));
               target.dispatchEvent(new DragEvent('dragover', eventOptions));
@@ -412,17 +553,33 @@ public sealed class ChromeDevToolsClient
                 clientY: {{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
                 dataTransfer: state.dataTransfer
               }));
+              if (state.defaultGhost?.matches?.(':popover-open')) {
+                state.defaultGhost.hidePopover();
+              }
+              state.defaultGhost?.remove();
               delete window.__cmgRecordingDrag;
               return true;
             })()
             """);
     }
 
-    public byte[] GetPageScreenshot(string remoteDebuggingUrl)
+    public void RemoveDefaultDragGhost(string remoteDebuggingUrl)
+    {
+        Evaluate(
+            remoteDebuggingUrl,
+            "(() => { const ghost = document.getElementById('__cmg_default_drag_ghost'); if (ghost?.matches?.(':popover-open')) ghost.hidePopover(); ghost?.remove(); return true; })()");
+    }
+
+    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true)
     {
         return Run(async () =>
         {
             await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            if (promoteMessageBar)
+            {
+                await PromoteMessageBar(session);
+            }
+
             var screenshot = await session.SendCommand("Page.captureScreenshot", writer => writer.WriteString("format", "png"));
 
             if (!TryReadString(screenshot, "result", "data", out var data) || string.IsNullOrWhiteSpace(data))
@@ -604,6 +761,27 @@ public sealed class ChromeDevToolsClient
         }
 
         return clip;
+    }
+
+    private static async Task PromoteMessageBar(DevToolsSession session)
+    {
+        await session.SendCommand("Runtime.evaluate", writer =>
+        {
+            writer.WriteString(
+                "expression",
+                """
+                (() => {
+                  const bar = document.getElementById('__cmg_message_bar');
+                  if (!bar || typeof bar.showPopover !== 'function') return true;
+                  if (bar.matches(':popover-open')) {
+                    bar.hidePopover();
+                  }
+                  bar.showPopover();
+                  return true;
+                })()
+                """);
+            writer.WriteBoolean("returnByValue", true);
+        });
     }
 
     private static async Task ClickAt(DevToolsSession session, double x, double y)

@@ -35,6 +35,7 @@ public sealed class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildSelectorCommand("hover", "Hover an element."));
         command.Subcommands.Add(BuildSelectorCommand("scrollIntoView", "Scroll an element into view."));
         command.Subcommands.Add(BuildSelectCommand());
+        command.Subcommands.Add(BuildShowMessageBarCommand());
         command.Subcommands.Add(BuildDelayCommand());
         command.Subcommands.Add(BuildSelectorCommand("html", "Print an element's outer HTML."));
         command.Subcommands.Add(BuildScreenshotCommand());
@@ -241,6 +242,24 @@ public sealed class BrowserControlCommandBuilder
                 "select",
                 parseResult.GetValue(selectorArgument) ?? string.Empty,
                 parseResult.GetValue(valueArgument) ?? string.Empty)));
+
+        return command;
+    }
+
+    private Command BuildShowMessageBarCommand()
+    {
+        var messageArgument = new Argument<string>("message")
+        {
+            Description = "Message to show in a fixed bar at the top of the page."
+        };
+
+        var command = new Command("showMessageBar", "Inject or update a fixed message bar at the top of the page.")
+        {
+            messageArgument
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(ToScriptLine("showMessageBar", parseResult.GetValue(messageArgument) ?? string.Empty)));
 
         return command;
     }
@@ -496,6 +515,10 @@ public sealed class BrowserControlCommandBuilder
 
     private static string QuoteScriptValue(string value)
     {
-        return $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
+        return $"\"{value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("\"", "\\\"", StringComparison.Ordinal)
+            .Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal)}\"";
     }
 }

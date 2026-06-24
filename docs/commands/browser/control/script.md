@@ -72,6 +72,12 @@ screenshot "#profileDialog" output="profile-dialog.png"
 assertText "#lastDialogAction" "None"
 ```
 
+Message bar example:
+
+```text
+showMessageBar "Opening the profile dialog"
+```
+
 Complex drag example:
 
 ```text

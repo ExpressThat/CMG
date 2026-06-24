@@ -132,6 +132,21 @@ Example:
 select "#environment" "prod"
 ```
 
+## `showMessageBar`
+
+```text
+showMessageBar "message"
+```
+
+Injects or updates a fixed caption bar near the top center of the page with a custom message. The bar dynamically sizes to the message, supports multi-line text, uses the browser top layer when available so it appears above page dialogs, is visible in screenshots and GIF recordings, and does not intercept pointer input.
+
+Example:
+
+```text
+showMessageBar "Opening the profile dialog"
+showMessageBar "Opening profile dialog\nWaiting for dialog content"
+```
+
 ## `delay`
 
 ```text
@@ -251,6 +266,7 @@ Rules:
 - No actions are allowed after `drop`.
 - Other child actions fail with `Action '<name>' is not supported inside block dragAndDrop.`
 - With `--gif`, CMG keeps the drag lifecycle active while the body runs so page-owned drag ghosts can stay visible.
+- If the page does not call `DataTransfer.setDragImage()`, CMG shows a default-preview bridge during the active drag so the live browser and GIF still show a browser-style default drag preview.
 
 Complex example:
 

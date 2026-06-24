@@ -98,6 +98,7 @@ public sealed partial class BrowserScriptRunner
             "hover" => ExecuteSelectorAction(action, selector => devToolsClient.Hover(remoteDebuggingUrl, selector)),
             "scrollintoview" => ExecuteSelectorAction(action, selector => devToolsClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
             "select" => ExecuteSelect(remoteDebuggingUrl, action),
+            "showmessagebar" => ExecuteShowMessageBar(remoteDebuggingUrl, action),
             "delay" => ExecuteDelay(action),
             "html" => ExecuteHtml(remoteDebuggingUrl, action),
             "screenshot" => ExecuteScreenshot(remoteDebuggingUrl, action),
@@ -166,6 +167,13 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 2, 2);
         devToolsClient.Select(remoteDebuggingUrl, action.Arguments[0], action.Arguments[1]);
+        return [];
+    }
+
+    private IReadOnlyList<string> ExecuteShowMessageBar(string remoteDebuggingUrl, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        devToolsClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0]);
         return [];
     }
 

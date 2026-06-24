@@ -34,7 +34,13 @@ Escaped quotes inside quoted strings use `\"`:
 type "#releaseNote" "Text with a \"quoted\" word"
 ```
 
-Backslashes are kept as literal characters unless they escape `"` or another `\`, so Windows paths work as expected:
+Quoted strings also support `\n`, `\r`, and `\t` escapes:
+
+```text
+showMessageBar "Opening profile dialog\nWaiting for dialog content"
+```
+
+Backslashes are kept as literal characters unless they escape `"`, another `\`, `n`, `r`, or `t`, so Windows paths work as expected:
 
 ```text
 navigate "C:\Projects\CMG\index.html"

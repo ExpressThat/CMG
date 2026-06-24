@@ -25,6 +25,7 @@ cmg browser control [command] [options]
 - [`hover`](hover.md): Hover an element.
 - [`scrollIntoView`](scrollIntoView.md): Scroll an element into view.
 - [`select`](select.md): Set a select-like element value.
+- [`showMessageBar`](showMessageBar.md): Inject or update a fixed message bar at the top of the page.
 - [`delay`](delay.md): Pause for a duration.
 - [`html`](html.md): Print an element's outer HTML.
 - [`screenshot`](screenshot.md): Capture an element screenshot.

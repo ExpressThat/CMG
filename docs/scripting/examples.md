@@ -37,6 +37,14 @@ navigate "C:\Projects\CMG\index.html"
 assertText "h1" "CMG Browser Control Test Page"
 ```
 
+## Page Message Bar
+
+```text
+navigate "C:\Projects\CMG\index.html"
+showMessageBar "Opening the profile dialog"
+screenshotPage output="message-bar.png"
+```
+
 ## Variables
 
 ```text

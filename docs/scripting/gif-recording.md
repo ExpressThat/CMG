@@ -30,11 +30,11 @@ CMG removes the DOM cursor when recording ends.
 
 ## Drag Ghost
 
-During recorded `dragAndDrop`, CMG does not create or style its own drag preview. It sends real Chrome mouse down, move, and release events while recording frames. If the page or browser exposes a drag ghost, drag image, or custom drag preview during a normal manual drag, that site-owned preview is what the GIF records.
+During recorded `dragAndDrop`, CMG sends real Chrome mouse down, move, and release events while recording frames. It also dispatches the page drag lifecycle while the pointer moves: `dragstart`, repeated `drag` and `dragover` events, then `dragend`.
 
-This matters because different sites can use different drag previews through browser behavior, CSS, JavaScript drag handlers, or `DataTransfer.setDragImage()`. CMG leaves that presentation to the page instead of cloning the source element.
+If the page calls `DataTransfer.setDragImage()` during `dragstart`, CMG treats that as a site-owned custom drag image and does not add its own drag preview. Pages that render their own DOM-based drag ghost during drag events also continue to control their own visual behavior.
 
-CMG also dispatches the page drag lifecycle while the pointer moves: `dragstart`, repeated `drag` and `dragover` events, then `dragend`. This lets pages that render their own DOM-based drag ghost show it live in the browser and in the recorded GIF.
+When the page does not call `DataTransfer.setDragImage()`, a manual browser drag would normally show Chrome's generated default drag preview. DevTools-driven drags do not reliably expose that native preview to the live browser view or page screenshots, so CMG adds a default-preview bridge by cloning the source element into the browser top layer while the drag is active. This is only used for the default-preview case; custom page drag images take precedence.
 
 After the visual mouse drag finishes, CMG still applies the normal scripted drop behavior used by the non-GIF `dragAndDrop` action. This keeps command execution reliable for pages that accept scripted drag events but do not complete a drop from DevTools mouse events alone.
 

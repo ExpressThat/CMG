@@ -222,8 +222,9 @@ public sealed class ScriptGifRecorder : IDisposable
             return;
         }
 
+        devToolsClient.PromoteMessageBar(remoteDebuggingUrl);
         devToolsClient.MoveDomCursor(remoteDebuggingUrl, pointer.Position);
-        var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl);
+        var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar: false);
         frameSink.AddFrame(screenshot, delayCentiseconds);
     }
 
@@ -237,6 +238,7 @@ public sealed class ScriptGifRecorder : IDisposable
         try
         {
             devToolsClient.RemoveDomCursor(remoteDebuggingUrl);
+            devToolsClient.RemoveDefaultDragGhost(remoteDebuggingUrl);
         }
         catch (ChromeDevToolsException)
         {

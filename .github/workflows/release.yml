@@ -104,11 +104,11 @@ jobs:
             exit 1
           }
 
-      - name: Generate CMG.skill
+      - name: Generate SKILL.md
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path "${{ env.RELEASE_DIR }}" | Out-Null
-          $skillPath = Join-Path "${{ env.RELEASE_DIR }}" "CMG.skill"
+          $skillPath = Join-Path "${{ env.RELEASE_DIR }}" "SKILL.md"
           Copy-Item -Path "skill/CMG.skill.md" -Destination $skillPath -Force
 
           $contentFiles = @("README.md")
@@ -158,7 +158,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path "${{ env.RELEASE_PACKAGE_DIR }}" | Out-Null
 
           Copy-Item -Path "${{ env.PUBLISH_DIR }}\CMG.exe" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\CMG.exe" -Force
-          Copy-Item -Path "${{ env.RELEASE_DIR }}\CMG.skill" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\CMG.skill" -Force
+          Copy-Item -Path "${{ env.RELEASE_DIR }}\SKILL.md" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\SKILL.md" -Force
 
           $zipPath = Join-Path "${{ env.RELEASE_DIR }}" "cmg-${{ env.RELEASE_VERSION }}-win-x64.zip"
           Compress-Archive -Path "${{ env.RELEASE_PACKAGE_DIR }}\*" -DestinationPath $zipPath -Force

@@ -130,6 +130,18 @@ public sealed class BrowserScriptParser
                     continue;
                 }
 
+                if (index + 1 < line.Length && line[index + 1] is 'n' or 'r' or 't')
+                {
+                    current.Add(line[index + 1] switch
+                    {
+                        'n' => '\n',
+                        'r' => '\r',
+                        _ => '\t'
+                    });
+                    index++;
+                    continue;
+                }
+
                 current.Add(character);
                 continue;
             }

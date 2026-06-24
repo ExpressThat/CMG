@@ -18,6 +18,8 @@ CMG is a command-line browser control tool intended to be called by AI agents.
 - For `getElement --screenshot`, the screenshot result is also a `data:image/png;base64,...` URL unless `--output` is used.
 - Use `waitForElement` before interacting with dynamic UI.
 - Use `.cmgscript` block `dragAndDrop` when a drag needs intermediate `delay`, `hover`, or `waitForElement` steps.
+- Use `showMessageBar "message"` to place a visible centered caption bar near the top of the page while recording. It dynamically sizes to the message, supports multi-line captions, and appears above page dialogs.
+- During GIF drag recording, page-owned custom drag images take precedence. If the page does not call `DataTransfer.setDragImage()`, CMG shows a browser-default style preview bridge so the drag remains visible in the live browser and recorded GIF.
 
 ## Authentication Workflows
 
