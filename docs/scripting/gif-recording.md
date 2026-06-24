@@ -38,17 +38,24 @@ CMG removes the DOM cursor when recording ends.
 ```text
 moveMouse "center"
 moveMouse x=100 y=200
+moveMouse selector=".content-area" edge=bottom inset=24
 ```
 
 Coordinates are viewport-relative CSS pixels. Aliases are inset from the viewport edge where needed: `center`, `top`, `bottom`, `left`, `right`, `topLeft`, `topRight`, `bottomLeft`, and `bottomRight`.
 
-Use `moveMouse "bottom"` with `delay` inside a `dragAndDrop` block when a page auto-scrolls while a dragged item is held near the lower viewport edge. CMG keeps the drag state active during the delay and repeatedly emits held pointer/mouse movement plus dragover events:
+Use selector/edge targeting when the app scrolls a specific container rather than the browser window:
+
+```text
+moveMouse selector=".content-area" edge=bottom inset=24
+```
+
+Use `moveMouse selector=".content-area" edge=bottom` with `delay` inside a `dragAndDrop` block when a page auto-scrolls while a dragged item is held near the lower edge of a scrollable content area. CMG keeps the drag state active during the delay and repeatedly emits held pointer/mouse movement plus dragover events:
 
 ```text
 dragAndDrop ".card" {
-  moveMouse "bottom"
+  moveMouse selector=".content-area" edge=bottom inset=24
   delay 1500
-  moveMouse "bottom"
+  moveMouse selector=".content-area" edge=bottom inset=24
   delay 1500
   drop "#target"
 }
@@ -57,6 +64,8 @@ dragAndDrop ".card" {
 ## Drag Ghost
 
 During recorded `dragAndDrop`, CMG moves the virtual pointer while recording frames and dispatches the page drag lifecycle: `dragstart`, repeated `drag` and `dragover` events, then `dragend`.
+
+CMG creates the `DataTransfer` object needed for synthetic drag events, then lets the page's own drag handlers set `effectAllowed`, `dropEffect`, and drag payloads. CMG does not force those values; it preserves page-set values through the recorded drag so `dragover` handlers can inspect them.
 
 If the page calls `DataTransfer.setDragImage()` during `dragstart`, CMG treats that as a site-owned custom drag image and does not add its own drag preview. Pages that render their own DOM-based drag ghost during drag events also continue to control their own visual behavior.
 

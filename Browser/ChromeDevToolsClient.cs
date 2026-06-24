@@ -481,6 +481,19 @@ public sealed class ChromeDevToolsClient : IBrowserAutomationClient
         });
     }
 
+    public ElementBox GetElementBox(string remoteDebuggingUrl, string selector)
+    {
+        return Run(async () =>
+        {
+            var pageTarget = await TryFindPageWithSelector(remoteDebuggingUrl, selector) ??
+                throw new ElementNotFoundException(selector);
+
+            await using var session = await DevToolsSession.Connect(pageTarget);
+            var clip = await GetElementClip(session, selector);
+            return new ElementBox(clip.X, clip.Y, clip.Width, clip.Height);
+        });
+    }
+
     public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point)
     {
         Evaluate(remoteDebuggingUrl, BrowserDomScripts.MoveDomCursor(point));

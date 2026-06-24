@@ -63,6 +63,8 @@ public interface IBrowserAutomationClient
 
     byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true);
 
+    ElementBox GetElementBox(string remoteDebuggingUrl, string selector);
+
     ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector);
 
     void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point);
@@ -94,3 +96,5 @@ public sealed class BrowserAutomationClientFactory
 }
 
 public sealed record ViewportSize(double Width, double Height);
+
+public sealed record ElementBox(double X, double Y, double Width, double Height);

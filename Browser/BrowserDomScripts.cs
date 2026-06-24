@@ -196,6 +196,18 @@ public static class BrowserDomScripts
           const target = document.querySelector({{JsonString(targetSelector)}});
           if (!source || !target) return false;
           const dataTransfer = new DataTransfer();
+          const preserveWritableDataTransferState = propertyName => {
+            let value = dataTransfer[propertyName];
+            try {
+              Object.defineProperty(dataTransfer, propertyName, {
+                configurable: true,
+                get: () => value,
+                set: next => { value = String(next); }
+              });
+            } catch {}
+          };
+          preserveWritableDataTransferState('effectAllowed');
+          preserveWritableDataTransferState('dropEffect');
           const sourceRect = source.getBoundingClientRect();
           const targetRect = target.getBoundingClientRect();
           const start = { clientX: sourceRect.left + sourceRect.width / 2, clientY: sourceRect.top + sourceRect.height / 2, bubbles: true, cancelable: true, dataTransfer };
@@ -216,6 +228,18 @@ public static class BrowserDomScripts
           const source = document.querySelector({{JsonString(sourceSelector)}});
           if (!source) return false;
           const dataTransfer = new DataTransfer();
+          const preserveWritableDataTransferState = propertyName => {
+            let value = dataTransfer[propertyName];
+            try {
+              Object.defineProperty(dataTransfer, propertyName, {
+                configurable: true,
+                get: () => value,
+                set: next => { value = String(next); }
+              });
+            } catch {}
+          };
+          preserveWritableDataTransferState('effectAllowed');
+          preserveWritableDataTransferState('dropEffect');
           let customDragImageSet = false;
           const originalSetDragImage = dataTransfer.setDragImage?.bind(dataTransfer);
           if (originalSetDragImage) {

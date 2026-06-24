@@ -244,6 +244,15 @@ public sealed class FirefoxBiDiClient : IBrowserAutomationClient
             return new ElementPoint(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
         });
 
+    public ElementBox GetElementBox(string remoteDebuggingUrl, string selector) =>
+        Run(async () =>
+        {
+            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            var context = await session.GetPrimaryContext();
+            var rect = await GetElementRect(session, context.Id, selector);
+            return new ElementBox(rect.X, rect.Y, rect.Width, rect.Height);
+        });
+
     public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point) =>
         Evaluate(remoteDebuggingUrl, BrowserDomScripts.MoveDomCursor(point));
 

@@ -139,6 +139,18 @@ Run the bottom-edge drag demo with GIF recording:
 dotnet run -- browser control script --file demo-scripts\09-drag-autoscroll.cmgscript --gif demo-output\drag-autoscroll.gif
 ```
 
+For apps that scroll a canvas or content area instead of the browser window, target the scroll container edge:
+
+```text
+dragAndDrop ".library-item" {
+  moveMouse selector=".content-area" edge=bottom inset=24
+  delay 1500
+  moveMouse selector=".content-area" edge=bottom inset=24
+  delay 1500
+  drop ".content-drop-target"
+}
+```
+
 ## CSS Hover States
 
 The virtual pointer in GIF mode triggers real browser hover state. This demo moves across elements with CSS `:hover` styling, asserts that the hover card received a browser hover event, and captures the visual state.

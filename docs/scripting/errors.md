@@ -127,12 +127,19 @@ Use a supported alias or pass viewport-relative coordinates:
 ```text
 moveMouse "bottom"
 moveMouse x=100 y=200
+moveMouse selector=".content-area" edge=bottom
 ```
 
 Coordinates outside the visible viewport fail:
 
 ```text
 Line 3: moveMouse failed. moveMouse target (2000, 2000) is outside the current viewport 1280x720.
+```
+
+Element-edge targeting requires both a selector and an edge:
+
+```text
+Line 3: moveMouse failed. moveMouse element-edge targeting requires edge=<top|bottom|left|right|center|topLeft|topRight|bottomLeft|bottomRight>.
 ```
 
 ## Failed Assertion
