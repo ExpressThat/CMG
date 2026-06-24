@@ -48,28 +48,7 @@ public sealed class ChromeDevToolsClient
                 await using var session = await DevToolsSession.Connect(pageTarget);
 
                 await session.ScrollElementIntoView(selector);
-
-                var document = await session.SendCommand("DOM.getDocument");
-                var rootNodeId = ReadInt32(document, "result", "root", "nodeId");
-
-                var query = await session.SendCommand("DOM.querySelector", writer =>
-                {
-                    writer.WriteNumber("nodeId", rootNodeId);
-                    writer.WriteString("selector", selector);
-                });
-
-                var nodeId = ReadInt32(query, "result", "nodeId");
-                if (nodeId is 0)
-                {
-                    continue;
-                }
-
-                var boxModel = await session.SendCommand("DOM.getBoxModel", writer =>
-                {
-                    writer.WriteNumber("nodeId", nodeId);
-                });
-
-                var clip = ElementClip.FromBoxModel(boxModel);
+                var clip = await GetElementPageClip(session, selector);
                 if (clip.Width <= 0 || clip.Height <= 0)
                 {
                     throw new ChromeDevToolsException($"Element '{selector}' has no visible area to screenshot.");
@@ -97,6 +76,44 @@ public sealed class ChromeDevToolsClient
 
             throw new ElementNotFoundException(selector);
         });
+    }
+
+    private static async Task<ElementClip> GetElementPageClip(DevToolsSession session, string selector)
+    {
+        var response = await session.SendCommand("Runtime.evaluate", writer =>
+        {
+            writer.WriteString(
+                "expression",
+                $$"""
+                (() => {
+                  const element = document.querySelector({{ToJsonStringLiteral(selector)}});
+                  if (!element) return null;
+                  const rect = element.getBoundingClientRect();
+                  return {
+                    x: Math.max(0, rect.left + window.scrollX),
+                    y: Math.max(0, rect.top + window.scrollY),
+                    width: rect.width,
+                    height: rect.height
+                  };
+                })()
+                """);
+            writer.WriteBoolean("returnByValue", true);
+        });
+
+        if (!TryReadElement(response, ["result", "result", "value"], out var value) || value.ValueKind is JsonValueKind.Null)
+        {
+            throw new ElementNotFoundException(selector);
+        }
+
+        if (!TryReadDouble(value, "x", out var x) ||
+            !TryReadDouble(value, "y", out var y) ||
+            !TryReadDouble(value, "width", out var width) ||
+            !TryReadDouble(value, "height", out var height))
+        {
+            throw new ChromeDevToolsException($"Chrome did not return a screenshot clip for element '{selector}'.");
+        }
+
+        return new ElementClip(x, y, width, height);
     }
 
     public void Navigate(string remoteDebuggingUrl, string target)
@@ -812,6 +829,13 @@ public sealed class ChromeDevToolsClient
 
         value = element.GetBoolean();
         return true;
+    }
+
+    private static bool TryReadDouble(JsonElement root, string propertyName, out double value)
+    {
+        value = 0;
+
+        return root.TryGetProperty(propertyName, out var element) && element.TryGetDouble(out value);
     }
 
     private static string ToJsonStringLiteral(string value)
