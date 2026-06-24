@@ -10,10 +10,22 @@ Start the CMG-controlled browser:
 dotnet run -- browser launch
 ```
 
+Use Firefox instead of Chrome:
+
+```powershell
+dotnet run -- --firefox browser launch
+```
+
 Run a script:
 
 ```powershell
 dotnet run -- browser control script --file demo-scripts\01-dialog-flow.cmgscript
+```
+
+Run a demo script in Firefox:
+
+```powershell
+dotnet run -- --firefox browser control script --file demo-scripts\01-dialog-flow.cmgscript
 ```
 
 Record a script as a GIF:
@@ -32,6 +44,7 @@ Close the browser:
 
 ```powershell
 dotnet run -- browser close
+dotnet run -- --firefox browser close
 ```
 
 ## Scripts

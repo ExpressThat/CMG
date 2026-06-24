@@ -16,6 +16,12 @@ Published executable examples use `cmg`:
 cmg <command> [arguments] [options]
 ```
 
+## Global Options
+
+- `--firefox`: Use Firefox instead of the default Chrome browser. Put this before the command group, for example `cmg --firefox browser launch`.
+
+Chrome is the default browser. Firefox support uses WebDriver BiDi and keeps separate launch state/profile data from Chrome.
+
 ## Command Groups
 
 - [`browser`](commands/browser/index.md): Browser lifecycle and capture commands.

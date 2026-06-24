@@ -17,7 +17,9 @@ public static class DependencyInjection
         services.AddSingleton<IBrowserControlCommandHandler, BrowserControlCommandHandler>();
         services.AddSingleton<IBrowserController, BrowserController>();
         services.AddSingleton<IBrowserControlService, BrowserControlService>();
+        services.AddSingleton<BrowserAutomationClientFactory>();
         services.AddSingleton<ChromeDevToolsClient>();
+        services.AddSingleton<FirefoxBiDiClient>();
         services.AddSingleton<BrowserScriptParser>();
         services.AddSingleton<BrowserScriptRunner>();
         services.AddSingleton<BrowserStateStore>();

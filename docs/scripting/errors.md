@@ -10,10 +10,17 @@ When `--gif <path>` is used, CMG still writes a partial GIF with the frames capt
 No CMG-controlled Chrome instance is running. Run 'cmg browser launch' first.
 ```
 
+For Firefox, the equivalent error is:
+
+```text
+No CMG-controlled Firefox instance is running. Run 'cmg --firefox browser launch' first.
+```
+
 Start Chrome first:
 
 ```powershell
 cmg browser launch
+cmg --firefox browser launch
 ```
 
 ## Missing Script File

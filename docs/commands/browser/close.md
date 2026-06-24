@@ -1,15 +1,16 @@
 # `browser close`
 
-Closes the CMG-controlled Chrome instance.
+Closes the CMG-controlled browser instance. Chrome is the default; use the top-level `--firefox` option to close the Firefox instance.
 
 ```powershell
 cmg browser close
+cmg --firefox browser close
 ```
 
 ## Behavior
 
-- Reads `%LOCALAPPDATA%\CMG\browser.state`.
-- Closes the tracked Chrome process.
+- Reads the selected browser state file under `%LOCALAPPDATA%\CMG`.
+- Closes the tracked selected browser process.
 - Clears stale browser state when the tracked process no longer exists.
 - Ignores extra arguments and prints them as ignored.
 
@@ -29,11 +30,12 @@ No CMG-controlled Chrome instance is running.
 
 ## Exit Codes
 
-- `0`: No browser was running, stale state was cleared, or Chrome was closed successfully.
-- `1`: Chrome could not be closed.
+- `0`: No browser was running, stale state was cleared, or the selected browser was closed successfully.
+- `1`: The selected browser could not be closed.
 
 ## Example
 
 ```powershell
 cmg browser close
+cmg --firefox browser close
 ```

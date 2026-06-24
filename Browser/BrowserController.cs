@@ -4,14 +4,15 @@ namespace CMG.Browser;
 
 public interface IBrowserController
 {
-    BrowserLaunchResult Launch(IReadOnlyList<string> additionalArguments);
+    BrowserLaunchResult Launch(BrowserKind browserKind, IReadOnlyList<string> additionalArguments);
 
-    BrowserCloseResult Close();
+    BrowserCloseResult Close(BrowserKind browserKind);
 }
 
 public sealed class BrowserController : IBrowserController
 {
-    private const int RemoteDebuggingPort = 9222;
+    private const int ChromeRemoteDebuggingPort = 9222;
+    private const int FirefoxRemoteDebuggingPort = 9223;
     private readonly BrowserStateStore stateStore;
 
     public BrowserController(BrowserStateStore stateStore)
@@ -19,37 +20,40 @@ public sealed class BrowserController : IBrowserController
         this.stateStore = stateStore;
     }
 
-    public BrowserLaunchResult Launch(IReadOnlyList<string> additionalArguments)
+    public BrowserLaunchResult Launch(BrowserKind browserKind, IReadOnlyList<string> additionalArguments)
     {
-        if (TryGetRunningBrowser(out var runningState))
+        if (TryGetRunningBrowser(browserKind, out var runningState))
         {
             return new BrowserLaunchResult(
                 0,
-                $"Chrome is already running for CMG. PID: {runningState.ProcessId}.",
+                $"{browserKind.DisplayName()} is already running for CMG. PID: {runningState.ProcessId}.",
                 runningState.RemoteDebuggingUrl);
         }
 
-        stateStore.Clear();
+        stateStore.Clear(browserKind);
 
-        var chromePath = ChromeExecutableLocator.Find();
-        if (chromePath is null)
+        var executablePath = FindExecutable(browserKind);
+        if (executablePath is null)
         {
             return new BrowserLaunchResult(
                 1,
-                "Could not find Chrome. Install Chrome or add chrome.exe to PATH.",
+                $"Could not find {browserKind.DisplayName()}. Install {browserKind.DisplayName()} or add its executable to PATH.",
                 null);
         }
 
-        Directory.CreateDirectory(BrowserPaths.UserDataDirectory);
+        var userDataDirectory = BrowserPaths.GetUserDataDirectory(browserKind);
+        Directory.CreateDirectory(userDataDirectory);
+        WriteBrowserPreferences(browserKind, userDataDirectory);
 
-        var remoteDebuggingUrl = $"http://127.0.0.1:{RemoteDebuggingPort}";
+        var remoteDebuggingPort = GetRemoteDebuggingPort(browserKind);
+        var remoteDebuggingUrl = GetRemoteDebuggingUrl(browserKind, remoteDebuggingPort);
         var processStartInfo = new ProcessStartInfo
         {
-            FileName = chromePath,
+            FileName = executablePath,
             UseShellExecute = true
         };
 
-        foreach (var argument in BuildChromeArguments(additionalArguments))
+        foreach (var argument in BuildBrowserArguments(browserKind, remoteDebuggingPort, userDataDirectory, additionalArguments))
         {
             processStartInfo.ArgumentList.Add(argument);
         }
@@ -59,38 +63,38 @@ public sealed class BrowserController : IBrowserController
             var process = Process.Start(processStartInfo);
             if (process is null)
             {
-                return new BrowserLaunchResult(1, "Chrome did not start.", null);
+                return new BrowserLaunchResult(1, $"{browserKind.DisplayName()} did not start.", null);
             }
 
-            stateStore.Save(new BrowserState(
+            stateStore.Save(browserKind, new BrowserState(
                 process.Id,
-                RemoteDebuggingPort,
+                remoteDebuggingPort,
                 remoteDebuggingUrl,
-                BrowserPaths.UserDataDirectory));
+                userDataDirectory));
 
             return new BrowserLaunchResult(
                 0,
-                $"Chrome launched for CMG. PID: {process.Id}.",
+                $"{browserKind.DisplayName()} launched for CMG. PID: {process.Id}.",
                 remoteDebuggingUrl);
         }
         catch (Exception exception) when (exception is InvalidOperationException or System.ComponentModel.Win32Exception)
         {
-            return new BrowserLaunchResult(1, $"Failed to launch Chrome: {exception.Message}", null);
+            return new BrowserLaunchResult(1, $"Failed to launch {browserKind.DisplayName()}: {exception.Message}", null);
         }
     }
 
-    public BrowserCloseResult Close()
+    public BrowserCloseResult Close(BrowserKind browserKind)
     {
-        var state = stateStore.Load();
+        var state = stateStore.Load(browserKind);
         if (state is null)
         {
-            return new BrowserCloseResult(0, "No CMG-controlled Chrome instance is running.");
+            return new BrowserCloseResult(0, $"No CMG-controlled {browserKind.DisplayName()} instance is running.");
         }
 
         if (!TryGetProcess(state.ProcessId, out var process))
         {
-            stateStore.Clear();
-            return new BrowserCloseResult(0, "CMG-controlled Chrome was not running. Cleared stale browser state.");
+            stateStore.Clear(browserKind);
+            return new BrowserCloseResult(0, $"CMG-controlled {browserKind.DisplayName()} was not running. Cleared stale browser state.");
         }
 
         try
@@ -105,19 +109,19 @@ public sealed class BrowserController : IBrowserController
             }
 
             process.WaitForExit();
-            stateStore.Clear();
+            stateStore.Clear(browserKind);
 
-            return new BrowserCloseResult(0, $"Closed CMG-controlled Chrome. PID: {state.ProcessId}.");
+            return new BrowserCloseResult(0, $"Closed CMG-controlled {browserKind.DisplayName()}. PID: {state.ProcessId}.");
         }
         catch (Exception exception) when (exception is InvalidOperationException or System.ComponentModel.Win32Exception)
         {
-            return new BrowserCloseResult(1, $"Failed to close Chrome: {exception.Message}");
+            return new BrowserCloseResult(1, $"Failed to close {browserKind.DisplayName()}: {exception.Message}");
         }
     }
 
-    private bool TryGetRunningBrowser(out BrowserState state)
+    private bool TryGetRunningBrowser(BrowserKind browserKind, out BrowserState state)
     {
-        state = stateStore.Load() ?? BrowserState.Empty;
+        state = stateStore.Load(browserKind) ?? BrowserState.Empty;
 
         return state.ProcessId > 0 && TryGetProcess(state.ProcessId, out _);
     }
@@ -141,12 +145,37 @@ public sealed class BrowserController : IBrowserController
         }
     }
 
-    private static IEnumerable<string> BuildChromeArguments(IReadOnlyList<string> additionalArguments)
+    private static string? FindExecutable(BrowserKind browserKind) =>
+        browserKind is BrowserKind.Firefox ? FirefoxExecutableLocator.Find() : ChromeExecutableLocator.Find();
+
+    private static int GetRemoteDebuggingPort(BrowserKind browserKind) =>
+        browserKind is BrowserKind.Firefox ? FirefoxRemoteDebuggingPort : ChromeRemoteDebuggingPort;
+
+    private static string GetRemoteDebuggingUrl(BrowserKind browserKind, int remoteDebuggingPort) =>
+        browserKind is BrowserKind.Firefox
+            ? $"ws://127.0.0.1:{remoteDebuggingPort}/session"
+            : $"http://127.0.0.1:{remoteDebuggingPort}";
+
+    private static IEnumerable<string> BuildBrowserArguments(
+        BrowserKind browserKind,
+        int remoteDebuggingPort,
+        string userDataDirectory,
+        IReadOnlyList<string> additionalArguments)
+    {
+        return browserKind is BrowserKind.Firefox
+            ? BuildFirefoxArguments(remoteDebuggingPort, userDataDirectory, additionalArguments)
+            : BuildChromeArguments(remoteDebuggingPort, userDataDirectory, additionalArguments);
+    }
+
+    private static IEnumerable<string> BuildChromeArguments(
+        int remoteDebuggingPort,
+        string userDataDirectory,
+        IReadOnlyList<string> additionalArguments)
     {
         var arguments = new List<string>
         {
-            $"--remote-debugging-port={RemoteDebuggingPort}",
-            $"--user-data-dir={BrowserPaths.UserDataDirectory}",
+            $"--remote-debugging-port={remoteDebuggingPort}",
+            $"--user-data-dir={userDataDirectory}",
             "--no-first-run",
             "--no-default-browser-check"
         };
@@ -159,6 +188,42 @@ public sealed class BrowserController : IBrowserController
         }
 
         return arguments;
+    }
+
+    private static IEnumerable<string> BuildFirefoxArguments(
+        int remoteDebuggingPort,
+        string userDataDirectory,
+        IReadOnlyList<string> additionalArguments)
+    {
+        var arguments = new List<string>
+        {
+            "-no-remote",
+            "--remote-debugging-port",
+            remoteDebuggingPort.ToString(),
+            "--profile",
+            userDataDirectory
+        };
+
+        arguments.AddRange(additionalArguments);
+
+        if (!additionalArguments.Any(argument => !argument.StartsWith("-", StringComparison.Ordinal)))
+        {
+            arguments.Add("about:blank");
+        }
+
+        return arguments;
+    }
+
+    private static void WriteBrowserPreferences(BrowserKind browserKind, string userDataDirectory)
+    {
+        if (browserKind is not BrowserKind.Firefox)
+        {
+            return;
+        }
+
+        File.WriteAllLines(Path.Combine(userDataDirectory, "user.js"), [
+            "user_pref(\"remote.active-protocols\", 1);"
+        ]);
     }
 }
 

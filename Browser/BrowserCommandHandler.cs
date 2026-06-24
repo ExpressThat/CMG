@@ -2,9 +2,9 @@ namespace CMG.Browser;
 
 public interface IBrowserCommandHandler
 {
-    int Launch(IReadOnlyList<string> arguments);
+    int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments);
 
-    int Close(IReadOnlyList<string> arguments);
+    int Close(BrowserKind browserKind, IReadOnlyList<string> arguments);
 }
 
 public sealed class BrowserCommandHandler : IBrowserCommandHandler
@@ -16,9 +16,9 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
         this.browserController = browserController;
     }
 
-    public int Launch(IReadOnlyList<string> arguments)
+    public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments)
     {
-        var result = browserController.Launch(arguments);
+        var result = browserController.Launch(browserKind, arguments);
 
         Console.WriteLine(result.Message);
 
@@ -30,9 +30,9 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
         return result.ExitCode;
     }
 
-    public int Close(IReadOnlyList<string> arguments)
+    public int Close(BrowserKind browserKind, IReadOnlyList<string> arguments)
     {
-        var result = browserController.Close();
+        var result = browserController.Close(browserKind);
 
         Console.WriteLine(result.Message);
 

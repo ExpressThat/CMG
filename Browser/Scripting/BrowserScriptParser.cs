@@ -40,7 +40,7 @@ public sealed class BrowserScriptParser
             }
 
             var hasBlock = trimmed.EndsWith('{');
-            if (trimmed.Contains('}', StringComparison.Ordinal))
+            if (trimmed.StartsWith('}'))
             {
                 return ActionListParseResult.Fail($"Line {lineNumber}: unexpected block close '}}'.");
             }

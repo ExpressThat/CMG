@@ -2,14 +2,14 @@ namespace CMG.Browser.Scripting.Recording;
 
 public sealed class ScriptGifRecorder : IDisposable
 {
-    private readonly ChromeDevToolsClient devToolsClient;
+    private readonly IBrowserAutomationClient devToolsClient;
     private readonly ScriptRecordingOptions options;
     private readonly GifFrameSink frameSink = new();
     private readonly VirtualPointer pointer = new();
     private string? remoteDebuggingUrl;
 
     public ScriptGifRecorder(
-        ChromeDevToolsClient devToolsClient,
+        IBrowserAutomationClient devToolsClient,
         ScriptRecordingOptions options)
     {
         this.devToolsClient = devToolsClient;
@@ -21,7 +21,6 @@ public sealed class ScriptGifRecorder : IDisposable
     public void Start(string remoteDebuggingUrl)
     {
         this.remoteDebuggingUrl = remoteDebuggingUrl;
-        CaptureHoldFrame();
     }
 
     public void BeforeAction(BrowserScriptAction action)
@@ -59,6 +58,11 @@ public sealed class ScriptGifRecorder : IDisposable
         {
             CapturePulseFrame();
             CaptureHoldFrame();
+            return;
+        }
+
+        if (name is "set")
+        {
             return;
         }
 

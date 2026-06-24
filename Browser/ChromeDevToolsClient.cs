@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace CMG.Browser;
 
-public sealed class ChromeDevToolsClient
+public sealed class ChromeDevToolsClient : IBrowserAutomationClient
 {
     private static readonly TimeSpan CommandTimeout = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(100);
@@ -123,7 +123,7 @@ public sealed class ChromeDevToolsClient
         {
             await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
             await session.SendCommand("Page.navigate", writer => writer.WriteString("url", target));
-            await Task.Delay(500);
+            await WaitForPagePaint(session);
 
             return true;
         });
@@ -171,7 +171,7 @@ public sealed class ChromeDevToolsClient
         ExecuteElementScript(
             remoteDebuggingUrl,
             selector,
-            $"element.focus(); element.value = `${{element.value ?? ''}}{EscapeForJavaScriptTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
+            $"element.focus(); element.value = `${{element.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
     }
 
     public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null)
@@ -242,78 +242,12 @@ public sealed class ChromeDevToolsClient
 
     public void ShowMessageBar(string remoteDebuggingUrl, string message)
     {
-        Evaluate(
-            remoteDebuggingUrl,
-            $$"""
-            (() => {
-              const promote = element => {
-                if (typeof element.showPopover === 'function') {
-                  if (element.matches(':popover-open')) {
-                    element.hidePopover();
-                  }
-                  element.showPopover();
-                }
-              };
-              let bar = document.getElementById('__cmg_message_bar');
-              if (!bar) {
-                bar = document.createElement('div');
-                bar.id = '__cmg_message_bar';
-                bar.setAttribute('popover', 'manual');
-                bar.setAttribute('role', 'status');
-                bar.setAttribute('aria-live', 'polite');
-                bar.style.all = 'initial';
-                bar.style.position = 'fixed';
-                bar.style.left = '50%';
-                bar.style.top = '12px';
-                bar.style.zIndex = '2147483646';
-                bar.style.width = 'max-content';
-                bar.style.maxWidth = 'min(760px, calc(100vw - 32px))';
-                bar.style.minHeight = '42px';
-                bar.style.margin = '0';
-                bar.style.padding = '10px 16px';
-                bar.style.border = '0';
-                bar.style.background = '#111827';
-                bar.style.color = '#ffffff';
-                bar.style.font = '600 14px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-                bar.style.textAlign = 'center';
-                bar.style.boxShadow = '0 10px 28px rgba(0,0,0,.24)';
-                bar.style.boxSizing = 'border-box';
-                bar.style.pointerEvents = 'none';
-                bar.style.borderRadius = '8px';
-                bar.style.transform = 'translateX(-50%)';
-                bar.style.whiteSpace = 'pre-wrap';
-                bar.style.overflowWrap = 'anywhere';
-
-                const text = document.createElement('div');
-                text.id = '__cmg_message_bar_text';
-                bar.appendChild(text);
-
-                document.documentElement.appendChild(bar);
-              }
-
-              const text = document.getElementById('__cmg_message_bar_text');
-              text.textContent = {{ToJsonStringLiteral(message)}};
-              promote(bar);
-              return true;
-            })()
-            """);
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.ShowMessageBar(message));
     }
 
     public void PromoteMessageBar(string remoteDebuggingUrl)
     {
-        Evaluate(
-            remoteDebuggingUrl,
-            """
-            (() => {
-              const bar = document.getElementById('__cmg_message_bar');
-              if (!bar || typeof bar.showPopover !== 'function') return true;
-              if (bar.matches(':popover-open')) {
-                bar.hidePopover();
-              }
-              bar.showPopover();
-              return true;
-            })()
-            """);
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.PromoteMessageBar());
     }
 
     public string GetElementText(string remoteDebuggingUrl, string selector)
@@ -371,7 +305,7 @@ public sealed class ChromeDevToolsClient
                 throw new ElementNotFoundException(sourceSelector);
 
             await using var session = await DevToolsSession.Connect(pageTarget);
-            var expression = BuildDragAndDropExpression(sourceSelector, targetSelector);
+            var expression = BrowserDomScripts.DragAndDrop(sourceSelector, targetSelector);
             var response = await session.SendCommand("Runtime.evaluate", writer =>
             {
                 writer.WriteString("expression", expression);
@@ -426,148 +360,22 @@ public sealed class ChromeDevToolsClient
 
     public void BeginPageDrag(string remoteDebuggingUrl, string sourceSelector, ElementPoint point)
     {
-        Evaluate(
-            remoteDebuggingUrl,
-            $$"""
-            (() => {
-              const source = document.querySelector({{ToJsonStringLiteral(sourceSelector)}});
-              if (!source) return false;
-              const dataTransfer = new DataTransfer();
-              let customDragImageSet = false;
-              const originalSetDragImage = dataTransfer.setDragImage?.bind(dataTransfer);
-              if (originalSetDragImage) {
-                try {
-                  Object.defineProperty(dataTransfer, 'setDragImage', {
-                    configurable: true,
-                    value: (...args) => {
-                      customDragImageSet = true;
-                      return originalSetDragImage(...args);
-                    }
-                  });
-                } catch {
-                }
-              }
-              window.__cmgRecordingDrag = { source, dataTransfer, defaultGhost: null };
-              const eventOptions = {
-                bubbles: true,
-                cancelable: true,
-                clientX: {{point.X.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
-                clientY: {{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
-                dataTransfer
-              };
-              source.dispatchEvent(new DragEvent('dragstart', eventOptions));
-              if (!customDragImageSet) {
-                const existing = document.getElementById('__cmg_default_drag_ghost');
-                existing?.remove();
-                const sourceRect = source.getBoundingClientRect();
-                const ghost = document.createElement('div');
-                ghost.id = '__cmg_default_drag_ghost';
-                ghost.setAttribute('popover', 'manual');
-                ghost.style.all = 'initial';
-                ghost.style.position = 'fixed';
-                ghost.style.left = `${eventOptions.clientX}px`;
-                ghost.style.top = `${eventOptions.clientY}px`;
-                ghost.style.zIndex = '2147483645';
-                ghost.style.width = `${Math.max(1, sourceRect.width)}px`;
-                ghost.style.height = `${Math.max(1, sourceRect.height)}px`;
-                ghost.style.margin = '0';
-                ghost.style.padding = '0';
-                ghost.style.border = '0';
-                ghost.style.background = 'transparent';
-                ghost.style.overflow = 'visible';
-                ghost.style.pointerEvents = 'none';
-                ghost.style.opacity = '.72';
-                ghost.style.transform = 'translate(-50%, -50%) rotate(-1deg)';
-                ghost.style.filter = 'drop-shadow(0 12px 18px rgba(0,0,0,.24))';
-                const clone = source.cloneNode(true);
-                clone.removeAttribute?.('id');
-                clone.removeAttribute?.('popover');
-                clone.style.pointerEvents = 'none';
-                clone.style.boxSizing = 'border-box';
-                clone.style.width = `${Math.max(1, sourceRect.width)}px`;
-                clone.style.height = `${Math.max(1, sourceRect.height)}px`;
-                clone.style.maxWidth = 'none';
-                clone.style.maxHeight = 'none';
-                clone.style.margin = '0';
-                ghost.appendChild(clone);
-                document.documentElement.appendChild(ghost);
-                if (typeof ghost.showPopover === 'function') {
-                  ghost.showPopover();
-                }
-                window.__cmgRecordingDrag.defaultGhost = ghost;
-              }
-              source.dispatchEvent(new DragEvent('drag', eventOptions));
-              return true;
-            })()
-            """);
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.BeginDrag(sourceSelector, point));
     }
 
     public void MovePageDrag(string remoteDebuggingUrl, ElementPoint point)
     {
-        Evaluate(
-            remoteDebuggingUrl,
-            $$"""
-            (() => {
-              const state = window.__cmgRecordingDrag;
-              if (!state?.source || !state?.dataTransfer) return false;
-              const target = document.elementFromPoint(
-                {{point.X.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
-                {{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}}) || document.body;
-              const eventOptions = {
-                bubbles: true,
-                cancelable: true,
-                clientX: {{point.X.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
-                clientY: {{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
-                dataTransfer: state.dataTransfer
-              };
-              if (state.defaultGhost?.isConnected) {
-                state.defaultGhost.style.left = `${eventOptions.clientX}px`;
-                state.defaultGhost.style.top = `${eventOptions.clientY}px`;
-                if (typeof state.defaultGhost.showPopover === 'function') {
-                  if (state.defaultGhost.matches(':popover-open')) {
-                    state.defaultGhost.hidePopover();
-                  }
-                  state.defaultGhost.showPopover();
-                }
-              }
-              state.source.dispatchEvent(new DragEvent('drag', eventOptions));
-              target.dispatchEvent(new DragEvent('dragenter', eventOptions));
-              target.dispatchEvent(new DragEvent('dragover', eventOptions));
-              return true;
-            })()
-            """);
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.MoveDrag(point));
     }
 
     public void EndPageDrag(string remoteDebuggingUrl, ElementPoint point)
     {
-        Evaluate(
-            remoteDebuggingUrl,
-            $$"""
-            (() => {
-              const state = window.__cmgRecordingDrag;
-              if (!state?.source || !state?.dataTransfer) return false;
-              state.source.dispatchEvent(new DragEvent('dragend', {
-                bubbles: true,
-                cancelable: true,
-                clientX: {{point.X.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
-                clientY: {{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}},
-                dataTransfer: state.dataTransfer
-              }));
-              if (state.defaultGhost?.matches?.(':popover-open')) {
-                state.defaultGhost.hidePopover();
-              }
-              state.defaultGhost?.remove();
-              delete window.__cmgRecordingDrag;
-              return true;
-            })()
-            """);
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.EndDrag(point));
     }
 
     public void RemoveDefaultDragGhost(string remoteDebuggingUrl)
     {
-        Evaluate(
-            remoteDebuggingUrl,
-            "(() => { const ghost = document.getElementById('__cmg_default_drag_ghost'); if (ghost?.matches?.(':popover-open')) ghost.hidePopover(); ghost?.remove(); return true; })()");
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.RemoveDefaultDragGhost());
     }
 
     public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true)
@@ -608,52 +416,12 @@ public sealed class ChromeDevToolsClient
 
     public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point)
     {
-        Evaluate(
-            remoteDebuggingUrl,
-            $$"""
-            (() => {
-              let cursor = document.getElementById('__cmg_virtual_cursor');
-              if (!cursor) {
-                cursor = document.createElement('div');
-                cursor.id = '__cmg_virtual_cursor';
-                cursor.setAttribute('popover', 'manual');
-                cursor.style.all = 'initial';
-                cursor.style.position = 'fixed';
-                cursor.style.left = '0px';
-                cursor.style.top = '0px';
-                cursor.style.width = '26px';
-                cursor.style.height = '34px';
-                cursor.style.margin = '0';
-                cursor.style.padding = '0';
-                cursor.style.border = '0';
-                cursor.style.background = 'transparent';
-                cursor.style.overflow = 'visible';
-                cursor.style.color = 'transparent';
-                cursor.style.zIndex = '2147483647';
-                cursor.style.pointerEvents = 'none';
-                cursor.style.transform = 'translate(-3px, -3px)';
-                cursor.style.filter = 'drop-shadow(0 2px 3px rgba(0,0,0,.4))';
-                cursor.innerHTML = '<svg width="26" height="34" viewBox="0 0 26 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 2L22 19L13.2 20.1L9.2 31L3 2Z" fill="#fff" stroke="#111" stroke-width="2" stroke-linejoin="round"/><path d="M13.2 20.1L18.6 29.4" stroke="#111" stroke-width="2.5" stroke-linecap="round"/></svg>';
-                document.documentElement.appendChild(cursor);
-              }
-              cursor.style.left = '{{point.X.ToString(System.Globalization.CultureInfo.InvariantCulture)}}px';
-              cursor.style.top = '{{point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}}px';
-              if (typeof cursor.showPopover === 'function') {
-                if (cursor.matches(':popover-open')) {
-                  cursor.hidePopover();
-                }
-                cursor.showPopover();
-              }
-              return true;
-            })()
-            """);
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.MoveDomCursor(point));
     }
 
     public void RemoveDomCursor(string remoteDebuggingUrl)
     {
-        Evaluate(
-            remoteDebuggingUrl,
-            "(() => { const cursor = document.getElementById('__cmg_virtual_cursor'); if (cursor?.matches?.(':popover-open')) cursor.hidePopover(); cursor?.remove(); return true; })()");
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.RemoveDomCursor());
     }
 
     public IReadOnlyList<ChromePageTab> ListTabs(string remoteDebuggingUrl)
@@ -769,17 +537,7 @@ public sealed class ChromeDevToolsClient
         {
             writer.WriteString(
                 "expression",
-                """
-                (() => {
-                  const bar = document.getElementById('__cmg_message_bar');
-                  if (!bar || typeof bar.showPopover !== 'function') return true;
-                  if (bar.matches(':popover-open')) {
-                    bar.hidePopover();
-                  }
-                  bar.showPopover();
-                  return true;
-                })()
-                """);
+                BrowserDomScripts.PromoteMessageBar());
             writer.WriteBoolean("returnByValue", true);
         });
     }
@@ -871,6 +629,34 @@ public sealed class ChromeDevToolsClient
         return await DevToolsSession.Connect(pageTargets[0]);
     }
 
+    private static async Task WaitForPagePaint(DevToolsSession session)
+    {
+        var deadline = DateTimeOffset.UtcNow.AddSeconds(5);
+        while (DateTimeOffset.UtcNow <= deadline)
+        {
+            var response = await session.SendCommand("Runtime.evaluate", writer =>
+            {
+                writer.WriteString("expression", "document.readyState === 'complete' || document.readyState === 'interactive'");
+                writer.WriteBoolean("returnByValue", true);
+            });
+
+            if (TryReadBoolean(response, ["result", "result", "value"], out var ready) && ready)
+            {
+                break;
+            }
+
+            await Task.Delay(PollInterval);
+        }
+
+        await session.SendCommand("Runtime.evaluate", writer =>
+        {
+            writer.WriteString(
+                "expression",
+                "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))");
+            writer.WriteBoolean("awaitPromise", true);
+        });
+    }
+
     private static async Task<IReadOnlyList<Uri>> GetPageWebSocketDebuggerUrls(string remoteDebuggingUrl)
     {
         return (await GetPageTargets(remoteDebuggingUrl))
@@ -932,28 +718,8 @@ public sealed class ChromeDevToolsClient
         return $"(() => {{ const element = document.querySelector({ToJsonStringLiteral(selector)}); return element ? element.outerHTML : null; }})()";
     }
 
-    private static string BuildElementActionExpression(string selector, string body)
-    {
-        return $"(() => {{ const element = document.querySelector({ToJsonStringLiteral(selector)}); if (!element) return null; {body} }})()";
-    }
-
-    private static string BuildDragAndDropExpression(string sourceSelector, string targetSelector)
-    {
-        return $$"""
-        (() => {
-          const source = document.querySelector({{ToJsonStringLiteral(sourceSelector)}});
-          const target = document.querySelector({{ToJsonStringLiteral(targetSelector)}});
-          if (!source || !target) return false;
-          const dataTransfer = new DataTransfer();
-          source.dispatchEvent(new DragEvent('dragstart', { bubbles: true, cancelable: true, dataTransfer }));
-          target.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true, dataTransfer }));
-          target.dispatchEvent(new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer }));
-          target.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer }));
-          source.dispatchEvent(new DragEvent('dragend', { bubbles: true, cancelable: true, dataTransfer }));
-          return true;
-        })()
-        """;
-    }
+    private static string BuildElementActionExpression(string selector, string body) =>
+        BrowserDomScripts.ElementAction(selector, body);
 
     private static int ReadInt32(JsonElement root, params string[] path)
     {
@@ -1026,14 +792,6 @@ public sealed class ChromeDevToolsClient
         }
 
         return Encoding.UTF8.GetString(stream.ToArray());
-    }
-
-    private static string EscapeForJavaScriptTemplate(string value)
-    {
-        return value
-            .Replace("\\", "\\\\", StringComparison.Ordinal)
-            .Replace("`", "\\`", StringComparison.Ordinal)
-            .Replace("${", "\\${", StringComparison.Ordinal);
     }
 
     private static bool TryReadString(JsonElement root, string first, string second, out string? value)
@@ -1165,7 +923,7 @@ public sealed class ChromeDevToolsClient
 
         private static string BuildScrollIntoViewExpression(string selector)
         {
-            return $"(() => {{ const element = document.querySelector({ToJsonStringLiteral(selector)}); if (!element) return false; element.scrollIntoView({{ block: 'center', inline: 'center' }}); return true; }})()";
+            return BrowserDomScripts.ScrollIntoView(selector);
         }
 
         private static string ReadProtocolError(JsonElement error)

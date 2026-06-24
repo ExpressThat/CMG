@@ -1,22 +1,23 @@
 # `browser launch`
 
-Launches a CMG-controlled Chrome instance with remote debugging enabled.
+Launches a CMG-controlled browser instance with remote debugging enabled. Chrome is the default; use the top-level `--firefox` option to launch Firefox.
 
 ```powershell
-cmg browser launch [chrome-arguments...]
+cmg browser launch [browser-arguments...]
+cmg --firefox browser launch [browser-arguments...]
 ```
 
 ## Arguments
 
-- `[chrome-arguments...]`: Additional arguments passed through to Chrome.
+- `[browser-arguments...]`: Additional arguments passed through to the selected browser.
 
 ## Behavior
 
-- Starts Chrome with `--remote-debugging-port=9222`.
-- Uses a dedicated Chrome profile at `%LOCALAPPDATA%\CMG\chrome-profile`.
-- Persists browser state at `%LOCALAPPDATA%\CMG\browser.state`.
+- Starts Chrome with `--remote-debugging-port=9222`, or Firefox with `--remote-debugging-port 9223`.
+- Uses a dedicated Chrome profile at `%LOCALAPPDATA%\CMG\chrome-profile`, or Firefox profile at `%LOCALAPPDATA%\CMG\firefox-profile`.
+- Persists Chrome state at `%LOCALAPPDATA%\CMG\browser.state`, or Firefox state at `%LOCALAPPDATA%\CMG\firefox.browser.state`.
 - Only one CMG-controlled browser instance is launched. Calling this command again while the tracked process is running reports the existing process instead of opening another window.
-- If no non-option argument is supplied, Chrome opens `about:blank`.
+- If no non-option argument is supplied, the browser opens `about:blank`.
 
 ## Stdout
 
@@ -25,6 +26,13 @@ On first launch:
 ```text
 Chrome launched for CMG. PID: <pid>.
 Remote debugging: http://127.0.0.1:9222
+```
+
+Firefox launch writes:
+
+```text
+Firefox launched for CMG. PID: <pid>.
+Remote debugging: ws://127.0.0.1:9223/session
 ```
 
 When Chrome is already running:
@@ -36,8 +44,8 @@ Remote debugging: http://127.0.0.1:9222
 
 ## Exit Codes
 
-- `0`: Chrome is running or was launched successfully.
-- `1`: Chrome could not be found or launched.
+- `0`: The selected browser is running or was launched successfully.
+- `1`: The selected browser could not be found or launched.
 
 ## Examples
 
@@ -45,4 +53,5 @@ Remote debugging: http://127.0.0.1:9222
 cmg browser launch
 cmg browser launch --window-size=1200,800
 cmg browser launch https://example.com
+cmg --firefox browser launch https://example.com
 ```

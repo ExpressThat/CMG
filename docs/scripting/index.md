@@ -4,6 +4,7 @@ CMG scripts use the `.cmgscript` extension and are executed with:
 
 ```powershell
 cmg browser control script --file flow.cmgscript
+cmg --firefox browser control script --file flow.cmgscript
 ```
 
 Use scripts when a single selector command is not enough and an agent needs to describe a repeatable browser flow.

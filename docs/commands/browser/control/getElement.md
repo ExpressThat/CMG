@@ -19,8 +19,8 @@ cmg browser control getElement <selector> (--html | --screenshot) [--output <pat
 
 ## Behavior
 
-- Connects to the CMG Chrome remote debugging endpoint.
-- Searches available Chrome page targets until the selector is found.
+- Connects to the selected CMG browser automation endpoint.
+- Searches available page targets until the selector is found.
 - Scrolls the selected element into view before reading HTML or taking a screenshot.
 - Exactly one output mode must be provided: `--html` or `--screenshot`.
 - Quote selectors such as `"#openProfileDialog"` in shells where `#` can start a comment.
@@ -57,12 +57,13 @@ Validation and runtime errors are written to stderr, including:
 ## Exit Codes
 
 - `0`: Element HTML or screenshot was returned successfully.
-- `1`: Validation failed, Chrome was unavailable, or the element could not be found/captured.
+- `1`: Validation failed, the selected browser was unavailable, or the element could not be found/captured.
 
 ## Examples
 
 ```powershell
 cmg browser launch https://example.com
+cmg --firefox browser launch https://example.com
 cmg browser control getElement "h1" --html
 cmg browser control getElement "#hero" --screenshot
 cmg browser control getElement ".card" --screenshot --output card.png

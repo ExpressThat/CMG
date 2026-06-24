@@ -12,7 +12,7 @@ public sealed class BrowserControlCommandBuilder
         this.browserControlCommandHandler = browserControlCommandHandler;
     }
 
-    public Command Build()
+    public Command Build(Option<bool> firefoxOption)
     {
         var command = new Command("control", "Browser interaction and page control commands.");
 
@@ -24,35 +24,35 @@ public sealed class BrowserControlCommandBuilder
             return 1;
         });
 
-        command.Subcommands.Add(BuildGetElementCommand());
-        command.Subcommands.Add(BuildScriptCommand());
-        command.Subcommands.Add(BuildNavigateCommand());
-        command.Subcommands.Add(BuildWaitForElementCommand());
-        command.Subcommands.Add(BuildSelectorCommand("click", "Click an element."));
-        command.Subcommands.Add(BuildTypeCommand());
-        command.Subcommands.Add(BuildSelectorCommand("clear", "Clear an input-like element."));
-        command.Subcommands.Add(BuildPressCommand());
-        command.Subcommands.Add(BuildSelectorCommand("hover", "Hover an element."));
-        command.Subcommands.Add(BuildSelectorCommand("scrollIntoView", "Scroll an element into view."));
-        command.Subcommands.Add(BuildSelectCommand());
-        command.Subcommands.Add(BuildShowMessageBarCommand());
-        command.Subcommands.Add(BuildDelayCommand());
-        command.Subcommands.Add(BuildSelectorCommand("html", "Print an element's outer HTML."));
-        command.Subcommands.Add(BuildScreenshotCommand());
-        command.Subcommands.Add(BuildScreenshotPageCommand());
-        command.Subcommands.Add(BuildAssertTextCommand());
-        command.Subcommands.Add(BuildEvaluateCommand());
-        command.Subcommands.Add(BuildSetViewportCommand());
-        command.Subcommands.Add(BuildDragAndDropCommand());
-        command.Subcommands.Add(BuildNoArgumentCommand("listTabs", "List available Chrome page targets."));
-        command.Subcommands.Add(BuildIndexedCommand("activateTab", "Activate a Chrome page target by index."));
-        command.Subcommands.Add(BuildIndexedCommand("closeTab", "Close a Chrome page target by index."));
-        command.Subcommands.Add(BuildSetCommand());
+        command.Subcommands.Add(BuildGetElementCommand(firefoxOption));
+        command.Subcommands.Add(BuildScriptCommand(firefoxOption));
+        command.Subcommands.Add(BuildNavigateCommand(firefoxOption));
+        command.Subcommands.Add(BuildWaitForElementCommand(firefoxOption));
+        command.Subcommands.Add(BuildSelectorCommand(firefoxOption, "click", "Click an element."));
+        command.Subcommands.Add(BuildTypeCommand(firefoxOption));
+        command.Subcommands.Add(BuildSelectorCommand(firefoxOption, "clear", "Clear an input-like element."));
+        command.Subcommands.Add(BuildPressCommand(firefoxOption));
+        command.Subcommands.Add(BuildSelectorCommand(firefoxOption, "hover", "Hover an element."));
+        command.Subcommands.Add(BuildSelectorCommand(firefoxOption, "scrollIntoView", "Scroll an element into view."));
+        command.Subcommands.Add(BuildSelectCommand(firefoxOption));
+        command.Subcommands.Add(BuildShowMessageBarCommand(firefoxOption));
+        command.Subcommands.Add(BuildDelayCommand(firefoxOption));
+        command.Subcommands.Add(BuildSelectorCommand(firefoxOption, "html", "Print an element's outer HTML."));
+        command.Subcommands.Add(BuildScreenshotCommand(firefoxOption));
+        command.Subcommands.Add(BuildScreenshotPageCommand(firefoxOption));
+        command.Subcommands.Add(BuildAssertTextCommand(firefoxOption));
+        command.Subcommands.Add(BuildEvaluateCommand(firefoxOption));
+        command.Subcommands.Add(BuildSetViewportCommand(firefoxOption));
+        command.Subcommands.Add(BuildDragAndDropCommand(firefoxOption));
+        command.Subcommands.Add(BuildNoArgumentCommand(firefoxOption, "listTabs", "List available page targets."));
+        command.Subcommands.Add(BuildIndexedCommand(firefoxOption, "activateTab", "Activate a page target by index."));
+        command.Subcommands.Add(BuildIndexedCommand(firefoxOption, "closeTab", "Close a page target by index."));
+        command.Subcommands.Add(BuildSetCommand(firefoxOption));
 
         return command;
     }
 
-    private Command BuildGetElementCommand()
+    private Command BuildGetElementCommand(Option<bool> firefoxOption)
     {
         var selectorArgument = new Argument<string>("selector")
         {
@@ -90,13 +90,13 @@ public sealed class BrowserControlCommandBuilder
             var screenshot = parseResult.GetValue(screenshotOption);
             var output = parseResult.GetValue(outputOption);
 
-            return browserControlCommandHandler.GetElement(selector, html, screenshot, output);
+            return browserControlCommandHandler.GetElement(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), selector, html, screenshot, output);
         });
 
         return command;
     }
 
-    private Command BuildScriptCommand()
+    private Command BuildScriptCommand(Option<bool> firefoxOption)
     {
         var fileOption = new Option<string>("--file")
         {
@@ -120,13 +120,13 @@ public sealed class BrowserControlCommandBuilder
             var file = parseResult.GetValue(fileOption) ?? string.Empty;
             var gif = parseResult.GetValue(gifOption);
 
-            return browserControlCommandHandler.RunScript(file, gif);
+            return browserControlCommandHandler.RunScript(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), file, gif);
         });
 
         return command;
     }
 
-    private Command BuildNavigateCommand()
+    private Command BuildNavigateCommand(Option<bool> firefoxOption)
     {
         var targetArgument = new Argument<string>("target")
         {
@@ -139,12 +139,12 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine("navigate", parseResult.GetValue(targetArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine("navigate", parseResult.GetValue(targetArgument) ?? string.Empty)));
 
         return command;
     }
 
-    private Command BuildWaitForElementCommand()
+    private Command BuildWaitForElementCommand(Option<bool> firefoxOption)
     {
         var selectorArgument = CreateSelectorArgument();
         var timeoutOption = new Option<int>("--timeout")
@@ -160,7 +160,7 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine(
                 "waitForElement",
                 [parseResult.GetValue(selectorArgument) ?? string.Empty],
                 [("timeout", parseResult.GetValue(timeoutOption).ToString())])));
@@ -168,7 +168,7 @@ public sealed class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildSelectorCommand(string name, string description)
+    private Command BuildSelectorCommand(Option<bool> firefoxOption, string name, string description)
     {
         var selectorArgument = CreateSelectorArgument();
         var command = new Command(name, description)
@@ -177,12 +177,12 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine(name, parseResult.GetValue(selectorArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine(name, parseResult.GetValue(selectorArgument) ?? string.Empty)));
 
         return command;
     }
 
-    private Command BuildTypeCommand()
+    private Command BuildTypeCommand(Option<bool> firefoxOption)
     {
         var selectorArgument = CreateSelectorArgument();
         var textArgument = new Argument<string>("text")
@@ -197,7 +197,7 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine(
                 "type",
                 parseResult.GetValue(selectorArgument) ?? string.Empty,
                 parseResult.GetValue(textArgument) ?? string.Empty)));
@@ -205,7 +205,7 @@ public sealed class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildPressCommand()
+    private Command BuildPressCommand(Option<bool> firefoxOption)
     {
         var keyArgument = new Argument<string>("key")
         {
@@ -218,12 +218,12 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine("press", parseResult.GetValue(keyArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine("press", parseResult.GetValue(keyArgument) ?? string.Empty)));
 
         return command;
     }
 
-    private Command BuildSelectCommand()
+    private Command BuildSelectCommand(Option<bool> firefoxOption)
     {
         var selectorArgument = CreateSelectorArgument();
         var valueArgument = new Argument<string>("value")
@@ -238,7 +238,7 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine(
                 "select",
                 parseResult.GetValue(selectorArgument) ?? string.Empty,
                 parseResult.GetValue(valueArgument) ?? string.Empty)));
@@ -246,7 +246,7 @@ public sealed class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildShowMessageBarCommand()
+    private Command BuildShowMessageBarCommand(Option<bool> firefoxOption)
     {
         var messageArgument = new Argument<string>("message")
         {
@@ -259,12 +259,12 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine("showMessageBar", parseResult.GetValue(messageArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine("showMessageBar", parseResult.GetValue(messageArgument) ?? string.Empty)));
 
         return command;
     }
 
-    private Command BuildDelayCommand()
+    private Command BuildDelayCommand(Option<bool> firefoxOption)
     {
         var millisecondsArgument = new Argument<int>("milliseconds")
         {
@@ -277,12 +277,12 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine("delay", parseResult.GetValue(millisecondsArgument).ToString())));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine("delay", parseResult.GetValue(millisecondsArgument).ToString())));
 
         return command;
     }
 
-    private Command BuildScreenshotCommand()
+    private Command BuildScreenshotCommand(Option<bool> firefoxOption)
     {
         var selectorArgument = CreateSelectorArgument();
         var outputOption = new Option<FileInfo?>("--output")
@@ -299,7 +299,7 @@ public sealed class BrowserControlCommandBuilder
         command.SetAction(parseResult =>
         {
             var options = ToOutputOptions(parseResult.GetValue(outputOption));
-            return browserControlCommandHandler.RunScriptAction(ToScriptLine(
+            return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine(
                 "screenshot",
                 [parseResult.GetValue(selectorArgument) ?? string.Empty],
                 options));
@@ -308,7 +308,7 @@ public sealed class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildScreenshotPageCommand()
+    private Command BuildScreenshotPageCommand(Option<bool> firefoxOption)
     {
         var outputOption = new Option<FileInfo?>("--output")
         {
@@ -321,12 +321,12 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine("screenshotPage", [], ToOutputOptions(parseResult.GetValue(outputOption)))));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine("screenshotPage", [], ToOutputOptions(parseResult.GetValue(outputOption)))));
 
         return command;
     }
 
-    private Command BuildAssertTextCommand()
+    private Command BuildAssertTextCommand(Option<bool> firefoxOption)
     {
         var selectorArgument = CreateSelectorArgument();
         var expectedArgument = new Argument<string>("expected")
@@ -341,7 +341,7 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine(
                 "assertText",
                 parseResult.GetValue(selectorArgument) ?? string.Empty,
                 parseResult.GetValue(expectedArgument) ?? string.Empty)));
@@ -349,7 +349,7 @@ public sealed class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildEvaluateCommand()
+    private Command BuildEvaluateCommand(Option<bool> firefoxOption)
     {
         var expressionArgument = new Argument<string>("expression")
         {
@@ -362,12 +362,12 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine("evaluate", parseResult.GetValue(expressionArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine("evaluate", parseResult.GetValue(expressionArgument) ?? string.Empty)));
 
         return command;
     }
 
-    private Command BuildSetViewportCommand()
+    private Command BuildSetViewportCommand(Option<bool> firefoxOption)
     {
         var widthOption = new Option<int>("--width")
         {
@@ -387,7 +387,7 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine(
                 "setViewport",
                 [],
                 [
@@ -398,7 +398,7 @@ public sealed class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildDragAndDropCommand()
+    private Command BuildDragAndDropCommand(Option<bool> firefoxOption)
     {
         var sourceArgument = new Argument<string>("sourceSelector")
         {
@@ -416,7 +416,7 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine(
                 "dragAndDrop",
                 parseResult.GetValue(sourceArgument) ?? string.Empty,
                 parseResult.GetValue(targetArgument) ?? string.Empty)));
@@ -424,16 +424,16 @@ public sealed class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildNoArgumentCommand(string name, string description)
+    private Command BuildNoArgumentCommand(Option<bool> firefoxOption, string name, string description)
     {
         var command = new Command(name, description);
 
-        command.SetAction(_ => browserControlCommandHandler.RunScriptAction(name));
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), name));
 
         return command;
     }
 
-    private Command BuildIndexedCommand(string name, string description)
+    private Command BuildIndexedCommand(Option<bool> firefoxOption, string name, string description)
     {
         var indexOption = new Option<int>("--index")
         {
@@ -447,12 +447,12 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine(name, [], [("index", parseResult.GetValue(indexOption).ToString())])));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine(name, [], [("index", parseResult.GetValue(indexOption).ToString())])));
 
         return command;
     }
 
-    private Command BuildSetCommand()
+    private Command BuildSetCommand(Option<bool> firefoxOption)
     {
         var nameArgument = new Argument<string>("name")
         {
@@ -470,7 +470,7 @@ public sealed class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, firefoxOption), ToScriptLine(
                 "set",
                 parseResult.GetValue(nameArgument) ?? string.Empty,
                 parseResult.GetValue(valueArgument) ?? string.Empty)));

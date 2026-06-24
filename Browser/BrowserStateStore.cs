@@ -4,13 +4,19 @@ public sealed class BrowserStateStore
 {
     public BrowserState? Load()
     {
-        if (!File.Exists(BrowserPaths.StateFile))
+        return Load(BrowserKind.Chrome);
+    }
+
+    public BrowserState? Load(BrowserKind browserKind)
+    {
+        var stateFile = BrowserPaths.GetStateFile(browserKind);
+        if (!File.Exists(stateFile))
         {
             return null;
         }
 
         var values = File
-            .ReadAllLines(BrowserPaths.StateFile)
+            .ReadAllLines(stateFile)
             .Select(line => line.Split('=', 2))
             .Where(parts => parts.Length is 2)
             .ToDictionary(parts => parts[0], parts => parts[1], StringComparer.OrdinalIgnoreCase);
@@ -32,9 +38,14 @@ public sealed class BrowserStateStore
 
     public void Save(BrowserState state)
     {
+        Save(BrowserKind.Chrome, state);
+    }
+
+    public void Save(BrowserKind browserKind, BrowserState state)
+    {
         BrowserPaths.EnsureAppDataDirectory();
 
-        File.WriteAllLines(BrowserPaths.StateFile, [
+        File.WriteAllLines(BrowserPaths.GetStateFile(browserKind), [
             $"{nameof(BrowserState.ProcessId)}={state.ProcessId}",
             $"{nameof(BrowserState.RemoteDebuggingPort)}={state.RemoteDebuggingPort}",
             $"{nameof(BrowserState.RemoteDebuggingUrl)}={state.RemoteDebuggingUrl}",
@@ -44,9 +55,15 @@ public sealed class BrowserStateStore
 
     public void Clear()
     {
-        if (File.Exists(BrowserPaths.StateFile))
+        Clear(BrowserKind.Chrome);
+    }
+
+    public void Clear(BrowserKind browserKind)
+    {
+        var stateFile = BrowserPaths.GetStateFile(browserKind);
+        if (File.Exists(stateFile))
         {
-            File.Delete(BrowserPaths.StateFile);
+            File.Delete(stateFile);
         }
     }
 }

@@ -40,7 +40,7 @@ waitForElement "#openProfileDialog" timeout=5000
 click "<selector>"
 ```
 
-Scrolls the element into view and dispatches a Chrome DevTools mouse press and release at the element center.
+Scrolls the element into view and clicks the element in the selected browser.
 
 Example:
 
@@ -82,7 +82,7 @@ clear "#profileName"
 press "Enter"
 ```
 
-Dispatches a key down and key up event through Chrome DevTools Protocol.
+Dispatches key down and key up behavior in the selected browser.
 
 Example:
 
@@ -286,7 +286,7 @@ dragAndDrop "[data-command='browser launch']" {
 listTabs
 ```
 
-Prints available Chrome page targets as `TAB` result lines.
+Prints available page targets as `TAB` result lines.
 
 ## `activateTab`
 

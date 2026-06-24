@@ -1,6 +1,7 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace CMG.Browser.Scripting.Recording;
 
@@ -29,15 +30,33 @@ public sealed class GifFrameSink : IDisposable
             Directory.CreateDirectory(directory);
         }
 
-        using var gif = frames[0].Clone();
+        var width = frames.Max(frame => frame.Width);
+        var height = frames.Max(frame => frame.Height);
+        using var gif = NormalizeFrame(frames[0], width, height);
         gif.Metadata.GetGifMetadata().RepeatCount = 0;
 
         for (var index = 1; index < frames.Count; index++)
         {
-            gif.Frames.AddFrame(frames[index].Frames.RootFrame);
+            using var normalized = NormalizeFrame(frames[index], width, height);
+            gif.Frames.AddFrame(normalized.Frames.RootFrame);
         }
 
         gif.SaveAsGif(fullPath);
+    }
+
+    private static Image<Rgba32> NormalizeFrame(Image<Rgba32> frame, int width, int height)
+    {
+        if (frame.Width == width && frame.Height == height)
+        {
+            return frame.Clone();
+        }
+
+        var normalized = new Image<Rgba32>(width, height, Color.White);
+        normalized.Mutate(context => context.DrawImage(frame, new Point(0, 0), 1f));
+        normalized.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay =
+            frame.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay;
+
+        return normalized;
     }
 
     public void Dispose()

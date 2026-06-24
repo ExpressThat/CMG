@@ -4,11 +4,11 @@ namespace CMG.Browser;
 
 public interface IBrowserControlCommandHandler
 {
-    int GetElement(string selector, bool html, bool screenshot, FileInfo? output);
+    int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output);
 
-    int RunScript(string file, FileInfo? gif);
+    int RunScript(BrowserKind browserKind, string file, FileInfo? gif);
 
-    int RunScriptAction(string scriptLine);
+    int RunScriptAction(BrowserKind browserKind, string scriptLine);
 }
 
 public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
@@ -20,7 +20,7 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         this.browserControlService = browserControlService;
     }
 
-    public int GetElement(string selector, bool html, bool screenshot, FileInfo? output)
+    public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output)
     {
         if (html == screenshot)
         {
@@ -28,7 +28,7 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
             return 1;
         }
 
-        var result = browserControlService.GetElement(selector, html ? ElementOutputMode.Html : ElementOutputMode.Screenshot);
+        var result = browserControlService.GetElement(browserKind, selector, html ? ElementOutputMode.Html : ElementOutputMode.Screenshot);
 
         if (!result.Success)
         {
@@ -65,16 +65,16 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         return 0;
     }
 
-    public int RunScript(string file, FileInfo? gif)
+    public int RunScript(BrowserKind browserKind, string file, FileInfo? gif)
     {
-        var result = browserControlService.RunScript(file, gif);
+        var result = browserControlService.RunScript(browserKind, file, gif);
 
         return WriteScriptResult(result);
     }
 
-    public int RunScriptAction(string scriptLine)
+    public int RunScriptAction(BrowserKind browserKind, string scriptLine)
     {
-        var result = browserControlService.RunScriptAction(scriptLine);
+        var result = browserControlService.RunScriptAction(browserKind, scriptLine);
 
         return WriteScriptResult(result);
     }
