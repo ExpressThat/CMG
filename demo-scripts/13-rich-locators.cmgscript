@@ -1,0 +1,10 @@
+# Demonstrates direct browser-control rich locators.
+# dotnet run -- browser control script --file demo-scripts\13-rich-locators.cmgscript
+
+navigate "index.html"
+waitForLoadState "complete"
+click "text=Open profile"
+waitForElement "text=Edit Browser Profile"
+type "label=Profile name" "Locator Agent"
+assertText "text=Edit Browser Profile" "Edit Browser Profile"
+hover "label=Profile name"

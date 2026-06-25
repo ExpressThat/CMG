@@ -85,7 +85,7 @@ public static class CmgLocator
     private static string BuildElementExpression(string kind, string value) =>
         kind switch
         {
-            "text" => $"Array.from(document.querySelectorAll('body *')).find(e => (e.innerText || e.textContent || '').includes({QuoteJs(value)}))",
+            "text" => $"Array.from(document.querySelectorAll('body *')).filter(e => (e.innerText || e.textContent || '').includes({QuoteJs(value)})).sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length || (a.innerText || a.textContent || '').length - (b.innerText || b.textContent || '').length)[0]",
             "role" => $"Array.from(document.querySelectorAll('body *')).find(e => ((e.getAttribute('role') || implicitRole(e)) === {QuoteJs(value)}))",
             "label" => $"Array.from(document.querySelectorAll('label')).find(l => (l.innerText || '').includes({QuoteJs(value)}))?.control",
             "xpath" => $"document.evaluate({QuoteJs(value)}, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue",

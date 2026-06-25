@@ -7,8 +7,9 @@ public sealed partial class BrowserScriptRunner
         IBrowserAutomationClient automationClient,
         BrowserScriptAction action)
     {
+        action = NormalizeSelectorArgument(action);
         RequireArgumentCount(action, 1, 1);
-        automationClient.Click(remoteDebuggingUrl, action.Arguments[0]);
+        automationClient.Click(remoteDebuggingUrl, ResolveSelector(remoteDebuggingUrl, automationClient, action));
         return WaitForDownload(action);
     }
 

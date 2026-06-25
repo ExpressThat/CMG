@@ -13,32 +13,40 @@ public sealed partial class BrowserScriptRunner
 
     private static IReadOnlyList<string> ExecuteWaitForElement(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
+        action = NormalizeSelectorArgument(action);
         RequireArgumentCount(action, 1, 1);
         var timeout = GetIntOption(action, "timeout", 5_000);
-        automationClient.WaitForElement(remoteDebuggingUrl, action.Arguments[0], timeout);
+        automationClient.WaitForElement(remoteDebuggingUrl, ResolveSelector(remoteDebuggingUrl, automationClient, action), timeout);
         return [];
     }
 
-    private static IReadOnlyList<string> ExecuteSelectorAction(BrowserScriptAction action, Action<string> execute)
+    private static IReadOnlyList<string> ExecuteSelectorAction(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        Action<string> execute)
     {
+        action = NormalizeSelectorArgument(action);
         RequireArgumentCount(action, 1, 1);
-        execute(action.Arguments[0]);
+        execute(ResolveSelector(remoteDebuggingUrl, automationClient, action));
         return [];
     }
 
     private static IReadOnlyList<string> ExecuteType(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action, ScriptGifRecorder? recorder)
     {
+        action = NormalizeSelectorArgument(action);
         RequireArgumentCount(action, 2, 2);
+        var selector = ResolveSelector(remoteDebuggingUrl, automationClient, action);
         if (recorder is null)
         {
-            automationClient.Type(remoteDebuggingUrl, action.Arguments[0], action.Arguments[1]);
+            automationClient.Type(remoteDebuggingUrl, selector, action.Arguments[1]);
             return [];
         }
 
         recorder.CaptureClickPulse();
         automationClient.TypeProgressively(
             remoteDebuggingUrl,
-            action.Arguments[0],
+            selector,
             action.Arguments[1],
             recorder.CaptureTypingFrame);
 
@@ -73,8 +81,9 @@ public sealed partial class BrowserScriptRunner
 
     private static IReadOnlyList<string> ExecuteSelect(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
+        action = NormalizeSelectorArgument(action);
         RequireArgumentCount(action, 2, 2);
-        automationClient.Select(remoteDebuggingUrl, action.Arguments[0], action.Arguments[1]);
+        automationClient.Select(remoteDebuggingUrl, ResolveSelector(remoteDebuggingUrl, automationClient, action), action.Arguments[1]);
         return [];
     }
 
@@ -94,14 +103,16 @@ public sealed partial class BrowserScriptRunner
 
     private static IReadOnlyList<string> ExecuteHtml(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
+        action = NormalizeSelectorArgument(action);
         RequireArgumentCount(action, 1, 1);
-        return [$"HTML {action.LineNumber:000} {automationClient.GetElementHtml(remoteDebuggingUrl, action.Arguments[0])}"];
+        return [$"HTML {action.LineNumber:000} {automationClient.GetElementHtml(remoteDebuggingUrl, ResolveSelector(remoteDebuggingUrl, automationClient, action))}"];
     }
 
     private static IReadOnlyList<string> ExecuteScreenshot(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
+        action = NormalizeSelectorArgument(action);
         RequireArgumentCount(action, 1, 1);
-        var bytes = automationClient.GetElementScreenshot(remoteDebuggingUrl, action.Arguments[0]);
+        var bytes = automationClient.GetElementScreenshot(remoteDebuggingUrl, ResolveSelector(remoteDebuggingUrl, automationClient, action));
         return WriteScreenshotOutput(action, bytes);
     }
 
@@ -114,14 +125,16 @@ public sealed partial class BrowserScriptRunner
 
     private static IReadOnlyList<string> ExecuteAssertText(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
+        action = NormalizeSelectorArgument(action);
         RequireArgumentCount(action, 2, 2);
+        var selector = ResolveSelector(remoteDebuggingUrl, automationClient, action);
         var timeout = GetIntOption(action, "timeout", 0);
         var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeout);
         var text = string.Empty;
 
         do
         {
-            text = automationClient.GetElementText(remoteDebuggingUrl, action.Arguments[0]);
+            text = automationClient.GetElementText(remoteDebuggingUrl, selector);
             if (text.Contains(action.Arguments[1], StringComparison.Ordinal))
             {
                 return [];

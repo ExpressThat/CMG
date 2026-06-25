@@ -1,3 +1,5 @@
+using CMG.Runner;
+
 namespace CMG.Browser.Scripting;
 
 public static class BrowserMouseTargetResolver
@@ -46,9 +48,10 @@ public static class BrowserMouseTargetResolver
             throw new ScriptExecutionException($"{action.Name} selector targeting cannot be combined with x/y coordinates or duplicate selector arguments.");
         }
 
+        var resolvedSelector = ResolveLocator(remoteDebuggingUrl, client, action.LineNumber, selector);
         var inset = action.Options.TryGetValue("inset", out var value) ? ParseNonNegativeNumber(value, "inset") : 16;
         var viewport = client.GetViewportSize(remoteDebuggingUrl);
-        var box = client.GetElementBox(remoteDebuggingUrl, selector);
+        var box = client.GetElementBox(remoteDebuggingUrl, resolvedSelector);
         return EdgePoint(action.Name, edge, box, viewport, inset);
     }
 
@@ -108,6 +111,16 @@ public static class BrowserMouseTargetResolver
         double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var number) && number >= 0
             ? number
             : throw new ScriptExecutionException($"Mouse option '{name}' must be a non-negative number.");
+
+    private static string ResolveLocator(string remoteDebuggingUrl, IBrowserAutomationClient client, int lineNumber, string locator)
+    {
+        foreach (var expression in CmgLocator.PrefixExpressions(locator, lineNumber))
+        {
+            client.Evaluate(remoteDebuggingUrl, expression);
+        }
+
+        return CmgLocator.Resolve(locator, lineNumber).Selector;
+    }
 
     private static double Clamp(double value, double min, double max) => Math.Min(max, Math.Max(min, value));
 

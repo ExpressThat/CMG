@@ -113,9 +113,9 @@ public sealed partial class BrowserScriptRunner
         return action.Name.ToLowerInvariant() switch
         {
             "delay" => ExecuteDelay(action),
-            "hover" => ExecuteSelectorAction(action, selector => automationClient.Hover(remoteDebuggingUrl, selector)),
+            "hover" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Hover(remoteDebuggingUrl, selector)),
             "movemouse" => ExecuteMoveMouse(action, recorder: null, dragging: true),
-            "scrollintoview" => ExecuteSelectorAction(action, selector => automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
+            "scrollintoview" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             _ => throw new ScriptExecutionException($"Action '{action.Name}' is not supported inside block dragAndDrop.")
         };

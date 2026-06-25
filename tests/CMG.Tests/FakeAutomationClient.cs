@@ -8,6 +8,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public List<string> EvaluatedExpressions { get; } = [];
     public string LastInitScript { get; private set; } = string.Empty;
     public string LastClickedSelector { get; private set; } = string.Empty;
+    public string LastWaitSelector { get; private set; } = string.Empty;
+    public string LastTypedSelector { get; private set; } = string.Empty;
+    public string LastTypedText { get; private set; } = string.Empty;
+    public string LastElementTextSelector { get; private set; } = string.Empty;
+    public string LastElementBoxSelector { get; private set; } = string.Empty;
     public ViewportSize? LastViewport { get; private set; }
     public ViewportOptions? LastViewportOptions { get; private set; }
     public PdfPrintOptions? LastPdfOptions { get; private set; }
@@ -30,9 +35,13 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) => [];
     public string Navigate(string remoteDebuggingUrl, string target) => target;
-    public void WaitForElement(string remoteDebuggingUrl, string selector, int timeoutMilliseconds) { }
+    public void WaitForElement(string remoteDebuggingUrl, string selector, int timeoutMilliseconds) => LastWaitSelector = selector;
     public void Click(string remoteDebuggingUrl, string selector) => LastClickedSelector = selector;
-    public void Type(string remoteDebuggingUrl, string selector, string text) { }
+    public void Type(string remoteDebuggingUrl, string selector, string text)
+    {
+        LastTypedSelector = selector;
+        LastTypedText = text;
+    }
     public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null) { }
     public void Clear(string remoteDebuggingUrl, string selector) { }
     public void Press(string remoteDebuggingUrl, string key) { }
@@ -44,8 +53,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public void Select(string remoteDebuggingUrl, string selector, string value) { }
     public void ShowMessageBar(string remoteDebuggingUrl, string message) { }
     public void PromoteMessageBar(string remoteDebuggingUrl) { }
-    public string GetElementText(string remoteDebuggingUrl, string selector) =>
-        TextResponses.Count > 0 ? TextResponses.Dequeue() : string.Empty;
+    public string GetElementText(string remoteDebuggingUrl, string selector)
+    {
+        LastElementTextSelector = selector;
+        return TextResponses.Count > 0 ? TextResponses.Dequeue() : string.Empty;
+    }
     public string Evaluate(string remoteDebuggingUrl, string expression)
     {
         LastExpression = expression;
@@ -82,7 +94,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         LastPdfOptions = options;
         return [1, 2, 3];
     }
-    public ElementBox GetElementBox(string remoteDebuggingUrl, string selector) => new(0, 0, 1, 1);
+    public ElementBox GetElementBox(string remoteDebuggingUrl, string selector)
+    {
+        LastElementBoxSelector = selector;
+        return new(0, 0, 1, 1);
+    }
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) => new(0, 0);
     public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point) { }
     public void RemoveDomCursor(string remoteDebuggingUrl) { }

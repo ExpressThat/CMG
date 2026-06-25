@@ -93,6 +93,7 @@ dotnet run -- --firefox browser close
 - `08-gif-move-mouse.cmgscript`: Demonstrates GIF-only `moveMouse` and visible pointer movement.
 - `09-drag-autoscroll.cmgscript`: Demonstrates `moveMouse "bottom"` inside a GIF drag block.
 - `10-css-hover-states.cmgscript`: Demonstrates real CSS `:hover` states during GIF pointer movement.
+- `13-rich-locators.cmgscript`: Demonstrates direct browser-control text and label locators.
 - `20-v2-runner-flow.cmgscript`: Demonstrates the structured runner DSL, `step`, and `gif` blocks.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 

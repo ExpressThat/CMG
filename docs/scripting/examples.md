@@ -403,6 +403,19 @@ test "profile form state" {
 
 These assertions run in the page and report clear step failures. Wrap them in `step` blocks when a GIF should show a caption for the checked state.
 
+## Direct Rich Locators
+
+```text
+navigate "index.html"
+click "text=Open profile"
+waitForElement "text=Edit Browser Profile"
+type "label=Profile name" "Locator Agent"
+assertText "text=Edit Browser Profile" "Edit Browser Profile"
+hover "label=Profile name"
+```
+
+The same locator resolver is used by direct browser-control scripts and `cmg run`. Pointer-aware actions still move the virtual pointer to the resolved element marker, so GIFs keep the pointer, browser events, and drag ghost behavior aligned.
+
 ## Environment Emulation
 
 ```text

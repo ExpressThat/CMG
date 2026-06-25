@@ -68,17 +68,13 @@ public sealed partial class BrowserScriptRunner
 
     private static BrowserScriptAction NormalizeLocatorArgument(BrowserScriptAction action)
     {
-        if (action.Arguments.Count > 0)
+        var locator = action.Options.FirstOrDefault(pair => IsLocatorOption(pair.Key));
+        if (string.IsNullOrWhiteSpace(locator.Key))
         {
             return action;
         }
 
-        var locator = action.Options.FirstOrDefault(pair => IsLocatorOption(pair.Key));
-        return string.IsNullOrWhiteSpace(locator.Key)
-            ? action
-            : action with { Arguments = [$"{locator.Key}={locator.Value}"] };
+        return action with { Arguments = [$"{locator.Key}={locator.Value}", .. action.Arguments] };
     }
 
-    private static bool IsLocatorOption(string key) =>
-        key is "css" or "testid" or "text" or "role" or "label" or "placeholder" or "alt" or "title" or "xpath";
 }

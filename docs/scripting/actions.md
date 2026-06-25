@@ -1272,7 +1272,7 @@ Unknown actions fail explicitly instead of being ignored. If a future parity act
 
 ## Locator Support
 
-Current runner support:
+Direct browser-control scripts and `cmg run` both support:
 
 - Plain CSS selectors, for example `"#open"`.
 - Explicit CSS selectors, for example `"css=#open"`.
@@ -1285,7 +1285,18 @@ Current runner support:
 - Title locators, for example `"title=Close"`.
 - XPath locators, for example `"xpath=//button[.='Save']"`.
 
-For non-CSS locator forms, CMG resolves the element inside the page, marks it with a temporary `data-cmg-locator-id`, and then runs the normal pointer-aware command against that marker. This keeps GIF pointer movement and browser events connected to the resolved element.
+For non-CSS locator forms, CMG resolves the element inside the page, marks it with a temporary `data-cmg-locator-id`, and then runs the normal pointer-aware command against that marker. This keeps GIF pointer movement, browser events, drag ghosts, and screenshots connected to the resolved element.
+
+Direct browser-control scripts can pass locator forms as normal arguments or as option-style tokens when the locator contains `=`, for example:
+
+```text
+click text=Save
+type label=Email "agent@example.com"
+click "text=Save changes"
+mouseMove selector="text=Drop here" edge=center
+```
+
+Quote the whole locator token when the locator value contains spaces.
 
 ## Actionability
 
