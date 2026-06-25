@@ -15,6 +15,7 @@ public static class CmgJsonReportWriter
             writer.WriteStartObject();
             writer.WriteString("name", test.Name);
             writer.WriteString("sourcePath", test.SourcePath);
+            writer.WriteString("status", Status(test));
             writer.WriteBoolean("success", test.Success);
             writer.WriteString("error", test.Error);
             writer.WriteString("gifPath", test.GifPath);
@@ -53,4 +54,7 @@ public static class CmgJsonReportWriter
         writer.Flush();
         return builder.ToString();
     }
+
+    private static string Status(CmgTestResult test) =>
+        string.IsNullOrWhiteSpace(test.Status) ? test.Success ? "passed" : "failed" : test.Status;
 }

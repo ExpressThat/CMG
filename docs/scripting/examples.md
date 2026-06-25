@@ -465,6 +465,20 @@ test "checkout" tag=smoke,critical {
 }
 ```
 
+Focus or skip tests from the DSL:
+
+```text
+test "debug checkout" only=true {
+  click "#checkout"
+}
+
+test "legacy checkout" skip=true reason="Legacy page is disabled" {
+  click "#legacyCheckout"
+}
+```
+
+If any selected test has `only=true`, CMG runs only focused tests. `skip=true` writes `TEST SKIP <name>` and reports `status=skipped` without running the test actions.
+
 ## API Request
 
 ```text

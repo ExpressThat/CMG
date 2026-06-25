@@ -13,7 +13,7 @@ public static class CmgHtmlReportWriter
         builder.AppendLine("</head><body><h1>CMG Report</h1>");
         foreach (var test in tests)
         {
-            var state = test.Success ? "pass" : "fail";
+            var state = Status(test);
             builder.AppendLine($"<section><h2 class=\"{state}\">{Encode(test.Name)} - {state}</h2>");
             if (!string.IsNullOrWhiteSpace(test.Error))
             {
@@ -39,4 +39,7 @@ public static class CmgHtmlReportWriter
     }
 
     private static string Encode(string value) => WebUtility.HtmlEncode(value);
+
+    private static string Status(CmgTestResult test) =>
+        string.IsNullOrWhiteSpace(test.Status) ? test.Success ? "pass" : "fail" : test.Status;
 }

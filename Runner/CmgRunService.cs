@@ -84,9 +84,16 @@ public sealed class CmgRunService : ICmgRunService
             return;
         }
 
-        var plannedTests = planner.Plan(parse.Document).Where(test => ShouldRun(test, options)).ToArray();
+        var plannedTests = SelectFocusedTests(planner.Plan(parse.Document).Where(test => ShouldRun(test, options)).ToArray());
         foreach (var test in ApplyShard(plannedTests, options))
         {
+            if (IsSkipped(test))
+            {
+                tests.Add(SkippedTest(test));
+                output.Add($"TEST SKIP {test.Name}");
+                continue;
+            }
+
             var validation = validator.Validate(test);
             if (!validation.Success)
             {
@@ -138,6 +145,29 @@ public sealed class CmgRunService : ICmgRunService
             Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty
         };
     }
+
+    internal static IReadOnlyList<CmgTestCase> SelectFocusedTests(IReadOnlyList<CmgTestCase> tests) =>
+        tests.Any(IsOnly) ? tests.Where(IsOnly).ToArray() : tests;
+
+    private static CmgTestResult SkippedTest(CmgTestCase test)
+    {
+        var reason = test.Options.TryGetValue("reason", out var value) ? value : "Skipped by test option.";
+        return new CmgTestResult(test.Name, test.SourcePath, true, [], reason, null, [])
+        {
+            Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty,
+            Status = "skipped"
+        };
+    }
+
+    private static bool IsOnly(CmgTestCase test) => IsTruthyOption(test, "only");
+
+    private static bool IsSkipped(CmgTestCase test) => IsTruthyOption(test, "skip");
+
+    private static bool IsTruthyOption(CmgTestCase test, string name) =>
+        test.Options.TryGetValue(name, out var value) &&
+        (value.Equals("true", StringComparison.OrdinalIgnoreCase) ||
+        value.Equals("1", StringComparison.OrdinalIgnoreCase) ||
+        value.Equals("yes", StringComparison.OrdinalIgnoreCase));
 
     private static bool ShouldRun(CmgTestCase test, CmgRunOptions options)
     {

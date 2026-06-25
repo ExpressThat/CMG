@@ -54,4 +54,5 @@ public sealed record CmgTestResult(
     IReadOnlyList<CmgStepResult> Steps)
 {
     public string Tags { get; init; } = string.Empty;
+    public string Status { get; init; } = string.Empty;
 }

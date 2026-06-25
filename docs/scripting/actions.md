@@ -1138,9 +1138,26 @@ Groups tests in reports. Test names are emitted as `<suite> / <test>`.
 test "name" {
   navigate "https://example.com"
 }
+
+test "focused" only=true {
+  click "#run"
+}
+
+test "skipped" skip=true reason="Covered by API test" {
+  click "#legacy"
+}
 ```
 
-Defines a runnable test. `cmg run` exits `1` if any test fails.
+Defines a runnable test. `cmg run` exits `1` if any non-skipped test fails.
+
+Options:
+
+- `tag`: Optional comma-separated tags used by `cmg run --tag`.
+- `only`: Optional focus flag. When any selected test has `only=true`, only focused tests run.
+- `skip`: Optional skip flag. `skip=true` records `TEST SKIP <name>` and a skipped report entry without running the test actions.
+- `reason`: Optional skip reason included in reports.
+
+Skipped tests are successful for process exit purposes unless another selected test fails.
 
 ### `beforeEach` And `afterEach`
 

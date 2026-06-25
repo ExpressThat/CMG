@@ -34,9 +34,10 @@ Stdout prints one parseable line per test:
 ```text
 TEST PASS <name>
 TEST FAIL <name>
+TEST SKIP <name>
 ```
 
-Failures may include action output before the failing test line. Stderr contains the final error when one is available.
+Failures may include action output before the failing test line. Skipped tests do not run actions or produce GIFs. Stderr contains the final error when one is available.
 
 When a step fails, stderr also includes:
 
@@ -44,7 +45,7 @@ When a step fails, stderr also includes:
 STEP FAIL line=<line> action=<action> reason=<reason>
 ```
 
-Reports and traces include per-test output and per-step diagnostics so agents can explain why a run failed.
+Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON reports include `status` values such as `passed`, `failed`, and `skipped`; JUnit reports emit `<skipped>` nodes for skipped tests.
 
 ## GIF Behavior
 
@@ -77,3 +78,17 @@ cmg run checkout.cmgscript --report-json artifacts\checkout.json --report-html a
 cmg run checkout.cmgscript --trace artifacts\traces
 cmg run tests\flows --grep checkout --tag smoke --retries 2 --shard 1/3
 ```
+
+Use runner options on test declarations for provider-style focus and skip behavior:
+
+```text
+test "checkout" only=true {
+  click "#pay"
+}
+
+test "legacy flow" skip=true reason="Disabled until the legacy page is removed" {
+  click "#legacy"
+}
+```
+
+When any selected test has `only=true`, `cmg run` runs only focused tests. `skip=true` records `TEST SKIP <name>` and a skipped report entry without running actions.
