@@ -40,7 +40,7 @@ public sealed class CmgActionLowererTests
     [Fact]
     public void Lower_PlannedUnsupportedActionFailsExplicitly()
     {
-        var action = Node("intercept", ["/api/**"], []);
+        var action = Node("workerIntercept", ["/api/**"], []);
         var line = Assert.Single(new CmgActionLowerer().Lower(action));
 
         Assert.Contains("planned but not implemented", line);
@@ -142,6 +142,14 @@ public sealed class CmgActionLowererTests
         var line = Assert.Single(new CmgActionLowerer().Lower(Node("route", ["/api"], [])));
 
         Assert.Equal("route \"/api\"", line);
+    }
+
+    [Fact]
+    public void Lower_InterceptPassesThrough()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("intercept", ["/api"], [])));
+
+        Assert.Equal("intercept \"/api\"", line);
     }
 
     [Fact]

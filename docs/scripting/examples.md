@@ -297,7 +297,7 @@ The request result appears in CLI output and reports. Failures include the expec
 ```text
 test "mocked profile" {
   navigate "https://example.com"
-  route "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
+  intercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
   evaluate "fetch('/api/profile').then(r => r.text())"
   waitForResponse "/api/profile"
 }

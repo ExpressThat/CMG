@@ -95,7 +95,7 @@ Check [actions.md](actions.md) for the supported action list.
 Some parity actions are reserved in the new runner DSL before their browser protocol implementation is complete:
 
 ```text
-Line 4: evaluate failed. CMG action 'intercept' is planned but not implemented in this slice.
+Line 4: evaluate failed. CMG action 'workerIntercept' is planned but not implemented in this slice.
 ```
 
 This is intentional. The action failed because it is not available yet, not because the page behaved incorrectly.
