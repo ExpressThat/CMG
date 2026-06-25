@@ -18,7 +18,23 @@ suite "profile" {
 
 ## Blocks
 
-Blocks use `{` at the end of the parent line and `}` on its own line.
+Blocks use `{` at the end of the parent line and `}` to close the block. Branch continuations can be written on the next line or combined with the closing brace; spacing and casing are tolerant for `elseif`, `else`, `catch`, and `finally`.
+
+```text
+if false {
+  caption "if"
+}   ELSE   {
+  caption "else"
+}
+
+try {
+  caption "try"
+}catch error{
+  caption "${error}"
+} finally {
+  caption "done"
+}
+```
 
 Supported structural blocks:
 
@@ -77,6 +93,12 @@ import "shared.cmgscript"
 ```
 
 Imports are expanded before parsing. Relative paths resolve from the importing file's directory. Imported files can import other files; cycles and missing files fail before any action runs.
+
+`import` is case-insensitive and tolerates extra spacing before the quoted path:
+
+```text
+  IMPORT    "shared.cmgscript"
+```
 
 ## Variables And Capture
 

@@ -26,4 +26,26 @@ public sealed class BrowserScriptParserTests
         Assert.Equal("", action.Arguments[0]);
         Assert.Equal("", action.Arguments[2]);
     }
+
+    [Fact]
+    public void Parse_AllowsOddBranchSpacing()
+    {
+        var result = new BrowserScriptParser().Parse("""
+        if false {
+          caption "if"
+        }   ELSE   {
+          caption "else"
+        }
+        try {
+          caption "try"
+        }catch error{
+          caption "${error}"
+        }   FINALLY   {
+          caption "done"
+        }
+        """);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(["if", "else", "try", "catch", "finally"], result.Actions.Select(action => action.Name.ToLowerInvariant()));
+    }
 }

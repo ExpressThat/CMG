@@ -45,12 +45,23 @@ public sealed class BrowserScriptRunnerNavigationActionTests
     }
 
     [Fact]
+    public void RunText_WaitForLoadStateSupportsNetworkIdle()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("waitForLoadState networkidle", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("networkidle", client.LastExpression);
+        Assert.Contains("LOAD_STATE 001 {}", result.StdoutLines);
+    }
+
+    [Fact]
     public void RunText_WaitForLoadStateValidatesState()
     {
-        var result = Runner().RunText("waitForLoadState networkidle", "debug", new FakeAutomationClient());
+        var result = Runner().RunText("waitForLoadState paint", "debug", new FakeAutomationClient());
 
         Assert.False(result.Success);
-        Assert.Contains("loading, interactive, complete, or load", result.Error);
+        Assert.Contains("loading, interactive, complete, load, or networkidle", result.Error);
     }
 
     [Fact]

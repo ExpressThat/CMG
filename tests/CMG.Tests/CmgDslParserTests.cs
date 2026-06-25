@@ -111,4 +111,45 @@ public sealed class CmgDslParserTests
             directory.Delete(recursive: true);
         }
     }
+
+    [Fact]
+    public void Parse_AllowsOddBranchSpacingAndImportCasing()
+    {
+        var directory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
+        try
+        {
+            File.WriteAllText(Path.Combine(directory.FullName, "shared.cmgscript"), """
+            macro note {
+              caption "imported"
+            }
+            """);
+
+            var result = new CmgDslParser().Parse(Path.Combine(directory.FullName, "flow.cmgscript"), """
+              IMPORT    "shared.cmgscript"
+
+              test   "spacing"   {
+                if false {
+                  caption "if"
+                }ELSE{
+                  call note
+                }
+                try {
+                  caption "try"
+                }   Catch   error   {
+                  caption "${error}"
+                }FINALLY{
+                  caption "done"
+                }
+              }
+            """);
+
+            Assert.True(result.Success, result.Error);
+            var test = result.Document!.Nodes.Single(node => node.Kind.Equals("test", StringComparison.OrdinalIgnoreCase));
+            Assert.Equal(["if", "else", "try", "catch", "finally"], test.Children.Select(action => action.Kind.ToLowerInvariant()));
+        }
+        finally
+        {
+            directory.Delete(recursive: true);
+        }
+    }
 }

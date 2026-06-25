@@ -81,9 +81,9 @@ public sealed partial class BrowserScriptRunner
         }
 
         var state = action.Arguments.Count > 0 ? action.Arguments[0] : "load";
-        if (state is not ("loading" or "interactive" or "complete" or "load"))
+        if (state is not ("loading" or "interactive" or "complete" or "load" or "networkidle"))
         {
-            throw new ScriptExecutionException("waitForLoadState expects loading, interactive, complete, or load.");
+            throw new ScriptExecutionException("waitForLoadState expects loading, interactive, complete, load, or networkidle.");
         }
 
         var timeout = GetIntOption(action, "timeout", 5_000);

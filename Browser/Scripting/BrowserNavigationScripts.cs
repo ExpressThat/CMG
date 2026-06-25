@@ -58,10 +58,22 @@ public static class BrowserNavigationScripts
         new Promise((resolve, reject) => {
           const expected = {{Quote(state)}};
           const deadline = Date.now() + {{timeoutMilliseconds}};
-          const isReady = () => expected === 'load'
-            ? document.readyState === 'complete'
-            : document.readyState === expected;
+          let quietSince = 0;
+          let lastNetworkCount = -1;
+          const networkCount = () => (window.__cmgRequests?.length || 0) +
+            (window.__cmgResponses?.length || 0) + (window.__cmgRequestFailures?.length || 0);
+          const isReady = () => {
+            if (expected === 'load') return document.readyState === 'complete';
+            if (expected === 'networkidle') return document.readyState === 'complete' && quietSince > 0 && Date.now() - quietSince >= 500;
+            return document.readyState === expected;
+          };
           const poll = () => {
+            const count = networkCount();
+            if (count !== lastNetworkCount) {
+              lastNetworkCount = count;
+              quietSince = Date.now();
+            }
+
             if (isReady()) {
               resolve(document.readyState);
               return;

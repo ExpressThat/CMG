@@ -33,6 +33,7 @@ waitForUrl "/checkout" timeout=10000
 toHaveURL "/checkout"
 toHaveTitle "Checkout"
 waitForLoadState "complete" timeout=5000
+waitForLoadState "networkidle" timeout=5000
 waitForNavigation "/checkout" waitUntil=domcontentloaded timeout=10000
 ```
 
@@ -48,7 +49,7 @@ Arguments:
 
 - `waitForUrl`, `toHaveURL`: Required URL substring expected in `location.href`.
 - `toHaveTitle`: Required title substring expected in `document.title`.
-- `waitForLoadState`: Optional state. Supports `loading`, `interactive`, `complete`, and `load`. `load` is an alias for `complete`.
+- `waitForLoadState`: Optional state. Supports `loading`, `interactive`, `complete`, `load`, and `networkidle`. `load` is an alias for `complete`; `networkidle` waits for a complete document and a 500ms quiet window in CMG's page-side request log.
 - `waitForNavigation`: Optional URL substring expected in `location.href`.
 
 Output:
@@ -63,7 +64,7 @@ Output:
 
 These actions do not move the virtual pointer. Use `step`, `caption`, or a `gif` block when a GIF should narrate a non-visual navigation wait.
 
-`waitForNavigation waitUntil=networkidle` uses CMG's in-page request log as a quiet-window signal, so it works best after CMG has installed page network hooks through route, request waits, or network environment actions.
+`waitForLoadState "networkidle"` and `waitForNavigation waitUntil=networkidle` use CMG's in-page request log as a quiet-window signal, so they work best after CMG has installed page network hooks through route, request waits, or network environment actions.
 
 ## `waitForElement`
 
