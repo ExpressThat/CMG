@@ -16,6 +16,7 @@ public sealed partial class BrowserScriptRunner
             "expecturl" => ExpectUrl(remoteDebuggingUrl, automationClient, action),
             "expecttitle" => ExpectTitle(remoteDebuggingUrl, automationClient, action),
             "waitforloadstate" => WaitForLoadState(remoteDebuggingUrl, automationClient, action),
+            "waitfornavigation" => WaitForNavigation(remoteDebuggingUrl, automationClient, action),
             _ => throw new ScriptExecutionException($"Unknown navigation action '{action.Name}'.")
         };
     }
@@ -80,5 +81,29 @@ public sealed partial class BrowserScriptRunner
         var timeout = GetIntOption(action, "timeout", 5_000);
         var actual = automationClient.Evaluate(remoteDebuggingUrl, BrowserNavigationScripts.WaitForLoadState(state, timeout));
         return [$"LOAD_STATE {action.LineNumber:000} {actual}"];
+    }
+
+    private static IReadOnlyList<string> WaitForNavigation(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        if (action.Arguments.Count > 1)
+        {
+            throw new ScriptExecutionException("waitForNavigation expects at most one URL substring argument.");
+        }
+
+        var waitUntil = action.Options.TryGetValue("waitUntil", out var waitUntilValue)
+            ? waitUntilValue
+            : action.Options.GetValueOrDefault("state", "load");
+        if (waitUntil is not ("load" or "domcontentloaded" or "networkidle" or "commit"))
+        {
+            throw new ScriptExecutionException("waitForNavigation waitUntil= expects load, domcontentloaded, networkidle, or commit.");
+        }
+
+        var timeout = GetIntOption(action, "timeout", 5_000);
+        var expected = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
+        var json = automationClient.Evaluate(remoteDebuggingUrl, BrowserNavigationScripts.WaitForNavigation(expected, waitUntil, timeout));
+        return [$"NAVIGATION {action.LineNumber:000} {json}"];
     }
 }

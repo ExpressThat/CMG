@@ -25,7 +25,7 @@ public sealed class CmgActionLowerer
             "selecttext" => ElementScript(action, "element.focus({ preventScroll: true }); element.select?.(); return true;"),
             "dblclick" => LowerMouseEvent(action, "dblclick", button: 0),
             "rightclick" => LowerMouseEvent(action, "contextmenu", button: 2),
-            "reload" or "goback" or "goforward" or "waitforurl" or "waitforloadstate" =>
+            "reload" or "goback" or "goforward" or "waitforurl" or "waitforloadstate" or "waitfornavigation" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "waitforselector" or "waitforfunction" or "waitfortimeout" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],

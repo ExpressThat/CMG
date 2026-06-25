@@ -78,6 +78,46 @@ public static class BrowserNavigationScripts
         })
         """;
 
+    public static string WaitForNavigation(string expectedUrl, string waitUntil, int timeoutMilliseconds) =>
+        $$"""
+        new Promise((resolve, reject) => {
+          const expectedUrl = {{Quote(expectedUrl)}};
+          const waitUntil = {{Quote(waitUntil)}};
+          const deadline = Date.now() + {{timeoutMilliseconds}};
+          let quietSince = 0;
+          let lastNetworkCount = -1;
+          const networkCount = () => (window.__cmgRequests?.length || 0) +
+            (window.__cmgResponses?.length || 0) + (window.__cmgRequestFailures?.length || 0);
+          const urlReady = () => !expectedUrl || location.href.includes(expectedUrl);
+          const stateReady = () => {
+            if (waitUntil === 'commit') return true;
+            if (waitUntil === 'domcontentloaded') return document.readyState !== 'loading';
+            if (waitUntil === 'networkidle') return document.readyState === 'complete' && quietSince > 0 && Date.now() - quietSince >= 500;
+            return document.readyState === 'complete';
+          };
+          const poll = () => {
+            const count = networkCount();
+            if (count !== lastNetworkCount) {
+              lastNetworkCount = count;
+              quietSince = Date.now();
+            }
+
+            if (urlReady() && stateReady()) {
+              resolve(JSON.stringify({ url: location.href, state: document.readyState, waitUntil }));
+              return;
+            }
+
+            if (Date.now() >= deadline) {
+              reject(new Error(`Navigation did not reach ${waitUntil} within {{timeoutMilliseconds}}ms. Last URL: ${location.href}; state: ${document.readyState}`));
+              return;
+            }
+
+            setTimeout(poll, 50);
+          };
+          poll();
+        })
+        """;
+
     private static string Quote(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
 }

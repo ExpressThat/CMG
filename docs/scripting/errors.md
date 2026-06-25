@@ -331,6 +331,8 @@ Pass headers as quoted name/value pairs and pass `true` or `false` to `setOfflin
 ```text
 Line 2: waitForUrl failed. URL did not match /checkout within 5000ms. Last URL: https://example.com/cart
 Line 3: waitForLoadState failed. waitForLoadState expects loading, interactive, complete, or load.
+Line 4: waitForNavigation failed. waitForNavigation waitUntil= expects load, domcontentloaded, networkidle, or commit.
+Line 5: waitForNavigation failed. Navigation did not reach load within 5000ms. Last URL: https://example.com/cart; state: loading
 ```
 
 Navigation wait failures include the expected state or URL, timeout, and the last observed browser state when available.

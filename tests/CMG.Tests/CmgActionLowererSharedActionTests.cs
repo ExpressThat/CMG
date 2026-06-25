@@ -27,6 +27,7 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("goForward", null, "goForward")]
     [InlineData("waitForUrl", "/checkout", "waitForUrl \"/checkout\"")]
     [InlineData("waitForLoadState", "complete", "waitForLoadState \"complete\"")]
+    [InlineData("waitForNavigation", "/checkout", "waitForNavigation \"/checkout\"")]
     [InlineData("waitForFunction", "window.ready", "waitForFunction \"window.ready\"")]
     [InlineData("waitForSelector", "#ready", "waitForSelector \"#ready\"")]
     [InlineData("waitForTimeout", "1", "waitForTimeout \"1\"")]

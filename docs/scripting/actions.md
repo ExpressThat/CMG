@@ -20,7 +20,7 @@ Example:
 navigate "C:\Projects\CMG\index.html"
 ```
 
-## `reload`, `goBack`, `goForward`, `waitForUrl`, And `waitForLoadState`
+## `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, And `waitForNavigation`
 
 ```text
 reload
@@ -28,18 +28,22 @@ goBack timeout=5000
 goForward timeout=5000
 waitForUrl "/checkout" timeout=10000
 waitForLoadState "complete" timeout=5000
+waitForNavigation "/checkout" waitUntil=domcontentloaded timeout=10000
 ```
 
 Runs common page navigation controls from both direct browser-control scripts and `cmg run`.
 
 Options:
 
-- `timeout`: Optional for `goBack`, `goForward`, `waitForUrl`, and `waitForLoadState`. Default is `5000`.
+- `timeout`: Optional for `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, and `waitForNavigation`. Default is `5000`.
+- `waitUntil`: Optional for `waitForNavigation`. Supports `load`, `domcontentloaded`, `networkidle`, and `commit`. Default is `load`.
+- `state`: Alias for `waitUntil` on `waitForNavigation`.
 
 Arguments:
 
 - `waitForUrl`: Required URL substring expected in `location.href`.
 - `waitForLoadState`: Optional state. Supports `loading`, `interactive`, `complete`, and `load`. `load` is an alias for `complete`.
+- `waitForNavigation`: Optional URL substring expected in `location.href`.
 
 Output:
 
@@ -48,8 +52,11 @@ Output:
 - `FORWARD <line> <url>` after browser history moves forward.
 - `URL <line> <url>` when `waitForUrl` matches.
 - `LOAD_STATE <line> <state>` when the requested load state is reached.
+- `NAVIGATION <line> <json>` when the requested navigation URL and state are reached.
 
 These actions do not move the virtual pointer. Use `step`, `caption`, or a `gif` block when a GIF should narrate a non-visual navigation wait.
+
+`waitForNavigation waitUntil=networkidle` uses CMG's in-page request log as a quiet-window signal, so it works best after CMG has installed page network hooks through route, request waits, or network environment actions.
 
 ## `waitForElement`
 

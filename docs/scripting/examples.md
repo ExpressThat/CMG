@@ -623,6 +623,7 @@ test "browser history" {
   waitForUrl "/start"
   goForward
   waitForUrl "/checkout"
+  waitForNavigation "/checkout" waitUntil=load
   reload
   waitForLoadState "complete"
 }

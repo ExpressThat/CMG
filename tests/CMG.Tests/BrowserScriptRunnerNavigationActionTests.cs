@@ -53,5 +53,26 @@ public sealed class BrowserScriptRunnerNavigationActionTests
         Assert.Contains("loading, interactive, complete, or load", result.Error);
     }
 
+    [Fact]
+    public void RunText_WaitForNavigationUsesPollingScript()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("waitForNavigation \"/checkout\" waitUntil=domcontentloaded timeout=250", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("Navigation did not reach", client.LastExpression);
+        Assert.Contains("domcontentloaded", client.LastExpression);
+        Assert.Contains("NAVIGATION 001 {}", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_WaitForNavigationValidatesWaitUntil()
+    {
+        var result = Runner().RunText("waitForNavigation waitUntil=paint", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("load, domcontentloaded, networkidle, or commit", result.Error);
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }
