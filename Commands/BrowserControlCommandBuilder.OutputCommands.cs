@@ -1,0 +1,185 @@
+using System.CommandLine;
+using CMG.Browser;
+
+namespace CMG.Commands;
+
+public sealed partial class BrowserControlCommandBuilder
+{
+    private Command BuildShowMessageBarCommand(BrowserSelectionOptions browserOptions)
+    {
+        var messageArgument = new Argument<string>("message")
+        {
+            Description = "Message to show in a fixed bar at the top of the page."
+        };
+
+        var command = new Command("showMessageBar", "Inject or update a fixed message bar at the top of the page.")
+        {
+            messageArgument
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("showMessageBar", parseResult.GetValue(messageArgument) ?? string.Empty)));
+
+        return command;
+    }
+
+    private Command BuildDelayCommand(BrowserSelectionOptions browserOptions)
+    {
+        var millisecondsArgument = new Argument<int>("milliseconds")
+        {
+            Description = "Delay duration in milliseconds."
+        };
+
+        var command = new Command("delay", "Pause execution for a duration.")
+        {
+            millisecondsArgument
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("delay", parseResult.GetValue(millisecondsArgument).ToString())));
+
+        return command;
+    }
+
+    private Command BuildScreenshotCommand(BrowserSelectionOptions browserOptions)
+    {
+        var selectorArgument = CreateSelectorArgument();
+        var outputOption = new Option<FileInfo?>("--output")
+        {
+            Description = "Write the PNG screenshot to this file instead of stdout data URL."
+        };
+
+        var command = new Command("screenshot", "Capture an element screenshot.")
+        {
+            selectorArgument,
+            outputOption
+        };
+
+        command.SetAction(parseResult =>
+        {
+            var options = ToOutputOptions(parseResult.GetValue(outputOption));
+            return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+                "screenshot",
+                [parseResult.GetValue(selectorArgument) ?? string.Empty],
+                options));
+        });
+
+        return command;
+    }
+
+    private Command BuildScreenshotPageCommand(BrowserSelectionOptions browserOptions)
+    {
+        var outputOption = new Option<FileInfo?>("--output")
+        {
+            Description = "Write the PNG screenshot to this file instead of stdout data URL."
+        };
+
+        var command = new Command("screenshotPage", "Capture a full viewport screenshot.")
+        {
+            outputOption
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("screenshotPage", [], ToOutputOptions(parseResult.GetValue(outputOption)))));
+
+        return command;
+    }
+
+    private Command BuildAssertTextCommand(BrowserSelectionOptions browserOptions)
+    {
+        var selectorArgument = CreateSelectorArgument();
+        var expectedArgument = new Argument<string>("expected")
+        {
+            Description = "Expected text fragment."
+        };
+
+        var command = new Command("assertText", "Assert that an element contains text.")
+        {
+            selectorArgument,
+            expectedArgument
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+                "assertText",
+                parseResult.GetValue(selectorArgument) ?? string.Empty,
+                parseResult.GetValue(expectedArgument) ?? string.Empty)));
+
+        return command;
+    }
+
+    private Command BuildEvaluateCommand(BrowserSelectionOptions browserOptions)
+    {
+        var expressionArgument = new Argument<string>("expression")
+        {
+            Description = "JavaScript expression to evaluate."
+        };
+
+        var command = new Command("evaluate", "Evaluate JavaScript in the primary page.")
+        {
+            expressionArgument
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("evaluate", parseResult.GetValue(expressionArgument) ?? string.Empty)));
+
+        return command;
+    }
+
+    private Command BuildSetViewportCommand(BrowserSelectionOptions browserOptions)
+    {
+        var widthOption = new Option<int>("--width")
+        {
+            Description = "Viewport width in CSS pixels.",
+            Required = true
+        };
+        var heightOption = new Option<int>("--height")
+        {
+            Description = "Viewport height in CSS pixels.",
+            Required = true
+        };
+
+        var command = new Command("setViewport", "Set viewport dimensions.")
+        {
+            widthOption,
+            heightOption
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+                "setViewport",
+                [],
+                [
+                    ("width", parseResult.GetValue(widthOption).ToString()),
+                    ("height", parseResult.GetValue(heightOption).ToString())
+                ])));
+
+        return command;
+    }
+
+    private Command BuildDragAndDropCommand(BrowserSelectionOptions browserOptions)
+    {
+        var sourceArgument = new Argument<string>("sourceSelector")
+        {
+            Description = "CSS selector for the drag source."
+        };
+        var targetArgument = new Argument<string>("targetSelector")
+        {
+            Description = "CSS selector for the drop target."
+        };
+
+        var command = new Command("dragAndDrop", "Drag one element onto another.")
+        {
+            sourceArgument,
+            targetArgument
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+                "dragAndDrop",
+                parseResult.GetValue(sourceArgument) ?? string.Empty,
+                parseResult.GetValue(targetArgument) ?? string.Empty)));
+
+        return command;
+    }
+}

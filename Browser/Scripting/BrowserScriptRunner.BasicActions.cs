@@ -1,0 +1,138 @@
+using CMG.Browser.Scripting.Recording;
+
+namespace CMG.Browser.Scripting;
+
+public sealed partial class BrowserScriptRunner
+{
+    private static IReadOnlyList<string> ExecuteNavigate(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var finalUrl = automationClient.Navigate(remoteDebuggingUrl, NormalizeNavigationTarget(action.Arguments[0]));
+        return string.IsNullOrWhiteSpace(finalUrl) ? [] : [$"NAVIGATED {action.LineNumber:000} {finalUrl}"];
+    }
+
+    private static IReadOnlyList<string> ExecuteWaitForElement(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var timeout = GetIntOption(action, "timeout", 5_000);
+        automationClient.WaitForElement(remoteDebuggingUrl, action.Arguments[0], timeout);
+        return [];
+    }
+
+    private static IReadOnlyList<string> ExecuteSelectorAction(BrowserScriptAction action, Action<string> execute)
+    {
+        RequireArgumentCount(action, 1, 1);
+        execute(action.Arguments[0]);
+        return [];
+    }
+
+    private static IReadOnlyList<string> ExecuteType(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action, ScriptGifRecorder? recorder)
+    {
+        RequireArgumentCount(action, 2, 2);
+        if (recorder is null)
+        {
+            automationClient.Type(remoteDebuggingUrl, action.Arguments[0], action.Arguments[1]);
+            return [];
+        }
+
+        recorder.CaptureClickPulse();
+        automationClient.TypeProgressively(
+            remoteDebuggingUrl,
+            action.Arguments[0],
+            action.Arguments[1],
+            recorder.CaptureTypingFrame);
+
+        return [];
+    }
+
+    private static IReadOnlyList<string> ExecutePress(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        automationClient.Press(remoteDebuggingUrl, action.Arguments[0]);
+        return [];
+    }
+
+    private static IReadOnlyList<string> ExecuteSelect(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 2, 2);
+        automationClient.Select(remoteDebuggingUrl, action.Arguments[0], action.Arguments[1]);
+        return [];
+    }
+
+    private static IReadOnlyList<string> ExecuteShowMessageBar(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        automationClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0]);
+        return [];
+    }
+
+    private static IReadOnlyList<string> ExecuteDelay(BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        Thread.Sleep(ParsePositiveInt(action.Arguments[0], "delay"));
+        return [];
+    }
+
+    private static IReadOnlyList<string> ExecuteHtml(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        return [$"HTML {action.LineNumber:000} {automationClient.GetElementHtml(remoteDebuggingUrl, action.Arguments[0])}"];
+    }
+
+    private static IReadOnlyList<string> ExecuteScreenshot(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var bytes = automationClient.GetElementScreenshot(remoteDebuggingUrl, action.Arguments[0]);
+        return WriteScreenshotOutput(action, bytes);
+    }
+
+    private static IReadOnlyList<string> ExecuteScreenshotPage(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 0, 0);
+        var bytes = automationClient.GetPageScreenshot(remoteDebuggingUrl);
+        return WriteScreenshotOutput(action, bytes);
+    }
+
+    private static IReadOnlyList<string> ExecuteAssertText(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 2, 2);
+        var text = automationClient.GetElementText(remoteDebuggingUrl, action.Arguments[0]);
+        if (!text.Contains(action.Arguments[1], StringComparison.Ordinal))
+        {
+            throw new ScriptExecutionException($"Expected text '{action.Arguments[1]}' was not found. Actual text: '{text}'.");
+        }
+
+        return [];
+    }
+
+    private static IReadOnlyList<string> ExecuteEvaluate(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        return [$"EVALUATE {action.LineNumber:000} {automationClient.Evaluate(remoteDebuggingUrl, action.Arguments[0])}"];
+    }
+
+    private static IReadOnlyList<string> ExecuteSetViewport(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 0, 0);
+        var width = GetIntOption(action, "width", required: true);
+        var height = GetIntOption(action, "height", required: true);
+        automationClient.SetViewport(remoteDebuggingUrl, width, height);
+        return [];
+    }
+
+    private static IReadOnlyList<string> ExecuteMoveMouse(BrowserScriptAction action, ScriptGifRecorder? recorder, bool dragging)
+    {
+        if (recorder is null)
+        {
+            throw new ScriptExecutionException("moveMouse requires script GIF recording. Run the script with --gif <path>.");
+        }
+
+        if (action.Children.Count > 0)
+        {
+            throw new ScriptExecutionException("moveMouse does not accept a block body.");
+        }
+
+        recorder.MoveMouse(action, dragging);
+        return [];
+    }
+}

@@ -1,0 +1,103 @@
+using System.Net.WebSockets;
+using System.Text;
+using System.Text.Json;
+
+namespace CMG.Browser;
+
+public sealed partial class ChromeDevToolsClient
+{
+    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true)
+    {
+        return Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            if (promoteMessageBar)
+            {
+                await PromoteMessageBar(session);
+            }
+
+            var screenshot = await session.SendCommand("Page.captureScreenshot", writer => writer.WriteString("format", "png"));
+
+            if (!TryReadString(screenshot, "result", "data", out var data) || string.IsNullOrWhiteSpace(data))
+            {
+                throw new ChromeDevToolsException("Chrome did not return screenshot image data.");
+            }
+
+            return Convert.FromBase64String(data);
+        });
+    }
+
+    public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector)
+    {
+        return Run(async () =>
+        {
+            var pageTarget = await TryFindPageWithSelector(remoteDebuggingUrl, selector) ??
+                throw new ElementNotFoundException(selector);
+
+            await using var session = await DevToolsSession.Connect(pageTarget);
+            var clip = await GetElementClip(session, selector);
+            await EnsurePointInViewport(session, selector, clip.CenterX, clip.CenterY);
+
+            return new ElementPoint(clip.CenterX, clip.CenterY);
+        });
+    }
+
+    public ElementBox GetElementBox(string remoteDebuggingUrl, string selector)
+    {
+        return Run(async () =>
+        {
+            var pageTarget = await TryFindPageWithSelector(remoteDebuggingUrl, selector) ??
+                throw new ElementNotFoundException(selector);
+
+            await using var session = await DevToolsSession.Connect(pageTarget);
+            var clip = await GetElementClip(session, selector);
+            return new ElementBox(clip.X, clip.Y, clip.Width, clip.Height);
+        });
+    }
+
+    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point)
+    {
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.MoveDomCursor(point));
+    }
+
+    public void RemoveDomCursor(string remoteDebuggingUrl)
+    {
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.RemoveDomCursor());
+    }
+
+    public IReadOnlyList<ChromePageTab> ListTabs(string remoteDebuggingUrl)
+    {
+        return Run(async () =>
+        {
+            var targets = await GetPageTargets(remoteDebuggingUrl);
+
+            return targets
+                .Select(target => new ChromePageTab(target.Id, target.Title, target.Url))
+                .ToArray();
+        });
+    }
+
+    public void ActivateTab(string remoteDebuggingUrl, int index)
+    {
+        Run(async () =>
+        {
+            var target = await GetPageTargetAt(remoteDebuggingUrl, index);
+            using var httpClient = new HttpClient { Timeout = CommandTimeout };
+            await httpClient.GetStringAsync($"{remoteDebuggingUrl.TrimEnd('/')}/json/activate/{target.Id}");
+
+            return true;
+        });
+    }
+
+    public void CloseTab(string remoteDebuggingUrl, int index)
+    {
+        Run(async () =>
+        {
+            var target = await GetPageTargetAt(remoteDebuggingUrl, index);
+            using var httpClient = new HttpClient { Timeout = CommandTimeout };
+            await httpClient.GetStringAsync($"{remoteDebuggingUrl.TrimEnd('/')}/json/close/{target.Id}");
+
+            return true;
+        });
+    }
+}
