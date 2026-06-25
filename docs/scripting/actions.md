@@ -328,6 +328,25 @@ Example:
 scrollIntoView "#dragdrop"
 ```
 
+## `scrollTo`, `scrollBy`, And `wheel`
+
+```text
+scrollTo bottom
+scrollTo 0 0 selector="#pane"
+scrollBy 0 160 selector="#pane"
+wheel "#pane" deltaY=120
+wheel center deltaX=0 deltaY=-80
+wheel x=120 y=240 deltaY=100
+```
+
+Runs page scrolling and mouse-wheel style input in direct browser-control scripts and `cmg run`.
+
+- `scrollTo`: Scrolls the window or `selector=<selector>` element to an absolute position. Accepts aliases `top`, `bottom`, `left`, `right`, positional `x y`, or `x=` / `y=` options.
+- `scrollBy`: Scrolls the window or `selector=<selector>` element by a delta. Accepts positional `x y` or `x=` / `y=` options.
+- `wheel`: Dispatches a `WheelEvent` and scrolls the target. Use `deltaX=` and `deltaY=`; default is `deltaX=0 deltaY=100`. A selector argument or `selector=` targets an element. Alias or `x=` / `y=` targets move the GIF pointer before dispatching.
+
+Selectors support CMG rich locators. In GIF recordings, `wheel` moves the virtual pointer when a selector, alias, or coordinate target is provided. `scrollTo` and `scrollBy` capture the changed viewport but do not move the pointer by themselves.
+
 ## `select` And `selectOption`
 
 ```text

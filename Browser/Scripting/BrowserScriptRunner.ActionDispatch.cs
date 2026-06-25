@@ -106,6 +106,7 @@ public sealed partial class BrowserScriptRunner
             "expectaccessible" => ExecuteExpectAccessible(remoteDebuggingUrl, automationClient, action),
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),
             "mousemove" or "mousedown" or "mouseup" => ExecuteMouseAction(remoteDebuggingUrl, automationClient, action, recorder),
+            "scrollto" or "scrollby" or "wheel" => ExecuteScrollAction(remoteDebuggingUrl, automationClient, action, recorder),
             "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action, recorder),
             "gif" or "recordvideo" or "screencast" => ExecuteGifBlock(remoteDebuggingUrl, automationClient, action, context, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),

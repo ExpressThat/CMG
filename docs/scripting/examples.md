@@ -695,6 +695,22 @@ The same locator resolver is used by direct browser-control scripts and `cmg run
 
 Filter locator examples are available as `demo-scripts/41-locator-filters.cmgscript`. The structured `cmg run` form is available as `demo-scripts/42-locator-filters-runner.cmgscript`.
 
+## Scroll And Wheel
+
+```text
+setContent "<main style='height:1600px'><section id='pane' style='height:80px; overflow:auto'><div style='height:500px'><button id='target'>Deep target</button></div></section></main>"
+scrollTo bottom
+expectEval "window.scrollY > 0"
+scrollTo top
+scrollBy 0 180 selector="#pane"
+wheel "#pane" deltaY=120
+expectEval "document.querySelector('#pane').scrollTop > 0"
+```
+
+`scrollTo` and `scrollBy` work on the window or `selector=<selector>` element. `wheel` dispatches a browser wheel event, scrolls the target, and moves the GIF virtual pointer when a selector, alias, or coordinate target is provided.
+
+This direct-script example is available as `demo-scripts/43-scroll-wheel.cmgscript`. The structured `cmg run` form is available as `demo-scripts/44-scroll-wheel-runner.cmgscript`.
+
 ## Pointer Click Variants
 
 ```text

@@ -1,0 +1,16 @@
+test "scroll and wheel" {
+  setContent "<main style='height:1600px'><section id='pane' style='height:80px; overflow:auto; border:1px solid #999'><div style='height:500px'><button id='target' style='margin-top:360px'>Deep target</button></div></section></main>"
+
+  scrollTo bottom
+  expectEval "window.scrollY > 0"
+
+  scrollTo top
+  expectEval "window.scrollY == 0"
+
+  scrollBy 0 180 selector="#pane"
+  expectEval "document.querySelector('#pane').scrollTop > 0"
+
+  scrollTo 0 0 selector="#pane"
+  wheel "#pane" deltaY=120
+  expectEval "document.querySelector('#pane').scrollTop > 0"
+}

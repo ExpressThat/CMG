@@ -403,9 +403,13 @@ Wait failures include whether the selector, expression, or timeout argument caus
 ```text
 Line 4: mouseMove failed. mouseMove requires either one alias argument or x=<pixels> y=<pixels> options.
 Line 5: mouseDown failed. mouseDown target (900, 900) is outside the current viewport 800x600.
+Line 6: scrollBy failed. x must be a whole number.
+Line 7: scrollTo failed. scrollTo alias must be top, bottom, left, or right.
 ```
 
 Mouse actions validate target shape and viewport bounds before sending pointer events.
+
+Scroll actions validate whole-number coordinates and known aliases before changing the page. `scrollTo`, `scrollBy`, and `wheel` selector targets also report the rich-locator or CSS selector that could not be matched.
 
 ## Keyboard Failure
 

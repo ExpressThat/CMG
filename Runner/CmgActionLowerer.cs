@@ -71,7 +71,8 @@ public sealed partial class CmgActionLowerer
             "set" => LowerSet(action),
             "evaluate" or "expecteval" or "asserteval" or "expectexpression" or "assertexpression" or
             "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or
-            "dispatchevent" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or "draganddrop" or "listtabs" or "activatetab" or "closetab" =>
+            "dispatchevent" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or
+            "scrollto" or "scrollby" or "wheel" or "draganddrop" or "listtabs" or "activatetab" or "closetab" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),
             "opentab" or "waitfortab" or "waitforpopup" => [ToLine(action.Kind, action.Arguments, action.Options)],
@@ -245,6 +246,5 @@ public sealed partial class CmgActionLowerer
 
     private static string Quote(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
-
     private static string QuoteJs(string value) => Quote(value);
 }
