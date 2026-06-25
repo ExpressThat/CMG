@@ -9,7 +9,7 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var selectorArgument = new Argument<string>("selector")
         {
-            Description = "CSS selector for the element."
+            Description = "CSS selector or CMG rich locator for the element."
         };
 
         var htmlOption = new Option<bool>("--html")

@@ -8,7 +8,7 @@ cmg browser control getElement <selector> (--html | --screenshot) [--output <pat
 
 ## Arguments
 
-- `<selector>`: CSS selector for the target element.
+- `<selector>`: CSS selector or CMG rich locator for the target element.
 
 ## Options
 
@@ -20,7 +20,8 @@ cmg browser control getElement <selector> (--html | --screenshot) [--output <pat
 ## Behavior
 
 - Connects to the selected CMG browser automation endpoint.
-- Searches available page targets until the selector is found.
+- Searches available page targets until the selector or locator is found.
+- Supports the same rich locators as scripts, including `text=`, `role=`, `label=`, `testid=`, `placeholder=`, `alt=`, `title=`, and `xpath=`.
 - `--html` reads the selected element without scrolling.
 - `--screenshot` scrolls the selected element into view before capture.
 - Exactly one output mode must be provided: `--html` or `--screenshot`.
@@ -67,6 +68,7 @@ cmg browser launch https://example.com
 cmg --edge browser launch https://example.com
 cmg --firefox browser launch https://example.com
 cmg browser control getElement "h1" --html
+cmg browser control getElement "text=Save changes" --html
 cmg --edge browser control getElement "h1" --html
 cmg browser control getElement "#hero" --screenshot
 cmg browser control getElement ".card" --screenshot --output card.png

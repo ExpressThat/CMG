@@ -1,4 +1,5 @@
 using CMG.Browser.Scripting;
+using CMG.Runner;
 
 namespace CMG.Browser;
 
@@ -38,10 +39,11 @@ public sealed class BrowserControlService : IBrowserControlService
         var automationClient = automationClientFactory.Create(browserKind);
         try
         {
+            var resolved = ResolveSelector(state.RemoteDebuggingUrl, automationClient, selector);
             return outputMode switch
             {
-                ElementOutputMode.Html => ElementResult.ForHtml(automationClient.GetElementHtml(state.RemoteDebuggingUrl, selector)),
-                ElementOutputMode.Screenshot => ElementResult.ForScreenshot(automationClient.GetElementScreenshot(state.RemoteDebuggingUrl, selector)),
+                ElementOutputMode.Html => ElementResult.ForHtml(automationClient.GetElementHtml(state.RemoteDebuggingUrl, resolved)),
+                ElementOutputMode.Screenshot => ElementResult.ForScreenshot(automationClient.GetElementScreenshot(state.RemoteDebuggingUrl, resolved)),
                 _ => ElementResult.Fail("Unsupported element output mode.")
             };
         }
@@ -84,6 +86,16 @@ public sealed class BrowserControlService : IBrowserControlService
 
     private static string BuildBrowserNotRunningMessage(BrowserKind browserKind) =>
         $"No CMG-controlled {browserKind.DisplayName()} instance is running. Run 'cmg {browserKind.CommandOptionPrefix()}browser launch' first.";
+
+    private static string ResolveSelector(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, string selector)
+    {
+        foreach (var expression in CmgLocator.PrefixExpressions(selector, lineNumber: 0))
+        {
+            automationClient.Evaluate(remoteDebuggingUrl, expression);
+        }
+
+        return CmgLocator.Resolve(selector, lineNumber: 0).Selector;
+    }
 }
 
 public enum ElementOutputMode
