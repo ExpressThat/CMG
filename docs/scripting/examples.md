@@ -252,6 +252,19 @@ test "api health" tag=api {
 
 The request result appears in CLI output and reports. Failures include the expected and actual status or body mismatch reason.
 
+## Network Mocking
+
+```text
+test "mocked profile" {
+  navigate "https://example.com"
+  route "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
+  evaluate "fetch('/api/profile').then(r => r.text())"
+  waitForResponse "/api/profile"
+}
+```
+
+This patches page `fetch` calls and records matching responses for `waitForResponse`.
+
 ## Storage State
 
 ```text

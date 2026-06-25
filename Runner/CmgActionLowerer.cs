@@ -29,6 +29,9 @@ public sealed class CmgActionLowerer
             "localstorage" => [ToLine("evaluate", [BuildStorage(action, "localStorage")])],
             "sessionstorage" => [ToLine("evaluate", [BuildStorage(action, "sessionStorage")])],
             "cookie" => [ToLine("evaluate", [BuildCookie(action)])],
+            "route" or "mockresponse" => [ToLine("evaluate", [CmgNetworkScripts.Route(action)])],
+            "clearroutes" => [ToLine("evaluate", [CmgNetworkScripts.ClearRoutes()])],
+            "waitforresponse" => [ToLine("evaluate", [CmgNetworkScripts.WaitForResponse(action)])],
             "setviewport" => [ToLine("setViewport", [], action.Options)],
             "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "html" or "screenshot" or "asserttext" =>
                 LowerSelectorCommand(action.Kind, action),

@@ -30,6 +30,7 @@ public sealed partial class ChromeDevToolsClient
             {
                 writer.WriteString("expression", expression);
                 writer.WriteBoolean("returnByValue", true);
+                writer.WriteBoolean("awaitPromise", true);
             });
 
             if (!TryReadElement(response, ["result", "result"], out var result))

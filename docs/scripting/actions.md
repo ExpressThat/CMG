@@ -549,6 +549,22 @@ storageState load path="artifacts\auth.json"
 
 Saves or loads page storage state for the current browser page. The state includes `localStorage`, `sessionStorage`, and the current `document.cookie` string. This is a runner action and reports `STORAGE_STATE` output lines.
 
+### `route`, `mockResponse`, `waitForResponse`, And `clearRoutes`
+
+```text
+route "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
+waitForResponse "/api/profile" timeout=5000
+clearRoutes
+```
+
+Installs a page-level fetch route. Matching `fetch()` calls receive the configured mocked response and are recorded in the page response log. `waitForResponse` waits for a logged response whose URL contains the pattern.
+
+Notes:
+
+- Route matching uses substring matching.
+- This slice patches page `fetch`. XHR and browser-level request routing are planned separately.
+- Network actions do not move the virtual pointer. They are captured in reports and can be wrapped with `step` or captions for GIF narration.
+
 ## Planned Parity Actions
 
 Commands such as `intercept`, `route`, `apiRequest`, `uploadFiles`, `download`, `popup`, `frame`, device emulation, and full network mocking are reserved for parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.

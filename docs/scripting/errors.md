@@ -192,6 +192,14 @@ STEP FAIL line=3 action=apiRequest reason=Expected status 200, got 500.
 
 `apiRequest` failures include the reason in stderr and reports. The step output includes `API` and `API_BODY` lines when a response was received.
 
+## Network Wait Failure
+
+```text
+STEP FAIL line=6 action=waitForResponse reason=Line 6: evaluate failed. Timed out waiting for response /api/profile.
+```
+
+Install a matching `route` or make sure the page performs a matching `fetch()` before the timeout expires.
+
 ## Storage State Failure
 
 ```text
