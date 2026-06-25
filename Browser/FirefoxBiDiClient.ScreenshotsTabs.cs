@@ -191,12 +191,6 @@ public sealed partial class FirefoxBiDiClient
     public int InterceptWorkerRequests(string remoteDebuggingUrl, string? target, WorkerRouteOptions options) =>
         int.Parse(EvaluateWorker(remoteDebuggingUrl, target, BuildFirefoxWorkerInterceptScript(options)), System.Globalization.CultureInfo.InvariantCulture);
 
-    public void StartCoverage(string remoteDebuggingUrl, CoverageOptions options) =>
-        throw UnsupportedCoverageException();
-
-    public string StopCoverage(string remoteDebuggingUrl) =>
-        throw UnsupportedCoverageException();
-
     private static async Task<IReadOnlyList<BrowserWorkerInfo>> ListFirefoxWorkers(FirefoxBiDiSession session)
     {
         var response = await session.SendCommand("script.getRealms");
@@ -241,6 +235,4 @@ public sealed partial class FirefoxBiDiClient
     })()
     """;
 
-    private static ChromeDevToolsException UnsupportedCoverageException() =>
-        new("Coverage collection is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for startCoverage/stopCoverage.");
 }

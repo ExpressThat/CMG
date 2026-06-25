@@ -409,10 +409,10 @@ Use `listWorkers` to inspect available worker ids and URLs before targeting a sp
 
 ```text
 Line 3: startCoverage failed. startCoverage option js= must be true or false.
-Line 7: stopCoverage failed. Coverage collection is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for startCoverage/stopCoverage.
+Line 7: stopCoverage failed. JavaScript evaluation failed.
 ```
 
-Use Chrome or Edge for page coverage collection. Call `startCoverage` before the actions that should be measured and `stopCoverage` after them.
+Call `startCoverage` before the actions that should be measured and `stopCoverage` after them. If the page blocks script or stylesheet inspection, CMG reports the browser evaluation failure.
 
 ## HAR Failure
 
