@@ -184,6 +184,15 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_WebSocketActionsPassThrough()
+    {
+        var lowerer = new CmgActionLowerer();
+
+        Assert.Equal("routeWebSocket \"/socket\"", Assert.Single(lowerer.Lower(Node("routeWebSocket", ["/socket"], []))));
+        Assert.Equal("waitForWebSocket \"ready\"", Assert.Single(lowerer.Lower(Node("waitForWebSocket", ["ready"], []))));
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));

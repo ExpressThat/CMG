@@ -772,6 +772,20 @@ test "uses one-shot post intercept" {
 }
 ```
 
+## WebSocket Routing
+
+```text
+test "captures socket traffic" {
+  routeWebSocket "/socket" message="ready"
+  evaluate "window.__socket = new WebSocket('wss://example.com/socket')"
+  waitForWebSocket "/socket"
+  waitForWebSocketMessage "ready"
+  clearWebSocketRoutes
+}
+```
+
+WebSocket routing is page-side and works in direct browser-control scripts and `cmg run`. It does not move the virtual pointer, but reports and traces include `WEBSOCKET_ROUTE`, `WEBSOCKET`, and `WEBSOCKET_MESSAGE` lines.
+
 ## API Request
 
 ```text

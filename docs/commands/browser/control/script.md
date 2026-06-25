@@ -24,7 +24,7 @@ cmg --firefox browser control script --file <path>
 - Stops on the first failed action.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
-- Supports the same parity actions as the structured runner DSL, including `wait`, `caption`, `assertVisible`, `expectText`, `fill`, `check`, `uncheck`, `focus`, `blur`, `selectText`, `dblclick`, `rightClick`, `selectOption`, `dispatchEvent`, `keyDown`, `keyUp`, `insertText`, `mouseMove`, `mouseDown`, `mouseUp`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `waitForEvent`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNavigation`, `url`, `title`, `content`, `setContent`, `captureDialogs`, `setDialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `addScriptTag`, `addStyleTag`, `exposeFunction`, `exposeBinding`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHttpCredentials`, `clearHttpCredentials`, `setOffline`, `route`, `intercept`, `waitForRequest`, `waitForRequestFinished`, `waitForRequestFailed`, `waitForResponse`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `expectValue`, `expectAttribute`, `expectChecked`, `expectCount`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, `waitForTab`, and `waitForPopup`.
+- Supports the same parity actions as the structured runner DSL, including `wait`, `caption`, `assertVisible`, `expectText`, `fill`, `check`, `uncheck`, `focus`, `blur`, `selectText`, `dblclick`, `rightClick`, `selectOption`, `dispatchEvent`, `keyDown`, `keyUp`, `insertText`, `mouseMove`, `mouseDown`, `mouseUp`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `waitForEvent`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNavigation`, `url`, `title`, `content`, `setContent`, `captureDialogs`, `setDialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `addScriptTag`, `addStyleTag`, `exposeFunction`, `exposeBinding`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHttpCredentials`, `clearHttpCredentials`, `setOffline`, `route`, `intercept`, `routeWebSocket`, `waitForWebSocket`, `waitForWebSocketMessage`, `waitForRequest`, `waitForRequestFinished`, `waitForRequestFailed`, `waitForResponse`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `expectValue`, `expectAttribute`, `expectChecked`, `expectCount`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, `waitForTab`, and `waitForPopup`.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
 - Browser JavaScript dialogs are handled explicitly. CMG does not silently remove, accept, or dismiss dialogs through the browser protocol. Add `captureDialogs` or `setDialogBehavior` before the action that opens an `alert`, `confirm`, or `prompt`.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
@@ -105,29 +105,33 @@ REQUEST 052 {"method":"GET","url":"/api/profile","type":"fetch","body":""}
 REQUEST_FAILED 053 {"method":"GET","url":"/api/down","type":"fetch","mocked":true,"error":"profile service unavailable"}
 RESPONSE 054 {"url":"/api/profile","status":200,"mocked":true}
 ROUTES_CLEARED 055
-HAR_EXPORTED 056 C:\Projects\CMG\demo-output\network.har
-HAR_REPLAY 057 routes=1 C:\Projects\CMG\demo-output\network.har
-FRAME 058 frameClick
-FRAME_EVALUATE 059 Checkout
-CLOCK 060 1700000000000
-TICK 061 250 now=1700000000250
-CLOCK_RESTORED 062
-CONTEXT_CLEARED 063
-CONTEXT_RESET 064
-ACCESSIBILITY 065 C:\Projects\CMG\demo-output\a11y.json
-ACCESSIBLE 066 role=button name="Save"
-CONTEXT_CREATED 067 id=... target=... url="about:blank"
-CONTEXT_ACTIVE 068 ...
-CONTEXT_CLOSED 069 ...
-WORKER 070 id=... type=worker title="worker.js" url="https://example.com/worker.js"
-WORKER_INTERCEPT 071 routes=1 /api/profile
-COVERAGE_STARTED 072 js=true css=true
-COVERAGE 073 C:\Projects\CMG\demo-output\coverage.json
-FILE_READ 074 payload C:\Projects\CMG\fixtures\payload.json
-FILE_WRITTEN 075 C:\Projects\CMG\demo-output\result.txt
-FILE_APPENDED 076 C:\Projects\CMG\demo-output\result.txt
-FILE_OK 077 C:\Projects\CMG\demo-output\result.txt
-PDF 078 C:\Projects\CMG\demo-output\page.pdf
+WEBSOCKET_ROUTE 056 /socket
+WEBSOCKET 057 {"url":"/socket","routed":true}
+WEBSOCKET_MESSAGE 058 {"url":"/socket","data":"ready","routed":true}
+WEBSOCKET_ROUTES_CLEARED 059
+HAR_EXPORTED 060 C:\Projects\CMG\demo-output\network.har
+HAR_REPLAY 061 routes=1 C:\Projects\CMG\demo-output\network.har
+FRAME 062 frameClick
+FRAME_EVALUATE 063 Checkout
+CLOCK 064 1700000000000
+TICK 065 250 now=1700000000250
+CLOCK_RESTORED 066
+CONTEXT_CLEARED 067
+CONTEXT_RESET 068
+ACCESSIBILITY 069 C:\Projects\CMG\demo-output\a11y.json
+ACCESSIBLE 070 role=button name="Save"
+CONTEXT_CREATED 071 id=... target=... url="about:blank"
+CONTEXT_ACTIVE 072 ...
+CONTEXT_CLOSED 073 ...
+WORKER 074 id=... type=worker title="worker.js" url="https://example.com/worker.js"
+WORKER_INTERCEPT 075 routes=1 /api/profile
+COVERAGE_STARTED 076 js=true css=true
+COVERAGE 077 C:\Projects\CMG\demo-output\coverage.json
+FILE_READ 078 payload C:\Projects\CMG\fixtures\payload.json
+FILE_WRITTEN 079 C:\Projects\CMG\demo-output\result.txt
+FILE_APPENDED 080 C:\Projects\CMG\demo-output\result.txt
+FILE_OK 081 C:\Projects\CMG\demo-output\result.txt
+PDF 082 C:\Projects\CMG\demo-output\page.pdf
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 

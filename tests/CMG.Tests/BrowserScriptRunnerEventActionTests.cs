@@ -57,9 +57,22 @@ public sealed class BrowserScriptRunnerEventActionTests
     }
 
     [Fact]
+    public void RunText_WaitForEventWebSocketUsesWebSocketWait()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"success":true,"value":{"url":"/socket","routed":false}}""");
+
+        var result = Runner().RunText("waitForEvent websocket \"/socket\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("__cmgWebSockets", client.LastExpression);
+        Assert.Contains(result.StdoutLines, line => line.Contains("WEBSOCKET", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void RunText_WaitForEventReportsUnknownEvent()
     {
-        var result = Runner().RunText("waitForEvent websocket \"/socket\"", "debug", new FakeAutomationClient());
+        var result = Runner().RunText("waitForEvent workerclose \"worker.js\"", "debug", new FakeAutomationClient());
 
         Assert.False(result.Success);
         Assert.Contains("waitForEvent supports", result.Error);

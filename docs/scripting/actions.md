@@ -773,6 +773,8 @@ waitForEvent request "/api/profile"
 waitForEvent requestFinished "/api/profile"
 waitForEvent requestFailed "/api/profile"
 waitForEvent response pattern="/api/profile"
+waitForEvent websocket "/socket"
+waitForEvent websocketMessage "ready"
 waitForEvent download directory="demo-output" pattern="*.csv"
 ```
 
@@ -780,7 +782,7 @@ Provider-style event wait that maps to CMG's explicit wait actions. Use it when 
 
 Arguments:
 
-- First argument: event name. Supported values are `popup`, `page`, `tab`, `download`, `dialog`, `console`, `pageError`, `request`, `requestFinished`, `requestFailed`, and `response`.
+- First argument: event name. Supported values are `popup`, `page`, `tab`, `download`, `dialog`, `console`, `pageError`, `request`, `requestFinished`, `requestFailed`, `response`, `websocket`, and `websocketMessage`.
 - Second argument: matcher text for events that require a message or URL matcher. `popup`, `page`, `tab`, and `download` do not need a matcher.
 
 Options:
@@ -792,6 +794,7 @@ Options:
 Output:
 
 - Uses the output shape of the mapped action, such as `TAB_COUNT`, `DOWNLOAD`, `DIALOG`, `CONSOLE`, `PAGE_ERROR`, `REQUEST`, `REQUEST_FINISHED`, `REQUEST_FAILED`, or `RESPONSE`.
+- WebSocket event waits use `WEBSOCKET` or `WEBSOCKET_MESSAGE`.
 
 Failures:
 
@@ -1279,6 +1282,39 @@ Output:
 - `RESPONSE <line> <json>` when `waitForResponse` finds a matching response.
 - `HAR_EXPORTED <line> <path>` when a HAR file is written.
 - `HAR_REPLAY <line> routes=<count> <path>` when HAR routes are installed.
+
+### `routeWebSocket`, `clearWebSocketRoutes`, `waitForWebSocket`, And `waitForWebSocketMessage`
+
+```text
+routeWebSocket "/socket" message="ready"
+routeWebSocket "/socket" close=true code=1000 reason="done"
+waitForWebSocket "/socket" timeout=5000
+waitForWebSocketMessage "ready" timeout=5000
+clearWebSocketRoutes
+```
+
+Wraps the page `WebSocket` constructor in the current page and future navigations. Matching sockets are recorded, sent messages are captured on the socket record, and matching routes can dispatch a synthetic message on open or close the socket. This is CMG's page-side equivalent of provider WebSocket routing, so it works in direct scripts and `cmg run` while preserving report, trace, and GIF behavior.
+
+Arguments:
+
+- `pattern`: Required substring matched against the WebSocket URL.
+
+Options:
+
+- `message`: Optional synthetic message dispatched to matching sockets after `open`.
+- `close`: Optional boolean. Use `true` to close matching sockets after `open`.
+- `code`: Optional close code. Default is `1000`.
+- `reason`: Optional close reason. Default is `Closed by CMG routeWebSocket`.
+- `timeout`: Optional for waits. Default is `5000`.
+
+Output:
+
+- `WEBSOCKET_ROUTE <line> <pattern>` when a route is installed.
+- `WEBSOCKET <line> <json>` when a matching socket is found.
+- `WEBSOCKET_MESSAGE <line> <json>` when a matching message is found.
+- `WEBSOCKET_ROUTES_CLEARED <line>` when routes are cleared.
+
+These actions do not move the virtual pointer. Wrap them in `step`, `caption`, or `gif` blocks when a GIF should narrate WebSocket setup or waits.
 
 ### `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHttpCredentials`, `clearHttpCredentials`, And `setOffline`
 

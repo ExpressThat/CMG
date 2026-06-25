@@ -413,6 +413,15 @@ Line 10: intercept failed. intercept option delay= must be a non-negative intege
 
 Network waits use substring matching against page `fetch()` and `XMLHttpRequest` URLs recorded by CMG's page-side network patch. `waitForRequestFinished` waits for completed responses. `waitForRequestFailed` waits for rejected `fetch()` calls or XHR `error`, `abort`, or `timeout` events.
 
+## WebSocket Failure
+
+```text
+Line 4: routeWebSocket failed. routeWebSocket option close= must be true or false.
+Line 5: waitForWebSocketMessage failed. Timed out waiting for websocket message ready
+```
+
+WebSocket waits use substring matching against recorded socket URLs and message data. Install `routeWebSocket` before creating sockets that should receive synthetic route behavior.
+
 ## Network Environment Failure
 
 ```text
