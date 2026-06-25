@@ -75,7 +75,7 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 1, int.MaxValue);
         var max = GetIntOption(action, "max", 100);
         var iterations = 0;
-        while (EvaluateCondition(remoteDebuggingUrl, automationClient, action, context))
+        while (EvaluateCondition(remoteDebuggingUrl, automationClient, action, context, recorder))
         {
             if (iterations++ >= max)
             {

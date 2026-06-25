@@ -1,0 +1,23 @@
+set count 7
+
+switch evaluate "'checkout'" {
+  case "profile" {
+    caption "Profile flow"
+  }
+  case in "checkout" "billing" {
+    caption "Checkout flow"
+  }
+  default {
+    caption "Fallback flow"
+  }
+}
+
+switch ${count} {
+  case > 5 {
+    caption "Large batch"
+  }
+}
+
+if (evaluate "'checkout'" in "checkout" "billing" && ${count} > 5) {
+  caption "Inline action condition"
+}

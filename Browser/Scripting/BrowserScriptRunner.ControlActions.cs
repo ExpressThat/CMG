@@ -53,6 +53,12 @@ public sealed partial class BrowserScriptRunner
             case "catch":
             case "finally":
                 return [];
+            case "switch":
+                ExecuteSwitch(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
+            case "case":
+            case "default":
+                return [];
             default:
                 throw new ScriptExecutionException($"Unknown control action '{action.Name}'.");
         }
@@ -74,5 +80,8 @@ public sealed partial class BrowserScriptRunner
         name.Equals("continue", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("try", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("catch", StringComparison.OrdinalIgnoreCase) ||
-        name.Equals("finally", StringComparison.OrdinalIgnoreCase);
+        name.Equals("finally", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("switch", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("case", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("default", StringComparison.OrdinalIgnoreCase);
 }

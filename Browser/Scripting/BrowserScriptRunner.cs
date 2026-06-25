@@ -95,9 +95,9 @@ public sealed partial class BrowserScriptRunner
                 continue;
             }
 
-            if (IsConditionalBranch(actions[index].Name) || IsTryBranch(actions[index].Name))
+            if (IsConditionalBranch(actions[index].Name) || IsTryBranch(actions[index].Name) || IsSwitchBranch(actions[index].Name))
             {
-                var parent = IsTryBranch(actions[index].Name) ? "try" : "if";
+                var parent = IsTryBranch(actions[index].Name) ? "try" : IsSwitchBranch(actions[index].Name) ? "switch" : "if";
                 throw new ScriptActionFailedException($"Line {actions[index].LineNumber}: {actions[index].Name} failed. {actions[index].Name} must follow a {parent} block.");
             }
 
@@ -134,6 +134,10 @@ public sealed partial class BrowserScriptRunner
     private static bool IsTryBranch(string name) =>
         name.Equals("catch", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("finally", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsSwitchBranch(string name) =>
+        name.Equals("case", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("default", StringComparison.OrdinalIgnoreCase);
 
     private void ExecuteOneAction(
         string remoteDebuggingUrl,

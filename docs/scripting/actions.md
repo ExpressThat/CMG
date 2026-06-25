@@ -1663,15 +1663,42 @@ if (${count} > 5 && !(${mode} == "")) {
 }
 ```
 
-Conditions support static values, `${variables}`, strings, numbers, empty strings, `==`, `!=`, `>`, `>=`, `<`, `<=`, `&&`, `||`, and unary `!`. They can also run assertion or wait actions:
+Conditions support static values, `${variables}`, strings, numbers, empty strings, `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`, `matches`, `in`, `&&`, `||`, and unary `!`. The same comparison operators are available in `elseif`, `while`, and `switch` case matchers.
+
+Conditions can also run actions. Actions that emit a payload, such as `evaluate`, `title`, `url`, `content`, `textContent`, `innerText`, `inputValue`, `getAttribute`, selector evaluation, `readFile`, `fixture`, `call`, and `return`, can be compared with the same operators:
 
 ```text
-if (assertText "#status" "Saved") {
+if (evaluate "window.checkoutReady" == "true") {
   click "#continue"
 }
 ```
 
+Actions that do not emit a payload are boolean probes: they are true when they succeed and false when they fail. Pointer-aware actions used in conditions still use CMG's virtual pointer and pointer event path when GIF recording is active.
+
 Only the first matching branch runs. Branch bodies can contain any action, including nested control flow, loops, macros, `gif` blocks, pointer actions, and non-visual actions. Macros declared inside a branch are scoped to that branch body.
+
+### `switch`, `case`, And `default`
+
+```text
+switch title {
+  case "profile" {
+    caption "Profile flow"
+  }
+  case contains "Checkout" {
+    caption "Payment flow"
+  }
+  case matches "admin-.+" {
+    caption "Admin flow"
+  }
+  default {
+    caption "Fallback flow"
+  }
+}
+```
+
+`switch` evaluates one value and runs the first matching `case`. The switch subject can be static text, a variable, or a value-producing action such as `title` or `evaluate`. A bare `case "value"` is an equality match. A case can also start with `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`, `matches`, or `in`. `matches` uses a regular expression and `in` accepts one or more values.
+
+`default` is optional and runs when no case matches. A switch block can contain only `case` and `default` blocks, and can have only one default. Case/default bodies are scoped like `if` branches: variables set inside macros remain local to their macro calls, and helper macros declared inside a branch do not leak outward.
 
 ### `macro`, `call`, And `return`
 

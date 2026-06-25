@@ -127,6 +127,32 @@ Macros can receive plain values, variables, selectors, or temporary selectors fr
 
 This direct-script example is available as `demo-scripts/30-control-flow-macros.cmgscript` and imports `demo-scripts/30-shared-macros.cmgscript`. The structured `cmg run` form is available as `demo-scripts/31-control-flow-runner.cmgscript`.
 
+## Switch Control
+
+```text
+set count 7
+
+switch evaluate "'checkout'" {
+  case "profile" {
+    caption "Profile flow"
+  }
+  case in "checkout" "billing" {
+    caption "Checkout flow"
+  }
+  default {
+    caption "Fallback flow"
+  }
+}
+
+if (evaluate "'checkout'" in "checkout" "billing" && ${count} > 5) {
+  caption "Priority payment flow"
+}
+```
+
+`switch` supports equality cases plus `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`, `matches`, and `in`. The word operators `contains`, `matches`, and `in` also work in `if`, `elseif`, and `while` conditions. Value-producing actions such as `evaluate`, page getters, element getters, file reads, and macro calls can be used inline in those conditions.
+
+This direct-script example is available as `demo-scripts/39-switch-control.cmgscript`. The structured `cmg run` form is available as `demo-scripts/40-switch-control-runner.cmgscript`.
+
 ## Macro Scoping
 
 ```text

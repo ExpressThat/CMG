@@ -35,6 +35,7 @@ Supported structural blocks:
 - `if <condition> { ... }`
 - `elseif <condition> { ... }`
 - `else { ... }`
+- `switch <value> { case <value> { ... } default { ... } }`
 - `for <count> { ... }`
 - `for <variable> <start> <end> { ... }`
 - `repeat <count> { ... }`
@@ -93,23 +94,53 @@ Variables are referenced as `${name}`. A macro reads from its own parameters and
 
 ## Control Flow And Macros
 
-Conditions support static values, variables, `==`, `!=`, `>`, `>=`, `<`, `<=`, `&&`, `||`, unary `!`, strings, numbers, and empty strings:
+Conditions support static values, variables, `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`, `matches`, `in`, `&&`, `||`, unary `!`, strings, numbers, and empty strings:
 
 ```text
 if (${count} > 5 && !(${mode} == "")) {
   click "#save"
 } elseif (${mode} == "preview") {
   hover "#save"
+} elseif (${mode} in "checkout" "billing") {
+  caption "Payment flow"
+} elseif (evaluate "window.checkoutReady" == "true") {
+  caption "Browser state is ready"
 } else {
   caption "Nothing to save"
 }
 ```
 
-Conditions can also run assertion or wait actions:
+Conditions can also run actions. Actions that emit a payload, such as `evaluate`, `title`, element getters, file reads, and `call`, can be compared with the same operators. Actions that do not emit a payload are treated as true when they succeed and false when they fail:
 
 ```text
 if (assertText "#status" "Saved") {
   click "#continue"
+}
+```
+
+Use `switch` when a value has several branches. `case` defaults to equality and also supports `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`, `matches`, and `in`:
+
+```text
+switch ${mode} {
+  case "profile" {
+    caption "Profile flow"
+  }
+  case in "checkout" "billing" {
+    caption "Payment flow"
+  }
+  default {
+    caption "Fallback flow"
+  }
+}
+```
+
+The `switch` subject can also be a value-producing action:
+
+```text
+switch title {
+  case contains "Checkout" {
+    caption "Checkout page"
+  }
 }
 ```
 

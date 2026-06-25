@@ -610,10 +610,13 @@ continue must be inside a loop.
 Line 10: catch failed. catch must follow a try block.
 Line 12: try failed. catch must appear before finally.
 Line 9: if failed. Invalid action condition 'assertText'.
+Line 4: case failed. case must follow a switch block.
+Line 6: switch failed. switch can contain only case or default blocks.
+Line 7: switch failed. switch can have only one default block.
 ```
 
 Define macros before calling them. Top-level macros in `cmg run` are registered for each test; macros declared inside another macro, branch, or loop are scoped to that block and are not available afterward.
 
-Loop variables and macro parameters are scoped to the loop iteration or macro call. Use `set` when a value must be available after the block completes.
+Loop variables and macro parameters are scoped to the loop iteration or macro call. `if`, `elseif`, `while`, and `switch` comparisons support `contains`, `matches`, and `in` in addition to numeric/string comparison operators. Inline actions in conditions are true when they succeed; value-producing actions can be compared by payload. Use `set` when a value must be available after the block completes.
 
 `try` can recover from expected action failures with `catch`. If the `catch` or `finally` body fails, that new failure becomes the script failure. If there is no `catch`, `finally` still runs and the original failure is reported.

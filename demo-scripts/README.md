@@ -120,6 +120,8 @@ dotnet run -- --firefox browser close
 - `36-runner-selection.cmgscript`: Demonstrates runner `only=true` focus and `skip=true` metadata.
 - `37-evaluated-assertions.cmgscript`: Demonstrates `expectEval`, `assertEval`, and expression matchers.
 - `38-before-after-all.cmgscript`: Demonstrates root and suite `beforeAll` / `afterAll` hooks.
+- `39-switch-control.cmgscript`: Demonstrates direct-script `switch`, `case`, `default`, and shared word comparison operators.
+- `40-switch-control-runner.cmgscript`: Demonstrates the same switch control flow in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

@@ -15,7 +15,7 @@ public sealed partial class BrowserScriptRunner
         foreach (var branch in branches)
         {
             var matches = branch.Name.Equals("else", StringComparison.OrdinalIgnoreCase) ||
-                EvaluateCondition(remoteDebuggingUrl, automationClient, branch, context);
+                EvaluateCondition(remoteDebuggingUrl, automationClient, branch, context, recorder);
             if (!matches) continue;
             WithMacroScope(context, () =>
                 ExecuteActions(remoteDebuggingUrl, automationClient, branch.Children, context, recorder, output));
@@ -27,7 +27,8 @@ public sealed partial class BrowserScriptRunner
         string remoteDebuggingUrl,
         IBrowserAutomationClient automationClient,
         BrowserScriptAction action,
-        ScriptExecutionContext context)
+        ScriptExecutionContext context,
+        Recording.ScriptGifRecorder? recorder)
     {
         if (action.Arguments.Count is 0)
         {
@@ -35,8 +36,13 @@ public sealed partial class BrowserScriptRunner
         }
 
         var condition = StripConditionParens(string.Join(' ', action.Arguments.Select(argument => ExpandVariables(argument, context))));
+        if (TryEvaluateInlineActionCondition(remoteDebuggingUrl, automationClient, condition, context, recorder, out var actionResult))
+        {
+            return actionResult;
+        }
+
         return LooksLikeActionCondition(condition)
-            ? EvaluateActionCondition(remoteDebuggingUrl, automationClient, condition, context)
+            ? EvaluateActionCondition(remoteDebuggingUrl, automationClient, condition, context, recorder)
             : new ConditionExpression(condition).Evaluate();
     }
 
@@ -44,7 +50,8 @@ public sealed partial class BrowserScriptRunner
         string remoteDebuggingUrl,
         IBrowserAutomationClient automationClient,
         string condition,
-        ScriptExecutionContext context)
+        ScriptExecutionContext context,
+        Recording.ScriptGifRecorder? recorder)
     {
         var parsed = parser.Parse(condition);
         if (!parsed.Success || parsed.Actions.Count is not 1)
@@ -54,7 +61,7 @@ public sealed partial class BrowserScriptRunner
 
         try
         {
-            ExecuteAction(remoteDebuggingUrl, automationClient, ExpandVariables(parsed.Actions[0], context), context, recorder: null);
+            ExecuteConditionAction(remoteDebuggingUrl, automationClient, ExpandVariables(parsed.Actions[0], context), context, recorder);
             return true;
         }
         catch (Exception exception) when (exception is ScriptExecutionException or ChromeDevToolsException or ElementNotFoundException)
@@ -110,6 +117,12 @@ public sealed partial class BrowserScriptRunner
                 if (index >= 0) return Compare(value[..index], value[(index + op.Length)..], op);
             }
 
+            foreach (var op in new[] { "contains", "matches", "in" })
+            {
+                var index = IndexTopLevelWord(value, op);
+                if (index >= 0) return Match(value[..index], value[(index + op.Length)..], op);
+            }
+
             return Truthy(Unquote(value.Trim()));
         }
 
@@ -125,6 +138,19 @@ public sealed partial class BrowserScriptRunner
 
             var compare = string.Compare(l, r, StringComparison.Ordinal);
             return op switch { "==" => compare == 0, "!=" => compare != 0, ">" => compare > 0, "<" => compare < 0, ">=" => compare >= 0, "<=" => compare <= 0, _ => false };
+        }
+
+        private static bool Match(string left, string right, string op)
+        {
+            var l = Unquote(left.Trim());
+            var r = Unquote(right.Trim());
+            return op switch
+            {
+                "contains" => l.Contains(r, StringComparison.Ordinal),
+                "matches" => System.Text.RegularExpressions.Regex.IsMatch(l, r),
+                "in" => SplitValues(r).Any(value => string.Equals(l, value, StringComparison.Ordinal)),
+                _ => false
+            };
         }
 
         private static bool Truthy(string value) =>
@@ -160,6 +186,22 @@ public sealed partial class BrowserScriptRunner
             }
             return -1;
         }
+
+        private static int IndexTopLevelWord(string value, string token)
+        {
+            for (var index = 0; index <= value.Length - token.Length; index++)
+            {
+                if (Depth(value, index) is not 0 || !value.AsSpan(index, token.Length).SequenceEqual(token)) continue;
+                var before = index is 0 || char.IsWhiteSpace(value[index - 1]);
+                var afterIndex = index + token.Length;
+                var after = afterIndex >= value.Length || char.IsWhiteSpace(value[afterIndex]);
+                if (before && after) return index;
+            }
+            return -1;
+        }
+
+        private static IEnumerable<string> SplitValues(string value) =>
+            value.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(Unquote);
 
         private static int Depth(string value, int until)
         {
