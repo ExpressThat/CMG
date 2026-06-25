@@ -1198,7 +1198,7 @@ workerEvaluate "self.location.href" target="worker.js"
 workerIntercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json" target="worker.js"
 ```
 
-Inspects and controls Chrome/Edge worker targets exposed by remote debugging. `workerIntercept` patches a matched worker's `fetch()` function so worker-originated requests can receive deterministic responses. The optional `target` option can be a worker id or URL substring; when omitted, CMG uses the first available worker.
+Inspects and controls worker targets exposed by the browser automation provider. `workerIntercept` patches a matched worker's `fetch()` function so worker-originated requests can receive deterministic responses. The optional `target` option can be a worker id or URL substring; when omitted, CMG uses the first available worker.
 
 Options:
 
@@ -1215,7 +1215,7 @@ Output:
 - `WORKER_EVALUATE <line> <result>` for worker evaluation.
 - `WORKER_INTERCEPT <line> routes=<count> <pattern>` when a worker intercept is installed.
 
-Worker actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful. Firefox supports `listWorkers` and `workerEvaluate` through WebDriver BiDi worker realms; `workerIntercept` requires Chrome or Edge.
+Worker actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful.
 
 ### `startCoverage` And `stopCoverage`
 

@@ -189,7 +189,7 @@ public sealed partial class FirefoxBiDiClient
         });
 
     public int InterceptWorkerRequests(string remoteDebuggingUrl, string? target, WorkerRouteOptions options) =>
-        throw UnsupportedWorkerException();
+        int.Parse(EvaluateWorker(remoteDebuggingUrl, target, BuildFirefoxWorkerInterceptScript(options)), System.Globalization.CultureInfo.InvariantCulture);
 
     public void StartCoverage(string remoteDebuggingUrl, CoverageOptions options) =>
         throw UnsupportedCoverageException();
@@ -225,8 +225,21 @@ public sealed partial class FirefoxBiDiClient
         return new BrowserWorkerInfo(id, type, type, origin ?? string.Empty);
     }
 
-    private static ChromeDevToolsException UnsupportedWorkerException() =>
-        new("Worker request interception is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for workerIntercept.");
+    private static string BuildFirefoxWorkerInterceptScript(WorkerRouteOptions options) => $$"""
+    (() => {
+      const routes = globalThis.__cmgWorkerRoutes ||= [];
+      routes.push({ pattern: {{BrowserDomScripts.JsonString(options.Pattern)}}, status: {{options.Status}}, body: {{BrowserDomScripts.JsonString(options.Body)}}, contentType: {{BrowserDomScripts.JsonString(options.ContentType)}} });
+      if (!globalThis.__cmgOriginalFetch) {
+        globalThis.__cmgOriginalFetch = globalThis.fetch?.bind(globalThis);
+        globalThis.fetch = async (input, init) => {
+          const url = typeof input === 'string' ? input : input?.url ?? '';
+          const route = routes.find(item => url.includes(item.pattern));
+          return route ? new Response(route.body, { status: route.status, headers: { 'content-type': route.contentType } }) : globalThis.__cmgOriginalFetch(input, init);
+        };
+      }
+      return routes.length.toString();
+    })()
+    """;
 
     private static ChromeDevToolsException UnsupportedCoverageException() =>
         new("Coverage collection is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for startCoverage/stopCoverage.");
