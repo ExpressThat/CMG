@@ -506,13 +506,17 @@ expectTitle "Checkout"
 
 Fails unless the current URL or title contains the expected text.
 
-### `waitForURL`
+### `waitForUrl`
 
 ```text
-waitForURL "/dashboard"
+waitForUrl "/dashboard" timeout=10000
 ```
 
-Checks the current URL and fails with a clear reason when it does not contain the expected text. Full retrying URL waits are planned.
+Polls the current URL until it contains the expected text, then reports the matched URL. If the timeout expires, the failure reason includes the expected text, timeout, and last URL seen.
+
+Options:
+
+- `timeout`: Optional timeout in milliseconds. Default is `5000`.
 
 ### `localStorage`, `sessionStorage`, And `cookie`
 

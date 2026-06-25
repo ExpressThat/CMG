@@ -127,7 +127,27 @@ public sealed class CmgActionLowerer
     private static string BuildWaitForUrl(CmgNode action)
     {
         var expected = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
-        return $"(() => {{ if (!location.href.includes({QuoteJs(expected)})) throw new Error(`URL did not match {expected}: ${{location.href}}`); return location.href; }})()";
+        var timeout = action.Options.TryGetValue("timeout", out var value) && int.TryParse(value, out var parsed) ? parsed : 5000;
+        return $$"""
+        new Promise((resolve, reject) => {
+          const expected = {{QuoteJs(expected)}};
+          const deadline = Date.now() + {{timeout}};
+          const poll = () => {
+            if (location.href.includes(expected)) {
+              resolve(location.href);
+              return;
+            }
+
+            if (Date.now() >= deadline) {
+              reject(new Error(`URL did not match ${expected} within {{timeout}}ms. Last URL: ${location.href}`));
+              return;
+            }
+
+            setTimeout(poll, 50);
+          };
+          poll();
+        })
+        """;
     }
 
     private static string BuildStorage(CmgNode action, string storage)

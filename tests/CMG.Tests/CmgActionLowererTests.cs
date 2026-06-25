@@ -73,6 +73,17 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_WaitForUrlPollsUntilTimeout()
+    {
+        var action = Node("waitForUrl", ["checkout"], []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(action));
+
+        Assert.Contains("new Promise", line);
+        Assert.Contains("within 5000ms", line);
+        Assert.Contains("setTimeout(poll, 50)", line);
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));
