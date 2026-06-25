@@ -48,6 +48,26 @@ public sealed class BrowserScriptRunnerNetworkTests
     }
 
     [Fact]
+    public void RunText_RouteSupportsDelayOption()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("route \"/api\" delay=250", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("delay: 250", client.LastExpression);
+        Assert.Contains("__cmgDelay", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_RouteRejectsInvalidDelayOption()
+    {
+        var result = Runner().RunText("route \"/api\" delay=never", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("delay= must be a non-negative integer", result.Error);
+    }
+
+    [Fact]
     public void RunText_ClearRoutesOutputsParseableLine()
     {
         var result = Runner().RunText("clearRoutes", "debug", new FakeAutomationClient());

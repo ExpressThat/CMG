@@ -12,7 +12,8 @@ public static class CmgNetworkScripts
         var error = action.Options.TryGetValue("error", out var errorValue) ? errorValue : "Request aborted by CMG route";
         var method = action.Options.TryGetValue("method", out var methodValue) ? methodValue.ToUpperInvariant() : string.Empty;
         var times = TryReadTimes(action, out var timesValue) ? timesValue.ToString() : "null";
-        return InstallPrelude() + $"window.__cmgRoutes.push({{ pattern: {Quote(pattern)}, method: {Quote(method)}, times: {times}, status: {status}, body: {Quote(body)}, contentType: {Quote(contentType)}, abort: {abort}, error: {Quote(error)} }}); true";
+        var delay = action.Options.TryGetValue("delay", out var delayValue) ? delayValue : "0";
+        return InstallPrelude() + $"window.__cmgRoutes.push({{ pattern: {Quote(pattern)}, method: {Quote(method)}, times: {times}, delay: {delay}, status: {status}, body: {Quote(body)}, contentType: {Quote(contentType)}, abort: {abort}, error: {Quote(error)} }}); true";
     }
 
     public static string ClearRoutes() => "window.__cmgRoutes = []; true";
@@ -97,6 +98,7 @@ public static class CmgNetworkScripts
           window.__cmgRequests = window.__cmgRequests || [];
           window.__cmgResponses = window.__cmgResponses || [];
           window.__cmgRequestFailures = window.__cmgRequestFailures || [];
+          window.__cmgDelay = ms => new Promise(resolve => setTimeout(resolve, Math.max(0, Number(ms) || 0)));
           window.__cmgTakeRoute = (url, method) => {
             const index = window.__cmgRoutes.findIndex(route =>
               url.includes(route.pattern) &&
@@ -118,6 +120,7 @@ public static class CmgNetworkScripts
               window.__cmgRequests.push({ method, url, type: 'fetch', body: init?.body ? String(init.body) : '' });
               const route = window.__cmgTakeRoute(url, method);
               if (route) {
+                await window.__cmgDelay(route.delay);
                 if (route.abort) {
                   window.__cmgRequestFailures.push({ method, url, type: 'fetch', mocked: true, error: route.error || 'Request aborted by CMG route' });
                   throw new TypeError(route.error || 'Request aborted by CMG route');
@@ -162,30 +165,30 @@ public static class CmgNetworkScripts
                   return send(body);
                 }
                 if (route.abort) {
-                  window.__cmgRequestFailures.push({ method, url, type: 'xhr', mocked: true, error: route.error || 'Request aborted by CMG route' });
                   Object.defineProperty(xhr, 'readyState', { configurable: true, get: () => 4 });
                   Object.defineProperty(xhr, 'status', { configurable: true, get: () => 0 });
                   setTimeout(() => {
+                    window.__cmgRequestFailures.push({ method, url, type: 'xhr', mocked: true, error: route.error || 'Request aborted by CMG route' });
                     xhr.onreadystatechange?.();
                     xhr.onerror?.(new Event('error'));
                     xhr.dispatchEvent(new Event('readystatechange'));
                     xhr.dispatchEvent(new Event('error'));
                     xhr.dispatchEvent(new Event('loadend'));
-                  }, 0);
+                  }, Math.max(0, Number(route.delay) || 0));
                   return;
                 }
-                window.__cmgResponses.push({ method, url, status: route.status, mocked: true, type: 'xhr', body: route.body, contentType: route.contentType });
                 Object.defineProperty(xhr, 'readyState', { configurable: true, get: () => 4 });
                 Object.defineProperty(xhr, 'status', { configurable: true, get: () => route.status });
                 Object.defineProperty(xhr, 'responseText', { configurable: true, get: () => route.body });
                 Object.defineProperty(xhr, 'response', { configurable: true, get: () => route.body });
                 setTimeout(() => {
+                  window.__cmgResponses.push({ method, url, status: route.status, mocked: true, type: 'xhr', body: route.body, contentType: route.contentType });
                   xhr.onreadystatechange?.();
                   xhr.onload?.();
                   xhr.dispatchEvent(new Event('readystatechange'));
                   xhr.dispatchEvent(new Event('load'));
                   xhr.dispatchEvent(new Event('loadend'));
-                }, 0);
+                }, Math.max(0, Number(route.delay) || 0));
               };
               return xhr;
             };

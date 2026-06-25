@@ -23,6 +23,12 @@ public sealed partial class BrowserScriptRunner
         {
             throw new ScriptExecutionException($"{action.Name} option times= must be a positive integer.");
         }
+
+        if (action.Options.TryGetValue("delay", out var delay) &&
+            (!int.TryParse(delay, out var parsedDelay) || parsedDelay < 0))
+        {
+            throw new ScriptExecutionException($"{action.Name} option delay= must be a non-negative integer.");
+        }
     }
 
     private static IReadOnlyList<string> ExecuteClearRoutes(

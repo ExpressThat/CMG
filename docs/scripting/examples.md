@@ -304,13 +304,13 @@ The request result appears in CLI output and reports. Failures include the expec
 ```text
 test "mocked profile" {
   navigate "https://example.com"
-  intercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
+  intercept "/api/profile" delay=250 status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
   evaluate "fetch('/api/profile').then(r => r.text())"
   waitForResponse "/api/profile"
 }
 ```
 
-This patches page `fetch` and `XMLHttpRequest` calls and records matching responses for `waitForResponse`.
+This patches page `fetch` and `XMLHttpRequest` calls and records matching responses for `waitForResponse`. Use `delay=` to simulate a slow mocked response without moving the virtual pointer.
 
 ## HAR Replay
 

@@ -40,6 +40,17 @@ public sealed class CmgNetworkScriptsTests
     }
 
     [Fact]
+    public void Route_CanDelayMatchingRequests()
+    {
+        var action = Node("route", ["/api"], new Dictionary<string, string> { ["delay"] = "250" });
+        var script = CmgNetworkScripts.Route(action);
+
+        Assert.Contains("delay: 250", script);
+        Assert.Contains("__cmgDelay", script);
+        Assert.Contains("Number(route.delay)", script);
+    }
+
+    [Fact]
     public void WaitForResponse_ReportsTimeoutPattern()
     {
         var action = Node("waitForResponse", ["/api"], new Dictionary<string, string> { ["timeout"] = "1000" });

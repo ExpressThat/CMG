@@ -1101,7 +1101,7 @@ Saves or loads page storage state for the current browser page. The state includ
 ```text
 route "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
 intercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
-intercept "/api/profile" method=POST times=1 status=201 body="{\"saved\":true}"
+intercept "/api/profile" method=POST times=1 delay=250 status=201 body="{\"saved\":true}"
 intercept "/api/down" abort=true error="offline"
 waitForResponse "/api/profile" timeout=5000
 waitForRequest "/api/profile" timeout=5000
@@ -1111,7 +1111,7 @@ replayHar path="artifacts\network.har"
 clearRoutes
 ```
 
-Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Use `method=` to restrict a route to one HTTP method and `times=` to remove it after a fixed number of matches. Use `abort=true` or `action=abort` to reject matching requests instead; aborted matches are recorded in the request failure log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest`, `waitForRequestFailed`, and `waitForResponse` wait for logged entries whose URL contains the pattern.
+Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Use `method=` to restrict a route to one HTTP method, `times=` to remove it after a fixed number of matches, and `delay=` to simulate response latency. Use `abort=true` or `action=abort` to reject matching requests instead; aborted matches are recorded in the request failure log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest`, `waitForRequestFailed`, and `waitForResponse` wait for logged entries whose URL contains the pattern.
 
 Options:
 
@@ -1120,6 +1120,7 @@ Options:
 - `contentType`: Optional mocked response content type. Default is `text/plain`.
 - `method`: Optional HTTP method filter, for example `GET` or `POST`.
 - `times`: Optional positive integer. The route is removed after that many matches.
+- `delay`: Optional non-negative integer in milliseconds. The mocked fulfill or abort waits for this duration.
 - `abort`: Optional boolean-like route abort switch. Use `true` to fail matching requests.
 - `action`: Optional route action. Use `abort` to fail matching requests.
 - `error`: Optional failure message for aborted routes. Default is `Request aborted by CMG route`.
