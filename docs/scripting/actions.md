@@ -452,6 +452,32 @@ Output:
 
 Init-script actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful.
 
+## `addScriptTag` And `addStyleTag`
+
+```text
+addScriptTag "window.__runtimeTag = true;"
+addScriptTag url="https://example.com/app.js"
+addScriptTag path="fixtures\runtime.js"
+addStyleTag "body { outline: 2px solid red; }"
+addStyleTag url="https://example.com/app.css"
+```
+
+Injects a runtime `<script>`, `<style>`, or stylesheet `<link>` into the current page. These actions are available in direct browser-control scripts and `cmg run`.
+
+Inputs:
+
+- `url`: Optional script or stylesheet URL.
+- `path`: Optional local file path whose content is injected.
+- `content`: Optional inline content.
+- inline positional content: Optional single content argument when no option is used.
+
+Output:
+
+- `SCRIPT_TAG <line> <content|url>` when a script tag is added.
+- `STYLE_TAG <line> <content|url>` when a style tag or stylesheet link is added.
+
+Tag injection actions do not move the virtual pointer. Wrap them in `step`, `caption`, or a `gif` block when the recording should narrate page setup.
+
 ## `setViewport`
 
 ```text

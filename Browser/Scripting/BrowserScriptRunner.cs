@@ -120,6 +120,7 @@ public sealed partial class BrowserScriptRunner
             "url" or "title" or "content" or "setcontent" =>
                 ExecutePageContentAction(remoteDebuggingUrl, automationClient, action),
             "addinitscript" or "evaluateonnewdocument" => ExecuteAddInitScript(remoteDebuggingUrl, automationClient, action),
+            "addscripttag" or "addstyletag" => ExecuteAddTag(remoteDebuggingUrl, automationClient, action),
             "setviewport" => ExecuteSetViewport(remoteDebuggingUrl, automationClient, action),
             "apirequest" => ExecuteApiRequest(action),
             "storagestate" => ExecuteStorageState(remoteDebuggingUrl, automationClient, action),

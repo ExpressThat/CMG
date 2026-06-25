@@ -55,6 +55,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("stopCoverage", null, "stopCoverage")]
     [InlineData("addInitScript", "window.__ready = true;", "addInitScript \"window.__ready = true;\"")]
     [InlineData("evaluateOnNewDocument", "window.__ready = true;", "evaluateOnNewDocument \"window.__ready = true;\"")]
+    [InlineData("addScriptTag", "window.__tag = true;", "addScriptTag \"window.__tag = true;\"")]
+    [InlineData("addStyleTag", "body { color: red; }", "addStyleTag \"body { color: red; }\"")]
     [InlineData("setOffline", "true", "setOffline \"true\"")]
     [InlineData("clearExtraHTTPHeaders", null, "clearExtraHTTPHeaders")]
     [InlineData("apiRequest", "GET", "apiRequest \"GET\" \"https://example.test\"", "https://example.test")]
