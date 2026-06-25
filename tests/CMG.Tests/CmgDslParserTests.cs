@@ -182,4 +182,26 @@ public sealed class CmgDslParserTests
         Assert.Equal("#save", action.Arguments[0]);
         Assert.Equal("5000", action.Options["timeout"]);
     }
+
+    [Fact]
+    public void Parse_AllowsMessySpacingInsideNestedRunnerBlocks()
+    {
+        var result = new CmgDslParser().Parse("flow.cmgscript", """
+                    describe          "spacing"          {
+                              it          "runs"          {
+                                        if          true          {
+                                                  click          "#save"          timeout=5000
+                                        }          else          {
+                                                  caption          "not ready"
+                                        }
+                              }
+                    }
+        """);
+
+        Assert.True(result.Success, result.Error);
+        var test = Assert.Single(Assert.Single(result.Document!.Nodes).Children);
+        Assert.Equal("it", test.Kind);
+        Assert.Equal(["if", "else"], test.Children.Select(node => node.Kind.ToLowerInvariant()));
+        Assert.Equal("#save", test.Children[0].Children[0].Arguments[0]);
+    }
 }

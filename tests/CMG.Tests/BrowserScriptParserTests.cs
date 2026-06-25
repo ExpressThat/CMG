@@ -82,4 +82,23 @@ public sealed class BrowserScriptParserTests
                 Assert.Equal("Done", action.Arguments[0]);
             });
     }
+
+    [Fact]
+    public void Parse_AllowsMessySpacingInsideNestedBlocks()
+    {
+        var result = new BrowserScriptParser().Parse("""
+                    if          true          {
+                              click          "#save"          timeout=5000
+                    }          else          {
+                              caption          "not ready"
+                    }
+        """);
+
+        Assert.True(result.Success, result.Error);
+        var action = result.Actions[0];
+        Assert.Equal("if", action.Name);
+        Assert.Equal("true", action.Arguments[0]);
+        Assert.Equal("#save", Assert.Single(action.Children).Arguments[0]);
+        Assert.Equal("else", result.Actions[1].Name);
+    }
 }
