@@ -887,6 +887,29 @@ Output:
 
 Worker actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful. Firefox runs fail with an explicit unsupported-provider reason until CMG has a BiDi-backed worker target implementation.
 
+### `startCoverage` And `stopCoverage`
+
+```text
+startCoverage js=true css=true
+navigate "https://example.com"
+stopCoverage path="artifacts\coverage.json"
+```
+
+Collects JavaScript precise coverage and CSS rule usage from the current Chrome/Edge page target. `startCoverage` enables collection; `stopCoverage` stops collection and returns or writes a JSON object with `js` and `css` arrays.
+
+Options:
+
+- `js`: Optional boolean for `startCoverage`. Default is `true`.
+- `css`: Optional boolean for `startCoverage`. Default is `true`.
+- `path`: Optional output path for `stopCoverage`. Without it, stdout receives the JSON payload.
+
+Output:
+
+- `COVERAGE_STARTED <line> js=<true|false> css=<true|false>` when collection starts.
+- `COVERAGE <line> <path-or-json>` when coverage is stopped.
+
+Coverage actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions for GIF narration. Firefox runs fail with an explicit unsupported-provider reason until CMG has a BiDi-backed coverage implementation.
+
 ### `expectScreenshot`
 
 ```text

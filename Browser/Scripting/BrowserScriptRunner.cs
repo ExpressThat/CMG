@@ -127,6 +127,7 @@ public sealed partial class BrowserScriptRunner
                 ExecuteBrowserContextAction(remoteDebuggingUrl, automationClient, action, context),
             "listworkers" or "waitforworker" or "workerevaluate" or "workerintercept" =>
                 ExecuteWorkerAction(remoteDebuggingUrl, automationClient, action),
+            "startcoverage" or "stopcoverage" => ExecuteCoverageAction(remoteDebuggingUrl, automationClient, action),
             "accessibilitysnapshot" => ExecuteAccessibilitySnapshot(remoteDebuggingUrl, automationClient, action),
             "expectaccessible" => ExecuteExpectAccessible(remoteDebuggingUrl, automationClient, action),
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),

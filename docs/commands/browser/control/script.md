@@ -24,7 +24,7 @@ cmg --firefox browser control script --file <path>
 - Stops on the first failed action.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
-- Supports the same parity actions as the structured runner DSL, including `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `intercept`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, and `waitForTab`.
+- Supports the same parity actions as the structured runner DSL, including `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `startCoverage`, `stopCoverage`, `intercept`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, and `waitForTab`.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
 - Browser JavaScript dialogs and leave-page prompts are automatically accepted while CMG is connected to the page, including alerts, confirms, prompts, and before-unload confirmation prompts.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
@@ -81,11 +81,13 @@ CONTEXT_ACTIVE 032 ...
 CONTEXT_CLOSED 033 ...
 WORKER 034 id=... type=worker title="worker.js" url="https://example.com/worker.js"
 WORKER_INTERCEPT 035 routes=1 /api/profile
-FILE_READ 036 payload C:\Projects\CMG\fixtures\payload.json
-FILE_WRITTEN 037 C:\Projects\CMG\demo-output\result.txt
-FILE_APPENDED 038 C:\Projects\CMG\demo-output\result.txt
-FILE_OK 039 C:\Projects\CMG\demo-output\result.txt
-PDF 040 C:\Projects\CMG\demo-output\page.pdf
+COVERAGE_STARTED 036 js=true css=true
+COVERAGE 037 C:\Projects\CMG\demo-output\coverage.json
+FILE_READ 038 payload C:\Projects\CMG\fixtures\payload.json
+FILE_WRITTEN 039 C:\Projects\CMG\demo-output\result.txt
+FILE_APPENDED 040 C:\Projects\CMG\demo-output\result.txt
+FILE_OK 041 C:\Projects\CMG\demo-output\result.txt
+PDF 042 C:\Projects\CMG\demo-output\page.pdf
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 

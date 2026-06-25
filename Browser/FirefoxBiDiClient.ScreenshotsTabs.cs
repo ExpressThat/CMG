@@ -107,9 +107,18 @@ public sealed partial class FirefoxBiDiClient
     public int InterceptWorkerRequests(string remoteDebuggingUrl, string? target, WorkerRouteOptions options) =>
         throw UnsupportedWorkerException();
 
+    public void StartCoverage(string remoteDebuggingUrl, CoverageOptions options) =>
+        throw UnsupportedCoverageException();
+
+    public string StopCoverage(string remoteDebuggingUrl) =>
+        throw UnsupportedCoverageException();
+
     private static ChromeDevToolsException UnsupportedContextException() =>
         new("Isolated browser contexts are not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for newContext/useContext/closeContext.");
 
     private static ChromeDevToolsException UnsupportedWorkerException() =>
         new("Worker target control is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for listWorkers/workerEvaluate/workerIntercept.");
+
+    private static ChromeDevToolsException UnsupportedCoverageException() =>
+        new("Coverage collection is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for startCoverage/stopCoverage.");
 }

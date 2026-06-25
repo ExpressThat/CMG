@@ -44,6 +44,7 @@ public sealed class CmgActionLowerer
             "clearcontext" or "resetcontext" or
             "newcontext" or "usecontext" or "listcontexts" or "closecontext" or
             "listworkers" or "waitforworker" or "workerevaluate" or "workerintercept" or
+            "startcoverage" or "stopcoverage" or
             "accessibilitysnapshot" or "expectaccessible" or
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" or
             "printpdf" or "pdf" or

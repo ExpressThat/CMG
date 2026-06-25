@@ -338,6 +338,19 @@ test "worker profile request" {
 
 Worker actions are non-visual and do not move the virtual pointer. Use a `step` caption when a GIF should explain that a worker route was installed.
 
+## Coverage Collection
+
+```text
+test "checkout coverage" {
+  startCoverage js=true css=true
+  navigate "https://example.com/checkout"
+  click "#submit"
+  stopCoverage path="demo-output\coverage.json"
+}
+```
+
+Coverage actions work in direct browser-control scripts and `cmg run`. They do not move the virtual pointer, but reports and traces include the `COVERAGE` output line.
+
 ## Visual Screenshot Assertion
 
 ```text

@@ -92,6 +92,10 @@ public interface IBrowserAutomationClient
     string EvaluateWorker(string remoteDebuggingUrl, string? target, string expression);
 
     int InterceptWorkerRequests(string remoteDebuggingUrl, string? target, WorkerRouteOptions options);
+
+    void StartCoverage(string remoteDebuggingUrl, CoverageOptions options);
+
+    string StopCoverage(string remoteDebuggingUrl);
 }
 
 public sealed class BrowserAutomationClientFactory
@@ -122,3 +126,5 @@ public sealed record BrowserContextInfo(string Id, string TargetId, string Url, 
 public sealed record BrowserWorkerInfo(string Id, string Type, string Title, string Url);
 
 public sealed record WorkerRouteOptions(string Pattern, int Status, string Body, string ContentType);
+
+public sealed record CoverageOptions(bool JavaScript, bool Css);

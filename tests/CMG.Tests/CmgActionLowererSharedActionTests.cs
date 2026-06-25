@@ -17,6 +17,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("useContext", "ctx-1", "useContext \"ctx-1\"")]
     [InlineData("listWorkers", null, "listWorkers")]
     [InlineData("workerIntercept", "/api", "workerIntercept \"/api\"")]
+    [InlineData("startCoverage", null, "startCoverage")]
+    [InlineData("stopCoverage", null, "stopCoverage")]
     public void Lower_SharedActionsPassThrough(string kind, string? arg, string expected, string? secondArg = null)
     {
         var args = new[] { arg, secondArg }.Where(value => value is not null).Cast<string>().ToArray();

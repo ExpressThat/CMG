@@ -297,6 +297,15 @@ Line 6: workerIntercept failed. Worker target control is not supported for Firef
 
 Use `listWorkers` to inspect available worker ids and URLs before targeting a specific worker. Worker interception patches `fetch()` inside existing Chrome/Edge worker targets.
 
+## Coverage Failure
+
+```text
+Line 3: startCoverage failed. startCoverage option js= must be true or false.
+Line 7: stopCoverage failed. Coverage collection is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for startCoverage/stopCoverage.
+```
+
+Use Chrome or Edge for page coverage collection. Call `startCoverage` before the actions that should be measured and `stopCoverage` after them.
+
 ## HAR Failure
 
 ```text

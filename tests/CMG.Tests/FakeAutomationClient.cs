@@ -14,6 +14,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public List<BrowserWorkerInfo> Workers { get; } = [];
     public string ActiveBrowserContext { get; private set; } = string.Empty;
     public WorkerRouteOptions? LastWorkerRoute { get; private set; }
+    public CoverageOptions? LastCoverageOptions { get; private set; }
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) => [];
@@ -78,4 +79,6 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         LastWorkerRoute = options;
         return 1;
     }
+    public void StartCoverage(string remoteDebuggingUrl, CoverageOptions options) => LastCoverageOptions = options;
+    public string StopCoverage(string remoteDebuggingUrl) => """{"js":[],"css":[]}""";
 }
