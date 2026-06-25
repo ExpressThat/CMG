@@ -23,7 +23,14 @@ public sealed record CmgTestCase(
     string SourcePath,
     string Name,
     IReadOnlyList<CmgNode> Actions,
-    IReadOnlyDictionary<string, string> Options);
+    IReadOnlyDictionary<string, string> Options)
+{
+    public string? SuiteName { get; init; }
+    public IReadOnlyList<CmgNode> RootBeforeAll { get; init; } = [];
+    public IReadOnlyList<CmgNode> RootAfterAll { get; init; } = [];
+    public IReadOnlyList<CmgNode> SuiteBeforeAll { get; init; } = [];
+    public IReadOnlyList<CmgNode> SuiteAfterAll { get; init; } = [];
+}
 
 public sealed record CmgRunOptions(
     BrowserKind BrowserKind,

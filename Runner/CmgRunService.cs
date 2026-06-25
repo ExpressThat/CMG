@@ -8,7 +8,7 @@ public interface ICmgRunService
     CmgRunResult Run(string path, CmgRunOptions options);
 }
 
-public sealed class CmgRunService : ICmgRunService
+public sealed partial class CmgRunService : ICmgRunService
 {
     private readonly BrowserStateStore stateStore;
     private readonly BrowserAutomationClientFactory automationClientFactory;
@@ -85,7 +85,8 @@ public sealed class CmgRunService : ICmgRunService
         }
 
         var plannedTests = SelectFocusedTests(planner.Plan(parse.Document).Where(test => ShouldRun(test, options)).ToArray());
-        foreach (var test in ApplyShard(plannedTests, options))
+        var selectedTests = ApplyOnceHooks(ApplyShard(plannedTests, options).ToArray());
+        foreach (var test in selectedTests)
         {
             if (IsSkipped(test))
             {

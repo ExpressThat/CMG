@@ -1184,15 +1184,25 @@ Options:
 
 Skipped tests are successful for process exit purposes unless another selected test fails.
 
-### `beforeEach` And `afterEach`
+### `beforeAll`, `afterAll`, `beforeEach`, And `afterEach`
 
 ```text
-beforeEach {
+beforeAll {
   navigate "https://example.com"
+}
+
+beforeEach {
+  resetContext
+}
+
+afterAll {
+  caption "Finished"
 }
 ```
 
-Root hooks apply to every test. Hooks inside a suite apply to that suite.
+Root hooks apply to every test file. Hooks inside a suite apply to that suite. `beforeEach` and `afterEach` run around every selected test. `beforeAll` runs once before the first non-skipped selected test in its root or suite scope; `afterAll` runs once after the last non-skipped selected test in that scope.
+
+Once hooks are inserted into the first or last selected test script after macro registration. Use them for browser/page setup and teardown. Script variables created in a `beforeAll` hook are available only inside the test script where that hook runs; use top-level macros, imports, browser state, fixtures, or files for reusable state across tests.
 
 ### `step`
 
@@ -1804,6 +1814,6 @@ Selector-based runner actions wait before running the pointer-aware command. CMG
 - has a non-empty bounding box;
 - is not `display:none` or `visibility:hidden`;
 - is not disabled with `disabled` or `aria-disabled="true"`;
-- has a stable rectangle across animation frames.
+- has a stable rectangle across actionability polls.
 
 Use `timeout=<milliseconds>` on the action to control the wait. If the element does not become actionable, the step fails with the reason in stderr and reports.

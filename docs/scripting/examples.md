@@ -387,6 +387,31 @@ Record every test as a GIF:
 dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript --gif demo-output\runner-gifs
 ```
 
+Use once-per-scope hooks for page setup and teardown:
+
+```text
+beforeAll {
+  setContent "<main><button id='run'>Run</button><output id='status'>Ready</output></main>"
+}
+
+suite "hooked flow" {
+  beforeAll {
+    caption "Suite setup"
+  }
+
+  test "uses setup page" {
+    click "#run"
+    expectText "#status" "Ready"
+  }
+
+  afterAll {
+    caption "Suite teardown"
+  }
+}
+```
+
+This example is available as `demo-scripts/38-before-after-all.cmgscript`.
+
 Record only one block from inside the script:
 
 ```text

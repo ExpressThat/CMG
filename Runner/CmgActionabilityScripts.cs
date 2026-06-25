@@ -28,7 +28,7 @@ public static class CmgActionabilityScripts
             last = { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
             if (visible && enabled && stable) { resolve(true); return; }
             if (Date.now() > deadline) reject(new Error('Element {{EscapeMessage(selector)}} was not actionable before timeout'));
-            else requestAnimationFrame(check);
+            else setTimeout(check, 50);
           };
           check();
         })

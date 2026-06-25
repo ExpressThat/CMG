@@ -12,6 +12,7 @@ public sealed class CmgActionabilityScriptsTests
 
         Assert.Contains("getBoundingClientRect", line);
         Assert.Contains(":disabled", line);
-        Assert.Contains("requestAnimationFrame", line);
+        Assert.Contains("setTimeout", line);
+        Assert.DoesNotContain("requestAnimationFrame", line);
     }
 }

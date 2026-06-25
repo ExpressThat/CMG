@@ -182,6 +182,8 @@ public sealed class CmgDslParser
         var invalid = nodes.FirstOrDefault(node =>
             !node.Kind.Equals("suite", StringComparison.OrdinalIgnoreCase) &&
             !node.Kind.Equals("test", StringComparison.OrdinalIgnoreCase) &&
+            !node.Kind.Equals("beforeAll", StringComparison.OrdinalIgnoreCase) &&
+            !node.Kind.Equals("afterAll", StringComparison.OrdinalIgnoreCase) &&
             !node.Kind.Equals("beforeEach", StringComparison.OrdinalIgnoreCase) &&
             !node.Kind.Equals("afterEach", StringComparison.OrdinalIgnoreCase) &&
             !node.Kind.Equals("macro", StringComparison.OrdinalIgnoreCase));

@@ -24,6 +24,8 @@ Supported structural blocks:
 
 - `suite "name" { ... }`
 - `test "name" { ... }`
+- `beforeAll { ... }`
+- `afterAll { ... }`
 - `beforeEach { ... }`
 - `afterEach { ... }`
 - `step "caption" { ... }`
