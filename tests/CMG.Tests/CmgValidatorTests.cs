@@ -13,14 +13,12 @@ public sealed class CmgValidatorTests
     }
 
     [Fact]
-    public void Validate_FailsPlannedLocatorWithLineReason()
+    public void Validate_AllowsRichLocators()
     {
         var action = new CmgNode(7, "click", "click", ["role=button"], new Dictionary<string, string>(), []);
         var result = new CmgValidator().Validate(Test(action));
 
-        Assert.False(result.Success);
-        Assert.Equal(7, result.LineNumber);
-        Assert.Contains("planned", result.Error);
+        Assert.True(result.Success);
     }
 
     private static CmgTestCase Test(params CmgNode[] actions) => new("flow.cmgscript", "flow", actions, new Dictionary<string, string>());

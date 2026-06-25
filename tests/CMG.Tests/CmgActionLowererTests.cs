@@ -66,6 +66,16 @@ public sealed class CmgActionLowererTests
         Assert.Contains("Expected URL", Assert.Single(lowerer.Lower(Node("expectUrl", ["checkout"], []))));
     }
 
+    [Fact]
+    public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
+    {
+        var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));
+
+        Assert.Equal(2, lines.Count);
+        Assert.StartsWith("evaluate", lines[0]);
+        Assert.Contains("data-cmg-locator-id", lines[1]);
+    }
+
     private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyList<CmgNode> children) =>
         new(1, kind, args.FirstOrDefault() ?? kind, args, new Dictionary<string, string>(), children);
 }

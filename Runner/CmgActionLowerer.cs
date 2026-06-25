@@ -10,16 +10,16 @@ public sealed class CmgActionLowerer
             "step" or "gif" => LowerStep(action),
             "caption" => [ToLine("showMessageBar", action.Arguments)],
             "fill" => LowerFill(action),
-            "assertvisible" => [ToLine("waitForElement", action.Arguments, action.Options)],
+            "assertvisible" => LowerSelectorCommand("waitForElement", action),
             "wait" => LowerWait(action),
             "expecttext" => [ToLine("assertText", action.Arguments)],
             "expecturl" => [ToLine("evaluate", [BuildExpectUrl(action)])],
             "expecttitle" => [ToLine("evaluate", [BuildExpectTitle(action)])],
-            "check" => [ElementScript(action, "element.checked = true; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;")],
-            "uncheck" => [ElementScript(action, "element.checked = false; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;")],
-            "focus" => [ElementScript(action, "element.focus({ preventScroll: true }); return true;")],
-            "blur" => [ElementScript(action, "element.blur(); return true;")],
-            "selecttext" => [ElementScript(action, "element.focus({ preventScroll: true }); element.select?.(); return true;")],
+            "check" => ElementScript(action, "element.checked = true; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;"),
+            "uncheck" => ElementScript(action, "element.checked = false; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;"),
+            "focus" => ElementScript(action, "element.focus({ preventScroll: true }); return true;"),
+            "blur" => ElementScript(action, "element.blur(); return true;"),
+            "selecttext" => ElementScript(action, "element.focus({ preventScroll: true }); element.select?.(); return true;"),
             "dblclick" => LowerMouseEvent(action, "dblclick", button: 0),
             "rightclick" => LowerMouseEvent(action, "contextmenu", button: 2),
             "reload" => [ToLine("evaluate", ["location.reload()"])],
@@ -30,8 +30,9 @@ public sealed class CmgActionLowerer
             "sessionstorage" => [ToLine("evaluate", [BuildStorage(action, "sessionStorage")])],
             "cookie" => [ToLine("evaluate", [BuildCookie(action)])],
             "setviewport" => [ToLine("setViewport", [], action.Options)],
-            "click" or "type" or "clear" or "press" or "hover" or "scrollintoview" or "select" or
-            "showmessagebar" or "delay" or "html" or "screenshot" or "screenshotpage" or "asserttext" or
+            "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "html" or "screenshot" or "asserttext" =>
+                LowerSelectorCommand(action.Kind, action),
+            "press" or "showmessagebar" or "delay" or "screenshotpage" or
             "evaluate" or "movemouse" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or "set" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "apirequest" => [],
@@ -52,9 +53,11 @@ public sealed class CmgActionLowerer
             return [ToLine("evaluate", [BuildUnsupportedExpression("fill requires selector and text")])];
         }
 
+        var resolved = CmgLocator.Resolve(action.Arguments[0], action.LineNumber);
         return [
-            ToLine("clear", [action.Arguments[0]]),
-            ToLine("type", [action.Arguments[0], action.Arguments[1]])
+            .. resolved.PrefixLines,
+            ToLine("clear", [resolved.Selector]),
+            ToLine("type", [resolved.Selector, action.Arguments[1]])
         ];
     }
 
@@ -68,17 +71,35 @@ public sealed class CmgActionLowerer
         return action.Arguments.Count > 0 ? [ToLine("waitForElement", action.Arguments, action.Options)] : [];
     }
 
-    private static string ElementScript(CmgNode action, string body)
+    private static IReadOnlyList<string> LowerSelectorCommand(string command, CmgNode action)
     {
-        var selector = action.Arguments.Count > 0 ? CmgLocator.ToCssSelector(action.Arguments[0]) : string.Empty;
-        return ToLine("evaluate", [$"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}'); {body} }})()"]);
+        if (action.Arguments.Count is 0)
+        {
+            return [ToLine(command, action.Arguments, action.Options)];
+        }
+
+        var resolved = CmgLocator.Resolve(action.Arguments[0], action.LineNumber);
+        return [
+            .. resolved.PrefixLines,
+            ToLine(command, [resolved.Selector, .. action.Arguments.Skip(1)], action.Options)
+        ];
+    }
+
+    private static IReadOnlyList<string> ElementScript(CmgNode action, string body)
+    {
+        var resolved = action.Arguments.Count > 0 ? CmgLocator.Resolve(action.Arguments[0], action.LineNumber) : new CmgResolvedLocator(string.Empty, []);
+        return [
+            .. resolved.PrefixLines,
+            ToLine("evaluate", [$"(() => {{ const element = document.querySelector({QuoteJs(resolved.Selector)}); if (!element) throw new Error('No element matched selector {resolved.Selector}'); {body} }})()"])
+        ];
     }
 
     private static IReadOnlyList<string> LowerMouseEvent(CmgNode action, string eventName, int button)
     {
-        var selector = action.Arguments.Count > 0 ? CmgLocator.ToCssSelector(action.Arguments[0]) : string.Empty;
+        var resolved = action.Arguments.Count > 0 ? CmgLocator.Resolve(action.Arguments[0], action.LineNumber) : new CmgResolvedLocator(string.Empty, []);
+        var selector = resolved.Selector;
         var expression = $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}'); const rect = element.getBoundingClientRect(); const options = {{ bubbles: true, cancelable: true, button: {button}, buttons: {button + 1}, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }}; element.dispatchEvent(new MouseEvent('{eventName}', options)); return true; }})()";
-        return [ToLine("hover", [selector]), ToLine("evaluate", [expression])];
+        return [.. resolved.PrefixLines, ToLine("hover", [selector]), ToLine("evaluate", [expression])];
     }
 
     private static string BuildExpectUrl(CmgNode action)

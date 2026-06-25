@@ -551,13 +551,12 @@ Current runner support:
 - Plain CSS selectors, for example `"#open"`.
 - Explicit CSS selectors, for example `"css=#open"`.
 - Test id selectors, for example `"testid=save"`, mapped to `[data-testid='save']`.
+- Text locators, for example `"text=Save"`.
+- Role locators, for example `"role=button"`.
+- Label locators, for example `"label=Email"`.
+- Placeholder locators, for example `"placeholder=Search"`.
+- Alt text locators, for example `"alt=Logo"`.
+- Title locators, for example `"title=Close"`.
+- XPath locators, for example `"xpath=//button[.='Save']"`.
 
-Planned locators fail during validation with a clear reason until the full locator engine lands:
-
-- `text=`
-- `role=`
-- `label=`
-- `placeholder=`
-- `alt=`
-- `title=`
-- `xpath=`
+For non-CSS locator forms, CMG resolves the element inside the page, marks it with a temporary `data-cmg-locator-id`, and then runs the normal pointer-aware command against that marker. This keeps GIF pointer movement and browser events connected to the resolved element.
