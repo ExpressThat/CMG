@@ -582,9 +582,24 @@ Options:
 
 This action captures visual artifacts and reports them, but it does not move the virtual pointer by itself. Wrap it in a `step` when the GIF should include a caption explaining the comparison.
 
+### `uploadFiles`
+
+```text
+uploadFiles "#avatar" "fixtures\avatar.png"
+uploadFiles "testid=file-input" "fixtures\one.txt" "fixtures\two.txt"
+```
+
+Assigns one or more local files to an `<input type="file">` element and dispatches `input` and `change` events in the page. The first argument is a CMG locator. Remaining arguments are local file paths resolved from the current working directory unless absolute.
+
+Output:
+
+- `UPLOAD <line> <count>` on success.
+
+Failure reasons include a missing selector argument, no file paths, a local file that does not exist, or browser evaluation failure. This action is available at the top level and inside `gif` blocks. It does not move the virtual pointer by itself because browser file choosers cannot be driven from page JavaScript; wrap it in a `step` or `caption` when the GIF should explain the upload transition.
+
 ## Planned Parity Actions
 
-Commands such as `intercept`, `route`, `apiRequest`, `uploadFiles`, `download`, `popup`, `frame`, device emulation, and full network mocking are reserved for parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
+Commands such as `intercept`, `download`, `popup`, `frame`, device emulation, and full browser-level network mocking are reserved for parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
 
 ## Locator Support
 

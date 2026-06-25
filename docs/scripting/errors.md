@@ -226,6 +226,14 @@ STEP FAIL line=4 action=storageState reason=Storage state file 'auth.json' was n
 
 Use `storageState save path="..."` before loading a state file.
 
+## File Upload Failure
+
+```text
+STEP FAIL line=6 action=uploadFiles reason=Upload file 'fixtures\avatar.png' was not found.
+```
+
+Check that every file path passed after the selector exists from the process working directory, or use absolute paths. A missing selector or missing file argument fails before any browser interaction runs.
+
 ## Undefined Variable
 
 ```text

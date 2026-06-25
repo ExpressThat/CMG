@@ -60,15 +60,29 @@ public sealed partial class CmgVisualSegmentExecutor
         return true;
     }
 
-    private CmgStepResult RunDirectAction(CmgNode action, string remoteDebuggingUrl) =>
-        action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase)
-            ? apiRequestRunner.Run(action)
-            : action.Kind.Equals("storageState", StringComparison.OrdinalIgnoreCase)
-                ? storageStateRunner.Run(action, remoteDebuggingUrl, automationClient)
-                : visualAssertionRunner.Run(action, remoteDebuggingUrl, automationClient);
+    private CmgStepResult RunDirectAction(CmgNode action, string remoteDebuggingUrl)
+    {
+        if (action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase))
+        {
+            return apiRequestRunner.Run(action);
+        }
+
+        if (action.Kind.Equals("storageState", StringComparison.OrdinalIgnoreCase))
+        {
+            return storageStateRunner.Run(action, remoteDebuggingUrl, automationClient);
+        }
+
+        if (action.Kind.Equals("uploadFiles", StringComparison.OrdinalIgnoreCase))
+        {
+            return uploadRunner.Run(action, remoteDebuggingUrl, automationClient);
+        }
+
+        return visualAssertionRunner.Run(action, remoteDebuggingUrl, automationClient);
+    }
 
     private static bool IsDirectAction(CmgNode action) =>
         action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase) ||
         action.Kind.Equals("storageState", StringComparison.OrdinalIgnoreCase) ||
-        action.Kind.Equals("expectScreenshot", StringComparison.OrdinalIgnoreCase);
+        action.Kind.Equals("expectScreenshot", StringComparison.OrdinalIgnoreCase) ||
+        action.Kind.Equals("uploadFiles", StringComparison.OrdinalIgnoreCase);
 }

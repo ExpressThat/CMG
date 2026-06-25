@@ -11,6 +11,7 @@ public sealed partial class CmgVisualSegmentExecutor
     private readonly CmgApiRequestRunner apiRequestRunner;
     private readonly CmgStorageStateRunner storageStateRunner;
     private readonly CmgVisualAssertionRunner visualAssertionRunner;
+    private readonly CmgUploadRunner uploadRunner;
 
     public CmgVisualSegmentExecutor(
         BrowserScriptRunner scriptRunner,
@@ -18,7 +19,8 @@ public sealed partial class CmgVisualSegmentExecutor
         CmgActionLowerer lowerer,
         CmgApiRequestRunner apiRequestRunner,
         CmgStorageStateRunner storageStateRunner,
-        CmgVisualAssertionRunner visualAssertionRunner)
+        CmgVisualAssertionRunner visualAssertionRunner,
+        CmgUploadRunner uploadRunner)
     {
         this.scriptRunner = scriptRunner;
         this.automationClient = automationClient;
@@ -26,6 +28,7 @@ public sealed partial class CmgVisualSegmentExecutor
         this.apiRequestRunner = apiRequestRunner;
         this.storageStateRunner = storageStateRunner;
         this.visualAssertionRunner = visualAssertionRunner;
+        this.uploadRunner = uploadRunner;
     }
 
     public CmgTestResult Run(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options, int attempt)
@@ -108,6 +111,25 @@ public sealed partial class CmgVisualSegmentExecutor
                 }
 
                 var step = visualAssertionRunner.Run(action, remoteDebuggingUrl, automationClient);
+                output.AddRange(step.Output);
+                steps.Add(step);
+                if (!step.Success)
+                {
+                    return Fail(test, output, step.Error, gifs, steps);
+                }
+
+                continue;
+            }
+
+            if (action.Kind.Equals("uploadFiles", StringComparison.OrdinalIgnoreCase))
+            {
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null);
+                if (!AppendResult(flush, output, steps, action, gif: null, out var error))
+                {
+                    return Fail(test, output, error, gifs, steps);
+                }
+
+                var step = uploadRunner.Run(action, remoteDebuggingUrl, automationClient);
                 output.AddRange(step.Output);
                 steps.Add(step);
                 if (!step.Success)

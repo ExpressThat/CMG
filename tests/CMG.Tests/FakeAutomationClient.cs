@@ -4,6 +4,8 @@ namespace CMG.Tests;
 
 internal sealed class FakeAutomationClient : IBrowserAutomationClient
 {
+    public string LastExpression { get; private set; } = string.Empty;
+
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) => [];
     public string Navigate(string remoteDebuggingUrl, string target) => target;
@@ -19,7 +21,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public void ShowMessageBar(string remoteDebuggingUrl, string message) { }
     public void PromoteMessageBar(string remoteDebuggingUrl) { }
     public string GetElementText(string remoteDebuggingUrl, string selector) => string.Empty;
-    public string Evaluate(string remoteDebuggingUrl, string expression) => "{}";
+    public string Evaluate(string remoteDebuggingUrl, string expression)
+    {
+        LastExpression = expression;
+        return "{}";
+    }
     public void SetViewport(string remoteDebuggingUrl, int width, int height) { }
     public ViewportSize GetViewportSize(string remoteDebuggingUrl) => new(800, 600);
     public void DragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector) { }

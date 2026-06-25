@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddSingleton<CmgApiRequestRunner>();
         services.AddSingleton<CmgStorageStateRunner>();
         services.AddSingleton<CmgVisualAssertionRunner>();
+        services.AddSingleton<CmgUploadRunner>();
         services.AddSingleton<IBrowserController, BrowserController>();
         services.AddSingleton<IBrowserControlService, BrowserControlService>();
         services.AddSingleton<BrowserAutomationClientFactory>();

@@ -285,6 +285,20 @@ test "dialog matches baseline" {
 
 If the baseline does not exist, CMG writes it from the actual screenshot and fails so the baseline can be reviewed.
 
+## File Upload
+
+```text
+test "uploads avatar" {
+  navigate "https://example.com/profile"
+  step "Select avatar file" {
+    uploadFiles "#avatar" "fixtures\avatar.png"
+  }
+  click "#save"
+}
+```
+
+`uploadFiles` can also run inside `gif` blocks. The step caption gives the recording visible context while the page receives the same `input` and `change` events as a browser-driven file upload.
+
 ## Storage State
 
 ```text
