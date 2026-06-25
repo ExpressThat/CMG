@@ -341,6 +341,17 @@ test "opens help popup" {
 
 For direct browser-control scripts, `openTab "https://example.com/help"` can create the tab without going through page UI. In recorded test GIFs, user-facing popup flows should prefer `click` plus `waitForTab` so the pointer interaction remains visible.
 
+## Download Flow
+
+```text
+test "exports report" {
+  navigate "https://example.com/reports"
+  download "#exportCsv" directory="demo-output" pattern="*.csv" timeout=10000
+}
+```
+
+Use `download` when the page interaction should be visible in a GIF. Use `waitForDownload` when another action already triggered the download.
+
 ## Storage State
 
 ```text

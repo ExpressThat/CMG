@@ -59,6 +59,7 @@ STORAGE_STATE 010 saved C:\Projects\CMG\demo-output\auth.json
 UPLOAD 011 1
 VISUAL 012 diff=0
 EMULATE 013 width height userAgent
+DOWNLOAD 014 C:\Projects\CMG\demo-output\report.csv
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 

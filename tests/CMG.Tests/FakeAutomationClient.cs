@@ -5,6 +5,7 @@ namespace CMG.Tests;
 internal sealed class FakeAutomationClient : IBrowserAutomationClient
 {
     public string LastExpression { get; private set; } = string.Empty;
+    public string LastClickedSelector { get; private set; } = string.Empty;
     public ViewportSize? LastViewport { get; private set; }
     public Queue<string> TextResponses { get; } = new();
     public Queue<IReadOnlyList<ChromePageTab>> TabResponses { get; } = new();
@@ -13,7 +14,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) => [];
     public string Navigate(string remoteDebuggingUrl, string target) => target;
     public void WaitForElement(string remoteDebuggingUrl, string selector, int timeoutMilliseconds) { }
-    public void Click(string remoteDebuggingUrl, string selector) { }
+    public void Click(string remoteDebuggingUrl, string selector) => LastClickedSelector = selector;
     public void Type(string remoteDebuggingUrl, string selector, string text) { }
     public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null) { }
     public void Clear(string remoteDebuggingUrl, string selector) { }

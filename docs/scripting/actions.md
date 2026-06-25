@@ -416,6 +416,25 @@ Output:
 
 - `TAB_COUNT <line> <actual-count>` on success.
 
+## `download` And `waitForDownload`
+
+```text
+download "#export" directory="demo-output" pattern="*.csv" timeout=10000
+waitForDownload directory="demo-output" pattern="*.zip" timeout=10000
+```
+
+`download` clicks a selector and then waits for a matching file. In GIF recordings, the virtual pointer moves to the selector and records the click that triggers the download. `waitForDownload` only polls the filesystem and does not move the pointer.
+
+Options:
+
+- `directory`: Directory to watch. Default is the current working directory.
+- `pattern`: File glob to match. Default is `*`.
+- `timeout`: Optional timeout in milliseconds. Default is `5000`.
+
+Output:
+
+- `DOWNLOAD <line> <path>` on success.
+
 ## `activateTab`
 
 ```text

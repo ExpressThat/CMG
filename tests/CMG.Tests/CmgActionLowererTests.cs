@@ -119,6 +119,16 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_DownloadUsesActionabilityBeforePointerClick()
+    {
+        var lines = new CmgActionLowerer().Lower(Node("download", ["#export"], []));
+
+        Assert.Equal(2, lines.Count);
+        Assert.Contains("not actionable", lines[0]);
+        Assert.Equal("download \"#export\"", lines[1]);
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));

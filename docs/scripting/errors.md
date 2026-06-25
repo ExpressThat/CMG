@@ -203,6 +203,14 @@ Line 4: emulate failed. geolocation must be '<latitude>,<longitude>'.
 
 Provide both viewport dimensions together and pass geolocation as a comma-separated latitude/longitude pair.
 
+## Download Timeout
+
+```text
+Line 6: download failed. No download matching '*.csv' appeared in 'C:\Projects\CMG\demo-output' within 10000ms.
+```
+
+Check the browser download directory, file pattern, and timeout. `download` ignores in-progress Chrome `.crdownload` files.
+
 ## Failed Assertion
 
 ```text

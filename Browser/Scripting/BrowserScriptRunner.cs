@@ -108,6 +108,8 @@ public sealed partial class BrowserScriptRunner
             "expectscreenshot" => ExecuteVisualAssertion(remoteDebuggingUrl, automationClient, action),
             "uploadfiles" => ExecuteUploadFiles(remoteDebuggingUrl, automationClient, action),
             "emulate" => ExecuteEmulate(remoteDebuggingUrl, automationClient, action),
+            "download" => ExecuteDownload(remoteDebuggingUrl, automationClient, action),
+            "waitfordownload" => ExecuteWaitForDownload(action),
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),
             "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),
