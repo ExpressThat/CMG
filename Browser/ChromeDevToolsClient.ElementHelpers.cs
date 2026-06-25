@@ -121,24 +121,6 @@ public sealed partial class ChromeDevToolsClient
         });
     }
 
-    private static async Task TryAcceptJavaScriptDialog(DevToolsSession session)
-    {
-        try
-        {
-            await session.SendCommand("Page.handleJavaScriptDialog", writer => writer.WriteBoolean("accept", true));
-            await session.SendCommand("Runtime.evaluate", writer =>
-            {
-                writer.WriteString(
-                    "expression",
-                    "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))");
-                writer.WriteBoolean("awaitPromise", true);
-            });
-        }
-        catch (ChromeDevToolsException)
-        {
-        }
-    }
-
     private static async Task EnsurePointInViewport(DevToolsSession session, string selector, double x, double y)
     {
         var response = await session.SendCommand("Runtime.evaluate", writer =>

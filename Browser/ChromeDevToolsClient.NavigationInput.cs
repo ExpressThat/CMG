@@ -58,7 +58,6 @@ public sealed partial class ChromeDevToolsClient
             await EnsurePointInViewport(session, selector, clip.CenterX, clip.CenterY);
             await ClickAt(session, clip.CenterX, clip.CenterY);
             await Task.Delay(50);
-            await TryAcceptJavaScriptDialog(session);
 
             return true;
         });

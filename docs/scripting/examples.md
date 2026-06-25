@@ -609,6 +609,17 @@ test "waits for app readiness" {
 }
 ```
 
+## Dialogs
+
+```text
+test "handles prompt" {
+  captureDialogs
+  setDialogBehavior accept promptText="CMG"
+  click "#openPrompt"
+  waitForDialog "Your name"
+}
+```
+
 ## Network Request Wait
 
 ```text

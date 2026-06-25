@@ -4,7 +4,7 @@ Scripts stop on the first error.
 
 When `--gif <path>` is used, CMG still writes a partial GIF with the frames captured before the error, as long as recording had started.
 
-Browser JavaScript dialogs and leave-page prompts are automatically accepted while CMG is connected to a page. If a page repeatedly opens prompts, the action may still fail from timeout or a browser protocol error after CMG accepts the prompts it sees.
+Browser JavaScript dialogs are handled explicitly. Add `captureDialogs` or `setDialogBehavior` before the action that opens an `alert`, `confirm`, or `prompt`; otherwise a real browser dialog can block the page until the browser or protocol reports an error.
 
 ## Browser Not Running
 
@@ -339,6 +339,15 @@ Line 7: waitForTimeout failed. delay must be a positive integer.
 ```
 
 Wait failures include whether the selector, expression, or timeout argument caused the failure.
+
+## Dialog Failure
+
+```text
+Line 4: setDialogBehavior failed. setDialogBehavior expects accept or dismiss.
+Line 5: waitForDialog failed. Timed out waiting for dialog Saved
+```
+
+Dialog waits match against captured `alert`, `confirm`, and `prompt` messages. Install `captureDialogs` before triggering the dialog.
 
 ## Network Wait Failure
 

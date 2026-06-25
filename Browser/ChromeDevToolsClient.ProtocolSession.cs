@@ -82,7 +82,6 @@ public sealed partial class ChromeDevToolsClient
                     !responseId.TryGetInt32(out var responseCommandId) ||
                     responseCommandId != id)
                 {
-                    await HandleProtocolEvent(document.RootElement);
                     continue;
                 }
 
@@ -93,44 +92,6 @@ public sealed partial class ChromeDevToolsClient
 
                 return document.RootElement.Clone();
             }
-        }
-
-        private async Task HandleProtocolEvent(JsonElement root)
-        {
-            if (!TryReadString(root, "method", out var method) ||
-                !string.Equals(method, "Page.javascriptDialogOpening", StringComparison.Ordinal))
-            {
-                return;
-            }
-
-            await SendCommandWithoutResponse("Page.handleJavaScriptDialog", writer =>
-            {
-                writer.WriteBoolean("accept", true);
-            });
-        }
-
-        private async Task SendCommandWithoutResponse(string method, Action<Utf8JsonWriter>? writeParams = null)
-        {
-            var id = Interlocked.Increment(ref commandId);
-            using var commandStream = new MemoryStream();
-
-            await using (var writer = new Utf8JsonWriter(commandStream))
-            {
-                writer.WriteStartObject();
-                writer.WriteNumber("id", id);
-                writer.WriteString("method", method);
-
-                if (writeParams is not null)
-                {
-                    writer.WriteStartObject("params");
-                    writeParams(writer);
-                    writer.WriteEndObject();
-                }
-
-                writer.WriteEndObject();
-            }
-
-            await socket.SendAsync(commandStream.ToArray(), WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
         public async ValueTask DisposeAsync()

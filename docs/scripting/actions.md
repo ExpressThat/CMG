@@ -2,7 +2,7 @@
 
 All actions fail fast. If an action fails, later actions are not executed.
 
-While an action is connected to a page, CMG automatically accepts browser JavaScript dialogs and leave-page prompts. This includes alerts, confirms, prompts, and before-unload confirmation prompts that would otherwise block automation.
+Browser JavaScript dialogs are not silently removed. Use `captureDialogs` and `setDialogBehavior` before the page action that is expected to call `alert`, `confirm`, or `prompt`.
 
 ## `navigate`
 
@@ -571,6 +571,35 @@ Output:
 - `PAGE_ERROR <line> <type>: <text>` when a matching page error is found.
 
 Page-error actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful.
+
+## `captureDialogs`, `setDialogBehavior`, And `waitForDialog`
+
+```text
+captureDialogs
+setDialogBehavior accept promptText="CMG"
+setDialogBehavior dismiss
+waitForDialog "Saved" timeout=5000
+```
+
+Installs page-side dialog automation for `alert`, `confirm`, and `prompt` calls in the current page and future navigations. Captured dialogs are logged with their type, message, accepted state, and prompt value when available. Install this before the action that opens a dialog.
+
+Arguments:
+
+- `setDialogBehavior`: `accept` or `dismiss`.
+- `waitForDialog`: Text expected in the dialog message.
+
+Options:
+
+- `promptText`: Optional text returned from accepted prompts.
+- `timeout`: Optional for `waitForDialog`. Default is `5000`.
+
+Output:
+
+- `DIALOG_CAPTURE <line>` when dialog capture is installed.
+- `DIALOG_BEHAVIOR <line> <accept|dismiss>` when behavior changes.
+- `DIALOG <line> <json>` when a matching dialog is found.
+
+Dialog actions do not move the virtual pointer. Wrap them in `step`, `caption`, or a `gif` block when the recording should narrate dialog handling.
 
 ## Frame Actions
 
