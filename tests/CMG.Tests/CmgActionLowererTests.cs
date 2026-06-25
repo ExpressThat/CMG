@@ -137,6 +137,14 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_NetworkActionsPassThrough()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("route", ["/api"], [])));
+
+        Assert.Equal("route \"/api\"", line);
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));

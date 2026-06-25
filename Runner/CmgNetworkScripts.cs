@@ -52,6 +52,42 @@ public static class CmgNetworkScripts
               return response;
             };
           }
+          if (!window.__cmgXhrPatched) {
+            window.__cmgXhrPatched = true;
+            const OriginalXHR = window.XMLHttpRequest;
+            window.XMLHttpRequest = function() {
+              const xhr = new OriginalXHR();
+              let method = 'GET';
+              let url = '';
+              const open = xhr.open.bind(xhr);
+              xhr.open = (...args) => {
+                method = String(args[0] || 'GET');
+                url = String(args[1] || '');
+                return open(...args);
+              };
+              const send = xhr.send.bind(xhr);
+              xhr.send = body => {
+                const route = window.__cmgRoutes.find(r => url.includes(r.pattern));
+                if (!route) {
+                  xhr.addEventListener('loadend', () => window.__cmgResponses.push({ url, status: xhr.status, mocked: false, type: 'xhr' }), { once: true });
+                  return send(body);
+                }
+                window.__cmgResponses.push({ url, status: route.status, mocked: true, type: 'xhr' });
+                Object.defineProperty(xhr, 'readyState', { configurable: true, get: () => 4 });
+                Object.defineProperty(xhr, 'status', { configurable: true, get: () => route.status });
+                Object.defineProperty(xhr, 'responseText', { configurable: true, get: () => route.body });
+                Object.defineProperty(xhr, 'response', { configurable: true, get: () => route.body });
+                setTimeout(() => {
+                  xhr.onreadystatechange?.();
+                  xhr.onload?.();
+                  xhr.dispatchEvent(new Event('readystatechange'));
+                  xhr.dispatchEvent(new Event('load'));
+                  xhr.dispatchEvent(new Event('loadend'));
+                }, 0);
+              };
+              return xhr;
+            };
+          }
         })();
         """;
 

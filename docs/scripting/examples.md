@@ -271,7 +271,7 @@ test "mocked profile" {
 }
 ```
 
-This patches page `fetch` calls and records matching responses for `waitForResponse`.
+This patches page `fetch` and `XMLHttpRequest` calls and records matching responses for `waitForResponse`.
 
 ## Visual Screenshot Assertion
 

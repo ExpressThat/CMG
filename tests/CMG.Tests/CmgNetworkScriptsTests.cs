@@ -11,6 +11,7 @@ public sealed class CmgNetworkScriptsTests
         var script = CmgNetworkScripts.Route(action);
 
         Assert.Contains("__cmgRoutes", script);
+        Assert.Contains("XMLHttpRequest", script);
         Assert.Contains("201", script);
         Assert.Contains("ok", script);
     }

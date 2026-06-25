@@ -676,13 +676,18 @@ waitForResponse "/api/profile" timeout=5000
 clearRoutes
 ```
 
-Installs a page-level fetch route. Matching `fetch()` calls receive the configured mocked response and are recorded in the page response log. `waitForResponse` waits for a logged response whose URL contains the pattern.
+Installs a page-level route for `fetch()` and `XMLHttpRequest`. Matching calls receive the configured mocked response and are recorded in the page response log. `waitForResponse` waits for a logged response whose URL contains the pattern.
 
 Notes:
 
 - Route matching uses substring matching.
-- This slice patches page `fetch`. XHR and browser-level request routing are planned separately.
 - Network actions do not move the virtual pointer. They are captured in reports and can be wrapped with `step` or captions for GIF narration.
+
+Output:
+
+- `ROUTE <line> <pattern>` when a route is installed.
+- `ROUTES_CLEARED <line>` when routes are cleared.
+- `RESPONSE <line> <json>` when `waitForResponse` finds a matching response.
 
 ### `expectScreenshot`
 
@@ -718,7 +723,7 @@ Failure reasons include a missing selector argument, no file paths, a local file
 
 ## Planned Parity Actions
 
-Commands such as `intercept`, `download`, `popup`, `frame`, device emulation, and full browser-level network mocking are reserved for parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
+Commands such as `frame`, worker-level interception, browser-context isolation, and protocol-native HAR replay are reserved for remaining parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
 
 ## Locator Support
 

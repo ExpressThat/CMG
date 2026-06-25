@@ -33,14 +33,11 @@ public sealed class CmgActionLowerer
             "localstorage" => [ToLine("evaluate", [BuildStorage(action, "localStorage")])],
             "sessionstorage" => [ToLine("evaluate", [BuildStorage(action, "sessionStorage")])],
             "cookie" => [ToLine("evaluate", [BuildCookie(action)])],
-            "route" or "mockresponse" => [ToLine("evaluate", [CmgNetworkScripts.Route(action)])],
-            "clearroutes" => [ToLine("evaluate", [CmgNetworkScripts.ClearRoutes()])],
-            "waitforresponse" => [ToLine("evaluate", [CmgNetworkScripts.WaitForResponse(action)])],
             "setviewport" => [ToLine("setViewport", [], action.Options)],
             "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "html" or "screenshot" or "asserttext" =>
                 LowerSelectorCommand(action.Kind, action),
             "press" or "showmessagebar" or "delay" or "screenshotpage" or "emulate" or "waitfordownload" or
-            "captureconsole" or "waitforconsole" or
+            "captureconsole" or "waitforconsole" or "route" or "mockresponse" or "clearroutes" or "waitforresponse" or
             "evaluate" or "movemouse" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or "set" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),

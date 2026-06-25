@@ -62,6 +62,9 @@ EMULATE 013 width height userAgent
 DOWNLOAD 014 C:\Projects\CMG\demo-output\report.csv
 CONSOLE_CAPTURE 015
 CONSOLE 016 info: settings saved
+ROUTE 017 /api/profile
+RESPONSE 018 {"url":"/api/profile","status":200,"mocked":true}
+ROUTES_CLEARED 019
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 
