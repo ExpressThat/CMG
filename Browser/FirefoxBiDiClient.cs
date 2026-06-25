@@ -16,7 +16,7 @@ public sealed partial class FirefoxBiDiClient : IBrowserAutomationClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext();
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             await Evaluate(session, context.Id, BrowserDomScripts.ScrollIntoView(selector));
             await PromoteMessageBar(session, context.Id);
             var rect = await GetElementRect(session, context.Id, selector);

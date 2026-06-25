@@ -38,13 +38,13 @@ public sealed partial class FirefoxBiDiClient
                 : remoteDebuggingUrl;
         }
 
-        public async Task<FirefoxContext> GetPrimaryContext() =>
-            (await GetTopLevelContexts()).FirstOrDefault() ??
+        public async Task<FirefoxContext> GetPrimaryContext(string remoteDebuggingUrl) =>
+            (await GetTopLevelContexts(remoteDebuggingUrl)).FirstOrDefault() ??
             throw new ChromeDevToolsException("No Firefox browsing context was available through WebDriver BiDi.");
 
-        public async Task<FirefoxContext> GetContextAt(int index)
+        public async Task<FirefoxContext> GetContextAt(string remoteDebuggingUrl, int index)
         {
-            var contexts = await GetTopLevelContexts();
+            var contexts = await GetTopLevelContexts(remoteDebuggingUrl);
             if (index < 0 || index >= contexts.Count)
             {
                 throw new ChromeDevToolsException($"Tab index {index} does not exist. Available tab count: {contexts.Count}.");
@@ -53,7 +53,7 @@ public sealed partial class FirefoxBiDiClient
             return contexts[index];
         }
 
-        public async Task<IReadOnlyList<FirefoxContext>> GetTopLevelContexts()
+        public async Task<IReadOnlyList<FirefoxContext>> GetTopLevelContexts(string? remoteDebuggingUrl = null)
         {
             var response = await SendCommand("browsingContext.getTree");
             if (!TryReadElement(response, ["result", "contexts"], out var contextsElement) ||
@@ -62,7 +62,7 @@ public sealed partial class FirefoxBiDiClient
                 throw new ChromeDevToolsException("Firefox did not return browsing contexts.");
             }
 
-            return contextsElement
+            var contexts = contextsElement
                 .EnumerateArray()
                 .Where(context => TryReadString(context, "context", out _))
                 .Select(context =>
@@ -73,6 +73,8 @@ public sealed partial class FirefoxBiDiClient
                 })
                 .Where(context => !string.IsNullOrWhiteSpace(context.Id))
                 .ToArray();
+
+            return remoteDebuggingUrl is null ? contexts : PrioritizeFirefoxActiveContext(remoteDebuggingUrl, contexts);
         }
 
         public async Task<JsonElement> SendCommand(string method, Action<Utf8JsonWriter>? writeParams = null)

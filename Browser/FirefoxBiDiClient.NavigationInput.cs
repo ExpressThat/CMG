@@ -11,7 +11,7 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext();
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             await ApplyInitScripts(session, remoteDebuggingUrl);
             var response = await session.SendCommand("browsingContext.navigate", writer =>
             {
@@ -115,7 +115,7 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext();
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             return ReadScriptResultValue(await Evaluate(session, context.Id, expression));
         });
 
@@ -157,7 +157,7 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext();
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             await session.SendCommand("browsingContext.setViewport", writer =>
             {
                 writer.WriteString("context", context.Id);
@@ -179,7 +179,7 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext();
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             var json = ReadScriptResultValue(await Evaluate(session, context.Id, "JSON.stringify({ width: window.innerWidth, height: window.innerHeight })"));
             using var document = JsonDocument.Parse(json);
             var root = document.RootElement;

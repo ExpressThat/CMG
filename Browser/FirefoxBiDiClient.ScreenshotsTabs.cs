@@ -10,7 +10,7 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext();
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             if (promoteMessageBar)
             {
                 await PromoteMessageBar(session, context.Id);
@@ -29,7 +29,7 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext();
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             var response = await session.SendCommand("browsingContext.print", writer =>
             {
                 writer.WriteString("context", context.Id);
@@ -45,7 +45,7 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext();
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             var rect = await GetElementRect(session, context.Id, selector);
             await EnsurePointInViewport(session, context.Id, selector, rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
             return new ElementPoint(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
@@ -55,7 +55,7 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext();
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             var rect = await GetElementRect(session, context.Id, selector);
             return new ElementBox(rect.X, rect.Y, rect.Width, rect.Height);
         });
@@ -70,7 +70,7 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var contexts = await session.GetTopLevelContexts();
+            var contexts = await session.GetTopLevelContexts(remoteDebuggingUrl);
             var tabs = new List<ChromePageTab>();
 
             foreach (var context in contexts)
@@ -85,7 +85,7 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetContextAt(index);
+            var context = await session.GetContextAt(remoteDebuggingUrl, index);
             await session.SendCommand("browsingContext.activate", writer => writer.WriteString("context", context.Id));
             return true;
         });
@@ -94,22 +94,65 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetContextAt(index);
+            var context = await session.GetContextAt(remoteDebuggingUrl, index);
             await session.SendCommand("browsingContext.close", writer => writer.WriteString("context", context.Id));
             return true;
         });
 
-    public IReadOnlyList<BrowserContextInfo> ListBrowserContexts(string remoteDebuggingUrl) =>
-        throw UnsupportedContextException();
+    public IReadOnlyList<BrowserContextInfo> ListBrowserContexts(string remoteDebuggingUrl)
+    {
+        var contexts = SnapshotFirefoxContexts(remoteDebuggingUrl);
+        var active = FirefoxActiveContexts.GetValueOrDefault(Key(remoteDebuggingUrl));
+        return contexts.Select(context => context with { Active = context.TargetId == active }).ToArray();
+    }
 
     public BrowserContextInfo NewBrowserContext(string remoteDebuggingUrl, string initialUrl) =>
-        throw UnsupportedContextException();
+        Run(async () =>
+        {
+            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            var userContext = ReadRequired(await session.SendCommand("browser.createUserContext"), ["result", "userContext"]);
+            var created = await session.SendCommand("browsingContext.create", writer =>
+            {
+                writer.WriteString("type", "tab");
+                writer.WriteString("userContext", userContext);
+            });
+            var contextId = ReadRequired(created, ["result", "context"]);
+            if (!initialUrl.Equals("about:blank", StringComparison.OrdinalIgnoreCase))
+            {
+                await session.SendCommand("browsingContext.navigate", writer =>
+                {
+                    writer.WriteString("context", contextId);
+                    writer.WriteString("url", initialUrl);
+                    writer.WriteString("wait", "complete");
+                });
+            }
 
-    public void UseBrowserContext(string remoteDebuggingUrl, string id) =>
-        throw UnsupportedContextException();
+            SetFirefoxActiveContext(remoteDebuggingUrl, contextId);
+            var info = new BrowserContextInfo(userContext, contextId, initialUrl, Active: true);
+            StoreFirefoxContext(remoteDebuggingUrl, info);
+            return info;
+        });
 
-    public void CloseBrowserContext(string remoteDebuggingUrl, string id) =>
-        throw UnsupportedContextException();
+    public void UseBrowserContext(string remoteDebuggingUrl, string id)
+    {
+        var context = FindFirefoxContext(remoteDebuggingUrl, id) ??
+            throw new ChromeDevToolsException($"Browser context '{id}' was not found in this script run.");
+        SetFirefoxActiveContext(remoteDebuggingUrl, context.TargetId);
+    }
+
+    public void CloseBrowserContext(string remoteDebuggingUrl, string id)
+    {
+        var context = FindFirefoxContext(remoteDebuggingUrl, id) ??
+            throw new ChromeDevToolsException($"Browser context '{id}' was not found in this script run.");
+        Run(async () =>
+        {
+            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            await session.SendCommand("browser.removeUserContext", writer => writer.WriteString("userContext", context.Id));
+            RemoveFirefoxContext(remoteDebuggingUrl, context.Id);
+            ClearFirefoxActiveContext(remoteDebuggingUrl, context.TargetId);
+            return true;
+        });
+    }
 
     public IReadOnlyList<BrowserWorkerInfo> ListWorkers(string remoteDebuggingUrl) =>
         throw UnsupportedWorkerException();
@@ -125,9 +168,6 @@ public sealed partial class FirefoxBiDiClient
 
     public string StopCoverage(string remoteDebuggingUrl) =>
         throw UnsupportedCoverageException();
-
-    private static ChromeDevToolsException UnsupportedContextException() =>
-        new("Isolated browser contexts are not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for newContext/useContext/closeContext.");
 
     private static ChromeDevToolsException UnsupportedWorkerException() =>
         new("Worker target control is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for listWorkers/workerEvaluate/workerIntercept.");
