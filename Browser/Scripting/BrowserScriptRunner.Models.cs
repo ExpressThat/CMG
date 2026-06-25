@@ -10,9 +10,64 @@ public sealed record ScriptRunResult(bool Success, IReadOnlyList<string> StdoutL
 
 internal sealed class ScriptExecutionContext
 {
-    public Dictionary<string, string> Variables { get; } = new(StringComparer.Ordinal);
-    public Dictionary<string, BrowserScriptAction> Macros { get; } = new(StringComparer.OrdinalIgnoreCase);
+    private List<Dictionary<string, string>> variableScopes = [new(StringComparer.Ordinal)];
+
+    public Dictionary<string, ScriptMacro> Macros { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public int CurrentVariableScopeIndex => variableScopes.Count - 1;
+
+    public bool TryGetVariable(string name, out string value)
+    {
+        for (var index = variableScopes.Count - 1; index >= 0; index--)
+        {
+            if (variableScopes[index].TryGetValue(name, out value!))
+            {
+                return true;
+            }
+        }
+
+        value = string.Empty;
+        return false;
+    }
+
+    public void SetVariable(string name, string value) => variableScopes[^1][name] = value;
+
+    public void RemoveLocalVariable(string name) => variableScopes[^1].Remove(name);
+
+    public IReadOnlyList<Dictionary<string, string>> CaptureVariableScopes(int maxIndex) =>
+        variableScopes.Take(maxIndex + 1)
+            .Select(scope => new Dictionary<string, string>(scope, StringComparer.Ordinal))
+            .ToArray();
+
+    public void WithVariableScopes(IReadOnlyList<Dictionary<string, string>> scopes, Action body)
+    {
+        var previous = variableScopes;
+        variableScopes = scopes.Select(scope => new Dictionary<string, string>(scope, StringComparer.Ordinal)).ToList();
+        try
+        {
+            body();
+        }
+        finally
+        {
+            variableScopes = previous;
+        }
+    }
+
+    public void PushVariableScope(IEnumerable<(string Key, string Value)> values, Action body)
+    {
+        variableScopes.Add(values.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal));
+        try
+        {
+            body();
+        }
+        finally
+        {
+            variableScopes.RemoveAt(variableScopes.Count - 1);
+        }
+    }
 }
+
+internal sealed record ScriptMacro(BrowserScriptAction Action, int DefinitionScopeIndex);
 
 internal sealed record ScriptReadResult(bool Success, string? Script, string? Error)
 {

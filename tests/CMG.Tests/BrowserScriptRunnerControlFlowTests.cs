@@ -179,6 +179,27 @@ public sealed class BrowserScriptRunnerControlFlowTests
     }
 
     [Fact]
+    public void RunText_TopLevelMacroIgnoresUnrelatedCallerLocalShadow()
+    {
+        var result = Runner().RunText("""
+        set token "global"
+        macro readTop {
+          return "${token}"
+        }
+        macro caller {
+          set token "local"
+          call readTop
+        }
+        set final {
+          call caller
+        }
+        """, "debug", new FakeAutomationClient());
+
+        Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
+        Assert.Contains("SET 009 final global", result.StdoutLines);
+    }
+
+    [Fact]
     public void RunText_MacroCanReturnVariableValue()
     {
         var client = new FakeAutomationClient();

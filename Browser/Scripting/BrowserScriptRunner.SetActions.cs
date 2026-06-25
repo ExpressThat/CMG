@@ -14,7 +14,7 @@ public sealed partial class BrowserScriptRunner
         if (action.Children.Count is 0)
         {
             RequireArgumentCount(action, 2, 2);
-            context.Variables[action.Arguments[0]] = action.Arguments[1];
+            context.SetVariable(action.Arguments[0], action.Arguments[1]);
             return [];
         }
 
@@ -23,7 +23,7 @@ public sealed partial class BrowserScriptRunner
         ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output);
 
         var payload = ExtractSetPayload(action, output);
-        context.Variables[action.Arguments[0]] = payload;
+        context.SetVariable(action.Arguments[0], payload);
         output.Add($"SET {action.LineNumber:000} {action.Arguments[0]} {payload}");
         return output;
     }

@@ -29,7 +29,7 @@ public sealed partial class BrowserScriptRunner
         var info = automationClient.NewBrowserContext(remoteDebuggingUrl, initialUrl);
         if (action.Arguments.Count is 1)
         {
-            context.Variables[action.Arguments[0]] = info.Id;
+            context.SetVariable(action.Arguments[0], info.Id);
         }
 
         return [$"CONTEXT_CREATED {action.LineNumber:000} id={info.Id} target={info.TargetId} url=\"{info.Url}\""];

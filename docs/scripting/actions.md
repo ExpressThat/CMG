@@ -1634,7 +1634,7 @@ call fillProfile "Agent" "agent@example.com"
 
 `macro` registers a reusable block. `call` executes it. Parameters are untyped values, so callers can pass variables, selectors, temporary selectors from `foreachSelector`, URLs, file paths, or any other string value. Macro calls can be nested, and macros can declare helper macros inside their body.
 
-Macro variable lookup starts with parameters and local `set` values, then walks upward through parent tree scopes until it finds a matching variable. Variables set inside the macro body are scoped to the call. A `set` inside a macro does not overwrite a variable with the same name in a parent scope. Macros declared inside another macro, branch, or loop are restored when that block finishes, so helper macros do not leak into later steps. Top-level macros in `cmg run` are registered before each planned test.
+Macro variable lookup starts with parameters and local `set` values, then walks upward through the parent tree scopes where that macro was defined until it finds a matching variable. It does not read unrelated local variables from a caller outside that definition tree. Variables set inside the macro body are scoped to the call. A `set` inside a macro does not overwrite a variable with the same name in a parent scope. Macros declared inside another macro, branch, or loop are restored when that block finishes, so helper macros do not leak into later steps. Top-level macros in `cmg run` are registered before each planned test.
 
 `set` can capture macro output:
 

@@ -24,7 +24,7 @@ public sealed partial class BrowserScriptRunner
         }
 
         var value = ReadFile(path, action);
-        context.Variables[action.Arguments[0]] = value;
+        context.SetVariable(action.Arguments[0], value);
         return [$"FILE_READ {action.LineNumber:000} {action.Arguments[0]} {path}"];
     }
 

@@ -22,7 +22,7 @@ public sealed partial class BrowserScriptRunner
         return VariableRegex().Replace(value, match =>
         {
             var name = match.Groups[1].Value;
-            if (!context.Variables.TryGetValue(name, out var replacement))
+            if (!context.TryGetVariable(name, out var replacement))
             {
                 throw new ScriptExecutionException($"Variable '{name}' is not defined.");
             }
