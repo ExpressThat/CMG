@@ -219,6 +219,30 @@ dragAndDrop ".card" {
 }
 ```
 
+## `mouseMove`, `mouseDown`, And `mouseUp`
+
+```text
+mouseMove "center"
+mouseMove x=100 y=200
+mouseMove selector=".canvas" edge=bottom inset=24
+mouseDown "center"
+mouseUp "center"
+```
+
+Runs lower-level mouse primitives similar to Playwright and Puppeteer mouse APIs. Unlike `moveMouse`, these actions are available with or without GIF recording. In GIF mode, `mouseMove` uses CMG's virtual pointer movement and frame capture. `mouseDown` and `mouseUp` move the pointer to the target before sending the button event.
+
+Targets use the same forms as `moveMouse`:
+
+- one alias argument: `center`, `top`, `bottom`, `left`, `right`, `topLeft`, `topRight`, `bottomLeft`, or `bottomRight`;
+- `x=<pixels> y=<pixels>` viewport coordinates;
+- selector-edge targeting with `selector=<selector> edge=<edge> inset=<pixels>`.
+
+Output:
+
+- `MOUSE_MOVED <line> <x>,<y>`
+- `MOUSE_DOWN <line> <x>,<y>`
+- `MOUSE_UP <line> <x>,<y>`
+
 ## `scrollIntoView`
 
 ```text

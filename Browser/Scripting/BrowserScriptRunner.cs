@@ -145,6 +145,8 @@ public sealed partial class BrowserScriptRunner
             "accessibilitysnapshot" => ExecuteAccessibilitySnapshot(remoteDebuggingUrl, automationClient, action),
             "expectaccessible" => ExecuteExpectAccessible(remoteDebuggingUrl, automationClient, action),
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),
+            "mousemove" or "mousedown" or "mouseup" =>
+                ExecuteMouseAction(remoteDebuggingUrl, automationClient, action, recorder),
             "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),
             "opentab" => ExecuteOpenTab(remoteDebuggingUrl, automationClient, action),

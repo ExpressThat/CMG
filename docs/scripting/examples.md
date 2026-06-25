@@ -609,6 +609,17 @@ test "waits for app readiness" {
 }
 ```
 
+## Low-Level Mouse
+
+```text
+test "canvas drag" {
+  mouseMove selector="#canvas" edge=center
+  mouseDown selector="#canvas" edge=center
+  mouseMove selector="#canvas" edge=bottomRight inset=20
+  mouseUp selector="#canvas" edge=bottomRight inset=20
+}
+```
+
 ## Dialogs
 
 ```text

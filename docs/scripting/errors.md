@@ -340,6 +340,15 @@ Line 7: waitForTimeout failed. delay must be a positive integer.
 
 Wait failures include whether the selector, expression, or timeout argument caused the failure.
 
+## Mouse Failure
+
+```text
+Line 4: mouseMove failed. mouseMove requires either one alias argument or x=<pixels> y=<pixels> options.
+Line 5: mouseDown failed. mouseDown target (900, 900) is outside the current viewport 800x600.
+```
+
+Mouse actions validate target shape and viewport bounds before sending pointer events.
+
 ## Dialog Failure
 
 ```text

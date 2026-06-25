@@ -17,6 +17,9 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string ActiveBrowserContext { get; private set; } = string.Empty;
     public WorkerRouteOptions? LastWorkerRoute { get; private set; }
     public CoverageOptions? LastCoverageOptions { get; private set; }
+    public ElementPoint? LastMouseMove { get; private set; }
+    public ElementPoint? LastMouseDown { get; private set; }
+    public ElementPoint? LastMouseUp { get; private set; }
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) => [];
@@ -52,9 +55,9 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public void MovePageDrag(string remoteDebuggingUrl, ElementPoint point) { }
     public void EndPageDrag(string remoteDebuggingUrl, ElementPoint point) { }
     public void RemoveDefaultDragGhost(string remoteDebuggingUrl) { }
-    public void MoveMouse(string remoteDebuggingUrl, ElementPoint point, int buttons) { }
-    public void MouseDown(string remoteDebuggingUrl, ElementPoint point) { }
-    public void MouseUp(string remoteDebuggingUrl, ElementPoint point) { }
+    public void MoveMouse(string remoteDebuggingUrl, ElementPoint point, int buttons) => LastMouseMove = point;
+    public void MouseDown(string remoteDebuggingUrl, ElementPoint point) => LastMouseDown = point;
+    public void MouseUp(string remoteDebuggingUrl, ElementPoint point) => LastMouseUp = point;
     public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true) => [];
     public byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options)
     {
