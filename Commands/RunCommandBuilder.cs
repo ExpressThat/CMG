@@ -36,6 +36,10 @@ public sealed class RunCommandBuilder
         {
             Description = "Write a JUnit XML test report to this file."
         };
+        var traceOption = new Option<DirectoryInfo?>("--trace")
+        {
+            Description = "Write per-test trace JSON files to this directory."
+        };
         var grepOption = new Option<string?>("--grep")
         {
             Description = "Run tests whose names contain this text."
@@ -60,6 +64,7 @@ public sealed class RunCommandBuilder
             jsonOption,
             htmlOption,
             junitOption,
+            traceOption,
             grepOption,
             tagOption,
             retriesOption,
@@ -74,6 +79,7 @@ public sealed class RunCommandBuilder
                 parseResult.GetValue(jsonOption),
                 parseResult.GetValue(htmlOption),
                 parseResult.GetValue(junitOption),
+                parseResult.GetValue(traceOption),
                 parseResult.GetValue(grepOption),
                 parseResult.GetValue(tagOption),
                 parseResult.GetValue(retriesOption),

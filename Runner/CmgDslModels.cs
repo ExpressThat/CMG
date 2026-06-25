@@ -31,6 +31,7 @@ public sealed record CmgRunOptions(
     FileInfo? JsonReport,
     FileInfo? HtmlReport,
     FileInfo? JUnitReport,
+    DirectoryInfo? TraceDirectory,
     string? Grep,
     string? Tag,
     int Retries,

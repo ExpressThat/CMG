@@ -64,6 +64,7 @@ public sealed class CmgRunService : ICmgRunService
         }
 
         WriteReports(options, tests);
+        CmgTraceWriter.Write(options.TraceDirectory, tests);
         return new CmgRunResult(tests.All(test => test.Success), output, tests, null);
     }
 

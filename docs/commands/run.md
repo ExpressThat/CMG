@@ -14,6 +14,7 @@ cmg run <path> [options]
 - `--report-json <file>`: Write a JSON test report.
 - `--report-html <file>`: Write an HTML test report.
 - `--report-junit <file>`: Write a JUnit XML test report.
+- `--trace <directory>`: Write per-test trace JSON files.
 - `--grep <text>`: Run tests whose names contain the text.
 - `--tag <tag>`: Run tests with a matching `tag=` option.
 - `--retries <count>`: Retry failed tests this many times.
@@ -39,7 +40,7 @@ When a step fails, stderr also includes:
 STEP FAIL line=<line> action=<action> reason=<reason>
 ```
 
-Reports include per-test output and per-step diagnostics so agents can explain why a run failed.
+Reports and traces include per-test output and per-step diagnostics so agents can explain why a run failed.
 
 ## GIF Behavior
 
@@ -63,5 +64,6 @@ cmg browser launch
 cmg run demo-scripts
 cmg run tests\flows --gif artifacts\gifs
 cmg run checkout.cmgscript --report-json artifacts\checkout.json --report-html artifacts\checkout.html
+cmg run checkout.cmgscript --trace artifacts\traces
 cmg run tests\flows --grep checkout --tag smoke --retries 2 --shard 1/3
 ```

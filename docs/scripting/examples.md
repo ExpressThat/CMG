@@ -225,6 +225,14 @@ dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript `
 
 Reports include per-test status, output, GIF paths, and step-level failure reasons.
 
+Write trace files for deeper debugging:
+
+```powershell
+dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript --trace demo-output\traces
+```
+
+Each trace is a JSON file with test metadata, steps, output, errors, and GIF references.
+
 ## Filtering, Sharding, And Retries
 
 ```powershell

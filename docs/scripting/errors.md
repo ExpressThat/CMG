@@ -116,6 +116,8 @@ STEP FAIL line=8 action=click reason=Line 8: click failed. No element matched se
 
 JSON and HTML reports include the same reason, the test name, output lines, and any GIF path connected to the failure.
 
+Use `cmg run --trace <directory>` to write per-test trace JSON with every recorded step and failure reason.
+
 ## Invalid Shard
 
 ```text
