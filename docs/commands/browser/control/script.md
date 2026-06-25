@@ -24,7 +24,7 @@ cmg --firefox browser control script --file <path>
 - Stops on the first failed action.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
-- Supports the same parity actions as the structured runner DSL, including `apiRequest`, `storageState`, `uploadFiles`, `expectScreenshot`, `openTab`, and `waitForTab`.
+- Supports the same parity actions as the structured runner DSL, including `apiRequest`, `storageState`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `uploadFiles`, `expectScreenshot`, `openTab`, and `waitForTab`.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
 - Browser JavaScript dialogs and leave-page prompts are automatically accepted while CMG is connected to the page, including alerts, confirms, prompts, and before-unload confirmation prompts.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
@@ -76,6 +76,10 @@ CONTEXT_CLEARED 027
 CONTEXT_RESET 028
 ACCESSIBILITY 029 C:\Projects\CMG\demo-output\a11y.json
 ACCESSIBLE 030 role=button name="Save"
+FILE_READ 031 payload C:\Projects\CMG\fixtures\payload.json
+FILE_WRITTEN 032 C:\Projects\CMG\demo-output\result.txt
+FILE_APPENDED 033 C:\Projects\CMG\demo-output\result.txt
+FILE_OK 034 C:\Projects\CMG\demo-output\result.txt
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 

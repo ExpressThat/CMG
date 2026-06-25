@@ -131,6 +131,8 @@ public sealed partial class BrowserScriptRunner
             "waitfortab" => ExecuteWaitForTab(remoteDebuggingUrl, automationClient, action),
             "activatetab" => ExecuteActivateTab(remoteDebuggingUrl, automationClient, action),
             "closetab" => ExecuteCloseTab(remoteDebuggingUrl, automationClient, action),
+            "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" =>
+                ExecuteFileAction(action, context),
             "set" => ExecuteSet(action, context),
             _ => throw new ScriptExecutionException($"Unknown action '{action.Name}'.")
         };

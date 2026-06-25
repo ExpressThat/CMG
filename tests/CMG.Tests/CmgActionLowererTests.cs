@@ -187,6 +187,15 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_FileActionsPassThrough()
+    {
+        var node = new CmgNode(1, "readFile", "readFile", ["payload"], new Dictionary<string, string> { ["path"] = "fixtures/payload.json" }, []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(node));
+
+        Assert.Equal("readFile \"payload\" path=\"fixtures/payload.json\"", line);
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));

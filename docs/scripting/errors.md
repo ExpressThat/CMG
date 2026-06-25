@@ -287,6 +287,16 @@ Line 5: exportHar failed. exportHar requires path=<file>.
 
 Pass `path=<file>` to both HAR actions. `exportHar` writes captured page-level `fetch` and `XMLHttpRequest` traffic; `replayHar` installs routes from that file.
 
+## File Action Failure
+
+```text
+Line 3: readFile failed. File 'fixtures\payload.json' was not found.
+Line 4: writeFile failed. writeFile requires path=<file>.
+Line 5: expectFile failed. Expected file 'demo-output\result.txt' to contain 'Done'.
+```
+
+Pass `path=<file>` to every file action. For `readFile` and `fixture`, the first argument is the variable name that receives the file content. `expectFile contains="..."` reports the expected text when the file exists but does not match.
+
 ## Visual Assertion Failure
 
 ```text

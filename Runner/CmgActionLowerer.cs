@@ -42,6 +42,7 @@ public sealed class CmgActionLowerer
             "clock" or "tick" or "restoreclock" or
             "clearcontext" or "resetcontext" or
             "accessibilitysnapshot" or "expectaccessible" or
+            "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" or
             "evaluate" or "movemouse" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or "set" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),

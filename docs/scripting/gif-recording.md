@@ -4,6 +4,7 @@ Scripts can record an animated GIF with:
 
 ```powershell
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
+cmg run flow.cmgscript --gif demo-output\runner-gifs
 ```
 
 ## What Gets Captured
@@ -17,6 +18,7 @@ cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
 - Drag-and-drop actions move from the source selector to the target selector while keeping the page drag lifecycle active, so pages can show their own native drag preview when one is available.
 - During a block drag, CMG dispatches DOM `pointerdown`/`mousedown` at drag start, held `pointermove`/`mousemove` while moving or delaying, and `pointerup`/`mouseup` at drop. The Chrome/Edge pointer also moves through CDP. This lets page drag state and edge-autoscroll logic react without forcing Chrome into native drag mode.
 - Screenshot actions still scroll the selected element into view before capture.
+- File, fixture, API, network, clock, context, accessibility, and storage actions do not move the virtual pointer. Wrap them in `step`, `caption`, or `gif` blocks when their result should be visible to a GIF viewer.
 - Delay actions capture a hold frame.
 
 ## Virtual Pointer
@@ -100,5 +102,5 @@ Timing is not configurable in v1.
 
 - GIF files can become large for long scripts.
 - Recording can make scripts run slower because screenshots are captured after each action.
-- GIF recording is supported only on `browser control script`.
+- GIF recording is supported by `browser control script --gif`, `cmg run --gif`, and `gif "name" { ... }` blocks inside `cmg run` scripts.
 - `moveMouse` requires `--gif`; scripts without recording do not create or move a virtual mouse.

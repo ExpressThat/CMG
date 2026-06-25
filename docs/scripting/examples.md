@@ -174,6 +174,23 @@ Run it with GIF recording:
 dotnet run -- browser control script --file demo-scripts\10-css-hover-states.cmgscript --gif demo-output\css-hover-states.gif
 ```
 
+## Fixtures And Files
+
+```text
+readFile payload path="index.html"
+writeFile path="demo-output\fixture-copy.txt" text="${payload}"
+appendFile path="demo-output\fixture-copy.txt" text="\n<!-- checked by CMG -->"
+expectFile path="demo-output\fixture-copy.txt" contains="checked by CMG"
+```
+
+The same file actions can run inside direct browser-control scripts and inside `cmg run` tests. File I/O does not move the virtual pointer, but the output and any failure reason are included in reports and traces.
+
+Run the complete direct script:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\11-fixtures-and-files.cmgscript
+```
+
 ## Stdin
 
 ```powershell

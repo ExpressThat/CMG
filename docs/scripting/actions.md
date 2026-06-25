@@ -582,6 +582,34 @@ set target "#openProfileDialog"
 click "${target}"
 ```
 
+## `readFile`, `fixture`, `writeFile`, `appendFile`, And `expectFile`
+
+```text
+readFile payload path="fixtures\payload.json"
+fixture avatar path="fixtures\avatar.png" encoding=base64
+writeFile path="demo-output\result.txt" text="Saved ${payload}"
+appendFile path="demo-output\result.txt" text="\nDone"
+expectFile path="demo-output\result.txt" contains="Done"
+```
+
+Reads, writes, appends, and asserts local files from both direct browser-control scripts and `cmg run`. `readFile` and `fixture` store the file content in the variable named by the first argument, so later actions can use `${name}` expansion. Use `encoding=base64` when the fixture should be stored as base64 text.
+
+Options:
+
+- `path`: Required file path.
+- `encoding`: Optional for `readFile` and `fixture`; use `base64` for binary fixtures.
+- `text`: Optional text for `writeFile` and `appendFile`. If omitted, the first positional argument is written.
+- `contains`: Optional text that `expectFile` requires in the file.
+
+Output:
+
+- `FILE_READ <line> <variable> <path>` when a file or fixture is read.
+- `FILE_WRITTEN <line> <path>` when a file is written.
+- `FILE_APPENDED <line> <path>` when a file is appended.
+- `FILE_OK <line> <path>` when a file assertion passes.
+
+File actions do not move the virtual pointer. In GIF runs, wrap them in `step`, `caption`, or a `gif` block when the recording should narrate setup, fixture loading, or artifact checks.
+
 ## Runner-Only Structural Actions
 
 These actions are used with `cmg run`, not `browser control script`.
