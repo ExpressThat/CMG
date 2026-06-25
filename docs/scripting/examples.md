@@ -597,3 +597,14 @@ test "browser history" {
   waitForLoadState "complete"
 }
 ```
+
+## Explicit Waits
+
+```text
+test "waits for app readiness" {
+  navigate "https://example.com/app"
+  waitForSelector "#app"
+  waitForFunction "window.appReady === true" timeout=10000
+  waitForTimeout 250
+}
+```

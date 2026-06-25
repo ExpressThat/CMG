@@ -331,6 +331,15 @@ Line 5: cookie failed. cookie expects get, set, remove, or clear.
 
 Storage actions validate the operation and required key/value arguments before mutating browser state.
 
+## Wait Failure
+
+```text
+Line 6: waitForFunction failed. waitForFunction did not become truthy within 5000ms.
+Line 7: waitForTimeout failed. delay must be a positive integer.
+```
+
+Wait failures include whether the selector, expression, or timeout argument caused the failure.
+
 ## Worker Failure
 
 ```text

@@ -14,7 +14,7 @@ Feature parity actions are available in both script types unless a command page 
 
 - `browser control script` is the direct browser-control surface for agents.
 - `cmg run` is the structured test DSL with suites, hooks, reports, retries, sharding, traces, and optional per-test GIFs.
-- Shared actions include pointer-aware browser actions, navigation controls, browser contexts, worker control, init scripts, coverage collection, page-error capture, storage state, API requests, network environment controls, network fetch mocks, fixtures and file assertions, PDF output, file upload, tab/popup controls, and visual assertions.
+- Shared actions include pointer-aware browser actions, explicit waits, navigation controls, browser contexts, worker control, init scripts, coverage collection, page-error capture, storage state, API requests, network environment controls, network fetch mocks, fixtures and file assertions, PDF output, file upload, tab/popup controls, and visual assertions.
 
 ## Guides
 

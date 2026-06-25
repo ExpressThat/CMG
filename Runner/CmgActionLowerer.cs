@@ -27,6 +27,8 @@ public sealed class CmgActionLowerer
             "rightclick" => LowerMouseEvent(action, "contextmenu", button: 2),
             "reload" or "goback" or "goforward" or "waitforurl" or "waitforloadstate" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
+            "waitforselector" or "waitforfunction" or "waitfortimeout" =>
+                [ToLine(action.Kind, action.Arguments, action.Options)],
             "localstorage" or "sessionstorage" or "cookie" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "setviewport" => [ToLine("setViewport", [], action.Options)],
             "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "html" or "screenshot" or "asserttext" =>

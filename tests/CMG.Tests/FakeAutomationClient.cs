@@ -10,6 +10,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public ViewportSize? LastViewport { get; private set; }
     public PdfPrintOptions? LastPdfOptions { get; private set; }
     public Queue<string> TextResponses { get; } = new();
+    public Queue<string> EvaluateResponses { get; } = new();
     public Queue<IReadOnlyList<ChromePageTab>> TabResponses { get; } = new();
     public List<BrowserContextInfo> BrowserContexts { get; } = [];
     public List<BrowserWorkerInfo> Workers { get; } = [];
@@ -36,7 +37,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string Evaluate(string remoteDebuggingUrl, string expression)
     {
         LastExpression = expression;
-        return "{}";
+        return EvaluateResponses.Count > 0 ? EvaluateResponses.Dequeue() : "{}";
     }
     public string AddInitScript(string remoteDebuggingUrl, string source)
     {

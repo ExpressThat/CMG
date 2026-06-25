@@ -55,19 +55,44 @@ These actions do not move the virtual pointer. Use `step`, `caption`, or a `gif`
 
 ```text
 waitForElement "<selector>" timeout=5000
+waitForSelector "<selector>" timeout=5000
 ```
 
-Waits until a selector exists in any available page target.
+Waits until a selector exists in any available page target. `waitForSelector` is an alias for Playwright/Puppeteer-style scripts and reports a parseable output line.
 
 Options:
 
 - `timeout`: Optional timeout in milliseconds. Default is `5000`.
+
+Output:
+
+- `SELECTOR <line> <selector>` for `waitForSelector`.
 
 Example:
 
 ```text
 waitForElement "#openProfileDialog" timeout=5000
 ```
+
+## `waitForFunction` And `waitForTimeout`
+
+```text
+waitForFunction "window.appReady === true" timeout=10000
+waitForTimeout 500
+```
+
+`waitForFunction` polls a browser-side JavaScript expression until it returns a truthy value. `waitForTimeout` is a Playwright-style alias for a fixed delay. These actions are available in both direct browser-control scripts and `cmg run`.
+
+Options:
+
+- `timeout`: Optional for `waitForFunction`. Default is `5000`.
+
+Output:
+
+- `FUNCTION <line> <value>` when the expression becomes truthy.
+- `WAIT_TIMEOUT <line> <milliseconds>` after a timeout wait completes.
+
+These actions do not move the virtual pointer. Wrap them in `step`, `caption`, or a `gif` block when a GIF should explain the wait.
 
 ## `click`
 
