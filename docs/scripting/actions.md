@@ -1096,7 +1096,7 @@ storageState load path="artifacts\auth.json"
 
 Saves or loads page storage state for the current browser page. The state includes `localStorage`, `sessionStorage`, and the current `document.cookie` string. This is a runner action and reports `STORAGE_STATE` output lines.
 
-### `route`, `intercept`, `mockResponse`, `waitForRequest`, `waitForRequestFailed`, `waitForResponse`, `exportHar`, `replayHar`, And `clearRoutes`
+### `route`, `intercept`, `mockResponse`, `waitForRequest`, `waitForRequestFinished`, `waitForRequestFailed`, `waitForResponse`, `exportHar`, `replayHar`, And `clearRoutes`
 
 ```text
 route "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
@@ -1105,13 +1105,14 @@ intercept "/api/profile" method=POST times=1 delay=250 status=201 body="{\"saved
 intercept "/api/down" abort=true error="offline"
 waitForResponse "/api/profile" timeout=5000
 waitForRequest "/api/profile" timeout=5000
+waitForRequestFinished "/api/profile" timeout=5000
 waitForRequestFailed "/api/profile" timeout=5000
 exportHar path="artifacts\network.har"
 replayHar path="artifacts\network.har"
 clearRoutes
 ```
 
-Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Use `method=` to restrict a route to one HTTP method, `times=` to remove it after a fixed number of matches, and `delay=` to simulate response latency. Use `abort=true` or `action=abort` to reject matching requests instead; aborted matches are recorded in the request failure log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest`, `waitForRequestFailed`, and `waitForResponse` wait for logged entries whose URL contains the pattern.
+Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Use `method=` to restrict a route to one HTTP method, `times=` to remove it after a fixed number of matches, and `delay=` to simulate response latency. Use `abort=true` or `action=abort` to reject matching requests instead; aborted matches are recorded in the request failure log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest` waits for dispatch, `waitForRequestFinished` and `waitForResponse` wait for completed responses, and `waitForRequestFailed` waits for failures. All network waits match logged entries whose URL contains the pattern.
 
 Options:
 
@@ -1138,6 +1139,7 @@ Output:
 - `ROUTE <line> <pattern>` when a route or intercept is installed.
 - `ROUTES_CLEARED <line>` when routes are cleared.
 - `REQUEST <line> <json>` when `waitForRequest` finds a matching request.
+- `REQUEST_FINISHED <line> <json>` when `waitForRequestFinished` finds a completed matching request.
 - `REQUEST_FAILED <line> <json>` when `waitForRequestFailed` finds a matching failed request.
 - `RESPONSE <line> <json>` when `waitForResponse` finds a matching response.
 - `HAR_EXPORTED <line> <path>` when a HAR file is written.

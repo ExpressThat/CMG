@@ -132,6 +132,7 @@ public sealed partial class BrowserScriptRunner
             "route" or "mockresponse" or "intercept" => ExecuteRoute(remoteDebuggingUrl, automationClient, action),
             "clearroutes" => ExecuteClearRoutes(remoteDebuggingUrl, automationClient, action),
             "waitforrequest" => ExecuteWaitForRequest(remoteDebuggingUrl, automationClient, action),
+            "waitforrequestfinished" => ExecuteWaitForRequestFinished(remoteDebuggingUrl, automationClient, action),
             "waitforrequestfailed" => ExecuteWaitForRequestFailed(remoteDebuggingUrl, automationClient, action),
             "waitforresponse" => ExecuteWaitForResponse(remoteDebuggingUrl, automationClient, action),
             "exporthar" => ExecuteExportHar(remoteDebuggingUrl, automationClient, action),

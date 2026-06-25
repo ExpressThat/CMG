@@ -306,6 +306,7 @@ test "mocked profile" {
   navigate "https://example.com"
   intercept "/api/profile" delay=250 status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
   evaluate "fetch('/api/profile').then(r => r.text())"
+  waitForRequestFinished "/api/profile"
   waitForResponse "/api/profile"
 }
 ```
@@ -679,6 +680,7 @@ test "loads profile" {
   route "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
   click "#loadProfile"
   waitForRequest "/api/profile"
+  waitForRequestFinished "/api/profile"
   waitForResponse "/api/profile"
 }
 
@@ -698,6 +700,7 @@ test "handles intercepted outage" {
 test "uses one-shot post intercept" {
   intercept "/api/profile" method=POST times=1 status=201 body="{\"saved\":true}" contentType="application/json"
   evaluate "fetch('/api/profile', { method: 'POST' }).then(response => response.status)"
+  waitForRequestFinished "/api/profile"
   waitForResponse "/api/profile"
 }
 ```

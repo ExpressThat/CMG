@@ -113,6 +113,30 @@ public sealed class BrowserScriptRunnerNetworkTests
     }
 
     [Fact]
+    public void RunText_WaitForRequestFinishedOutputsLine()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"success":true,"value":{"url":"/api","status":200}}""");
+        var result = Runner().RunText("waitForRequestFinished \"/api\" timeout=500", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("__cmgResponses", client.LastExpression);
+        Assert.Contains(result.StdoutLines, line => line.Contains("REQUEST_FINISHED", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_WaitForRequestFinishedReportsTimeout()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"success":false,"error":"Timed out waiting for finished request /api"}""");
+
+        var result = Runner().RunText("waitForRequestFinished \"/api\" timeout=1", "debug", client);
+
+        Assert.False(result.Success);
+        Assert.Contains("Timed out waiting for finished request /api", result.Error);
+    }
+
+    [Fact]
     public void RunText_WaitForRequestFailedOutputsFailureLine()
     {
         var client = new FakeAutomationClient();

@@ -55,6 +55,24 @@ public static class CmgNetworkScripts
         """;
     }
 
+    public static string WaitForRequestFinished(CmgNode action)
+    {
+        var pattern = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
+        var timeout = action.Options.TryGetValue("timeout", out var timeoutValue) ? timeoutValue : "5000";
+        return InstallPrelude() + $$"""
+        new Promise((resolve, reject) => {
+          const deadline = Date.now() + {{timeout}};
+          const check = () => {
+            const hit = window.__cmgResponses.find(r => r.url.includes({{Quote(pattern)}}));
+            if (hit) { resolve(JSON.stringify({ success: true, value: hit })); return; }
+            if (Date.now() > deadline) { resolve(JSON.stringify({ success: false, error: 'Timed out waiting for finished request {{EscapeMessage(pattern)}}' })); return; }
+            setTimeout(check, 50);
+          };
+          check();
+        })
+        """;
+    }
+
     public static string WaitForRequest(CmgNode action)
     {
         var pattern = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;

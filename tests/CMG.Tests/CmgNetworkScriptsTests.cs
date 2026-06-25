@@ -73,6 +73,17 @@ public sealed class CmgNetworkScriptsTests
     }
 
     [Fact]
+    public void WaitForRequestFinished_ReportsTimeoutPattern()
+    {
+        var action = Node("waitForRequestFinished", ["/api"], new Dictionary<string, string> { ["timeout"] = "1000" });
+        var script = CmgNetworkScripts.WaitForRequestFinished(action);
+
+        Assert.Contains("__cmgResponses", script);
+        Assert.Contains("1000", script);
+        Assert.Contains("Timed out waiting for finished request", script);
+    }
+
+    [Fact]
     public void WaitForRequestFailed_ReportsTimeoutPattern()
     {
         var action = Node("waitForRequestFailed", ["/api"], new Dictionary<string, string> { ["timeout"] = "1000" });

@@ -61,6 +61,16 @@ public sealed partial class BrowserScriptRunner
         return [$"REQUEST {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
     }
 
+    private static IReadOnlyList<string> ExecuteWaitForRequestFinished(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var result = automationClient.Evaluate(remoteDebuggingUrl, CmgNetworkScripts.WaitForRequestFinished(ToNode(action)));
+        return [$"REQUEST_FINISHED {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
+    }
+
     private static IReadOnlyList<string> ExecuteWaitForRequestFailed(
         string remoteDebuggingUrl,
         IBrowserAutomationClient automationClient,
