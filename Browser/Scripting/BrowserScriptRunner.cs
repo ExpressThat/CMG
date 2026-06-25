@@ -92,6 +92,8 @@ public sealed partial class BrowserScriptRunner
             "waitforselector" or "waitforfunction" or "waitfortimeout" =>
                 ExecuteWaitAction(remoteDebuggingUrl, automationClient, action),
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
+            "wait" => ExecuteWaitAlias(remoteDebuggingUrl, automationClient, action),
+            "assertvisible" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             "click" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Click(remoteDebuggingUrl, selector)),
             "dblclick" or "rightclick" => ExecuteMouseClickVariant(remoteDebuggingUrl, automationClient, action),
             "fill" => ExecuteFill(remoteDebuggingUrl, automationClient, action, recorder),
@@ -104,13 +106,13 @@ public sealed partial class BrowserScriptRunner
             "hover" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Hover(remoteDebuggingUrl, selector)),
             "scrollintoview" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
             "select" or "selectoption" => ExecuteSelect(remoteDebuggingUrl, automationClient, action),
-            "showmessagebar" => ExecuteShowMessageBar(remoteDebuggingUrl, automationClient, action),
+            "showmessagebar" or "caption" => ExecuteShowMessageBar(remoteDebuggingUrl, automationClient, action),
             "delay" => ExecuteDelay(action),
             "html" => ExecuteHtml(remoteDebuggingUrl, automationClient, action),
             "screenshot" => ExecuteScreenshot(remoteDebuggingUrl, automationClient, action),
             "screenshotpage" => ExecuteScreenshotPage(remoteDebuggingUrl, automationClient, action),
             "printpdf" or "pdf" => ExecutePrintPdf(remoteDebuggingUrl, automationClient, action),
-            "asserttext" => ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
+            "asserttext" or "expecttext" => ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
             "expectvisible" or "expecthidden" or "expectenabled" or "expectdisabled" or
             "expectvalue" or "expectattribute" or "expectchecked" or "expectcount" =>
                 ExecuteElementExpectation(remoteDebuggingUrl, automationClient, action),

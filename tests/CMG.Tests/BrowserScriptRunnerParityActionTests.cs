@@ -31,5 +31,44 @@ public sealed class BrowserScriptRunnerParityActionTests
         Assert.Contains("uploadFiles requires a selector", result.Error);
     }
 
+    [Fact]
+    public void RunText_ExpectTextAliasesAssertText()
+    {
+        var client = new FakeAutomationClient();
+        client.TextResponses.Enqueue("Saved");
+        var result = Runner().RunText("expectText \"#status\" Saved", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal("#status", client.LastElementTextSelector);
+    }
+
+    [Fact]
+    public void RunText_AssertVisibleAliasesWaitForElement()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("assertVisible \"#save\" timeout=250", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal("#save", client.LastWaitSelector);
+    }
+
+    [Fact]
+    public void RunText_WaitAliasesElementWait()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("wait \"#ready\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal("#ready", client.LastWaitSelector);
+    }
+
+    [Fact]
+    public void RunText_CaptionAliasesShowMessageBar()
+    {
+        var result = Runner().RunText("caption Saved", "debug", new FakeAutomationClient());
+
+        Assert.True(result.Success);
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }
