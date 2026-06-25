@@ -480,6 +480,28 @@ Output:
 
 Cross-origin iframes cannot be accessed from page JavaScript. Those fail with a clear same-origin/not-ready reason.
 
+## `clock`, `tick`, And `restoreClock`
+
+```text
+clock now=1700000000000
+tick 250
+restoreClock
+```
+
+Installs deterministic page-side time control, advances fake time, and restores the browser clock. The fake clock patches `Date`, `Date.now`, `setTimeout`, `clearTimeout`, `setInterval`, and `clearInterval` in the current page context.
+
+Options:
+
+- `now`: Optional epoch milliseconds for `clock`. Default is the current host time.
+
+Output:
+
+- `CLOCK <line> <epoch-ms>` when the fake clock is installed.
+- `TICK <line> <milliseconds> now=<epoch-ms>` after fake time advances.
+- `CLOCK_RESTORED <line>` after restoring native time APIs.
+
+Clock actions do not move the virtual pointer. In GIF recordings, wrap them in `step` or `caption` when the time change should be visible to a viewer.
+
 ## `activateTab`
 
 ```text

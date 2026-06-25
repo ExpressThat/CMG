@@ -379,6 +379,21 @@ test "logs save result" {
 
 Console waits are useful when an app reports diagnostics through the browser console. Reports and traces include the `CONSOLE` output line.
 
+## Deterministic Time
+
+```text
+test "expires session banner" {
+  navigate "https://example.com/app"
+  clock now=1700000000000
+  click "#startSession"
+  tick 300000
+  expectText "#sessionBanner" "Expired" timeout=1000
+  restoreClock
+}
+```
+
+Clock actions are shared by direct browser-control scripts and `cmg run`. They do not move the virtual pointer, so use a `step` caption when the time jump should be narrated in a GIF.
+
 ## Storage State
 
 ```text

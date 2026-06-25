@@ -153,6 +153,14 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_ClockActionsPassThrough()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("tick", ["250"], [])));
+
+        Assert.Equal("tick \"250\"", line);
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));

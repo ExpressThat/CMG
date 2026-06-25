@@ -118,6 +118,7 @@ public sealed partial class BrowserScriptRunner
             "frameclick" or "frametype" or "framefill" or "framehover" or
             "framewaitforelement" or "frameasserttext" or "frameevaluate" =>
                 ExecuteFrameAction(remoteDebuggingUrl, automationClient, action),
+            "clock" or "tick" or "restoreclock" => ExecuteClockAction(remoteDebuggingUrl, automationClient, action),
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),
             "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),

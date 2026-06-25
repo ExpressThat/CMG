@@ -228,6 +228,15 @@ Line 9: frameAssertText failed. Expected frame text to contain Saved, got Saving
 
 Frame actions require a same-origin iframe because they run through page JavaScript. Use tab or browser-context actions for cross-origin flows that open in their own page target.
 
+## Clock Failure
+
+```text
+Line 5: tick failed. Clock is not installed. Run clock now=<epoch-ms> first.
+Line 6: tick failed. 'tick' must be a positive whole number.
+```
+
+Install the fake clock before advancing time and pass non-negative millisecond values to `tick`.
+
 ## Failed Assertion
 
 ```text

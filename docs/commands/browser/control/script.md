@@ -67,6 +67,9 @@ RESPONSE 018 {"url":"/api/profile","status":200,"mocked":true}
 ROUTES_CLEARED 019
 FRAME 020 frameClick
 FRAME_EVALUATE 021 Checkout
+CLOCK 022 1700000000000
+TICK 023 250 now=1700000000250
+CLOCK_RESTORED 024
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 
