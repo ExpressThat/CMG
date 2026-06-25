@@ -1,0 +1,8 @@
+# Demonstrates direct double-click and right-click pointer actions.
+
+setContent "<button id='target'>Click target</button><output id='result'>none</output><script>const target = document.querySelector('#target'); const result = document.querySelector('#result'); target.addEventListener('dblclick', () => result.textContent = 'double'); target.addEventListener('contextmenu', event => { event.preventDefault(); result.textContent = 'right'; });</script>"
+waitForElement "#target"
+dblclick "#target"
+assertText "#result" "double"
+rightClick "#target"
+assertText "#result" "right"

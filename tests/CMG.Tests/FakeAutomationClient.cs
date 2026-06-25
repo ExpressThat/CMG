@@ -8,6 +8,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public List<string> EvaluatedExpressions { get; } = [];
     public string LastInitScript { get; private set; } = string.Empty;
     public string LastClickedSelector { get; private set; } = string.Empty;
+    public string LastHoveredSelector { get; private set; } = string.Empty;
     public string LastWaitSelector { get; private set; } = string.Empty;
     public string LastTypedSelector { get; private set; } = string.Empty;
     public string LastTypedText { get; private set; } = string.Empty;
@@ -48,7 +49,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public void KeyDown(string remoteDebuggingUrl, string key) => LastKeyDown = key;
     public void KeyUp(string remoteDebuggingUrl, string key) => LastKeyUp = key;
     public void InsertText(string remoteDebuggingUrl, string text) => LastInsertedText = text;
-    public void Hover(string remoteDebuggingUrl, string selector) { }
+    public void Hover(string remoteDebuggingUrl, string selector) => LastHoveredSelector = selector;
     public void ScrollElementIntoView(string remoteDebuggingUrl, string selector) { }
     public void Select(string remoteDebuggingUrl, string selector, string value) { }
     public void ShowMessageBar(string remoteDebuggingUrl, string message) { }

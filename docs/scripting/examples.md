@@ -416,6 +416,19 @@ hover "label=Profile name"
 
 The same locator resolver is used by direct browser-control scripts and `cmg run`. Pointer-aware actions still move the virtual pointer to the resolved element marker, so GIFs keep the pointer, browser events, and drag ghost behavior aligned.
 
+## Pointer Click Variants
+
+```text
+setContent "<button id='target'>Click target</button><output id='result'>none</output><script>const target = document.querySelector('#target'); const result = document.querySelector('#result'); target.addEventListener('dblclick', () => result.textContent = 'double'); target.addEventListener('contextmenu', event => { event.preventDefault(); result.textContent = 'right'; });</script>"
+waitForElement "#target"
+dblclick "#target"
+assertText "#result" "double"
+rightClick "#target"
+assertText "#result" "right"
+```
+
+This example is available as `demo-scripts/14-pointer-click-variants.cmgscript`.
+
 ## Environment Emulation
 
 ```text

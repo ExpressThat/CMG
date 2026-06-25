@@ -121,7 +121,8 @@ public sealed class CmgActionLowerer
     {
         var resolved = action.Arguments.Count > 0 ? CmgLocator.Resolve(action.Arguments[0], action.LineNumber) : new CmgResolvedLocator(string.Empty, []);
         var selector = resolved.Selector;
-        var expression = $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}'); const rect = element.getBoundingClientRect(); const options = {{ bubbles: true, cancelable: true, button: {button}, buttons: {button + 1}, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }}; element.dispatchEvent(new MouseEvent('{eventName}', options)); return true; }})()";
+        var buttons = button == 2 ? 2 : 1;
+        var expression = $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}'); const rect = element.getBoundingClientRect(); const options = {{ bubbles: true, cancelable: true, button: {button}, buttons: {buttons}, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }}; element.dispatchEvent(new MouseEvent('{eventName}', options)); return true; }})()";
         return [
             .. resolved.PrefixLines,
             CmgActionabilityScripts.WaitForActionable(selector, action),

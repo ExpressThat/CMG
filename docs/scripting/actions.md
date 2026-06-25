@@ -2,7 +2,7 @@
 
 All actions fail fast. If an action fails, later actions are not executed.
 
-Browser JavaScript dialogs are not silently removed. Use `captureDialogs` and `setDialogBehavior` before the page action that is expected to call `alert`, `confirm`, or `prompt`.
+Browser JavaScript dialogs are not silently removed, accepted, or dismissed through the browser protocol. Use `captureDialogs` and `setDialogBehavior` before the page action that is expected to call `alert`, `confirm`, or `prompt`.
 
 ## `navigate`
 
@@ -999,6 +999,11 @@ rightClick "#item"
 ```
 
 Moves to the element with the visual hover path, then dispatches the page-facing mouse event.
+
+Output:
+
+- `MOUSE_EVENT <line> dblclick <selector>` for `dblclick`.
+- `MOUSE_EVENT <line> contextmenu <selector>` for `rightClick`.
 
 ### `expectUrl` And `expectTitle`
 

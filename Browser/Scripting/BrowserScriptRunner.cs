@@ -93,6 +93,7 @@ public sealed partial class BrowserScriptRunner
                 ExecuteWaitAction(remoteDebuggingUrl, automationClient, action),
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             "click" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Click(remoteDebuggingUrl, selector)),
+            "dblclick" or "rightclick" => ExecuteMouseClickVariant(remoteDebuggingUrl, automationClient, action),
             "type" => ExecuteType(remoteDebuggingUrl, automationClient, action, recorder),
             "clear" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Clear(remoteDebuggingUrl, selector)),
             "press" => ExecutePress(remoteDebuggingUrl, automationClient, action),

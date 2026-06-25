@@ -38,5 +38,21 @@ public sealed class BrowserScriptRunnerMouseActionTests
         Assert.Contains("requires either one alias", result.Error);
     }
 
+    [Theory]
+    [InlineData("dblclick text=Save", "dblclick", 0, 1)]
+    [InlineData("rightClick text=Save", "contextmenu", 2, 2)]
+    public void RunText_MouseClickVariantsResolveAndDispatch(string script, string eventName, int button, int buttons)
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText(script, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal("[data-cmg-locator-id=\"__cmg_locator_1\"]", client.LastHoveredSelector);
+        Assert.Contains($"MouseEvent('{eventName}'", client.LastExpression);
+        Assert.Contains($"button: {button}", client.LastExpression);
+        Assert.Contains($"buttons: {buttons}", client.LastExpression);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith($"MOUSE_EVENT 001 {eventName}", StringComparison.Ordinal));
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

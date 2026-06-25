@@ -24,13 +24,13 @@ cmg --firefox browser control script --file <path>
 - Stops on the first failed action.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
-- Supports the same parity actions as the structured runner DSL, including `keyDown`, `keyUp`, `insertText`, `mouseMove`, `mouseDown`, `mouseUp`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNavigation`, `url`, `title`, `content`, `setContent`, `captureDialogs`, `setDialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setOffline`, `route`, `intercept`, `waitForRequest`, `waitForRequestFinished`, `waitForRequestFailed`, `waitForResponse`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, and `waitForTab`.
+- Supports the same parity actions as the structured runner DSL, including `dblclick`, `rightClick`, `keyDown`, `keyUp`, `insertText`, `mouseMove`, `mouseDown`, `mouseUp`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNavigation`, `url`, `title`, `content`, `setContent`, `captureDialogs`, `setDialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setOffline`, `route`, `intercept`, `waitForRequest`, `waitForRequestFinished`, `waitForRequestFailed`, `waitForResponse`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, and `waitForTab`.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
-- Browser JavaScript dialogs are handled explicitly. Add `captureDialogs` or `setDialogBehavior` before the action that opens an `alert`, `confirm`, or `prompt`.
+- Browser JavaScript dialogs are handled explicitly. CMG does not silently remove, accept, or dismiss dialogs through the browser protocol. Add `captureDialogs` or `setDialogBehavior` before the action that opens an `alert`, `confirm`, or `prompt`.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
 - Selector actions support the same rich locators as `cmg run`, including `text=`, `role=`, `label=`, `testid=`, `placeholder=`, `alt=`, `title=`, and `xpath=`. Pointer-aware actions resolve the locator to a temporary element marker before moving the virtual pointer.
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
-- GIF pointer movement dispatches browser movement and hover events. This includes automatic pointer movement before `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`, not only drag movement.
+- GIF pointer movement dispatches browser movement and hover events. This includes automatic pointer movement before `click`, `dblclick`, `rightClick`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`, not only drag movement.
 - `moveMouse` is available only inside scripts run with `--gif`; there is no one-off CLI `browser control moveMouse` command.
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.
 
@@ -55,6 +55,8 @@ URL 007 https://example.com/profile
 TITLE 008 CMG Browser Control Test Page
 CONTENT 009 <html>...</html>
 CONTENT_SET 010 length=16
+MOUSE_EVENT 011 dblclick #save
+MOUSE_EVENT 012 contextmenu #menu
 TAB 0 id=... title="..." url="..."
 TAB_OPENED 011 https://example.com
 TAB_COUNT 012 2

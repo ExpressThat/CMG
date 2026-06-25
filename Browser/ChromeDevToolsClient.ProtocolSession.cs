@@ -24,13 +24,13 @@ public sealed partial class ChromeDevToolsClient
             var session = new DevToolsSession(socket);
             if (enablePage)
             {
-                await session.EnableAutoDialogHandling();
+                await session.EnablePageEvents();
             }
 
             return session;
         }
 
-        public async Task EnableAutoDialogHandling()
+        public async Task EnablePageEvents()
         {
             await SendCommand("Page.enable");
         }
