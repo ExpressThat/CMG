@@ -211,6 +211,14 @@ Line 6: download failed. No download matching '*.csv' appeared in 'C:\Projects\C
 
 Check the browser download directory, file pattern, and timeout. `download` ignores in-progress Chrome `.crdownload` files.
 
+## Console Timeout
+
+```text
+Line 7: waitForConsole failed. Console message 'settings saved' was not seen within 5000ms.
+```
+
+Call `captureConsole` before the action that should log the message, and check the optional `level=` filter.
+
 ## Failed Assertion
 
 ```text

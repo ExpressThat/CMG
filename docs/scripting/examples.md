@@ -352,6 +352,19 @@ test "exports report" {
 
 Use `download` when the page interaction should be visible in a GIF. Use `waitForDownload` when another action already triggered the download.
 
+## Console Feedback
+
+```text
+test "logs save result" {
+  navigate "https://example.com/settings"
+  captureConsole
+  click "#save"
+  waitForConsole "settings saved" level=info timeout=5000
+}
+```
+
+Console waits are useful when an app reports diagnostics through the browser console. Reports and traces include the `CONSOLE` output line.
+
 ## Storage State
 
 ```text

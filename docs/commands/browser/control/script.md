@@ -60,6 +60,8 @@ UPLOAD 011 1
 VISUAL 012 diff=0
 EMULATE 013 width height userAgent
 DOWNLOAD 014 C:\Projects\CMG\demo-output\report.csv
+CONSOLE_CAPTURE 015
+CONSOLE 016 info: settings saved
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 

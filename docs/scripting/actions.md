@@ -435,6 +435,25 @@ Output:
 
 - `DOWNLOAD <line> <path>` on success.
 
+## `captureConsole` And `waitForConsole`
+
+```text
+captureConsole
+waitForConsole "saved" level=info timeout=5000
+```
+
+Installs a page-side console hook and waits for a captured console message. Call `captureConsole` before the page action that is expected to log. `waitForConsole` checks captured `log`, `info`, `warn`, and `error` calls.
+
+Options:
+
+- `level`: Optional console level filter: `log`, `info`, `warn`, or `error`.
+- `timeout`: Optional timeout in milliseconds. Default is `5000`.
+
+Output:
+
+- `CONSOLE_CAPTURE <line>` when the hook is installed.
+- `CONSOLE <line> <level>: <text>` when a matching message is found.
+
 ## `activateTab`
 
 ```text

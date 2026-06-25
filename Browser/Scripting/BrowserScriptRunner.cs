@@ -110,6 +110,8 @@ public sealed partial class BrowserScriptRunner
             "emulate" => ExecuteEmulate(remoteDebuggingUrl, automationClient, action),
             "download" => ExecuteDownload(remoteDebuggingUrl, automationClient, action),
             "waitfordownload" => ExecuteWaitForDownload(action),
+            "captureconsole" => ExecuteCaptureConsole(remoteDebuggingUrl, automationClient, action),
+            "waitforconsole" => ExecuteWaitForConsole(remoteDebuggingUrl, automationClient, action),
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),
             "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),

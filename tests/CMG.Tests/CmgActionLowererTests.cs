@@ -129,6 +129,14 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_ConsoleActionsPassThrough()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("waitForConsole", ["saved"], [])));
+
+        Assert.Equal("waitForConsole \"saved\"", line);
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));
