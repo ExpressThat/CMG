@@ -1249,7 +1249,9 @@ Output:
 
 ```text
 expectVisible "#save" timeout=5000
+waitForVisible "#save" timeout=5000
 expectHidden "#spinner" timeout=5000
+waitForHidden "#spinner" timeout=5000
 expectEnabled "#save"
 expectDisabled "#archive"
 expectValue "#email" "agent@example.com" timeout=5000
@@ -1267,7 +1269,7 @@ toBeChecked "#terms" true
 toHaveCount ".result" 3
 ```
 
-Runs browser-side assertions for common UI state checks. The `toHave*` and `toBe*` forms are Playwright-style aliases over the matching CMG assertions. Element assertions resolve CMG locators before checking the matched element. Direct browser-control scripts also accept locator-form options such as `expectVisible text=Save` when the parser would otherwise treat `text=Save` as an option. `expectCount` and `toHaveCount` count matching CSS elements and support zero-count assertions.
+Runs browser-side assertions for common UI state checks. The `toHave*` and `toBe*` forms are Playwright-style aliases over the matching CMG assertions. `waitForVisible` and `waitForHidden` are provider-style wait aliases for the visible and hidden assertions. Element assertions resolve CMG locators before checking the matched element. Direct browser-control scripts also accept locator-form options such as `expectVisible text=Save` when the parser would otherwise treat `text=Save` as an option. `expectCount` and `toHaveCount` count matching CSS elements and support zero-count assertions.
 
 Options:
 

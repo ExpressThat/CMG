@@ -46,7 +46,8 @@ public sealed class CmgValidator
             "html" or "screenshot" or "asserttext" or "download" or "uploadfiles" or
             "fill" or "check" or "uncheck" or "focus" or "blur" or "selecttext" or
             "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "dispatchevent" or "expecttext" or "expectvalue" or
-            "expectattribute" or "expectchecked" or "expectcount" or "expectscreenshot";
+            "expectattribute" or "expectchecked" or "expectcount" or "expectscreenshot" or
+            "waitforvisible" or "waitforhidden";
 }
 
 public sealed record CmgValidationResult(bool Success, int LineNumber, string Action, string? Error)

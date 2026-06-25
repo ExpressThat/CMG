@@ -12,8 +12,8 @@ public sealed partial class BrowserScriptRunner
     {
         var mode = action.Name.ToLowerInvariant() switch
         {
-            "expectvisible" or "tobevisible" => "visible",
-            "expecthidden" or "tobehidden" => "hidden",
+            "expectvisible" or "tobevisible" or "waitforvisible" => "visible",
+            "expecthidden" or "tobehidden" or "waitforhidden" => "hidden",
             "expectenabled" or "tobeenabled" => "enabled",
             "expectdisabled" or "tobedisabled" => "disabled",
             "expectvalue" or "tohavevalue" => "value",

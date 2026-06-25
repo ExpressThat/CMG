@@ -10,6 +10,7 @@ suite "runner demo" {
       step "Opening profile dialog" {
         click "#openProfileDialog"
       }
+      waitForVisible "#profileDialog" timeout=5000
       assertText "#lastDialogAction" "None"
     }
   }

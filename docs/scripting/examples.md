@@ -455,7 +455,9 @@ If the baseline does not exist, CMG writes it from the actual screenshot and fai
 test "profile form state" {
   navigate "https://example.com/profile"
   expectVisible "#profileForm" timeout=5000
+  waitForVisible "#save" timeout=5000
   expectHidden "#loading"
+  waitForHidden "#loading"
   expectEnabled "#save"
   expectDisabled "#archive"
   expectValue "#email" "agent@example.com" timeout=5000

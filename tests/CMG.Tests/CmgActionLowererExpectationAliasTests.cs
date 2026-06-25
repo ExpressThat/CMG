@@ -9,7 +9,9 @@ public sealed class CmgActionLowererExpectationAliasTests
     [InlineData("containsText", "assertText \"#target\" \"Saved\"", "Saved")]
     [InlineData("waitForText", "assertText \"#target\" \"Saved\"", "Saved")]
     [InlineData("toBeVisible", "expectVisible \"#target\"")]
+    [InlineData("waitForVisible", "expectVisible \"#target\"")]
     [InlineData("toBeHidden", "expectHidden \"#target\"")]
+    [InlineData("waitForHidden", "expectHidden \"#target\"")]
     [InlineData("toBeEnabled", "expectEnabled \"#target\"")]
     [InlineData("toBeDisabled", "expectDisabled \"#target\"")]
     public void Lower_PlaywrightExpectationAliasesUseCmgAssertions(string name, string expected, string? value = null)

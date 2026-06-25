@@ -122,7 +122,7 @@ public sealed partial class BrowserScriptRunner
             "printpdf" or "pdf" => ExecutePrintPdf(remoteDebuggingUrl, automationClient, action),
             "asserttext" or "expecttext" or "tohavetext" or "containstext" or "contains" or "waitfortext" =>
                 ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
-            "expectvisible" or "tobevisible" or "expecthidden" or "tobehidden" or
+            "expectvisible" or "tobevisible" or "waitforvisible" or "expecthidden" or "tobehidden" or "waitforhidden" or
             "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" or
             "expectvalue" or "tohavevalue" or "expectattribute" or "tohaveattribute" or
             "expectchecked" or "tobechecked" or "expectcount" or "tohavecount" =>
