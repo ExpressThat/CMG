@@ -1066,16 +1066,26 @@ Output:
 ```text
 apiRequest "GET" "https://example.com/api/status" status=200 contains="ok"
 apiRequest "POST" "https://example.com/api/items" body="{\"name\":\"demo\"}" header.Authorization="Bearer token"
+apiRequest "POST" "https://example.com/api/items" json="{\"name\":\"demo\"}" query.preview=true timeout=10000
 ```
 
-Runs an HTTP request from the test runner. This does not move the virtual pointer because it is not a browser UI action, but it is included in reports and step failure diagnostics.
+Runs an HTTP request from direct browser-control scripts or `cmg run`. This does not move the virtual pointer because it is not a browser UI action, but it is included in stdout, reports, traces, and step failure diagnostics.
 
 Options:
 
 - `status`: Expected numeric response status.
 - `contains`: Text expected in the response body.
 - `body`: Request body text.
+- `json`: Request body text with `Content-Type: application/json` unless `contentType=` is also set.
+- `contentType`: Request content type for `body` or `json`.
+- `query.<name>`: Query string value to append to the request URL.
 - `header.<name>`: Request header.
+- `timeout`: Request timeout in milliseconds. Default is `30000`.
+
+Output:
+
+- `API <line> <status> <url>` after receiving a response.
+- `API_BODY <line> <body>` with the response body.
 
 ### `storageState`
 

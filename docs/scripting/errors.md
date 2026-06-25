@@ -304,6 +304,7 @@ The assertion checks whether the element text contains the expected text.
 
 ```text
 STEP FAIL line=3 action=apiRequest reason=Expected status 200, got 500.
+STEP FAIL line=4 action=apiRequest reason=apiRequest option timeout= must be a positive number of milliseconds.
 ```
 
 `apiRequest` failures include the reason in stderr and reports. The step output includes `API` and `API_BODY` lines when a response was received.

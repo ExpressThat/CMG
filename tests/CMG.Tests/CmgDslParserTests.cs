@@ -44,13 +44,14 @@ public sealed class CmgDslParserTests
         var parser = new CmgDslParser();
         var result = parser.Parse("flow.cmgscript", """
         test "typing" {
-          type "#name" "Line\nTwo" timeout=5000
+          type "#name" "Line\nTwo" timeout=5000 header.Authorization="Bearer token"
         }
         """);
 
         var action = Assert.Single(Assert.Single(result.Document!.Nodes).Children);
         Assert.Equal("Line\nTwo", action.Arguments[1]);
         Assert.Equal("5000", action.Options["timeout"]);
+        Assert.Equal("Bearer token", action.Options["header.Authorization"]);
     }
 
     [Fact]

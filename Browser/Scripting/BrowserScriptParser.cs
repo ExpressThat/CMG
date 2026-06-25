@@ -189,7 +189,7 @@ public sealed class BrowserScriptParser
             return false;
         }
 
-        return value.All(character => char.IsLetterOrDigit(character) || character is '-' or '_');
+        return value.All(character => char.IsLetterOrDigit(character) || character is '-' or '_' or '.');
     }
 }
 

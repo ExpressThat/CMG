@@ -4,7 +4,13 @@ namespace CMG.Runner;
 
 public sealed class CmgApiRequestRunner
 {
-    private static readonly HttpClient Client = new();
+    private static readonly HttpClient SharedClient = new();
+    private readonly HttpClient client;
+
+    public CmgApiRequestRunner(HttpClient? client = null)
+    {
+        this.client = client ?? SharedClient;
+    }
 
     public CmgStepResult Run(CmgNode action)
     {
@@ -15,22 +21,71 @@ public sealed class CmgApiRequestRunner
 
         try
         {
-            using var request = new HttpRequestMessage(new HttpMethod(action.Arguments[0]), action.Arguments[1]);
+            using var request = new HttpRequestMessage(new HttpMethod(action.Arguments[0]), BuildUri(action));
             AddHeaders(request.Headers, action);
-            if (action.Options.TryGetValue("body", out var body))
-            {
-                request.Content = new StringContent(body);
-            }
-
-            using var response = Client.Send(request);
-            var responseBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            AddContent(request, action);
+            using var cancellation = new CancellationTokenSource(GetTimeout(action));
+            using var response = client.Send(request, cancellation.Token);
+            var responseBody = response.Content.ReadAsStringAsync(cancellation.Token).GetAwaiter().GetResult();
             var output = BuildOutput(action, response, responseBody);
             return Validate(action, response, responseBody, output);
         }
-        catch (Exception exception) when (exception is HttpRequestException or InvalidOperationException or UriFormatException)
+        catch (Exception exception) when (exception is HttpRequestException or InvalidOperationException or UriFormatException or TaskCanceledException or FormatException)
         {
-            return Fail(action, exception.Message);
+            return Fail(action, exception is TaskCanceledException ? "API request timed out." : exception.Message);
         }
+    }
+
+    private static Uri BuildUri(CmgNode action)
+    {
+        var builder = new UriBuilder(action.Arguments[1]);
+        var query = new List<string>();
+        if (!string.IsNullOrWhiteSpace(builder.Query))
+        {
+            query.Add(builder.Query.TrimStart('?'));
+        }
+
+        query.AddRange(action.Options
+            .Where(option => option.Key.StartsWith("query.", StringComparison.OrdinalIgnoreCase))
+            .Select(option => $"{Uri.EscapeDataString(option.Key["query.".Length..])}={Uri.EscapeDataString(option.Value)}"));
+        builder.Query = string.Join('&', query.Where(part => !string.IsNullOrWhiteSpace(part)));
+        return builder.Uri;
+    }
+
+    private static void AddContent(HttpRequestMessage request, CmgNode action)
+    {
+        var content = action.Options.TryGetValue("json", out var json)
+            ? new StringContent(json)
+            : action.Options.TryGetValue("body", out var body)
+                ? new StringContent(body)
+                : null;
+        if (content is null)
+        {
+            return;
+        }
+
+        if (action.Options.TryGetValue("contentType", out var contentType))
+        {
+            content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+        }
+        else if (action.Options.ContainsKey("json"))
+        {
+            content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+        }
+
+        request.Content = content;
+    }
+
+    private static TimeSpan GetTimeout(CmgNode action)
+    {
+        if (!action.Options.TryGetValue("timeout", out var value))
+        {
+            return TimeSpan.FromSeconds(30);
+        }
+
+        return int.TryParse(value, out var milliseconds) && milliseconds > 0
+            ? TimeSpan.FromMilliseconds(milliseconds)
+            : throw new InvalidOperationException("apiRequest option timeout= must be a positive number of milliseconds.");
     }
 
     private static void AddHeaders(HttpRequestHeaders headers, CmgNode action)

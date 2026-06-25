@@ -695,3 +695,13 @@ test "handles intercepted outage" {
   waitForRequestFailed "/api/profile"
 }
 ```
+
+## API Request
+
+```text
+test "creates item through api" {
+  apiRequest "POST" "https://example.com/api/items" json="{\"name\":\"demo\"}" query.preview=true header.Authorization="Bearer token" status=201 contains="demo"
+}
+```
+
+`apiRequest` is runner-side HTTP and does not move the virtual pointer. Its `API` and `API_BODY` output is included in reports and traces.

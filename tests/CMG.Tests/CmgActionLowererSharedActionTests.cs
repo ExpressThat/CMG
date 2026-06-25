@@ -54,6 +54,7 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("evaluateOnNewDocument", "window.__ready = true;", "evaluateOnNewDocument \"window.__ready = true;\"")]
     [InlineData("setOffline", "true", "setOffline \"true\"")]
     [InlineData("clearExtraHTTPHeaders", null, "clearExtraHTTPHeaders")]
+    [InlineData("apiRequest", "GET", "apiRequest \"GET\" \"https://example.test\"", "https://example.test")]
     public void Lower_SharedActionsPassThrough(string kind, string? arg, string expected, string? secondArg = null)
     {
         var args = new[] { arg, secondArg }.Where(value => value is not null).Cast<string>().ToArray();

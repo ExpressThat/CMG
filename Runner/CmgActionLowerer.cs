@@ -54,7 +54,7 @@ public sealed class CmgActionLowerer
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),
             "opentab" or "waitfortab" => [ToLine(action.Kind, action.Arguments, action.Options)],
-            "apirequest" => [],
+            "apirequest" => [ToLine(action.Kind, action.Arguments, action.Options)],
             _ => [ToLine("evaluate", [BuildUnsupportedExpression(action.Kind)])]
         };
     }

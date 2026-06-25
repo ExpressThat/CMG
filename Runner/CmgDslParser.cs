@@ -139,7 +139,7 @@ public sealed class CmgDslParser
     private static bool IsOptionKey(string value) =>
         value.Length > 0 &&
         char.IsLetter(value[0]) &&
-        value.All(character => char.IsLetterOrDigit(character) || character is '-' or '_');
+        value.All(character => char.IsLetterOrDigit(character) || character is '-' or '_' or '.');
 
     private static string? ValidateTopLevel(IReadOnlyList<CmgNode> nodes)
     {
