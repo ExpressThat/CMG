@@ -57,6 +57,8 @@ public sealed partial class BrowserScriptRunner
             "expectvalue" or "tohavevalue" or "expectattribute" or "tohaveattribute" or
             "expectchecked" or "tobechecked" or "expectcount" or "tohavecount" => ExecuteElementExpectation(remoteDebuggingUrl, automationClient, action),
             "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, automationClient, action),
+            "expecteval" or "asserteval" or "expectexpression" or "assertexpression" =>
+                ExecuteEvaluateAssertion(remoteDebuggingUrl, automationClient, action),
             "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" => ExecuteSelectorEvaluate(remoteDebuggingUrl, automationClient, action),
             "url" or "title" or "content" or "setcontent" => ExecutePageContentAction(remoteDebuggingUrl, automationClient, action),
             "addinitscript" or "evaluateonnewdocument" => ExecuteAddInitScript(remoteDebuggingUrl, automationClient, action),

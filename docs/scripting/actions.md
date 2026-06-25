@@ -474,6 +474,31 @@ Evaluates JavaScript in the primary page target and prints the returned value as
 
 The output payload is just the returned value. A `set` block can capture it without storing the `PASS` or `EVALUATE` prefix.
 
+## `expectEval`, `assertEval`, `expectExpression`, And `assertExpression`
+
+```text
+expectEval "window.appReady === true"
+assertEval "document.title" equals="Checkout"
+expectExpression "document.body.innerText" contains="Saved"
+assertExpression "window.retryCount < 3" timeout=5000
+```
+
+Evaluates JavaScript in the primary page target and fails unless the returned value matches the requested assertion. These aliases are shared by direct browser-control scripts and `cmg run`.
+
+Options:
+
+- `equals` or `eq`: Optional exact expected value.
+- `contains`: Optional substring expected in the evaluated value.
+- `timeout`: Optional polling timeout in milliseconds. Default is `0`, which checks once.
+
+When no matcher option is supplied, the value must be truthy. Empty text, `false`, `0`, `null`, and `undefined` are falsey.
+
+Output:
+
+- `EXPECT_EVAL <line> <value>` when the assertion passes.
+
+Evaluated assertions do not move the virtual pointer. Wrap them in `step`, `caption`, or `gif` blocks when a recording should narrate the check.
+
 ## `url`, `title`, `content`, And `setContent`
 
 ```text

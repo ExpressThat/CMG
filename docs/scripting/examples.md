@@ -614,6 +614,19 @@ test "profile form state" {
 
 These assertions run in the page and report clear step failures. Wrap them in `step` blocks when a GIF should show a caption for the checked state.
 
+## Evaluated Assertions
+
+```text
+setContent "<main><h1>Checkout</h1><output id='status'>Saved</output><script>window.appReady = true;</script></main>"
+expectEval "window.appReady === true"
+assertEval "document.querySelector('#status').textContent" equals=Saved
+expectExpression "document.body.innerText" contains=Checkout
+```
+
+Evaluated assertions are useful when provider-style assertions need a page expression rather than a selector. They work in direct browser-control scripts and `cmg run`, and they report the actual value on failure.
+
+This example is available as `demo-scripts/37-evaluated-assertions.cmgscript`.
+
 ## Direct Rich Locators
 
 ```text

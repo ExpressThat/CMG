@@ -36,6 +36,7 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("setViewportSize", null, "setViewport width=\"390\" height=\"844\"", null, "390", "844")]
     [InlineData("waitForPopup", null, "waitForPopup")]
     [InlineData("waitForFunction", "window.ready", "waitForFunction \"window.ready\"")]
+    [InlineData("expectEval", "window.ready", "expectEval \"window.ready\"")]
     [InlineData("waitForSelector", "#ready", "waitForSelector \"#ready\"")]
     [InlineData("waitForTimeout", "1", "waitForTimeout \"1\"")]
     [InlineData("setGeolocation", "51.5,-0.1", "setGeolocation \"51.5,-0.1\"")]

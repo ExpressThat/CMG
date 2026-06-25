@@ -69,7 +69,8 @@ public sealed partial class CmgActionLowerer
             "textcontent" or "innertext" or "inputvalue" or "getattribute" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "set" => LowerSet(action),
-            "evaluate" or "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or
+            "evaluate" or "expecteval" or "asserteval" or "expectexpression" or "assertexpression" or
+            "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or
             "dispatchevent" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or "draganddrop" or "listtabs" or "activatetab" or "closetab" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),

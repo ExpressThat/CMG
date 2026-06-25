@@ -548,6 +548,15 @@ STEP FAIL line=8 action=expectAttribute reason=Expected attribute aria-label to 
 
 `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `expectValue`, `expectAttribute`, `expectChecked`, and `expectCount` run in the page and report the expected state plus the actual state that caused the failure.
 
+## Evaluated Assertion Failure
+
+```text
+Line 4: expectEval failed. Expected evaluated value to be truthy. Actual: 'false'.
+Line 5: assertExpression failed. Expected evaluated value to equal 'Saved' within 5000ms. Actual: 'Saving'.
+```
+
+Use `equals=`, `eq=`, or `contains=` when truthiness is not specific enough. Add `timeout=<milliseconds>` when the page expression should be polled until it reaches the expected state.
+
 ## Storage State Failure
 
 ```text
