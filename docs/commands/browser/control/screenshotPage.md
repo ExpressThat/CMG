@@ -9,7 +9,7 @@ cmg browser control screenshotPage [--output <path>] [--full-page]
 ## Options
 
 - `--output <path>`: Optional PNG output path. Without it, stdout includes a `data:image/png;base64,...` result.
-- `--full-page`: Capture the full scrollable page instead of only the current viewport. Supported for Chrome and Edge. Firefox exits `1` with an explicit unsupported-provider reason.
+- `--full-page`: Capture the full scrollable page instead of only the current viewport.
 
 ## Stdout
 

@@ -400,7 +400,7 @@ Network waits use substring matching against page `fetch()` and `XMLHttpRequest`
 ```text
 Line 4: waitForWorker failed. Worker 'worker.js' was not available within 5000ms.
 Line 5: workerEvaluate failed. No worker matched 'analytics-worker'.
-Line 6: workerIntercept failed. Worker target control is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for listWorkers/workerEvaluate/workerIntercept.
+Line 6: workerIntercept failed. Worker request interception is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for workerIntercept.
 ```
 
 Use `listWorkers` to inspect available worker ids and URLs before targeting a specific worker. Worker interception patches `fetch()` inside existing Chrome/Edge worker targets.

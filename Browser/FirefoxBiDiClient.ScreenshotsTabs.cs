@@ -155,10 +155,38 @@ public sealed partial class FirefoxBiDiClient
     }
 
     public IReadOnlyList<BrowserWorkerInfo> ListWorkers(string remoteDebuggingUrl) =>
-        throw UnsupportedWorkerException();
+        Run(async () =>
+        {
+            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            return await ListFirefoxWorkers(session);
+        });
 
     public string EvaluateWorker(string remoteDebuggingUrl, string? target, string expression) =>
-        throw UnsupportedWorkerException();
+        Run(async () =>
+        {
+            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            var workers = await ListFirefoxWorkers(session);
+            var worker = string.IsNullOrWhiteSpace(target)
+                ? workers.FirstOrDefault()
+                : workers.FirstOrDefault(worker =>
+                    worker.Id == target ||
+                    worker.Type.Contains(target, StringComparison.OrdinalIgnoreCase) ||
+                    worker.Url.Contains(target, StringComparison.OrdinalIgnoreCase));
+            if (worker is null)
+            {
+                throw new ChromeDevToolsException($"Worker '{target ?? "<first>"}' was not available.");
+            }
+
+            return ReadScriptResultValue(await session.SendCommand("script.evaluate", writer =>
+            {
+                writer.WriteString("expression", expression);
+                writer.WriteBoolean("awaitPromise", true);
+                writer.WriteString("resultOwnership", "none");
+                writer.WriteStartObject("target");
+                writer.WriteString("realm", worker.Id);
+                writer.WriteEndObject();
+            }));
+        });
 
     public int InterceptWorkerRequests(string remoteDebuggingUrl, string? target, WorkerRouteOptions options) =>
         throw UnsupportedWorkerException();
@@ -169,8 +197,36 @@ public sealed partial class FirefoxBiDiClient
     public string StopCoverage(string remoteDebuggingUrl) =>
         throw UnsupportedCoverageException();
 
+    private static async Task<IReadOnlyList<BrowserWorkerInfo>> ListFirefoxWorkers(FirefoxBiDiSession session)
+    {
+        var response = await session.SendCommand("script.getRealms");
+        if (!TryReadElement(response, ["result", "realms"], out var realms) || realms.ValueKind is not JsonValueKind.Array)
+        {
+            throw new ChromeDevToolsException("Firefox did not return worker realms.");
+        }
+
+        return realms.EnumerateArray()
+            .Select(ReadWorker)
+            .Where(worker => worker is not null)
+            .Cast<BrowserWorkerInfo>()
+            .ToArray();
+    }
+
+    private static BrowserWorkerInfo? ReadWorker(JsonElement realm)
+    {
+        if (!TryReadString(realm, "type", out var type) || string.IsNullOrWhiteSpace(type) ||
+            !type.Contains("worker", StringComparison.OrdinalIgnoreCase) ||
+            !TryReadString(realm, "realm", out var id) || string.IsNullOrWhiteSpace(id))
+        {
+            return null;
+        }
+
+        _ = TryReadString(realm, "origin", out var origin);
+        return new BrowserWorkerInfo(id, type, type, origin ?? string.Empty);
+    }
+
     private static ChromeDevToolsException UnsupportedWorkerException() =>
-        new("Worker target control is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for listWorkers/workerEvaluate/workerIntercept.");
+        new("Worker request interception is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for workerIntercept.");
 
     private static ChromeDevToolsException UnsupportedCoverageException() =>
         new("Coverage collection is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for startCoverage/stopCoverage.");

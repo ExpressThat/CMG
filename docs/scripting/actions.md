@@ -383,7 +383,7 @@ Output:
 
 - `PDF <line> <path>` on success.
 
-PDF generation does not move the virtual pointer. It is supported for Chrome and Edge through the browser print API. Firefox runs fail with an explicit unsupported-provider reason.
+PDF generation does not move the virtual pointer. It is supported through Chrome and Edge page printing and Firefox WebDriver BiDi printing.
 
 ## `assertText`
 
@@ -805,7 +805,7 @@ Output:
 - `CONTEXT <index> id=<context-id> target=<target-id> active=<true|false> url="<url>"` for `listContexts`.
 - `CONTEXT_CLOSED <line> <id>` when a context is closed.
 
-Context actions do not move the virtual pointer. Later pointer-aware actions use the currently active context, so GIF recordings keep the same virtual pointer and event behavior inside that page. Firefox runs fail with an explicit unsupported-provider reason until CMG has a BiDi-backed isolated context implementation.
+Context actions do not move the virtual pointer. Later pointer-aware actions use the currently active context, so GIF recordings keep the same virtual pointer and event behavior inside that page.
 
 ## `accessibilitySnapshot` And `expectAccessible`
 
@@ -1215,7 +1215,7 @@ Output:
 - `WORKER_EVALUATE <line> <result>` for worker evaluation.
 - `WORKER_INTERCEPT <line> routes=<count> <pattern>` when a worker intercept is installed.
 
-Worker actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful. Firefox runs fail with an explicit unsupported-provider reason until CMG has a BiDi-backed worker target implementation.
+Worker actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful. Firefox supports `listWorkers` and `workerEvaluate` through WebDriver BiDi worker realms; `workerIntercept` requires Chrome or Edge.
 
 ### `startCoverage` And `stopCoverage`
 
