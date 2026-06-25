@@ -401,6 +401,26 @@ evaluate "document.title"
 
 Evaluates JavaScript in the primary page target and prints the returned value as an `EVALUATE` result line.
 
+## `url`, `title`, `content`, And `setContent`
+
+```text
+url
+title
+content
+setContent "<main>CMG</main>"
+```
+
+Reads or replaces page-level metadata and HTML content. These are shared actions for direct browser-control scripts and `cmg run`.
+
+Output:
+
+- `URL <line> <url>` for the current page URL.
+- `TITLE <line> <title>` for the current document title.
+- `CONTENT <line> <html>` for `document.documentElement.outerHTML`.
+- `CONTENT_SET <line> length=<character-count>` after replacing the document with `setContent`.
+
+`url`, `title`, and `content` do not move the virtual pointer. `setContent` changes the page without pointer movement; wrap it in `step`, `caption`, or a `gif` block when a recording should narrate the page content change.
+
 ## `addInitScript` And `evaluateOnNewDocument`
 
 ```text

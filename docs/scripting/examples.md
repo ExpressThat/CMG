@@ -411,6 +411,20 @@ test "location-aware profile" {
 
 Use `emulate` before navigation when the page reads environment values during startup. The same action is available in direct browser-control scripts for AI-driven exploration.
 
+## Page Metadata And Content
+
+```text
+test "inspects generated page" {
+  setContent "<main><h1>CMG</h1></main>"
+  title
+  url
+  content
+  expectText "h1" "CMG"
+}
+```
+
+Use `url`, `title`, and `content` when a script needs page state as parseable output. Use `setContent` for generated test pages or AI-driven browser setup.
+
 ## File Upload
 
 ```text

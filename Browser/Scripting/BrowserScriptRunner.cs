@@ -108,6 +108,8 @@ public sealed partial class BrowserScriptRunner
             "printpdf" or "pdf" => ExecutePrintPdf(remoteDebuggingUrl, automationClient, action),
             "asserttext" => ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
             "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, automationClient, action),
+            "url" or "title" or "content" or "setcontent" =>
+                ExecutePageContentAction(remoteDebuggingUrl, automationClient, action),
             "addinitscript" or "evaluateonnewdocument" => ExecuteAddInitScript(remoteDebuggingUrl, automationClient, action),
             "setviewport" => ExecuteSetViewport(remoteDebuggingUrl, automationClient, action),
             "apirequest" => ExecuteApiRequest(action),

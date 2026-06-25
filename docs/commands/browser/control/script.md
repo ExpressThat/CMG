@@ -24,7 +24,7 @@ cmg --firefox browser control script --file <path>
 - Stops on the first failed action.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
-- Supports the same parity actions as the structured runner DSL, including `keyDown`, `keyUp`, `insertText`, `mouseMove`, `mouseDown`, `mouseUp`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `captureDialogs`, `setDialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setOffline`, `route`, `intercept`, `waitForRequest`, `waitForRequestFailed`, `waitForResponse`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, and `waitForTab`.
+- Supports the same parity actions as the structured runner DSL, including `keyDown`, `keyUp`, `insertText`, `mouseMove`, `mouseDown`, `mouseUp`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `url`, `title`, `content`, `setContent`, `captureDialogs`, `setDialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setOffline`, `route`, `intercept`, `waitForRequest`, `waitForRequestFailed`, `waitForResponse`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, and `waitForTab`.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
 - Browser JavaScript dialogs are handled explicitly. Add `captureDialogs` or `setDialogBehavior` before the action that opens an `alert`, `confirm`, or `prompt`.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
@@ -50,72 +50,76 @@ HTML 003 <button id="openProfileDialog" type="button">Open profile dialog</butto
 SCREENSHOT 004 C:\Projects\CMG\profile-dialog.png
 SCREENSHOT 005 data:image/png;base64,<base64-png-data>
 EVALUATE 006 CMG Browser Control Test Page
+URL 007 https://example.com/profile
+TITLE 008 CMG Browser Control Test Page
+CONTENT 009 <html>...</html>
+CONTENT_SET 010 length=16
 TAB 0 id=... title="..." url="..."
-TAB_OPENED 007 https://example.com
-TAB_COUNT 008 2
-API 009 200 https://example.com/health
-API_BODY 009 ok
-STORAGE_STATE 010 saved C:\Projects\CMG\demo-output\auth.json
-UPLOAD 011 1
-VISUAL 012 diff=0
-EMULATE 013 width height userAgent
-GEOLOCATION 014 51.5,-0.1 accuracy=10
-PERMISSIONS 015 geolocation,notifications
-PERMISSIONS_CLEARED 016
-RELOADED 017 https://example.com
-URL 018 https://example.com/checkout
-LOAD_STATE 019 complete
-SELECTOR 020 #ready
-FUNCTION 021 true
-WAIT_TIMEOUT 022 250
-KEY_DOWN 023 Shift
-TEXT_INSERTED 024 3
-KEY_UP 025 Shift
-MOUSE_MOVED 026 400,300
-MOUSE_DOWN 027 400,300
-MOUSE_UP 028 400,300
-LOCAL_STORAGE 029 set token
-SESSION_STORAGE 030 get token abc
-COOKIE 031 set mode
-DOWNLOAD 032 C:\Projects\CMG\demo-output\report.csv
-CONSOLE_CAPTURE 033
-CONSOLE 034 info: settings saved
-PAGE_ERROR_CAPTURE 035
-PAGE_ERROR 036 error: Cannot read properties of null
-DIALOG_CAPTURE 037
-DIALOG_BEHAVIOR 038 accept
-DIALOG 039 {"type":"alert","message":"Saved","accepted":true}
-INIT_SCRIPT 040 ...
-HEADERS_SET 041 2
-OFFLINE 042 true
-ROUTE 043 /api/profile
-REQUEST 044 {"method":"GET","url":"/api/profile","type":"fetch","body":""}
-REQUEST_FAILED 045 {"method":"GET","url":"/api/down","type":"fetch","error":"Failed to fetch"}
-RESPONSE 046 {"url":"/api/profile","status":200,"mocked":true}
-ROUTES_CLEARED 047
-HAR_EXPORTED 048 C:\Projects\CMG\demo-output\network.har
-HAR_REPLAY 049 routes=1 C:\Projects\CMG\demo-output\network.har
-FRAME 050 frameClick
-FRAME_EVALUATE 051 Checkout
-CLOCK 052 1700000000000
-TICK 053 250 now=1700000000250
-CLOCK_RESTORED 054
-CONTEXT_CLEARED 055
-CONTEXT_RESET 056
-ACCESSIBILITY 057 C:\Projects\CMG\demo-output\a11y.json
-ACCESSIBLE 058 role=button name="Save"
-CONTEXT_CREATED 059 id=... target=... url="about:blank"
-CONTEXT_ACTIVE 060 ...
-CONTEXT_CLOSED 061 ...
-WORKER 062 id=... type=worker title="worker.js" url="https://example.com/worker.js"
-WORKER_INTERCEPT 063 routes=1 /api/profile
-COVERAGE_STARTED 064 js=true css=true
-COVERAGE 065 C:\Projects\CMG\demo-output\coverage.json
-FILE_READ 066 payload C:\Projects\CMG\fixtures\payload.json
-FILE_WRITTEN 067 C:\Projects\CMG\demo-output\result.txt
-FILE_APPENDED 068 C:\Projects\CMG\demo-output\result.txt
-FILE_OK 069 C:\Projects\CMG\demo-output\result.txt
-PDF 070 C:\Projects\CMG\demo-output\page.pdf
+TAB_OPENED 011 https://example.com
+TAB_COUNT 012 2
+API 013 200 https://example.com/health
+API_BODY 013 ok
+STORAGE_STATE 014 saved C:\Projects\CMG\demo-output\auth.json
+UPLOAD 015 1
+VISUAL 016 diff=0
+EMULATE 017 width height userAgent
+GEOLOCATION 018 51.5,-0.1 accuracy=10
+PERMISSIONS 019 geolocation,notifications
+PERMISSIONS_CLEARED 020
+RELOADED 021 https://example.com
+URL 022 https://example.com/checkout
+LOAD_STATE 023 complete
+SELECTOR 024 #ready
+FUNCTION 025 true
+WAIT_TIMEOUT 026 250
+KEY_DOWN 027 Shift
+TEXT_INSERTED 028 3
+KEY_UP 029 Shift
+MOUSE_MOVED 030 400,300
+MOUSE_DOWN 031 400,300
+MOUSE_UP 032 400,300
+LOCAL_STORAGE 033 set token
+SESSION_STORAGE 034 get token abc
+COOKIE 035 set mode
+DOWNLOAD 036 C:\Projects\CMG\demo-output\report.csv
+CONSOLE_CAPTURE 037
+CONSOLE 038 info: settings saved
+PAGE_ERROR_CAPTURE 039
+PAGE_ERROR 040 error: Cannot read properties of null
+DIALOG_CAPTURE 041
+DIALOG_BEHAVIOR 042 accept
+DIALOG 043 {"type":"alert","message":"Saved","accepted":true}
+INIT_SCRIPT 044 ...
+HEADERS_SET 045 2
+OFFLINE 046 true
+ROUTE 047 /api/profile
+REQUEST 048 {"method":"GET","url":"/api/profile","type":"fetch","body":""}
+REQUEST_FAILED 049 {"method":"GET","url":"/api/down","type":"fetch","error":"Failed to fetch"}
+RESPONSE 050 {"url":"/api/profile","status":200,"mocked":true}
+ROUTES_CLEARED 051
+HAR_EXPORTED 052 C:\Projects\CMG\demo-output\network.har
+HAR_REPLAY 053 routes=1 C:\Projects\CMG\demo-output\network.har
+FRAME 054 frameClick
+FRAME_EVALUATE 055 Checkout
+CLOCK 056 1700000000000
+TICK 057 250 now=1700000000250
+CLOCK_RESTORED 058
+CONTEXT_CLEARED 059
+CONTEXT_RESET 060
+ACCESSIBILITY 061 C:\Projects\CMG\demo-output\a11y.json
+ACCESSIBLE 062 role=button name="Save"
+CONTEXT_CREATED 063 id=... target=... url="about:blank"
+CONTEXT_ACTIVE 064 ...
+CONTEXT_CLOSED 065 ...
+WORKER 066 id=... type=worker title="worker.js" url="https://example.com/worker.js"
+WORKER_INTERCEPT 067 routes=1 /api/profile
+COVERAGE_STARTED 068 js=true css=true
+COVERAGE 069 C:\Projects\CMG\demo-output\coverage.json
+FILE_READ 070 payload C:\Projects\CMG\fixtures\payload.json
+FILE_WRITTEN 071 C:\Projects\CMG\demo-output\result.txt
+FILE_APPENDED 072 C:\Projects\CMG\demo-output\result.txt
+FILE_OK 073 C:\Projects\CMG\demo-output\result.txt
+PDF 074 C:\Projects\CMG\demo-output\page.pdf
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 

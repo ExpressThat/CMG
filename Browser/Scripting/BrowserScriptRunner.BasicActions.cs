@@ -150,6 +150,46 @@ public sealed partial class BrowserScriptRunner
         return [$"EVALUATE {action.LineNumber:000} {automationClient.Evaluate(remoteDebuggingUrl, action.Arguments[0])}"];
     }
 
+    private static IReadOnlyList<string> ExecutePageContentAction(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        return action.Name.ToLowerInvariant() switch
+        {
+            "url" => EvaluateNoArg(action, automationClient, remoteDebuggingUrl, "URL", "location.href"),
+            "title" => EvaluateNoArg(action, automationClient, remoteDebuggingUrl, "TITLE", "document.title"),
+            "content" => EvaluateNoArg(action, automationClient, remoteDebuggingUrl, "CONTENT", "document.documentElement.outerHTML"),
+            "setcontent" => SetContent(action, automationClient, remoteDebuggingUrl),
+            _ => throw new ScriptExecutionException($"Unknown page content action '{action.Name}'.")
+        };
+    }
+
+    private static IReadOnlyList<string> EvaluateNoArg(
+        BrowserScriptAction action,
+        IBrowserAutomationClient automationClient,
+        string remoteDebuggingUrl,
+        string label,
+        string expression)
+    {
+        RequireArgumentCount(action, 0, 0);
+        return [$"{label} {action.LineNumber:000} {automationClient.Evaluate(remoteDebuggingUrl, expression)}"];
+    }
+
+    private static IReadOnlyList<string> SetContent(
+        BrowserScriptAction action,
+        IBrowserAutomationClient automationClient,
+        string remoteDebuggingUrl)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var html = QuoteScriptString(action.Arguments[0]);
+        automationClient.Evaluate(remoteDebuggingUrl, $"document.open(); document.write({html}); document.close(); true");
+        return [$"CONTENT_SET {action.LineNumber:000} length={action.Arguments[0].Length}"];
+    }
+
+    private static string QuoteScriptString(string value) =>
+        $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal).Replace("\r", "\\r", StringComparison.Ordinal).Replace("\n", "\\n", StringComparison.Ordinal)}\"";
+
     private static IReadOnlyList<string> ExecuteSetViewport(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 0, 0);
