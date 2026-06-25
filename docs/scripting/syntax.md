@@ -90,6 +90,15 @@ action positionalArgs... key=value...
 
 Options use identifier-like keys. Selector values containing `=` remain positional arguments unless the key before `=` is identifier-like.
 
+Indentation, tabs, and repeated spaces between tokens are ignored outside quoted strings:
+
+```text
+          click          "#save"          timeout=5000
+		caption          "Done"
+```
+
+Spaces inside quoted strings are preserved.
+
 ## Imports
 
 Use a line-level import to include reusable macros or setup actions:

@@ -166,4 +166,20 @@ public sealed class CmgDslParserTests
         Assert.Equal(["before", "it", "after"], suite.Children.Select(node => node.Kind.ToLowerInvariant()));
         Assert.Equal("<main>{ready}</main>", suite.Children[0].Children[0].Arguments[0]);
     }
+
+    [Fact]
+    public void Parse_AllowsHeavyIndentationTabsAndRepeatedSpacing()
+    {
+        var result = new CmgDslParser().Parse("flow.cmgscript", "          test          \"spacing\"          tag=smoke          {\r\n\t\tclick          \"#save\"          timeout=5000\r\n          }\r\n");
+
+        Assert.True(result.Success, result.Error);
+        var test = Assert.Single(result.Document!.Nodes);
+        Assert.Equal("test", test.Kind);
+        Assert.Equal("spacing", test.Name);
+        Assert.Equal("smoke", test.Options["tag"]);
+        var action = Assert.Single(test.Children);
+        Assert.Equal("click", action.Kind);
+        Assert.Equal("#save", action.Arguments[0]);
+        Assert.Equal("5000", action.Options["timeout"]);
+    }
 }

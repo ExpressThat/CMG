@@ -61,4 +61,25 @@ public sealed class BrowserScriptParserTests
         Assert.Equal("if", action.Name);
         Assert.Equal("<main>{ok}</main>", Assert.Single(action.Children).Arguments[0]);
     }
+
+    [Fact]
+    public void Parse_AllowsHeavyIndentationAndRepeatedSpacing()
+    {
+        var result = new BrowserScriptParser().Parse("          click          \"#save\"          timeout=5000\r\n\t\tcaption          \"Done\"");
+
+        Assert.True(result.Success, result.Error);
+        Assert.Collection(
+            result.Actions,
+            action =>
+            {
+                Assert.Equal("click", action.Name);
+                Assert.Equal("#save", action.Arguments[0]);
+                Assert.Equal("5000", action.Options["timeout"]);
+            },
+            action =>
+            {
+                Assert.Equal("caption", action.Name);
+                Assert.Equal("Done", action.Arguments[0]);
+            });
+    }
 }
