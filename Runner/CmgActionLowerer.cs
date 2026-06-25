@@ -69,13 +69,13 @@ public sealed class CmgActionLowerer
 
     private static string ElementScript(CmgNode action, string body)
     {
-        var selector = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
+        var selector = action.Arguments.Count > 0 ? CmgLocator.ToCssSelector(action.Arguments[0]) : string.Empty;
         return ToLine("evaluate", [$"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}'); {body} }})()"]);
     }
 
     private static IReadOnlyList<string> LowerMouseEvent(CmgNode action, string eventName, int button)
     {
-        var selector = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
+        var selector = action.Arguments.Count > 0 ? CmgLocator.ToCssSelector(action.Arguments[0]) : string.Empty;
         var expression = $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}'); const rect = element.getBoundingClientRect(); const options = {{ bubbles: true, cancelable: true, button: {button}, buttons: {button + 1}, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }}; element.dispatchEvent(new MouseEvent('{eventName}', options)); return true; }})()";
         return [ToLine("hover", [selector]), ToLine("evaluate", [expression])];
     }

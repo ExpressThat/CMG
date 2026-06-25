@@ -527,3 +527,21 @@ Reads or mutates page storage from the current page context.
 ## Planned Parity Actions
 
 Commands such as `intercept`, `route`, `apiRequest`, `uploadFiles`, `download`, `popup`, `frame`, device emulation, and full network mocking are reserved for parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
+
+## Locator Support
+
+Current runner support:
+
+- Plain CSS selectors, for example `"#open"`.
+- Explicit CSS selectors, for example `"css=#open"`.
+- Test id selectors, for example `"testid=save"`, mapped to `[data-testid='save']`.
+
+Planned locators fail during validation with a clear reason until the full locator engine lands:
+
+- `text=`
+- `role=`
+- `label=`
+- `placeholder=`
+- `alt=`
+- `title=`
+- `xpath=`

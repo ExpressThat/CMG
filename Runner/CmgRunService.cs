@@ -16,6 +16,7 @@ public sealed class CmgRunService : ICmgRunService
     private readonly CmgDslParser parser;
     private readonly CmgTestPlanner planner;
     private readonly CmgActionLowerer lowerer;
+    private readonly CmgValidator validator;
 
     public CmgRunService(
         BrowserStateStore stateStore,
@@ -23,7 +24,8 @@ public sealed class CmgRunService : ICmgRunService
         BrowserScriptRunner scriptRunner,
         CmgDslParser parser,
         CmgTestPlanner planner,
-        CmgActionLowerer lowerer)
+        CmgActionLowerer lowerer,
+        CmgValidator validator)
     {
         this.stateStore = stateStore;
         this.automationClientFactory = automationClientFactory;
@@ -31,6 +33,7 @@ public sealed class CmgRunService : ICmgRunService
         this.parser = parser;
         this.planner = planner;
         this.lowerer = lowerer;
+        this.validator = validator;
     }
 
     public CmgRunResult Run(string path, CmgRunOptions options)
@@ -70,6 +73,21 @@ public sealed class CmgRunService : ICmgRunService
 
         foreach (var test in planner.Plan(parse.Document))
         {
+            var validation = validator.Validate(test);
+            if (!validation.Success)
+            {
+                tests.Add(new CmgTestResult(
+                    test.Name,
+                    test.SourcePath,
+                    false,
+                    [],
+                    validation.Error,
+                    null,
+                    [new CmgStepResult(validation.LineNumber, validation.Action, false, [], validation.Error, null)]));
+                output.Add($"TEST FAIL {test.Name}");
+                continue;
+            }
+
             var result = RunTest(test, remoteDebuggingUrl, options);
             tests.Add(result);
             output.Add($"TEST {(result.Success ? "PASS" : "FAIL")} {result.Name}");

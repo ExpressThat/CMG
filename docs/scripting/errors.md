@@ -100,6 +100,12 @@ Line 4: evaluate failed. CMG action 'intercept' is planned but not implemented i
 
 This is intentional. The action failed because it is not available yet, not because the page behaved incorrectly.
 
+Planned locator forms fail before the browser is asked to run the step:
+
+```text
+STEP FAIL line=7 action=click reason=Locator 'role=button' is planned for full parity but is not implemented in this slice.
+```
+
 ## Runner Step Failure
 
 `cmg run` prints step diagnostics on stderr:
