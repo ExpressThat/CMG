@@ -219,6 +219,15 @@ Line 7: waitForConsole failed. Console message 'settings saved' was not seen wit
 
 Call `captureConsole` before the action that should log the message, and check the optional `level=` filter.
 
+## Frame Failure
+
+```text
+Line 8: frameClick failed. Iframe #checkoutFrame is not same-origin or is not ready.
+Line 9: frameAssertText failed. Expected frame text to contain Saved, got Saving.
+```
+
+Frame actions require a same-origin iframe because they run through page JavaScript. Use tab or browser-context actions for cross-origin flows that open in their own page target.
+
 ## Failed Assertion
 
 ```text

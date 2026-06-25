@@ -38,6 +38,7 @@ public sealed class CmgActionLowerer
                 LowerSelectorCommand(action.Kind, action),
             "press" or "showmessagebar" or "delay" or "screenshotpage" or "emulate" or "waitfordownload" or
             "captureconsole" or "waitforconsole" or "route" or "mockresponse" or "clearroutes" or "waitforresponse" or
+            "frameclick" or "frametype" or "framefill" or "framehover" or "framewaitforelement" or "frameasserttext" or "frameevaluate" or
             "evaluate" or "movemouse" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or "set" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),

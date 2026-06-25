@@ -1,8 +1,28 @@
 
+using CMG.Browser.Scripting;
+
 namespace CMG.Browser.Scripting.Recording;
 
 public sealed partial class ScriptGifRecorder
 {
+    private void MoveToFrameSelector(string frameSelector, string selector)
+    {
+        if (remoteDebuggingUrl is null)
+        {
+            return;
+        }
+
+        var json = devToolsClient.Evaluate(remoteDebuggingUrl, BrowserFrameScripts.TargetCenter(frameSelector, selector));
+        using var document = System.Text.Json.JsonDocument.Parse(json);
+        var root = document.RootElement;
+        if (!root.TryGetProperty("x", out var x) || !root.TryGetProperty("y", out var y))
+        {
+            throw new ScriptExecutionException($"Could not resolve frame selector '{selector}'.");
+        }
+
+        MovePointerTo(new ElementPoint(x.GetDouble(), y.GetDouble()), dragging: false);
+    }
+
     private void MoveToSelector(string selector)
     {
         if (remoteDebuggingUrl is null)

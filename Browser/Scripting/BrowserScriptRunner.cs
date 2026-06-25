@@ -115,6 +115,9 @@ public sealed partial class BrowserScriptRunner
             "route" or "mockresponse" => ExecuteRoute(remoteDebuggingUrl, automationClient, action),
             "clearroutes" => ExecuteClearRoutes(remoteDebuggingUrl, automationClient, action),
             "waitforresponse" => ExecuteWaitForResponse(remoteDebuggingUrl, automationClient, action),
+            "frameclick" or "frametype" or "framefill" or "framehover" or
+            "framewaitforelement" or "frameasserttext" or "frameevaluate" =>
+                ExecuteFrameAction(remoteDebuggingUrl, automationClient, action),
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),
             "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),

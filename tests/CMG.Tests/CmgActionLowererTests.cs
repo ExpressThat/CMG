@@ -145,6 +145,14 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_FrameActionsPassThrough()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("frameClick", ["#frame", "#save"], [])));
+
+        Assert.Equal("frameClick \"#frame\" \"#save\"", line);
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));

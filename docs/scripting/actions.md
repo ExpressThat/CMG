@@ -454,6 +454,32 @@ Output:
 - `CONSOLE_CAPTURE <line>` when the hook is installed.
 - `CONSOLE <line> <level>: <text>` when a matching message is found.
 
+## Frame Actions
+
+```text
+frameClick "#checkoutFrame" "#save"
+frameType "#checkoutFrame" "#email" "agent@example.com"
+frameFill "#checkoutFrame" "#name" "CMG"
+frameHover "#checkoutFrame" "#help"
+frameWaitForElement "#checkoutFrame" "#ready" timeout=5000
+frameAssertText "#checkoutFrame" "#status" "Saved"
+frameEvaluate "#checkoutFrame" "document.title"
+```
+
+Runs actions against a same-origin iframe selected from the top page. The first argument is the iframe selector. The second argument is the selector or JavaScript expression inside that frame.
+
+GIF behavior:
+
+- `frameClick`, `frameType`, `frameFill`, and `frameHover` move the virtual pointer to the element's actual top-page coordinate inside the iframe before running.
+- Non-visual frame actions do not move the pointer, but their outputs and failures are captured in reports and traces.
+
+Output:
+
+- `FRAME <line> <action>` for successful frame actions.
+- `FRAME_EVALUATE <line> <result>` for `frameEvaluate`.
+
+Cross-origin iframes cannot be accessed from page JavaScript. Those fail with a clear same-origin/not-ready reason.
+
 ## `activateTab`
 
 ```text

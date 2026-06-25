@@ -56,6 +56,10 @@ public sealed partial class ScriptGifRecorder : IDisposable
         {
             MoveToSelector(action.Arguments[0]);
         }
+        else if (name is "frameclick" or "frametype" or "framefill" or "framehover" && action.Arguments.Count >= 2)
+        {
+            MoveToFrameSelector(action.Arguments[0], action.Arguments[1]);
+        }
     }
 
     public void AfterAction(BrowserScriptAction action)
@@ -67,7 +71,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
         var name = action.Name.ToLowerInvariant();
 
-        if (name is "click" or "download")
+        if (name is "click" or "download" or "frameclick")
         {
             CapturePulseFrame();
             CaptureHoldFrame();

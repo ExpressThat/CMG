@@ -341,6 +341,20 @@ test "opens help popup" {
 
 For direct browser-control scripts, `openTab "https://example.com/help"` can create the tab without going through page UI. In recorded test GIFs, user-facing popup flows should prefer `click` plus `waitForTab` so the pointer interaction remains visible.
 
+## Frame Flow
+
+```text
+test "saves checkout frame" {
+  navigate "https://example.com/checkout"
+  frameWaitForElement "#checkoutFrame" "#email" timeout=5000
+  frameFill "#checkoutFrame" "#email" "agent@example.com"
+  frameClick "#checkoutFrame" "#save"
+  frameAssertText "#checkoutFrame" "#status" "Saved"
+}
+```
+
+Recorded frame pointer actions move the virtual pointer to the element's top-page coordinate inside the iframe. Frame actions require a same-origin iframe.
+
 ## Download Flow
 
 ```text
