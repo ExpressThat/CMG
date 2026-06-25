@@ -1081,6 +1081,7 @@ Saves or loads page storage state for the current browser page. The state includ
 ```text
 route "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
 intercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
+intercept "/api/down" abort=true error="offline"
 waitForResponse "/api/profile" timeout=5000
 waitForRequest "/api/profile" timeout=5000
 waitForRequestFailed "/api/profile" timeout=5000
@@ -1089,13 +1090,23 @@ replayHar path="artifacts\network.har"
 clearRoutes
 ```
 
-Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest`, `waitForRequestFailed`, and `waitForResponse` wait for logged entries whose URL contains the pattern.
+Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Use `abort=true` or `action=abort` to reject matching requests instead; aborted matches are recorded in the request failure log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest`, `waitForRequestFailed`, and `waitForResponse` wait for logged entries whose URL contains the pattern.
+
+Options:
+
+- `status`: Optional mocked response status. Default is `200`.
+- `body`: Optional mocked response body. Default is empty text.
+- `contentType`: Optional mocked response content type. Default is `text/plain`.
+- `abort`: Optional boolean-like route abort switch. Use `true` to fail matching requests.
+- `action`: Optional route action. Use `abort` to fail matching requests.
+- `error`: Optional failure message for aborted routes. Default is `Request aborted by CMG route`.
 
 `exportHar` writes captured response metadata and bodies to a HAR-like JSON file. `replayHar` reads that file and installs routes for each captured request URL.
 
 Notes:
 
 - Route matching uses substring matching.
+- Route aborts are observable with `waitForRequestFailed`, not `waitForResponse`.
 - Network actions do not move the virtual pointer. They are captured in reports and can be wrapped with `step` or captions for GIF narration.
 
 Output:

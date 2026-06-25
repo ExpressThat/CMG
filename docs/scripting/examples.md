@@ -681,4 +681,10 @@ test "reports offline profile failure" {
   waitForRequestFailed "/api/profile"
   setOffline false
 }
+
+test "handles intercepted outage" {
+  intercept "/api/profile" abort=true error="profile service unavailable"
+  evaluate "fetch('/api/profile').catch(error => error.message)"
+  waitForRequestFailed "/api/profile"
+}
 ```

@@ -17,6 +17,17 @@ public sealed class CmgNetworkScriptsTests
     }
 
     [Fact]
+    public void Route_CanAbortMatchingRequests()
+    {
+        var action = Node("route", ["/api"], new Dictionary<string, string> { ["abort"] = "true", ["error"] = "offline" });
+        var script = CmgNetworkScripts.Route(action);
+
+        Assert.Contains("abort: true", script);
+        Assert.Contains("__cmgRequestFailures.push", script);
+        Assert.Contains("offline", script);
+    }
+
+    [Fact]
     public void WaitForResponse_ReportsTimeoutPattern()
     {
         var action = Node("waitForResponse", ["/api"], new Dictionary<string, string> { ["timeout"] = "1000" });

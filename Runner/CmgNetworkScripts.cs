@@ -8,7 +8,9 @@ public static class CmgNetworkScripts
         var status = action.Options.TryGetValue("status", out var statusValue) ? statusValue : "200";
         var body = action.Options.TryGetValue("body", out var bodyValue) ? bodyValue : string.Empty;
         var contentType = action.Options.TryGetValue("contentType", out var typeValue) ? typeValue : "text/plain";
-        return InstallPrelude() + $"window.__cmgRoutes.push({{ pattern: {Quote(pattern)}, status: {status}, body: {Quote(body)}, contentType: {Quote(contentType)} }}); true";
+        var abort = IsAbortRoute(action) ? "true" : "false";
+        var error = action.Options.TryGetValue("error", out var errorValue) ? errorValue : "Request aborted by CMG route";
+        return InstallPrelude() + $"window.__cmgRoutes.push({{ pattern: {Quote(pattern)}, status: {status}, body: {Quote(body)}, contentType: {Quote(contentType)}, abort: {abort}, error: {Quote(error)} }}); true";
     }
 
     public static string ClearRoutes() => "window.__cmgRoutes = []; true";
@@ -102,6 +104,10 @@ public static class CmgNetworkScripts
               window.__cmgRequests.push({ method, url, type: 'fetch', body: init?.body ? String(init.body) : '' });
               const route = window.__cmgRoutes.find(r => url.includes(r.pattern));
               if (route) {
+                if (route.abort) {
+                  window.__cmgRequestFailures.push({ method, url, type: 'fetch', mocked: true, error: route.error || 'Request aborted by CMG route' });
+                  throw new TypeError(route.error || 'Request aborted by CMG route');
+                }
                 const response = new Response(route.body, { status: route.status, headers: { 'content-type': route.contentType } });
                 window.__cmgResponses.push({ method, url, status: route.status, mocked: true, body: route.body, contentType: route.contentType });
                 return response;
@@ -141,6 +147,19 @@ public static class CmgNetworkScripts
                   xhr.addEventListener('timeout', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Request timed out' }), { once: true });
                   return send(body);
                 }
+                if (route.abort) {
+                  window.__cmgRequestFailures.push({ method, url, type: 'xhr', mocked: true, error: route.error || 'Request aborted by CMG route' });
+                  Object.defineProperty(xhr, 'readyState', { configurable: true, get: () => 4 });
+                  Object.defineProperty(xhr, 'status', { configurable: true, get: () => 0 });
+                  setTimeout(() => {
+                    xhr.onreadystatechange?.();
+                    xhr.onerror?.(new Event('error'));
+                    xhr.dispatchEvent(new Event('readystatechange'));
+                    xhr.dispatchEvent(new Event('error'));
+                    xhr.dispatchEvent(new Event('loadend'));
+                  }, 0);
+                  return;
+                }
                 window.__cmgResponses.push({ method, url, status: route.status, mocked: true, type: 'xhr', body: route.body, contentType: route.contentType });
                 Object.defineProperty(xhr, 'readyState', { configurable: true, get: () => 4 });
                 Object.defineProperty(xhr, 'status', { configurable: true, get: () => route.status });
@@ -164,4 +183,11 @@ public static class CmgNetworkScripts
         $"'{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("'", "\\'", StringComparison.Ordinal)}'";
 
     private static string EscapeMessage(string value) => value.Replace("'", "\\'", StringComparison.Ordinal);
+
+    private static bool IsAbortRoute(CmgNode action) =>
+        IsTrue(action.Options.GetValueOrDefault("abort")) ||
+        string.Equals(action.Options.GetValueOrDefault("action"), "abort", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsTrue(string? value) =>
+        string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
 }

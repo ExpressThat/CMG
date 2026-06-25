@@ -94,7 +94,7 @@ HEADERS_SET 045 2
 OFFLINE 046 true
 ROUTE 047 /api/profile
 REQUEST 048 {"method":"GET","url":"/api/profile","type":"fetch","body":""}
-REQUEST_FAILED 049 {"method":"GET","url":"/api/down","type":"fetch","error":"Failed to fetch"}
+REQUEST_FAILED 049 {"method":"GET","url":"/api/down","type":"fetch","mocked":true,"error":"profile service unavailable"}
 RESPONSE 050 {"url":"/api/profile","status":200,"mocked":true}
 ROUTES_CLEARED 051
 HAR_EXPORTED 052 C:\Projects\CMG\demo-output\network.har

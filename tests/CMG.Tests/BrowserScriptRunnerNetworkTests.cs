@@ -16,6 +16,18 @@ public sealed class BrowserScriptRunnerNetworkTests
     }
 
     [Fact]
+    public void RunText_RouteSupportsAbortOption()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("intercept \"/api\" abort=true error=offline", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("abort: true", client.LastExpression);
+        Assert.Contains("offline", client.LastExpression);
+        Assert.Contains("ROUTE", string.Join('\n', result.StdoutLines));
+    }
+
+    [Fact]
     public void RunText_ClearRoutesOutputsParseableLine()
     {
         var result = Runner().RunText("clearRoutes", "debug", new FakeAutomationClient());
