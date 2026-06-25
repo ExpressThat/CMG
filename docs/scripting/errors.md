@@ -192,6 +192,14 @@ STEP FAIL line=3 action=apiRequest reason=Expected status 200, got 500.
 
 `apiRequest` failures include the reason in stderr and reports. The step output includes `API` and `API_BODY` lines when a response was received.
 
+## Storage State Failure
+
+```text
+STEP FAIL line=4 action=storageState reason=Storage state file 'auth.json' was not found.
+```
+
+Use `storageState save path="..."` before loading a state file.
+
 ## Undefined Variable
 
 ```text

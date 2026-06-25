@@ -540,6 +540,15 @@ Options:
 - `body`: Request body text.
 - `header.<name>`: Request header.
 
+### `storageState`
+
+```text
+storageState save path="artifacts\auth.json"
+storageState load path="artifacts\auth.json"
+```
+
+Saves or loads page storage state for the current browser page. The state includes `localStorage`, `sessionStorage`, and the current `document.cookie` string. This is a runner action and reports `STORAGE_STATE` output lines.
+
 ## Planned Parity Actions
 
 Commands such as `intercept`, `route`, `apiRequest`, `uploadFiles`, `download`, `popup`, `frame`, device emulation, and full network mocking are reserved for parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.

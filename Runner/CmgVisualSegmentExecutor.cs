@@ -9,17 +9,20 @@ public sealed class CmgVisualSegmentExecutor
     private readonly IBrowserAutomationClient automationClient;
     private readonly CmgActionLowerer lowerer;
     private readonly CmgApiRequestRunner apiRequestRunner;
+    private readonly CmgStorageStateRunner storageStateRunner;
 
     public CmgVisualSegmentExecutor(
         BrowserScriptRunner scriptRunner,
         IBrowserAutomationClient automationClient,
         CmgActionLowerer lowerer,
-        CmgApiRequestRunner apiRequestRunner)
+        CmgApiRequestRunner apiRequestRunner,
+        CmgStorageStateRunner storageStateRunner)
     {
         this.scriptRunner = scriptRunner;
         this.automationClient = automationClient;
         this.lowerer = lowerer;
         this.apiRequestRunner = apiRequestRunner;
+        this.storageStateRunner = storageStateRunner;
     }
 
     public CmgTestResult Run(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options, int attempt)
@@ -74,6 +77,25 @@ public sealed class CmgVisualSegmentExecutor
                 continue;
             }
 
+            if (action.Kind.Equals("storageState", StringComparison.OrdinalIgnoreCase))
+            {
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null);
+                if (!AppendResult(flush, output, steps, action, gif: null, out var error))
+                {
+                    return Fail(test, output, error, gifs, steps);
+                }
+
+                var step = storageStateRunner.Run(action, remoteDebuggingUrl, automationClient);
+                output.AddRange(step.Output);
+                steps.Add(step);
+                if (!step.Success)
+                {
+                    return Fail(test, output, step.Error, gifs, steps);
+                }
+
+                continue;
+            }
+
             var lines = lowerer.Lower(action);
             pending.AddRange(lines);
             if (!action.Kind.Equals("gif", StringComparison.OrdinalIgnoreCase))
@@ -107,7 +129,8 @@ public sealed class CmgVisualSegmentExecutor
         var pending = new List<string>();
         foreach (var action in actions)
         {
-            if (action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase))
+            if (action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase) ||
+                action.Kind.Equals("storageState", StringComparison.OrdinalIgnoreCase))
             {
                 var flush = RunLines(pending, remoteDebuggingUrl, gif);
                 if (!AppendResult(flush, output, steps, action, gif, out error))
@@ -115,11 +138,13 @@ public sealed class CmgVisualSegmentExecutor
                     return false;
                 }
 
-                var apiStep = apiRequestRunner.Run(action);
-                output.AddRange(apiStep.Output);
-                steps.Add(apiStep);
-                error = apiStep.Error;
-                if (!apiStep.Success)
+                var step = action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase)
+                    ? apiRequestRunner.Run(action)
+                    : storageStateRunner.Run(action, remoteDebuggingUrl, automationClient);
+                output.AddRange(step.Output);
+                steps.Add(step);
+                error = step.Error;
+                if (!step.Success)
                 {
                     return false;
                 }

@@ -251,3 +251,21 @@ test "api health" tag=api {
 ```
 
 The request result appears in CLI output and reports. Failures include the expected and actual status or body mismatch reason.
+
+## Storage State
+
+```text
+test "login saves state" {
+  navigate "https://example.com/login"
+  fill "#email" "agent@example.com"
+  fill "#password" "secret"
+  click "#submit"
+  storageState save path="demo-output\auth.json"
+}
+
+test "uses saved state" {
+  navigate "https://example.com"
+  storageState load path="demo-output\auth.json"
+  reload
+}
+```
