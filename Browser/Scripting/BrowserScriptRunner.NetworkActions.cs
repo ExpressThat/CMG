@@ -47,6 +47,7 @@ public sealed partial class BrowserScriptRunner
         BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
+        ValidateNetworkWaitOptions(action);
         var result = automationClient.Evaluate(remoteDebuggingUrl, CmgNetworkScripts.WaitForResponse(ToNode(action)));
         return [$"RESPONSE {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
     }
@@ -57,6 +58,7 @@ public sealed partial class BrowserScriptRunner
         BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
+        ValidateNetworkWaitOptions(action);
         var result = automationClient.Evaluate(remoteDebuggingUrl, CmgNetworkScripts.WaitForRequest(ToNode(action)));
         return [$"REQUEST {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
     }
@@ -67,6 +69,7 @@ public sealed partial class BrowserScriptRunner
         BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
+        ValidateNetworkWaitOptions(action);
         var result = automationClient.Evaluate(remoteDebuggingUrl, CmgNetworkScripts.WaitForRequestFinished(ToNode(action)));
         return [$"REQUEST_FINISHED {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
     }
@@ -77,8 +80,30 @@ public sealed partial class BrowserScriptRunner
         BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
+        ValidateNetworkWaitOptions(action);
         var result = automationClient.Evaluate(remoteDebuggingUrl, CmgNetworkScripts.WaitForRequestFailed(ToNode(action)));
         return [$"REQUEST_FAILED {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
+    }
+
+    private static void ValidateNetworkWaitOptions(BrowserScriptAction action)
+    {
+        if (action.Options.TryGetValue("timeout", out var timeout) &&
+            (!int.TryParse(timeout, out var parsedTimeout) || parsedTimeout < 0))
+        {
+            throw new ScriptExecutionException($"{action.Name} option timeout= must be a non-negative integer.");
+        }
+
+        if (action.Options.TryGetValue("status", out var status) &&
+            (!int.TryParse(status, out var parsedStatus) || parsedStatus < 100 || parsedStatus > 999))
+        {
+            throw new ScriptExecutionException($"{action.Name} option status= must be a numeric HTTP status.");
+        }
+
+        if (action.Options.TryGetValue("mocked", out var mocked) &&
+            !bool.TryParse(mocked, out _))
+        {
+            throw new ScriptExecutionException($"{action.Name} option mocked= must be true or false.");
+        }
     }
 
     private static string ParseNetworkWaitResult(string result)

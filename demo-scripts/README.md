@@ -109,6 +109,7 @@ dotnet run -- --firefox browser close
 - `26-provider-text-assertions.cmgscript`: Demonstrates `contains`, `containsText`, and `waitForText` aliases.
 - `27-selector-evaluation.cmgscript`: Demonstrates selector-scoped evaluation and `set` block capture.
 - `28-element-getters.cmgscript`: Demonstrates element getter output and `set` block capture.
+- `29-filtered-network-waits.cmgscript`: Demonstrates method/status/body filters for network waits.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

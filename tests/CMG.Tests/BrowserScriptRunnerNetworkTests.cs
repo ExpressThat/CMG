@@ -89,6 +89,29 @@ public sealed class BrowserScriptRunnerNetworkTests
     }
 
     [Fact]
+    public void RunText_WaitForResponseSupportsProviderFilters()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"success":true,"value":{"url":"/api","method":"POST","status":201,"body":"created","mocked":true}}""");
+        var result = Runner().RunText("waitForResponse \"/api\" method=POST status=201 contains=created mocked=true", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("method: 'POST'", client.LastExpression);
+        Assert.Contains("status: 201", client.LastExpression);
+        Assert.Contains("contains: 'created'", client.LastExpression);
+        Assert.Contains("mocked: true", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_WaitForResponseRejectsInvalidStatusFilter()
+    {
+        var result = Runner().RunText("waitForResponse \"/api\" status=ok", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("status= must be a numeric HTTP status", result.Error);
+    }
+
+    [Fact]
     public void RunText_WaitForRequestOutputsRequestLine()
     {
         var client = new FakeAutomationClient();

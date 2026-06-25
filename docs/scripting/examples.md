@@ -379,13 +379,15 @@ The request result appears in CLI output and reports. Failures include the expec
 test "mocked profile" {
   navigate "https://example.com"
   intercept "/api/profile" delay=250 status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
+  intercept "/api/profile" method=POST status=201 body="created"
   evaluate "fetch('/api/profile').then(r => r.text())"
+  evaluate "fetch('/api/profile', { method: 'POST' }).then(r => r.text())"
   waitForRequestFinished "/api/profile"
-  waitForResponse "/api/profile"
+  waitForResponse "/api/profile" method=POST status=201 contains=created mocked=true
 }
 ```
 
-This patches page `fetch` and `XMLHttpRequest` calls and records matching responses for `waitForResponse`. Use `delay=` to simulate a slow mocked response without moving the virtual pointer.
+This patches page `fetch` and `XMLHttpRequest` calls and records matching responses for `waitForResponse`. Use `delay=` to simulate a slow mocked response without moving the virtual pointer. Network waits can filter by method, status, response body text, and whether the match came from a CMG mock.
 
 ## HAR Replay
 

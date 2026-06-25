@@ -62,6 +62,24 @@ public sealed class CmgNetworkScriptsTests
     }
 
     [Fact]
+    public void WaitForResponse_CanFilterByMethodStatusAndBody()
+    {
+        var action = Node("waitForResponse", ["/api"], new Dictionary<string, string>
+        {
+            ["method"] = "post",
+            ["status"] = "201",
+            ["contains"] = "created",
+            ["mocked"] = "true"
+        });
+        var script = CmgNetworkScripts.WaitForResponse(action);
+
+        Assert.Contains("method: 'POST'", script);
+        Assert.Contains("status: 201", script);
+        Assert.Contains("contains: 'created'", script);
+        Assert.Contains("mocked: true", script);
+    }
+
+    [Fact]
     public void WaitForRequest_ReportsTimeoutPattern()
     {
         var action = Node("waitForRequest", ["/api"], new Dictionary<string, string> { ["timeout"] = "1000" });
