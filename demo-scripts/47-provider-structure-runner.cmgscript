@@ -1,0 +1,22 @@
+before {
+  setContent "<main><button id='run'>Run</button><output id='status'>Ready</output></main>"
+}
+
+describe "provider structure aliases" {
+  before {
+    caption "suite setup"
+  }
+
+  it "runs with mocha names" {
+    click "#run"
+    toContainText "#status" "Ready"
+  }
+
+  specify "supports specify too" {
+    toHaveTitle ""
+  }
+
+  after {
+    caption "suite teardown"
+  }
+}

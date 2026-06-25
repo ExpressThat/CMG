@@ -1172,7 +1172,7 @@ File actions do not move the virtual pointer. In GIF runs, wrap them in `step`, 
 
 These actions are used with `cmg run`, not `browser control script`.
 
-### `suite`
+### `suite`, `describe`, And `context`
 
 ```text
 suite "name" {
@@ -1180,14 +1180,24 @@ suite "name" {
     click "#run"
   }
 }
+
+describe "checkout" {
+  it "submits payment" {
+    click "#pay"
+  }
+}
 ```
 
-Groups tests in reports. Test names are emitted as `<suite> / <test>`.
+Groups tests in reports. `describe` and `context` are Cypress/Mocha-style aliases for `suite`. Test names are emitted as `<suite> / <test>`.
 
-### `test`
+### `test`, `it`, And `specify`
 
 ```text
 test "name" {
+  navigate "https://example.com"
+}
+
+it "name" {
   navigate "https://example.com"
 }
 
@@ -1200,7 +1210,7 @@ test "skipped" skip=true reason="Covered by API test" {
 }
 ```
 
-Defines a runnable test. `cmg run` exits `1` if any non-skipped test fails.
+Defines a runnable test. `it` and `specify` are Cypress/Mocha-style aliases for `test`. `cmg run` exits `1` if any non-skipped test fails.
 
 Options:
 
@@ -1211,10 +1221,14 @@ Options:
 
 Skipped tests are successful for process exit purposes unless another selected test fails.
 
-### `beforeAll`, `afterAll`, `beforeEach`, And `afterEach`
+### `beforeAll`, `before`, `afterAll`, `after`, `beforeEach`, And `afterEach`
 
 ```text
 beforeAll {
+  navigate "https://example.com"
+}
+
+before {
   navigate "https://example.com"
 }
 
@@ -1225,9 +1239,13 @@ beforeEach {
 afterAll {
   caption "Finished"
 }
+
+after {
+  caption "Finished"
+}
 ```
 
-Root hooks apply to every test file. Hooks inside a suite apply to that suite. `beforeEach` and `afterEach` run around every selected test. `beforeAll` runs once before the first non-skipped selected test in its root or suite scope; `afterAll` runs once after the last non-skipped selected test in that scope.
+Root hooks apply to every test file. Hooks inside a suite apply to that suite. `before` is an alias for `beforeAll`; `after` is an alias for `afterAll`. `beforeEach` and `afterEach` run around every selected test. Once hooks run before the first non-skipped selected test in their root or suite scope and after the last non-skipped selected test in that scope.
 
 Once hooks are inserted into the first or last selected test script after macro registration. Use them for browser/page setup and teardown. Script variables created in a `beforeAll` hook are available only inside the test script where that hook runs; use top-level macros, imports, browser state, fixtures, or files for reusable state across tests.
 

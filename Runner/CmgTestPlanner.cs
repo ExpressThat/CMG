@@ -74,17 +74,24 @@ public sealed class CmgTestPlanner
         return new CmgTestCase(sourcePath, name, actions, test.Options) { SuiteName = suiteName };
     }
 
-    private static bool IsSuite(CmgNode node) => node.Kind.Equals("suite", StringComparison.OrdinalIgnoreCase);
+    private static bool IsSuite(CmgNode node) =>
+        IsAny(node, "suite", "describe", "context");
 
-    private static bool IsTest(CmgNode node) => node.Kind.Equals("test", StringComparison.OrdinalIgnoreCase);
+    private static bool IsTest(CmgNode node) =>
+        IsAny(node, "test", "it", "specify");
 
     private static bool IsMacro(CmgNode node) => node.Kind.Equals("macro", StringComparison.OrdinalIgnoreCase);
 
-    private static bool IsBeforeAll(CmgNode node) => node.Kind.Equals("beforeAll", StringComparison.OrdinalIgnoreCase);
+    private static bool IsBeforeAll(CmgNode node) =>
+        IsAny(node, "beforeAll", "before");
 
-    private static bool IsAfterAll(CmgNode node) => node.Kind.Equals("afterAll", StringComparison.OrdinalIgnoreCase);
+    private static bool IsAfterAll(CmgNode node) =>
+        IsAny(node, "afterAll", "after");
 
     private static bool IsBeforeEach(CmgNode node) => node.Kind.Equals("beforeEach", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsAfterEach(CmgNode node) => node.Kind.Equals("afterEach", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsAny(CmgNode node, params string[] names) =>
+        names.Any(name => node.Kind.Equals(name, StringComparison.OrdinalIgnoreCase));
 }

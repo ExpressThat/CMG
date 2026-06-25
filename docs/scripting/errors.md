@@ -111,7 +111,7 @@ STEP FAIL line=9 action=click reason=Line 9: evaluate failed. Locator hasText= r
 ## V1 Script Passed To `cmg run`
 
 ```text
-Line 1: cmg run requires the new DSL with test/suite blocks. V1 flat scripts are not supported; see docs/scripting/migration.md.
+Line 1: cmg run requires the new DSL with test/it/specify or suite/describe/context blocks. V1 flat scripts are not supported; see docs/scripting/migration.md.
 ```
 
 Use `browser control script --file <path>` for direct browser-control scripts, or migrate the file to the new test DSL for `cmg run`.

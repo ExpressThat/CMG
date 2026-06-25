@@ -80,7 +80,7 @@ public sealed class CmgDslParserTests
         """);
 
         Assert.False(result.Success);
-        Assert.Contains("V1 flat scripts are not supported", result.Error);
+        Assert.Contains("test/it/specify or suite/describe/context", result.Error);
     }
 
     [Fact]

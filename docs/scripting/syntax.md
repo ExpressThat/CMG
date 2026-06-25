@@ -38,10 +38,10 @@ try {
 
 Supported structural blocks:
 
-- `suite "name" { ... }`
-- `test "name" { ... }`
-- `beforeAll { ... }`
-- `afterAll { ... }`
+- `suite "name" { ... }`, `describe "name" { ... }`, or `context "name" { ... }`
+- `test "name" { ... }`, `it "name" { ... }`, or `specify "name" { ... }`
+- `beforeAll { ... }` or `before { ... }`
+- `afterAll { ... }` or `after { ... }`
 - `beforeEach { ... }`
 - `afterEach { ... }`
 - `step "caption" { ... }`

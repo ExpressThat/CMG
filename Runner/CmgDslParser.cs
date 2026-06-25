@@ -206,16 +206,19 @@ public sealed class CmgDslParser
     private static string? ValidateTopLevel(IReadOnlyList<CmgNode> nodes)
     {
         var invalid = nodes.FirstOrDefault(node =>
-            !node.Kind.Equals("suite", StringComparison.OrdinalIgnoreCase) &&
-            !node.Kind.Equals("test", StringComparison.OrdinalIgnoreCase) &&
-            !node.Kind.Equals("beforeAll", StringComparison.OrdinalIgnoreCase) &&
-            !node.Kind.Equals("afterAll", StringComparison.OrdinalIgnoreCase) &&
+            !IsAny(node, "suite", "describe", "context") &&
+            !IsAny(node, "test", "it", "specify") &&
+            !IsAny(node, "beforeAll", "before") &&
+            !IsAny(node, "afterAll", "after") &&
             !node.Kind.Equals("beforeEach", StringComparison.OrdinalIgnoreCase) &&
             !node.Kind.Equals("afterEach", StringComparison.OrdinalIgnoreCase) &&
             !node.Kind.Equals("macro", StringComparison.OrdinalIgnoreCase));
 
         return invalid is null
             ? null
-            : $"Line {invalid.LineNumber}: cmg run requires the new DSL with test/suite blocks. V1 flat scripts are not supported; see docs/scripting/migration.md.";
+            : $"Line {invalid.LineNumber}: cmg run requires the new DSL with test/it/specify or suite/describe/context blocks. V1 flat scripts are not supported; see docs/scripting/migration.md.";
     }
+
+    private static bool IsAny(CmgNode node, params string[] names) =>
+        names.Any(name => node.Kind.Equals(name, StringComparison.OrdinalIgnoreCase));
 }

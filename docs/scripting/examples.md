@@ -438,6 +438,23 @@ suite "hooked flow" {
 
 This example is available as `demo-scripts/38-before-after-all.cmgscript`.
 
+Provider-style structure aliases are also supported:
+
+```text
+before {
+  setContent "<main><button id='run'>Run</button><output id='status'>Ready</output></main>"
+}
+
+describe "provider structure aliases" {
+  it "runs with mocha names" {
+    click "#run"
+    toContainText "#status" "Ready"
+  }
+}
+```
+
+This example is available as `demo-scripts/47-provider-structure-runner.cmgscript`.
+
 Record only one block from inside the script:
 
 ```text

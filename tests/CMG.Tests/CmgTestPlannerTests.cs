@@ -43,4 +43,40 @@ public sealed class CmgTestPlannerTests
             action => Assert.Equal("click", action.Kind),
             action => Assert.Equal("caption", action.Kind));
     }
+
+    [Fact]
+    public void Plan_SupportsProviderSuiteTestAndOnceHookAliases()
+    {
+        var document = new CmgDslParser().Parse("flow.cmgscript", """
+        before {
+          caption "root before"
+        }
+
+        describe "Alias suite" {
+          before {
+            caption "suite before"
+          }
+
+          it "case" {
+            caption "test"
+          }
+
+          specify "other" {
+            caption "other"
+          }
+
+          after {
+            caption "suite after"
+          }
+        }
+        """).Document!;
+
+        var tests = CmgRunService.ApplyOnceHooks(new CmgTestPlanner().Plan(document));
+
+        Assert.Equal(["Alias suite / case", "Alias suite / other"], tests.Select(test => test.Name));
+        Assert.Equal(["root before", "suite before", "test"], tests[0].Actions.Select(FirstArgument));
+        Assert.Equal(["other", "suite after"], tests[1].Actions.Select(FirstArgument));
+    }
+
+    private static string FirstArgument(CmgNode node) => node.Arguments.FirstOrDefault() ?? node.Name;
 }

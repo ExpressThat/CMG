@@ -2,7 +2,7 @@
 
 The new CMG DSL replaces the original flat `.cmgscript` format. `cmg run` does not run V1 flat scripts and does not provide a compatibility mode. Existing scripts must be migrated by wrapping actions into tests and, when needed, visual `gif` blocks.
 
-If a file starts with an action such as `navigate`, `click`, or `assertText` at the top level, `cmg run` fails with a migration error. Top-level entries must be `test`, `suite`, `beforeAll`, `afterAll`, `beforeEach`, `afterEach`, or `macro`.
+If a file starts with an action such as `navigate`, `click`, or `assertText` at the top level, `cmg run` fails with a migration error. Top-level entries must be `test`/`it`/`specify`, `suite`/`describe`/`context`, `beforeAll`/`before`, `afterAll`/`after`, `beforeEach`, `afterEach`, or `macro`.
 
 ## Basic Script
 
