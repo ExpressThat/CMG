@@ -3,7 +3,7 @@
 Launches a CMG-controlled browser instance with remote debugging enabled. Chrome is the default. Use the optional top-level `--chrome` option to select Chrome explicitly, `--edge` to launch Microsoft Edge, or `--firefox` to launch Firefox.
 
 ```powershell
-cmg browser launch [browser-arguments...]
+cmg browser launch [browser-arguments...] [options]
 cmg --chrome browser launch [browser-arguments...]
 cmg --edge browser launch [browser-arguments...]
 cmg --firefox browser launch [browser-arguments...]
@@ -12,6 +12,11 @@ cmg --firefox browser launch [browser-arguments...]
 ## Arguments
 
 - `[browser-arguments...]`: Additional arguments passed through to the selected browser.
+
+## Options
+
+- `--headless`: Launch in headless mode. Chrome and Edge receive `--headless=new`; Firefox receives `--headless`.
+- `--url <target>`: Initial URL or path to open. This is appended after raw browser arguments.
 
 ## Behavior
 
@@ -61,6 +66,7 @@ Remote debugging: http://127.0.0.1:9222
 ```powershell
 cmg browser launch
 cmg --chrome browser launch
+cmg browser launch --headless --url https://example.com
 cmg browser launch --window-size=1200,800
 cmg browser launch https://example.com
 cmg --edge browser launch https://example.com

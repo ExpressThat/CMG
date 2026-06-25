@@ -2,7 +2,7 @@ namespace CMG.Browser;
 
 public interface IBrowserCommandHandler
 {
-    int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments);
+    int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url);
 
     int Close(BrowserKind browserKind, IReadOnlyList<string> arguments);
 }
@@ -16,7 +16,7 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
         this.browserController = browserController;
     }
 
-    public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments)
+    public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
@@ -24,7 +24,7 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
             return 1;
         }
 
-        var result = browserController.Launch(browserKind, arguments);
+        var result = browserController.Launch(browserKind, BuildLaunchArguments(browserKind, arguments, headless, url));
 
         Console.WriteLine(result.Message);
 
@@ -34,6 +34,26 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
         }
 
         return result.ExitCode;
+    }
+
+    private static IReadOnlyList<string> BuildLaunchArguments(
+        BrowserKind browserKind,
+        IReadOnlyList<string> arguments,
+        bool headless,
+        string? url)
+    {
+        var values = new List<string>(arguments);
+        if (headless)
+        {
+            values.Add(browserKind.UsesFirefoxBiDi() ? "--headless" : "--headless=new");
+        }
+
+        if (!string.IsNullOrWhiteSpace(url))
+        {
+            values.Add(url);
+        }
+
+        return values;
     }
 
     public int Close(BrowserKind browserKind, IReadOnlyList<string> arguments)

@@ -30,16 +30,30 @@ public sealed class BrowserCommandBuilder
     private Command BuildLaunchCommand(BrowserSelectionOptions browserOptions)
     {
         var arguments = CreateTrailingArguments("Additional browser launch arguments.");
+        var headlessOption = new Option<bool>("--headless")
+        {
+            Description = "Launch the browser in headless mode."
+        };
+        var urlOption = new Option<string?>("--url")
+        {
+            Description = "Initial URL or path to open."
+        };
 
         var command = new Command("launch", "Launch a browser instance.")
         {
-            arguments
+            arguments,
+            headlessOption,
+            urlOption
         };
 
         command.SetAction(parseResult =>
         {
             var values = parseResult.GetValue(arguments) ?? [];
-            return browserCommandHandler.Launch(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), values);
+            return browserCommandHandler.Launch(
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                values,
+                parseResult.GetValue(headlessOption),
+                parseResult.GetValue(urlOption));
         });
 
         return command;
