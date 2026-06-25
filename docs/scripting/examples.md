@@ -485,9 +485,9 @@ The same locator resolver is used by direct browser-control scripts and `cmg run
 ```text
 setContent "<button id='target'>Click target</button><output id='result'>none</output><script>const target = document.querySelector('#target'); const result = document.querySelector('#result'); target.addEventListener('dblclick', () => result.textContent = 'double'); target.addEventListener('contextmenu', event => { event.preventDefault(); result.textContent = 'right'; });</script>"
 waitForElement "#target"
-dblclick "#target"
+doubleClick "#target"
 assertText "#result" "double"
-rightClick "#target"
+contextClick "#target"
 assertText "#result" "right"
 ```
 

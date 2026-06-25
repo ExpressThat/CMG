@@ -45,7 +45,7 @@ public sealed class CmgValidator
             "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "selectoption" or
             "html" or "screenshot" or "asserttext" or "download" or "uploadfiles" or
             "fill" or "check" or "uncheck" or "focus" or "blur" or "selecttext" or
-            "dblclick" or "rightclick" or "dispatchevent" or "expecttext" or "expectvalue" or
+            "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "dispatchevent" or "expecttext" or "expectvalue" or
             "expectattribute" or "expectchecked" or "expectcount" or "expectscreenshot";
 }
 

@@ -94,7 +94,7 @@ dotnet run -- --firefox browser close
 - `09-drag-autoscroll.cmgscript`: Demonstrates `moveMouse "bottom"` inside a GIF drag block.
 - `10-css-hover-states.cmgscript`: Demonstrates real CSS `:hover` states during GIF pointer movement.
 - `13-rich-locators.cmgscript`: Demonstrates direct browser-control text and label locators.
-- `14-pointer-click-variants.cmgscript`: Demonstrates `dblclick` and `rightClick` with pointer movement.
+- `14-pointer-click-variants.cmgscript`: Demonstrates `doubleClick` and `contextClick` with pointer movement.
 - `15-popup-alias.cmgscript`: Demonstrates `waitForPopup` as a popup-named tab wait.
 - `16-generic-event-waits.cmgscript`: Demonstrates provider-style `waitForEvent` aliases.
 - `17-http-credentials.cmgscript`: Demonstrates page-side HTTP credential automation for fetch/XHR.

@@ -11,7 +11,8 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 1, 1);
 
         var selector = ResolveSelector(remoteDebuggingUrl, automationClient, action);
-        var eventName = action.Name.Equals("rightclick", StringComparison.OrdinalIgnoreCase) ? "contextmenu" : "dblclick";
+        var name = action.Name.ToLowerInvariant();
+        var eventName = name is "rightclick" or "contextclick" ? "contextmenu" : "dblclick";
         var button = eventName == "contextmenu" ? 2 : 0;
 
         automationClient.Hover(remoteDebuggingUrl, selector);

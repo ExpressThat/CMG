@@ -98,7 +98,8 @@ public sealed partial class BrowserScriptRunner
             "wait" => ExecuteWaitAlias(remoteDebuggingUrl, automationClient, action),
             "assertvisible" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             "click" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Click(remoteDebuggingUrl, selector)),
-            "dblclick" or "rightclick" => ExecuteMouseClickVariant(remoteDebuggingUrl, automationClient, action),
+            "dblclick" or "doubleclick" or "rightclick" or "contextclick" =>
+                ExecuteMouseClickVariant(remoteDebuggingUrl, automationClient, action),
             "tap" or "touchtap" => ExecuteTap(remoteDebuggingUrl, automationClient, action, recorder),
             "fill" => ExecuteFill(remoteDebuggingUrl, automationClient, action, recorder),
             "check" or "uncheck" or "focus" or "blur" or "selecttext" =>

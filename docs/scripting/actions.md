@@ -1192,19 +1192,21 @@ blur "#name"
 
 Runs the corresponding DOM focus/selection behavior. These actions work in direct browser-control scripts and `cmg run`.
 
-### `dblclick` And `rightClick`
+### `dblclick`, `doubleClick`, `rightClick`, And `contextClick`
 
 ```text
 dblclick "#item"
+doubleClick "#item"
 rightClick "#item"
+contextClick "#item"
 ```
 
-Moves to the element with the visual hover path, then dispatches the page-facing mouse event.
+Moves to the element with the visual hover path, then dispatches the page-facing mouse event. `doubleClick` is an alias for `dblclick`; `contextClick` is an alias for `rightClick`.
 
 Output:
 
-- `MOUSE_EVENT <line> dblclick <selector>` for `dblclick`.
-- `MOUSE_EVENT <line> contextmenu <selector>` for `rightClick`.
+- `MOUSE_EVENT <line> dblclick <selector>` for `dblclick` and `doubleClick`.
+- `MOUSE_EVENT <line> contextmenu <selector>` for `rightClick` and `contextClick`.
 
 ### `dispatchEvent`
 
@@ -1225,7 +1227,7 @@ Output:
 
 - `EVENT <line> <event-name> <selector>` when the event is dispatched.
 
-`dispatchEvent` does not move the virtual pointer. Use pointer actions such as `click`, `dblclick`, or `rightClick` when the event should be visible in a GIF.
+`dispatchEvent` does not move the virtual pointer. Use pointer actions such as `click`, `dblclick`, `doubleClick`, `rightClick`, or `contextClick` when the event should be visible in a GIF.
 
 ### `expectUrl` And `expectTitle`
 

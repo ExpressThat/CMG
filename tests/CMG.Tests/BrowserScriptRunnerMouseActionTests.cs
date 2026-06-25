@@ -40,7 +40,9 @@ public sealed class BrowserScriptRunnerMouseActionTests
 
     [Theory]
     [InlineData("dblclick text=Save", "dblclick", 0, 1)]
+    [InlineData("doubleClick text=Save", "dblclick", 0, 1)]
     [InlineData("rightClick text=Save", "contextmenu", 2, 2)]
+    [InlineData("contextClick text=Save", "contextmenu", 2, 2)]
     public void RunText_MouseClickVariantsResolveAndDispatch(string script, string eventName, int button, int buttons)
     {
         var client = new FakeAutomationClient();

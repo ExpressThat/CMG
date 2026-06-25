@@ -26,8 +26,8 @@ public sealed class CmgActionLowerer
             "focus" => ElementScript(action, "element.focus({ preventScroll: true }); return true;"),
             "blur" => ElementScript(action, "element.blur(); return true;"),
             "selecttext" => ElementScript(action, "element.focus({ preventScroll: true }); element.select?.(); return true;"),
-            "dblclick" => LowerMouseEvent(action, "dblclick", button: 0),
-            "rightclick" => LowerMouseEvent(action, "contextmenu", button: 2),
+            "dblclick" or "doubleclick" => LowerMouseEvent(action, "dblclick", button: 0),
+            "rightclick" or "contextclick" => LowerMouseEvent(action, "contextmenu", button: 2),
             "tap" or "touchtap" => LowerSelectorCommand(action.Kind, action),
             "reload" or "goback" or "goforward" or "waitforurl" or "waitforloadstate" or "waitfornavigation" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],

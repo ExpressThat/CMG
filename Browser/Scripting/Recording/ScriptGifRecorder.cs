@@ -45,7 +45,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
         var name = action.Name.ToLowerInvariant();
 
-        if (name is "click" or "dblclick" or "rightclick" or "tap" or "touchtap" or "download" or "type" or "fill" or "clear" or
+        if (name is "click" or "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "tap" or "touchtap" or "download" or "type" or "fill" or "clear" or
             "hover" or "select" or "selectoption" or "check" or "uncheck" or "focus" or "blur" or "selecttext")
         {
             if (action.Arguments.Count > 0)
@@ -72,7 +72,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
         var name = action.Name.ToLowerInvariant();
 
-        if (name is "click" or "dblclick" or "rightclick" or "tap" or "touchtap" or "download" or "frameclick")
+        if (name is "click" or "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "tap" or "touchtap" or "download" or "frameclick")
         {
             CapturePulseFrame();
             CaptureHoldFrame();

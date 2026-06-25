@@ -77,7 +77,9 @@ public sealed class CmgActionLowererTests
     [InlineData("blur")]
     [InlineData("selectText")]
     [InlineData("dblclick")]
+    [InlineData("doubleClick")]
     [InlineData("rightClick")]
+    [InlineData("contextClick")]
     public void Lower_VisualElementActionsUsePageFacingCommands(string name)
     {
         var lines = new CmgActionLowerer().Lower(Node(name, ["#target"], []));
