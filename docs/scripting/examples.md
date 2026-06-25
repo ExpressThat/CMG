@@ -483,7 +483,7 @@ test "uploads avatar" {
 test "opens help popup" {
   navigate "https://example.com"
   click "#help"
-  waitForTab count=2 timeout=5000
+  waitForPopup count=2 timeout=5000
   activateTab index=1
   expectUrl "/help"
   closeTab index=1
@@ -491,7 +491,7 @@ test "opens help popup" {
 }
 ```
 
-For direct browser-control scripts, `openTab "https://example.com/help"` can create the tab without going through page UI. In recorded test GIFs, user-facing popup flows should prefer `click` plus `waitForTab` so the pointer interaction remains visible.
+For direct browser-control scripts, `openTab "https://example.com/help"` can create the tab without going through page UI. In recorded test GIFs, user-facing popup flows should prefer `click` plus `waitForPopup` or `waitForTab` so the pointer interaction remains visible.
 
 ## Frame Flow
 

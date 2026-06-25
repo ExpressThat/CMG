@@ -44,5 +44,17 @@ public sealed class BrowserScriptRunnerTabTests
         Assert.Contains("Expected at least 2 tab", result.Error);
     }
 
+    [Fact]
+    public void RunText_WaitForPopupAliasesWaitForTab()
+    {
+        var client = new FakeAutomationClient();
+        client.TabResponses.Enqueue([new ChromePageTab("1", "one", "about:blank")]);
+
+        var result = Runner().RunText("waitForPopup count=1 timeout=1", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains(result.StdoutLines, line => line.Contains("TAB_COUNT", StringComparison.Ordinal));
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

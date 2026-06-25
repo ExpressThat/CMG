@@ -166,7 +166,7 @@ public sealed partial class BrowserScriptRunner
             "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),
             "opentab" => ExecuteOpenTab(remoteDebuggingUrl, automationClient, action),
-            "waitfortab" => ExecuteWaitForTab(remoteDebuggingUrl, automationClient, action),
+            "waitfortab" or "waitforpopup" => ExecuteWaitForTab(remoteDebuggingUrl, automationClient, action),
             "activatetab" => ExecuteActivateTab(remoteDebuggingUrl, automationClient, action),
             "closetab" => ExecuteCloseTab(remoteDebuggingUrl, automationClient, action),
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" =>

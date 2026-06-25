@@ -611,13 +611,14 @@ Output:
 
 - `TAB_OPENED <line> <target>` on success.
 
-## `waitForTab`
+## `waitForTab` And `waitForPopup`
 
 ```text
 waitForTab count=2 timeout=5000
+waitForPopup count=2 timeout=5000
 ```
 
-Polls available page targets until at least `count` tabs exist. Use this after an action that opens a popup or after `openTab`.
+Polls available page targets until at least `count` tabs exist. `waitForPopup` is a provider-style alias for the same behavior. Use either action after a pointer action that opens a popup or after `openTab`.
 
 Required options:
 

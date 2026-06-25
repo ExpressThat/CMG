@@ -55,7 +55,7 @@ public sealed class CmgActionLowerer
             "evaluate" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or "set" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),
-            "opentab" or "waitfortab" => [ToLine(action.Kind, action.Arguments, action.Options)],
+            "opentab" or "waitfortab" or "waitforpopup" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "apirequest" => [ToLine(action.Kind, action.Arguments, action.Options)],
             _ => [ToLine("evaluate", [BuildUnsupportedExpression(action.Kind)])]
         };

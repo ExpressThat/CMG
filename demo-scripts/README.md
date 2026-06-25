@@ -95,6 +95,7 @@ dotnet run -- --firefox browser close
 - `10-css-hover-states.cmgscript`: Demonstrates real CSS `:hover` states during GIF pointer movement.
 - `13-rich-locators.cmgscript`: Demonstrates direct browser-control text and label locators.
 - `14-pointer-click-variants.cmgscript`: Demonstrates `dblclick` and `rightClick` with pointer movement.
+- `15-popup-alias.cmgscript`: Demonstrates `waitForPopup` as a popup-named tab wait.
 - `20-v2-runner-flow.cmgscript`: Demonstrates the structured runner DSL, `step`, and `gif` blocks.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
