@@ -459,6 +459,38 @@ Output:
 
 - `EMULATE <line> <option-names>` on success.
 
+## `setGeolocation`, `grantPermissions`, And `clearPermissions`
+
+```text
+setGeolocation "51.5,-0.1" accuracy=10
+setGeolocation latitude=51.5 longitude=-0.1
+grantPermissions "geolocation" "notifications"
+grantPermissions permissions="geolocation,notifications"
+clearPermissions
+```
+
+Controls page-visible geolocation and permission query state without changing the rest of the emulated environment. These actions are available in both direct browser-control scripts and `cmg run`.
+
+Arguments:
+
+- `setGeolocation`: Optional `<latitude>,<longitude>` positional argument.
+- `grantPermissions`: One or more permission names. Alternatively, pass a comma-separated `permissions=` option.
+
+Options:
+
+- `latitude`: Latitude for `setGeolocation` when no positional coordinate argument is used.
+- `longitude`: Longitude for `setGeolocation` when no positional coordinate argument is used.
+- `accuracy`: Optional coordinate accuracy in meters. Default is `1`.
+- `permissions`: Optional comma-separated permission list for `grantPermissions`.
+
+Output:
+
+- `GEOLOCATION <line> <latitude>,<longitude> accuracy=<accuracy>` when geolocation is set.
+- `PERMISSIONS <line> <comma-separated-permissions>` when permissions are granted.
+- `PERMISSIONS_CLEARED <line>` when all page-side permission grants are cleared back to `prompt`.
+
+These actions do not move the virtual pointer. In GIF recordings, wrap them in `step`, `caption`, or `gif` blocks when the permission or location change should be narrated.
+
 ## `dragAndDrop`
 
 ```text

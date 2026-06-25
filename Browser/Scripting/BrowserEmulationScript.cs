@@ -13,6 +13,15 @@ public static class BrowserEmulationScript
         return lines.Count is 0 ? string.Empty : $"(() => {{ {string.Join(' ', lines)} return true; }})()";
     }
 
+    public static string BuildGeolocation(double latitude, double longitude, double accuracy) =>
+        $"(() => {{ {GeolocationLine(latitude, longitude, accuracy)} return true; }})()";
+
+    public static string BuildPermissions(IReadOnlyList<string> permissions)
+    {
+        var joined = string.Join(',', permissions);
+        return $"(() => {{ {PermissionsLine(joined)} return true; }})()";
+    }
+
     private static void AddNavigator(List<string> lines, IReadOnlyDictionary<string, string> options)
     {
         if (options.TryGetValue("userAgent", out var userAgent))
@@ -62,16 +71,22 @@ public static class BrowserEmulationScript
             throw new ScriptExecutionException("geolocation must be '<latitude>,<longitude>'.");
         }
 
-        lines.Add($"Object.defineProperty(navigator, 'geolocation', {{ configurable: true, value: {{ getCurrentPosition: success => success({{ coords: {{ latitude: {lat}, longitude: {lng}, accuracy: 1 }} }}), watchPosition: success => {{ success({{ coords: {{ latitude: {lat}, longitude: {lng}, accuracy: 1 }} }}); return 1; }}, clearWatch: () => {{ }} }} }});");
+        lines.Add(GeolocationLine(lat, lng, 1));
     }
 
     private static void AddPermissions(List<string> lines, IReadOnlyDictionary<string, string> options)
     {
         if (options.TryGetValue("permissions", out var permissions))
         {
-            lines.Add($"navigator.permissions.query = descriptor => Promise.resolve({{ name: descriptor.name, state: {Quote(permissions)}.split(',').includes(descriptor.name) ? 'granted' : 'prompt' }});");
+            lines.Add(PermissionsLine(permissions));
         }
     }
+
+    private static string GeolocationLine(double lat, double lng, double accuracy) =>
+        $"Object.defineProperty(navigator, 'geolocation', {{ configurable: true, value: {{ getCurrentPosition: success => success({{ coords: {{ latitude: {lat}, longitude: {lng}, accuracy: {accuracy} }} }}), watchPosition: success => {{ success({{ coords: {{ latitude: {lat}, longitude: {lng}, accuracy: {accuracy} }} }}); return 1; }}, clearWatch: () => {{ }} }} }});";
+
+    private static string PermissionsLine(string permissions) =>
+        $"navigator.permissions.query = descriptor => Promise.resolve({{ name: descriptor.name, state: {Quote(permissions)}.split(',').includes(descriptor.name) ? 'granted' : 'prompt' }});";
 
     private static string Quote(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";

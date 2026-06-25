@@ -39,5 +39,42 @@ public sealed class BrowserScriptRunnerEmulationTests
         Assert.Throws<ScriptExecutionException>(() => BrowserEmulationScript.Build(options));
     }
 
+    [Fact]
+    public void RunText_SetGeolocationInstallsPageOverride()
+    {
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText("setGeolocation \"51.5,-0.1\" accuracy=10", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("geolocation", client.LastExpression);
+        Assert.Contains("accuracy: 10", client.LastExpression);
+        Assert.Contains("GEOLOCATION", string.Join('\n', result.StdoutLines));
+    }
+
+    [Fact]
+    public void RunText_GrantAndClearPermissionsInstallPermissionOverride()
+    {
+        var client = new FakeAutomationClient();
+
+        var grant = Runner().RunText("grantPermissions \"geolocation\" \"notifications\"", "debug", client);
+        var clear = Runner().RunText("clearPermissions", "debug", client);
+
+        Assert.True(grant.Success);
+        Assert.True(clear.Success);
+        Assert.Contains("permissions.query", client.LastExpression);
+        Assert.Contains("geolocation,notifications", string.Join('\n', grant.StdoutLines));
+        Assert.Contains("PERMISSIONS_CLEARED", string.Join('\n', clear.StdoutLines));
+    }
+
+    [Fact]
+    public void RunText_GrantPermissionsRequiresPermission()
+    {
+        var result = Runner().RunText("grantPermissions", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("requires at least one permission", result.Error);
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

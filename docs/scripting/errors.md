@@ -199,9 +199,11 @@ Line 3: moveMouse failed. moveMouse element-edge targeting requires edge=<top|bo
 ```text
 Line 3: emulate failed. emulate requires both width and height when overriding viewport.
 Line 4: emulate failed. geolocation must be '<latitude>,<longitude>'.
+Line 5: setGeolocation failed. setGeolocation requires '<latitude>,<longitude>' or latitude=<value> longitude=<value>.
+Line 6: grantPermissions failed. grantPermissions requires at least one permission name.
 ```
 
-Provide both viewport dimensions together and pass geolocation as a comma-separated latitude/longitude pair.
+Provide both viewport dimensions together, pass geolocation as a comma-separated latitude/longitude pair or latitude/longitude options, and grant at least one permission name.
 
 ## Download Timeout
 

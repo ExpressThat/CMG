@@ -399,6 +399,14 @@ test "mobile dark mode profile" {
   navigate "https://example.com/profile"
   expectScreenshot baseline="baselines\profile-mobile-dark.png" output="demo-output\profile-mobile-dark.actual.png"
 }
+
+test "location-aware profile" {
+  grantPermissions "geolocation"
+  setGeolocation "51.5,-0.1" accuracy=10
+  navigate "https://example.com/profile"
+  expectText "#nearest-office" "London"
+  clearPermissions
+}
 ```
 
 Use `emulate` before navigation when the page reads environment values during startup. The same action is available in direct browser-control scripts for AI-driven exploration.

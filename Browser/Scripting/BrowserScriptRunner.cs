@@ -117,6 +117,8 @@ public sealed partial class BrowserScriptRunner
             "expectscreenshot" => ExecuteVisualAssertion(remoteDebuggingUrl, automationClient, action),
             "uploadfiles" => ExecuteUploadFiles(remoteDebuggingUrl, automationClient, action),
             "emulate" => ExecuteEmulate(remoteDebuggingUrl, automationClient, action),
+            "setgeolocation" or "grantpermissions" or "clearpermissions" =>
+                ExecuteGeolocationOrPermission(remoteDebuggingUrl, automationClient, action),
             "download" => ExecuteDownload(remoteDebuggingUrl, automationClient, action),
             "waitfordownload" => ExecuteWaitForDownload(action),
             "captureconsole" => ExecuteCaptureConsole(remoteDebuggingUrl, automationClient, action),
