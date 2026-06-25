@@ -71,7 +71,8 @@ public sealed class CmgRunService : ICmgRunService
             return;
         }
 
-        foreach (var test in planner.Plan(parse.Document))
+        var plannedTests = planner.Plan(parse.Document).Where(test => ShouldRun(test, options)).ToArray();
+        foreach (var test in ApplyShard(plannedTests, options))
         {
             var validation = validator.Validate(test);
             if (!validation.Success)
@@ -88,17 +89,58 @@ public sealed class CmgRunService : ICmgRunService
                 continue;
             }
 
-            var result = RunTest(test, remoteDebuggingUrl, options);
+            var result = RunTestWithRetries(test, remoteDebuggingUrl, options);
             tests.Add(result);
             output.Add($"TEST {(result.Success ? "PASS" : "FAIL")} {result.Name}");
         }
     }
 
-    private CmgTestResult RunTest(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options)
+    private CmgTestResult RunTestWithRetries(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options)
+    {
+        CmgTestResult? last = null;
+        for (var attempt = 0; attempt <= options.Retries; attempt++)
+        {
+            last = RunTest(test, remoteDebuggingUrl, options, attempt + 1);
+            if (last.Success)
+            {
+                return last;
+            }
+        }
+
+        return last ?? new CmgTestResult(test.Name, test.SourcePath, false, [], "Test did not run.", null, []);
+    }
+
+    private CmgTestResult RunTest(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options, int attempt)
     {
         var executor = new CmgVisualSegmentExecutor(scriptRunner, automationClientFactory.Create(options.BrowserKind), lowerer);
-        var result = executor.Run(test, remoteDebuggingUrl, options);
-        return result;
+        return executor.Run(test, remoteDebuggingUrl, options, attempt) with
+        {
+            Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty
+        };
+    }
+
+    private static bool ShouldRun(CmgTestCase test, CmgRunOptions options)
+    {
+        if (!string.IsNullOrWhiteSpace(options.Grep) &&
+            !test.Name.Contains(options.Grep, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return string.IsNullOrWhiteSpace(options.Tag) ||
+            (test.Options.TryGetValue("tag", out var tag) &&
+            tag.Split(',', StringSplitOptions.TrimEntries).Contains(options.Tag, StringComparer.OrdinalIgnoreCase));
+    }
+
+    private static IEnumerable<CmgTestCase> ApplyShard(IReadOnlyList<CmgTestCase> tests, CmgRunOptions options)
+    {
+        for (var index = 0; index < tests.Count; index++)
+        {
+            if (index % options.ShardCount == options.ShardIndex - 1)
+            {
+                yield return tests[index];
+            }
+        }
     }
 
     internal static IReadOnlyList<string> ResolveFiles(string path)

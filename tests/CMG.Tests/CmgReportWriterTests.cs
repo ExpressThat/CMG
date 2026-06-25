@@ -40,5 +40,8 @@ public sealed class CmgReportWriterTests
             ["PASS 001 navigate"],
             "No element matched selector '#pay'",
             "checkout.gif",
-            [new CmgStepResult(12, "click", false, [], "No element matched selector '#pay'", "checkout.gif")]);
+            [new CmgStepResult(12, "click", false, [], "No element matched selector '#pay'", "checkout.gif")])
+        {
+            Tags = "smoke"
+        };
 }

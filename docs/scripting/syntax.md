@@ -29,6 +29,16 @@ Supported structural blocks:
 - `step "caption" { ... }`
 - `gif "name" { ... }`
 
+Tests can include options:
+
+```text
+test "checkout" tag=smoke,critical {
+  click "#checkout"
+}
+```
+
+Use `cmg run --tag smoke` to run tests with a matching tag. Use comma-separated tags when a test belongs to multiple groups.
+
 ## Actions
 
 Actions use:

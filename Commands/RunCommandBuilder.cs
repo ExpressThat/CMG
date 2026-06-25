@@ -36,13 +36,34 @@ public sealed class RunCommandBuilder
         {
             Description = "Write a JUnit XML test report to this file."
         };
+        var grepOption = new Option<string?>("--grep")
+        {
+            Description = "Run tests whose names contain this text."
+        };
+        var tagOption = new Option<string?>("--tag")
+        {
+            Description = "Run tests with a matching tag option."
+        };
+        var retriesOption = new Option<int>("--retries")
+        {
+            Description = "Retry failed tests this many times.",
+            DefaultValueFactory = _ => 0
+        };
+        var shardOption = new Option<string?>("--shard")
+        {
+            Description = "Run one shard as index/count, for example 1/3."
+        };
         var command = new Command("run", "Run CMG DSL tests with visual artifacts.")
         {
             pathArgument,
             gifOption,
             jsonOption,
             htmlOption,
-            junitOption
+            junitOption,
+            grepOption,
+            tagOption,
+            retriesOption,
+            shardOption
         };
 
         command.SetAction(parseResult =>
@@ -52,7 +73,11 @@ public sealed class RunCommandBuilder
                 parseResult.GetValue(gifOption),
                 parseResult.GetValue(jsonOption),
                 parseResult.GetValue(htmlOption),
-                parseResult.GetValue(junitOption)));
+                parseResult.GetValue(junitOption),
+                parseResult.GetValue(grepOption),
+                parseResult.GetValue(tagOption),
+                parseResult.GetValue(retriesOption),
+                parseResult.GetValue(shardOption)));
 
         return command;
     }

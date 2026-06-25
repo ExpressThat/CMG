@@ -10,7 +10,11 @@ public interface ICmgRunCommandHandler
         DirectoryInfo? artifacts,
         FileInfo? jsonReport,
         FileInfo? htmlReport,
-        FileInfo? junitReport);
+        FileInfo? junitReport,
+        string? grep,
+        string? tag,
+        int retries,
+        string? shard);
 }
 
 public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
@@ -28,7 +32,11 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         DirectoryInfo? artifacts,
         FileInfo? jsonReport,
         FileInfo? htmlReport,
-        FileInfo? junitReport)
+        FileInfo? junitReport,
+        string? grep,
+        string? tag,
+        int retries,
+        string? shard)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
@@ -36,7 +44,23 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             return 1;
         }
 
-        var result = runService.Run(path, new CmgRunOptions(browserKind, artifacts, jsonReport, htmlReport, junitReport));
+        if (!CmgShard.TryParse(shard, out var shardIndex, out var shardCount, out var shardError))
+        {
+            Console.Error.WriteLine(shardError);
+            return 1;
+        }
+
+        var result = runService.Run(path, new CmgRunOptions(
+            browserKind,
+            artifacts,
+            jsonReport,
+            htmlReport,
+            junitReport,
+            grep,
+            tag,
+            Math.Max(0, retries),
+            shardIndex,
+            shardCount));
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);

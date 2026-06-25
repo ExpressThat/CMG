@@ -14,6 +14,10 @@ cmg run <path> [options]
 - `--report-json <file>`: Write a JSON test report.
 - `--report-html <file>`: Write an HTML test report.
 - `--report-junit <file>`: Write a JUnit XML test report.
+- `--grep <text>`: Run tests whose names contain the text.
+- `--tag <tag>`: Run tests with a matching `tag=` option.
+- `--retries <count>`: Retry failed tests this many times.
+- `--shard <index/count>`: Run a deterministic shard, for example `1/3`.
 - `--chrome`: Use Chrome. This is the default.
 - `--edge`: Use Microsoft Edge.
 - `--firefox`: Use Firefox.
@@ -59,4 +63,5 @@ cmg browser launch
 cmg run demo-scripts
 cmg run tests\flows --gif artifacts\gifs
 cmg run checkout.cmgscript --report-json artifacts\checkout.json --report-html artifacts\checkout.html
+cmg run tests\flows --grep checkout --tag smoke --retries 2 --shard 1/3
 ```

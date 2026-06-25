@@ -224,3 +224,20 @@ dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript `
 ```
 
 Reports include per-test status, output, GIF paths, and step-level failure reasons.
+
+## Filtering, Sharding, And Retries
+
+```powershell
+dotnet run -- run demo-scripts --grep runner
+dotnet run -- run demo-scripts --tag smoke
+dotnet run -- run demo-scripts --retries 2
+dotnet run -- run demo-scripts --shard 1/2
+```
+
+Use `tag=` on tests:
+
+```text
+test "checkout" tag=smoke,critical {
+  click "#checkout"
+}
+```

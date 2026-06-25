@@ -19,13 +19,13 @@ public sealed class CmgVisualSegmentExecutor
         this.lowerer = lowerer;
     }
 
-    public CmgTestResult Run(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options)
+    public CmgTestResult Run(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options, int attempt)
     {
         var output = new List<string>();
         var gifs = new List<string>();
         var pending = new List<string>();
         var steps = new List<CmgStepResult>();
-        var commandGif = BuildGifPath(test, options);
+        var commandGif = BuildGifPath(test, options, attempt);
         var suppressGifBlocks = commandGif is not null;
 
         foreach (var action in test.Actions)
@@ -127,6 +127,20 @@ public sealed class CmgVisualSegmentExecutor
         return new FileInfo(Path.Combine(directory, $"{safeName}.gif"));
     }
 
-    private static FileInfo? BuildGifPath(CmgTestCase test, CmgRunOptions options) =>
-        options.GifDirectory is null ? null : CmgRunService.BuildGifPath(test, options);
+    private static FileInfo? BuildGifPath(CmgTestCase test, CmgRunOptions options, int attempt)
+    {
+        if (options.GifDirectory is null)
+        {
+            return null;
+        }
+
+        var path = CmgRunService.BuildGifPath(test, options);
+        if (attempt <= 1 || path is null)
+        {
+            return path;
+        }
+
+        var name = Path.GetFileNameWithoutExtension(path.Name);
+        return new FileInfo(Path.Combine(path.DirectoryName ?? string.Empty, $"{name}-attempt-{attempt}.gif"));
+    }
 }

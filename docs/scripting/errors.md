@@ -116,6 +116,14 @@ STEP FAIL line=8 action=click reason=Line 8: click failed. No element matched se
 
 JSON and HTML reports include the same reason, the test name, output lines, and any GIF path connected to the failure.
 
+## Invalid Shard
+
+```text
+--shard must use index/count with 1 <= index <= count.
+```
+
+Examples of valid values: `1/2`, `2/2`, `3/5`.
+
 ## Missing Element
 
 ```text

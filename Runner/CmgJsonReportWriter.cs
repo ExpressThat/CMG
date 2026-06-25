@@ -18,6 +18,7 @@ public static class CmgJsonReportWriter
             writer.WriteBoolean("success", test.Success);
             writer.WriteString("error", test.Error);
             writer.WriteString("gifPath", test.GifPath);
+            writer.WriteString("tags", test.Tags);
             writer.WriteStartArray("output");
             foreach (var line in test.Output)
             {

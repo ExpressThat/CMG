@@ -30,7 +30,12 @@ public sealed record CmgRunOptions(
     DirectoryInfo? GifDirectory,
     FileInfo? JsonReport,
     FileInfo? HtmlReport,
-    FileInfo? JUnitReport);
+    FileInfo? JUnitReport,
+    string? Grep,
+    string? Tag,
+    int Retries,
+    int ShardIndex,
+    int ShardCount);
 
 public sealed partial record CmgRunResult(
     bool Success,
@@ -45,4 +50,7 @@ public sealed record CmgTestResult(
     IReadOnlyList<string> Output,
     string? Error,
     string? GifPath,
-    IReadOnlyList<CmgStepResult> Steps);
+    IReadOnlyList<CmgStepResult> Steps)
+{
+    public string Tags { get; init; } = string.Empty;
+}
