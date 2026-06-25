@@ -218,10 +218,10 @@ Check the browser download directory, file pattern, and timeout. `download` igno
 
 ```text
 Line 4: screenshotPage failed. screenshotPage option fullPage= must be true or false.
-Line 5: screenshotPage failed. Full-page screenshots are not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for screenshotPage fullPage=true.
+Line 5: screenshotPage failed. Firefox did not return screenshot image data.
 ```
 
-Use `fullPage=true` only with Chrome or Edge. Leave it unset for the current viewport screenshot on any supported browser.
+Use `fullPage=true` for a full scrollable page capture. Use `fullPage=false` or leave it unset for the current viewport.
 
 ## Console Timeout
 
