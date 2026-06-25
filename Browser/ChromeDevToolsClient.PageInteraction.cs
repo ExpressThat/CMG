@@ -37,6 +37,13 @@ public sealed partial class ChromeDevToolsClient
                 return string.Empty;
             }
 
+            if (result.TryGetProperty("subtype", out var subtype) &&
+                subtype.GetString() is "error" &&
+                result.TryGetProperty("description", out var error))
+            {
+                throw new ChromeDevToolsException(error.GetString() ?? "JavaScript evaluation failed.");
+            }
+
             if (result.TryGetProperty("value", out var value))
             {
                 return value.ValueKind is JsonValueKind.String ? value.GetString() ?? string.Empty : value.ToString();

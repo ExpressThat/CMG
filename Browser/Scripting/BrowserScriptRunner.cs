@@ -23,9 +23,9 @@ public sealed partial class BrowserScriptRunner
         return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif);
     }
 
-    public ScriptRunResult RunText(string script, string remoteDebuggingUrl, IBrowserAutomationClient automationClient)
+    public ScriptRunResult RunText(string script, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif = null)
     {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif: null);
+        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif);
     }
 
     private ScriptRunResult RunParsedScript(string script, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif)

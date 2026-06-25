@@ -1,0 +1,16 @@
+# Demonstrates the CMG runner DSL.
+suite "runner demo" {
+  beforeEach {
+    navigate "C:\Projects\CMG\index.html"
+    waitForElement "#openProfileDialog" timeout=5000
+  }
+
+  test "records a partial dialog flow" {
+    gif "dialog-open" {
+      step "Opening profile dialog" {
+        click "#openProfileDialog"
+      }
+      assertText "#lastDialogAction" "None"
+    }
+  }
+}

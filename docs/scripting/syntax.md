@@ -1,126 +1,66 @@
 # `.cmgscript` Syntax
 
-Each executable line has this shape:
+CMG scripts are structured test files.
+
+```text
+suite "profile" {
+  beforeEach {
+    navigate "https://example.com"
+  }
+
+  test "opens dialog" {
+    step "Open dialog" {
+      click "#openProfileDialog"
+    }
+  }
+}
+```
+
+## Blocks
+
+Blocks use `{` at the end of the parent line and `}` on its own line.
+
+Supported structural blocks:
+
+- `suite "name" { ... }`
+- `test "name" { ... }`
+- `beforeEach { ... }`
+- `afterEach { ... }`
+- `step "caption" { ... }`
+- `gif "name" { ... }`
+
+## Actions
+
+Actions use:
 
 ```text
 action positionalArgs... key=value...
 ```
 
-## Comments And Blank Lines
+Options use identifier-like keys. Selector values containing `=` remain positional arguments unless the key before `=` is identifier-like.
 
-Blank lines are ignored.
+## Quoting
 
-Lines beginning with `#` are comments:
+Use quotes for values that contain spaces or shell-sensitive characters.
+
+```text
+click "#openProfileDialog"
+fill "#profileName" "CMG Test Profile"
+```
+
+Escapes inside quoted strings support `\"`, `\\`, `\n`, `\r`, and `\t`.
+
+## Comments
+
+Blank lines and full-line comments are ignored.
 
 ```text
 # Open the local test page
 navigate "C:\Projects\CMG\index.html"
 ```
 
-Only full-line comments are supported. Inline comments are treated as arguments.
+## GIF Blocks
 
-## Quoting
+`gif "name" { ... }` records only the wrapped actions when `cmg run` is used without command-level `--gif`.
 
-Use quotes for values that contain spaces, `#`, brackets, or shell-sensitive characters:
-
-```text
-click "#openProfileDialog"
-type "#profileName" "CMG Test Profile"
-```
-
-Escaped quotes inside quoted strings use `\"`:
-
-```text
-type "#releaseNote" "Text with a \"quoted\" word"
-```
-
-Quoted strings also support `\n`, `\r`, and `\t` escapes:
-
-```text
-showMessageBar "Opening profile dialog\nWaiting for dialog content"
-```
-
-Backslashes are kept as literal characters unless they escape `"`, another `\`, `n`, `r`, or `t`, so Windows paths work as expected:
-
-```text
-navigate "C:\Projects\CMG\index.html"
-```
-
-## Arguments
-
-Positional arguments come after the action name:
-
-```text
-waitForElement "#profileDialog[open]"
-```
-
-Keyed options use `key=value`:
-
-```text
-waitForElement "#profileDialog[open]" timeout=5000
-screenshot "#profileDialog" output="profile-dialog.png"
-```
-
-Only identifier-like keys are treated as options. CSS selectors that contain `=`, such as `[data-command='browser launch']`, remain normal positional arguments.
-
-Durations are milliseconds.
-
-## Blocks
-
-Some actions can take a nested block body:
-
-```text
-action positionalArgs... {
-  childAction positionalArgs...
-}
-```
-
-The opening `{` must be at the end of the parent action line. The closing `}` must be on its own line.
-
-For v1, block syntax is supported by the complex `dragAndDrop` action:
-
-```text
-dragAndDrop "[data-command='browser launch']" {
-  delay 200
-  hover "#lastDialogAction"
-  moveMouse "bottom"
-  drop "#dropQueue"
-}
-```
-
-Rules:
-
-- Block bodies use the same quoting, option, and variable expansion rules as top-level actions.
-- Blank lines and full-line comments are allowed inside blocks.
-- Nested blocks are parsed, but only actions that explicitly document block support may use them.
-- `dragAndDrop` block bodies must contain exactly one `drop` action.
-- `moveMouse` is allowed inside `dragAndDrop` blocks only when the script is run with `--gif`.
-- No actions are allowed after `drop` in a `dragAndDrop` block.
-
-## Variables
-
-Set variables with:
-
-```text
-set profileName "CMG Test Profile"
-```
-
-Reference variables with `${name}`:
-
-```text
-type "#profileName" "${profileName}"
-```
-
-Variables are expanded before each action runs. Referencing an undefined variable fails the script.
-
-## Paths And URLs
-
-`navigate` accepts URLs and existing local file paths. Existing file paths are converted to `file:///` URLs.
-
-```text
-navigate "https://example.com"
-navigate "C:\Projects\CMG\index.html"
-navigate "data:text/html,<h1>Hello</h1>"
-```
-
-Screenshot `output=` paths are written as files. Parent directories are created when needed.
+When `cmg run --gif <directory>` is used, CMG records the entire test and suppresses nested block recordings. Actions inside `gif` blocks still run and are included in the whole-test GIF.

@@ -11,10 +11,12 @@ public interface ICommandTreeBuilder
 public sealed class CommandTreeBuilder : ICommandTreeBuilder
 {
     private readonly BrowserCommandBuilder browserCommandBuilder;
+    private readonly RunCommandBuilder runCommandBuilder;
 
-    public CommandTreeBuilder(BrowserCommandBuilder browserCommandBuilder)
+    public CommandTreeBuilder(BrowserCommandBuilder browserCommandBuilder, RunCommandBuilder runCommandBuilder)
     {
         this.browserCommandBuilder = browserCommandBuilder;
+        this.runCommandBuilder = runCommandBuilder;
     }
 
     public RootCommand Build()
@@ -38,6 +40,7 @@ public sealed class CommandTreeBuilder : ICommandTreeBuilder
         rootCommand.Options.Add(firefoxOption);
 
         rootCommand.Subcommands.Add(browserCommandBuilder.Build(browserOptions));
+        rootCommand.Subcommands.Add(runCommandBuilder.Build(browserOptions));
 
         return rootCommand;
     }

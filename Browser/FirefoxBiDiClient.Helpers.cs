@@ -91,6 +91,11 @@ public sealed partial class FirefoxBiDiClient
             return string.Empty;
         }
 
+        if (type is "exception")
+        {
+            throw new ChromeDevToolsException("JavaScript evaluation failed.");
+        }
+
         if (!result.TryGetProperty("value", out var value))
         {
             return TryReadString(result, "text", out var text) ? text ?? string.Empty : string.Empty;

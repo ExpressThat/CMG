@@ -1,6 +1,7 @@
 using CMG.Browser;
 using CMG.Browser.Scripting;
 using CMG.Commands;
+using CMG.Runner;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CMG;
@@ -13,8 +14,14 @@ public static class DependencyInjection
         services.AddSingleton<ICommandTreeBuilder, CommandTreeBuilder>();
         services.AddSingleton<BrowserCommandBuilder>();
         services.AddSingleton<BrowserControlCommandBuilder>();
+        services.AddSingleton<RunCommandBuilder>();
         services.AddSingleton<IBrowserCommandHandler, BrowserCommandHandler>();
         services.AddSingleton<IBrowserControlCommandHandler, BrowserControlCommandHandler>();
+        services.AddSingleton<ICmgRunCommandHandler, CmgRunCommandHandler>();
+        services.AddSingleton<ICmgRunService, CmgRunService>();
+        services.AddSingleton<CmgDslParser>();
+        services.AddSingleton<CmgTestPlanner>();
+        services.AddSingleton<CmgActionLowerer>();
         services.AddSingleton<IBrowserController, BrowserController>();
         services.AddSingleton<IBrowserControlService, BrowserControlService>();
         services.AddSingleton<BrowserAutomationClientFactory>();
