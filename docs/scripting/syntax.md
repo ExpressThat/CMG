@@ -28,6 +28,8 @@ Supported structural blocks:
 - `afterEach { ... }`
 - `step "caption" { ... }`
 - `gif "name" { ... }`
+- `recordVideo "name" { ... }`
+- `screencast "name" { ... }`
 
 Tests can include options:
 
@@ -71,6 +73,6 @@ navigate "C:\Projects\CMG\index.html"
 
 ## GIF Blocks
 
-`gif "name" { ... }` records only the wrapped actions when direct `browser control script` or `cmg run` is used without command-level `--gif`.
+`gif "name" { ... }`, `recordVideo "name" { ... }`, and `screencast "name" { ... }` record only the wrapped actions when direct `browser control script` or `cmg run` is used without command-level `--gif`.
 
 When command-level `--gif` is used, CMG records the entire script or test and suppresses nested block recordings. Actions inside `gif` blocks still run and are included in the whole-run GIF.

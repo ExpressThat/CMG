@@ -42,7 +42,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
         foreach (var action in test.Actions)
         {
-            if (action.Kind.Equals("gif", StringComparison.OrdinalIgnoreCase) && !suppressGifBlocks)
+            if (IsRecordingBlock(action.Kind) && !suppressGifBlocks)
             {
                 var flush = RunLines(pending, remoteDebuggingUrl, gif: null);
                 if (!AppendResult(flush, output, steps, action, gif: null, out var error))
@@ -142,7 +142,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             var lines = lowerer.Lower(action);
             pending.AddRange(lines);
-            if (!action.Kind.Equals("gif", StringComparison.OrdinalIgnoreCase))
+            if (!IsRecordingBlock(action.Kind))
             {
                 steps.Add(new CmgStepResult(action.LineNumber, action.Kind, true, [], null, null));
             }
@@ -229,4 +229,9 @@ public sealed partial class CmgVisualSegmentExecutor
         var name = Path.GetFileNameWithoutExtension(path.Name);
         return new FileInfo(Path.Combine(path.DirectoryName ?? string.Empty, $"{name}-attempt-{attempt}.gif"));
     }
+
+    private static bool IsRecordingBlock(string name) =>
+        name.Equals("gif", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("recordVideo", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("screencast", StringComparison.OrdinalIgnoreCase);
 }

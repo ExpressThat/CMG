@@ -81,7 +81,7 @@ public sealed partial class BrowserScriptRunner
     {
         if (action.Children.Count > 0 &&
             !string.Equals(action.Name, "dragAndDrop", StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(action.Name, "gif", StringComparison.OrdinalIgnoreCase))
+            !IsRecordingBlock(action.Name))
         {
             throw new ScriptExecutionException($"Action '{action.Name}' does not accept a block body.");
         }
@@ -175,7 +175,7 @@ public sealed partial class BrowserScriptRunner
             "mousemove" or "mousedown" or "mouseup" =>
                 ExecuteMouseAction(remoteDebuggingUrl, automationClient, action, recorder),
             "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action, recorder),
-            "gif" => ExecuteGifBlock(remoteDebuggingUrl, automationClient, action, context, recorder),
+            "gif" or "recordvideo" or "screencast" => ExecuteGifBlock(remoteDebuggingUrl, automationClient, action, context, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),
             "opentab" => ExecuteOpenTab(remoteDebuggingUrl, automationClient, action),
             "waitfortab" or "waitforpopup" => ExecuteWaitForTab(remoteDebuggingUrl, automationClient, action),

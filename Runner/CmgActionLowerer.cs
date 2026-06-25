@@ -7,7 +7,7 @@ public sealed class CmgActionLowerer
         var name = action.Kind.ToLowerInvariant();
         return name switch
         {
-            "step" or "gif" => LowerStep(action),
+            "step" or "gif" or "recordvideo" or "screencast" => LowerStep(action),
             "caption" => [ToLine("showMessageBar", action.Arguments)],
             "fill" => LowerFill(action),
             "assertvisible" => LowerSelectorCommand("waitForElement", action),

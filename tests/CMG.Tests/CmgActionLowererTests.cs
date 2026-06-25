@@ -37,6 +37,18 @@ public sealed class CmgActionLowererTests
         Assert.Equal("click \"#open\"", lines[2]);
     }
 
+    [Theory]
+    [InlineData("recordVideo")]
+    [InlineData("screencast")]
+    public void Lower_ProviderRecordingBlocksCanBeFlattenedWhenCommandGifIsActive(string name)
+    {
+        var action = Node(name, ["Only this"], [Node("click", ["#open"], [])]);
+        var lines = new CmgActionLowerer().Lower(action);
+
+        Assert.Equal("showMessageBar \"Only this\"", lines[0]);
+        Assert.Equal("click \"#open\"", lines[2]);
+    }
+
     [Fact]
     public void Lower_PlannedUnsupportedActionFailsExplicitly()
     {

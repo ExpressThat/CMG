@@ -1041,15 +1041,20 @@ step "Open dialog" {
 
 Adds a visible caption before running the wrapped actions. In GIF mode, the caption appears in the recording.
 
-### `gif`
+### `gif`, `recordVideo`, And `screencast`
 
 ```text
 gif "open-dialog" {
   click "#open"
 }
+
+recordVideo "checkout" {
+  click "#pay"
+}
 ```
 
 Records only the wrapped actions when direct `browser control script` or `cmg run` is used without command-level `--gif`. If command-level `--gif` is used, the entire script or test is recorded and nested `gif` blocks do not create separate GIFs.
+`recordVideo` and `screencast` are provider-style aliases for the same CMG GIF recorder. Output is still an animated GIF so the virtual pointer, pointer events, drag ghost behavior, and captions remain consistent.
 
 Options:
 

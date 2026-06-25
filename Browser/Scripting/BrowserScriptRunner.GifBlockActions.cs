@@ -65,4 +65,9 @@ public sealed partial class BrowserScriptRunner
         var safe = string.Concat(value.Select(character => char.IsLetterOrDigit(character) ? character : '-')).Trim('-');
         return string.IsNullOrWhiteSpace(safe) ? "gif-block" : safe;
     }
+
+    private static bool IsRecordingBlock(string name) =>
+        name.Equals("gif", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("recordVideo", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("screencast", StringComparison.OrdinalIgnoreCase);
 }

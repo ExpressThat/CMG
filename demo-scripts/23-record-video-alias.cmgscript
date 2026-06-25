@@ -1,0 +1,6 @@
+# Demonstrates provider-style recording aliases that use CMG GIF output.
+
+recordVideo "record-video-alias" output="demo-output/record-video-alias.gif" {
+  showMessageBar "recordVideo uses CMG GIF recording"
+  delay 250
+}

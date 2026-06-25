@@ -258,6 +258,11 @@ gif "open-dialog" output="demo-output\open-dialog.gif" {
   click "#openProfileDialog"
   waitForElement "#profileDialog[open]"
 }
+
+recordVideo "open-dialog-video" output="demo-output\open-dialog-video.gif" {
+  click "#openProfileDialog"
+  waitForElement "#profileDialog[open]"
+}
 ```
 
 When command-level `--gif` is used, the whole script or test is recorded and `gif` blocks are included in that recording instead of producing nested GIF files.

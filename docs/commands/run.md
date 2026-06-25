@@ -49,8 +49,8 @@ Reports and traces include per-test output and per-step diagnostics so agents ca
 GIF recording is optional.
 
 - With `--gif` or `-gif`, CMG records the whole execution of each test.
-- When command-level GIF recording is active, script-level `gif { ... }` blocks do not create nested recordings; their actions are flattened into the whole-test GIF.
-- Without command-level GIF recording, script-level `gif "name" { ... }` records only the wrapped block.
+- When command-level GIF recording is active, script-level `gif { ... }`, `recordVideo { ... }`, and `screencast { ... }` blocks do not create nested recordings; their actions are flattened into the whole-test GIF.
+- Without command-level GIF recording, script-level `gif "name" { ... }`, `recordVideo "name" { ... }`, or `screencast "name" { ... }` records only the wrapped block.
 
 All recorded actions use CMG's virtual pointer, pointer/mouse event dispatch, captions, and drag ghost behavior.
 
