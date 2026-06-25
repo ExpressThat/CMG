@@ -520,6 +520,29 @@ Output:
 
 These actions do not move the virtual pointer. They provide practical context cleanup inside CMG's controlled browser instance; they are not a protocol-native replacement for creating multiple isolated browser contexts.
 
+## `accessibilitySnapshot` And `expectAccessible`
+
+```text
+accessibilitySnapshot
+accessibilitySnapshot "#dialog" output="artifacts\a11y.json"
+expectAccessible role=button name="Save"
+```
+
+Builds a page-derived accessibility snapshot or asserts that an element with a matching role and accessible-ish name exists. The snapshot includes role, name, hidden state, disabled state, and children derived from DOM attributes and common implicit roles.
+
+Options:
+
+- `output`: Optional JSON output path for `accessibilitySnapshot`.
+- `role`: Required role for `expectAccessible`.
+- `name`: Optional text expected in the accessible name for `expectAccessible`.
+
+Output:
+
+- `ACCESSIBILITY <line> <json-or-path>` for snapshots.
+- `ACCESSIBLE <line> role=<role> name="<name>"` for successful assertions.
+
+These actions do not move the virtual pointer. They are included in reports and traces. CMG currently derives this data from the page DOM rather than a protocol-native accessibility tree, which keeps behavior shared across supported browser clients.
+
 ## `activateTab`
 
 ```text

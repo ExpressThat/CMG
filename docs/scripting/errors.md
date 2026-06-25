@@ -245,6 +245,15 @@ Line 2: resetContext failed. JavaScript evaluation failed.
 
 Context cleanup runs in the current page. If the page blocks same-origin storage APIs or browser APIs are unavailable, the failing browser evaluation reason is reported in stderr, JSON reports, HTML reports, and traces.
 
+## Accessibility Failure
+
+```text
+Line 6: expectAccessible failed. expectAccessible requires role=<role>.
+Line 7: expectAccessible failed. No accessible element matched role=button name=Save.
+```
+
+Use `accessibilitySnapshot output="..."` to inspect the derived role/name tree when an assertion fails.
+
 ## Failed Assertion
 
 ```text

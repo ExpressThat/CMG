@@ -431,6 +431,19 @@ test "fresh login state" {
 
 Use `clearContext` when the page should stay loaded, and `resetContext` when the next action should start from `about:blank`.
 
+## Accessibility Snapshot
+
+```text
+test "dialog accessibility" {
+  navigate "https://example.com/profile"
+  click "#openProfileDialog"
+  accessibilitySnapshot "#profileDialog" output="demo-output\profile-dialog.a11y.json"
+  expectAccessible role=button name="Save"
+}
+```
+
+Accessibility actions do not move the virtual pointer. Wrap them in `step` blocks when the GIF should narrate what is being checked.
+
 ## Storage State
 
 ```text

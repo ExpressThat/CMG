@@ -178,6 +178,15 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_AccessibilityActionsPassThrough()
+    {
+        var node = new CmgNode(1, "expectAccessible", "expectAccessible", [], new Dictionary<string, string> { ["role"] = "button" }, []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(node));
+
+        Assert.Equal("expectAccessible role=\"button\"", line);
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));

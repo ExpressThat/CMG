@@ -74,6 +74,8 @@ TICK 025 250 now=1700000000250
 CLOCK_RESTORED 026
 CONTEXT_CLEARED 027
 CONTEXT_RESET 028
+ACCESSIBILITY 029 C:\Projects\CMG\demo-output\a11y.json
+ACCESSIBLE 030 role=button name="Save"
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 
