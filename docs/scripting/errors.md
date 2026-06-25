@@ -297,6 +297,16 @@ Line 5: expectFile failed. Expected file 'demo-output\result.txt' to contain 'Do
 
 Pass `path=<file>` to every file action. For `readFile` and `fixture`, the first argument is the variable name that receives the file content. `expectFile contains="..."` reports the expected text when the file exists but does not match.
 
+## PDF Failure
+
+```text
+Line 4: printPdf failed. printPdf requires path=<file>.
+Line 5: printPdf failed. printPdf option scale= must be a positive number.
+Line 6: printPdf failed. PDF generation is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for printPdf.
+```
+
+Use Chrome or Edge for PDF output. PDF generation is available in both direct scripts and `cmg run`, but it depends on a browser provider that exposes page printing.
+
 ## Visual Assertion Failure
 
 ```text

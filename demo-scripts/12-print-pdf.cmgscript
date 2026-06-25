@@ -1,0 +1,2 @@
+navigate "index.html"
+printPdf path="demo-output/page.pdf" printBackground=true

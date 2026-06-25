@@ -191,6 +191,21 @@ Run the complete direct script:
 dotnet run -- browser control script --file demo-scripts\11-fixtures-and-files.cmgscript
 ```
 
+## Print PDF
+
+```text
+navigate "C:\Projects\CMG\index.html"
+printPdf path="demo-output\page.pdf" printBackground=true
+```
+
+PDF generation works in direct browser-control scripts and `cmg run`. It is non-visual, so use a `step` or `caption` when a GIF should explain that the page is being printed.
+
+Run the complete direct script:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\12-print-pdf.cmgscript
+```
+
 ## Stdin
 
 ```powershell

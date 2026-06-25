@@ -254,6 +254,28 @@ Options:
 
 - `output`: Optional file path. Without it, stdout receives a `data:image/png;base64,...` result.
 
+## `printPdf`
+
+```text
+printPdf path="demo-output\page.pdf" printBackground=true
+pdf path="demo-output\page-landscape.pdf" landscape=true scale=0.9
+```
+
+Prints the current page to a PDF file. `pdf` is an alias for `printPdf`. This action is available in both direct browser-control scripts and `cmg run`.
+
+Options:
+
+- `path`: Required output PDF path.
+- `landscape`: Optional boolean. Default is `false`.
+- `printBackground`: Optional boolean. Default is `true`.
+- `scale`: Optional positive number. Default is `1`.
+
+Output:
+
+- `PDF <line> <path>` on success.
+
+PDF generation does not move the virtual pointer. It is supported for Chrome and Edge through the browser print API. Firefox runs fail with an explicit unsupported-provider reason.
+
 ## `assertText`
 
 ```text

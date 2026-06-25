@@ -25,6 +25,9 @@ public sealed partial class FirefoxBiDiClient
             return DecodeScreenshot(response);
         });
 
+    public byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options) =>
+        throw new ChromeDevToolsException("PDF generation is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for printPdf.");
+
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) =>
         Run(async () =>
         {

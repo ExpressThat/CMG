@@ -170,6 +170,15 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_NavigationActionsPassThrough()
+    {
+        var lowerer = new CmgActionLowerer();
+
+        Assert.Equal("navigate \"index.html\"", Assert.Single(lowerer.Lower(Node("navigate", ["index.html"], []))));
+        Assert.Equal("waitForElement \"#ready\"", Assert.Single(lowerer.Lower(Node("waitForElement", ["#ready"], []))));
+    }
+
+    [Fact]
     public void Lower_ContextActionsPassThrough()
     {
         var line = Assert.Single(new CmgActionLowerer().Lower(Node("clearContext", [], [])));
@@ -193,6 +202,15 @@ public sealed class CmgActionLowererTests
         var line = Assert.Single(new CmgActionLowerer().Lower(node));
 
         Assert.Equal("readFile \"payload\" path=\"fixtures/payload.json\"", line);
+    }
+
+    [Fact]
+    public void Lower_PdfActionsPassThrough()
+    {
+        var node = new CmgNode(1, "printPdf", "printPdf", [], new Dictionary<string, string> { ["path"] = "artifacts/page.pdf" }, []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(node));
+
+        Assert.Equal("printPdf path=\"artifacts/page.pdf\"", line);
     }
 
     [Fact]

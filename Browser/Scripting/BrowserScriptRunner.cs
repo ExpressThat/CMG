@@ -100,6 +100,7 @@ public sealed partial class BrowserScriptRunner
             "html" => ExecuteHtml(remoteDebuggingUrl, automationClient, action),
             "screenshot" => ExecuteScreenshot(remoteDebuggingUrl, automationClient, action),
             "screenshotpage" => ExecuteScreenshotPage(remoteDebuggingUrl, automationClient, action),
+            "printpdf" or "pdf" => ExecutePrintPdf(remoteDebuggingUrl, automationClient, action),
             "asserttext" => ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
             "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, automationClient, action),
             "setviewport" => ExecuteSetViewport(remoteDebuggingUrl, automationClient, action),

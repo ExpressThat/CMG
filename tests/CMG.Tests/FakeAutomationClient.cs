@@ -7,6 +7,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string LastExpression { get; private set; } = string.Empty;
     public string LastClickedSelector { get; private set; } = string.Empty;
     public ViewportSize? LastViewport { get; private set; }
+    public PdfPrintOptions? LastPdfOptions { get; private set; }
     public Queue<string> TextResponses { get; } = new();
     public Queue<IReadOnlyList<ChromePageTab>> TabResponses { get; } = new();
 
@@ -43,6 +44,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public void MouseDown(string remoteDebuggingUrl, ElementPoint point) { }
     public void MouseUp(string remoteDebuggingUrl, ElementPoint point) { }
     public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true) => [];
+    public byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options)
+    {
+        LastPdfOptions = options;
+        return [1, 2, 3];
+    }
     public ElementBox GetElementBox(string remoteDebuggingUrl, string selector) => new(0, 0, 1, 1);
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) => new(0, 0);
     public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point) { }

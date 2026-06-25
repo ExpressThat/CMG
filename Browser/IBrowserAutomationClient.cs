@@ -63,6 +63,8 @@ public interface IBrowserAutomationClient
 
     byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true);
 
+    byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options);
+
     ElementBox GetElementBox(string remoteDebuggingUrl, string selector);
 
     ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector);
@@ -98,3 +100,5 @@ public sealed class BrowserAutomationClientFactory
 public sealed record ViewportSize(double Width, double Height);
 
 public sealed record ElementBox(double X, double Y, double Width, double Height);
+
+public sealed record PdfPrintOptions(bool Landscape, bool PrintBackground, double Scale);
