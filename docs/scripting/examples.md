@@ -470,6 +470,18 @@ test "captures page failure" {
 
 Page-error capture records `error` and `unhandledrejection` events from the page. The output and failure reasons are included in reports and traces.
 
+## Init Script
+
+```text
+test "preloads feature flag" {
+  addInitScript "window.__featureFlag = true;"
+  navigate "https://example.com"
+  evaluate "window.__featureFlag"
+}
+```
+
+Init scripts run before future page documents execute app scripts. The action is available in direct browser-control scripts and `cmg run`.
+
 ## Deterministic Time
 
 ```text

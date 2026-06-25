@@ -227,6 +227,15 @@ Line 8: waitForPageError failed. Page error 'Cannot read' was not seen within 50
 
 Call `capturePageErrors` before the action that should throw or reject, and match text from the page error or rejected value.
 
+## Init Script Failure
+
+```text
+Line 2: addInitScript failed. addInitScript requires inline script text or path=<file>.
+Line 3: addInitScript failed. Init script file 'C:\Projects\CMG\fixtures\init.js' was not found.
+```
+
+Pass one inline script argument or `path=<file>`. Register init scripts before navigating to the page that should receive them.
+
 ## Frame Failure
 
 ```text

@@ -21,6 +21,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("workerIntercept", "/api", "workerIntercept \"/api\"")]
     [InlineData("startCoverage", null, "startCoverage")]
     [InlineData("stopCoverage", null, "stopCoverage")]
+    [InlineData("addInitScript", "window.__ready = true;", "addInitScript \"window.__ready = true;\"")]
+    [InlineData("evaluateOnNewDocument", "window.__ready = true;", "evaluateOnNewDocument \"window.__ready = true;\"")]
     public void Lower_SharedActionsPassThrough(string kind, string? arg, string expected, string? secondArg = null)
     {
         var args = new[] { arg, secondArg }.Where(value => value is not null).Cast<string>().ToArray();

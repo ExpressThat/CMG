@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -11,6 +12,7 @@ public sealed partial class FirefoxBiDiClient
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
             var context = await session.GetPrimaryContext();
+            await ApplyInitScripts(session, remoteDebuggingUrl);
             var response = await session.SendCommand("browsingContext.navigate", writer =>
             {
                 writer.WriteString("context", context.Id);
@@ -100,6 +102,40 @@ public sealed partial class FirefoxBiDiClient
             var context = await session.GetPrimaryContext();
             return ReadScriptResultValue(await Evaluate(session, context.Id, expression));
         });
+
+    private static readonly Dictionary<string, List<string>> InitScripts = [];
+    private static readonly object InitScriptLock = new();
+
+    public string AddInitScript(string remoteDebuggingUrl, string source)
+    {
+        lock (InitScriptLock)
+        {
+            var key = remoteDebuggingUrl.TrimEnd('/');
+            var scripts = InitScripts.GetValueOrDefault(key) ?? [];
+            scripts.Add(source);
+            InitScripts[key] = scripts;
+            return scripts.Count.ToString(CultureInfo.InvariantCulture);
+        }
+    }
+
+    private static async Task ApplyInitScripts(FirefoxBiDiSession session, string remoteDebuggingUrl)
+    {
+        foreach (var source in SnapshotInitScripts(remoteDebuggingUrl))
+        {
+            await session.SendCommand("script.addPreloadScript", writer =>
+            {
+                writer.WriteString("functionDeclaration", $"() => {{ {source} }}");
+            });
+        }
+    }
+
+    private static IReadOnlyList<string> SnapshotInitScripts(string remoteDebuggingUrl)
+    {
+        lock (InitScriptLock)
+        {
+            return InitScripts.GetValueOrDefault(remoteDebuggingUrl.TrimEnd('/'))?.ToArray() ?? [];
+        }
+    }
 
     public void SetViewport(string remoteDebuggingUrl, int width, int height) =>
         Run(async () =>

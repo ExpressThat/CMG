@@ -303,6 +303,26 @@ evaluate "document.title"
 
 Evaluates JavaScript in the primary page target and prints the returned value as an `EVALUATE` result line.
 
+## `addInitScript` And `evaluateOnNewDocument`
+
+```text
+addInitScript "window.__featureFlag = true;"
+addInitScript path="fixtures\init.js"
+evaluateOnNewDocument "window.__readyBeforeApp = true;"
+```
+
+Registers JavaScript to run before future page documents execute app scripts. `evaluateOnNewDocument` is an alias for Puppeteer-style scripts. Use this before `navigate`, `reload`, `openTab`, or context setup that should see the injected globals.
+
+Options:
+
+- `path`: Optional JavaScript file to read as the init script source. When `path` is omitted, pass one inline script argument.
+
+Output:
+
+- `INIT_SCRIPT <line> <id>` when the script is registered.
+
+Init-script actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful.
+
 ## `setViewport`
 
 ```text

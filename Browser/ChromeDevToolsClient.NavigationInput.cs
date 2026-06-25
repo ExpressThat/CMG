@@ -11,6 +11,7 @@ public sealed partial class ChromeDevToolsClient
         return Run(async () =>
         {
             await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            await ApplyInitScripts(session, remoteDebuggingUrl);
             var response = await session.SendCommand("Page.navigate", writer => writer.WriteString("url", target));
             if (TryReadString(response, ["result", "errorText"], out var errorText) &&
                 !string.IsNullOrWhiteSpace(errorText))

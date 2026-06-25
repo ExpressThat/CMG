@@ -24,7 +24,7 @@ cmg --firefox browser control script --file <path>
 - Stops on the first failed action.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
-- Supports the same parity actions as the structured runner DSL, including `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `intercept`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, and `waitForTab`.
+- Supports the same parity actions as the structured runner DSL, including `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `intercept`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, and `waitForTab`.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
 - Browser JavaScript dialogs and leave-page prompts are automatically accepted while CMG is connected to the page, including alerts, confirms, prompts, and before-unload confirmation prompts.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
@@ -64,32 +64,33 @@ CONSOLE_CAPTURE 015
 CONSOLE 016 info: settings saved
 PAGE_ERROR_CAPTURE 017
 PAGE_ERROR 018 error: Cannot read properties of null
-ROUTE 019 /api/profile
-RESPONSE 020 {"url":"/api/profile","status":200,"mocked":true}
-ROUTES_CLEARED 021
-HAR_EXPORTED 022 C:\Projects\CMG\demo-output\network.har
-HAR_REPLAY 023 routes=1 C:\Projects\CMG\demo-output\network.har
-FRAME 024 frameClick
-FRAME_EVALUATE 025 Checkout
-CLOCK 026 1700000000000
-TICK 027 250 now=1700000000250
-CLOCK_RESTORED 028
-CONTEXT_CLEARED 029
-CONTEXT_RESET 030
-ACCESSIBILITY 031 C:\Projects\CMG\demo-output\a11y.json
-ACCESSIBLE 032 role=button name="Save"
-CONTEXT_CREATED 033 id=... target=... url="about:blank"
-CONTEXT_ACTIVE 034 ...
-CONTEXT_CLOSED 035 ...
-WORKER 036 id=... type=worker title="worker.js" url="https://example.com/worker.js"
-WORKER_INTERCEPT 037 routes=1 /api/profile
-COVERAGE_STARTED 038 js=true css=true
-COVERAGE 039 C:\Projects\CMG\demo-output\coverage.json
-FILE_READ 040 payload C:\Projects\CMG\fixtures\payload.json
-FILE_WRITTEN 041 C:\Projects\CMG\demo-output\result.txt
-FILE_APPENDED 042 C:\Projects\CMG\demo-output\result.txt
-FILE_OK 043 C:\Projects\CMG\demo-output\result.txt
-PDF 044 C:\Projects\CMG\demo-output\page.pdf
+INIT_SCRIPT 019 ...
+ROUTE 020 /api/profile
+RESPONSE 021 {"url":"/api/profile","status":200,"mocked":true}
+ROUTES_CLEARED 022
+HAR_EXPORTED 023 C:\Projects\CMG\demo-output\network.har
+HAR_REPLAY 024 routes=1 C:\Projects\CMG\demo-output\network.har
+FRAME 025 frameClick
+FRAME_EVALUATE 026 Checkout
+CLOCK 027 1700000000000
+TICK 028 250 now=1700000000250
+CLOCK_RESTORED 029
+CONTEXT_CLEARED 030
+CONTEXT_RESET 031
+ACCESSIBILITY 032 C:\Projects\CMG\demo-output\a11y.json
+ACCESSIBLE 033 role=button name="Save"
+CONTEXT_CREATED 034 id=... target=... url="about:blank"
+CONTEXT_ACTIVE 035 ...
+CONTEXT_CLOSED 036 ...
+WORKER 037 id=... type=worker title="worker.js" url="https://example.com/worker.js"
+WORKER_INTERCEPT 038 routes=1 /api/profile
+COVERAGE_STARTED 039 js=true css=true
+COVERAGE 040 C:\Projects\CMG\demo-output\coverage.json
+FILE_READ 041 payload C:\Projects\CMG\fixtures\payload.json
+FILE_WRITTEN 042 C:\Projects\CMG\demo-output\result.txt
+FILE_APPENDED 043 C:\Projects\CMG\demo-output\result.txt
+FILE_OK 044 C:\Projects\CMG\demo-output\result.txt
+PDF 045 C:\Projects\CMG\demo-output\page.pdf
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 

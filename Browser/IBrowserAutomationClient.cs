@@ -34,6 +34,8 @@ public interface IBrowserAutomationClient
 
     string Evaluate(string remoteDebuggingUrl, string expression);
 
+    string AddInitScript(string remoteDebuggingUrl, string source);
+
     void SetViewport(string remoteDebuggingUrl, int width, int height);
 
     ViewportSize GetViewportSize(string remoteDebuggingUrl);

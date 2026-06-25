@@ -5,6 +5,7 @@ namespace CMG.Tests;
 internal sealed class FakeAutomationClient : IBrowserAutomationClient
 {
     public string LastExpression { get; private set; } = string.Empty;
+    public string LastInitScript { get; private set; } = string.Empty;
     public string LastClickedSelector { get; private set; } = string.Empty;
     public ViewportSize? LastViewport { get; private set; }
     public PdfPrintOptions? LastPdfOptions { get; private set; }
@@ -36,6 +37,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     {
         LastExpression = expression;
         return "{}";
+    }
+    public string AddInitScript(string remoteDebuggingUrl, string source)
+    {
+        LastInitScript = source;
+        return "init-1";
     }
     public void SetViewport(string remoteDebuggingUrl, int width, int height) => LastViewport = new(width, height);
     public ViewportSize GetViewportSize(string remoteDebuggingUrl) => new(800, 600);
