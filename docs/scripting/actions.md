@@ -743,6 +743,44 @@ Output:
 
 Dialog actions do not move the virtual pointer. Wrap them in `step`, `caption`, or a `gif` block when the recording should narrate dialog handling.
 
+## `waitForEvent`
+
+```text
+waitForEvent popup count=2 timeout=5000
+waitForEvent dialog "Saved" timeout=5000
+waitForEvent console "ready" level=info
+waitForEvent request "/api/profile"
+waitForEvent requestFinished "/api/profile"
+waitForEvent requestFailed "/api/profile"
+waitForEvent response pattern="/api/profile"
+waitForEvent download directory="demo-output" pattern="*.csv"
+```
+
+Provider-style event wait that maps to CMG's explicit wait actions. Use it when an AI agent is translating Cypress, Puppeteer, or Playwright-style event waits into CMG scripts while preserving CMG's parseable output and failure reasons.
+
+Arguments:
+
+- First argument: event name. Supported values are `popup`, `page`, `tab`, `download`, `dialog`, `console`, `pageError`, `request`, `requestFinished`, `requestFailed`, and `response`.
+- Second argument: matcher text for events that require a message or URL matcher. `popup`, `page`, `tab`, and `download` do not need a matcher.
+
+Options:
+
+- `pattern`, `text`, `message`, or `url`: Matcher aliases when a second argument is not supplied.
+- `timeout`: Optional timeout in milliseconds. Defaults to the target wait action default.
+- Event-specific options are passed through, such as `count` for popup/tab waits, `level` for console waits, and `directory`/`pattern` for download waits.
+
+Output:
+
+- Uses the output shape of the mapped action, such as `TAB_COUNT`, `DOWNLOAD`, `DIALOG`, `CONSOLE`, `PAGE_ERROR`, `REQUEST`, `REQUEST_FINISHED`, `REQUEST_FAILED`, or `RESPONSE`.
+
+Failures:
+
+- Unknown events fail with the supported event list.
+- Matcher-based events fail if no matcher argument or matcher option is supplied.
+- Timeout and match failures use the same messages as the mapped wait action.
+
+`waitForEvent` does not move the virtual pointer. It is included in reports and traces, and can be wrapped with `step`, `caption`, or `gif` blocks when the recording should narrate the wait.
+
 ## Frame Actions
 
 ```text

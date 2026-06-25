@@ -39,6 +39,7 @@ public sealed class CmgActionLowerer
             "press" or "keydown" or "keyup" or "inserttext" or "showmessagebar" or "delay" or "screenshotpage" or
             "emulate" or "setgeolocation" or "grantpermissions" or "clearpermissions" or "waitfordownload" or
             "captureconsole" or "waitforconsole" or "capturedialogs" or "setdialogbehavior" or "waitfordialog" or
+            "waitforevent" or
             "capturepageerrors" or "waitforpageerror" or
             "route" or "mockresponse" or "intercept" or "clearroutes" or "waitforrequest" or "waitforrequestfinished" or "waitforrequestfailed" or "waitforresponse" or "exporthar" or "replayhar" or
             "setextrahttpheaders" or "setheaders" or "clearextrahttpheaders" or "clearheaders" or "setoffline" or

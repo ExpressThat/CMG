@@ -704,6 +704,19 @@ test "handles prompt" {
 }
 ```
 
+The same waits can be written through the provider-style event adapter:
+
+```text
+test "waits for events" {
+  openTab "about:blank"
+  waitForEvent popup count=2
+  captureDialogs
+  setDialogBehavior accept
+  evaluate "alert('Saved')"
+  waitForEvent dialog "Saved"
+}
+```
+
 ## Network Request Wait
 
 ```text

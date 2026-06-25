@@ -158,6 +158,14 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_WaitForEventPassesThrough()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("waitForEvent", ["dialog", "Saved"], [])));
+
+        Assert.Equal("waitForEvent \"dialog\" \"Saved\"", line);
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));

@@ -382,6 +382,15 @@ Line 5: waitForDialog failed. Timed out waiting for dialog Saved
 
 Dialog waits match against captured `alert`, `confirm`, and `prompt` messages. Install `captureDialogs` before triggering the dialog.
 
+## Event Wait Failure
+
+```text
+Line 3: waitForEvent failed. waitForEvent supports popup, page, tab, download, dialog, console, pageError, request, requestFinished, requestFailed, and response.
+Line 4: waitForEvent failed. waitForEvent console requires a matcher argument or pattern= option.
+```
+
+`waitForEvent` maps provider-style event names to CMG's explicit waits. Matcher-based events require either a second argument or one of `pattern=`, `text=`, `message=`, or `url=`.
+
 ## Network Wait Failure
 
 ```text
