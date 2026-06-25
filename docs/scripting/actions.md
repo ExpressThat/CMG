@@ -294,6 +294,31 @@ Required options:
 - `width`
 - `height`
 
+## `emulate`
+
+```text
+emulate width=390 height=844 userAgent="CMG Mobile" locale=en-GB colorScheme=dark reducedMotion=reduce
+emulate timezone=Europe/London geolocation="51.5,-0.1" permissions=geolocation
+```
+
+Applies browser-environment overrides for both direct browser-control scripts and `cmg run` tests. `width` and `height` use the browser protocol viewport override. Other options install page-side overrides in the current page context.
+
+Options:
+
+- `width`: Viewport width in CSS pixels. Must be used with `height`.
+- `height`: Viewport height in CSS pixels. Must be used with `width`.
+- `userAgent`: Page-visible `navigator.userAgent` value.
+- `locale`: Page-visible `navigator.language` and `navigator.languages` value.
+- `timezone`: Reported `Intl.DateTimeFormat().resolvedOptions().timeZone`.
+- `colorScheme`: Media query result for `prefers-color-scheme`, for example `dark` or `light`.
+- `reducedMotion`: Media query result for `prefers-reduced-motion`, for example `reduce` or `no-preference`.
+- `geolocation`: Stubbed coordinates as `<latitude>,<longitude>`.
+- `permissions`: Comma-separated permission names that `navigator.permissions.query` should report as `granted`.
+
+Output:
+
+- `EMULATE <line> <option-names>` on success.
+
 ## `dragAndDrop`
 
 ```text

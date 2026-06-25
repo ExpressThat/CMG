@@ -5,6 +5,7 @@ namespace CMG.Tests;
 internal sealed class FakeAutomationClient : IBrowserAutomationClient
 {
     public string LastExpression { get; private set; } = string.Empty;
+    public ViewportSize? LastViewport { get; private set; }
     public Queue<string> TextResponses { get; } = new();
     public Queue<IReadOnlyList<ChromePageTab>> TabResponses { get; } = new();
 
@@ -29,7 +30,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         LastExpression = expression;
         return "{}";
     }
-    public void SetViewport(string remoteDebuggingUrl, int width, int height) { }
+    public void SetViewport(string remoteDebuggingUrl, int width, int height) => LastViewport = new(width, height);
     public ViewportSize GetViewportSize(string remoteDebuggingUrl) => new(800, 600);
     public void DragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector) { }
     public void MouseDragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector, IReadOnlyList<ElementPoint> path, Action<ElementPoint>? afterMove = null) { }

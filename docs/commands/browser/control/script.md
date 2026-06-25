@@ -58,6 +58,7 @@ API_BODY 009 ok
 STORAGE_STATE 010 saved C:\Projects\CMG\demo-output\auth.json
 UPLOAD 011 1
 VISUAL 012 diff=0
+EMULATE 013 width height userAgent
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 

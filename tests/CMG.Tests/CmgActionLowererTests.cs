@@ -110,6 +110,15 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_EmulatePassesOptionsToScriptRunner()
+    {
+        var node = new CmgNode(1, "emulate", "emulate", [], new Dictionary<string, string> { ["width"] = "390", ["height"] = "844" }, []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(node));
+
+        Assert.Equal("emulate width=\"390\" height=\"844\"", line);
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));

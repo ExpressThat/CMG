@@ -194,6 +194,15 @@ Element-edge targeting requires both a selector and an edge:
 Line 3: moveMouse failed. moveMouse element-edge targeting requires edge=<top|bottom|left|right|center|topLeft|topRight|bottomLeft|bottomRight>.
 ```
 
+## Invalid Emulation
+
+```text
+Line 3: emulate failed. emulate requires both width and height when overriding viewport.
+Line 4: emulate failed. geolocation must be '<latitude>,<longitude>'.
+```
+
+Provide both viewport dimensions together and pass geolocation as a comma-separated latitude/longitude pair.
+
 ## Failed Assertion
 
 ```text

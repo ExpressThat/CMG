@@ -299,6 +299,18 @@ test "profile form state" {
 
 These assertions run in the page and report clear step failures. Wrap them in `step` blocks when a GIF should show a caption for the checked state.
 
+## Environment Emulation
+
+```text
+test "mobile dark mode profile" {
+  emulate width=390 height=844 userAgent="CMG Mobile" locale=en-GB colorScheme=dark reducedMotion=reduce
+  navigate "https://example.com/profile"
+  expectScreenshot baseline="baselines\profile-mobile-dark.png" output="demo-output\profile-mobile-dark.actual.png"
+}
+```
+
+Use `emulate` before navigation when the page reads environment values during startup. The same action is available in direct browser-control scripts for AI-driven exploration.
+
 ## File Upload
 
 ```text
