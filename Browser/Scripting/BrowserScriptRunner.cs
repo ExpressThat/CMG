@@ -113,6 +113,8 @@ public sealed partial class BrowserScriptRunner
             "waitfordownload" => ExecuteWaitForDownload(action),
             "captureconsole" => ExecuteCaptureConsole(remoteDebuggingUrl, automationClient, action),
             "waitforconsole" => ExecuteWaitForConsole(remoteDebuggingUrl, automationClient, action),
+            "capturepageerrors" => ExecuteCapturePageErrors(remoteDebuggingUrl, automationClient, action),
+            "waitforpageerror" => ExecuteWaitForPageError(remoteDebuggingUrl, automationClient, action),
             "route" or "mockresponse" or "intercept" => ExecuteRoute(remoteDebuggingUrl, automationClient, action),
             "clearroutes" => ExecuteClearRoutes(remoteDebuggingUrl, automationClient, action),
             "waitforresponse" => ExecuteWaitForResponse(remoteDebuggingUrl, automationClient, action),

@@ -219,6 +219,14 @@ Line 7: waitForConsole failed. Console message 'settings saved' was not seen wit
 
 Call `captureConsole` before the action that should log the message, and check the optional `level=` filter.
 
+## Page Error Timeout
+
+```text
+Line 8: waitForPageError failed. Page error 'Cannot read' was not seen within 5000ms.
+```
+
+Call `capturePageErrors` before the action that should throw or reject, and match text from the page error or rejected value.
+
 ## Frame Failure
 
 ```text

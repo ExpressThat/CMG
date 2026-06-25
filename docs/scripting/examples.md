@@ -457,6 +457,19 @@ test "logs save result" {
 
 Console waits are useful when an app reports diagnostics through the browser console. Reports and traces include the `CONSOLE` output line.
 
+## Page Error Feedback
+
+```text
+test "captures page failure" {
+  navigate "https://example.com/settings"
+  capturePageErrors
+  click "#breakPage"
+  waitForPageError "Cannot read" timeout=5000
+}
+```
+
+Page-error capture records `error` and `unhandledrejection` events from the page. The output and failure reasons are included in reports and traces.
+
 ## Deterministic Time
 
 ```text

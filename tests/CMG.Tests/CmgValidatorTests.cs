@@ -21,6 +21,15 @@ public sealed class CmgValidatorTests
         Assert.True(result.Success);
     }
 
+    [Fact]
+    public void Validate_DoesNotTreatEvaluateJavaScriptAsLocator()
+    {
+        var action = new CmgNode(7, "evaluate", "evaluate", ["setTimeout(() => true, 0)"], new Dictionary<string, string>(), []);
+        var result = new CmgValidator().Validate(Test(action));
+
+        Assert.True(result.Success);
+    }
+
     private static CmgTestCase Test(params CmgNode[] actions) => new("flow.cmgscript", "flow", actions, new Dictionary<string, string>());
 
     private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyList<CmgNode> children) =>

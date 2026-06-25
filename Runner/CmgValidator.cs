@@ -6,7 +6,12 @@ public sealed class CmgValidator
     {
         foreach (var action in Flatten(test.Actions))
         {
-            foreach (var argument in action.Arguments)
+            if (!ValidatesLocator(action.Kind))
+            {
+                continue;
+            }
+
+            foreach (var argument in action.Arguments.Take(1))
             {
                 if (!LooksLikeLocator(argument) || CmgLocator.IsSupported(argument))
                 {
@@ -34,6 +39,14 @@ public sealed class CmgValidator
 
     private static bool LooksLikeLocator(string value) =>
         value.Contains('=', StringComparison.Ordinal) || value.StartsWith('#') || value.StartsWith('.');
+
+    private static bool ValidatesLocator(string kind) =>
+        kind.ToLowerInvariant() is
+            "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or
+            "html" or "screenshot" or "asserttext" or "download" or "uploadfiles" or
+            "fill" or "check" or "uncheck" or "focus" or "blur" or "selecttext" or
+            "dblclick" or "rightclick" or "expecttext" or "expectvalue" or
+            "expectattribute" or "expectchecked" or "expectcount" or "expectscreenshot";
 }
 
 public sealed record CmgValidationResult(bool Success, int LineNumber, string Action, string? Error)

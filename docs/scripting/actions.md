@@ -476,6 +476,26 @@ Output:
 - `CONSOLE_CAPTURE <line>` when the hook is installed.
 - `CONSOLE <line> <level>: <text>` when a matching message is found.
 
+## `capturePageErrors` And `waitForPageError`
+
+```text
+capturePageErrors
+waitForPageError "Cannot read" timeout=5000
+```
+
+Installs page-side listeners for `error` and `unhandledrejection` events and waits for a matching captured page error. Call `capturePageErrors` before the action expected to throw or reject.
+
+Options:
+
+- `timeout`: Optional timeout in milliseconds for `waitForPageError`. Default is `5000`.
+
+Output:
+
+- `PAGE_ERROR_CAPTURE <line>` when the hook is installed.
+- `PAGE_ERROR <line> <type>: <text>` when a matching page error is found.
+
+Page-error actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful.
+
 ## Frame Actions
 
 ```text

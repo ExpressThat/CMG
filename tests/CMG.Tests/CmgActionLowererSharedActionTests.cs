@@ -6,6 +6,8 @@ public sealed class CmgActionLowererSharedActionTests
 {
     [Theory]
     [InlineData("waitForConsole", "saved", "waitForConsole \"saved\"")]
+    [InlineData("capturePageErrors", null, "capturePageErrors")]
+    [InlineData("waitForPageError", "boom", "waitForPageError \"boom\"")]
     [InlineData("route", "/api", "route \"/api\"")]
     [InlineData("intercept", "/api", "intercept \"/api\"")]
     [InlineData("frameClick", "#frame", "frameClick \"#frame\" \"#save\"", "#save")]
