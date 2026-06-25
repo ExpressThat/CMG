@@ -736,6 +736,20 @@ test "keyboard shortcut" {
 }
 ```
 
+## Touch And Clipboard
+
+```text
+test "touch and clipboard" {
+  setClipboard "CMG clipboard"
+  readClipboard
+  tap "#openProfileDialog"
+  waitForElement "#profileDialog[open]"
+  clearClipboard
+}
+```
+
+`tap` and `touchTap` use the same selector and rich locator support as other pointer-aware actions. In GIF recordings the virtual pointer moves to the target and shows the tap pulse, while clipboard setup remains non-visual and appears in stdout, reports, and traces.
+
 ## Dialogs
 
 ```text

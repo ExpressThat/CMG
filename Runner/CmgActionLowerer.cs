@@ -27,6 +27,7 @@ public sealed class CmgActionLowerer
             "selecttext" => ElementScript(action, "element.focus({ preventScroll: true }); element.select?.(); return true;"),
             "dblclick" => LowerMouseEvent(action, "dblclick", button: 0),
             "rightclick" => LowerMouseEvent(action, "contextmenu", button: 2),
+            "tap" or "touchtap" => LowerSelectorCommand(action.Kind, action),
             "reload" or "goback" or "goforward" or "waitforurl" or "waitforloadstate" or "waitfornavigation" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "waitforselector" or "waitforfunction" or "waitfortimeout" =>
@@ -37,6 +38,7 @@ public sealed class CmgActionLowerer
                 LowerSelectorCommand(action.Kind, action),
             "navigate" or "waitforelement" or
             "press" or "keydown" or "keyup" or "inserttext" or "showmessagebar" or "delay" or "screenshotpage" or
+            "setclipboard" or "writeclipboard" or "readclipboard" or "clearclipboard" or
             "emulate" or "setgeolocation" or "grantpermissions" or "clearpermissions" or
             "setjavascriptenabled" or "javascriptenabled" or "bypasscsp" or "serviceworkers" or "setserviceworkers" or "waitfordownload" or
             "captureconsole" or "waitforconsole" or "capturedialogs" or "setdialogbehavior" or "waitfordialog" or

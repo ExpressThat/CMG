@@ -24,14 +24,14 @@ cmg --firefox browser control script --file <path>
 - Stops on the first failed action.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
-- Supports the same parity actions as the structured runner DSL, including `wait`, `caption`, `assertVisible`, `expectText`, `fill`, `check`, `uncheck`, `focus`, `blur`, `selectText`, `dblclick`, `rightClick`, `selectOption`, `dispatchEvent`, `keyDown`, `keyUp`, `insertText`, `mouseMove`, `mouseDown`, `mouseUp`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `waitForEvent`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNavigation`, `url`, `title`, `content`, `setContent`, `captureDialogs`, `setDialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `addScriptTag`, `addStyleTag`, `exposeFunction`, `exposeBinding`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setJavaScriptEnabled`, `bypassCSP`, `serviceWorkers`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHttpCredentials`, `clearHttpCredentials`, `setProxy`, `clearProxy`, `setOffline`, `route`, `intercept`, `routeWebSocket`, `waitForWebSocket`, `waitForWebSocketMessage`, `waitForRequest`, `waitForRequestFinished`, `waitForRequestFailed`, `waitForResponse`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `expectValue`, `expectAttribute`, `expectChecked`, `expectCount`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, `waitForTab`, and `waitForPopup`.
+- Supports the same parity actions as the structured runner DSL, including `wait`, `caption`, `assertVisible`, `expectText`, `fill`, `check`, `uncheck`, `focus`, `blur`, `selectText`, `dblclick`, `rightClick`, `tap`, `touchTap`, `selectOption`, `dispatchEvent`, `keyDown`, `keyUp`, `insertText`, `setClipboard`, `writeClipboard`, `readClipboard`, `clearClipboard`, `mouseMove`, `mouseDown`, `mouseUp`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `waitForEvent`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNavigation`, `url`, `title`, `content`, `setContent`, `captureDialogs`, `setDialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `addScriptTag`, `addStyleTag`, `exposeFunction`, `exposeBinding`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setJavaScriptEnabled`, `bypassCSP`, `serviceWorkers`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHttpCredentials`, `clearHttpCredentials`, `setProxy`, `clearProxy`, `setOffline`, `route`, `intercept`, `routeWebSocket`, `waitForWebSocket`, `waitForWebSocketMessage`, `waitForRequest`, `waitForRequestFinished`, `waitForRequestFailed`, `waitForResponse`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `expectValue`, `expectAttribute`, `expectChecked`, `expectCount`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, `waitForTab`, and `waitForPopup`.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
 - Browser JavaScript dialogs are handled explicitly. CMG does not silently remove, accept, or dismiss dialogs through the browser protocol. Add `captureDialogs` or `setDialogBehavior` before the action that opens an `alert`, `confirm`, or `prompt`.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
 - Script-level `gif "name" { ... }`, `recordVideo "name" { ... }`, and `screencast "name" { ... }` blocks record only the wrapped actions when `--gif` is not provided. When `--gif` is provided, the whole script is recorded and nested block recordings are suppressed.
 - Selector actions support the same rich locators as `cmg run`, including `text=`, `role=`, `label=`, `testid=`, `placeholder=`, `alt=`, `title=`, and `xpath=`. Pointer-aware actions resolve the locator to a temporary element marker before moving the virtual pointer.
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
-- GIF pointer movement dispatches browser movement and hover events. This includes automatic pointer movement before `click`, `dblclick`, `rightClick`, `type`, `fill`, `clear`, `hover`, `select`, `selectOption`, `check`, `uncheck`, `focus`, `blur`, `selectText`, and `dragAndDrop`, not only drag movement.
+- GIF pointer movement dispatches browser movement and hover events. This includes automatic pointer movement before `click`, `dblclick`, `rightClick`, `tap`, `touchTap`, `type`, `fill`, `clear`, `hover`, `select`, `selectOption`, `check`, `uncheck`, `focus`, `blur`, `selectText`, and `dragAndDrop`, not only drag movement.
 - `moveMouse` is available only inside scripts run with `--gif`; there is no one-off CLI `browser control moveMouse` command.
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.
 
@@ -58,6 +58,7 @@ CONTENT 009 <html>...</html>
 CONTENT_SET 010 length=16
 MOUSE_EVENT 011 dblclick #save
 MOUSE_EVENT 012 contextmenu #menu
+TAP 013 #touchTarget
 TAB 0 id=... title="..." url="..."
 TAB_OPENED 011 https://example.com
 TAB_COUNT 012 2
@@ -82,6 +83,9 @@ WAIT_TIMEOUT 029 250
 KEY_DOWN 030 Shift
 TEXT_INSERTED 031 3
 KEY_UP 032 Shift
+CLIPBOARD_SET 033 5
+CLIPBOARD 034 hello
+CLIPBOARD_CLEARED 035
 MOUSE_MOVED 033 400,300
 MOUSE_DOWN 034 400,300
 MOUSE_UP 035 400,300

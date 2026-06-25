@@ -98,6 +98,7 @@ public sealed partial class BrowserScriptRunner
             "assertvisible" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             "click" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Click(remoteDebuggingUrl, selector)),
             "dblclick" or "rightclick" => ExecuteMouseClickVariant(remoteDebuggingUrl, automationClient, action),
+            "tap" or "touchtap" => ExecuteTap(remoteDebuggingUrl, automationClient, action, recorder),
             "fill" => ExecuteFill(remoteDebuggingUrl, automationClient, action, recorder),
             "check" or "uncheck" or "focus" or "blur" or "selecttext" =>
                 ExecuteElementDomAction(remoteDebuggingUrl, automationClient, action),
@@ -106,6 +107,8 @@ public sealed partial class BrowserScriptRunner
             "clear" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Clear(remoteDebuggingUrl, selector)),
             "press" => ExecutePress(remoteDebuggingUrl, automationClient, action),
             "keydown" or "keyup" or "inserttext" => ExecuteKeyboardAction(remoteDebuggingUrl, automationClient, action),
+            "setclipboard" or "writeclipboard" or "readclipboard" or "clearclipboard" =>
+                ExecuteClipboardAction(remoteDebuggingUrl, automationClient, action),
             "hover" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Hover(remoteDebuggingUrl, selector)),
             "scrollintoview" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
             "select" or "selectoption" => ExecuteSelect(remoteDebuggingUrl, automationClient, action),

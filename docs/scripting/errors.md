@@ -144,7 +144,7 @@ Use `waitForElement` before actions that require an element.
 
 ## Element Outside Viewport
 
-User-like actions such as `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop` do not scroll automatically:
+User-like actions such as `click`, `tap`, `touchTap`, `type`, `clear`, `hover`, `select`, and `dragAndDrop` do not scroll automatically:
 
 ```text
 Line 3: click failed. Element '#dropQueue' is outside the current viewport. Run scrollIntoView first if this movement should scroll the page.
@@ -159,6 +159,30 @@ STEP FAIL line=8 action=click reason=Line 8: evaluate failed. Element #save was 
 ```
 
 Selector actions wait for visibility, enabled state, and stable layout before the pointer action runs. Increase `timeout=` or wait for the page state that enables the element.
+
+## Invalid `tap` Target
+
+```text
+Line 3: tap failed. No element matched selector '#missing'.
+Line 4: tap failed. No element at tap target.
+```
+
+Use an existing selector, a rich locator that resolves to one element, or viewport coordinates that land on a page element:
+
+```text
+tap "#save"
+tap text=Save
+tap x=120 y=240
+```
+
+## Invalid Clipboard Action
+
+```text
+Line 3: setClipboard failed. Expected 1 argument but got 0.
+Line 4: readClipboard failed. Expected 0 arguments but got 1.
+```
+
+`setClipboard` and `writeClipboard` require exactly one text argument. `readClipboard` and `clearClipboard` do not accept arguments.
 
 ## `moveMouse` Without GIF
 

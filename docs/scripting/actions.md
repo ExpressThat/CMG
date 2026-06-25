@@ -115,6 +115,30 @@ Example:
 click "#openProfileDialog"
 ```
 
+## `tap` And `touchTap`
+
+```text
+tap "<selector>"
+touchTap text=Save
+tap x=120 y=240
+```
+
+Dispatches a touch-style pointer sequence and click against a selector or viewport coordinate. `touchTap` is an alias for `tap`.
+
+Selector targets support the same rich locators as other pointer-aware actions, including `text=`, `role=`, `label=`, `testid=`, `placeholder=`, `alt=`, `title=`, and `xpath=`.
+
+Options:
+
+- `x`: Required when using coordinates.
+- `y`: Required when using coordinates.
+
+Output:
+
+- `TAP <line> <selector>` for selector targets.
+- `TAP <line> <x>,<y>` for coordinate targets.
+
+In GIF recordings, `tap` and `touchTap` move the virtual pointer to the target, dispatch page-facing movement and hover events, then show a click pulse for the tap.
+
 ## `type`
 
 ```text
@@ -174,6 +198,25 @@ Output:
 - `TEXT_INSERTED <line> <character-count>`
 
 Keyboard actions do not move the virtual pointer. In GIF recordings, wrap them in `step` or `caption` when the recording should narrate the keyboard state.
+
+## Clipboard Actions
+
+```text
+setClipboard "hello"
+writeClipboard "hello"
+readClipboard
+clearClipboard
+```
+
+Installs a page-side clipboard shim and controls it from direct browser-control scripts or `cmg run`. This provides deterministic clipboard behavior without relying on operating system clipboard permissions. `writeClipboard` is an alias for `setClipboard`.
+
+Output:
+
+- `CLIPBOARD_SET <line> <character-count>`
+- `CLIPBOARD <line> <text>`
+- `CLIPBOARD_CLEARED <line>`
+
+Clipboard actions do not move the virtual pointer. In GIF recordings, wrap them in `step` or `caption` when a viewer needs to know that clipboard state changed.
 
 ## `hover`
 

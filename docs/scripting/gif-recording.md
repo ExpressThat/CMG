@@ -14,14 +14,14 @@ cmg run flow.cmgscript --gif demo-output\runner-gifs
 - Click, type, clear, hover, select, and drag actions move the virtual pointer to the target selector when possible. User-like movement actions do not scroll automatically; add `scrollIntoView` steps when the pointer should move to content outside the current viewport.
 - Low-level `mouseMove`, `mouseDown`, and `mouseUp` actions also move the virtual pointer in GIF mode and dispatch page-facing pointer/mouse events.
 - Low-level keyboard actions do not move the pointer, but their output and failures are recorded. Use `step` or `caption` when a GIF should explain held modifier keys or inserted text.
-- Every GIF pointer movement dispatches browser movement and hover events while it moves. This includes automatic movement before `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`, not only explicit drag movement.
-- Click actions show a pointer movement and click pulse.
+- Every GIF pointer movement dispatches browser movement and hover events while it moves. This includes automatic movement before `click`, `tap`, `touchTap`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`, not only explicit drag movement.
+- Click and tap actions show a pointer movement and click pulse.
 - Type actions move to the input, click/focus it, and capture frames as characters appear.
 - Drag-and-drop actions move from the source selector to the target selector while keeping the page drag lifecycle active, so pages can show their own native drag preview when one is available.
 - During a block drag, CMG dispatches DOM `pointerdown`/`mousedown` at drag start, held `pointermove`/`mousemove` while moving or delaying, and `pointerup`/`mouseup` at drop. The Chrome/Edge pointer also moves through CDP. This lets page drag state and edge-autoscroll logic react without forcing Chrome into native drag mode.
 - Screenshot actions still scroll the selected element into view before capture.
-- Pointer actions such as `click`, `dblclick`, `rightClick`, `type`, `fill`, `clear`, `hover`, `select`, `selectOption`, `check`, `uncheck`, `focus`, `blur`, `selectText`, and `dragAndDrop` move the virtual pointer before acting so recorded GIFs show the same target the browser receives.
-- File, fixture, init-script, runtime tag injection, explicit event dispatch, PDF, API, explicit wait, navigation wait, dialog, browser environment, network environment, network mock, WebSocket, worker, coverage, page-error, clock, browser context, accessibility, element-state assertion, and storage actions such as `localStorage`, `sessionStorage`, and `cookie` do not move the virtual pointer. Wrap them in `step`, `caption`, or `gif` blocks when their result should be visible to a GIF viewer.
+- Pointer actions such as `click`, `dblclick`, `rightClick`, `tap`, `touchTap`, `type`, `fill`, `clear`, `hover`, `select`, `selectOption`, `check`, `uncheck`, `focus`, `blur`, `selectText`, and `dragAndDrop` move the virtual pointer before acting so recorded GIFs show the same target the browser receives.
+- File, fixture, init-script, runtime tag injection, explicit event dispatch, PDF, API, explicit wait, navigation wait, clipboard, dialog, browser environment, network environment, network mock, WebSocket, worker, coverage, page-error, clock, browser context, accessibility, element-state assertion, and storage actions such as `localStorage`, `sessionStorage`, and `cookie` do not move the virtual pointer. Wrap them in `step`, `caption`, or `gif` blocks when their result should be visible to a GIF viewer.
 - Delay actions capture a hold frame.
 
 ## Virtual Pointer

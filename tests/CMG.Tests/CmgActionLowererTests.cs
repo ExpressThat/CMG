@@ -50,6 +50,18 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_TouchAndClipboardActionsPassThrough()
+    {
+        var lowerer = new CmgActionLowerer();
+
+        var tap = lowerer.Lower(Node("tap", ["#save"], []));
+        Assert.Equal(2, tap.Count);
+        Assert.Equal("tap \"#save\"", tap[1]);
+        Assert.Equal("setClipboard \"hello\"", Assert.Single(lowerer.Lower(Node("setClipboard", ["hello"], []))));
+        Assert.Equal("readClipboard", Assert.Single(lowerer.Lower(Node("readClipboard", [], []))));
+    }
+
+    [Fact]
     public void Lower_PlannedUnsupportedActionFailsExplicitly()
     {
         var action = Node("notARealParityAction", ["/api/**"], []);
