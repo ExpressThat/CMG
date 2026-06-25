@@ -127,6 +127,44 @@ Macros can receive plain values, variables, selectors, or temporary selectors fr
 
 This direct-script example is available as `demo-scripts/30-control-flow-macros.cmgscript` and imports `demo-scripts/30-shared-macros.cmgscript`. The structured `cmg run` form is available as `demo-scripts/31-control-flow-runner.cmgscript`.
 
+## Macro Scoping
+
+```text
+set token "global"
+
+macro readGlobal {
+  return "${token}"
+}
+
+macro parent {
+  set token "parent"
+
+  macro child {
+    set beforeShadow {
+      return "${token}"
+    }
+    set token "child"
+    return "${beforeShadow}-${token}"
+  }
+
+  set childResult {
+    call child
+  }
+  set topResult {
+    call readGlobal
+  }
+  return "${childResult}-${token}-${topResult}"
+}
+
+set result {
+  call parent
+}
+```
+
+`child` reads `token` from its definition parent before it shadows the value locally. The parent still sees `parent` afterward. `readGlobal` was defined at the top level, so it reads the top-level `global` value rather than the unrelated local `token` inside `parent`.
+
+This direct-script example is available as `demo-scripts/34-macro-scoping.cmgscript`. The structured `cmg run` form is available as `demo-scripts/35-macro-scoping-runner.cmgscript`.
+
 ## Loop Control
 
 ```text

@@ -115,6 +115,8 @@ dotnet run -- --firefox browser close
 - `31-control-flow-runner.cmgscript`: Demonstrates the same control-flow and macro features in the structured runner DSL.
 - `32-loop-control.cmgscript`: Demonstrates `repeat`, bounded `while`, `break`, and `continue`.
 - `33-try-catch-finally.cmgscript`: Demonstrates recoverable failure handling with `try`, `catch`, and `finally`.
+- `34-macro-scoping.cmgscript`: Demonstrates macro parent-scope lookup and local variable shadowing in direct scripts.
+- `35-macro-scoping-runner.cmgscript`: Demonstrates macro parent-scope lookup and local variable shadowing in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.
