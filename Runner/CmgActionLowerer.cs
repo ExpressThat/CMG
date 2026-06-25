@@ -152,7 +152,7 @@ public sealed class CmgActionLowerer
     }
 
     private static string BuildUnsupportedExpression(string action) =>
-        $"(() => {{ throw new Error({Quote($"CMG action '{action}' is planned but not implemented in this slice.")}); }})()";
+        $"(() => {{ throw new Error({Quote($"Unsupported CMG action '{action}'. See docs/scripting/actions.md for supported actions.")}); }})()";
 
     private static string ToExpectationName(string name) =>
         name switch

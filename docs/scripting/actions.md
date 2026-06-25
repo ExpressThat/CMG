@@ -1507,9 +1507,9 @@ Output:
 
 Failure reasons include a missing selector argument, no file paths, a local file that does not exist, or browser evaluation failure. This action is available at the top level and inside `gif` blocks. It does not move the virtual pointer by itself because browser file choosers cannot be driven from page JavaScript; wrap it in a `step` or `caption` when the GIF should explain the upload transition.
 
-## Unknown Future Actions
+## Unknown Actions
 
-Unknown actions fail explicitly instead of being ignored. If a future parity action is not listed in this document, CMG reports it as planned but not implemented so agent callers can distinguish an unsupported DSL command from page behavior.
+Unknown actions fail explicitly instead of being ignored. If an action is not listed in this document, CMG reports it as unsupported so agent callers can distinguish a DSL command problem from page behavior.
 
 ## Locator Support
 

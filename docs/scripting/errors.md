@@ -90,15 +90,15 @@ Line 2: doThing failed. Unknown action 'doThing'.
 
 Check [actions.md](actions.md) for the supported action list.
 
-## Planned But Not Implemented
+## Unsupported Runner Action
 
-Some parity actions are reserved in the new runner DSL before their browser protocol implementation is complete:
+Unknown `cmg run` actions fail explicitly:
 
 ```text
-Line 4: evaluate failed. CMG action 'futureAction' is planned but not implemented in this slice.
+Line 4: evaluate failed. Unsupported CMG action 'futureAction'. See docs/scripting/actions.md for supported actions.
 ```
 
-This is intentional. The action failed because it is not available yet, not because the page behaved incorrectly.
+The action failed because the DSL action name is unsupported, not because the page behaved incorrectly.
 
 Invalid locator matches fail before the pointer action runs:
 

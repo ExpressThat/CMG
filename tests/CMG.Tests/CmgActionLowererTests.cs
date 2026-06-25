@@ -62,12 +62,12 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
-    public void Lower_PlannedUnsupportedActionFailsExplicitly()
+    public void Lower_UnsupportedActionFailsExplicitly()
     {
         var action = Node("notARealParityAction", ["/api/**"], []);
         var line = Assert.Single(new CmgActionLowerer().Lower(action));
 
-        Assert.Contains("planned but not implemented", line);
+        Assert.Contains("Unsupported CMG action", line);
     }
 
     [Theory]
@@ -83,7 +83,7 @@ public sealed class CmgActionLowererTests
         var lines = new CmgActionLowerer().Lower(Node(name, ["#target"], []));
 
         Assert.NotEmpty(lines);
-        Assert.All(lines, line => Assert.DoesNotContain("planned but not implemented", line));
+        Assert.All(lines, line => Assert.DoesNotContain("Unsupported CMG action", line));
     }
 
     [Fact]
