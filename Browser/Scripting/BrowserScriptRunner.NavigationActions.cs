@@ -2,6 +2,14 @@ namespace CMG.Browser.Scripting;
 
 public sealed partial class BrowserScriptRunner
 {
+    private static BrowserScriptAction NormalizeNavigationAlias(BrowserScriptAction action) =>
+        action.Name.ToLowerInvariant() switch
+        {
+            "tohaveurl" => action with { Name = "expectUrl" },
+            "tohavetitle" => action with { Name = "expectTitle" },
+            _ => action
+        };
+
     private static IReadOnlyList<string> ExecuteNavigationAction(
         string remoteDebuggingUrl,
         IBrowserAutomationClient automationClient,

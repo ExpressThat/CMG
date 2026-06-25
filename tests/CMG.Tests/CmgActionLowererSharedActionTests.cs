@@ -31,6 +31,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("goBack", null, "goBack")]
     [InlineData("goForward", null, "goForward")]
     [InlineData("waitForUrl", "/checkout", "waitForUrl \"/checkout\"")]
+    [InlineData("toHaveURL", "/checkout", "expectUrl \"/checkout\"")]
+    [InlineData("toHaveTitle", "Checkout", "expectTitle \"Checkout\"")]
     [InlineData("waitForLoadState", "complete", "waitForLoadState \"complete\"")]
     [InlineData("waitForNavigation", "/checkout", "waitForNavigation \"/checkout\"")]
     [InlineData("setViewportSize", null, "setViewport width=\"390\" height=\"844\"", null, "390", "844")]
@@ -47,6 +49,11 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("content", null, "content")]
     [InlineData("setContent", "<main>CMG</main>", "setContent \"<main>CMG</main>\"")]
     [InlineData("dispatchEvent", "#target", "dispatchEvent \"#target\" \"ready\"", "ready")]
+    [InlineData("toHaveScreenshot", "#dialog", "expectScreenshot \"#dialog\"")]
+    [InlineData("setInputFiles", "#file", "uploadFiles \"#file\" \"index.html\"", "index.html")]
+    [InlineData("selectFile", "#file", "uploadFiles \"#file\" \"index.html\"", "index.html")]
+    [InlineData("dragTo", "#source", "dragAndDrop \"#source\" \"#target\"", "#target")]
+    [InlineData("pressSequentially", "#name", "pressSequentially \"#name\" \"CMG\"", "CMG")]
     [InlineData("mouseMove", "center", "mouseMove \"center\"")]
     [InlineData("mouseDown", "center", "mouseDown \"center\"")]
     [InlineData("mouseUp", "center", "mouseUp \"center\"")]
@@ -91,6 +98,15 @@ public sealed class CmgActionLowererSharedActionTests
         var line = Assert.Single(new CmgActionLowerer().Lower(Node("viewport", [], new Dictionary<string, string> { ["width"] = "390", ["height"] = "844" })));
 
         Assert.Equal("setViewport width=\"390\" height=\"844\"", line);
+    }
+
+    [Fact]
+    public void Lower_ElementExpectationEscapesGeneratedNewlines()
+    {
+        var line = new CmgActionLowerer().Lower(Node("expectValue", ["#target", "Save"])).Last();
+
+        Assert.DoesNotContain(Environment.NewLine, line);
+        Assert.Contains("\\n", line);
     }
 
     [Fact]

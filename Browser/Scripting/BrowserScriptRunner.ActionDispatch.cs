@@ -23,8 +23,8 @@ public sealed partial class BrowserScriptRunner
         return action.Name.ToLowerInvariant() switch
         {
             "navigate" or "goto" or "visit" => ExecuteNavigate(remoteDebuggingUrl, automationClient, action),
-            "reload" or "goback" or "goforward" or "waitforurl" or "expecturl" or "expecttitle" or "waitforloadstate" or "waitfornavigation" =>
-                ExecuteNavigationAction(remoteDebuggingUrl, automationClient, action),
+            "reload" or "goback" or "goforward" or "waitforurl" or "expecturl" or "expecttitle" or "tohaveurl" or "tohavetitle" or
+            "waitforloadstate" or "waitfornavigation" => ExecuteNavigationAction(remoteDebuggingUrl, automationClient, NormalizeNavigationAlias(action)),
             "waitforselector" or "waitforfunction" or "waitfortimeout" => ExecuteWaitAction(remoteDebuggingUrl, automationClient, action),
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             "wait" => ExecuteWaitAlias(remoteDebuggingUrl, automationClient, action),
@@ -32,6 +32,7 @@ public sealed partial class BrowserScriptRunner
             "click" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Click(remoteDebuggingUrl, selector)),
             "dblclick" or "doubleclick" or "rightclick" or "contextclick" => ExecuteMouseClickVariant(remoteDebuggingUrl, automationClient, action),
             "tap" or "touchtap" => ExecuteTap(remoteDebuggingUrl, automationClient, action, recorder),
+            "presssequentially" => ExecuteType(remoteDebuggingUrl, automationClient, action with { Name = "type" }, recorder),
             "fill" => ExecuteFill(remoteDebuggingUrl, automationClient, action, recorder),
             "check" or "uncheck" or "focus" or "blur" or "selecttext" => ExecuteElementDomAction(remoteDebuggingUrl, automationClient, action),
             "dispatchevent" => ExecuteDispatchEvent(remoteDebuggingUrl, automationClient, action),
@@ -50,7 +51,7 @@ public sealed partial class BrowserScriptRunner
             "screenshot" => ExecuteScreenshot(remoteDebuggingUrl, automationClient, action),
             "screenshotpage" => ExecuteScreenshotPage(remoteDebuggingUrl, automationClient, action),
             "printpdf" or "pdf" => ExecutePrintPdf(remoteDebuggingUrl, automationClient, action),
-            "asserttext" or "expecttext" or "tohavetext" or "containstext" or "contains" or "waitfortext" =>
+            "asserttext" or "expecttext" or "tohavetext" or "tocontaintext" or "containstext" or "contains" or "waitfortext" =>
                 ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
             "expectvisible" or "tobevisible" or "waitforvisible" or "expecthidden" or "tobehidden" or "waitforhidden" or
             "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" or
@@ -68,8 +69,8 @@ public sealed partial class BrowserScriptRunner
             "apirequest" => ExecuteApiRequest(action),
             "storagestate" => ExecuteStorageState(remoteDebuggingUrl, automationClient, action),
             "localstorage" or "sessionstorage" or "cookie" => ExecuteStorageAction(remoteDebuggingUrl, automationClient, action),
-            "expectscreenshot" => ExecuteVisualAssertion(remoteDebuggingUrl, automationClient, action),
-            "uploadfiles" => ExecuteUploadFiles(remoteDebuggingUrl, automationClient, action),
+            "expectscreenshot" or "tohavescreenshot" => ExecuteVisualAssertion(remoteDebuggingUrl, automationClient, action),
+            "uploadfiles" or "setinputfiles" or "selectfile" => ExecuteUploadFiles(remoteDebuggingUrl, automationClient, action with { Name = "uploadFiles" }),
             "emulate" => ExecuteEmulate(remoteDebuggingUrl, automationClient, action),
             "setgeolocation" or "grantpermissions" or "clearpermissions" or
             "setjavascriptenabled" or "javascriptenabled" or "bypasscsp" or "serviceworkers" or "setserviceworkers" =>
@@ -107,7 +108,7 @@ public sealed partial class BrowserScriptRunner
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),
             "mousemove" or "mousedown" or "mouseup" => ExecuteMouseAction(remoteDebuggingUrl, automationClient, action, recorder),
             "scrollto" or "scrollby" or "wheel" => ExecuteScrollAction(remoteDebuggingUrl, automationClient, action, recorder),
-            "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action, recorder),
+            "draganddrop" or "dragto" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action with { Name = "dragAndDrop" }, recorder),
             "gif" or "recordvideo" or "screencast" => ExecuteGifBlock(remoteDebuggingUrl, automationClient, action, context, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),
             "opentab" => ExecuteOpenTab(remoteDebuggingUrl, automationClient, action),

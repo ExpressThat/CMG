@@ -161,7 +161,7 @@ public sealed partial class BrowserScriptRunner
     {
         action = NormalizeSelectorArgument(action);
         var name = action.Name.ToLowerInvariant();
-        if (name is not "contains" || action.Arguments.Count != 1)
+        if (name is not ("contains" or "tocontaintext") || action.Arguments.Count != 1)
         {
             return action;
         }

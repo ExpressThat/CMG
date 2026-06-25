@@ -15,8 +15,8 @@ public sealed partial class CmgActionLowerer
             "fill" => LowerFill(action),
             "assertvisible" => LowerSelectorCommand("waitForElement", action),
             "wait" => LowerWait(action),
-            "expecttext" or "tohavetext" or "containstext" or "waitfortext" or "contains" => LowerTextAssertion(action),
-            "expecturl" or "expecttitle" => [ToLine(action.Kind, action.Arguments, action.Options)],
+            "expecttext" or "tohavetext" or "tocontaintext" or "containstext" or "waitfortext" or "contains" => LowerTextAssertion(action),
+            "expecturl" or "expecttitle" or "tohaveurl" or "tohavetitle" => [ToLine(ToNavigationExpectationName(name), action.Arguments, action.Options)],
             "expectvisible" or "tobevisible" or "waitforvisible" or "expecthidden" or "tobehidden" or "waitforhidden" or
             "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" =>
                 [ToLine(ToExpectationName(name), action.Arguments, action.Options)],
@@ -39,7 +39,7 @@ public sealed partial class CmgActionLowerer
             "localstorage" or "sessionstorage" or "cookie" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "setviewport" => [ToLine("setViewport", action.Arguments, action.Options)],
             "viewport" or "setviewportsize" => [LowerViewportAlias(action)],
-            "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "selectoption" or "html" or "screenshot" or "asserttext" =>
+            "click" or "type" or "presssequentially" or "clear" or "hover" or "scrollintoview" or "select" or "selectoption" or "html" or "screenshot" or "asserttext" =>
                 LowerSelectorCommand(action.Kind, action),
             "goto" or "visit" => [ToLine("navigate", action.Arguments, action.Options)],
             "navigate" or "waitforelement" or
@@ -74,7 +74,10 @@ public sealed partial class CmgActionLowerer
             "dispatchevent" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or
             "scrollto" or "scrollby" or "wheel" or "draganddrop" or "listtabs" or "activatetab" or "closetab" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
+            "dragto" => [ToLine("dragAndDrop", action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),
+            "setinputfiles" or "selectfile" => [ToLine("uploadFiles", action.Arguments, action.Options)],
+            "tohavescreenshot" => [ToLine("expectScreenshot", action.Arguments, action.Options)],
             "opentab" or "waitfortab" or "waitforpopup" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "apirequest" => [ToLine(action.Kind, action.Arguments, action.Options)],
             _ => [ToLine("evaluate", [BuildUnsupportedExpression(action.Kind)])]
@@ -129,7 +132,8 @@ public sealed partial class CmgActionLowerer
     private static IReadOnlyList<string> LowerTextAssertion(CmgNode action)
     {
         if (action.Arguments.Count is 1 &&
-            action.Kind.Equals("contains", StringComparison.OrdinalIgnoreCase))
+            (action.Kind.Equals("contains", StringComparison.OrdinalIgnoreCase) ||
+            action.Kind.Equals("toContainText", StringComparison.OrdinalIgnoreCase)))
         {
             return [ToLine("assertText", ["body", action.Arguments[0]], action.Options)];
         }
@@ -220,31 +224,7 @@ public sealed partial class CmgActionLowerer
     private static string BuildUnsupportedExpression(string action) =>
         $"(() => {{ throw new Error({Quote($"Unsupported CMG action '{action}'. See docs/scripting/actions.md for supported actions.")}); }})()";
 
-    private static string ToExpectationName(string name) =>
-        name switch
-        {
-            "expectvisible" => "expectVisible",
-            "expecthidden" => "expectHidden",
-            "waitforvisible" => "expectVisible",
-            "waitforhidden" => "expectHidden",
-            "expectenabled" => "expectEnabled",
-            "expectdisabled" => "expectDisabled",
-            "expectvalue" => "expectValue",
-            "expectattribute" => "expectAttribute",
-            "expectchecked" => "expectChecked",
-            "expectcount" => "expectCount",
-            "tobevisible" => "expectVisible",
-            "tobehidden" => "expectHidden",
-            "tobeenabled" => "expectEnabled",
-            "tobedisabled" => "expectDisabled",
-            "tohavevalue" => "expectValue",
-            "tohaveattribute" => "expectAttribute",
-            "tobechecked" => "expectChecked",
-            "tohavecount" => "expectCount",
-            _ => name
-        };
-
     private static string Quote(string value) =>
-        $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
+        $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal).Replace("\r", "\\r", StringComparison.Ordinal).Replace("\n", "\\n", StringComparison.Ordinal)}\"";
     private static string QuoteJs(string value) => Quote(value);
 }

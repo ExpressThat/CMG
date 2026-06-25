@@ -42,11 +42,11 @@ public sealed class CmgValidator
 
     private static bool ValidatesLocator(string kind) =>
         kind.ToLowerInvariant() is
-            "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "selectoption" or
-            "html" or "screenshot" or "asserttext" or "download" or "uploadfiles" or
+            "click" or "type" or "presssequentially" or "clear" or "hover" or "scrollintoview" or "select" or "selectoption" or
+            "html" or "screenshot" or "asserttext" or "download" or "uploadfiles" or "setinputfiles" or "selectfile" or
             "fill" or "check" or "uncheck" or "focus" or "blur" or "selecttext" or
             "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "dispatchevent" or "expecttext" or "expectvalue" or
-            "expectattribute" or "expectchecked" or "expectcount" or "expectscreenshot" or
+            "expectattribute" or "expectchecked" or "expectcount" or "expectscreenshot" or "tohavescreenshot" or "dragto" or "tocontaintext" or
             "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or
             "textcontent" or "innertext" or "inputvalue" or "getattribute" or
             "waitforvisible" or "waitforhidden";

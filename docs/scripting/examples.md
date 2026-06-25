@@ -711,6 +711,21 @@ expectEval "document.querySelector('#pane').scrollTop > 0"
 
 This direct-script example is available as `demo-scripts/43-scroll-wheel.cmgscript`. The structured `cmg run` form is available as `demo-scripts/44-scroll-wheel-runner.cmgscript`.
 
+## Provider Aliases
+
+```text
+setContent "<!doctype html><title>Alias Demo</title><main><h1>Alias Demo</h1><input id='name'><input id='file' type='file'><div id='source' draggable='true'>Drag me</div><div id='target'>Drop here</div></main>"
+toHaveTitle "Alias Demo"
+toContainText "Alias Demo"
+pressSequentially "#name" "CMG"
+setInputFiles "#file" "index.html"
+dragTo "#source" "#target"
+```
+
+These aliases run through the same CMG actions as `expectTitle`, text assertions, `type`, `uploadFiles`, and `dragAndDrop`, so GIF recordings still use the virtual pointer, pointer events, drag previews, and captions.
+
+This direct-script example is available as `demo-scripts/45-provider-aliases.cmgscript`. The structured `cmg run` form is available as `demo-scripts/46-provider-aliases-runner.cmgscript`.
+
 ## Pointer Click Variants
 
 ```text

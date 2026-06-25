@@ -373,6 +373,8 @@ Pass headers as quoted name/value pairs and pass `true` or `false` to `setOfflin
 
 ```text
 Line 2: waitForUrl failed. URL did not match /checkout within 5000ms. Last URL: https://example.com/cart
+Line 2: toHaveURL failed. Expected URL to contain /checkout, got https://example.com/cart.
+Line 2: toHaveTitle failed. Expected title to contain Checkout, got Cart.
 Line 3: waitForLoadState failed. waitForLoadState expects loading, interactive, complete, or load.
 Line 4: waitForNavigation failed. waitForNavigation waitUntil= expects load, domcontentloaded, networkidle, or commit.
 Line 5: waitForNavigation failed. Navigation did not reach load within 5000ms. Last URL: https://example.com/cart; state: loading
@@ -541,6 +543,7 @@ PDF generation is available in both direct scripts and `cmg run`. If the browser
 
 ```text
 STEP FAIL line=5 action=expectScreenshot reason=Screenshot diff 0.0321 exceeded tolerance 0.01.
+STEP FAIL line=6 action=toHaveScreenshot reason=Baseline 'dialog.png' did not exist. Created it from the actual screenshot.
 ```
 
 The `VISUAL_ACTUAL` output line points to the actual PNG written for review. If the baseline file is missing, CMG creates it from the actual screenshot and fails with a message saying the baseline was created.
@@ -575,9 +578,10 @@ Use `storageState save path="..."` before loading a state file.
 
 ```text
 STEP FAIL line=6 action=uploadFiles reason=Upload file 'fixtures\avatar.png' was not found.
+STEP FAIL line=7 action=setInputFiles reason=Upload file 'fixtures\avatar.png' was not found.
 ```
 
-Check that every file path passed after the selector exists from the process working directory, or use absolute paths. A missing selector or missing file argument fails before any browser interaction runs.
+Check that every file path passed after the selector exists from the process working directory, or use absolute paths. A missing selector or missing file argument fails before any browser interaction runs. `setInputFiles` and `selectFile` report the same upload failure reasons as `uploadFiles`.
 
 ## Undefined Variable
 

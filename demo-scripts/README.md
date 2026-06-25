@@ -126,6 +126,8 @@ dotnet run -- --firefox browser close
 - `42-locator-filters-runner.cmgscript`: Demonstrates the same locator filters in the structured runner DSL.
 - `43-scroll-wheel.cmgscript`: Demonstrates window and element `scrollTo`, `scrollBy`, and wheel input in direct scripts.
 - `44-scroll-wheel-runner.cmgscript`: Demonstrates the same scroll and wheel actions in the structured runner DSL.
+- `45-provider-aliases.cmgscript`: Demonstrates provider-style aliases such as `toHaveTitle`, `toContainText`, `pressSequentially`, `setInputFiles`, and `dragTo`.
+- `46-provider-aliases-runner.cmgscript`: Demonstrates the same provider-style aliases in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

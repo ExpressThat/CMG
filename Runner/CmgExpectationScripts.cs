@@ -39,9 +39,9 @@ public static class CmgExpectationScripts
 
         var body = mode switch
         {
-            "value" => $"return element.value?.includes({QuoteJs(action.Arguments[1])}) ? null : `Expected value to contain {action.Arguments[1]}, got ${{element.value ?? ''}}.`;",
-            "attribute" => $"const actual = element.getAttribute({QuoteJs(action.Arguments[1])}); return actual?.includes({QuoteJs(action.Arguments[2])}) ? null : `Expected attribute {action.Arguments[1]} to contain {action.Arguments[2]}, got ${{actual}}.`;",
-            _ => $"return Boolean(element.checked) === {ExpectedChecked(action).ToString().ToLowerInvariant()} ? null : `Expected checked to be {ExpectedChecked(action).ToString().ToLowerInvariant()}, got ${{Boolean(element.checked)}}.`;"
+            "value" => $"return element.value?.includes({QuoteJs(action.Arguments[1])}) ? null : 'Expected value to contain {action.Arguments[1]}, got ' + (element.value ?? '') + '.';",
+            "attribute" => $"const actual = element.getAttribute({QuoteJs(action.Arguments[1])}); return actual?.includes({QuoteJs(action.Arguments[2])}) ? null : 'Expected attribute {action.Arguments[1]} to contain {action.Arguments[2]}, got ' + actual + '.';",
+            _ => $"return Boolean(element.checked) === {ExpectedChecked(action).ToString().ToLowerInvariant()} ? null : 'Expected checked to be {ExpectedChecked(action).ToString().ToLowerInvariant()}, got ' + Boolean(element.checked) + '.';"
         };
 
         return $$"""
@@ -50,7 +50,7 @@ public static class CmgExpectationScripts
           const deadline = Date.now() + {{timeout}};
           const check = () => {
             const element = document.querySelector(selector);
-            if (!element) return `No element matched selector ${selector}.`;
+            if (!element) return 'No element matched selector ' + selector + '.';
             {{body}}
           };
           const poll = () => {
@@ -85,7 +85,7 @@ public static class CmgExpectationScripts
           const poll = () => {
             const actual = document.querySelectorAll(selector).length;
             if (actual === expected) { resolve(true); return; }
-            if (Date.now() >= deadline) { reject(new Error(`Expected ${expected} elements for ${selector}, got ${actual}.`)); return; }
+            if (Date.now() >= deadline) { reject(new Error('Expected ' + expected + ' elements for ' + selector + ', got ' + actual + '.')); return; }
             setTimeout(poll, 50);
           };
           poll();
@@ -132,7 +132,7 @@ public static class CmgExpectationScripts
     private static string Line(string expression) => $"evaluate {Quote(expression)}";
 
     private static string Quote(string value) =>
-        $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
+        $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal).Replace("\r", "\\r", StringComparison.Ordinal).Replace("\n", "\\n", StringComparison.Ordinal)}\"";
 
     private static string QuoteJs(string value) => Quote(value);
 }

@@ -33,6 +33,8 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public ElementPoint? LastMouseMove { get; private set; }
     public ElementPoint? LastMouseDown { get; private set; }
     public ElementPoint? LastMouseUp { get; private set; }
+    public string LastDragSource { get; private set; } = string.Empty;
+    public string LastDragTarget { get; private set; } = string.Empty;
     public string LastKeyDown { get; private set; } = string.Empty;
     public string LastKeyUp { get; private set; } = string.Empty;
     public string LastInsertedText { get; private set; } = string.Empty;
@@ -85,7 +87,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         LastViewportOptions = options;
     }
     public ViewportSize GetViewportSize(string remoteDebuggingUrl) => new(800, 600);
-    public void DragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector) { }
+    public void DragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector)
+    {
+        LastDragSource = sourceSelector;
+        LastDragTarget = targetSelector;
+    }
     public void MouseDragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector, IReadOnlyList<ElementPoint> path, Action<ElementPoint>? afterMove = null) { }
     public void BeginPageDrag(string remoteDebuggingUrl, string sourceSelector, ElementPoint point) { }
     public void MovePageDrag(string remoteDebuggingUrl, ElementPoint point) { }

@@ -70,5 +70,50 @@ public sealed class BrowserScriptRunnerParityActionTests
         Assert.True(result.Success);
     }
 
+    [Fact]
+    public void RunText_ProviderNavigationAssertionAliasesExecute()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("https://example.test/cart");
+        client.EvaluateResponses.Enqueue("Cart");
+
+        var result = Runner().RunText("""
+        toHaveURL "/cart"
+        toHaveTitle "Cart"
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("URL 001 https://example.test/cart", result.StdoutLines);
+        Assert.Contains("TITLE 002 Cart", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_ProviderInputAliasesUsePointerAwareActions()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("""
+        pressSequentially "#name" "CMG"
+        dragTo "#source" "#target"
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("#name", client.LastTypedSelector);
+        Assert.Equal("CMG", client.LastTypedText);
+        Assert.Equal("#source", client.LastDragSource);
+        Assert.Equal("#target", client.LastDragTarget);
+    }
+
+    [Fact]
+    public void RunText_ToContainTextChecksBodyWithOneArgument()
+    {
+        var client = new FakeAutomationClient();
+        client.TextResponses.Enqueue("Ready");
+
+        var result = Runner().RunText("toContainText Ready", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("body", client.LastElementTextSelector);
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

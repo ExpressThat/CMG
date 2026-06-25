@@ -30,6 +30,8 @@ reload
 goBack timeout=5000
 goForward timeout=5000
 waitForUrl "/checkout" timeout=10000
+toHaveURL "/checkout"
+toHaveTitle "Checkout"
 waitForLoadState "complete" timeout=5000
 waitForNavigation "/checkout" waitUntil=domcontentloaded timeout=10000
 ```
@@ -44,7 +46,8 @@ Options:
 
 Arguments:
 
-- `waitForUrl`: Required URL substring expected in `location.href`.
+- `waitForUrl`, `toHaveURL`: Required URL substring expected in `location.href`.
+- `toHaveTitle`: Required title substring expected in `document.title`.
 - `waitForLoadState`: Optional state. Supports `loading`, `interactive`, `complete`, and `load`. `load` is an alias for `complete`.
 - `waitForNavigation`: Optional URL substring expected in `location.href`.
 
@@ -53,7 +56,8 @@ Output:
 - `RELOADED <line> <url>` after reloading the current URL.
 - `BACK <line> <url>` after browser history moves back.
 - `FORWARD <line> <url>` after browser history moves forward.
-- `URL <line> <url>` when `waitForUrl` matches.
+- `URL <line> <url>` when `waitForUrl` or `toHaveURL` matches.
+- `TITLE <line> <title>` when `toHaveTitle` matches.
 - `LOAD_STATE <line> <state>` when the requested load state is reached.
 - `NAVIGATION <line> <json>` when the requested navigation URL and state are reached.
 
@@ -146,9 +150,10 @@ In GIF recordings, `tap` and `touchTap` move the virtual pointer to the target, 
 
 ```text
 type "<selector>" "text"
+pressSequentially "<selector>" "text"
 ```
 
-Focuses the element without scrolling, appends text to its current value, and dispatches `input` and `change` events. The element center must already be inside the current viewport. Use `scrollIntoView` first when the script should move the page.
+Focuses the element without scrolling, appends text to its current value, and dispatches `input` and `change` events. `pressSequentially` is a Playwright-style alias for the same visible typing path. The element center must already be inside the current viewport. Use `scrollIntoView` first when the script should move the page.
 
 Example:
 
@@ -458,12 +463,13 @@ assertText "<selector>" "expected text" timeout=5000
 contains "expected text"
 contains "<selector>" "expected text"
 containsText "<selector>" "expected text"
+toContainText "<selector>" "expected text"
 waitForText "<selector>" "expected text" timeout=5000
 ```
 
-Reads an element's visible text and fails unless it contains the expected text. When `timeout` is provided, CMG polls the element text until it matches or the timeout expires. The DSL `expectText`, `toHaveText`, `containsText`, `waitForText`, and `contains` actions lower to this command and support the same option.
+Reads an element's visible text and fails unless it contains the expected text. When `timeout` is provided, CMG polls the element text until it matches or the timeout expires. The DSL `expectText`, `toHaveText`, `toContainText`, `containsText`, `waitForText`, and `contains` actions lower to this command and support the same option.
 
-`contains "text"` checks the page `body`, which matches the common provider pattern for finding text anywhere on the page. `contains "<selector>" "text"`, `containsText`, and `waitForText` check the target selector or rich locator.
+`contains "text"` and `toContainText "text"` check the page `body`, which matches the common provider pattern for finding text anywhere on the page. `contains "<selector>" "text"`, `toContainText "<selector>" "text"`, `containsText`, and `waitForText` check the target selector or rich locator.
 
 Options:
 
@@ -730,6 +736,7 @@ These actions do not move the virtual pointer. In GIF recordings, wrap them in `
 
 ```text
 dragAndDrop "<sourceSelector>" "<targetSelector>"
+dragTo "<sourceSelector>" "<targetSelector>"
 dragAndDrop "<sourceSelector>" {
   delay 200
   hover "<selector>"
@@ -737,7 +744,7 @@ dragAndDrop "<sourceSelector>" {
 }
 ```
 
-Dispatches drag-and-drop DOM events from the source element to the target element.
+Dispatches drag-and-drop DOM events from the source element to the target element. `dragTo` is a provider-style alias for the simple two-selector drag path.
 
 Simple drag-and-drop does not scroll automatically. The source and target centers must both already be inside the current viewport. Use `scrollIntoView` and, when needed, a large enough viewport before dragging.
 
@@ -1631,9 +1638,10 @@ Coverage actions do not move the virtual pointer. They are included in reports a
 ```text
 expectScreenshot "#dialog" baseline="baselines\dialog.png" output="demo-output\dialog.actual.png" tolerance=0.01
 expectScreenshot baseline="baselines\page.png" output="demo-output\page.actual.png"
+toHaveScreenshot "#dialog" baseline="baselines\dialog.png" output="demo-output\dialog.actual.png"
 ```
 
-Captures an element screenshot when a selector is provided, otherwise captures the page viewport. CMG compares the actual PNG against the baseline and fails if the normalized pixel difference is greater than `tolerance`.
+Captures an element screenshot when a selector is provided, otherwise captures the page viewport. `toHaveScreenshot` is a Playwright-style alias. CMG compares the actual PNG against the baseline and fails if the normalized pixel difference is greater than `tolerance`.
 
 Options:
 
@@ -1641,22 +1649,24 @@ Options:
 - `output`: Actual PNG path. Default is `actual.png`.
 - `tolerance`: Allowed normalized difference from `0` to `1`. Default is `0`.
 
-This action captures visual artifacts and reports them, but it does not move the virtual pointer by itself. Wrap it in a `step` when the GIF should include a caption explaining the comparison.
+When a selector is provided in GIF mode, CMG moves the virtual pointer to that element before the comparison frame. Page-level visual comparisons do not move the pointer. Wrap this action in a `step` when the GIF should include a caption explaining the comparison.
 
-### `uploadFiles`
+### `uploadFiles`, `setInputFiles`, And `selectFile`
 
 ```text
 uploadFiles "#avatar" "fixtures\avatar.png"
+setInputFiles "#avatar" "fixtures\avatar.png"
+selectFile "#avatar" "fixtures\avatar.png"
 uploadFiles "testid=file-input" "fixtures\one.txt" "fixtures\two.txt"
 ```
 
-Assigns one or more local files to an `<input type="file">` element and dispatches `input` and `change` events in the page. The first argument is a CMG locator. Remaining arguments are local file paths resolved from the current working directory unless absolute.
+Assigns one or more local files to an `<input type="file">` element and dispatches `input` and `change` events in the page. `setInputFiles` and `selectFile` are provider-style aliases. The first argument is a CMG locator. Remaining arguments are local file paths resolved from the current working directory unless absolute.
 
 Output:
 
 - `UPLOAD <line> <count>` on success.
 
-Failure reasons include a missing selector argument, no file paths, a local file that does not exist, or browser evaluation failure. This action is available at the top level and inside `gif` blocks. It does not move the virtual pointer by itself because browser file choosers cannot be driven from page JavaScript; wrap it in a `step` or `caption` when the GIF should explain the upload transition.
+Failure reasons include a missing selector argument, no file paths, a local file that does not exist, or browser evaluation failure. This action is available at the top level and inside `gif` blocks. In GIF mode, CMG moves the virtual pointer to the file input and captures the page-side upload transition; browser file chooser windows are not opened.
 
 ## Imports, Control Flow, Loops, And Macros
 
