@@ -39,6 +39,26 @@ public sealed class BrowserScriptRunnerElementExpectationTests
         Assert.Contains("EXPECT 001 attribute #target", result.StdoutLines);
     }
 
+    [Theory]
+    [InlineData("toHaveText \"#status\" \"Saved\"")]
+    [InlineData("toBeVisible \"#status\"")]
+    [InlineData("toBeHidden \"#status\"")]
+    [InlineData("toBeEnabled \"#status\"")]
+    [InlineData("toBeDisabled \"#status\"")]
+    [InlineData("toHaveValue \"#status\" \"Saved\"")]
+    [InlineData("toHaveAttribute \"#status\" \"aria-label\" \"Saved\"")]
+    [InlineData("toBeChecked \"#status\"")]
+    [InlineData("toHaveCount \"#status\" 1")]
+    public void RunText_PlaywrightExpectationAliasesExecute(string script)
+    {
+        var client = new FakeAutomationClient();
+        client.TextResponses.Enqueue("Saved");
+        var result = Runner().RunText(script, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.DoesNotContain("Unknown", result.Error ?? string.Empty);
+    }
+
     [Fact]
     public void RunText_ElementExpectationRunsLocatorPrefix()
     {

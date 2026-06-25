@@ -511,7 +511,7 @@ test "inspects generated page" {
   title
   url
   content
-  expectText "h1" "CMG"
+  toHaveText "h1" "CMG"
 }
 ```
 

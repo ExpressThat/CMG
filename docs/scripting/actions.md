@@ -1204,7 +1204,7 @@ Output:
 - `URL <line> <url>` for `expectUrl`.
 - `TITLE <line> <title>` for `expectTitle`.
 
-### `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `expectValue`, `expectAttribute`, `expectChecked`, And `expectCount`
+### Element Assertion Aliases
 
 ```text
 expectVisible "#save" timeout=5000
@@ -1215,9 +1215,18 @@ expectValue "#email" "agent@example.com" timeout=5000
 expectAttribute "#save" "aria-label" "Save"
 expectChecked "#terms" true
 expectCount ".result" 3 timeout=5000
+toHaveText "#status" "Saved"
+toBeVisible "#save"
+toBeHidden "#spinner"
+toBeEnabled "#save"
+toBeDisabled "#archive"
+toHaveValue "#email" "agent@example.com"
+toHaveAttribute "#save" "aria-label" "Save"
+toBeChecked "#terms" true
+toHaveCount ".result" 3
 ```
 
-Runs browser-side assertions for common UI state checks. Element assertions resolve CMG locators before checking the matched element. Direct browser-control scripts also accept locator-form options such as `expectVisible text=Save` when the parser would otherwise treat `text=Save` as an option. `expectCount` counts matching CSS elements and supports zero-count assertions.
+Runs browser-side assertions for common UI state checks. The `toHave*` and `toBe*` forms are Playwright-style aliases over the matching CMG assertions. Element assertions resolve CMG locators before checking the matched element. Direct browser-control scripts also accept locator-form options such as `expectVisible text=Save` when the parser would otherwise treat `text=Save` as an option. `expectCount` and `toHaveCount` count matching CSS elements and support zero-count assertions.
 
 Options:
 
@@ -1225,7 +1234,7 @@ Options:
 
 Output:
 
-- `EXPECT <line> <visible|hidden|enabled|disabled> <selector>` for direct `expectVisible`, `expectHidden`, `expectEnabled`, and `expectDisabled` actions.
+- `EXPECT <line> <visible|hidden|enabled|disabled|value|attribute|checked|count> <selector>` for direct element assertion actions and aliases.
 
 ### `waitForUrl`
 

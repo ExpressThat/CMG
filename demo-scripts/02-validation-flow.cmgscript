@@ -3,11 +3,11 @@ navigate "C:\Projects\CMG\index.html"
 waitForElement "#projectSlug" timeout=5000
 
 type "#projectSlug" "Bad Slug"
-assertText "#projectSlugMessage" "Use lowercase words separated by single hyphens."
+toHaveText "#projectSlugMessage" "Use lowercase words separated by single hyphens."
 
 clear "#projectSlug"
 type "#projectSlug" "cmg-browser-tools"
-assertText "#projectSlugMessage" "Slug looks good."
+toHaveText "#projectSlugMessage" "Slug looks good."
 
 type "#debugPort" "9222"
 assertText "#debugPortMessage" "Port is in range."

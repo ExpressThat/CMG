@@ -12,14 +12,14 @@ public sealed partial class BrowserScriptRunner
     {
         var mode = action.Name.ToLowerInvariant() switch
         {
-            "expectvisible" => "visible",
-            "expecthidden" => "hidden",
-            "expectenabled" => "enabled",
-            "expectdisabled" => "disabled",
-            "expectvalue" => "value",
-            "expectattribute" => "attribute",
-            "expectchecked" => "checked",
-            "expectcount" => "count",
+            "expectvisible" or "tobevisible" => "visible",
+            "expecthidden" or "tobehidden" => "hidden",
+            "expectenabled" or "tobeenabled" => "enabled",
+            "expectdisabled" or "tobedisabled" => "disabled",
+            "expectvalue" or "tohavevalue" => "value",
+            "expectattribute" or "tohaveattribute" => "attribute",
+            "expectchecked" or "tobechecked" => "checked",
+            "expectcount" or "tohavecount" => "count",
             _ => throw new ScriptExecutionException($"Unknown element expectation '{action.Name}'.")
         };
         action = NormalizeLocatorArgument(action);

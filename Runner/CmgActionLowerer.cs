@@ -12,14 +12,15 @@ public sealed class CmgActionLowerer
             "fill" => LowerFill(action),
             "assertvisible" => LowerSelectorCommand("waitForElement", action),
             "wait" => LowerWait(action),
-            "expecttext" => [ToLine("assertText", action.Arguments, action.Options)],
+            "expecttext" or "tohavetext" => [ToLine("assertText", action.Arguments, action.Options)],
             "expecturl" or "expecttitle" => [ToLine(action.Kind, action.Arguments, action.Options)],
-            "expectvisible" or "expecthidden" or "expectenabled" or "expectdisabled" =>
-                [ToLine(action.Kind, action.Arguments, action.Options)],
-            "expectvalue" => CmgExpectationScripts.Element(action, "value"),
-            "expectattribute" => CmgExpectationScripts.Element(action, "attribute"),
-            "expectchecked" => CmgExpectationScripts.Element(action, "checked"),
-            "expectcount" => CmgExpectationScripts.Element(action, "count"),
+            "expectvisible" or "tobevisible" or "expecthidden" or "tobehidden" or
+            "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" =>
+                [ToLine(ToExpectationName(name), action.Arguments, action.Options)],
+            "expectvalue" or "tohavevalue" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "value"),
+            "expectattribute" or "tohaveattribute" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "attribute"),
+            "expectchecked" or "tobechecked" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "checked"),
+            "expectcount" or "tohavecount" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "count"),
             "check" => ElementScript(action, "element.checked = true; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;"),
             "uncheck" => ElementScript(action, "element.checked = false; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;"),
             "focus" => ElementScript(action, "element.focus({ preventScroll: true }); return true;"),
@@ -152,6 +153,28 @@ public sealed class CmgActionLowerer
 
     private static string BuildUnsupportedExpression(string action) =>
         $"(() => {{ throw new Error({Quote($"CMG action '{action}' is planned but not implemented in this slice.")}); }})()";
+
+    private static string ToExpectationName(string name) =>
+        name switch
+        {
+            "expectvisible" => "expectVisible",
+            "expecthidden" => "expectHidden",
+            "expectenabled" => "expectEnabled",
+            "expectdisabled" => "expectDisabled",
+            "expectvalue" => "expectValue",
+            "expectattribute" => "expectAttribute",
+            "expectchecked" => "expectChecked",
+            "expectcount" => "expectCount",
+            "tobevisible" => "expectVisible",
+            "tobehidden" => "expectHidden",
+            "tobeenabled" => "expectEnabled",
+            "tobedisabled" => "expectDisabled",
+            "tohavevalue" => "expectValue",
+            "tohaveattribute" => "expectAttribute",
+            "tobechecked" => "expectChecked",
+            "tohavecount" => "expectCount",
+            _ => name
+        };
 
     private static string Quote(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
