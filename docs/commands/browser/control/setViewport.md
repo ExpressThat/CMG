@@ -3,13 +3,16 @@
 Runs the scripting `setViewport` action once from the command line.
 
 ```powershell
-cmg browser control setViewport --width <pixels> --height <pixels>
+cmg browser control setViewport --width <pixels> --height <pixels> [--device-scale-factor <number>] [--mobile] [--touch]
 ```
 
 ## Options
 
 - `--width <pixels>`: Required viewport width in CSS pixels.
 - `--height <pixels>`: Required viewport height in CSS pixels.
+- `--device-scale-factor <number>`: Optional device scale factor. Default is `1`.
+- `--mobile`: Use mobile viewport metrics.
+- `--touch`: Enable touch viewport hints.
 
 ## Stdout
 
@@ -30,4 +33,5 @@ Writes browser or validation errors.
 
 ```powershell
 cmg browser control setViewport --width 1280 --height 720
+cmg browser control setViewport --width 390 --height 844 --device-scale-factor 2 --mobile --touch
 ```

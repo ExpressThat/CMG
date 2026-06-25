@@ -86,10 +86,7 @@ public sealed partial class BrowserScriptRunner
 
         if (hasWidth)
         {
-            automationClient.SetViewport(
-                remoteDebuggingUrl,
-                GetIntOption(action, "width", required: true),
-                GetIntOption(action, "height", required: true));
+            automationClient.SetViewport(remoteDebuggingUrl, GetViewportOptions(action));
         }
     }
 

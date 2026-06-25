@@ -193,11 +193,17 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> ExecuteSetViewport(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 0, 0);
-        var width = GetIntOption(action, "width", required: true);
-        var height = GetIntOption(action, "height", required: true);
-        automationClient.SetViewport(remoteDebuggingUrl, width, height);
+        automationClient.SetViewport(remoteDebuggingUrl, GetViewportOptions(action));
         return [];
     }
+
+    private static ViewportOptions GetViewportOptions(BrowserScriptAction action) =>
+        new(
+            GetIntOption(action, "width", required: true),
+            GetIntOption(action, "height", required: true),
+            GetDoubleOption(action, "deviceScaleFactor", 1),
+            GetBoolOption(action, "isMobile"),
+            GetBoolOption(action, "hasTouch"));
 
     private static IReadOnlyList<string> ExecuteMoveMouse(BrowserScriptAction action, ScriptGifRecorder? recorder, bool dragging)
     {

@@ -153,7 +153,7 @@ public sealed partial class FirefoxBiDiClient
         }
     }
 
-    public void SetViewport(string remoteDebuggingUrl, int width, int height) =>
+    public void SetViewport(string remoteDebuggingUrl, ViewportOptions options) =>
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
@@ -162,11 +162,15 @@ public sealed partial class FirefoxBiDiClient
             {
                 writer.WriteString("context", context.Id);
                 writer.WriteStartObject("viewport");
-                writer.WriteNumber("width", width);
-                writer.WriteNumber("height", height);
+                writer.WriteNumber("width", options.Width);
+                writer.WriteNumber("height", options.Height);
                 writer.WriteEndObject();
-                writer.WriteNumber("devicePixelRatio", 1);
+                writer.WriteNumber("devicePixelRatio", options.DeviceScaleFactor);
             });
+            if (options.HasTouch || options.IsMobile)
+            {
+                await Evaluate(session, context.Id, "Object.defineProperty(navigator, 'maxTouchPoints', { configurable: true, get: () => 1 }); window.ontouchstart = window.ontouchstart || null;");
+            }
 
             return true;
         });

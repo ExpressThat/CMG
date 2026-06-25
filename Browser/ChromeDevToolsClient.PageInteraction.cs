@@ -54,18 +54,31 @@ public sealed partial class ChromeDevToolsClient
         });
     }
 
-    public void SetViewport(string remoteDebuggingUrl, int width, int height)
+    public void SetViewport(string remoteDebuggingUrl, ViewportOptions options)
     {
         Run(async () =>
         {
             await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
             await session.SendCommand("Emulation.setDeviceMetricsOverride", writer =>
             {
-                writer.WriteNumber("width", width);
-                writer.WriteNumber("height", height);
-                writer.WriteNumber("deviceScaleFactor", 1);
-                writer.WriteBoolean("mobile", false);
+                writer.WriteNumber("width", options.Width);
+                writer.WriteNumber("height", options.Height);
+                writer.WriteNumber("deviceScaleFactor", options.DeviceScaleFactor);
+                writer.WriteBoolean("mobile", options.IsMobile);
             });
+            await session.SendCommand("Emulation.setTouchEmulationEnabled", writer =>
+            {
+                writer.WriteBoolean("enabled", options.HasTouch);
+                writer.WriteNumber("maxTouchPoints", options.HasTouch ? 1 : 0);
+            });
+            if (options.HasTouch || options.IsMobile)
+            {
+                await session.SendCommand("Runtime.evaluate", writer =>
+                {
+                    writer.WriteString("expression", "Object.defineProperty(navigator, 'maxTouchPoints', { configurable: true, get: () => 1 }); window.ontouchstart = window.ontouchstart || null; true");
+                    writer.WriteBoolean("returnByValue", true);
+                });
+            }
 
             return true;
         });

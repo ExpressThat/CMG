@@ -151,21 +151,51 @@ public sealed partial class BrowserControlCommandBuilder
             Description = "Viewport height in CSS pixels.",
             Required = true
         };
+        var scaleOption = new Option<double?>("--device-scale-factor")
+        {
+            Description = "Device scale factor. Default is 1."
+        };
+        var mobileOption = new Option<bool>("--mobile")
+        {
+            Description = "Use mobile viewport metrics."
+        };
+        var touchOption = new Option<bool>("--touch")
+        {
+            Description = "Enable touch viewport hints."
+        };
 
         var command = new Command("setViewport", "Set viewport dimensions.")
         {
             widthOption,
-            heightOption
+            heightOption,
+            scaleOption,
+            mobileOption,
+            touchOption
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "setViewport",
-                [],
-                [
-                    ("width", parseResult.GetValue(widthOption).ToString()),
-                    ("height", parseResult.GetValue(heightOption).ToString())
-                ])));
+        {
+            var options = new List<(string Key, string Value)>
+            {
+                ("width", parseResult.GetValue(widthOption).ToString()),
+                ("height", parseResult.GetValue(heightOption).ToString())
+            };
+            var scale = parseResult.GetValue(scaleOption);
+            if (scale is not null)
+            {
+                options.Add(("deviceScaleFactor", scale.Value.ToString()));
+            }
+            if (parseResult.GetValue(mobileOption))
+            {
+                options.Add(("isMobile", "true"));
+            }
+            if (parseResult.GetValue(touchOption))
+            {
+                options.Add(("hasTouch", "true"));
+            }
+
+            return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("setViewport", [], options));
+        });
 
         return command;
     }

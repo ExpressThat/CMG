@@ -65,6 +65,13 @@ dragAndDrop "[data-command='browser launch']" "#dropQueue"
 assertText "#dropQueue" "browser launch"
 ```
 
+Mobile viewport setup:
+
+```text
+setViewport width=390 height=844 deviceScaleFactor=2 isMobile=true hasTouch=true
+navigate "https://example.com/mobile"
+```
+
 ## Complex Drag And Drop
 
 ```text

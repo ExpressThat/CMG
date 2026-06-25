@@ -449,6 +449,7 @@ Init-script actions do not move the virtual pointer. They are included in report
 
 ```text
 setViewport width=1280 height=720
+setViewport width=390 height=844 deviceScaleFactor=2 isMobile=true hasTouch=true
 ```
 
 Sets viewport metrics for the primary page target.
@@ -458,10 +459,16 @@ Required options:
 - `width`
 - `height`
 
+Optional options:
+
+- `deviceScaleFactor`: Device scale factor. Default is `1`.
+- `isMobile`: Optional boolean. Default is `false`.
+- `hasTouch`: Optional boolean. Default is `false`.
+
 ## `emulate`
 
 ```text
-emulate width=390 height=844 userAgent="CMG Mobile" locale=en-GB colorScheme=dark reducedMotion=reduce
+emulate width=390 height=844 deviceScaleFactor=2 isMobile=true hasTouch=true userAgent="CMG Mobile" locale=en-GB colorScheme=dark reducedMotion=reduce
 emulate timezone=Europe/London geolocation="51.5,-0.1" permissions=geolocation
 ```
 
@@ -471,6 +478,9 @@ Options:
 
 - `width`: Viewport width in CSS pixels. Must be used with `height`.
 - `height`: Viewport height in CSS pixels. Must be used with `width`.
+- `deviceScaleFactor`: Optional viewport device scale factor. Default is `1`.
+- `isMobile`: Optional boolean for mobile viewport metrics. Default is `false`.
+- `hasTouch`: Optional boolean for touch viewport hints. Default is `false`.
 - `userAgent`: Page-visible `navigator.userAgent` value.
 - `locale`: Page-visible `navigator.language` and `navigator.languages` value.
 - `timezone`: Reported `Intl.DateTimeFormat().resolvedOptions().timeZone`.

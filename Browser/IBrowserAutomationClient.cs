@@ -42,7 +42,7 @@ public interface IBrowserAutomationClient
 
     string AddInitScript(string remoteDebuggingUrl, string source);
 
-    void SetViewport(string remoteDebuggingUrl, int width, int height);
+    void SetViewport(string remoteDebuggingUrl, ViewportOptions options);
 
     ViewportSize GetViewportSize(string remoteDebuggingUrl);
 
@@ -124,6 +124,13 @@ public sealed class BrowserAutomationClientFactory
 }
 
 public sealed record ViewportSize(double Width, double Height);
+
+public sealed record ViewportOptions(
+    int Width,
+    int Height,
+    double DeviceScaleFactor = 1,
+    bool IsMobile = false,
+    bool HasTouch = false);
 
 public sealed record ElementBox(double X, double Y, double Width, double Height);
 
