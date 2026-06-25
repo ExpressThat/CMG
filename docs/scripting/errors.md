@@ -144,6 +144,14 @@ Line 3: click failed. Element '#dropQueue' is outside the current viewport. Run 
 
 Add an explicit `scrollIntoView "<selector>"` step before the action. For drag-and-drop, make sure the source and target can both fit in the current viewport, or use `setViewport` before scrolling.
 
+## Not Actionable
+
+```text
+STEP FAIL line=8 action=click reason=Line 8: evaluate failed. Element #save was not actionable before timeout.
+```
+
+Selector actions wait for visibility, enabled state, and stable layout before the pointer action runs. Increase `timeout=` or wait for the page state that enables the element.
+
 ## `moveMouse` Without GIF
 
 ```text

@@ -84,6 +84,7 @@ public sealed class CmgActionLowerer
         var resolved = CmgLocator.Resolve(action.Arguments[0], action.LineNumber);
         return [
             .. resolved.PrefixLines,
+            CmgActionabilityScripts.WaitForActionable(resolved.Selector, action),
             ToLine(command, [resolved.Selector, .. action.Arguments.Skip(1)], action.Options)
         ];
     }
@@ -93,6 +94,7 @@ public sealed class CmgActionLowerer
         var resolved = action.Arguments.Count > 0 ? CmgLocator.Resolve(action.Arguments[0], action.LineNumber) : new CmgResolvedLocator(string.Empty, []);
         return [
             .. resolved.PrefixLines,
+            CmgActionabilityScripts.WaitForActionable(resolved.Selector, action),
             ToLine("evaluate", [$"(() => {{ const element = document.querySelector({QuoteJs(resolved.Selector)}); if (!element) throw new Error('No element matched selector {resolved.Selector}'); {body} }})()"])
         ];
     }
@@ -102,7 +104,12 @@ public sealed class CmgActionLowerer
         var resolved = action.Arguments.Count > 0 ? CmgLocator.Resolve(action.Arguments[0], action.LineNumber) : new CmgResolvedLocator(string.Empty, []);
         var selector = resolved.Selector;
         var expression = $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}'); const rect = element.getBoundingClientRect(); const options = {{ bubbles: true, cancelable: true, button: {button}, buttons: {button + 1}, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }}; element.dispatchEvent(new MouseEvent('{eventName}', options)); return true; }})()";
-        return [.. resolved.PrefixLines, ToLine("hover", [selector]), ToLine("evaluate", [expression])];
+        return [
+            .. resolved.PrefixLines,
+            CmgActionabilityScripts.WaitForActionable(selector, action),
+            ToLine("hover", [selector]),
+            ToLine("evaluate", [expression])
+        ];
     }
 
     private static string BuildExpectUrl(CmgNode action)

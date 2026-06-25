@@ -19,7 +19,10 @@ public sealed class CmgActionLowererTests
         var action = Node("step", ["Open"], [Node("click", ["#open"], [])]);
         var lines = new CmgActionLowerer().Lower(action);
 
-        Assert.Equal(["showMessageBar \"Open\"", "click \"#open\""], lines);
+        Assert.Equal(3, lines.Count);
+        Assert.Equal("showMessageBar \"Open\"", lines[0]);
+        Assert.Contains("not actionable", lines[1]);
+        Assert.Equal("click \"#open\"", lines[2]);
     }
 
     [Fact]
@@ -28,7 +31,10 @@ public sealed class CmgActionLowererTests
         var action = Node("gif", ["Only this"], [Node("click", ["#open"], [])]);
         var lines = new CmgActionLowerer().Lower(action);
 
-        Assert.Equal(["showMessageBar \"Only this\"", "click \"#open\""], lines);
+        Assert.Equal(3, lines.Count);
+        Assert.Equal("showMessageBar \"Only this\"", lines[0]);
+        Assert.Contains("not actionable", lines[1]);
+        Assert.Equal("click \"#open\"", lines[2]);
     }
 
     [Fact]
@@ -71,9 +77,10 @@ public sealed class CmgActionLowererTests
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));
 
-        Assert.Equal(2, lines.Count);
+        Assert.Equal(3, lines.Count);
         Assert.StartsWith("evaluate", lines[0]);
-        Assert.Contains("data-cmg-locator-id", lines[1]);
+        Assert.Contains("not actionable", lines[1]);
+        Assert.Contains("data-cmg-locator-id", lines[2]);
     }
 
     private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyList<CmgNode> children) =>

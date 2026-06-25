@@ -585,3 +585,15 @@ Current runner support:
 - XPath locators, for example `"xpath=//button[.='Save']"`.
 
 For non-CSS locator forms, CMG resolves the element inside the page, marks it with a temporary `data-cmg-locator-id`, and then runs the normal pointer-aware command against that marker. This keeps GIF pointer movement and browser events connected to the resolved element.
+
+## Actionability
+
+Selector-based runner actions wait before running the pointer-aware command. CMG checks that the resolved element:
+
+- exists;
+- has a non-empty bounding box;
+- is not `display:none` or `visibility:hidden`;
+- is not disabled with `disabled` or `aria-disabled="true"`;
+- has a stable rectangle across animation frames.
+
+Use `timeout=<milliseconds>` on the action to control the wait. If the element does not become actionable, the step fails with the reason in stderr and reports.
