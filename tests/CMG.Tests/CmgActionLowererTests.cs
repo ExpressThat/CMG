@@ -83,6 +83,32 @@ public sealed class CmgActionLowererTests
         Assert.Contains("setTimeout(poll, 50)", line);
     }
 
+    [Theory]
+    [InlineData("expectValue", "Expected value")]
+    [InlineData("expectAttribute", "Expected attribute")]
+    [InlineData("expectChecked", "Expected checked")]
+    [InlineData("expectCount", "Expected ${expected} elements")]
+    public void Lower_ElementExpectationsEmitBrowserAssertions(string name, string expected)
+    {
+        var args = name.Equals("expectAttribute", StringComparison.OrdinalIgnoreCase)
+            ? new[] { "#target", "aria-label", "Save" }
+            : new[] { "#target", "Save" };
+
+        var line = new CmgActionLowerer().Lower(Node(name, args, [])).Last();
+
+        Assert.StartsWith("evaluate", line);
+        Assert.Contains(expected, line);
+    }
+
+    [Fact]
+    public void Lower_ExpectTextPreservesTimeoutOption()
+    {
+        var node = new CmgNode(1, "expectText", "expectText", ["#status", "Ready"], new Dictionary<string, string> { ["timeout"] = "500" }, []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(node));
+
+        Assert.Contains("timeout=\"500\"", line);
+    }
+
     [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {

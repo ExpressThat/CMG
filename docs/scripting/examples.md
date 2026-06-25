@@ -285,6 +285,20 @@ test "dialog matches baseline" {
 
 If the baseline does not exist, CMG writes it from the actual screenshot and fails so the baseline can be reviewed.
 
+## UI State Assertions
+
+```text
+test "profile form state" {
+  navigate "https://example.com/profile"
+  expectValue "#email" "agent@example.com" timeout=5000
+  expectAttribute "#save" "aria-label" "Save profile"
+  expectChecked "#marketing" false
+  expectCount ".validation-error" 0
+}
+```
+
+These assertions run in the page and report clear step failures. Wrap them in `step` blocks when a GIF should show a caption for the checked state.
+
 ## File Upload
 
 ```text

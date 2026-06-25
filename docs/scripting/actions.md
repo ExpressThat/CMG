@@ -511,6 +511,21 @@ expectTitle "Checkout"
 
 Fails unless the current URL or title contains the expected text.
 
+### `expectValue`, `expectAttribute`, `expectChecked`, And `expectCount`
+
+```text
+expectValue "#email" "agent@example.com" timeout=5000
+expectAttribute "#save" "aria-label" "Save"
+expectChecked "#terms" true
+expectCount ".result" 3 timeout=5000
+```
+
+Runs browser-side assertions for common UI state checks. `expectValue`, `expectAttribute`, and `expectChecked` resolve CMG locators before checking the matched element. `expectCount` counts matching CSS elements and supports zero-count assertions.
+
+Options:
+
+- `timeout`: Optional timeout in milliseconds. Default is `0`, which checks once.
+
 ### `waitForUrl`
 
 ```text
