@@ -544,14 +544,16 @@ Output:
 
 Tag injection actions do not move the virtual pointer. Wrap them in `step`, `caption`, or a `gif` block when the recording should narrate page setup.
 
-## `setViewport`
+## `setViewport`, `viewport`, And `setViewportSize`
 
 ```text
 setViewport width=1280 height=720
 setViewport width=390 height=844 deviceScaleFactor=2 isMobile=true hasTouch=true
+viewport 390 844
+setViewportSize 390 844
 ```
 
-Sets viewport metrics for the primary page target.
+Sets viewport metrics for the primary page target. `viewport` is a Cypress-style alias and `setViewportSize` is a Playwright-style alias. The aliases accept either positional width/height arguments or the same options as `setViewport`.
 
 Required options:
 
@@ -563,6 +565,10 @@ Optional options:
 - `deviceScaleFactor`: Device scale factor. Default is `1`.
 - `isMobile`: Optional boolean. Default is `false`.
 - `hasTouch`: Optional boolean. Default is `false`.
+
+Output:
+
+- A normal `PASS <line> <action>` line. Viewport actions do not emit a separate data line.
 
 ## `emulate`
 

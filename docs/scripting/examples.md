@@ -79,7 +79,7 @@ assertText "#dropQueue" "browser launch"
 Mobile viewport setup:
 
 ```text
-setViewport width=390 height=844 deviceScaleFactor=2 isMobile=true hasTouch=true
+viewport 390 844 deviceScaleFactor=2 isMobile=true hasTouch=true
 navigate "https://example.com/mobile"
 ```
 

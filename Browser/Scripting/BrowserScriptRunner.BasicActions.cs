@@ -203,21 +203,6 @@ public sealed partial class BrowserScriptRunner
     private static string QuoteScriptString(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal).Replace("\r", "\\r", StringComparison.Ordinal).Replace("\n", "\\n", StringComparison.Ordinal)}\"";
 
-    private static IReadOnlyList<string> ExecuteSetViewport(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
-    {
-        RequireArgumentCount(action, 0, 0);
-        automationClient.SetViewport(remoteDebuggingUrl, GetViewportOptions(action));
-        return [];
-    }
-
-    private static ViewportOptions GetViewportOptions(BrowserScriptAction action) =>
-        new(
-            GetIntOption(action, "width", required: true),
-            GetIntOption(action, "height", required: true),
-            GetDoubleOption(action, "deviceScaleFactor", 1),
-            GetBoolOption(action, "isMobile"),
-            GetBoolOption(action, "hasTouch"));
-
     private static IReadOnlyList<string> ExecuteMoveMouse(BrowserScriptAction action, ScriptGifRecorder? recorder, bool dragging)
     {
         if (recorder is null)

@@ -2,7 +2,7 @@
 set page "C:\Projects\CMG\index.html"
 set button "#openConfirmDialog"
 
-setViewport width=1100 height=800
+viewport 1100 800
 navigate "${page}"
 waitForElement "${button}" timeout=5000
 

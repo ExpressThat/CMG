@@ -34,7 +34,8 @@ public sealed class CmgActionLowerer
             "waitforselector" or "waitforfunction" or "waitfortimeout" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "localstorage" or "sessionstorage" or "cookie" => [ToLine(action.Kind, action.Arguments, action.Options)],
-            "setviewport" => [ToLine("setViewport", [], action.Options)],
+            "setviewport" => [ToLine("setViewport", action.Arguments, action.Options)],
+            "viewport" or "setviewportsize" => [LowerViewportAlias(action)],
             "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "selectoption" or "html" or "screenshot" or "asserttext" =>
                 LowerSelectorCommand(action.Kind, action),
             "goto" or "visit" => [ToLine("navigate", action.Arguments, action.Options)],
@@ -100,6 +101,28 @@ public sealed class CmgActionLowerer
         }
 
         return action.Arguments.Count > 0 ? [ToLine("waitForElement", action.Arguments, action.Options)] : [];
+    }
+
+    private static string LowerViewportAlias(CmgNode action)
+    {
+        if (action.Arguments.Count is 0)
+        {
+            return ToLine("setViewport", [], action.Options);
+        }
+
+        if (action.Arguments.Count is 2 &&
+            !action.Options.ContainsKey("width") &&
+            !action.Options.ContainsKey("height"))
+        {
+            var options = new Dictionary<string, string>(action.Options)
+            {
+                ["width"] = action.Arguments[0],
+                ["height"] = action.Arguments[1]
+            };
+            return ToLine("setViewport", [], options);
+        }
+
+        return ToLine("setViewport", action.Arguments, action.Options);
     }
 
     private static IReadOnlyList<string> LowerSelectorCommand(string command, CmgNode action)

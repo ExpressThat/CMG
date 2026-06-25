@@ -33,6 +33,7 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("waitForUrl", "/checkout", "waitForUrl \"/checkout\"")]
     [InlineData("waitForLoadState", "complete", "waitForLoadState \"complete\"")]
     [InlineData("waitForNavigation", "/checkout", "waitForNavigation \"/checkout\"")]
+    [InlineData("setViewportSize", null, "setViewport width=\"390\" height=\"844\"", null, "390", "844")]
     [InlineData("waitForPopup", null, "waitForPopup")]
     [InlineData("waitForFunction", "window.ready", "waitForFunction \"window.ready\"")]
     [InlineData("waitForSelector", "#ready", "waitForSelector \"#ready\"")]
@@ -66,12 +67,26 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("setOffline", "true", "setOffline \"true\"")]
     [InlineData("clearExtraHTTPHeaders", null, "clearExtraHTTPHeaders")]
     [InlineData("apiRequest", "GET", "apiRequest \"GET\" \"https://example.test\"", "https://example.test")]
-    public void Lower_SharedActionsPassThrough(string kind, string? arg, string expected, string? secondArg = null)
+    public void Lower_SharedActionsPassThrough(
+        string kind,
+        string? arg,
+        string expected,
+        string? secondArg = null,
+        string? thirdArg = null,
+        string? fourthArg = null)
     {
-        var args = new[] { arg, secondArg }.Where(value => value is not null).Cast<string>().ToArray();
+        var args = new[] { arg, secondArg, thirdArg, fourthArg }.Where(value => value is not null).Cast<string>().ToArray();
         var line = Assert.Single(new CmgActionLowerer().Lower(Node(kind, args)));
 
         Assert.Equal(expected, line);
+    }
+
+    [Fact]
+    public void Lower_ViewportAliasWithOptionsPassesThroughAsSetViewport()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("viewport", [], new Dictionary<string, string> { ["width"] = "390", ["height"] = "844" })));
+
+        Assert.Equal("setViewport width=\"390\" height=\"844\"", line);
     }
 
     [Fact]

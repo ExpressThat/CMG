@@ -39,6 +39,29 @@ public sealed class BrowserScriptRunnerEmulationTests
         Assert.True(client.LastViewportOptions?.HasTouch);
     }
 
+    [Theory]
+    [InlineData("viewport 390 844")]
+    [InlineData("setViewportSize 390 844")]
+    [InlineData("viewport width=390 height=844")]
+    public void RunText_ViewportAliasesSetViewport(string script)
+    {
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText(script, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(new(390, 844), client.LastViewport);
+    }
+
+    [Fact]
+    public void RunText_ViewportAliasRejectsInvalidShape()
+    {
+        var result = Runner().RunText("viewport 390", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("expects width=<pixels> height=<pixels>", result.Error);
+    }
+
     [Fact]
     public void RunText_SetViewportRejectsInvalidAdvancedOptions()
     {
