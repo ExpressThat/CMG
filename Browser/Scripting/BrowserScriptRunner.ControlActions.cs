@@ -18,6 +18,8 @@ public sealed partial class BrowserScriptRunner
             case "call":
                 ExecuteMacro(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
+            case "return":
+                return ReturnValue(action);
             case "if":
                 ExecuteIf(remoteDebuggingUrl, automationClient, [action], context, recorder, output);
                 return output;
@@ -40,6 +42,8 @@ public sealed partial class BrowserScriptRunner
 
     private static bool IsControlAction(string name) =>
         name.Equals("macro", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("call", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("return", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("if", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("elseif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("else", StringComparison.OrdinalIgnoreCase) ||

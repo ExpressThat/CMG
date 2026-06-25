@@ -156,6 +156,44 @@ public sealed class BrowserScriptRunnerControlFlowTests
     }
 
     [Fact]
+    public void RunText_SetInsideMacroDoesNotMutateCallerVariable()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("outer");
+        var result = Runner().RunText("""
+        set name "outer"
+        macro changeName {
+          set name "inner"
+        }
+        call changeName
+        evaluate "'${name}'"
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
+        Assert.Contains("EVALUATE 006 outer", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_MacroCanReturnVariableValue()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("Agent");
+        var result = Runner().RunText("""
+        macro readName value {
+          return "${value}"
+        }
+        set name {
+          call readName "Agent"
+        }
+        evaluate "'${name}'"
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
+        Assert.Contains("SET 004 name Agent", result.StdoutLines);
+        Assert.Contains("EVALUATE 007 Agent", result.StdoutLines);
+    }
+
+    [Fact]
     public void Run_ImportsMacrosRelativeToScriptFile()
     {
         var directory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));

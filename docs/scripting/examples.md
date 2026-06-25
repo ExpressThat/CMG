@@ -123,7 +123,7 @@ foreachSelector action ".command" {
 }
 ```
 
-Macros can receive plain values, variables, selectors, or temporary selectors from `foreachSelector`. Control blocks and macros can be nested in any combination. Macro parameters and loop variables are scoped to the current call or iteration, and helper macros declared inside a macro or branch do not leak outward.
+Macros can receive plain values, variables, selectors, or temporary selectors from `foreachSelector`. Control blocks and macros can be nested in any combination. Macro parameters and variables set inside a macro are scoped to the current call, loop variables are scoped to the current iteration, and helper macros declared inside a macro or branch do not leak outward.
 
 This direct-script example is available as `demo-scripts/30-control-flow-macros.cmgscript` and imports `demo-scripts/30-shared-macros.cmgscript`. The structured `cmg run` form is available as `demo-scripts/31-control-flow-runner.cmgscript`.
 

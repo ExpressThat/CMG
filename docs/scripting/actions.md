@@ -1621,7 +1621,7 @@ if (assertText "#status" "Saved") {
 
 Only the first matching branch runs. Branch bodies can contain any action, including nested control flow, loops, macros, `gif` blocks, pointer actions, and non-visual actions. Macros declared inside a branch are scoped to that branch body.
 
-### `macro` And `call`
+### `macro`, `call`, And `return`
 
 ```text
 macro fillProfile name email {
@@ -1634,7 +1634,7 @@ call fillProfile "Agent" "agent@example.com"
 
 `macro` registers a reusable block. `call` executes it. Parameters are untyped values, so callers can pass variables, selectors, temporary selectors from `foreachSelector`, URLs, file paths, or any other string value. Macro calls can be nested, and macros can declare helper macros inside their body.
 
-Macro parameters are scoped to the call. Macros declared inside another macro, branch, or loop are restored when that block finishes, so helper macros do not leak into later steps. Top-level macros in `cmg run` are registered before each planned test.
+Macro parameters and variables set inside the macro body are scoped to the call. A `set` inside a macro does not overwrite a variable with the same name in the caller. Macros declared inside another macro, branch, or loop are restored when that block finishes, so helper macros do not leak into later steps. Top-level macros in `cmg run` are registered before each planned test.
 
 `set` can capture macro output:
 
@@ -1648,7 +1648,19 @@ set title {
 }
 ```
 
-The variable receives only the final payload value from the macro body, such as the document title string.
+The variable receives only the final payload value from the macro body, such as the document title string. Use `return` when a macro should explicitly return a variable or static value:
+
+```text
+macro labelFor item {
+  return "label-${item}"
+}
+
+set label {
+  call labelFor "save"
+}
+```
+
+`return` requires at least one argument and emits `RETURN <line> <value>` when run directly.
 
 ### `for`, `foreach`, And `foreachSelector`
 

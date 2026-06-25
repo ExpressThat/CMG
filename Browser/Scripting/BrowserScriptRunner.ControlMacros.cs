@@ -34,8 +34,34 @@ public sealed partial class BrowserScriptRunner
             throw new ScriptExecutionException($"Macro '{macro.Arguments[0]}' expects {parameterNames.Length} argument(s), got {values.Length}.");
         }
 
-        WithVariables(context, parameterNames.Zip(values), () =>
+        WithMacroVariables(context, parameterNames.Zip(values), () =>
             ExecuteActions(remoteDebuggingUrl, automationClient, macro.Children, context, recorder, output));
+    }
+
+    private static IReadOnlyList<string> ReturnValue(BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, int.MaxValue);
+        return [$"RETURN {action.LineNumber:000} {string.Join(' ', action.Arguments)}"];
+    }
+
+    private static void WithMacroVariables(ScriptExecutionContext context, IEnumerable<(string Key, string Value)> values, Action body)
+    {
+        var previousVariables = context.Variables.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        var previousMacros = context.Macros.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            foreach (var (key, value) in values)
+            {
+                context.Variables[key] = value;
+            }
+
+            body();
+        }
+        finally
+        {
+            RestoreVariables(context, previousVariables);
+            RestoreMacros(context, previousMacros);
+        }
     }
 
     private static void WithVariables(ScriptExecutionContext context, IEnumerable<(string Key, string Value)> values, Action body)
@@ -66,6 +92,15 @@ public sealed partial class BrowserScriptRunner
             }
 
             RestoreMacros(context, previousMacros);
+        }
+    }
+
+    private static void RestoreVariables(ScriptExecutionContext context, Dictionary<string, string> previous)
+    {
+        context.Variables.Clear();
+        foreach (var (name, value) in previous)
+        {
+            context.Variables[name] = value;
         }
     }
 

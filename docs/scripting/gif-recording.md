@@ -22,7 +22,7 @@ cmg run flow.cmgscript --gif demo-output\runner-gifs
 - Screenshot actions still scroll the selected element into view before capture.
 - Pointer actions such as `click`, `dblclick`, `doubleClick`, `rightClick`, `contextClick`, `tap`, `touchTap`, `type`, `fill`, `clear`, `hover`, `select`, `selectOption`, `check`, `uncheck`, `focus`, `blur`, `selectText`, and `dragAndDrop` move the virtual pointer before acting so recorded GIFs show the same target the browser receives.
 - File, fixture, init-script, runtime tag injection, explicit event dispatch, PDF, API, explicit wait, navigation wait, clipboard, dialog, browser environment, network environment, network mock, WebSocket, worker, coverage, page-error, clock, browser context, accessibility, element getter, element-state assertion, and storage actions such as `localStorage`, `sessionStorage`, and `cookie` do not move the virtual pointer. Wrap them in `step`, `caption`, or `gif` blocks when their result should be visible to a GIF viewer.
-- Structural actions such as `import`, `macro`, `call`, `if`, `elseif`, `else`, `for`, `foreach`, and `foreachSelector` do not move the virtual pointer by themselves. Pointer-aware actions inside those blocks still use the same virtual pointer movement, pointer events, hover behavior, drag ghosts, and captions as top-level actions.
+- Structural actions such as `import`, `macro`, `call`, `return`, `if`, `elseif`, `else`, `for`, `foreach`, and `foreachSelector` do not move the virtual pointer by themselves. Pointer-aware actions inside those blocks still use the same virtual pointer movement, pointer events, hover behavior, drag ghosts, and captions as top-level actions.
 - Delay actions capture a hold frame.
 
 ## Virtual Pointer

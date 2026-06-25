@@ -9,7 +9,7 @@ public sealed partial class CmgActionLowerer
         {
             "step" or "gif" or "recordvideo" or "screencast" => LowerStep(action),
             "macro" or "if" or "elseif" or "else" or "for" or "foreach" or "foreachselector" => LowerControlBlock(action),
-            "call" => [ToLine(action.Kind, action.Arguments, action.Options)],
+            "call" or "return" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "caption" => [ToLine("showMessageBar", action.Arguments)],
             "fill" => LowerFill(action),
             "assertvisible" => LowerSelectorCommand("waitForElement", action),
