@@ -1819,6 +1819,12 @@ Direct browser-control scripts and `cmg run` both support:
 - Alt text locators, for example `"alt=Logo"`.
 - Title locators, for example `"title=Close"`.
 - XPath locators, for example `"xpath=//button[.='Save']"`.
+- Filter locators:
+  - `"first=.item"` resolves the first matching CSS element.
+  - `"last=.item"` resolves the last matching CSS element.
+  - `"nth=.item|2"` resolves the zero-based matching CSS element at index `2`.
+  - `"hasText=.item|Save"` resolves the first matching CSS element whose visible/text content includes `Save`.
+  - `"visible=.item"` resolves the first matching CSS element that has a non-empty box and is not hidden by `display:none` or `visibility:hidden`.
 
 For non-CSS locator forms, CMG resolves the element inside the page, marks it with a temporary `data-cmg-locator-id`, and then runs the normal pointer-aware command against that marker. This keeps GIF pointer movement, browser events, drag ghosts, and screenshots connected to the resolved element.
 
@@ -1828,10 +1834,12 @@ Direct browser-control scripts can pass locator forms as normal arguments or as 
 click text=Save
 type label=Email "agent@example.com"
 click "text=Save changes"
+click "nth=.result|2"
+assertText "hasText=.toast|Saved" "Saved"
 mouseMove selector="text=Drop here" edge=center
 ```
 
-Quote the whole locator token when the locator value contains spaces.
+Quote the whole locator token when the locator value contains spaces or filter separators. Filter locators are resolved to the same temporary element marker as text/role/xpath locators, so pointer-aware actions and GIF recordings target the resolved element.
 
 ## Actionability
 

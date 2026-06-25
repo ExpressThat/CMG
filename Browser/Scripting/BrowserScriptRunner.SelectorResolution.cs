@@ -37,5 +37,6 @@ public sealed partial class BrowserScriptRunner
     }
 
     private static bool IsLocatorOption(string key) =>
-        key is "css" or "testid" or "text" or "role" or "label" or "placeholder" or "alt" or "title" or "xpath";
+        key is "css" or "testid" or "text" or "role" or "label" or "placeholder" or "alt" or "title" or "xpath" or
+            "first" or "last" or "nth" or "hasText" or "visible";
 }

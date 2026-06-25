@@ -122,6 +122,8 @@ dotnet run -- --firefox browser close
 - `38-before-after-all.cmgscript`: Demonstrates root and suite `beforeAll` / `afterAll` hooks.
 - `39-switch-control.cmgscript`: Demonstrates direct-script `switch`, `case`, `default`, and shared word comparison operators.
 - `40-switch-control-runner.cmgscript`: Demonstrates the same switch control flow in the structured runner DSL.
+- `41-locator-filters.cmgscript`: Demonstrates `first=`, `nth=`, `hasText=`, and `visible=` locator filters with pointer-aware actions.
+- `42-locator-filters-runner.cmgscript`: Demonstrates the same locator filters in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

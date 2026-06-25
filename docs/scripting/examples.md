@@ -687,9 +687,13 @@ waitForElement "text=Edit Browser Profile"
 type "label=Profile name" "Locator Agent"
 assertText "text=Edit Browser Profile" "Edit Browser Profile"
 hover "label=Profile name"
+click "nth=.command|1"
+assertText "hasText=.toast|Saved" "Saved"
 ```
 
-The same locator resolver is used by direct browser-control scripts and `cmg run`. Pointer-aware actions still move the virtual pointer to the resolved element marker, so GIFs keep the pointer, browser events, and drag ghost behavior aligned.
+The same locator resolver is used by direct browser-control scripts and `cmg run`. Filter locators such as `first=`, `last=`, `nth=`, `hasText=`, and `visible=` resolve CSS matches into a temporary marker. Pointer-aware actions still move the virtual pointer to the resolved element marker, so GIFs keep the pointer, browser events, and drag ghost behavior aligned.
+
+Filter locator examples are available as `demo-scripts/41-locator-filters.cmgscript`. The structured `cmg run` form is available as `demo-scripts/42-locator-filters-runner.cmgscript`.
 
 ## Pointer Click Variants
 

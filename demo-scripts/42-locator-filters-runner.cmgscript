@@ -1,0 +1,14 @@
+test "locator filters" {
+  setContent "<main><button class='cmd' onclick='result.textContent=\"first\"'>First</button><button class='cmd' onclick='result.textContent=\"second\"'>Second</button><button class='cmd hidden' style='display:none'>Hidden</button><output id='result'>none</output></main>"
+
+  click "nth=.cmd|1"
+  expectText "#result" "second"
+
+  click "first=.cmd"
+  expectText "#result" "first"
+
+  click "hasText=.cmd|Second"
+  expectText "#result" "second"
+
+  click "visible=.cmd"
+}

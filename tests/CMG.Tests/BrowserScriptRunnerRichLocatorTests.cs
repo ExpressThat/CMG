@@ -38,6 +38,17 @@ public sealed class BrowserScriptRunnerRichLocatorTests
     }
 
     [Fact]
+    public void RunText_ClickResolvesFilterLocatorOption()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("click nth=.item|1", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("querySelectorAll('.item')", client.EvaluatedExpressions[0]);
+        Assert.Equal("[data-cmg-locator-id=\"__cmg_locator_1\"]", client.LastClickedSelector);
+    }
+
+    [Fact]
     public void RunText_MouseMoveSelectorUsesResolvedLocator()
     {
         var client = new FakeAutomationClient();

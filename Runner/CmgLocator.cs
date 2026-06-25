@@ -50,7 +50,12 @@ public static class CmgLocator
         locator.StartsWith("placeholder=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("alt=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("title=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("xpath=", StringComparison.OrdinalIgnoreCase);
+        locator.StartsWith("xpath=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("first=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("last=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("nth=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("hasText=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("visible=", StringComparison.OrdinalIgnoreCase);
 
     public static string UnsupportedReason(string locator) => $"Locator '{locator}' is not supported.";
 
@@ -78,8 +83,8 @@ public static class CmgLocator
     {
         var kind = locator[..locator.IndexOf('=')].ToLowerInvariant();
         var value = locator[(locator.IndexOf('=') + 1)..];
-        const string roleHelper = "const implicitRole = e => e.tagName === 'BUTTON' ? 'button' : e.tagName === 'A' && e.hasAttribute('href') ? 'link' : e.tagName === 'INPUT' || e.tagName === 'TEXTAREA' ? 'textbox' : '';";
-        return $"(() => {{ {roleHelper} const element = {BuildElementExpression(kind, value)}; if (!element) throw new Error('No element matched locator {locator}'); element.setAttribute('data-cmg-locator-id', '{marker}'); return true; }})()";
+        const string helpers = "const implicitRole = e => e.tagName === 'BUTTON' ? 'button' : e.tagName === 'A' && e.hasAttribute('href') ? 'link' : e.tagName === 'INPUT' || e.tagName === 'TEXTAREA' ? 'textbox' : ''; const IsVisible = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };";
+        return $"(() => {{ {helpers} const element = {BuildElementExpression(kind, value)}; if (!element) throw new Error('No element matched locator {locator}'); element.setAttribute('data-cmg-locator-id', '{marker}'); return true; }})()";
     }
 
     private static string BuildElementExpression(string kind, string value) =>
@@ -89,8 +94,38 @@ public static class CmgLocator
             "role" => $"Array.from(document.querySelectorAll('body *')).find(e => ((e.getAttribute('role') || implicitRole(e)) === {QuoteJs(value)}))",
             "label" => $"Array.from(document.querySelectorAll('label')).find(l => (l.innerText || '').includes({QuoteJs(value)}))?.control",
             "xpath" => $"document.evaluate({QuoteJs(value)}, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue",
+            "first" => $"document.querySelector({QuoteJs(value)})",
+            "last" => $"Array.from(document.querySelectorAll({QuoteJs(value)})).at(-1)",
+            "nth" => BuildNthExpression(value),
+            "hastext" => BuildHasTextExpression(value),
+            "visible" => $"Array.from(document.querySelectorAll({QuoteJs(value)})).find(IsVisible)",
             _ => "null"
         };
+
+    private static string BuildNthExpression(string value)
+    {
+        return SplitLocatorValue(value) is { } parts
+            ? $"Array.from(document.querySelectorAll({QuoteJs(parts.Left)}))[Number({QuoteJs(parts.Right)})]"
+            : "(() => { throw new Error('Locator nth= requires <selector>|<index>.'); })()";
+    }
+
+    private static string BuildHasTextExpression(string value)
+    {
+        return SplitLocatorValue(value) is { } parts
+            ? $"Array.from(document.querySelectorAll({QuoteJs(parts.Left)})).find(e => (e.innerText || e.textContent || '').includes({QuoteJs(parts.Right)}))"
+            : "(() => { throw new Error('Locator hasText= requires <selector>|<text>.'); })()";
+    }
+
+    private static (string Left, string Right)? SplitLocatorValue(string value)
+    {
+        var index = value.LastIndexOf('|');
+        if (index <= 0 || index == value.Length - 1)
+        {
+            return null;
+        }
+
+        return (value[..index], value[(index + 1)..]);
+    }
 
     private static string QuoteJs(string value) => $"'{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("'", "\\'", StringComparison.Ordinal)}'";
 
