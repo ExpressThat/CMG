@@ -391,6 +391,15 @@ Line 4: waitForEvent failed. waitForEvent console requires a matcher argument or
 
 `waitForEvent` maps provider-style event names to CMG's explicit waits. Matcher-based events require either a second argument or one of `pattern=`, `text=`, `message=`, or `url=`.
 
+## Exposed Function Failure
+
+```text
+Line 2: exposeFunction failed. exposeFunction requires a valid JavaScript identifier name.
+Line 3: exposeBinding failed. CMG exposed function cmgBinding must evaluate to a function.
+```
+
+Exposed page functions require a valid `window` property identifier and a JavaScript function expression.
+
 ## Network Wait Failure
 
 ```text

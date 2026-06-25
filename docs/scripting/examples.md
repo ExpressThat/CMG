@@ -272,6 +272,18 @@ dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript --trace demo-output\t
 
 Each trace is a JSON file with test metadata, steps, output, errors, and GIF references.
 
+## Exposed Page Functions
+
+```text
+test "uses exposed helper" {
+  exposeFunction cmgAdd "(a, b) => a + b"
+  evaluate "window.__sum = window.cmgAdd(2, 3)"
+  waitForFunction "window.__sum === 5"
+}
+```
+
+Exposed functions are page-side helpers available in direct browser-control scripts and `cmg run`. They do not call back into the CMG host process, so they work the same way across supported browser clients.
+
 ## Filtering, Sharding, And Retries
 
 ```powershell

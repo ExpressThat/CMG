@@ -53,7 +53,7 @@ public sealed class CmgActionLowerer
             "accessibilitysnapshot" or "expectaccessible" or
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" or
             "printpdf" or "pdf" or
-            "addinitscript" or "evaluateonnewdocument" or "addscripttag" or "addstyletag" or "url" or "title" or "content" or "setcontent" or
+            "addinitscript" or "evaluateonnewdocument" or "addscripttag" or "addstyletag" or "exposefunction" or "exposebinding" or "url" or "title" or "content" or "setcontent" or
             "evaluate" or "dispatchevent" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or "set" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),

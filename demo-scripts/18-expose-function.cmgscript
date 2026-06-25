@@ -1,0 +1,5 @@
+# Demonstrates page-side exposed functions.
+
+exposeFunction cmgAdd "(a, b) => a + b"
+evaluate "window.__cmgExposeResult = window.cmgAdd(2, 3)"
+waitForFunction "window.__cmgExposeResult === 5" timeout=5000

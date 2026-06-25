@@ -452,6 +452,26 @@ Output:
 
 Init-script actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful.
 
+## `exposeFunction` And `exposeBinding`
+
+```text
+exposeFunction cmgAdd "(a, b) => a + b"
+exposeBinding cmgBinding "(source, value) => `${source.name}:${value}`"
+```
+
+Installs a named page-side function in the current page and future navigations. `exposeFunction` calls the supplied JavaScript function with the page arguments. `exposeBinding` calls the supplied function with a source object as the first argument, followed by page arguments.
+
+Arguments:
+
+- First argument: JavaScript identifier to add to `window`.
+- Second argument: JavaScript function expression to execute when the page calls the exposed name.
+
+Output:
+
+- `EXPOSED_FUNCTION <line> <name>` when the function is installed.
+
+CMG exposes deterministic page-side functions instead of host-process callbacks. This keeps the feature available in both direct scripts and `cmg run`, including Firefox, reports, traces, and GIF narration. These actions do not move the virtual pointer.
+
 ## `addScriptTag` And `addStyleTag`
 
 ```text

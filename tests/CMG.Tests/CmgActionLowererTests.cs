@@ -175,6 +175,15 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_ExposeFunctionActionsPassThrough()
+    {
+        var lowerer = new CmgActionLowerer();
+
+        Assert.Equal("exposeFunction \"cmg\" \"() => true\"", Assert.Single(lowerer.Lower(Node("exposeFunction", ["cmg", "() => true"], []))));
+        Assert.Equal("exposeBinding \"cmg\" \"(source) => source.name\"", Assert.Single(lowerer.Lower(Node("exposeBinding", ["cmg", "(source) => source.name"], []))));
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));
