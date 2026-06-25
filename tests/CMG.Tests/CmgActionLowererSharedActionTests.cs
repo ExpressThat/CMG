@@ -25,6 +25,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("keyUp", "Shift", "keyUp \"Shift\"")]
     [InlineData("insertText", "hello", "insertText \"hello\"")]
     [InlineData("navigate", "index.html", "navigate \"index.html\"")]
+    [InlineData("goto", "index.html", "navigate \"index.html\"")]
+    [InlineData("visit", "index.html", "navigate \"index.html\"")]
     [InlineData("reload", null, "reload")]
     [InlineData("goBack", null, "goBack")]
     [InlineData("goForward", null, "goForward")]

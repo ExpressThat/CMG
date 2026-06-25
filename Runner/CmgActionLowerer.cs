@@ -36,6 +36,7 @@ public sealed class CmgActionLowerer
             "setviewport" => [ToLine("setViewport", [], action.Options)],
             "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "selectoption" or "html" or "screenshot" or "asserttext" =>
                 LowerSelectorCommand(action.Kind, action),
+            "goto" or "visit" => [ToLine("navigate", action.Arguments, action.Options)],
             "navigate" or "waitforelement" or
             "press" or "keydown" or "keyup" or "inserttext" or "showmessagebar" or "delay" or "screenshotpage" or
             "setclipboard" or "writeclipboard" or "readclipboard" or "clearclipboard" or

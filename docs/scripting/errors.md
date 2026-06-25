@@ -42,7 +42,7 @@ Check the path passed to `--file`.
 
 ## Navigation Failed
 
-Invalid URLs and missing path-like local targets fail the `navigate` action:
+Invalid URLs and missing path-like local targets fail the `navigate`, `goto`, and `visit` actions:
 
 ```text
 Line 1: navigate failed. Cannot navigate to invalid URL

@@ -4,13 +4,15 @@ All actions fail fast. If an action fails, later actions are not executed.
 
 Browser JavaScript dialogs are not silently removed, accepted, or dismissed through the browser protocol. Use `captureDialogs` and `setDialogBehavior` before the page action that is expected to call `alert`, `confirm`, or `prompt`.
 
-## `navigate`
+## `navigate`, `goto`, And `visit`
 
 ```text
 navigate "<url-or-path>"
+goto "<url-or-path>"
+visit "<url-or-path>"
 ```
 
-Navigates the primary page target to a URL, data URL, or local file path.
+Navigates the primary page target to a URL, data URL, or local file path. `goto` is a Playwright/Puppeteer-style alias and `visit` is a Cypress-style alias. All three use the same output and failure behavior.
 
 On success, stdout includes a `NAVIGATED <line> <final-url>` line after the `PASS` line. Local file paths must exist; missing path-like targets fail before the browser is asked to navigate.
 
@@ -18,6 +20,7 @@ Example:
 
 ```text
 navigate "C:\Projects\CMG\index.html"
+visit "https://example.com"
 ```
 
 ## `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, And `waitForNavigation`

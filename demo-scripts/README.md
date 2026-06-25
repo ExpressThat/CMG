@@ -105,6 +105,7 @@ dotnet run -- --firefox browser close
 - `22-browser-environment.cmgscript`: Demonstrates page-side browser environment controls.
 - `23-record-video-alias.cmgscript`: Demonstrates `recordVideo` as a CMG GIF recording alias.
 - `24-touch-clipboard.cmgscript`: Demonstrates touch-style `tap` and deterministic page-side clipboard actions.
+- `25-provider-navigation-aliases.cmgscript`: Demonstrates `visit` and `goto` navigation aliases.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

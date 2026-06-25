@@ -8,6 +8,17 @@ Record a demo as a GIF:
 dotnet run -- browser control script --file demo-scripts\01-dialog-flow.cmgscript --gif demo-output\dialog-flow.gif
 ```
 
+## Provider Navigation Aliases
+
+```text
+visit "C:\Projects\CMG\index.html"
+waitForElement "#openProfileDialog"
+goto "C:\Projects\CMG\index.html"
+waitForElement "#openProfileDialog"
+```
+
+This example is available as `demo-scripts/25-provider-navigation-aliases.cmgscript`.
+
 ## Dialog Flow
 
 ```text
