@@ -28,6 +28,18 @@ public sealed class CmgNetworkScriptsTests
     }
 
     [Fact]
+    public void Route_CanMatchMethodAndLimitUses()
+    {
+        var action = Node("route", ["/api"], new Dictionary<string, string> { ["method"] = "post", ["times"] = "1" });
+        var script = CmgNetworkScripts.Route(action);
+
+        Assert.Contains("method: 'POST'", script);
+        Assert.Contains("times: 1", script);
+        Assert.Contains("__cmgTakeRoute", script);
+        Assert.Contains("splice", script);
+    }
+
+    [Fact]
     public void WaitForResponse_ReportsTimeoutPattern()
     {
         var action = Node("waitForResponse", ["/api"], new Dictionary<string, string> { ["timeout"] = "1000" });

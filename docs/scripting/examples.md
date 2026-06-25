@@ -694,6 +694,12 @@ test "handles intercepted outage" {
   evaluate "fetch('/api/profile').catch(error => error.message)"
   waitForRequestFailed "/api/profile"
 }
+
+test "uses one-shot post intercept" {
+  intercept "/api/profile" method=POST times=1 status=201 body="{\"saved\":true}" contentType="application/json"
+  evaluate "fetch('/api/profile', { method: 'POST' }).then(response => response.status)"
+  waitForResponse "/api/profile"
+}
 ```
 
 ## API Request

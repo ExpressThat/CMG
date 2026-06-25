@@ -11,8 +11,18 @@ public sealed partial class BrowserScriptRunner
         BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
+        ValidateRouteOptions(action);
         automationClient.Evaluate(remoteDebuggingUrl, CmgNetworkScripts.Route(ToNode(action)));
         return [$"ROUTE {action.LineNumber:000} {action.Arguments[0]}"];
+    }
+
+    private static void ValidateRouteOptions(BrowserScriptAction action)
+    {
+        if (action.Options.TryGetValue("times", out var times) &&
+            (!int.TryParse(times, out var parsed) || parsed <= 0))
+        {
+            throw new ScriptExecutionException($"{action.Name} option times= must be a positive integer.");
+        }
     }
 
     private static IReadOnlyList<string> ExecuteClearRoutes(

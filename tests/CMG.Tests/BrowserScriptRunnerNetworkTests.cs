@@ -28,6 +28,26 @@ public sealed class BrowserScriptRunnerNetworkTests
     }
 
     [Fact]
+    public void RunText_RouteSupportsMethodAndTimesOptions()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("route \"/api\" method=POST times=1", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("method: 'POST'", client.LastExpression);
+        Assert.Contains("times: 1", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_RouteRejectsInvalidTimesOption()
+    {
+        var result = Runner().RunText("route \"/api\" times=never", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("times= must be a positive integer", result.Error);
+    }
+
+    [Fact]
     public void RunText_ClearRoutesOutputsParseableLine()
     {
         var result = Runner().RunText("clearRoutes", "debug", new FakeAutomationClient());

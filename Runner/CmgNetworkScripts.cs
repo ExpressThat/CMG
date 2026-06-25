@@ -10,7 +10,9 @@ public static class CmgNetworkScripts
         var contentType = action.Options.TryGetValue("contentType", out var typeValue) ? typeValue : "text/plain";
         var abort = IsAbortRoute(action) ? "true" : "false";
         var error = action.Options.TryGetValue("error", out var errorValue) ? errorValue : "Request aborted by CMG route";
-        return InstallPrelude() + $"window.__cmgRoutes.push({{ pattern: {Quote(pattern)}, status: {status}, body: {Quote(body)}, contentType: {Quote(contentType)}, abort: {abort}, error: {Quote(error)} }}); true";
+        var method = action.Options.TryGetValue("method", out var methodValue) ? methodValue.ToUpperInvariant() : string.Empty;
+        var times = TryReadTimes(action, out var timesValue) ? timesValue.ToString() : "null";
+        return InstallPrelude() + $"window.__cmgRoutes.push({{ pattern: {Quote(pattern)}, method: {Quote(method)}, times: {times}, status: {status}, body: {Quote(body)}, contentType: {Quote(contentType)}, abort: {abort}, error: {Quote(error)} }}); true";
     }
 
     public static string ClearRoutes() => "window.__cmgRoutes = []; true";
@@ -95,6 +97,18 @@ public static class CmgNetworkScripts
           window.__cmgRequests = window.__cmgRequests || [];
           window.__cmgResponses = window.__cmgResponses || [];
           window.__cmgRequestFailures = window.__cmgRequestFailures || [];
+          window.__cmgTakeRoute = (url, method) => {
+            const index = window.__cmgRoutes.findIndex(route =>
+              url.includes(route.pattern) &&
+              (!route.method || route.method === String(method || 'GET').toUpperCase()));
+            if (index < 0) return null;
+            const route = window.__cmgRoutes[index];
+            if (Number.isFinite(route.times)) {
+              route.times -= 1;
+              if (route.times <= 0) window.__cmgRoutes.splice(index, 1);
+            }
+            return route;
+          };
           if (!window.__cmgFetchPatched) {
             window.__cmgFetchPatched = true;
             const originalFetch = window.fetch.bind(window);
@@ -102,7 +116,7 @@ public static class CmgNetworkScripts
               const url = typeof input === 'string' ? input : input.url;
               const method = init?.method || input?.method || 'GET';
               window.__cmgRequests.push({ method, url, type: 'fetch', body: init?.body ? String(init.body) : '' });
-              const route = window.__cmgRoutes.find(r => url.includes(r.pattern));
+              const route = window.__cmgTakeRoute(url, method);
               if (route) {
                 if (route.abort) {
                   window.__cmgRequestFailures.push({ method, url, type: 'fetch', mocked: true, error: route.error || 'Request aborted by CMG route' });
@@ -139,7 +153,7 @@ public static class CmgNetworkScripts
               const send = xhr.send.bind(xhr);
               xhr.send = body => {
                 window.__cmgRequests.push({ method, url, type: 'xhr', body: body ? String(body) : '' });
-                const route = window.__cmgRoutes.find(r => url.includes(r.pattern));
+                const route = window.__cmgTakeRoute(url, method);
                 if (!route) {
                   xhr.addEventListener('loadend', () => window.__cmgResponses.push({ method, url, status: xhr.status, mocked: false, type: 'xhr', body: xhr.responseText || '', contentType: xhr.getResponseHeader('content-type') || 'text/plain' }), { once: true });
                   xhr.addEventListener('error', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Network error' }), { once: true });
@@ -190,4 +204,12 @@ public static class CmgNetworkScripts
 
     private static bool IsTrue(string? value) =>
         string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+
+    private static bool TryReadTimes(CmgNode action, out int times)
+    {
+        times = 0;
+        return action.Options.TryGetValue("times", out var value) &&
+            int.TryParse(value, out times) &&
+            times > 0;
+    }
 }
