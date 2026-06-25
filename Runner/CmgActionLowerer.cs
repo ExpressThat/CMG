@@ -62,7 +62,8 @@ public sealed class CmgActionLowerer
             "accessibilitysnapshot" or "expectaccessible" or
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" or
             "printpdf" or "pdf" or
-            "addinitscript" or "evaluateonnewdocument" or "addscripttag" or "addstyletag" or "exposefunction" or "exposebinding" or "url" or "title" or "content" or "setcontent" =>
+            "addinitscript" or "evaluateonnewdocument" or "addscripttag" or "addstyletag" or "exposefunction" or "exposebinding" or "url" or "title" or "content" or "setcontent" or
+            "textcontent" or "innertext" or "inputvalue" or "getattribute" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "set" => LowerSet(action),
             "evaluate" or "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or

@@ -88,6 +88,20 @@ evaluateAll ".command" "elements => elements.length"
 
 This example is available as `demo-scripts/27-selector-evaluation.cmgscript`.
 
+## Element Getters
+
+```text
+navigate "C:\Projects\CMG\index.html"
+textContent "h1"
+set titleText {
+  innerText "h1"
+}
+showMessageBar "${titleText}"
+getAttribute "#openProfileDialog" "id"
+```
+
+This example is available as `demo-scripts/28-element-getters.cmgscript`.
+
 ## Drag And Drop
 
 ```text

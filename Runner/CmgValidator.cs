@@ -48,6 +48,7 @@ public sealed class CmgValidator
             "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "dispatchevent" or "expecttext" or "expectvalue" or
             "expectattribute" or "expectchecked" or "expectcount" or "expectscreenshot" or
             "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or
+            "textcontent" or "innertext" or "inputvalue" or "getattribute" or
             "waitforvisible" or "waitforhidden";
 }
 

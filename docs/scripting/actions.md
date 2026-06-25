@@ -494,6 +494,31 @@ Output:
 
 `url`, `title`, and `content` do not move the virtual pointer. `setContent` changes the page without pointer movement; wrap it in `step`, `caption`, or a `gif` block when a recording should narrate the page content change.
 
+## `textContent`, `innerText`, `inputValue`, And `getAttribute`
+
+```text
+textContent "#status"
+innerText "#status"
+inputValue "#email"
+getAttribute "#profile" "href"
+```
+
+Reads element values from a selector or rich locator. These are non-visual getter actions for direct browser-control scripts and `cmg run`; they do not move the virtual pointer. Missing elements fail with the selector-specific reason from the browser.
+
+The output payload is just the retrieved value, so a `set` block stores only that value:
+
+```text
+set href {
+  getAttribute "#profile" "href"
+}
+```
+
+Output:
+
+- `TEXT <line> <text>` for `textContent` and `innerText`.
+- `VALUE <line> <value>` for `inputValue`.
+- `ATTRIBUTE <line> <value>` for `getAttribute`.
+
 ## `addInitScript` And `evaluateOnNewDocument`
 
 ```text

@@ -117,6 +117,8 @@ public sealed partial class BrowserScriptRunner
             "showmessagebar" or "caption" => ExecuteShowMessageBar(remoteDebuggingUrl, automationClient, action),
             "delay" => ExecuteDelay(action),
             "html" => ExecuteHtml(remoteDebuggingUrl, automationClient, action),
+            "textcontent" or "innertext" or "inputvalue" or "getattribute" =>
+                ExecuteElementGetter(remoteDebuggingUrl, automationClient, action),
             "screenshot" => ExecuteScreenshot(remoteDebuggingUrl, automationClient, action),
             "screenshotpage" => ExecuteScreenshotPage(remoteDebuggingUrl, automationClient, action),
             "printpdf" or "pdf" => ExecutePrintPdf(remoteDebuggingUrl, automationClient, action),
