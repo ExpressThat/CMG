@@ -269,6 +269,15 @@ STEP FAIL line=6 action=waitForResponse reason=Line 6: evaluate failed. Timed ou
 
 Install a matching `route` or make sure the page performs a matching `fetch()` before the timeout expires.
 
+## HAR Failure
+
+```text
+Line 4: replayHar failed. HAR file 'missing.har' was not found.
+Line 5: exportHar failed. exportHar requires path=<file>.
+```
+
+Pass `path=<file>` to both HAR actions. `exportHar` writes captured page-level `fetch` and `XMLHttpRequest` traffic; `replayHar` installs routes from that file.
+
 ## Visual Assertion Failure
 
 ```text

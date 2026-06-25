@@ -734,15 +734,19 @@ storageState load path="artifacts\auth.json"
 
 Saves or loads page storage state for the current browser page. The state includes `localStorage`, `sessionStorage`, and the current `document.cookie` string. This is a runner action and reports `STORAGE_STATE` output lines.
 
-### `route`, `mockResponse`, `waitForResponse`, And `clearRoutes`
+### `route`, `mockResponse`, `waitForResponse`, `exportHar`, `replayHar`, And `clearRoutes`
 
 ```text
 route "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
 waitForResponse "/api/profile" timeout=5000
+exportHar path="artifacts\network.har"
+replayHar path="artifacts\network.har"
 clearRoutes
 ```
 
 Installs a page-level route for `fetch()` and `XMLHttpRequest`. Matching calls receive the configured mocked response and are recorded in the page response log. `waitForResponse` waits for a logged response whose URL contains the pattern.
+
+`exportHar` writes captured response metadata and bodies to a HAR-like JSON file. `replayHar` reads that file and installs routes for each captured request URL.
 
 Notes:
 
@@ -754,6 +758,8 @@ Output:
 - `ROUTE <line> <pattern>` when a route is installed.
 - `ROUTES_CLEARED <line>` when routes are cleared.
 - `RESPONSE <line> <json>` when `waitForResponse` finds a matching response.
+- `HAR_EXPORTED <line> <path>` when a HAR file is written.
+- `HAR_REPLAY <line> routes=<count> <path>` when HAR routes are installed.
 
 ### `expectScreenshot`
 
@@ -789,7 +795,7 @@ Failure reasons include a missing selector argument, no file paths, a local file
 
 ## Planned Parity Actions
 
-Commands such as worker-level interception, multiple simultaneous isolated browser contexts, and protocol-native HAR replay are reserved for remaining parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
+Commands such as worker-level interception and multiple simultaneous isolated browser contexts are reserved for remaining parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
 
 ## Locator Support
 

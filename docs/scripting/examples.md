@@ -273,6 +273,26 @@ test "mocked profile" {
 
 This patches page `fetch` and `XMLHttpRequest` calls and records matching responses for `waitForResponse`.
 
+## HAR Replay
+
+```text
+test "records profile traffic" {
+  navigate "https://example.com"
+  evaluate "fetch('/api/profile').then(r => r.text())"
+  waitForResponse "/api/profile"
+  exportHar path="demo-output\profile.har"
+}
+
+test "replays profile traffic" {
+  replayHar path="demo-output\profile.har"
+  navigate "https://example.com"
+  evaluate "fetch('/api/profile').then(r => r.text())"
+  waitForResponse "/api/profile"
+}
+```
+
+CMG's HAR support is page-level and uses the same `fetch`/`XMLHttpRequest` hook as `route`. It is available in both direct browser-control scripts and `cmg run`.
+
 ## Visual Screenshot Assertion
 
 ```text

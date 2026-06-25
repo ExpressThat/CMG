@@ -27,6 +27,26 @@ public sealed class CmgNetworkScriptsTests
         Assert.Contains("/api", script);
     }
 
+    [Fact]
+    public void ExportHar_BuildsHarFromCapturedResponses()
+    {
+        var script = CmgNetworkScripts.ExportHar();
+
+        Assert.Contains("log", script);
+        Assert.Contains("__cmgResponses", script);
+        Assert.Contains("content", script);
+    }
+
+    [Fact]
+    public void ReplayHar_InstallsRoutesFromEntries()
+    {
+        var script = CmgNetworkScripts.ReplayHar("""{"log":{"entries":[{"request":{"url":"/api"},"response":{"status":200,"content":{"text":"ok"}}}]}}""");
+
+        Assert.Contains("JSON.parse", script);
+        Assert.Contains("__cmgRoutes.push", script);
+        Assert.Contains("/api", script);
+    }
+
     private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyDictionary<string, string> options) =>
         new(2, kind, kind, args, options, []);
 }

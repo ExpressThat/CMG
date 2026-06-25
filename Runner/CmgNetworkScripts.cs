@@ -13,6 +13,25 @@ public static class CmgNetworkScripts
 
     public static string ClearRoutes() => "window.__cmgRoutes = []; true";
 
+    public static string ExportHar() => InstallPrelude() + "JSON.stringify({ log: { version: '1.2', creator: { name: 'CMG', version: '1' }, entries: window.__cmgResponses.map(r => ({ request: { method: r.method || 'GET', url: r.url }, response: { status: r.status, content: { mimeType: r.contentType || 'text/plain', text: r.body || '' } }, _cmgMocked: Boolean(r.mocked), _cmgType: r.type || 'fetch' })) } })";
+
+    public static string ReplayHar(string json) => InstallPrelude() + $$"""
+    (() => {
+      const har = JSON.parse({{Quote(json)}});
+      for (const entry of har.log?.entries || []) {
+        const url = entry.request?.url;
+        if (!url) continue;
+        window.__cmgRoutes.push({
+          pattern: url,
+          status: Number(entry.response?.status || 200),
+          body: entry.response?.content?.text || '',
+          contentType: entry.response?.content?.mimeType || 'text/plain'
+        });
+      }
+      return window.__cmgRoutes.length;
+    })()
+    """;
+
     public static string WaitForResponse(CmgNode action)
     {
         var pattern = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
@@ -44,11 +63,12 @@ public static class CmgNetworkScripts
               const route = window.__cmgRoutes.find(r => url.includes(r.pattern));
               if (route) {
                 const response = new Response(route.body, { status: route.status, headers: { 'content-type': route.contentType } });
-                window.__cmgResponses.push({ url, status: route.status, mocked: true });
+                window.__cmgResponses.push({ method: init?.method || 'GET', url, status: route.status, mocked: true, body: route.body, contentType: route.contentType });
                 return response;
               }
               const response = await originalFetch(input, init);
-              window.__cmgResponses.push({ url, status: response.status, mocked: false });
+              const body = await response.clone().text().catch(() => '');
+              window.__cmgResponses.push({ method: init?.method || 'GET', url, status: response.status, mocked: false, body, contentType: response.headers.get('content-type') || 'text/plain' });
               return response;
             };
           }
@@ -69,10 +89,10 @@ public static class CmgNetworkScripts
               xhr.send = body => {
                 const route = window.__cmgRoutes.find(r => url.includes(r.pattern));
                 if (!route) {
-                  xhr.addEventListener('loadend', () => window.__cmgResponses.push({ url, status: xhr.status, mocked: false, type: 'xhr' }), { once: true });
+                  xhr.addEventListener('loadend', () => window.__cmgResponses.push({ method, url, status: xhr.status, mocked: false, type: 'xhr', body: xhr.responseText || '', contentType: xhr.getResponseHeader('content-type') || 'text/plain' }), { once: true });
                   return send(body);
                 }
-                window.__cmgResponses.push({ url, status: route.status, mocked: true, type: 'xhr' });
+                window.__cmgResponses.push({ method, url, status: route.status, mocked: true, type: 'xhr', body: route.body, contentType: route.contentType });
                 Object.defineProperty(xhr, 'readyState', { configurable: true, get: () => 4 });
                 Object.defineProperty(xhr, 'status', { configurable: true, get: () => route.status });
                 Object.defineProperty(xhr, 'responseText', { configurable: true, get: () => route.body });

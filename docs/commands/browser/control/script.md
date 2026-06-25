@@ -65,13 +65,15 @@ CONSOLE 016 info: settings saved
 ROUTE 017 /api/profile
 RESPONSE 018 {"url":"/api/profile","status":200,"mocked":true}
 ROUTES_CLEARED 019
-FRAME 020 frameClick
-FRAME_EVALUATE 021 Checkout
-CLOCK 022 1700000000000
-TICK 023 250 now=1700000000250
-CLOCK_RESTORED 024
-CONTEXT_CLEARED 025
-CONTEXT_RESET 026
+HAR_EXPORTED 020 C:\Projects\CMG\demo-output\network.har
+HAR_REPLAY 021 routes=1 C:\Projects\CMG\demo-output\network.har
+FRAME 022 frameClick
+FRAME_EVALUATE 023 Checkout
+CLOCK 024 1700000000000
+TICK 025 250 now=1700000000250
+CLOCK_RESTORED 026
+CONTEXT_CLEARED 027
+CONTEXT_RESET 028
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 

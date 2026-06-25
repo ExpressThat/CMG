@@ -37,7 +37,7 @@ public sealed class CmgActionLowerer
             "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "html" or "screenshot" or "asserttext" =>
                 LowerSelectorCommand(action.Kind, action),
             "press" or "showmessagebar" or "delay" or "screenshotpage" or "emulate" or "waitfordownload" or
-            "captureconsole" or "waitforconsole" or "route" or "mockresponse" or "clearroutes" or "waitforresponse" or
+            "captureconsole" or "waitforconsole" or "route" or "mockresponse" or "clearroutes" or "waitforresponse" or "exporthar" or "replayhar" or
             "frameclick" or "frametype" or "framefill" or "framehover" or "framewaitforelement" or "frameasserttext" or "frameevaluate" or
             "clock" or "tick" or "restoreclock" or
             "clearcontext" or "resetcontext" or

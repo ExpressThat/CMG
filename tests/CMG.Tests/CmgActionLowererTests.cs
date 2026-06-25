@@ -145,6 +145,15 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_HarActionsPassThrough()
+    {
+        var node = new CmgNode(1, "exportHar", "exportHar", [], new Dictionary<string, string> { ["path"] = "out.har" }, []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(node));
+
+        Assert.Equal("exportHar path=\"out.har\"", line);
+    }
+
+    [Fact]
     public void Lower_FrameActionsPassThrough()
     {
         var line = Assert.Single(new CmgActionLowerer().Lower(Node("frameClick", ["#frame", "#save"], [])));
