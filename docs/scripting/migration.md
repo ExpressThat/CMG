@@ -101,3 +101,13 @@ suite "profile" {
 Most original action names remain available inside tests: `navigate`, `waitForElement`, `click`, `type`, `clear`, `press`, `hover`, `scrollIntoView`, `select`, `delay`, `html`, `screenshot`, `screenshotPage`, `assertText`, `evaluate`, `setViewport`, `dragAndDrop`, `listTabs`, `activateTab`, `closeTab`, `set`, and `moveMouse`.
 
 Features planned for full Cypress, Puppeteer, and Playwright parity fail explicitly until implemented rather than silently doing nothing.
+
+## Reports And Failure Feedback
+
+Use runner report options to capture diagnostics:
+
+```powershell
+cmg run flow.cmgscript --report-json artifacts\flow.json --report-html artifacts\flow.html --report-junit artifacts\flow.xml
+```
+
+Reports include test status, stdout lines, GIF paths, and step failure reasons. CLI stderr includes `STEP FAIL` lines for failed steps.

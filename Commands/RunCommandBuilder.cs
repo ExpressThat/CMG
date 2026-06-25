@@ -28,11 +28,21 @@ public sealed class RunCommandBuilder
         {
             Description = "Write a JSON test report to this file."
         };
+        var htmlOption = new Option<FileInfo?>("--report-html")
+        {
+            Description = "Write an HTML test report to this file."
+        };
+        var junitOption = new Option<FileInfo?>("--report-junit")
+        {
+            Description = "Write a JUnit XML test report to this file."
+        };
         var command = new Command("run", "Run CMG DSL tests with visual artifacts.")
         {
             pathArgument,
             gifOption,
-            jsonOption
+            jsonOption,
+            htmlOption,
+            junitOption
         };
 
         command.SetAction(parseResult =>
@@ -40,7 +50,9 @@ public sealed class RunCommandBuilder
                 CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 parseResult.GetValue(pathArgument) ?? string.Empty,
                 parseResult.GetValue(gifOption),
-                parseResult.GetValue(jsonOption)));
+                parseResult.GetValue(jsonOption),
+                parseResult.GetValue(htmlOption),
+                parseResult.GetValue(junitOption)));
 
         return command;
     }

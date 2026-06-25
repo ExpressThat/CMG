@@ -24,6 +24,7 @@ public sealed class CmgVisualSegmentExecutor
         var output = new List<string>();
         var gifs = new List<string>();
         var pending = new List<string>();
+        var steps = new List<CmgStepResult>();
         var commandGif = BuildGifPath(test, options);
         var suppressGifBlocks = commandGif is not null;
 
@@ -32,9 +33,9 @@ public sealed class CmgVisualSegmentExecutor
             if (action.Kind.Equals("gif", StringComparison.OrdinalIgnoreCase) && !suppressGifBlocks)
             {
                 var flush = RunLines(pending, remoteDebuggingUrl, gif: null);
-                if (!AppendResult(flush, output, out var error))
+                if (!AppendResult(flush, output, steps, action, gif: null, out var error))
                 {
-                    return Fail(test, output, error, gifs);
+                    return Fail(test, output, error, gifs, steps);
                 }
 
                 var gif = ResolveGifPath(test, action, options);
@@ -45,21 +46,26 @@ public sealed class CmgVisualSegmentExecutor
                     gifs.Add(gif.FullName);
                 }
 
-                if (!AppendResult(blockResult, output, out error))
+                if (!AppendResult(blockResult, output, steps, action, gif, out error))
                 {
-                    return Fail(test, output, error, gifs);
+                    return Fail(test, output, error, gifs, steps);
                 }
 
                 continue;
             }
 
-            pending.AddRange(lowerer.Lower(action));
+            var lines = lowerer.Lower(action);
+            pending.AddRange(lines);
+            if (!action.Kind.Equals("gif", StringComparison.OrdinalIgnoreCase))
+            {
+                steps.Add(new CmgStepResult(action.LineNumber, action.Kind, true, [], null, null));
+            }
         }
 
         var final = RunLines(pending, remoteDebuggingUrl, commandGif);
-        if (!AppendResult(final, output, out var finalError))
+        if (!AppendResult(final, output, steps, test.Actions.LastOrDefault(), commandGif, out var finalError))
         {
-            return Fail(test, output, finalError, gifs);
+            return Fail(test, output, finalError, gifs, steps);
         }
 
         if (commandGif is not null)
@@ -67,7 +73,7 @@ public sealed class CmgVisualSegmentExecutor
             gifs.Add(commandGif.FullName);
         }
 
-        return new CmgTestResult(test.Name, test.SourcePath, true, output, null, string.Join(';', gifs));
+        return new CmgTestResult(test.Name, test.SourcePath, true, output, null, string.Join(';', gifs), steps);
     }
 
     private ScriptRunResult RunLines(List<string> lines, string remoteDebuggingUrl, FileInfo? gif)
@@ -82,15 +88,31 @@ public sealed class CmgVisualSegmentExecutor
         return scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif);
     }
 
-    private static bool AppendResult(ScriptRunResult result, List<string> output, out string? error)
+    private static bool AppendResult(
+        ScriptRunResult result,
+        List<string> output,
+        List<CmgStepResult> steps,
+        CmgNode? action,
+        FileInfo? gif,
+        out string? error)
     {
         output.AddRange(result.StdoutLines);
         error = result.Error;
+        if (!result.Success && action is not null)
+        {
+            steps.Add(new CmgStepResult(action.LineNumber, action.Kind, false, result.StdoutLines, result.Error, gif?.FullName));
+        }
+
         return result.Success;
     }
 
-    private static CmgTestResult Fail(CmgTestCase test, IReadOnlyList<string> output, string? error, IReadOnlyList<string> gifs) =>
-        new(test.Name, test.SourcePath, false, output, error, string.Join(';', gifs));
+    private static CmgTestResult Fail(
+        CmgTestCase test,
+        IReadOnlyList<string> output,
+        string? error,
+        IReadOnlyList<string> gifs,
+        IReadOnlyList<CmgStepResult> steps) =>
+        new(test.Name, test.SourcePath, false, output, error, string.Join(';', gifs), steps);
 
     private static FileInfo? ResolveGifPath(CmgTestCase test, CmgNode action, CmgRunOptions options)
     {

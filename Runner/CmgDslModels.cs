@@ -28,7 +28,9 @@ public sealed record CmgTestCase(
 public sealed record CmgRunOptions(
     BrowserKind BrowserKind,
     DirectoryInfo? GifDirectory,
-    FileInfo? JsonReport);
+    FileInfo? JsonReport,
+    FileInfo? HtmlReport,
+    FileInfo? JUnitReport);
 
 public sealed partial record CmgRunResult(
     bool Success,
@@ -42,4 +44,5 @@ public sealed record CmgTestResult(
     bool Success,
     IReadOnlyList<string> Output,
     string? Error,
-    string? GifPath);
+    string? GifPath,
+    IReadOnlyList<CmgStepResult> Steps);

@@ -54,7 +54,7 @@ public sealed class CmgRunService : ICmgRunService
             RunFile(file, state.RemoteDebuggingUrl, options, tests, output);
         }
 
-        WriteJsonReport(options.JsonReport, tests);
+        WriteReports(options, tests);
         return new CmgRunResult(tests.All(test => test.Success), output, tests, null);
     }
 
@@ -63,7 +63,7 @@ public sealed class CmgRunService : ICmgRunService
         var parse = parser.Parse(file, File.ReadAllText(file));
         if (!parse.Success || parse.Document is null)
         {
-            tests.Add(new CmgTestResult(Path.GetFileName(file), file, false, [], parse.Error, null));
+            tests.Add(new CmgTestResult(Path.GetFileName(file), file, false, [], parse.Error, null, []));
             output.Add($"TEST FAIL {Path.GetFileName(file)}");
             return;
         }
@@ -107,7 +107,14 @@ public sealed class CmgRunService : ICmgRunService
         return new FileInfo(Path.Combine(options.GifDirectory.FullName, $"{safeName}.gif"));
     }
 
-    private static void WriteJsonReport(FileInfo? report, IReadOnlyList<CmgTestResult> tests)
+    private static void WriteReports(CmgRunOptions options, IReadOnlyList<CmgTestResult> tests)
+    {
+        WriteReport(options.JsonReport, CmgJsonReportWriter.Write(tests));
+        WriteReport(options.HtmlReport, CmgHtmlReportWriter.Write(tests));
+        WriteReport(options.JUnitReport, CmgJUnitReportWriter.Write(tests));
+    }
+
+    private static void WriteReport(FileInfo? report, string content)
     {
         if (report is null)
         {
@@ -115,6 +122,6 @@ public sealed class CmgRunService : ICmgRunService
         }
 
         report.Directory?.Create();
-        File.WriteAllText(report.FullName, CmgJsonReportWriter.Write(tests));
+        File.WriteAllText(report.FullName, content);
     }
 }

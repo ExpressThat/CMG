@@ -392,3 +392,138 @@ Example:
 set target "#openProfileDialog"
 click "${target}"
 ```
+
+## Runner-Only Structural Actions
+
+These actions are used with `cmg run`, not `browser control script`.
+
+### `suite`
+
+```text
+suite "name" {
+  test "case" {
+    click "#run"
+  }
+}
+```
+
+Groups tests in reports. Test names are emitted as `<suite> / <test>`.
+
+### `test`
+
+```text
+test "name" {
+  navigate "https://example.com"
+}
+```
+
+Defines a runnable test. `cmg run` exits `1` if any test fails.
+
+### `beforeEach` And `afterEach`
+
+```text
+beforeEach {
+  navigate "https://example.com"
+}
+```
+
+Root hooks apply to every test. Hooks inside a suite apply to that suite.
+
+### `step`
+
+```text
+step "Open dialog" {
+  click "#open"
+}
+```
+
+Adds a visible caption before running the wrapped actions. In GIF mode, the caption appears in the recording.
+
+### `gif`
+
+```text
+gif "open-dialog" {
+  click "#open"
+}
+```
+
+Records only the wrapped actions when `cmg run` is used without command-level `--gif`. If `cmg run --gif <directory>` is used, the entire test is recorded and nested `gif` blocks do not create separate GIFs.
+
+## Runner Convenience Actions
+
+These actions lower to existing visual browser operations so GIF recordings still use the virtual pointer where appropriate.
+
+### `caption`
+
+```text
+caption "message"
+```
+
+Alias for `showMessageBar`.
+
+### `fill`
+
+```text
+fill "#name" "CMG"
+```
+
+Clears the field and types the value. In GIF mode this keeps the same visible pointer and progressive typing behavior as `clear` plus `type`.
+
+### `check` And `uncheck`
+
+```text
+check "#enabled"
+uncheck "#enabled"
+```
+
+Sets a checkbox-like element and dispatches `input` and `change` events.
+
+### `focus`, `blur`, And `selectText`
+
+```text
+focus "#name"
+selectText "#name"
+blur "#name"
+```
+
+Runs the corresponding DOM focus/selection behavior.
+
+### `dblclick` And `rightClick`
+
+```text
+dblclick "#item"
+rightClick "#item"
+```
+
+Moves to the element with the visual hover path, then dispatches the page-facing mouse event.
+
+### `expectUrl` And `expectTitle`
+
+```text
+expectUrl "/checkout"
+expectTitle "Checkout"
+```
+
+Fails unless the current URL or title contains the expected text.
+
+### `waitForURL`
+
+```text
+waitForURL "/dashboard"
+```
+
+Checks the current URL and fails with a clear reason when it does not contain the expected text. Full retrying URL waits are planned.
+
+### `localStorage`, `sessionStorage`, And `cookie`
+
+```text
+localStorage set "token" "abc"
+sessionStorage remove "token"
+cookie set "mode" "demo"
+```
+
+Reads or mutates page storage from the current page context.
+
+## Planned Parity Actions
+
+Commands such as `intercept`, `route`, `apiRequest`, `uploadFiles`, `download`, `popup`, `frame`, device emulation, and full network mocking are reserved for parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.

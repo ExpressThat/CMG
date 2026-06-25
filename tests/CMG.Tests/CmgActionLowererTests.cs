@@ -40,6 +40,32 @@ public sealed class CmgActionLowererTests
         Assert.Contains("planned but not implemented", line);
     }
 
+    [Theory]
+    [InlineData("check")]
+    [InlineData("uncheck")]
+    [InlineData("focus")]
+    [InlineData("blur")]
+    [InlineData("selectText")]
+    [InlineData("dblclick")]
+    [InlineData("rightClick")]
+    public void Lower_VisualElementActionsUsePageFacingCommands(string name)
+    {
+        var lines = new CmgActionLowerer().Lower(Node(name, ["#target"], []));
+
+        Assert.NotEmpty(lines);
+        Assert.All(lines, line => Assert.DoesNotContain("planned but not implemented", line));
+    }
+
+    [Fact]
+    public void Lower_StorageAndExpectationCommands()
+    {
+        var lowerer = new CmgActionLowerer();
+
+        Assert.Contains("localStorage", Assert.Single(lowerer.Lower(Node("localStorage", ["set", "token", "abc"], []))));
+        Assert.Contains("document.cookie", Assert.Single(lowerer.Lower(Node("cookie", [], []))));
+        Assert.Contains("Expected URL", Assert.Single(lowerer.Lower(Node("expectUrl", ["checkout"], []))));
+    }
+
     private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyList<CmgNode> children) =>
         new(1, kind, args.FirstOrDefault() ?? kind, args, new Dictionary<string, string>(), children);
 }

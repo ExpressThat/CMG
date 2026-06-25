@@ -182,3 +182,45 @@ navigate "C:\Projects\CMG\index.html"
 waitForElement "#openProfileDialog"
 "@ | cmg browser control script --file -
 ```
+
+## Runner DSL
+
+Run structured tests with:
+
+```powershell
+dotnet run -- browser launch
+dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript --report-json demo-output\runner.json
+```
+
+Record every test as a GIF:
+
+```powershell
+dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript --gif demo-output\runner-gifs
+```
+
+Record only one block from inside the script:
+
+```text
+test "partial recording" {
+  navigate "C:\Projects\CMG\index.html"
+  waitForElement "#openProfileDialog"
+  gif "open-dialog" {
+    step "Opening dialog" {
+      click "#openProfileDialog"
+    }
+  }
+}
+```
+
+When `cmg run --gif` is used, the whole test is recorded and `gif` blocks are included in that recording instead of producing nested GIF files.
+
+## Runner Reports
+
+```powershell
+dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript `
+  --report-json demo-output\runner.json `
+  --report-html demo-output\runner.html `
+  --report-junit demo-output\runner.xml
+```
+
+Reports include per-test status, output, GIF paths, and step-level failure reasons.

@@ -90,6 +90,26 @@ Line 2: doThing failed. Unknown action 'doThing'.
 
 Check [actions.md](actions.md) for the supported action list.
 
+## Planned But Not Implemented
+
+Some parity actions are reserved in the new runner DSL before their browser protocol implementation is complete:
+
+```text
+Line 4: evaluate failed. CMG action 'intercept' is planned but not implemented in this slice.
+```
+
+This is intentional. The action failed because it is not available yet, not because the page behaved incorrectly.
+
+## Runner Step Failure
+
+`cmg run` prints step diagnostics on stderr:
+
+```text
+STEP FAIL line=8 action=click reason=Line 8: click failed. No element matched selector '#missing'.
+```
+
+JSON and HTML reports include the same reason, the test name, output lines, and any GIF path connected to the failure.
+
 ## Missing Element
 
 ```text

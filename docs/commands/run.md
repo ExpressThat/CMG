@@ -12,6 +12,8 @@ cmg run <path> [options]
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
 - `--report-json <file>`: Write a JSON test report.
+- `--report-html <file>`: Write an HTML test report.
+- `--report-junit <file>`: Write a JUnit XML test report.
 - `--chrome`: Use Chrome. This is the default.
 - `--edge`: Use Microsoft Edge.
 - `--firefox`: Use Firefox.
@@ -26,6 +28,14 @@ TEST FAIL <name>
 ```
 
 Failures may include action output before the failing test line. Stderr contains the final error when one is available.
+
+When a step fails, stderr also includes:
+
+```text
+STEP FAIL line=<line> action=<action> reason=<reason>
+```
+
+Reports include per-test output and per-step diagnostics so agents can explain why a run failed.
 
 ## GIF Behavior
 
@@ -48,5 +58,5 @@ All recorded actions use CMG's virtual pointer, pointer/mouse event dispatch, ca
 cmg browser launch
 cmg run demo-scripts
 cmg run tests\flows --gif artifacts\gifs
-cmg run checkout.cmgscript --report-json artifacts\checkout.json
+cmg run checkout.cmgscript --report-json artifacts\checkout.json --report-html artifacts\checkout.html
 ```

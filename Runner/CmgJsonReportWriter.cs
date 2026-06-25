@@ -25,6 +25,26 @@ public static class CmgJsonReportWriter
             }
 
             writer.WriteEndArray();
+            writer.WriteStartArray("steps");
+            foreach (var step in test.Steps)
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("lineNumber", step.LineNumber);
+                writer.WriteString("name", step.Name);
+                writer.WriteBoolean("success", step.Success);
+                writer.WriteString("error", step.Error);
+                writer.WriteString("gifPath", step.GifPath);
+                writer.WriteStartArray("output");
+                foreach (var line in step.Output)
+                {
+                    writer.WriteStringValue(line);
+                }
+
+                writer.WriteEndArray();
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
             writer.WriteEndObject();
         }
 

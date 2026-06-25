@@ -4,7 +4,13 @@ namespace CMG.Runner;
 
 public interface ICmgRunCommandHandler
 {
-    int Run(BrowserKind browserKind, string path, DirectoryInfo? artifacts, FileInfo? jsonReport);
+    int Run(
+        BrowserKind browserKind,
+        string path,
+        DirectoryInfo? artifacts,
+        FileInfo? jsonReport,
+        FileInfo? htmlReport,
+        FileInfo? junitReport);
 }
 
 public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
@@ -16,7 +22,13 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         this.runService = runService;
     }
 
-    public int Run(BrowserKind browserKind, string path, DirectoryInfo? artifacts, FileInfo? jsonReport)
+    public int Run(
+        BrowserKind browserKind,
+        string path,
+        DirectoryInfo? artifacts,
+        FileInfo? jsonReport,
+        FileInfo? htmlReport,
+        FileInfo? junitReport)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
@@ -24,7 +36,7 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             return 1;
         }
 
-        var result = runService.Run(path, new CmgRunOptions(browserKind, artifacts, jsonReport));
+        var result = runService.Run(path, new CmgRunOptions(browserKind, artifacts, jsonReport, htmlReport, junitReport));
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);
@@ -33,6 +45,11 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         if (!result.Success && !string.IsNullOrWhiteSpace(result.Error))
         {
             Console.Error.WriteLine(result.Error);
+        }
+
+        foreach (var failed in result.Tests.SelectMany(test => test.Steps).Where(step => !step.Success))
+        {
+            Console.Error.WriteLine($"STEP FAIL line={failed.LineNumber} action={failed.Name} reason={failed.Error}");
         }
 
         return result.Success ? 0 : 1;

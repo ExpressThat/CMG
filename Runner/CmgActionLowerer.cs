@@ -13,6 +13,22 @@ public sealed class CmgActionLowerer
             "assertvisible" => [ToLine("waitForElement", action.Arguments, action.Options)],
             "wait" => LowerWait(action),
             "expecttext" => [ToLine("assertText", action.Arguments)],
+            "expecturl" => [ToLine("evaluate", [BuildExpectUrl(action)])],
+            "expecttitle" => [ToLine("evaluate", [BuildExpectTitle(action)])],
+            "check" => [ElementScript(action, "element.checked = true; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;")],
+            "uncheck" => [ElementScript(action, "element.checked = false; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;")],
+            "focus" => [ElementScript(action, "element.focus({ preventScroll: true }); return true;")],
+            "blur" => [ElementScript(action, "element.blur(); return true;")],
+            "selecttext" => [ElementScript(action, "element.focus({ preventScroll: true }); element.select?.(); return true;")],
+            "dblclick" => LowerMouseEvent(action, "dblclick", button: 0),
+            "rightclick" => LowerMouseEvent(action, "contextmenu", button: 2),
+            "reload" => [ToLine("evaluate", ["location.reload()"])],
+            "goback" => [ToLine("evaluate", ["history.back()"])],
+            "goforward" => [ToLine("evaluate", ["history.forward()"])],
+            "waitforurl" => [ToLine("evaluate", [BuildWaitForUrl(action)])],
+            "localstorage" => [ToLine("evaluate", [BuildStorage(action, "localStorage")])],
+            "sessionstorage" => [ToLine("evaluate", [BuildStorage(action, "sessionStorage")])],
+            "cookie" => [ToLine("evaluate", [BuildCookie(action)])],
             "setviewport" => [ToLine("setViewport", [], action.Options)],
             "click" or "type" or "clear" or "press" or "hover" or "scrollintoview" or "select" or
             "showmessagebar" or "delay" or "html" or "screenshot" or "screenshotpage" or "asserttext" or
@@ -51,6 +67,61 @@ public sealed class CmgActionLowerer
         return action.Arguments.Count > 0 ? [ToLine("waitForElement", action.Arguments, action.Options)] : [];
     }
 
+    private static string ElementScript(CmgNode action, string body)
+    {
+        var selector = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
+        return ToLine("evaluate", [$"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}'); {body} }})()"]);
+    }
+
+    private static IReadOnlyList<string> LowerMouseEvent(CmgNode action, string eventName, int button)
+    {
+        var selector = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
+        var expression = $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}'); const rect = element.getBoundingClientRect(); const options = {{ bubbles: true, cancelable: true, button: {button}, buttons: {button + 1}, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }}; element.dispatchEvent(new MouseEvent('{eventName}', options)); return true; }})()";
+        return [ToLine("hover", [selector]), ToLine("evaluate", [expression])];
+    }
+
+    private static string BuildExpectUrl(CmgNode action)
+    {
+        var expected = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
+        return $"(() => {{ if (!location.href.includes({QuoteJs(expected)})) throw new Error(`Expected URL to contain {expected}, got ${{location.href}}`); return location.href; }})()";
+    }
+
+    private static string BuildExpectTitle(CmgNode action)
+    {
+        var expected = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
+        return $"(() => {{ if (!document.title.includes({QuoteJs(expected)})) throw new Error(`Expected title to contain {expected}, got ${{document.title}}`); return document.title; }})()";
+    }
+
+    private static string BuildWaitForUrl(CmgNode action)
+    {
+        var expected = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
+        return $"(() => {{ if (!location.href.includes({QuoteJs(expected)})) throw new Error(`URL did not match {expected}: ${{location.href}}`); return location.href; }})()";
+    }
+
+    private static string BuildStorage(CmgNode action, string storage)
+    {
+        var operation = action.Arguments.Count > 0 ? action.Arguments[0].ToLowerInvariant() : "get";
+        var key = action.Arguments.Count > 1 ? action.Arguments[1] : string.Empty;
+        var value = action.Arguments.Count > 2 ? action.Arguments[2] : string.Empty;
+        return operation switch
+        {
+            "set" => $"{storage}.setItem({QuoteJs(key)}, {QuoteJs(value)})",
+            "remove" => $"{storage}.removeItem({QuoteJs(key)})",
+            "clear" => $"{storage}.clear()",
+            _ => $"{storage}.getItem({QuoteJs(key)})"
+        };
+    }
+
+    private static string BuildCookie(CmgNode action)
+    {
+        if (action.Arguments.Count >= 2 && action.Arguments[0].Equals("set", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"document.cookie = {QuoteJs($"{action.Arguments[1]}={action.Arguments.ElementAtOrDefault(2) ?? string.Empty}")}";
+        }
+
+        return "document.cookie";
+    }
+
     private static string ToLine(string action, IReadOnlyList<string> args) => ToLine(action, args, new Dictionary<string, string>());
 
     private static string ToLine(string action, IReadOnlyList<string> args, IReadOnlyDictionary<string, string> options)
@@ -66,4 +137,6 @@ public sealed class CmgActionLowerer
 
     private static string Quote(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
+
+    private static string QuoteJs(string value) => Quote(value);
 }
