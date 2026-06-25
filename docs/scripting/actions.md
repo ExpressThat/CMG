@@ -502,6 +502,24 @@ Output:
 
 Clock actions do not move the virtual pointer. In GIF recordings, wrap them in `step` or `caption` when the time change should be visible to a viewer.
 
+## `clearContext` And `resetContext`
+
+```text
+clearContext
+resetContext
+```
+
+Clears page context state in the current browser page. Both actions clear `localStorage`, `sessionStorage`, same-origin cookies, IndexedDB databases, Cache Storage entries, and registered service workers when the page exposes those APIs.
+
+`resetContext` also navigates the current page to `about:blank` after clearing state. `clearContext` leaves the current page loaded.
+
+Output:
+
+- `CONTEXT_CLEARED <line>` for `clearContext`.
+- `CONTEXT_RESET <line>` for `resetContext`.
+
+These actions do not move the virtual pointer. They provide practical context cleanup inside CMG's controlled browser instance; they are not a protocol-native replacement for creating multiple isolated browser contexts.
+
 ## `activateTab`
 
 ```text
@@ -771,7 +789,7 @@ Failure reasons include a missing selector argument, no file paths, a local file
 
 ## Planned Parity Actions
 
-Commands such as `frame`, worker-level interception, browser-context isolation, and protocol-native HAR replay are reserved for remaining parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
+Commands such as worker-level interception, multiple simultaneous isolated browser contexts, and protocol-native HAR replay are reserved for remaining parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
 
 ## Locator Support
 

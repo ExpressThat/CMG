@@ -237,6 +237,14 @@ Line 6: tick failed. 'tick' must be a positive whole number.
 
 Install the fake clock before advancing time and pass non-negative millisecond values to `tick`.
 
+## Context Cleanup Failure
+
+```text
+Line 2: resetContext failed. JavaScript evaluation failed.
+```
+
+Context cleanup runs in the current page. If the page blocks same-origin storage APIs or browser APIs are unavailable, the failing browser evaluation reason is reported in stderr, JSON reports, HTML reports, and traces.
+
 ## Failed Assertion
 
 ```text

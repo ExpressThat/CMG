@@ -394,6 +394,23 @@ test "expires session banner" {
 
 Clock actions are shared by direct browser-control scripts and `cmg run`. They do not move the virtual pointer, so use a `step` caption when the time jump should be narrated in a GIF.
 
+## Context Cleanup
+
+```text
+beforeEach {
+  resetContext
+  navigate "https://example.com/login"
+}
+
+test "fresh login state" {
+  fill "#email" "agent@example.com"
+  fill "#password" "secret"
+  click "#submit"
+}
+```
+
+Use `clearContext` when the page should stay loaded, and `resetContext` when the next action should start from `about:blank`.
+
 ## Storage State
 
 ```text

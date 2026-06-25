@@ -161,6 +161,14 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_ContextActionsPassThrough()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("clearContext", [], [])));
+
+        Assert.Equal("clearContext", line);
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));
