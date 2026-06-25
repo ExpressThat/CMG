@@ -96,13 +96,33 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> ExecuteAssertText(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 2, 2);
-        var text = automationClient.GetElementText(remoteDebuggingUrl, action.Arguments[0]);
-        if (!text.Contains(action.Arguments[1], StringComparison.Ordinal))
+        var timeout = GetIntOption(action, "timeout", 0);
+        var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeout);
+        var text = string.Empty;
+
+        do
         {
-            throw new ScriptExecutionException($"Expected text '{action.Arguments[1]}' was not found. Actual text: '{text}'.");
+            text = automationClient.GetElementText(remoteDebuggingUrl, action.Arguments[0]);
+            if (text.Contains(action.Arguments[1], StringComparison.Ordinal))
+            {
+                return [];
+            }
+
+            if (timeout <= 0)
+            {
+                break;
+            }
+
+            Thread.Sleep(50);
+        }
+        while (DateTimeOffset.UtcNow < deadline);
+
+        if (timeout > 0)
+        {
+            throw new ScriptExecutionException($"Expected text '{action.Arguments[1]}' was not found within {timeout}ms. Actual text: '{text}'.");
         }
 
-        return [];
+        throw new ScriptExecutionException($"Expected text '{action.Arguments[1]}' was not found. Actual text: '{text}'.");
     }
 
     private static IReadOnlyList<string> ExecuteEvaluate(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)

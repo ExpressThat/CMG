@@ -258,9 +258,14 @@ Options:
 
 ```text
 assertText "<selector>" "expected text"
+assertText "<selector>" "expected text" timeout=5000
 ```
 
-Reads an element's visible text and fails unless it contains the expected text.
+Reads an element's visible text and fails unless it contains the expected text. When `timeout` is provided, CMG polls the element text until it matches or the timeout expires. The DSL `expectText` action lowers to this command and supports the same option.
+
+Options:
+
+- `timeout`: Optional timeout in milliseconds. Default is `0`, which checks once.
 
 Example:
 
