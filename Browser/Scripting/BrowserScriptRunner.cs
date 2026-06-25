@@ -60,6 +60,11 @@ public sealed partial class BrowserScriptRunner
             FinishRecording(recorder, output);
             return ScriptRunResult.Fail(exception.Message, output);
         }
+        catch (LoopControlException exception)
+        {
+            FinishRecording(recorder, output);
+            return ScriptRunResult.Fail($"{exception.Kind} must be inside a loop.", output);
+        }
 
         FinishRecording(recorder, output);
 
@@ -116,7 +121,7 @@ public sealed partial class BrowserScriptRunner
         List<string> output,
         int stepNumber)
     {
-        var action = ExpandVariables(sourceAction, context);
+        var action = ShouldExpandBeforeDispatch(sourceAction.Name) ? ExpandVariables(sourceAction, context) : sourceAction;
         try
         {
             recorder?.BeforeAction(action);
@@ -130,4 +135,9 @@ public sealed partial class BrowserScriptRunner
             throw new ScriptActionFailedException($"Line {action.LineNumber}: {action.Name} failed. {exception.Message}");
         }
     }
+
+    private static bool ShouldExpandBeforeDispatch(string name) =>
+        !name.Equals("if", StringComparison.OrdinalIgnoreCase) &&
+        !name.Equals("elseif", StringComparison.OrdinalIgnoreCase) &&
+        !name.Equals("while", StringComparison.OrdinalIgnoreCase);
 }

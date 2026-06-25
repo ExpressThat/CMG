@@ -595,6 +595,9 @@ Line 8: call failed. Macro 'login' is not defined.
 Line 3: macro failed. macro requires a block body.
 Line 5: call failed. Macro 'fillProfile' expects 2 argument(s), got 1.
 Line 7: for failed. for option step= cannot be 0.
+Line 8: while failed. while exceeded max=100 iteration(s).
+break must be inside a loop.
+continue must be inside a loop.
 Line 9: if failed. Invalid action condition 'assertText'.
 ```
 

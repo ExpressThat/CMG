@@ -35,6 +35,9 @@ Supported structural blocks:
 - `else { ... }`
 - `for <count> { ... }`
 - `for <variable> <start> <end> { ... }`
+- `repeat <count> { ... }`
+- `repeat <variable> <count> { ... }`
+- `while <condition> max=100 { ... }`
 - `foreach <variable> <value>... { ... }`
 - `foreachSelector <variable> "<selector>" { ... }`
 - `macro <name> [parameter...] { ... }`
@@ -81,7 +84,7 @@ set title {
 
 Block capture stores only the final payload value from the wrapped actions. It does not store the `PASS`, `EVALUATE`, or other output prefixes. This also works with `call`, so `set result { call helper }` stores the macro body's final payload value. A macro can return an action result by making that action the final payload, or it can return a variable/static value with `return "${value}"`.
 
-Variables are referenced as `${name}`. Macro parameters and every `set` performed inside a macro are scoped to that macro call and do not mutate variables with the same name in the caller. Loop variables are scoped to the loop iteration. Explicit `set` variables outside macros remain available to later actions.
+Variables are referenced as `${name}`. A macro reads from its own parameters and local `set` values first, then walks upward through parent tree scopes until it finds a matching variable. Macro parameters and every `set` performed inside a macro are scoped to that macro call and do not mutate variables with the same name in a parent scope. Loop variables are scoped to the loop iteration. Explicit `set` variables outside macros remain available to later actions.
 
 ## Control Flow And Macros
 
@@ -118,6 +121,8 @@ foreachSelector row ".result" {
   call choose "${row}" "open"
 }
 ```
+
+`repeat`, `for`, `foreach`, `foreachSelector`, and `while` support `break` and `continue`. `while` has a safety guard and fails after `max=<count>` iterations; the default is `100`.
 
 `foreachSelector` binds the variable to a temporary CSS selector for each matched element and also exposes `${index}`. Macro definitions are block-scoped when declared inside another macro, branch, or loop. Top-level macros in `cmg run` are registered before each test.
 

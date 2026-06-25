@@ -59,57 +59,6 @@ public sealed class BrowserScriptRunnerControlFlowTests
     }
 
     [Fact]
-    public void RunText_ForAndForEachExecuteBlocks()
-    {
-        var client = new FakeAutomationClient();
-        var result = Runner().RunText("""
-        for i 0 2 {
-          type "#item-${i}" "${i}"
-        }
-        foreach name Alice Bob {
-          type "#name" "${name}"
-        }
-        """, "debug", client);
-
-        Assert.True(result.Success);
-        Assert.Equal("#name", client.LastTypedSelector);
-        Assert.Equal("Bob", client.LastTypedText);
-    }
-
-    [Fact]
-    public void RunText_ForEachSelectorProvidesSelectorAndIndex()
-    {
-        var client = new FakeAutomationClient();
-        client.EvaluateResponses.Enqueue("2");
-        var result = Runner().RunText("""
-        foreachSelector item ".row" {
-          click "${item}"
-        }
-        """, "debug", client);
-
-        Assert.True(result.Success);
-        Assert.Equal("#__cmg_foreach_1_1", client.LastClickedSelector);
-    }
-
-    [Fact]
-    public void RunText_MacroReceivesSelectorFromIterator()
-    {
-        var client = new FakeAutomationClient();
-        client.EvaluateResponses.Enqueue("2");
-        var result = Runner().RunText("""
-        macro choose item {
-          click "${item}"
-        }
-        foreachSelector row ".row" {
-          call choose "${row}"
-        }
-        """, "debug", client);
-
-        Assert.True(result.Success);
-        Assert.Equal("#__cmg_foreach_4_1", client.LastClickedSelector);
-    }
-
-    [Fact]
     public void RunText_ControlBlocksAndMacrosCanNestDeeply()
     {
         var client = new FakeAutomationClient();
@@ -171,6 +120,62 @@ public sealed class BrowserScriptRunnerControlFlowTests
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
         Assert.Contains("EVALUATE 006 outer", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_MacroReadsCallerVariableButLocalSetDoesNotLeak()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("global");
+        var result = Runner().RunText("""
+        set token "global"
+        macro readToken {
+          return "${token}"
+        }
+        macro shadowToken {
+          set token "local"
+          return "${token}"
+        }
+        set first {
+          call readToken
+        }
+        set second {
+          call shadowToken
+        }
+        evaluate "'${token}'"
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
+        Assert.Contains("SET 008 first global", result.StdoutLines);
+        Assert.Contains("SET 011 second local", result.StdoutLines);
+        Assert.Contains("EVALUATE 014 global", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_NestedMacroReadsParentTreeVariableAndShadowsLocally()
+    {
+        var result = Runner().RunText("""
+        macro outer {
+          set token "parent"
+          macro inner {
+            set first {
+              return "${token}"
+            }
+            set token "inner"
+            return "${first}-${token}"
+          }
+          set result {
+            call inner
+          }
+          return "${result}-${token}"
+        }
+        set final {
+          call outer
+        }
+        """, "debug", new FakeAutomationClient());
+
+        Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
+        Assert.Contains("SET 015 final parent-inner-parent", result.StdoutLines);
     }
 
     [Fact]

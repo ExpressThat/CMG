@@ -1634,7 +1634,7 @@ call fillProfile "Agent" "agent@example.com"
 
 `macro` registers a reusable block. `call` executes it. Parameters are untyped values, so callers can pass variables, selectors, temporary selectors from `foreachSelector`, URLs, file paths, or any other string value. Macro calls can be nested, and macros can declare helper macros inside their body.
 
-Macro parameters and variables set inside the macro body are scoped to the call. A `set` inside a macro does not overwrite a variable with the same name in the caller. Macros declared inside another macro, branch, or loop are restored when that block finishes, so helper macros do not leak into later steps. Top-level macros in `cmg run` are registered before each planned test.
+Macro variable lookup starts with parameters and local `set` values, then walks upward through parent tree scopes until it finds a matching variable. Variables set inside the macro body are scoped to the call. A `set` inside a macro does not overwrite a variable with the same name in a parent scope. Macros declared inside another macro, branch, or loop are restored when that block finishes, so helper macros do not leak into later steps. Top-level macros in `cmg run` are registered before each planned test.
 
 `set` can capture macro output:
 
@@ -1662,11 +1662,22 @@ set label {
 
 `return` requires at least one argument and emits `RETURN <line> <value>` when run directly.
 
-### `for`, `foreach`, And `foreachSelector`
+### `for`, `repeat`, `while`, `foreach`, `foreachSelector`, `break`, And `continue`
 
 ```text
 for 3 {
   caption "index ${index}"
+}
+
+repeat i 3 {
+  caption "repeat ${i}"
+}
+
+while (${ready} != true) max=10 {
+  waitForTimeout 250
+  set ready {
+    evaluate "window.ready === true"
+  }
 }
 
 for i 1 4 step=1 {
@@ -1678,13 +1689,20 @@ foreach name Alice Bob {
 }
 
 foreachSelector row ".result" {
+  if (${index} == 10) {
+    break
+  }
   click "${row}"
 }
 ```
 
 `for <count>` iterates from `0` up to but not including `<count>` and exposes `${index}`. `for <variable> <start> <end>` uses an exclusive end value and exposes the named variable. `step=<integer>` changes the increment and cannot be `0`.
 
-`foreach` iterates over explicit values. `foreachSelector` finds all CSS matches, binds the variable to a temporary selector for each element, and exposes `${index}`. Pointer-aware child actions still use CMG's normal virtual pointer movement, browser events, hover behavior, drag ghosts, and captions when GIF recording is active.
+`repeat <count>` repeats a fixed number of times and exposes `${index}`. `repeat <variable> <count>` exposes the named variable instead. `while <condition>` repeats while the same condition syntax used by `if` remains true. `while` has a safety guard: `max=<count>` defaults to `100` and the action fails if that many iterations are exceeded.
+
+`foreach` iterates over explicit values. `foreachSelector` finds all CSS matches, binds the variable to a temporary selector for each element, and exposes `${index}`. `break` exits the nearest loop. `continue` skips the rest of the current iteration. Using either action outside a loop fails clearly.
+
+Pointer-aware child actions still use CMG's normal virtual pointer movement, browser events, hover behavior, drag ghosts, and captions when GIF recording is active.
 
 ## Unknown Actions
 

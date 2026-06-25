@@ -12,6 +12,8 @@ public sealed class CmgActionLowererControlTests
     [InlineData("foreach")]
     [InlineData("foreachSelector")]
     [InlineData("macro")]
+    [InlineData("while")]
+    [InlineData("repeat")]
     public void Lower_ControlBlocksPreserveChildren(string name)
     {
         var node = new CmgNode(1, name, name, ["x"], new Dictionary<string, string>(), [
@@ -26,11 +28,16 @@ public sealed class CmgActionLowererControlTests
     }
 
     [Fact]
-    public void Lower_CallPassesThrough()
+    [Theory]
+    [InlineData("call", "call \"login\" \"agent\"")]
+    [InlineData("return", "return \"login\" \"agent\"")]
+    [InlineData("break", "break")]
+    [InlineData("continue", "continue")]
+    public void Lower_ControlActionsPassThrough(string name, string expected)
     {
         var line = Assert.Single(new CmgActionLowerer().Lower(
-            new CmgNode(1, "call", "call", ["login", "agent"], new Dictionary<string, string>(), [])));
+            new CmgNode(1, name, name, name is "break" or "continue" ? [] : ["login", "agent"], new Dictionary<string, string>(), [])));
 
-        Assert.Equal("call \"login\" \"agent\"", line);
+        Assert.Equal(expected, line);
     }
 }

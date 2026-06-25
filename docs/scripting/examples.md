@@ -127,6 +127,29 @@ Macros can receive plain values, variables, selectors, or temporary selectors fr
 
 This direct-script example is available as `demo-scripts/30-control-flow-macros.cmgscript` and imports `demo-scripts/30-shared-macros.cmgscript`. The structured `cmg run` form is available as `demo-scripts/31-control-flow-runner.cmgscript`.
 
+## Loop Control
+
+```text
+repeat i 4 {
+  if (${i} == 1) {
+    continue
+  }
+  if (${i} == 3) {
+    break
+  }
+  caption "Repeat ${i}"
+}
+
+while (${ready} == false) max=3 {
+  set ready true
+  caption "Ready"
+}
+```
+
+`repeat`, `for`, `foreach`, `foreachSelector`, and `while` can contain nested macros, conditionals, and GIF blocks. `while` is bounded with `max=` to prevent scripts from hanging indefinitely.
+
+This example is available as `demo-scripts/32-loop-control.cmgscript`.
+
 ## Drag And Drop
 
 ```text

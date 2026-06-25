@@ -35,6 +35,18 @@ public sealed partial class BrowserScriptRunner
             case "foreachselector":
                 ExecuteForEachSelector(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
+            case "while":
+                ExecuteWhile(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
+            case "repeat":
+                ExecuteRepeat(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
+            case "break":
+                RequireArgumentCount(action, 0, 0);
+                throw new LoopControlException("break");
+            case "continue":
+                RequireArgumentCount(action, 0, 0);
+                throw new LoopControlException("continue");
             default:
                 throw new ScriptExecutionException($"Unknown control action '{action.Name}'.");
         }
@@ -49,5 +61,9 @@ public sealed partial class BrowserScriptRunner
         name.Equals("else", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("for", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("foreach", StringComparison.OrdinalIgnoreCase) ||
-        name.Equals("foreachSelector", StringComparison.OrdinalIgnoreCase);
+        name.Equals("foreachSelector", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("while", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("repeat", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("break", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("continue", StringComparison.OrdinalIgnoreCase);
 }

@@ -36,3 +36,14 @@ internal sealed class ScriptActionFailedException : Exception
     {
     }
 }
+
+internal sealed class LoopControlException : Exception
+{
+    public LoopControlException(string kind)
+        : base(kind)
+    {
+        Kind = kind;
+    }
+
+    public string Kind { get; }
+}

@@ -113,6 +113,7 @@ dotnet run -- --firefox browser close
 - `30-control-flow-macros.cmgscript`: Demonstrates imports, macros, nested scoped helpers, conditionals, and selector iteration.
 - `30-shared-macros.cmgscript`: Imported helper macros for the control-flow demo.
 - `31-control-flow-runner.cmgscript`: Demonstrates the same control-flow and macro features in the structured runner DSL.
+- `32-loop-control.cmgscript`: Demonstrates `repeat`, bounded `while`, `break`, and `continue`.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.
