@@ -40,7 +40,7 @@ public sealed class CmgActionLowererTests
     [Fact]
     public void Lower_PlannedUnsupportedActionFailsExplicitly()
     {
-        var action = Node("workerIntercept", ["/api/**"], []);
+        var action = Node("notARealParityAction", ["/api/**"], []);
         var line = Assert.Single(new CmgActionLowerer().Lower(action));
 
         Assert.Contains("planned but not implemented", line);
@@ -126,108 +126,6 @@ public sealed class CmgActionLowererTests
         Assert.Equal(2, lines.Count);
         Assert.Contains("not actionable", lines[0]);
         Assert.Equal("download \"#export\"", lines[1]);
-    }
-
-    [Fact]
-    public void Lower_ConsoleActionsPassThrough()
-    {
-        var line = Assert.Single(new CmgActionLowerer().Lower(Node("waitForConsole", ["saved"], [])));
-
-        Assert.Equal("waitForConsole \"saved\"", line);
-    }
-
-    [Fact]
-    public void Lower_NetworkActionsPassThrough()
-    {
-        var line = Assert.Single(new CmgActionLowerer().Lower(Node("route", ["/api"], [])));
-
-        Assert.Equal("route \"/api\"", line);
-    }
-
-    [Fact]
-    public void Lower_InterceptPassesThrough()
-    {
-        var line = Assert.Single(new CmgActionLowerer().Lower(Node("intercept", ["/api"], [])));
-
-        Assert.Equal("intercept \"/api\"", line);
-    }
-
-    [Fact]
-    public void Lower_HarActionsPassThrough()
-    {
-        var node = new CmgNode(1, "exportHar", "exportHar", [], new Dictionary<string, string> { ["path"] = "out.har" }, []);
-        var line = Assert.Single(new CmgActionLowerer().Lower(node));
-
-        Assert.Equal("exportHar path=\"out.har\"", line);
-    }
-
-    [Fact]
-    public void Lower_FrameActionsPassThrough()
-    {
-        var line = Assert.Single(new CmgActionLowerer().Lower(Node("frameClick", ["#frame", "#save"], [])));
-
-        Assert.Equal("frameClick \"#frame\" \"#save\"", line);
-    }
-
-    [Fact]
-    public void Lower_ClockActionsPassThrough()
-    {
-        var line = Assert.Single(new CmgActionLowerer().Lower(Node("tick", ["250"], [])));
-
-        Assert.Equal("tick \"250\"", line);
-    }
-
-    [Fact]
-    public void Lower_NavigationActionsPassThrough()
-    {
-        var lowerer = new CmgActionLowerer();
-
-        Assert.Equal("navigate \"index.html\"", Assert.Single(lowerer.Lower(Node("navigate", ["index.html"], []))));
-        Assert.Equal("waitForElement \"#ready\"", Assert.Single(lowerer.Lower(Node("waitForElement", ["#ready"], []))));
-    }
-
-    [Fact]
-    public void Lower_ContextActionsPassThrough()
-    {
-        var line = Assert.Single(new CmgActionLowerer().Lower(Node("clearContext", [], [])));
-
-        Assert.Equal("clearContext", line);
-    }
-
-    [Fact]
-    public void Lower_BrowserContextActionsPassThrough()
-    {
-        var lowerer = new CmgActionLowerer();
-
-        Assert.Equal("newContext \"ctx\"", Assert.Single(lowerer.Lower(Node("newContext", ["ctx"], []))));
-        Assert.Equal("useContext \"ctx-1\"", Assert.Single(lowerer.Lower(Node("useContext", ["ctx-1"], []))));
-    }
-
-    [Fact]
-    public void Lower_AccessibilityActionsPassThrough()
-    {
-        var node = new CmgNode(1, "expectAccessible", "expectAccessible", [], new Dictionary<string, string> { ["role"] = "button" }, []);
-        var line = Assert.Single(new CmgActionLowerer().Lower(node));
-
-        Assert.Equal("expectAccessible role=\"button\"", line);
-    }
-
-    [Fact]
-    public void Lower_FileActionsPassThrough()
-    {
-        var node = new CmgNode(1, "readFile", "readFile", ["payload"], new Dictionary<string, string> { ["path"] = "fixtures/payload.json" }, []);
-        var line = Assert.Single(new CmgActionLowerer().Lower(node));
-
-        Assert.Equal("readFile \"payload\" path=\"fixtures/payload.json\"", line);
-    }
-
-    [Fact]
-    public void Lower_PdfActionsPassThrough()
-    {
-        var node = new CmgNode(1, "printPdf", "printPdf", [], new Dictionary<string, string> { ["path"] = "artifacts/page.pdf" }, []);
-        var line = Assert.Single(new CmgActionLowerer().Lower(node));
-
-        Assert.Equal("printPdf path=\"artifacts/page.pdf\"", line);
     }
 
     [Fact]

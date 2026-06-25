@@ -95,7 +95,7 @@ Check [actions.md](actions.md) for the supported action list.
 Some parity actions are reserved in the new runner DSL before their browser protocol implementation is complete:
 
 ```text
-Line 4: evaluate failed. CMG action 'workerIntercept' is planned but not implemented in this slice.
+Line 4: evaluate failed. CMG action 'futureAction' is planned but not implemented in this slice.
 ```
 
 This is intentional. The action failed because it is not available yet, not because the page behaved incorrectly.
@@ -286,6 +286,16 @@ STEP FAIL line=6 action=waitForResponse reason=Line 6: evaluate failed. Timed ou
 ```
 
 Install a matching `route` or make sure the page performs a matching `fetch()` before the timeout expires.
+
+## Worker Failure
+
+```text
+Line 4: waitForWorker failed. Worker 'worker.js' was not available within 5000ms.
+Line 5: workerEvaluate failed. No worker matched 'analytics-worker'.
+Line 6: workerIntercept failed. Worker target control is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for listWorkers/workerEvaluate/workerIntercept.
+```
+
+Use `listWorkers` to inspect available worker ids and URLs before targeting a specific worker. Worker interception patches `fetch()` inside existing Chrome/Edge worker targets.
 
 ## HAR Failure
 

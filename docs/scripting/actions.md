@@ -859,6 +859,34 @@ Output:
 - `HAR_EXPORTED <line> <path>` when a HAR file is written.
 - `HAR_REPLAY <line> routes=<count> <path>` when HAR routes are installed.
 
+### `listWorkers`, `waitForWorker`, `workerEvaluate`, And `workerIntercept`
+
+```text
+listWorkers
+waitForWorker "worker.js" timeout=5000
+workerEvaluate "self.location.href" target="worker.js"
+workerIntercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json" target="worker.js"
+```
+
+Inspects and controls Chrome/Edge worker targets exposed by remote debugging. `workerIntercept` patches a matched worker's `fetch()` function so worker-originated requests can receive deterministic responses. The optional `target` option can be a worker id or URL substring; when omitted, CMG uses the first available worker.
+
+Options:
+
+- `timeout`: Optional for `waitForWorker`. Default is `5000`.
+- `target`: Optional worker id or URL substring for `workerEvaluate` and `workerIntercept`.
+- `status`: Optional response status for `workerIntercept`. Default is `200`.
+- `body`: Optional response body for `workerIntercept`. Default is empty text.
+- `contentType`: Optional response content type for `workerIntercept`. Default is `text/plain`.
+
+Output:
+
+- `WORKER <index> id=<id> type=<type> title="<title>" url="<url>"` for `listWorkers`.
+- `WORKER_READY <line> id=<id> url="<url>"` for `waitForWorker`.
+- `WORKER_EVALUATE <line> <result>` for worker evaluation.
+- `WORKER_INTERCEPT <line> routes=<count> <pattern>` when a worker intercept is installed.
+
+Worker actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful. Firefox runs fail with an explicit unsupported-provider reason until CMG has a BiDi-backed worker target implementation.
+
 ### `expectScreenshot`
 
 ```text
@@ -891,9 +919,9 @@ Output:
 
 Failure reasons include a missing selector argument, no file paths, a local file that does not exist, or browser evaluation failure. This action is available at the top level and inside `gif` blocks. It does not move the virtual pointer by itself because browser file choosers cannot be driven from page JavaScript; wrap it in a `step` or `caption` when the GIF should explain the upload transition.
 
-## Planned Parity Actions
+## Unknown Future Actions
 
-Commands such as worker-level interception are reserved for remaining parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
+Unknown actions fail explicitly instead of being ignored. If a future parity action is not listed in this document, CMG reports it as planned but not implemented so agent callers can distinguish an unsupported DSL command from page behavior.
 
 ## Locator Support
 

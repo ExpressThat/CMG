@@ -43,6 +43,7 @@ public sealed class CmgActionLowerer
             "clock" or "tick" or "restoreclock" or
             "clearcontext" or "resetcontext" or
             "newcontext" or "usecontext" or "listcontexts" or "closecontext" or
+            "listworkers" or "waitforworker" or "workerevaluate" or "workerintercept" or
             "accessibilitysnapshot" or "expectaccessible" or
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" or
             "printpdf" or "pdf" or

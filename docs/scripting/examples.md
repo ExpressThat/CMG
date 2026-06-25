@@ -325,6 +325,19 @@ test "replays profile traffic" {
 
 CMG's HAR support is page-level and uses the same `fetch`/`XMLHttpRequest` hook as `route`. It is available in both direct browser-control scripts and `cmg run`.
 
+## Worker Interception
+
+```text
+test "worker profile request" {
+  navigate "https://example.com"
+  waitForWorker "worker.js" timeout=5000
+  workerIntercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json" target="worker.js"
+  workerEvaluate "fetch('/api/profile').then(r => r.text())" target="worker.js"
+}
+```
+
+Worker actions are non-visual and do not move the virtual pointer. Use a `step` caption when a GIF should explain that a worker route was installed.
+
 ## Visual Screenshot Assertion
 
 ```text

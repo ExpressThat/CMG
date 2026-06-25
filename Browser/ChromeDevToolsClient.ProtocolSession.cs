@@ -44,7 +44,7 @@ public sealed partial class ChromeDevToolsClient
             });
         }
 
-        public async Task<JsonElement> SendCommand(string method, Action<Utf8JsonWriter>? writeParams = null)
+        public async Task<JsonElement> SendCommand(string method, Action<Utf8JsonWriter>? writeParams = null, string? sessionId = null)
         {
             var id = Interlocked.Increment(ref commandId);
             using var commandStream = new MemoryStream();
@@ -54,6 +54,10 @@ public sealed partial class ChromeDevToolsClient
                 writer.WriteStartObject();
                 writer.WriteNumber("id", id);
                 writer.WriteString("method", method);
+                if (!string.IsNullOrWhiteSpace(sessionId))
+                {
+                    writer.WriteString("sessionId", sessionId);
+                }
 
                 if (writeParams is not null)
                 {

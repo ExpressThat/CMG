@@ -98,6 +98,18 @@ public sealed partial class FirefoxBiDiClient
     public void CloseBrowserContext(string remoteDebuggingUrl, string id) =>
         throw UnsupportedContextException();
 
+    public IReadOnlyList<BrowserWorkerInfo> ListWorkers(string remoteDebuggingUrl) =>
+        throw UnsupportedWorkerException();
+
+    public string EvaluateWorker(string remoteDebuggingUrl, string? target, string expression) =>
+        throw UnsupportedWorkerException();
+
+    public int InterceptWorkerRequests(string remoteDebuggingUrl, string? target, WorkerRouteOptions options) =>
+        throw UnsupportedWorkerException();
+
     private static ChromeDevToolsException UnsupportedContextException() =>
         new("Isolated browser contexts are not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for newContext/useContext/closeContext.");
+
+    private static ChromeDevToolsException UnsupportedWorkerException() =>
+        new("Worker target control is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for listWorkers/workerEvaluate/workerIntercept.");
 }

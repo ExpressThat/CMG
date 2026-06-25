@@ -86,6 +86,12 @@ public interface IBrowserAutomationClient
     void UseBrowserContext(string remoteDebuggingUrl, string id);
 
     void CloseBrowserContext(string remoteDebuggingUrl, string id);
+
+    IReadOnlyList<BrowserWorkerInfo> ListWorkers(string remoteDebuggingUrl);
+
+    string EvaluateWorker(string remoteDebuggingUrl, string? target, string expression);
+
+    int InterceptWorkerRequests(string remoteDebuggingUrl, string? target, WorkerRouteOptions options);
 }
 
 public sealed class BrowserAutomationClientFactory
@@ -112,3 +118,7 @@ public sealed record ElementBox(double X, double Y, double Width, double Height)
 public sealed record PdfPrintOptions(bool Landscape, bool PrintBackground, double Scale);
 
 public sealed record BrowserContextInfo(string Id, string TargetId, string Url, bool Active);
+
+public sealed record BrowserWorkerInfo(string Id, string Type, string Title, string Url);
+
+public sealed record WorkerRouteOptions(string Pattern, int Status, string Body, string ContentType);

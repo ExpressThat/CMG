@@ -11,7 +11,9 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public Queue<string> TextResponses { get; } = new();
     public Queue<IReadOnlyList<ChromePageTab>> TabResponses { get; } = new();
     public List<BrowserContextInfo> BrowserContexts { get; } = [];
+    public List<BrowserWorkerInfo> Workers { get; } = [];
     public string ActiveBrowserContext { get; private set; } = string.Empty;
+    public WorkerRouteOptions? LastWorkerRoute { get; private set; }
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) => [];
@@ -69,4 +71,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     }
     public void UseBrowserContext(string remoteDebuggingUrl, string id) => ActiveBrowserContext = id;
     public void CloseBrowserContext(string remoteDebuggingUrl, string id) => BrowserContexts.RemoveAll(context => context.Id == id || context.TargetId == id);
+    public IReadOnlyList<BrowserWorkerInfo> ListWorkers(string remoteDebuggingUrl) => Workers;
+    public string EvaluateWorker(string remoteDebuggingUrl, string? target, string expression) => $"worker:{expression}";
+    public int InterceptWorkerRequests(string remoteDebuggingUrl, string? target, WorkerRouteOptions options)
+    {
+        LastWorkerRoute = options;
+        return 1;
+    }
 }

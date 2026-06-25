@@ -125,6 +125,8 @@ public sealed partial class BrowserScriptRunner
             "clearcontext" or "resetcontext" => ExecuteContextAction(remoteDebuggingUrl, automationClient, action),
             "newcontext" or "usecontext" or "listcontexts" or "closecontext" =>
                 ExecuteBrowserContextAction(remoteDebuggingUrl, automationClient, action, context),
+            "listworkers" or "waitforworker" or "workerevaluate" or "workerintercept" =>
+                ExecuteWorkerAction(remoteDebuggingUrl, automationClient, action),
             "accessibilitysnapshot" => ExecuteAccessibilitySnapshot(remoteDebuggingUrl, automationClient, action),
             "expectaccessible" => ExecuteExpectAccessible(remoteDebuggingUrl, automationClient, action),
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),
