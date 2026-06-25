@@ -8,6 +8,8 @@ cmg run <path> [options]
 
 `<path>` can be one `.cmgscript` file or a directory. Directories are searched recursively for `.cmgscript` files.
 
+`cmg run` accepts only the new CMG DSL. V1 flat scripts are intentionally unsupported and fail with a migration error. Wrap actions in `test` or `suite` blocks and follow `docs/scripting/migration.md` when migrating old scripts.
+
 ## Options
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.

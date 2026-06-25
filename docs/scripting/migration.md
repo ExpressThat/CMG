@@ -1,6 +1,8 @@
 # Migration To The New CMG DSL
 
-The new CMG DSL replaces the original flat `.cmgscript` format. Existing scripts should be wrapped into tests and, when needed, visual `gif` blocks.
+The new CMG DSL replaces the original flat `.cmgscript` format. `cmg run` does not run V1 flat scripts and does not provide a compatibility mode. Existing scripts must be migrated by wrapping actions into tests and, when needed, visual `gif` blocks.
+
+If a file starts with an action such as `navigate`, `click`, or `assertText` at the top level, `cmg run` fails with a migration error. Top-level entries must be `test`, `suite`, `beforeEach`, or `afterEach`.
 
 ## Basic Script
 

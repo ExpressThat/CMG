@@ -42,6 +42,7 @@ public sealed class CmgActionLowerer
             "press" or "showmessagebar" or "delay" or "screenshotpage" or
             "evaluate" or "movemouse" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or "set" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
+            "opentab" or "waitfortab" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "apirequest" => [],
             _ => [ToLine("evaluate", [BuildUnsupportedExpression(action.Kind)])]
         };

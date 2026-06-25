@@ -6,6 +6,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
 {
     public string LastExpression { get; private set; } = string.Empty;
     public Queue<string> TextResponses { get; } = new();
+    public Queue<IReadOnlyList<ChromePageTab>> TabResponses { get; } = new();
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) => [];
@@ -44,7 +45,8 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) => new(0, 0);
     public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point) { }
     public void RemoveDomCursor(string remoteDebuggingUrl) { }
-    public IReadOnlyList<ChromePageTab> ListTabs(string remoteDebuggingUrl) => [];
+    public IReadOnlyList<ChromePageTab> ListTabs(string remoteDebuggingUrl) =>
+        TabResponses.Count > 0 ? TabResponses.Dequeue() : [];
     public void ActivateTab(string remoteDebuggingUrl, int index) { }
     public void CloseTab(string remoteDebuggingUrl, int index) { }
 }

@@ -52,4 +52,16 @@ public sealed class CmgDslParserTests
         Assert.Equal("Line\nTwo", action.Arguments[1]);
         Assert.Equal("5000", action.Options["timeout"]);
     }
+
+    [Fact]
+    public void Parse_RejectsFlatV1Scripts()
+    {
+        var result = new CmgDslParser().Parse("old.cmgscript", """
+        navigate "https://example.com"
+        click "#open"
+        """);
+
+        Assert.False(result.Success);
+        Assert.Contains("V1 flat scripts are not supported", result.Error);
+    }
 }

@@ -313,6 +313,22 @@ test "uploads avatar" {
 
 `uploadFiles` can also run inside `gif` blocks. The step caption gives the recording visible context while the page receives the same `input` and `change` events as a browser-driven file upload.
 
+## Popup And Tab Flow
+
+```text
+test "opens help popup" {
+  navigate "https://example.com"
+  click "#help"
+  waitForTab count=2 timeout=5000
+  activateTab index=1
+  expectUrl "/help"
+  closeTab index=1
+  activateTab index=0
+}
+```
+
+For direct browser-control scripts, `openTab "https://example.com/help"` can create the tab without going through page UI. In recorded test GIFs, user-facing popup flows should prefer `click` plus `waitForTab` so the pointer interaction remains visible.
+
 ## Storage State
 
 ```text

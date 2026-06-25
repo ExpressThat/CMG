@@ -6,9 +6,15 @@ public sealed class CmgDslParser
     {
         var lines = script.ReplaceLineEndings("\n").Split('\n');
         var result = ParseNodes(lines, 0, stopAtBlockEnd: false);
-        return result.Success
+        if (!result.Success)
+        {
+            return CmgParseResult.Fail(result.Error ?? "Could not parse script.");
+        }
+
+        var validation = ValidateTopLevel(result.Nodes);
+        return validation is null
             ? CmgParseResult.Ok(new CmgDocument(sourcePath, result.Nodes))
-            : CmgParseResult.Fail(result.Error ?? "Could not parse script.");
+            : CmgParseResult.Fail(validation);
     }
 
     private static CmgNodeListResult ParseNodes(string[] lines, int startIndex, bool stopAtBlockEnd)
@@ -134,4 +140,17 @@ public sealed class CmgDslParser
         value.Length > 0 &&
         char.IsLetter(value[0]) &&
         value.All(character => char.IsLetterOrDigit(character) || character is '-' or '_');
+
+    private static string? ValidateTopLevel(IReadOnlyList<CmgNode> nodes)
+    {
+        var invalid = nodes.FirstOrDefault(node =>
+            !node.Kind.Equals("suite", StringComparison.OrdinalIgnoreCase) &&
+            !node.Kind.Equals("test", StringComparison.OrdinalIgnoreCase) &&
+            !node.Kind.Equals("beforeEach", StringComparison.OrdinalIgnoreCase) &&
+            !node.Kind.Equals("afterEach", StringComparison.OrdinalIgnoreCase));
+
+        return invalid is null
+            ? null
+            : $"Line {invalid.LineNumber}: cmg run requires the new DSL with test/suite blocks. V1 flat scripts are not supported; see docs/scripting/migration.md.";
+    }
 }

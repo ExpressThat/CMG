@@ -1,6 +1,6 @@
-# CMG Scripting
+# CMG Browser-Control Scripting
 
-CMG scripts use the `.cmgscript` extension and are executed with:
+Browser-control scripts are for agents and people who need to drive the browser directly. They use the `.cmgscript` extension and are executed with:
 
 ```powershell
 cmg browser control script --file flow.cmgscript
@@ -8,7 +8,13 @@ cmg --edge browser control script --file flow.cmgscript
 cmg --firefox browser control script --file flow.cmgscript
 ```
 
-Use scripts when a single selector command is not enough and an agent needs to describe a repeatable browser flow.
+Use browser-control scripts when a single selector command is not enough and an agent needs to describe a repeatable browser flow. This is separate from `cmg run`, which executes the new test DSL and intentionally rejects V1 flat scripts.
+
+Feature parity actions are available in both script types unless a command page says otherwise:
+
+- `browser control script` is the direct browser-control surface for agents.
+- `cmg run` is the structured test DSL with suites, hooks, reports, retries, sharding, traces, and optional per-test GIFs.
+- Shared actions include pointer-aware browser actions, storage state, API requests, network fetch mocks, file upload, tab/popup controls, and visual assertions.
 
 ## Guides
 

@@ -106,6 +106,14 @@ Invalid locator matches fail before the pointer action runs:
 STEP FAIL line=7 action=click reason=Line 7: evaluate failed. No element matched locator role=button.
 ```
 
+## V1 Script Passed To `cmg run`
+
+```text
+Line 1: cmg run requires the new DSL with test/suite blocks. V1 flat scripts are not supported; see docs/scripting/migration.md.
+```
+
+Use `browser control script --file <path>` for direct browser-control scripts, or migrate the file to the new test DSL for `cmg run`.
+
 ## Runner Step Failure
 
 `cmg run` prints step diagnostics on stderr:

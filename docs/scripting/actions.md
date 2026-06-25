@@ -359,6 +359,38 @@ listTabs
 
 Prints available page targets as `TAB` result lines.
 
+## `openTab`
+
+```text
+openTab "https://example.com"
+```
+
+Opens a new browser tab from the active page with `window.open`. Local file paths are normalized the same way as `navigate`.
+
+Output:
+
+- `TAB_OPENED <line> <target>` on success.
+
+## `waitForTab`
+
+```text
+waitForTab count=2 timeout=5000
+```
+
+Polls available page targets until at least `count` tabs exist. Use this after an action that opens a popup or after `openTab`.
+
+Required options:
+
+- `count`: Minimum tab count.
+
+Options:
+
+- `timeout`: Optional timeout in milliseconds. Default is `5000`.
+
+Output:
+
+- `TAB_COUNT <line> <actual-count>` on success.
+
 ## `activateTab`
 
 ```text

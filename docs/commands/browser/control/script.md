@@ -1,6 +1,6 @@
 # `browser control script`
 
-Runs a `.cmgscript` browser automation script against the selected CMG-controlled browser instance. Chrome is the default. Use `--chrome` to select Chrome explicitly, `--edge` for Microsoft Edge, or `--firefox` for Firefox.
+Runs a `.cmgscript` browser automation script against the selected CMG-controlled browser instance. This command is the direct AI/browser-control scripting surface. It is intentionally separate from `cmg run`, which executes the new test DSL and does not run V1 flat scripts. Chrome is the default. Use `--chrome` to select Chrome explicitly, `--edge` for Microsoft Edge, or `--firefox` for Firefox.
 
 ```powershell
 cmg browser control script --file <path>
@@ -24,6 +24,7 @@ cmg --firefox browser control script --file <path>
 - Stops on the first failed action.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
+- Supports the same parity actions as the structured runner DSL, including `apiRequest`, `storageState`, `uploadFiles`, `expectScreenshot`, `openTab`, and `waitForTab`.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
 - Browser JavaScript dialogs and leave-page prompts are automatically accepted while CMG is connected to the page, including alerts, confirms, prompts, and before-unload confirmation prompts.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
@@ -50,6 +51,13 @@ SCREENSHOT 004 C:\Projects\CMG\profile-dialog.png
 SCREENSHOT 005 data:image/png;base64,<base64-png-data>
 EVALUATE 006 CMG Browser Control Test Page
 TAB 0 id=... title="..." url="..."
+TAB_OPENED 007 https://example.com
+TAB_COUNT 008 2
+API 009 200 https://example.com/health
+API_BODY 009 ok
+STORAGE_STATE 010 saved C:\Projects\CMG\demo-output\auth.json
+UPLOAD 011 1
+VISUAL 012 diff=0
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 
