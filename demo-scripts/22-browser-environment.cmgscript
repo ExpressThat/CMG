@@ -1,0 +1,11 @@
+# Demonstrates page-side browser environment controls.
+
+test "browser environment controls" {
+  setJavaScriptEnabled false
+  bypassCSP true
+  serviceWorkers block
+  setProxy "https://proxy.local/?url="
+  clearProxy
+  serviceWorkers allow
+  setJavaScriptEnabled true
+}

@@ -361,14 +361,29 @@ test "offline banner" {
   navigate "https://example.com"
   setExtraHTTPHeaders "X-CMG-Agent" "true"
   setHttpCredentials "agent" "secret"
+  setProxy "https://proxy.local/?url="
   setOffline true
   evaluate "fetch('/api/profile').catch(error => error.message)"
   setOffline false
+  clearProxy
   clearHttpCredentials
 }
 ```
 
-Network environment actions are shared by direct scripts and `cmg run`. They do not move the virtual pointer, but reports and traces include `HEADERS_SET`, `HEADERS_CLEARED`, `HTTP_CREDENTIALS_SET`, `HTTP_CREDENTIALS_CLEARED`, and `OFFLINE` lines.
+Network environment actions are shared by direct scripts and `cmg run`. They do not move the virtual pointer, but reports and traces include `HEADERS_SET`, `HEADERS_CLEARED`, `HTTP_CREDENTIALS_SET`, `HTTP_CREDENTIALS_CLEARED`, `PROXY_SET`, `PROXY_CLEARED`, and `OFFLINE` lines.
+
+## Browser Environment
+
+```text
+test "browser environment knobs" {
+  setJavaScriptEnabled false
+  bypassCSP true
+  serviceWorkers block
+  serviceWorkers allow
+}
+```
+
+These actions are CMG page-side equivalents of provider context settings. They do not relaunch the browser or change browser-level process flags.
 
 ## Worker Interception
 

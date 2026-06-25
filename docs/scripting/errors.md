@@ -427,9 +427,20 @@ WebSocket waits use substring matching against recorded socket URLs and message 
 ```text
 Line 4: setHttpCredentials failed. setHttpCredentials username cannot be empty.
 Line 5: setExtraHTTPHeaders failed. setExtraHTTPHeaders requires one or more <name> <value> header pairs.
+Line 6: setProxy failed. setProxy proxy prefix cannot be empty.
 ```
 
 Network environment actions patch page-originated `fetch()` and `XMLHttpRequest` calls. Browser-level navigation requests are not rewritten by these actions.
+
+## Browser Environment Failure
+
+```text
+Line 3: setJavaScriptEnabled failed. setJavaScriptEnabled expects true or false.
+Line 4: bypassCSP failed. bypassCSP expects true or false.
+Line 5: serviceWorkers failed. serviceWorkers expects allow or block.
+```
+
+Browser environment actions are page-side hooks. They do not alter the already-running browser process or browser launch flags.
 
 ## Worker Failure
 

@@ -133,7 +133,8 @@ public sealed partial class BrowserScriptRunner
             "expectscreenshot" => ExecuteVisualAssertion(remoteDebuggingUrl, automationClient, action),
             "uploadfiles" => ExecuteUploadFiles(remoteDebuggingUrl, automationClient, action),
             "emulate" => ExecuteEmulate(remoteDebuggingUrl, automationClient, action),
-            "setgeolocation" or "grantpermissions" or "clearpermissions" =>
+            "setgeolocation" or "grantpermissions" or "clearpermissions" or
+            "setjavascriptenabled" or "javascriptenabled" or "bypasscsp" or "serviceworkers" or "setserviceworkers" =>
                 ExecuteGeolocationOrPermission(remoteDebuggingUrl, automationClient, action),
             "download" => ExecuteDownload(remoteDebuggingUrl, automationClient, action),
             "waitfordownload" => ExecuteWaitForDownload(action),
@@ -155,7 +156,8 @@ public sealed partial class BrowserScriptRunner
             "routewebsocket" or "clearwebsocketroutes" or "waitforwebsocket" or "waitforwebsocketmessage" =>
                 ExecuteWebSocketAction(remoteDebuggingUrl, automationClient, action),
             "setextrahttpheaders" or "setheaders" or "clearextrahttpheaders" or "clearheaders" or
-            "sethttpcredentials" or "httpcredentials" or "authenticate" or "clearhttpcredentials" or "setoffline" =>
+            "sethttpcredentials" or "httpcredentials" or "authenticate" or "clearhttpcredentials" or
+            "setproxy" or "proxy" or "clearproxy" or "setoffline" =>
                 ExecuteNetworkEnvironmentAction(remoteDebuggingUrl, automationClient, action),
             "frameclick" or "frametype" or "framefill" or "framehover" or
             "framewaitforelement" or "frameasserttext" or "frameevaluate" =>

@@ -24,7 +24,7 @@ cmg --firefox browser control script --file <path>
 - Stops on the first failed action.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
-- Supports the same parity actions as the structured runner DSL, including `wait`, `caption`, `assertVisible`, `expectText`, `fill`, `check`, `uncheck`, `focus`, `blur`, `selectText`, `dblclick`, `rightClick`, `selectOption`, `dispatchEvent`, `keyDown`, `keyUp`, `insertText`, `mouseMove`, `mouseDown`, `mouseUp`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `waitForEvent`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNavigation`, `url`, `title`, `content`, `setContent`, `captureDialogs`, `setDialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `addScriptTag`, `addStyleTag`, `exposeFunction`, `exposeBinding`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHttpCredentials`, `clearHttpCredentials`, `setOffline`, `route`, `intercept`, `routeWebSocket`, `waitForWebSocket`, `waitForWebSocketMessage`, `waitForRequest`, `waitForRequestFinished`, `waitForRequestFailed`, `waitForResponse`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `expectValue`, `expectAttribute`, `expectChecked`, `expectCount`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, `waitForTab`, and `waitForPopup`.
+- Supports the same parity actions as the structured runner DSL, including `wait`, `caption`, `assertVisible`, `expectText`, `fill`, `check`, `uncheck`, `focus`, `blur`, `selectText`, `dblclick`, `rightClick`, `selectOption`, `dispatchEvent`, `keyDown`, `keyUp`, `insertText`, `mouseMove`, `mouseDown`, `mouseUp`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `waitForEvent`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNavigation`, `url`, `title`, `content`, `setContent`, `captureDialogs`, `setDialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `apiRequest`, `storageState`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `addScriptTag`, `addStyleTag`, `exposeFunction`, `exposeBinding`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setJavaScriptEnabled`, `bypassCSP`, `serviceWorkers`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHttpCredentials`, `clearHttpCredentials`, `setProxy`, `clearProxy`, `setOffline`, `route`, `intercept`, `routeWebSocket`, `waitForWebSocket`, `waitForWebSocketMessage`, `waitForRequest`, `waitForRequestFinished`, `waitForRequestFailed`, `waitForResponse`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `expectValue`, `expectAttribute`, `expectChecked`, `expectCount`, `printPdf`, `uploadFiles`, `expectScreenshot`, `openTab`, `waitForTab`, and `waitForPopup`.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
 - Browser JavaScript dialogs are handled explicitly. CMG does not silently remove, accept, or dismiss dialogs through the browser protocol. Add `captureDialogs` or `setDialogBehavior` before the action that opens an `alert`, `confirm`, or `prompt`.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
@@ -70,68 +70,73 @@ EMULATE 017 width height userAgent
 GEOLOCATION 018 51.5,-0.1 accuracy=10
 PERMISSIONS 019 geolocation,notifications
 PERMISSIONS_CLEARED 020
-RELOADED 021 https://example.com
-URL 022 https://example.com/checkout
-LOAD_STATE 023 complete
-SELECTOR 024 #ready
-FUNCTION 025 true
-WAIT_TIMEOUT 026 250
-KEY_DOWN 027 Shift
-TEXT_INSERTED 028 3
-KEY_UP 029 Shift
-MOUSE_MOVED 030 400,300
-MOUSE_DOWN 031 400,300
-MOUSE_UP 032 400,300
-LOCAL_STORAGE 033 set token
-SESSION_STORAGE 034 get token abc
-COOKIE 035 set mode
-DOWNLOAD 036 C:\Projects\CMG\demo-output\report.csv
-CONSOLE_CAPTURE 037
-CONSOLE 038 info: settings saved
-PAGE_ERROR_CAPTURE 039
-PAGE_ERROR 040 error: Cannot read properties of null
-DIALOG_CAPTURE 041
-DIALOG_BEHAVIOR 042 accept
-DIALOG 043 {"type":"alert","message":"Saved","accepted":true}
-INIT_SCRIPT 044 ...
-EXPOSED_FUNCTION 045 cmgAdd
-GIF_BLOCK_SUPPRESSED 046
-HEADERS_SET 047 2
-HTTP_CREDENTIALS_SET 048 agent
-HTTP_CREDENTIALS_CLEARED 049
-OFFLINE 050 true
-ROUTE 051 /api/profile
-REQUEST 052 {"method":"GET","url":"/api/profile","type":"fetch","body":""}
-REQUEST_FAILED 053 {"method":"GET","url":"/api/down","type":"fetch","mocked":true,"error":"profile service unavailable"}
-RESPONSE 054 {"url":"/api/profile","status":200,"mocked":true}
-ROUTES_CLEARED 055
-WEBSOCKET_ROUTE 056 /socket
-WEBSOCKET 057 {"url":"/socket","routed":true}
-WEBSOCKET_MESSAGE 058 {"url":"/socket","data":"ready","routed":true}
-WEBSOCKET_ROUTES_CLEARED 059
-HAR_EXPORTED 060 C:\Projects\CMG\demo-output\network.har
-HAR_REPLAY 061 routes=1 C:\Projects\CMG\demo-output\network.har
-FRAME 062 frameClick
-FRAME_EVALUATE 063 Checkout
-CLOCK 064 1700000000000
-TICK 065 250 now=1700000000250
-CLOCK_RESTORED 066
-CONTEXT_CLEARED 067
-CONTEXT_RESET 068
-ACCESSIBILITY 069 C:\Projects\CMG\demo-output\a11y.json
-ACCESSIBLE 070 role=button name="Save"
-CONTEXT_CREATED 071 id=... target=... url="about:blank"
-CONTEXT_ACTIVE 072 ...
-CONTEXT_CLOSED 073 ...
-WORKER 074 id=... type=worker title="worker.js" url="https://example.com/worker.js"
-WORKER_INTERCEPT 075 routes=1 /api/profile
-COVERAGE_STARTED 076 js=true css=true
-COVERAGE 077 C:\Projects\CMG\demo-output\coverage.json
-FILE_READ 078 payload C:\Projects\CMG\fixtures\payload.json
-FILE_WRITTEN 079 C:\Projects\CMG\demo-output\result.txt
-FILE_APPENDED 080 C:\Projects\CMG\demo-output\result.txt
-FILE_OK 081 C:\Projects\CMG\demo-output\result.txt
-PDF 082 C:\Projects\CMG\demo-output\page.pdf
+JAVASCRIPT_ENABLED 021 false
+CSP_BYPASS 022 true
+SERVICE_WORKERS 023 block
+RELOADED 024 https://example.com
+URL 025 https://example.com/checkout
+LOAD_STATE 026 complete
+SELECTOR 027 #ready
+FUNCTION 028 true
+WAIT_TIMEOUT 029 250
+KEY_DOWN 030 Shift
+TEXT_INSERTED 031 3
+KEY_UP 032 Shift
+MOUSE_MOVED 033 400,300
+MOUSE_DOWN 034 400,300
+MOUSE_UP 035 400,300
+LOCAL_STORAGE 036 set token
+SESSION_STORAGE 037 get token abc
+COOKIE 038 set mode
+DOWNLOAD 039 C:\Projects\CMG\demo-output\report.csv
+CONSOLE_CAPTURE 040
+CONSOLE 041 info: settings saved
+PAGE_ERROR_CAPTURE 042
+PAGE_ERROR 043 error: Cannot read properties of null
+DIALOG_CAPTURE 044
+DIALOG_BEHAVIOR 045 accept
+DIALOG 046 {"type":"alert","message":"Saved","accepted":true}
+INIT_SCRIPT 047 ...
+EXPOSED_FUNCTION 048 cmgAdd
+GIF_BLOCK_SUPPRESSED 049
+HEADERS_SET 050 2
+HTTP_CREDENTIALS_SET 051 agent
+HTTP_CREDENTIALS_CLEARED 052
+PROXY_SET 053 https://proxy.local/?url=
+PROXY_CLEARED 054
+OFFLINE 055 true
+ROUTE 056 /api/profile
+REQUEST 057 {"method":"GET","url":"/api/profile","type":"fetch","body":""}
+REQUEST_FAILED 058 {"method":"GET","url":"/api/down","type":"fetch","mocked":true,"error":"profile service unavailable"}
+RESPONSE 059 {"url":"/api/profile","status":200,"mocked":true}
+ROUTES_CLEARED 060
+WEBSOCKET_ROUTE 061 /socket
+WEBSOCKET 062 {"url":"/socket","routed":true}
+WEBSOCKET_MESSAGE 063 {"url":"/socket","data":"ready","routed":true}
+WEBSOCKET_ROUTES_CLEARED 064
+HAR_EXPORTED 065 C:\Projects\CMG\demo-output\network.har
+HAR_REPLAY 066 routes=1 C:\Projects\CMG\demo-output\network.har
+FRAME 067 frameClick
+FRAME_EVALUATE 068 Checkout
+CLOCK 069 1700000000000
+TICK 070 250 now=1700000000250
+CLOCK_RESTORED 071
+CONTEXT_CLEARED 072
+CONTEXT_RESET 073
+ACCESSIBILITY 074 C:\Projects\CMG\demo-output\a11y.json
+ACCESSIBLE 075 role=button name="Save"
+CONTEXT_CREATED 076 id=... target=... url="about:blank"
+CONTEXT_ACTIVE 077 ...
+CONTEXT_CLOSED 078 ...
+WORKER 079 id=... type=worker title="worker.js" url="https://example.com/worker.js"
+WORKER_INTERCEPT 080 routes=1 /api/profile
+COVERAGE_STARTED 081 js=true css=true
+COVERAGE 082 C:\Projects\CMG\demo-output\coverage.json
+FILE_READ 083 payload C:\Projects\CMG\fixtures\payload.json
+FILE_WRITTEN 084 C:\Projects\CMG\demo-output\result.txt
+FILE_APPENDED 085 C:\Projects\CMG\demo-output\result.txt
+FILE_OK 086 C:\Projects\CMG\demo-output\result.txt
+PDF 087 C:\Projects\CMG\demo-output\page.pdf
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 

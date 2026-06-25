@@ -15,6 +15,8 @@ public sealed partial class BrowserScriptRunner
             "clearextrahttpheaders" or "clearheaders" => ClearExtraHttpHeaders(remoteDebuggingUrl, automationClient, action),
             "sethttpcredentials" or "httpcredentials" or "authenticate" => SetHttpCredentials(remoteDebuggingUrl, automationClient, action),
             "clearhttpcredentials" => ClearHttpCredentials(remoteDebuggingUrl, automationClient, action),
+            "setproxy" or "proxy" => SetProxy(remoteDebuggingUrl, automationClient, action),
+            "clearproxy" => ClearProxy(remoteDebuggingUrl, automationClient, action),
             "setoffline" => SetOffline(remoteDebuggingUrl, automationClient, action),
             _ => throw new ScriptExecutionException($"Unknown network environment action '{action.Name}'.")
         };
@@ -76,6 +78,29 @@ public sealed partial class BrowserScriptRunner
         automationClient.AddInitScript(remoteDebuggingUrl, script);
         automationClient.Evaluate(remoteDebuggingUrl, script);
         return [$"HTTP_CREDENTIALS_CLEARED {action.LineNumber:000}"];
+    }
+
+    private static IReadOnlyList<string> SetProxy(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        if (string.IsNullOrWhiteSpace(action.Arguments[0]))
+        {
+            throw new ScriptExecutionException($"{action.Name} proxy prefix cannot be empty.");
+        }
+
+        var script = BrowserNetworkEnvironmentScripts.Proxy(action.Arguments[0]);
+        automationClient.AddInitScript(remoteDebuggingUrl, script);
+        automationClient.Evaluate(remoteDebuggingUrl, script);
+        return [$"PROXY_SET {action.LineNumber:000} {action.Arguments[0]}"];
+    }
+
+    private static IReadOnlyList<string> ClearProxy(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 0, 0);
+        var script = BrowserNetworkEnvironmentScripts.ClearProxy();
+        automationClient.AddInitScript(remoteDebuggingUrl, script);
+        automationClient.Evaluate(remoteDebuggingUrl, script);
+        return [$"PROXY_CLEARED {action.LineNumber:000}"];
     }
 
     private static IReadOnlyList<string> SetOffline(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)

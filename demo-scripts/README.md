@@ -102,6 +102,7 @@ dotnet run -- --firefox browser close
 - `19-direct-gif-block.cmgscript`: Demonstrates direct browser-control `gif` blocks.
 - `20-v2-runner-flow.cmgscript`: Demonstrates the structured runner DSL, `step`, and `gif` blocks.
 - `21-websocket-routing.cmgscript`: Demonstrates page-side WebSocket routing and waits.
+- `22-browser-environment.cmgscript`: Demonstrates page-side browser environment controls.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

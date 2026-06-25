@@ -22,6 +22,50 @@ public static class BrowserEmulationScript
         return $"(() => {{ {PermissionsLine(joined)} return true; }})()";
     }
 
+    public static string JavaScriptEnabled(bool enabled) =>
+        enabled
+            ? "(() => { window.__cmgJavaScriptBlocked = false; return true; })()"
+            : """
+              (() => {
+                window.__cmgJavaScriptBlocked = true;
+                const originalAppend = Element.prototype.appendChild;
+                Element.prototype.appendChild = function(child) {
+                  if (window.__cmgJavaScriptBlocked && child?.tagName === 'SCRIPT') {
+                    throw new Error('CMG JavaScript blocking rejected a dynamic script.');
+                  }
+                  return originalAppend.call(this, child);
+                };
+                window.eval = () => { throw new Error('CMG JavaScript blocking rejected eval.'); };
+                window.Function = function() { throw new Error('CMG JavaScript blocking rejected Function.'); };
+                return true;
+              })()
+              """;
+
+    public static string BypassCsp(bool enabled) =>
+        $$"""
+        (() => {
+          window.__cmgBypassCsp = {{enabled.ToString().ToLowerInvariant()}};
+          if (window.__cmgBypassCsp) {
+            document.querySelectorAll('meta[http-equiv="Content-Security-Policy" i]').forEach(node => node.remove());
+          }
+          return window.__cmgBypassCsp;
+        })()
+        """;
+
+    public static string ServiceWorkers(string mode) =>
+        $$"""
+        (() => {
+          window.__cmgServiceWorkers = {{Quote(mode)}};
+          if (navigator.serviceWorker && !navigator.serviceWorker.__cmgOriginalRegister) {
+            navigator.serviceWorker.__cmgOriginalRegister = navigator.serviceWorker.register.bind(navigator.serviceWorker);
+            navigator.serviceWorker.register = (...args) => window.__cmgServiceWorkers === 'block'
+              ? Promise.reject(new Error('CMG service worker blocking is enabled.'))
+              : navigator.serviceWorker.__cmgOriginalRegister(...args);
+          }
+          return window.__cmgServiceWorkers;
+        })()
+        """;
+
     private static void AddNavigator(List<string> lines, IReadOnlyDictionary<string, string> options)
     {
         if (options.TryGetValue("userAgent", out var userAgent))

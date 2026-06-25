@@ -554,6 +554,11 @@ setGeolocation latitude=51.5 longitude=-0.1
 grantPermissions "geolocation" "notifications"
 grantPermissions permissions="geolocation,notifications"
 clearPermissions
+setJavaScriptEnabled false
+javaScriptEnabled true
+bypassCSP true
+serviceWorkers block
+serviceWorkers allow
 ```
 
 Controls page-visible geolocation and permission query state without changing the rest of the emulated environment. These actions are available in both direct browser-control scripts and `cmg run`.
@@ -562,6 +567,9 @@ Arguments:
 
 - `setGeolocation`: Optional `<latitude>,<longitude>` positional argument.
 - `grantPermissions`: One or more permission names. Alternatively, pass a comma-separated `permissions=` option.
+- `setJavaScriptEnabled` or `javaScriptEnabled`: `true` or `false` for CMG's dynamic-script blocker.
+- `bypassCSP`: `true` or `false` for removing page CSP meta tags.
+- `serviceWorkers`: `allow` or `block` for page `navigator.serviceWorker.register()`.
 
 Options:
 
@@ -575,6 +583,9 @@ Output:
 - `GEOLOCATION <line> <latitude>,<longitude> accuracy=<accuracy>` when geolocation is set.
 - `PERMISSIONS <line> <comma-separated-permissions>` when permissions are granted.
 - `PERMISSIONS_CLEARED <line>` when all page-side permission grants are cleared back to `prompt`.
+- `JAVASCRIPT_ENABLED <line> <true|false>` when dynamic script blocking changes.
+- `CSP_BYPASS <line> <true|false>` when page-side CSP bypass changes.
+- `SERVICE_WORKERS <line> <allow|block>` when service-worker registration mode changes.
 
 These actions do not move the virtual pointer. In GIF recordings, wrap them in `step`, `caption`, or `gif` blocks when the permission or location change should be narrated.
 
@@ -1323,16 +1334,20 @@ setExtraHTTPHeaders "X-CMG-Agent" "true" "Accept" "application/json"
 clearExtraHTTPHeaders
 setHttpCredentials "agent" "secret"
 clearHttpCredentials
+setProxy "https://proxy.local/?url="
+clearProxy
 setOffline true
 setOffline false
 ```
 
 Patches page-side `fetch()` and `XMLHttpRequest` behavior in the current page and future navigations. Extra headers are added to page-originated fetch/XHR requests. HTTP credentials add a Basic `Authorization` header to page-originated fetch/XHR requests. Offline mode reports `navigator.onLine=false`, dispatches `offline`/`online`, and makes patched fetch/XHR requests fail while enabled.
+`setProxy` rewrites page fetch/XHR request URLs to `<prefix><encoded-url>`.
 
 Arguments:
 
 - `name value`: Required for `setExtraHTTPHeaders`; repeat pairs to add more request headers.
 - `username password`: Required for `setHttpCredentials`, `httpCredentials`, or `authenticate`.
+- `proxy prefix`: Required for `setProxy` or `proxy`.
 
 Output:
 
@@ -1340,9 +1355,11 @@ Output:
 - `HEADERS_CLEARED <line>` when extra headers are cleared.
 - `HTTP_CREDENTIALS_SET <line> <username>` when Basic auth credentials are installed.
 - `HTTP_CREDENTIALS_CLEARED <line>` when Basic auth credentials are removed.
+- `PROXY_SET <line> <prefix>` when page request rewriting is installed.
+- `PROXY_CLEARED <line>` when page request rewriting is cleared.
 - `OFFLINE <line> <true|false>` when offline mode changes.
 
-These actions do not move the virtual pointer. They affect page-side requests and are included in reports and traces. Browser-level navigation requests and browser-native HTTP auth prompts are not rewritten; use them before page actions that call `fetch()` or `XMLHttpRequest`.
+These actions do not move the virtual pointer. They affect page-side requests and are included in reports and traces. Browser-level navigation requests, browser-native HTTP auth prompts, and browser launch proxy state are not rewritten; use them before page actions that call `fetch()` or `XMLHttpRequest`.
 
 ### `listWorkers`, `waitForWorker`, `workerEvaluate`, And `workerIntercept`
 

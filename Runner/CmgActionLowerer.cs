@@ -37,14 +37,16 @@ public sealed class CmgActionLowerer
                 LowerSelectorCommand(action.Kind, action),
             "navigate" or "waitforelement" or
             "press" or "keydown" or "keyup" or "inserttext" or "showmessagebar" or "delay" or "screenshotpage" or
-            "emulate" or "setgeolocation" or "grantpermissions" or "clearpermissions" or "waitfordownload" or
+            "emulate" or "setgeolocation" or "grantpermissions" or "clearpermissions" or
+            "setjavascriptenabled" or "javascriptenabled" or "bypasscsp" or "serviceworkers" or "setserviceworkers" or "waitfordownload" or
             "captureconsole" or "waitforconsole" or "capturedialogs" or "setdialogbehavior" or "waitfordialog" or
             "waitforevent" or
             "capturepageerrors" or "waitforpageerror" or
             "route" or "mockresponse" or "intercept" or "clearroutes" or "waitforrequest" or "waitforrequestfinished" or "waitforrequestfailed" or "waitforresponse" or "exporthar" or "replayhar" or
             "routewebsocket" or "clearwebsocketroutes" or "waitforwebsocket" or "waitforwebsocketmessage" or
             "setextrahttpheaders" or "setheaders" or "clearextrahttpheaders" or "clearheaders" or
-            "sethttpcredentials" or "httpcredentials" or "authenticate" or "clearhttpcredentials" or "setoffline" or
+            "sethttpcredentials" or "httpcredentials" or "authenticate" or "clearhttpcredentials" or
+            "setproxy" or "proxy" or "clearproxy" or "setoffline" or
             "frameclick" or "frametype" or "framefill" or "framehover" or "framewaitforelement" or "frameasserttext" or "frameevaluate" or
             "clock" or "tick" or "restoreclock" or
             "clearcontext" or "resetcontext" or

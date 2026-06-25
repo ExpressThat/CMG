@@ -193,6 +193,17 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_EnvironmentProviderActionsPassThrough()
+    {
+        var lowerer = new CmgActionLowerer();
+
+        Assert.Equal("setJavaScriptEnabled \"false\"", Assert.Single(lowerer.Lower(Node("setJavaScriptEnabled", ["false"], []))));
+        Assert.Equal("bypassCSP \"true\"", Assert.Single(lowerer.Lower(Node("bypassCSP", ["true"], []))));
+        Assert.Equal("serviceWorkers \"block\"", Assert.Single(lowerer.Lower(Node("serviceWorkers", ["block"], []))));
+        Assert.Equal("setProxy \"https://proxy.local/?url=\"", Assert.Single(lowerer.Lower(Node("setProxy", ["https://proxy.local/?url="], []))));
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));

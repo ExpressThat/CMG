@@ -65,6 +65,27 @@ public sealed class BrowserScriptRunnerNetworkEnvironmentActionTests
     }
 
     [Fact]
+    public void RunText_SetProxyInstallsFetchAndXhrRewrite()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("setProxy \"https://proxy.local/?url=\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("__cmgProxyPrefix", client.LastExpression);
+        Assert.Contains("__cmgProxyPrefix", client.LastInitScript);
+        Assert.Contains("PROXY_SET 001 https://proxy.local/?url=", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_ClearProxyClearsRewrite()
+    {
+        var result = Runner().RunText("clearProxy", "debug", new FakeAutomationClient());
+
+        Assert.True(result.Success);
+        Assert.Contains("PROXY_CLEARED 001", result.StdoutLines);
+    }
+
+    [Fact]
     public void RunText_SetOfflineValidatesBoolean()
     {
         var result = Runner().RunText("setOffline maybe", "debug", new FakeAutomationClient());

@@ -58,6 +58,35 @@ public static class BrowserNetworkEnvironmentScripts
     public static string ClearHttpCredentials() =>
         "(() => { if (window.__cmgExtraHeaders) delete window.__cmgExtraHeaders.Authorization; return true; })()";
 
+    public static string Proxy(string prefix) =>
+        $$"""
+        (() => {
+          window.__cmgProxyPrefix = {{Quote(prefix)}};
+          const rewrite = input => {
+            if (!window.__cmgProxyPrefix) return input;
+            const url = typeof input === 'string' ? input : input?.url;
+            if (!url) return input;
+            const target = window.__cmgProxyPrefix + encodeURIComponent(url);
+            return typeof input === 'string' ? target : new Request(target, input);
+          };
+          if (!window.__cmgOriginalFetchForProxy) {
+            window.__cmgOriginalFetchForProxy = window.fetch.bind(window);
+            window.fetch = (input, init) => window.__cmgOriginalFetchForProxy(rewrite(input), init);
+          }
+          if (!window.__cmgOriginalXhrOpenForProxy) {
+            window.__cmgOriginalXhrOpenForProxy = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+              const target = window.__cmgProxyPrefix ? window.__cmgProxyPrefix + encodeURIComponent(url) : url;
+              return window.__cmgOriginalXhrOpenForProxy.call(this, method, target, ...rest);
+            };
+          }
+          return window.__cmgProxyPrefix;
+        })()
+        """;
+
+    public static string ClearProxy() =>
+        "(() => { window.__cmgProxyPrefix = ''; return true; })()";
+
     public static string Offline(bool offline) =>
         $$"""
         (() => {

@@ -102,5 +102,48 @@ public sealed class BrowserScriptRunnerEmulationTests
         Assert.Contains("requires at least one permission", result.Error);
     }
 
+    [Fact]
+    public void RunText_JavaScriptEnabledInstallsDynamicScriptBlocker()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("setJavaScriptEnabled false", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("__cmgJavaScriptBlocked", client.LastExpression);
+        Assert.Contains("__cmgJavaScriptBlocked", client.LastInitScript);
+        Assert.Contains("JAVASCRIPT_ENABLED 001 false", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_BypassCspRemovesMetaPolicies()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("bypassCSP true", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("__cmgBypassCsp", client.LastExpression);
+        Assert.Contains("CSP_BYPASS 001 true", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_ServiceWorkersCanBeBlocked()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("serviceWorkers block", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("__cmgServiceWorkers", client.LastExpression);
+        Assert.Contains("SERVICE_WORKERS 001 block", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_ServiceWorkersValidatesMode()
+    {
+        var result = Runner().RunText("serviceWorkers maybe", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("expects allow or block", result.Error);
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

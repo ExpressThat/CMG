@@ -28,6 +28,9 @@ public sealed partial class BrowserScriptRunner
             "setgeolocation" => ExecuteSetGeolocation(remoteDebuggingUrl, automationClient, action),
             "grantpermissions" => ExecuteGrantPermissions(remoteDebuggingUrl, automationClient, action),
             "clearpermissions" => ExecuteClearPermissions(remoteDebuggingUrl, automationClient, action),
+            "setjavascriptenabled" or "javascriptenabled" => ExecuteJavaScriptEnabled(remoteDebuggingUrl, automationClient, action),
+            "bypasscsp" => ExecuteBypassCsp(remoteDebuggingUrl, automationClient, action),
+            "serviceworkers" or "setserviceworkers" => ExecuteServiceWorkers(remoteDebuggingUrl, automationClient, action),
             _ => throw new ScriptExecutionException($"Unknown emulation action '{action.Name}'.")
         };
     }
@@ -70,6 +73,49 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 0, 0);
         automationClient.Evaluate(remoteDebuggingUrl, BrowserEmulationScript.BuildPermissions([]));
         return [$"PERMISSIONS_CLEARED {action.LineNumber:000}"];
+    }
+
+    private static IReadOnlyList<string> ExecuteJavaScriptEnabled(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        if (!bool.TryParse(action.Arguments[0], out var enabled))
+        {
+            throw new ScriptExecutionException($"{action.Name} expects true or false.");
+        }
+
+        var script = BrowserEmulationScript.JavaScriptEnabled(enabled);
+        automationClient.AddInitScript(remoteDebuggingUrl, script);
+        automationClient.Evaluate(remoteDebuggingUrl, script);
+        return [$"JAVASCRIPT_ENABLED {action.LineNumber:000} {enabled.ToString().ToLowerInvariant()}"];
+    }
+
+    private static IReadOnlyList<string> ExecuteBypassCsp(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        if (!bool.TryParse(action.Arguments[0], out var enabled))
+        {
+            throw new ScriptExecutionException("bypassCSP expects true or false.");
+        }
+
+        var script = BrowserEmulationScript.BypassCsp(enabled);
+        automationClient.AddInitScript(remoteDebuggingUrl, script);
+        automationClient.Evaluate(remoteDebuggingUrl, script);
+        return [$"CSP_BYPASS {action.LineNumber:000} {enabled.ToString().ToLowerInvariant()}"];
+    }
+
+    private static IReadOnlyList<string> ExecuteServiceWorkers(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var mode = action.Arguments[0].ToLowerInvariant();
+        if (mode is not ("allow" or "block"))
+        {
+            throw new ScriptExecutionException("serviceWorkers expects allow or block.");
+        }
+
+        var script = BrowserEmulationScript.ServiceWorkers(mode);
+        automationClient.AddInitScript(remoteDebuggingUrl, script);
+        automationClient.Evaluate(remoteDebuggingUrl, script);
+        return [$"SERVICE_WORKERS {action.LineNumber:000} {mode}"];
     }
 
     private static void ApplyViewport(
