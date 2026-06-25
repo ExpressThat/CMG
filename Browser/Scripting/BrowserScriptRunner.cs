@@ -99,6 +99,7 @@ public sealed partial class BrowserScriptRunner
             "fill" => ExecuteFill(remoteDebuggingUrl, automationClient, action, recorder),
             "check" or "uncheck" or "focus" or "blur" or "selecttext" =>
                 ExecuteElementDomAction(remoteDebuggingUrl, automationClient, action),
+            "dispatchevent" => ExecuteDispatchEvent(remoteDebuggingUrl, automationClient, action),
             "type" => ExecuteType(remoteDebuggingUrl, automationClient, action, recorder),
             "clear" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Clear(remoteDebuggingUrl, selector)),
             "press" => ExecutePress(remoteDebuggingUrl, automationClient, action),

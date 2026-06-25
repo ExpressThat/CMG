@@ -1032,6 +1032,27 @@ Output:
 - `MOUSE_EVENT <line> dblclick <selector>` for `dblclick`.
 - `MOUSE_EVENT <line> contextmenu <selector>` for `rightClick`.
 
+### `dispatchEvent`
+
+```text
+dispatchEvent "#item" "ready"
+dispatchEvent "#item" "cmg:ready" detail="{\"ok\":true}" bubbles=true cancelable=true
+```
+
+Dispatches a page-side `Event` on the selected element. When `detail=` is provided, CMG dispatches a `CustomEvent` and parses `detail` as JSON. This action is available in direct browser-control scripts and `cmg run`.
+
+Options:
+
+- `detail`: Optional JSON payload for a `CustomEvent`.
+- `bubbles`: Optional boolean. Default is `true`.
+- `cancelable`: Optional boolean. Default is `true`.
+
+Output:
+
+- `EVENT <line> <event-name> <selector>` when the event is dispatched.
+
+`dispatchEvent` does not move the virtual pointer. Use pointer actions such as `click`, `dblclick`, or `rightClick` when the event should be visible in a GIF.
+
 ### `expectUrl` And `expectTitle`
 
 ```text

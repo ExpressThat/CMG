@@ -39,6 +39,7 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("title", null, "title")]
     [InlineData("content", null, "content")]
     [InlineData("setContent", "<main>CMG</main>", "setContent \"<main>CMG</main>\"")]
+    [InlineData("dispatchEvent", "#target", "dispatchEvent \"#target\" \"ready\"", "ready")]
     [InlineData("mouseMove", "center", "mouseMove \"center\"")]
     [InlineData("mouseDown", "center", "mouseDown \"center\"")]
     [InlineData("mouseUp", "center", "mouseUp \"center\"")]
