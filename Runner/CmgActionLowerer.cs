@@ -65,7 +65,8 @@ public sealed class CmgActionLowerer
             "addinitscript" or "evaluateonnewdocument" or "addscripttag" or "addstyletag" or "exposefunction" or "exposebinding" or "url" or "title" or "content" or "setcontent" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "set" => LowerSet(action),
-            "evaluate" or "dispatchevent" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or "draganddrop" or "listtabs" or "activatetab" or "closetab" =>
+            "evaluate" or "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or
+            "dispatchevent" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or "draganddrop" or "listtabs" or "activatetab" or "closetab" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),
             "opentab" or "waitfortab" or "waitforpopup" => [ToLine(action.Kind, action.Arguments, action.Options)],

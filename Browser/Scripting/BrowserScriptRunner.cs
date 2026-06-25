@@ -128,6 +128,8 @@ public sealed partial class BrowserScriptRunner
             "expectchecked" or "tobechecked" or "expectcount" or "tohavecount" =>
                 ExecuteElementExpectation(remoteDebuggingUrl, automationClient, action),
             "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, automationClient, action),
+            "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" =>
+                ExecuteSelectorEvaluate(remoteDebuggingUrl, automationClient, action),
             "url" or "title" or "content" or "setcontent" =>
                 ExecutePageContentAction(remoteDebuggingUrl, automationClient, action),
             "addinitscript" or "evaluateonnewdocument" => ExecuteAddInitScript(remoteDebuggingUrl, automationClient, action),

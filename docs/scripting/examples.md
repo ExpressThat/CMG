@@ -75,6 +75,19 @@ set heading {
 showMessageBar "${heading}"
 ```
 
+## Selector Evaluation
+
+```text
+navigate "C:\Projects\CMG\index.html"
+set pageTitle {
+  evalOnSelector "h1" "element.textContent"
+}
+showMessageBar "${pageTitle}"
+evaluateAll ".command" "elements => elements.length"
+```
+
+This example is available as `demo-scripts/27-selector-evaluation.cmgscript`.
+
 ## Drag And Drop
 
 ```text

@@ -107,6 +107,7 @@ dotnet run -- --firefox browser close
 - `24-touch-clipboard.cmgscript`: Demonstrates touch-style `tap` and deterministic page-side clipboard actions.
 - `25-provider-navigation-aliases.cmgscript`: Demonstrates `visit` and `goto` navigation aliases.
 - `26-provider-text-assertions.cmgscript`: Demonstrates `contains`, `containsText`, and `waitForText` aliases.
+- `27-selector-evaluation.cmgscript`: Demonstrates selector-scoped evaluation and `set` block capture.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

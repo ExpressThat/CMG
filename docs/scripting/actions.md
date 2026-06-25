@@ -462,9 +462,17 @@ waitForText "h1" "CMG Browser Control Test Page" timeout=5000
 
 ```text
 evaluate "document.title"
+evaluateOnSelector "#save" "element.textContent"
+evalOnSelector "#save" "element => element.textContent"
+evaluateAll ".item" "elements => elements.length"
+evalAll ".item" "elements.map(element => element.textContent).join(', ')"
 ```
 
 Evaluates JavaScript in the primary page target and prints the returned value as an `EVALUATE` result line.
+
+`evaluateOnSelector` and `evalOnSelector` resolve a selector or rich locator, expose it as `element`, and return either the value of the expression or the result of a function/arrow function called with that element. `evaluateAll` and `evalAll` expose all matching CSS elements as `elements`.
+
+The output payload is just the returned value. A `set` block can capture it without storing the `PASS` or `EVALUATE` prefix.
 
 ## `url`, `title`, `content`, And `setContent`
 

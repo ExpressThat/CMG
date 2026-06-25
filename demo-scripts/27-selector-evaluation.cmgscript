@@ -1,0 +1,7 @@
+navigate "C:\Projects\CMG\index.html"
+waitForElement "h1" timeout=5000
+set pageTitle {
+  evalOnSelector "h1" "element.textContent"
+}
+showMessageBar "${pageTitle}"
+evaluateAll ".command" "elements => elements.length"
