@@ -27,9 +27,7 @@ public sealed class CmgActionLowerer
             "rightclick" => LowerMouseEvent(action, "contextmenu", button: 2),
             "reload" or "goback" or "goforward" or "waitforurl" or "waitforloadstate" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
-            "localstorage" => [ToLine("evaluate", [BuildStorage(action, "localStorage")])],
-            "sessionstorage" => [ToLine("evaluate", [BuildStorage(action, "sessionStorage")])],
-            "cookie" => [ToLine("evaluate", [BuildCookie(action)])],
+            "localstorage" or "sessionstorage" or "cookie" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "setviewport" => [ToLine("setViewport", [], action.Options)],
             "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "html" or "screenshot" or "asserttext" =>
                 LowerSelectorCommand(action.Kind, action),
@@ -124,30 +122,6 @@ public sealed class CmgActionLowerer
             ToLine("hover", [selector]),
             ToLine("evaluate", [expression])
         ];
-    }
-
-    private static string BuildStorage(CmgNode action, string storage)
-    {
-        var operation = action.Arguments.Count > 0 ? action.Arguments[0].ToLowerInvariant() : "get";
-        var key = action.Arguments.Count > 1 ? action.Arguments[1] : string.Empty;
-        var value = action.Arguments.Count > 2 ? action.Arguments[2] : string.Empty;
-        return operation switch
-        {
-            "set" => $"{storage}.setItem({QuoteJs(key)}, {QuoteJs(value)})",
-            "remove" => $"{storage}.removeItem({QuoteJs(key)})",
-            "clear" => $"{storage}.clear()",
-            _ => $"{storage}.getItem({QuoteJs(key)})"
-        };
-    }
-
-    private static string BuildCookie(CmgNode action)
-    {
-        if (action.Arguments.Count >= 2 && action.Arguments[0].Equals("set", StringComparison.OrdinalIgnoreCase))
-        {
-            return $"document.cookie = {QuoteJs($"{action.Arguments[1]}={action.Arguments.ElementAtOrDefault(2) ?? string.Empty}")}";
-        }
-
-        return "document.cookie";
     }
 
     private static string ToLine(string action, IReadOnlyList<string> args) => ToLine(action, args, new Dictionary<string, string>());

@@ -67,8 +67,8 @@ public sealed class CmgActionLowererTests
     {
         var lowerer = new CmgActionLowerer();
 
-        Assert.Contains("localStorage", Assert.Single(lowerer.Lower(Node("localStorage", ["set", "token", "abc"], []))));
-        Assert.Contains("document.cookie", Assert.Single(lowerer.Lower(Node("cookie", [], []))));
+        Assert.Equal("localStorage \"set\" \"token\" \"abc\"", Assert.Single(lowerer.Lower(Node("localStorage", ["set", "token", "abc"], []))));
+        Assert.Equal("cookie", Assert.Single(lowerer.Lower(Node("cookie", [], []))));
         Assert.Equal("expectUrl \"checkout\"", Assert.Single(lowerer.Lower(Node("expectUrl", ["checkout"], []))));
     }
 

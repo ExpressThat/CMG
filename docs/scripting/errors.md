@@ -322,6 +322,15 @@ Line 3: waitForLoadState failed. waitForLoadState expects loading, interactive, 
 
 Navigation wait failures include the expected state or URL, timeout, and the last observed browser state when available.
 
+## Storage Failure
+
+```text
+Line 4: localStorage failed. localStorage set expects a key and value.
+Line 5: cookie failed. cookie expects get, set, remove, or clear.
+```
+
+Storage actions validate the operation and required key/value arguments before mutating browser state.
+
 ## Worker Failure
 
 ```text

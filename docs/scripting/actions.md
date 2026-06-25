@@ -878,11 +878,26 @@ Options:
 
 ```text
 localStorage set "token" "abc"
+localStorage get "token"
+localStorage clear
 sessionStorage remove "token"
 cookie set "mode" "demo"
+cookie get "mode"
+cookie clear
 ```
 
-Reads or mutates page storage from the current page context.
+Reads or mutates page storage from the current page context. These are shared actions, so they work in both direct browser-control scripts and `cmg run`.
+
+Arguments:
+
+- `localStorage` and `sessionStorage`: `get <key>`, `set <key> <value>`, `remove <key>`, or `clear`.
+- `cookie`: `get [key]`, `set <key> <value>`, `remove <key>`, or `clear`.
+
+Output:
+
+- `LOCAL_STORAGE <line> <operation> ...` for local storage.
+- `SESSION_STORAGE <line> <operation> ...` for session storage.
+- `COOKIE <line> <operation> ...` for cookies.
 
 ### `apiRequest`
 

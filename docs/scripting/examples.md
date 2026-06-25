@@ -571,6 +571,18 @@ test "uses saved state" {
 }
 ```
 
+## Storage Commands
+
+```text
+test "sets browser storage" {
+  localStorage set "token" "abc"
+  sessionStorage set "mode" "test"
+  cookie set "cmg" "demo"
+  localStorage get "token"
+  cookie get "cmg"
+}
+```
+
 ## Navigation Controls
 
 ```text

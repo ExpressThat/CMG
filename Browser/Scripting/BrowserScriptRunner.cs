@@ -109,6 +109,8 @@ public sealed partial class BrowserScriptRunner
             "setviewport" => ExecuteSetViewport(remoteDebuggingUrl, automationClient, action),
             "apirequest" => ExecuteApiRequest(action),
             "storagestate" => ExecuteStorageState(remoteDebuggingUrl, automationClient, action),
+            "localstorage" or "sessionstorage" or "cookie" =>
+                ExecuteStorageAction(remoteDebuggingUrl, automationClient, action),
             "expectscreenshot" => ExecuteVisualAssertion(remoteDebuggingUrl, automationClient, action),
             "uploadfiles" => ExecuteUploadFiles(remoteDebuggingUrl, automationClient, action),
             "emulate" => ExecuteEmulate(remoteDebuggingUrl, automationClient, action),
