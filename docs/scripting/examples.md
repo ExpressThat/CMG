@@ -608,3 +608,14 @@ test "waits for app readiness" {
   waitForTimeout 250
 }
 ```
+
+## Network Request Wait
+
+```text
+test "loads profile" {
+  route "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
+  click "#loadProfile"
+  waitForRequest "/api/profile"
+  waitForResponse "/api/profile"
+}
+```

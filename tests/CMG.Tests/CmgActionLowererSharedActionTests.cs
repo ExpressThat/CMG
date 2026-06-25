@@ -10,6 +10,7 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("waitForPageError", "boom", "waitForPageError \"boom\"")]
     [InlineData("route", "/api", "route \"/api\"")]
     [InlineData("intercept", "/api", "intercept \"/api\"")]
+    [InlineData("waitForRequest", "/api", "waitForRequest \"/api\"")]
     [InlineData("frameClick", "#frame", "frameClick \"#frame\" \"#save\"", "#save")]
     [InlineData("tick", "250", "tick \"250\"")]
     [InlineData("navigate", "index.html", "navigate \"index.html\"")]

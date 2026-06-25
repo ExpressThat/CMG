@@ -340,6 +340,15 @@ Line 7: waitForTimeout failed. delay must be a positive integer.
 
 Wait failures include whether the selector, expression, or timeout argument caused the failure.
 
+## Network Wait Failure
+
+```text
+Line 5: waitForRequest failed. Timed out waiting for request /api/profile
+Line 6: waitForResponse failed. Timed out waiting for response /api/profile
+```
+
+Network waits use substring matching against page `fetch()` and `XMLHttpRequest` URLs recorded by CMG's page-side network patch.
+
 ## Worker Failure
 
 ```text

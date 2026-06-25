@@ -1,4 +1,5 @@
 using CMG.Runner;
+using System.Text.Json;
 
 namespace CMG.Browser.Scripting;
 
@@ -31,7 +32,32 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 1, 1);
         var result = automationClient.Evaluate(remoteDebuggingUrl, CmgNetworkScripts.WaitForResponse(ToNode(action)));
-        return [$"RESPONSE {action.LineNumber:000} {result}"];
+        return [$"RESPONSE {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
+    }
+
+    private static IReadOnlyList<string> ExecuteWaitForRequest(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var result = automationClient.Evaluate(remoteDebuggingUrl, CmgNetworkScripts.WaitForRequest(ToNode(action)));
+        return [$"REQUEST {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
+    }
+
+    private static string ParseNetworkWaitResult(string result)
+    {
+        using var document = JsonDocument.Parse(result);
+        var root = document.RootElement;
+        if (root.TryGetProperty("success", out var success) && success.GetBoolean())
+        {
+            return root.TryGetProperty("value", out var value) ? value.GetRawText() : "{}";
+        }
+
+        var error = root.TryGetProperty("error", out var reason)
+            ? reason.GetString() ?? "Network wait failed."
+            : "Network wait failed.";
+        throw new ScriptExecutionException(error);
     }
 
     private static IReadOnlyList<string> ExecuteExportHar(

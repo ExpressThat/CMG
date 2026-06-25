@@ -28,11 +28,36 @@ public sealed class BrowserScriptRunnerNetworkTests
     public void RunText_WaitForResponseOutputsResponseLine()
     {
         var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"success":true,"value":{"url":"/api","status":200}}""");
         var result = Runner().RunText("waitForResponse \"/api\" timeout=500", "debug", client);
 
         Assert.True(result.Success);
         Assert.Contains("waitForResponse", result.StdoutLines[0]);
         Assert.Contains(result.StdoutLines, line => line.Contains("RESPONSE", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_WaitForRequestOutputsRequestLine()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"success":true,"value":{"url":"/api","method":"GET"}}""");
+        var result = Runner().RunText("waitForRequest \"/api\" timeout=500", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("__cmgRequests", client.LastExpression);
+        Assert.Contains(result.StdoutLines, line => line.Contains("REQUEST", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_WaitForRequestReportsTimeout()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"success":false,"error":"Timed out waiting for request /api"}""");
+
+        var result = Runner().RunText("waitForRequest \"/api\" timeout=1", "debug", client);
+
+        Assert.False(result.Success);
+        Assert.Contains("Timed out waiting for request /api", result.Error);
     }
 
     [Fact]

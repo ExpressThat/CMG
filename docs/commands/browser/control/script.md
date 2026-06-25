@@ -77,31 +77,32 @@ INIT_SCRIPT 028 ...
 HEADERS_SET 029 2
 OFFLINE 030 true
 ROUTE 031 /api/profile
-RESPONSE 032 {"url":"/api/profile","status":200,"mocked":true}
-ROUTES_CLEARED 033
-HAR_EXPORTED 034 C:\Projects\CMG\demo-output\network.har
-HAR_REPLAY 035 routes=1 C:\Projects\CMG\demo-output\network.har
-FRAME 036 frameClick
-FRAME_EVALUATE 037 Checkout
-CLOCK 038 1700000000000
-TICK 039 250 now=1700000000250
-CLOCK_RESTORED 040
-CONTEXT_CLEARED 041
-CONTEXT_RESET 042
-ACCESSIBILITY 043 C:\Projects\CMG\demo-output\a11y.json
-ACCESSIBLE 044 role=button name="Save"
-CONTEXT_CREATED 045 id=... target=... url="about:blank"
-CONTEXT_ACTIVE 046 ...
-CONTEXT_CLOSED 047 ...
-WORKER 048 id=... type=worker title="worker.js" url="https://example.com/worker.js"
-WORKER_INTERCEPT 049 routes=1 /api/profile
-COVERAGE_STARTED 050 js=true css=true
-COVERAGE 051 C:\Projects\CMG\demo-output\coverage.json
-FILE_READ 052 payload C:\Projects\CMG\fixtures\payload.json
-FILE_WRITTEN 053 C:\Projects\CMG\demo-output\result.txt
-FILE_APPENDED 054 C:\Projects\CMG\demo-output\result.txt
-FILE_OK 055 C:\Projects\CMG\demo-output\result.txt
-PDF 056 C:\Projects\CMG\demo-output\page.pdf
+REQUEST 032 {"method":"GET","url":"/api/profile","type":"fetch","body":""}
+RESPONSE 033 {"url":"/api/profile","status":200,"mocked":true}
+ROUTES_CLEARED 034
+HAR_EXPORTED 035 C:\Projects\CMG\demo-output\network.har
+HAR_REPLAY 036 routes=1 C:\Projects\CMG\demo-output\network.har
+FRAME 037 frameClick
+FRAME_EVALUATE 038 Checkout
+CLOCK 039 1700000000000
+TICK 040 250 now=1700000000250
+CLOCK_RESTORED 041
+CONTEXT_CLEARED 042
+CONTEXT_RESET 043
+ACCESSIBILITY 044 C:\Projects\CMG\demo-output\a11y.json
+ACCESSIBLE 045 role=button name="Save"
+CONTEXT_CREATED 046 id=... target=... url="about:blank"
+CONTEXT_ACTIVE 047 ...
+CONTEXT_CLOSED 048 ...
+WORKER 049 id=... type=worker title="worker.js" url="https://example.com/worker.js"
+WORKER_INTERCEPT 050 routes=1 /api/profile
+COVERAGE_STARTED 051 js=true css=true
+COVERAGE 052 C:\Projects\CMG\demo-output\coverage.json
+FILE_READ 053 payload C:\Projects\CMG\fixtures\payload.json
+FILE_WRITTEN 054 C:\Projects\CMG\demo-output\result.txt
+FILE_APPENDED 055 C:\Projects\CMG\demo-output\result.txt
+FILE_OK 056 C:\Projects\CMG\demo-output\result.txt
+PDF 057 C:\Projects\CMG\demo-output\page.pdf
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 
