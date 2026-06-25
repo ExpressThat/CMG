@@ -20,6 +20,12 @@ public interface IBrowserAutomationClient
 
     void Press(string remoteDebuggingUrl, string key);
 
+    void KeyDown(string remoteDebuggingUrl, string key);
+
+    void KeyUp(string remoteDebuggingUrl, string key);
+
+    void InsertText(string remoteDebuggingUrl, string text);
+
     void Hover(string remoteDebuggingUrl, string selector);
 
     void ScrollElementIntoView(string remoteDebuggingUrl, string selector);

@@ -620,6 +620,18 @@ test "canvas drag" {
 }
 ```
 
+## Low-Level Keyboard
+
+```text
+test "keyboard shortcut" {
+  click "#editor"
+  keyDown "Control"
+  press "A"
+  keyUp "Control"
+  insertText "Replacement text"
+}
+```
+
 ## Dialogs
 
 ```text

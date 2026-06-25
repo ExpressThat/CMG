@@ -77,6 +77,22 @@ public sealed partial class FirefoxBiDiClient
             remoteDebuggingUrl,
             $"(() => {{ const target = document.activeElement || document.body; const options = {{ key: {BrowserDomScripts.JsonString(key)}, bubbles: true, cancelable: true }}; target.dispatchEvent(new KeyboardEvent('keydown', options)); target.dispatchEvent(new KeyboardEvent('keyup', options)); return true; }})()");
 
+    public void KeyDown(string remoteDebuggingUrl, string key) =>
+        DispatchKeyboard(remoteDebuggingUrl, key, "keydown");
+
+    public void KeyUp(string remoteDebuggingUrl, string key) =>
+        DispatchKeyboard(remoteDebuggingUrl, key, "keyup");
+
+    public void InsertText(string remoteDebuggingUrl, string text) =>
+        Evaluate(
+            remoteDebuggingUrl,
+            $"(() => {{ const target = document.activeElement || document.body; if ('value' in target) {{ target.value = `${{target.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`; target.dispatchEvent(new Event('input', {{ bubbles: true }})); target.dispatchEvent(new Event('change', {{ bubbles: true }})); return true; }} document.execCommand?.('insertText', false, {BrowserDomScripts.JsonString(text)}); return true; }})()");
+
+    private void DispatchKeyboard(string remoteDebuggingUrl, string key, string type) =>
+        Evaluate(
+            remoteDebuggingUrl,
+            $"(() => {{ const target = document.activeElement || document.body; const options = {{ key: {BrowserDomScripts.JsonString(key)}, bubbles: true, cancelable: true }}; target.dispatchEvent(new KeyboardEvent({BrowserDomScripts.JsonString(type)}, options)); return true; }})()");
+
     public void Hover(string remoteDebuggingUrl, string selector) =>
         ExecuteVisibleElementScript(remoteDebuggingUrl, selector, "const rect = element.getBoundingClientRect(); const options = { bubbles: true, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }; element.dispatchEvent(new MouseEvent('mouseover', options)); element.dispatchEvent(new MouseEvent('mousemove', options)); return true;");
 

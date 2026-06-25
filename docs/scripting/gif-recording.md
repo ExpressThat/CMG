@@ -13,6 +13,7 @@ cmg run flow.cmgscript --gif demo-output\runner-gifs
 - A frame is captured after visual actions. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
 - Click, type, clear, hover, select, and drag actions move the virtual pointer to the target selector when possible. User-like movement actions do not scroll automatically; add `scrollIntoView` steps when the pointer should move to content outside the current viewport.
 - Low-level `mouseMove`, `mouseDown`, and `mouseUp` actions also move the virtual pointer in GIF mode and dispatch page-facing pointer/mouse events.
+- Low-level keyboard actions do not move the pointer, but their output and failures are recorded. Use `step` or `caption` when a GIF should explain held modifier keys or inserted text.
 - Every GIF pointer movement dispatches browser movement and hover events while it moves. This includes automatic movement before `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`, not only explicit drag movement.
 - Click actions show a pointer movement and click pulse.
 - Type actions move to the input, click/focus it, and capture frames as characters appear.

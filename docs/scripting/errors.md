@@ -349,6 +349,15 @@ Line 5: mouseDown failed. mouseDown target (900, 900) is outside the current vie
 
 Mouse actions validate target shape and viewport bounds before sending pointer events.
 
+## Keyboard Failure
+
+```text
+Line 3: keyDown failed. Expected 1 positional argument(s), got 0.
+Line 4: insertText failed. Expected 1 positional argument(s), got 0.
+```
+
+Keyboard actions require one key or text argument and operate on the current browser focus.
+
 ## Dialog Failure
 
 ```text

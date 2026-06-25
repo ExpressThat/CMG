@@ -150,6 +150,24 @@ Example:
 press "Escape"
 ```
 
+## `keyDown`, `keyUp`, And `insertText`
+
+```text
+keyDown "Shift"
+insertText "ABC"
+keyUp "Shift"
+```
+
+Runs lower-level keyboard primitives similar to Playwright and Puppeteer. `keyDown` and `keyUp` hold or release a single key. `insertText` inserts text into the currently focused editable element.
+
+Output:
+
+- `KEY_DOWN <line> <key>`
+- `KEY_UP <line> <key>`
+- `TEXT_INSERTED <line> <character-count>`
+
+Keyboard actions do not move the virtual pointer. In GIF recordings, wrap them in `step` or `caption` when the recording should narrate the keyboard state.
+
 ## `hover`
 
 ```text

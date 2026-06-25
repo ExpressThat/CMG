@@ -96,6 +96,7 @@ public sealed partial class BrowserScriptRunner
             "type" => ExecuteType(remoteDebuggingUrl, automationClient, action, recorder),
             "clear" => ExecuteSelectorAction(action, selector => automationClient.Clear(remoteDebuggingUrl, selector)),
             "press" => ExecutePress(remoteDebuggingUrl, automationClient, action),
+            "keydown" or "keyup" or "inserttext" => ExecuteKeyboardAction(remoteDebuggingUrl, automationClient, action),
             "hover" => ExecuteSelectorAction(action, selector => automationClient.Hover(remoteDebuggingUrl, selector)),
             "scrollintoview" => ExecuteSelectorAction(action, selector => automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
             "select" => ExecuteSelect(remoteDebuggingUrl, automationClient, action),

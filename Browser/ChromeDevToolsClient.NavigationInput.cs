@@ -95,25 +95,35 @@ public sealed partial class ChromeDevToolsClient
 
     public void Press(string remoteDebuggingUrl, string key)
     {
+        KeyDown(remoteDebuggingUrl, key);
+        KeyUp(remoteDebuggingUrl, key);
+    }
+
+    public void KeyDown(string remoteDebuggingUrl, string key) =>
+        DispatchKey(remoteDebuggingUrl, key, "keyDown");
+
+    public void KeyUp(string remoteDebuggingUrl, string key) =>
+        DispatchKey(remoteDebuggingUrl, key, "keyUp");
+
+    public void InsertText(string remoteDebuggingUrl, string text) =>
         Run(async () =>
         {
             await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
-
-            await session.SendCommand("Input.dispatchKeyEvent", writer =>
-            {
-                writer.WriteString("type", "keyDown");
-                writer.WriteString("key", key);
-            });
-
-            await session.SendCommand("Input.dispatchKeyEvent", writer =>
-            {
-                writer.WriteString("type", "keyUp");
-                writer.WriteString("key", key);
-            });
-
+            await session.SendCommand("Input.insertText", writer => writer.WriteString("text", text));
             return true;
         });
-    }
+
+    private void DispatchKey(string remoteDebuggingUrl, string key, string type) =>
+        Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            await session.SendCommand("Input.dispatchKeyEvent", writer =>
+            {
+                writer.WriteString("type", type);
+                writer.WriteString("key", key);
+            });
+            return true;
+        });
 
     public void Hover(string remoteDebuggingUrl, string selector)
     {

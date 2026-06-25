@@ -52,6 +52,25 @@ public sealed partial class BrowserScriptRunner
         return [];
     }
 
+    private static IReadOnlyList<string> ExecuteKeyboardAction(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        switch (action.Name.ToLowerInvariant())
+        {
+            case "keydown":
+                automationClient.KeyDown(remoteDebuggingUrl, action.Arguments[0]);
+                return [$"KEY_DOWN {action.LineNumber:000} {action.Arguments[0]}"];
+            case "keyup":
+                automationClient.KeyUp(remoteDebuggingUrl, action.Arguments[0]);
+                return [$"KEY_UP {action.LineNumber:000} {action.Arguments[0]}"];
+            case "inserttext":
+                automationClient.InsertText(remoteDebuggingUrl, action.Arguments[0]);
+                return [$"TEXT_INSERTED {action.LineNumber:000} {action.Arguments[0].Length}"];
+            default:
+                throw new ScriptExecutionException($"Unknown keyboard action '{action.Name}'.");
+        }
+    }
+
     private static IReadOnlyList<string> ExecuteSelect(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 2, 2);
