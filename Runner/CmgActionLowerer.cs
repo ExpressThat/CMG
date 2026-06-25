@@ -42,7 +42,8 @@ public sealed class CmgActionLowerer
             "waitforevent" or
             "capturepageerrors" or "waitforpageerror" or
             "route" or "mockresponse" or "intercept" or "clearroutes" or "waitforrequest" or "waitforrequestfinished" or "waitforrequestfailed" or "waitforresponse" or "exporthar" or "replayhar" or
-            "setextrahttpheaders" or "setheaders" or "clearextrahttpheaders" or "clearheaders" or "setoffline" or
+            "setextrahttpheaders" or "setheaders" or "clearextrahttpheaders" or "clearheaders" or
+            "sethttpcredentials" or "httpcredentials" or "authenticate" or "clearhttpcredentials" or "setoffline" or
             "frameclick" or "frametype" or "framefill" or "framehover" or "framewaitforelement" or "frameasserttext" or "frameevaluate" or
             "clock" or "tick" or "restoreclock" or
             "clearcontext" or "resetcontext" or

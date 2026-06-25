@@ -166,6 +166,15 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_HttpCredentialActionsPassThrough()
+    {
+        var lowerer = new CmgActionLowerer();
+
+        Assert.Equal("setHttpCredentials \"user\" \"secret\"", Assert.Single(lowerer.Lower(Node("setHttpCredentials", ["user", "secret"], []))));
+        Assert.Equal("clearHttpCredentials", Assert.Single(lowerer.Lower(Node("clearHttpCredentials", [], []))));
+    }
+
+    [Fact]
     public void Lower_RichLocatorMarksElementThenUsesVisualSelector()
     {
         var lines = new CmgActionLowerer().Lower(Node("click", ["role=button"], []));

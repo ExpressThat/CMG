@@ -339,13 +339,15 @@ CMG's HAR support is page-level and uses the same `fetch`/`XMLHttpRequest` hook 
 test "offline banner" {
   navigate "https://example.com"
   setExtraHTTPHeaders "X-CMG-Agent" "true"
+  setHttpCredentials "agent" "secret"
   setOffline true
   evaluate "fetch('/api/profile').catch(error => error.message)"
   setOffline false
+  clearHttpCredentials
 }
 ```
 
-Network environment actions are shared by direct scripts and `cmg run`. They do not move the virtual pointer, but reports and traces include `HEADERS_SET`, `HEADERS_CLEARED`, and `OFFLINE` lines.
+Network environment actions are shared by direct scripts and `cmg run`. They do not move the virtual pointer, but reports and traces include `HEADERS_SET`, `HEADERS_CLEARED`, `HTTP_CREDENTIALS_SET`, `HTTP_CREDENTIALS_CLEARED`, and `OFFLINE` lines.
 
 ## Worker Interception
 

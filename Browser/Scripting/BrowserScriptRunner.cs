@@ -149,7 +149,8 @@ public sealed partial class BrowserScriptRunner
             "waitforresponse" => ExecuteWaitForResponse(remoteDebuggingUrl, automationClient, action),
             "exporthar" => ExecuteExportHar(remoteDebuggingUrl, automationClient, action),
             "replayhar" => ExecuteReplayHar(remoteDebuggingUrl, automationClient, action),
-            "setextrahttpheaders" or "setheaders" or "clearextrahttpheaders" or "clearheaders" or "setoffline" =>
+            "setextrahttpheaders" or "setheaders" or "clearextrahttpheaders" or "clearheaders" or
+            "sethttpcredentials" or "httpcredentials" or "authenticate" or "clearhttpcredentials" or "setoffline" =>
                 ExecuteNetworkEnvironmentAction(remoteDebuggingUrl, automationClient, action),
             "frameclick" or "frametype" or "framefill" or "framehover" or
             "framewaitforelement" or "frameasserttext" or "frameevaluate" =>

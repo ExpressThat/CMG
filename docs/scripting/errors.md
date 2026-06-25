@@ -404,6 +404,15 @@ Line 10: intercept failed. intercept option delay= must be a non-negative intege
 
 Network waits use substring matching against page `fetch()` and `XMLHttpRequest` URLs recorded by CMG's page-side network patch. `waitForRequestFinished` waits for completed responses. `waitForRequestFailed` waits for rejected `fetch()` calls or XHR `error`, `abort`, or `timeout` events.
 
+## Network Environment Failure
+
+```text
+Line 4: setHttpCredentials failed. setHttpCredentials username cannot be empty.
+Line 5: setExtraHTTPHeaders failed. setExtraHTTPHeaders requires one or more <name> <value> header pairs.
+```
+
+Network environment actions patch page-originated `fetch()` and `XMLHttpRequest` calls. Browser-level navigation requests are not rewritten by these actions.
+
 ## Worker Failure
 
 ```text

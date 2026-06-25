@@ -97,6 +97,7 @@ dotnet run -- --firefox browser close
 - `14-pointer-click-variants.cmgscript`: Demonstrates `dblclick` and `rightClick` with pointer movement.
 - `15-popup-alias.cmgscript`: Demonstrates `waitForPopup` as a popup-named tab wait.
 - `16-generic-event-waits.cmgscript`: Demonstrates provider-style `waitForEvent` aliases.
+- `17-http-credentials.cmgscript`: Demonstrates page-side HTTP credential automation for fetch/XHR.
 - `20-v2-runner-flow.cmgscript`: Demonstrates the structured runner DSL, `step`, and `gif` blocks.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 

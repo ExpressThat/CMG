@@ -31,6 +31,33 @@ public static class BrowserNetworkEnvironmentScripts
     public static string ClearExtraHeaders() =>
         "(() => { window.__cmgExtraHeaders = {}; return true; })()";
 
+    public static string HttpCredentials(string authorization) =>
+        $$"""
+        (() => {
+          window.__cmgExtraHeaders = { ...(window.__cmgExtraHeaders || {}), Authorization: {{Quote(authorization)}} };
+          if (!window.__cmgOriginalFetchForHeaders) {
+            window.__cmgOriginalFetchForHeaders = window.fetch.bind(window);
+            window.fetch = (input, init = {}) => {
+              init.headers = { ...(init.headers || {}), ...(window.__cmgExtraHeaders || {}) };
+              return window.__cmgOriginalFetchForHeaders(input, init);
+            };
+          }
+          if (!window.__cmgOriginalXhrSendForHeaders) {
+            window.__cmgOriginalXhrSendForHeaders = XMLHttpRequest.prototype.send;
+            XMLHttpRequest.prototype.send = function(body) {
+              for (const [name, value] of Object.entries(window.__cmgExtraHeaders || {})) {
+                try { this.setRequestHeader(name, value); } catch { }
+              }
+              return window.__cmgOriginalXhrSendForHeaders.call(this, body);
+            };
+          }
+          return true;
+        })()
+        """;
+
+    public static string ClearHttpCredentials() =>
+        "(() => { if (window.__cmgExtraHeaders) delete window.__cmgExtraHeaders.Authorization; return true; })()";
+
     public static string Offline(bool offline) =>
         $$"""
         (() => {

@@ -35,6 +35,36 @@ public sealed class BrowserScriptRunnerNetworkEnvironmentActionTests
     }
 
     [Fact]
+    public void RunText_SetHttpCredentialsInstallsAuthorizationPatch()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("setHttpCredentials user secret", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("Authorization", client.LastExpression);
+        Assert.Contains("Basic dXNlcjpzZWNyZXQ=", client.LastExpression);
+        Assert.Contains("HTTP_CREDENTIALS_SET 001 user", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_SetHttpCredentialsValidatesUsername()
+    {
+        var result = Runner().RunText("setHttpCredentials \" \" secret", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("username cannot be empty", result.Error);
+    }
+
+    [Fact]
+    public void RunText_ClearHttpCredentialsRemovesAuthorizationHeader()
+    {
+        var result = Runner().RunText("clearHttpCredentials", "debug", new FakeAutomationClient());
+
+        Assert.True(result.Success);
+        Assert.Contains("HTTP_CREDENTIALS_CLEARED 001", result.StdoutLines);
+    }
+
+    [Fact]
     public void RunText_SetOfflineValidatesBoolean()
     {
         var result = Runner().RunText("setOffline maybe", "debug", new FakeAutomationClient());

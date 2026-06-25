@@ -1251,28 +1251,33 @@ Output:
 - `HAR_EXPORTED <line> <path>` when a HAR file is written.
 - `HAR_REPLAY <line> routes=<count> <path>` when HAR routes are installed.
 
-### `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, And `setOffline`
+### `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHttpCredentials`, `clearHttpCredentials`, And `setOffline`
 
 ```text
 setExtraHTTPHeaders "X-CMG-Agent" "true" "Accept" "application/json"
 clearExtraHTTPHeaders
+setHttpCredentials "agent" "secret"
+clearHttpCredentials
 setOffline true
 setOffline false
 ```
 
-Patches page-side `fetch()` and `XMLHttpRequest` behavior in the current page and future navigations. Extra headers are added to page-originated fetch/XHR requests. Offline mode reports `navigator.onLine=false`, dispatches `offline`/`online`, and makes patched fetch/XHR requests fail while enabled.
+Patches page-side `fetch()` and `XMLHttpRequest` behavior in the current page and future navigations. Extra headers are added to page-originated fetch/XHR requests. HTTP credentials add a Basic `Authorization` header to page-originated fetch/XHR requests. Offline mode reports `navigator.onLine=false`, dispatches `offline`/`online`, and makes patched fetch/XHR requests fail while enabled.
 
 Arguments:
 
 - `name value`: Required for `setExtraHTTPHeaders`; repeat pairs to add more request headers.
+- `username password`: Required for `setHttpCredentials`, `httpCredentials`, or `authenticate`.
 
 Output:
 
 - `HEADERS_SET <line> <count>` when headers are installed.
 - `HEADERS_CLEARED <line>` when extra headers are cleared.
+- `HTTP_CREDENTIALS_SET <line> <username>` when Basic auth credentials are installed.
+- `HTTP_CREDENTIALS_CLEARED <line>` when Basic auth credentials are removed.
 - `OFFLINE <line> <true|false>` when offline mode changes.
 
-These actions do not move the virtual pointer. They affect page-side requests and are included in reports and traces. Browser-level navigation requests are not rewritten; use them before page actions that call `fetch()` or `XMLHttpRequest`.
+These actions do not move the virtual pointer. They affect page-side requests and are included in reports and traces. Browser-level navigation requests and browser-native HTTP auth prompts are not rewritten; use them before page actions that call `fetch()` or `XMLHttpRequest`.
 
 ### `listWorkers`, `waitForWorker`, `workerEvaluate`, And `workerIntercept`
 

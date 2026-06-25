@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace CMG.Browser.Scripting;
 
 public sealed partial class BrowserScriptRunner
@@ -11,6 +13,8 @@ public sealed partial class BrowserScriptRunner
         {
             "setextrahttpheaders" or "setheaders" => SetExtraHttpHeaders(remoteDebuggingUrl, automationClient, action),
             "clearextrahttpheaders" or "clearheaders" => ClearExtraHttpHeaders(remoteDebuggingUrl, automationClient, action),
+            "sethttpcredentials" or "httpcredentials" or "authenticate" => SetHttpCredentials(remoteDebuggingUrl, automationClient, action),
+            "clearhttpcredentials" => ClearHttpCredentials(remoteDebuggingUrl, automationClient, action),
             "setoffline" => SetOffline(remoteDebuggingUrl, automationClient, action),
             _ => throw new ScriptExecutionException($"Unknown network environment action '{action.Name}'.")
         };
@@ -48,6 +52,30 @@ public sealed partial class BrowserScriptRunner
         automationClient.AddInitScript(remoteDebuggingUrl, script);
         automationClient.Evaluate(remoteDebuggingUrl, script);
         return [$"HEADERS_CLEARED {action.LineNumber:000}"];
+    }
+
+    private static IReadOnlyList<string> SetHttpCredentials(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 2, 2);
+        if (string.IsNullOrWhiteSpace(action.Arguments[0]))
+        {
+            throw new ScriptExecutionException($"{action.Name} username cannot be empty.");
+        }
+
+        var token = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{action.Arguments[0]}:{action.Arguments[1]}"));
+        var script = BrowserNetworkEnvironmentScripts.HttpCredentials($"Basic {token}");
+        automationClient.AddInitScript(remoteDebuggingUrl, script);
+        automationClient.Evaluate(remoteDebuggingUrl, script);
+        return [$"HTTP_CREDENTIALS_SET {action.LineNumber:000} {action.Arguments[0]}"];
+    }
+
+    private static IReadOnlyList<string> ClearHttpCredentials(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 0, 0);
+        var script = BrowserNetworkEnvironmentScripts.ClearHttpCredentials();
+        automationClient.AddInitScript(remoteDebuggingUrl, script);
+        automationClient.Evaluate(remoteDebuggingUrl, script);
+        return [$"HTTP_CREDENTIALS_CLEARED {action.LineNumber:000}"];
     }
 
     private static IReadOnlyList<string> SetOffline(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
