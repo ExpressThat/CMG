@@ -273,6 +273,18 @@ test "mocked profile" {
 
 This patches page `fetch` calls and records matching responses for `waitForResponse`.
 
+## Visual Screenshot Assertion
+
+```text
+test "dialog matches baseline" {
+  navigate "C:\Projects\CMG\index.html"
+  click "#openProfileDialog"
+  expectScreenshot "#profileDialog" baseline="baselines\profile-dialog.png" output="demo-output\profile-dialog.actual.png" tolerance=0.01
+}
+```
+
+If the baseline does not exist, CMG writes it from the actual screenshot and fails so the baseline can be reviewed.
+
 ## Storage State
 
 ```text

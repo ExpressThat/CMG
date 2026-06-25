@@ -565,6 +565,23 @@ Notes:
 - This slice patches page `fetch`. XHR and browser-level request routing are planned separately.
 - Network actions do not move the virtual pointer. They are captured in reports and can be wrapped with `step` or captions for GIF narration.
 
+### `expectScreenshot`
+
+```text
+expectScreenshot "#dialog" baseline="baselines\dialog.png" output="demo-output\dialog.actual.png" tolerance=0.01
+expectScreenshot baseline="baselines\page.png" output="demo-output\page.actual.png"
+```
+
+Captures an element screenshot when a selector is provided, otherwise captures the page viewport. CMG compares the actual PNG against the baseline and fails if the normalized pixel difference is greater than `tolerance`.
+
+Options:
+
+- `baseline`: Baseline PNG path. If missing, CMG writes it from the actual image and fails with an explanatory reason.
+- `output`: Actual PNG path. Default is `actual.png`.
+- `tolerance`: Allowed normalized difference from `0` to `1`. Default is `0`.
+
+This action captures visual artifacts and reports them, but it does not move the virtual pointer by itself. Wrap it in a `step` when the GIF should include a caption explaining the comparison.
+
 ## Planned Parity Actions
 
 Commands such as `intercept`, `route`, `apiRequest`, `uploadFiles`, `download`, `popup`, `frame`, device emulation, and full network mocking are reserved for parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.

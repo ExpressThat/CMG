@@ -210,6 +210,14 @@ STEP FAIL line=6 action=waitForResponse reason=Line 6: evaluate failed. Timed ou
 
 Install a matching `route` or make sure the page performs a matching `fetch()` before the timeout expires.
 
+## Visual Assertion Failure
+
+```text
+STEP FAIL line=5 action=expectScreenshot reason=Screenshot diff 0.0321 exceeded tolerance 0.01.
+```
+
+The `VISUAL_ACTUAL` output line points to the actual PNG written for review. If the baseline file is missing, CMG creates it from the actual screenshot and fails with a message saying the baseline was created.
+
 ## Storage State Failure
 
 ```text
