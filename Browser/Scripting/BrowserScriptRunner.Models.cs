@@ -11,6 +11,7 @@ public sealed record ScriptRunResult(bool Success, IReadOnlyList<string> StdoutL
 internal sealed class ScriptExecutionContext
 {
     public Dictionary<string, string> Variables { get; } = new(StringComparer.Ordinal);
+    public Dictionary<string, BrowserScriptAction> Macros { get; } = new(StringComparer.OrdinalIgnoreCase);
 }
 
 internal sealed record ScriptReadResult(bool Success, string? Script, string? Error)
@@ -23,6 +24,14 @@ internal sealed record ScriptReadResult(bool Success, string? Script, string? Er
 public sealed class ScriptExecutionException : Exception
 {
     public ScriptExecutionException(string message)
+        : base(message)
+    {
+    }
+}
+
+internal sealed class ScriptActionFailedException : Exception
+{
+    public ScriptActionFailedException(string message)
         : base(message)
     {
     }

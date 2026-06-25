@@ -1,0 +1,13 @@
+macro announce message {
+  showMessageBar "${message}"
+}
+
+macro chooseCommand item {
+  macro hoverItem selector {
+    hover "${selector}"
+  }
+
+  if (${index} == 0) {
+    call hoverItem "${item}"
+  }
+}

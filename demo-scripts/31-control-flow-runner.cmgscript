@@ -1,0 +1,18 @@
+import "30-shared-macros.cmgscript"
+
+test "control flow macros" {
+  navigate "index.html"
+  set heading {
+    textContent "h1"
+  }
+
+  if (${heading} != "") {
+    call announce "${heading}"
+  } else {
+    caption "Heading was empty"
+  }
+
+  foreachSelector action ".command" {
+    call chooseCommand "${action}"
+  }
+}

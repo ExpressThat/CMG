@@ -15,4 +15,15 @@ public sealed class BrowserScriptParserTests
         Assert.Equal("Bearer token", action.Options["header.Authorization"]);
         Assert.Equal(2, action.Arguments.Count);
     }
+
+    [Fact]
+    public void Parse_PreservesEmptyQuotedStrings()
+    {
+        var result = new BrowserScriptParser().Parse("if \"\" == \"\" {\n  evaluate \"true\"\n}");
+
+        Assert.True(result.Success);
+        var action = Assert.Single(result.Actions);
+        Assert.Equal("", action.Arguments[0]);
+        Assert.Equal("", action.Arguments[2]);
+    }
 }

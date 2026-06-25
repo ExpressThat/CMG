@@ -20,13 +20,7 @@ public sealed partial class BrowserScriptRunner
 
         RequireArgumentCount(action, 1, 1);
         var output = new List<string>();
-        foreach (var child in action.Children)
-        {
-            recorder?.BeforeAction(child);
-            var lines = ExecuteAction(remoteDebuggingUrl, automationClient, child, context, recorder);
-            recorder?.AfterAction(child);
-            output.AddRange(lines);
-        }
+        ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output);
 
         var payload = ExtractSetPayload(action, output);
         context.Variables[action.Arguments[0]] = payload;

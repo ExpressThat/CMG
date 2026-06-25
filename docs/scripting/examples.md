@@ -102,6 +102,31 @@ getAttribute "#openProfileDialog" "id"
 
 This example is available as `demo-scripts/28-element-getters.cmgscript`.
 
+## Control Flow, Imports, And Macros
+
+```text
+import "30-shared-macros.cmgscript"
+
+navigate "C:\Projects\CMG\index.html"
+set heading {
+  textContent "h1"
+}
+
+if (${heading} != "") {
+  call announce "${heading}"
+} else {
+  caption "Heading was empty"
+}
+
+foreachSelector action ".command" {
+  call chooseCommand "${action}"
+}
+```
+
+Macros can receive plain values, variables, selectors, or temporary selectors from `foreachSelector`. Control blocks and macros can be nested in any combination. Macro parameters and loop variables are scoped to the current call or iteration, and helper macros declared inside a macro or branch do not leak outward.
+
+This direct-script example is available as `demo-scripts/30-control-flow-macros.cmgscript` and imports `demo-scripts/30-shared-macros.cmgscript`. The structured `cmg run` form is available as `demo-scripts/31-control-flow-runner.cmgscript`.
+
 ## Drag And Drop
 
 ```text

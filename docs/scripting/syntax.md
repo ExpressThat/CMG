@@ -30,6 +30,14 @@ Supported structural blocks:
 - `gif "name" { ... }`
 - `recordVideo "name" { ... }`
 - `screencast "name" { ... }`
+- `if <condition> { ... }`
+- `elseif <condition> { ... }`
+- `else { ... }`
+- `for <count> { ... }`
+- `for <variable> <start> <end> { ... }`
+- `foreach <variable> <value>... { ... }`
+- `foreachSelector <variable> "<selector>" { ... }`
+- `macro <name> [parameter...] { ... }`
 
 Tests can include options:
 
@@ -50,6 +58,68 @@ action positionalArgs... key=value...
 ```
 
 Options use identifier-like keys. Selector values containing `=` remain positional arguments unless the key before `=` is identifier-like.
+
+## Imports
+
+Use a line-level import to include reusable macros or setup actions:
+
+```text
+import "shared.cmgscript"
+```
+
+Imports are expanded before parsing. Relative paths resolve from the importing file's directory. Imported files can import other files; cycles and missing files fail before any action runs.
+
+## Variables And Capture
+
+Use `set` with a literal value or a block:
+
+```text
+set title {
+  evaluate "document.title"
+}
+```
+
+Block capture stores only the final payload value from the wrapped actions. It does not store the `PASS`, `EVALUATE`, or other output prefixes. This also works with `call`, so `set result { call helper }` stores the macro body's final payload value.
+
+Variables are referenced as `${name}`. Macro parameters and loop variables are scoped to the macro call or loop iteration. Explicit `set` variables remain available to later actions.
+
+## Control Flow And Macros
+
+Conditions support static values, variables, `==`, `!=`, `>`, `>=`, `<`, `<=`, `&&`, `||`, unary `!`, strings, numbers, and empty strings:
+
+```text
+if (${count} > 5 && !(${mode} == "")) {
+  click "#save"
+} elseif (${mode} == "preview") {
+  hover "#save"
+} else {
+  caption "Nothing to save"
+}
+```
+
+Conditions can also run assertion or wait actions:
+
+```text
+if (assertText "#status" "Saved") {
+  click "#continue"
+}
+```
+
+Loops and macros can be nested in any combination:
+
+```text
+macro choose item label {
+  if (${label} != "") {
+    click "${item}"
+  }
+}
+
+foreachSelector row ".result" {
+  call choose "${row}" "open"
+}
+```
+
+`foreachSelector` binds the variable to a temporary CSS selector for each matched element and also exposes `${index}`. Macro definitions are block-scoped when declared inside another macro, branch, or loop. Top-level macros in `cmg run` are registered before each test.
 
 ## Quoting
 

@@ -1,6 +1,6 @@
 namespace CMG.Runner;
 
-public sealed class CmgActionLowerer
+public sealed partial class CmgActionLowerer
 {
     public IReadOnlyList<string> Lower(CmgNode action)
     {
@@ -8,6 +8,8 @@ public sealed class CmgActionLowerer
         return name switch
         {
             "step" or "gif" or "recordvideo" or "screencast" => LowerStep(action),
+            "macro" or "if" or "elseif" or "else" or "for" or "foreach" or "foreachselector" => LowerControlBlock(action),
+            "call" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "caption" => [ToLine("showMessageBar", action.Arguments)],
             "fill" => LowerFill(action),
             "assertvisible" => LowerSelectorCommand("waitForElement", action),

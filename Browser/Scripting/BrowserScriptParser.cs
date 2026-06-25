@@ -4,7 +4,7 @@ public sealed class BrowserScriptParser
 {
     public ScriptParseResult Parse(string script)
     {
-        var lines = script.ReplaceLineEndings("\n").Split('\n');
+        var lines = ExpandCombinedBranchLines(script.ReplaceLineEndings("\n").Split('\n'));
         var parseResult = ParseActions(lines, 0, stopAtBlockEnd: false);
         if (!parseResult.Success)
         {
@@ -111,11 +111,32 @@ public sealed class BrowserScriptParser
         return ActionListParseResult.Ok(actions, lines.Length);
     }
 
+    private static string[] ExpandCombinedBranchLines(string[] lines)
+    {
+        var expanded = new List<string>();
+        foreach (var line in lines)
+        {
+            var trimmed = line.TrimStart();
+            if (trimmed.StartsWith("} elseif", StringComparison.Ordinal) ||
+                trimmed.StartsWith("} else", StringComparison.Ordinal))
+            {
+                expanded.Add("}");
+                expanded.Add(trimmed[1..].TrimStart());
+                continue;
+            }
+
+            expanded.Add(line);
+        }
+
+        return expanded.ToArray();
+    }
+
     private static TokenizeResult Tokenize(string line, int lineNumber)
     {
         var tokens = new List<string>();
         var current = new List<char>();
         var inQuotes = false;
+        var tokenStarted = false;
 
         for (var index = 0; index < line.Length; index++)
         {
@@ -149,15 +170,17 @@ public sealed class BrowserScriptParser
             if (character is '"')
             {
                 inQuotes = !inQuotes;
+                tokenStarted = true;
                 continue;
             }
 
             if (char.IsWhiteSpace(character) && !inQuotes)
             {
-                AddCurrentToken(tokens, current);
+                AddCurrentToken(tokens, current, ref tokenStarted);
                 continue;
             }
 
+            tokenStarted = true;
             current.Add(character);
         }
 
@@ -166,20 +189,21 @@ public sealed class BrowserScriptParser
             return TokenizeResult.Fail($"Line {lineNumber}: unterminated quoted string.");
         }
 
-        AddCurrentToken(tokens, current);
+        AddCurrentToken(tokens, current, ref tokenStarted);
 
         return TokenizeResult.Ok(tokens);
     }
 
-    private static void AddCurrentToken(List<string> tokens, List<char> current)
+    private static void AddCurrentToken(List<string> tokens, List<char> current, ref bool tokenStarted)
     {
-        if (current.Count is 0)
+        if (!tokenStarted)
         {
             return;
         }
 
         tokens.Add(new string(current.ToArray()));
         current.Clear();
+        tokenStarted = false;
     }
 
     private static bool IsOptionKey(string value)

@@ -10,6 +10,8 @@ cmg run <path> [options]
 
 `cmg run` accepts only the new CMG DSL. V1 flat scripts are intentionally unsupported and fail with a migration error. Wrap actions in `test` or `suite` blocks and follow `docs/scripting/migration.md` when migrating old scripts.
 
+The runner supports line-level `import "path"` statements. Relative imports resolve from the importing file's directory before parsing. Top-level macros from the file or imported files are registered before each test, and suite-level macros are registered before tests in that suite.
+
 ## Options
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
@@ -55,6 +57,8 @@ GIF recording is optional.
 All recorded actions use CMG's virtual pointer, pointer/mouse event dispatch, captions, and drag ghost behavior.
 
 Shared pointer, keyboard, assertion, and non-visual actions such as `goto`, `visit`, `viewport`, `setViewportSize`, `tap`, `touchTap`, `keyDown`, `keyUp`, `insertText`, `contains`, `containsText`, `waitForText`, `toHaveText`, `waitForVisible`, `waitForHidden`, `toBeVisible`, `toBeHidden`, `toBeEnabled`, `toBeDisabled`, `toHaveValue`, `toHaveAttribute`, `toBeChecked`, `toHaveCount`, `setClipboard`, `writeClipboard`, `readClipboard`, `clearClipboard`, `mouseMove`, `mouseDown`, `mouseUp`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `waitForEvent`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNavigation`, `url`, `title`, `content`, `setContent`, `textContent`, `innerText`, `inputValue`, `getAttribute`, `evaluateOnSelector`, `evalOnSelector`, `evaluateAll`, `evalAll`, `apiRequest`, `waitForRequest`, `waitForRequestFinished`, `waitForRequestFailed`, `routeWebSocket`, `waitForWebSocket`, `waitForWebSocketMessage`, `captureDialogs`, `setDialogBehavior`, `onDialog`, `handleDialog`, `dialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `exposeFunction`, `exposeBinding`, `startCoverage`, `stopCoverage`, `capturePageErrors`, `waitForPageError`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setJavaScriptEnabled`, `bypassCSP`, `serviceWorkers`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHttpCredentials`, `clearHttpCredentials`, `setProxy`, `clearProxy`, `setOffline`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, and `printPdf` are also available in `cmg run`. Non-visual actions do not move the virtual pointer, but their output and failure reasons are included in stdout, reports, and traces.
+
+Control-flow and reuse actions `if`, `elseif`, `else`, `for`, `foreach`, `foreachSelector`, `macro`, and `call` are available inside tests, hooks, steps, and GIF blocks. They can be nested, and pointer-aware actions inside them use the same virtual pointer behavior as top-level actions.
 
 `contains "text"` checks the page body. `contains "<selector>" "text"`, `containsText`, and `waitForText` check a selector or rich locator and accept `timeout=<milliseconds>`. Successful text checks emit the normal test/step pass output; failed checks include the expected and actual text in the step failure reason.
 

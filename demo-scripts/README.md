@@ -110,6 +110,9 @@ dotnet run -- --firefox browser close
 - `27-selector-evaluation.cmgscript`: Demonstrates selector-scoped evaluation and `set` block capture.
 - `28-element-getters.cmgscript`: Demonstrates element getter output and `set` block capture.
 - `29-filtered-network-waits.cmgscript`: Demonstrates method/status/body filters for network waits.
+- `30-control-flow-macros.cmgscript`: Demonstrates imports, macros, nested scoped helpers, conditionals, and selector iteration.
+- `30-shared-macros.cmgscript`: Imported helper macros for the control-flow demo.
+- `31-control-flow-runner.cmgscript`: Demonstrates the same control-flow and macro features in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

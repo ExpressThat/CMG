@@ -1,10 +1,20 @@
+using CMG.Browser.Scripting;
+
 namespace CMG.Runner;
 
 public sealed class CmgDslParser
 {
     public CmgParseResult Parse(string sourcePath, string script)
     {
-        var lines = script.ReplaceLineEndings("\n").Split('\n');
+        var baseDirectory = Path.GetDirectoryName(Path.GetFullPath(sourcePath)) ?? Directory.GetCurrentDirectory();
+        var importResult = ScriptImportExpander.Expand(script, baseDirectory);
+        if (!importResult.Success)
+        {
+            return CmgParseResult.Fail(importResult.Error ?? "Could not import script.");
+        }
+
+        script = importResult.Script ?? string.Empty;
+        var lines = ExpandCombinedBranchLines(script.ReplaceLineEndings("\n").Split('\n'));
         var result = ParseNodes(lines, 0, stopAtBlockEnd: false);
         if (!result.Success)
         {
@@ -85,11 +95,32 @@ public sealed class CmgDslParser
             : CmgNodeListResult.Ok(nodes, lines.Length);
     }
 
+    private static string[] ExpandCombinedBranchLines(string[] lines)
+    {
+        var expanded = new List<string>();
+        foreach (var line in lines)
+        {
+            var trimmed = line.TrimStart();
+            if (trimmed.StartsWith("} elseif", StringComparison.Ordinal) ||
+                trimmed.StartsWith("} else", StringComparison.Ordinal))
+            {
+                expanded.Add("}");
+                expanded.Add(trimmed[1..].TrimStart());
+                continue;
+            }
+
+            expanded.Add(line);
+        }
+
+        return expanded.ToArray();
+    }
+
     private static CmgTokenizeResult Tokenize(string line, int lineNumber)
     {
         var tokens = new List<string>();
         var current = new List<char>();
         var inQuotes = false;
+        var tokenStarted = false;
         for (var index = 0; index < line.Length; index++)
         {
             var character = line[index];
@@ -102,15 +133,17 @@ public sealed class CmgDslParser
             if (character is '"')
             {
                 inQuotes = !inQuotes;
+                tokenStarted = true;
                 continue;
             }
 
             if (char.IsWhiteSpace(character) && !inQuotes)
             {
-                AddToken(tokens, current);
+                AddToken(tokens, current, ref tokenStarted);
                 continue;
             }
 
+            tokenStarted = true;
             current.Add(character);
         }
 
@@ -119,21 +152,22 @@ public sealed class CmgDslParser
             return CmgTokenizeResult.Fail($"Line {lineNumber}: unterminated quoted string.");
         }
 
-        AddToken(tokens, current);
+        AddToken(tokens, current, ref tokenStarted);
         return tokens.Count is 0
             ? CmgTokenizeResult.Fail($"Line {lineNumber}: expected a command.")
             : CmgTokenizeResult.Ok(tokens);
     }
 
-    private static void AddToken(List<string> tokens, List<char> current)
+    private static void AddToken(List<string> tokens, List<char> current, ref bool tokenStarted)
     {
-        if (current.Count is 0)
+        if (!tokenStarted)
         {
             return;
         }
 
         tokens.Add(new string(current.ToArray()));
         current.Clear();
+        tokenStarted = false;
     }
 
     private static bool IsOptionKey(string value) =>
@@ -147,7 +181,8 @@ public sealed class CmgDslParser
             !node.Kind.Equals("suite", StringComparison.OrdinalIgnoreCase) &&
             !node.Kind.Equals("test", StringComparison.OrdinalIgnoreCase) &&
             !node.Kind.Equals("beforeEach", StringComparison.OrdinalIgnoreCase) &&
-            !node.Kind.Equals("afterEach", StringComparison.OrdinalIgnoreCase));
+            !node.Kind.Equals("afterEach", StringComparison.OrdinalIgnoreCase) &&
+            !node.Kind.Equals("macro", StringComparison.OrdinalIgnoreCase));
 
         return invalid is null
             ? null

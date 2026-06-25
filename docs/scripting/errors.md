@@ -576,3 +576,28 @@ Define variables before using them:
 set target "#openProfileDialog"
 click "${target}"
 ```
+
+## Import Failure
+
+```text
+Imported script 'C:\Projects\CMG\demo-scripts\missing.cmgscript' was not found.
+Import cycle detected for 'C:\Projects\CMG\demo-scripts\shared.cmgscript'.
+Invalid import syntax 'import shared.cmgscript'. Use import "path".
+```
+
+Imports are expanded before parsing. Quote the path, keep relative paths relative to the importing file, and avoid cycles between shared helper files.
+
+## Control Flow And Macro Failure
+
+```text
+Line 6: elseif failed. elseif must follow an if block.
+Line 8: call failed. Macro 'login' is not defined.
+Line 3: macro failed. macro requires a block body.
+Line 5: call failed. Macro 'fillProfile' expects 2 argument(s), got 1.
+Line 7: for failed. for option step= cannot be 0.
+Line 9: if failed. Invalid action condition 'assertText'.
+```
+
+Define macros before calling them. Top-level macros in `cmg run` are registered for each test; macros declared inside another macro, branch, or loop are scoped to that block and are not available afterward.
+
+Loop variables and macro parameters are scoped to the loop iteration or macro call. Use `set` when a value must be available after the block completes.

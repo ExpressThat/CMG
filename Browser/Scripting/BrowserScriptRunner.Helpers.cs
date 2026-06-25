@@ -13,8 +13,7 @@ public sealed partial class BrowserScriptRunner
             Options = action.Options.ToDictionary(
                 pair => pair.Key,
                 pair => ExpandVariables(pair.Value, context),
-                StringComparer.OrdinalIgnoreCase),
-            Children = action.Children.Select(child => ExpandVariables(child, context)).ToArray()
+                StringComparer.OrdinalIgnoreCase)
         };
     }
 
@@ -49,7 +48,13 @@ public sealed partial class BrowserScriptRunner
             return ScriptReadResult.Fail($"Script file '{file}' was not found.");
         }
 
-        return ScriptReadResult.Ok(File.ReadAllText(file));
+        var fullPath = Path.GetFullPath(file);
+        var expanded = ScriptImportExpander.Expand(
+            File.ReadAllText(fullPath),
+            Path.GetDirectoryName(fullPath) ?? Directory.GetCurrentDirectory());
+        return expanded.Success
+            ? ScriptReadResult.Ok(expanded.Script ?? string.Empty)
+            : ScriptReadResult.Fail(expanded.Error ?? "Could not import script.");
     }
 
     private static string NormalizeNavigationTarget(string target)

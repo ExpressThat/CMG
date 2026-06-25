@@ -9,10 +9,16 @@ public sealed class CmgTestPlannerTests
     {
         var parser = new CmgDslParser();
         var document = parser.Parse("flow.cmgscript", """
+        macro rootHelper {
+          caption "root macro"
+        }
         beforeEach {
           caption "root"
         }
         suite "Suite" {
+          macro suiteHelper {
+            caption "suite macro"
+          }
           beforeEach {
             caption "suite"
           }
@@ -30,6 +36,8 @@ public sealed class CmgTestPlannerTests
         Assert.Equal("Suite / case", test.Name);
         Assert.Collection(
             test.Actions,
+            action => Assert.Equal("macro", action.Kind),
+            action => Assert.Equal("macro", action.Kind),
             action => Assert.Equal("caption", action.Kind),
             action => Assert.Equal("caption", action.Kind),
             action => Assert.Equal("click", action.Kind),

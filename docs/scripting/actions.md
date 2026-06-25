@@ -1587,6 +1587,93 @@ Output:
 
 Failure reasons include a missing selector argument, no file paths, a local file that does not exist, or browser evaluation failure. This action is available at the top level and inside `gif` blocks. It does not move the virtual pointer by itself because browser file choosers cannot be driven from page JavaScript; wrap it in a `step` or `caption` when the GIF should explain the upload transition.
 
+## Imports, Control Flow, Loops, And Macros
+
+These language actions are available in both direct `browser control script` files and `cmg run`.
+
+### `import`
+
+```text
+import "shared.cmgscript"
+```
+
+Expands another script file before parsing. Relative paths resolve from the directory of the importing script. Imported files can contain macros, setup actions, tests for `cmg run`, and more imports. Missing files and import cycles fail before any action runs.
+
+### `if`, `elseif`, And `else`
+
+```text
+if (${count} > 5 && !(${mode} == "")) {
+  click "#save"
+} elseif (${mode} == "preview") {
+  hover "#save"
+} else {
+  caption "No action"
+}
+```
+
+Conditions support static values, `${variables}`, strings, numbers, empty strings, `==`, `!=`, `>`, `>=`, `<`, `<=`, `&&`, `||`, and unary `!`. They can also run assertion or wait actions:
+
+```text
+if (assertText "#status" "Saved") {
+  click "#continue"
+}
+```
+
+Only the first matching branch runs. Branch bodies can contain any action, including nested control flow, loops, macros, `gif` blocks, pointer actions, and non-visual actions. Macros declared inside a branch are scoped to that branch body.
+
+### `macro` And `call`
+
+```text
+macro fillProfile name email {
+  fill "#name" "${name}"
+  fill "#email" "${email}"
+}
+
+call fillProfile "Agent" "agent@example.com"
+```
+
+`macro` registers a reusable block. `call` executes it. Parameters are untyped values, so callers can pass variables, selectors, temporary selectors from `foreachSelector`, URLs, file paths, or any other string value. Macro calls can be nested, and macros can declare helper macros inside their body.
+
+Macro parameters are scoped to the call. Macros declared inside another macro, branch, or loop are restored when that block finishes, so helper macros do not leak into later steps. Top-level macros in `cmg run` are registered before each planned test.
+
+`set` can capture macro output:
+
+```text
+macro readTitle {
+  evaluate "document.title"
+}
+
+set title {
+  call readTitle
+}
+```
+
+The variable receives only the final payload value from the macro body, such as the document title string.
+
+### `for`, `foreach`, And `foreachSelector`
+
+```text
+for 3 {
+  caption "index ${index}"
+}
+
+for i 1 4 step=1 {
+  click "#item-${i}"
+}
+
+foreach name Alice Bob {
+  fill "#name" "${name}"
+}
+
+foreachSelector row ".result" {
+  click "${row}"
+}
+```
+
+`for <count>` iterates from `0` up to but not including `<count>` and exposes `${index}`. `for <variable> <start> <end>` uses an exclusive end value and exposes the named variable. `step=<integer>` changes the increment and cannot be `0`.
+
+`foreach` iterates over explicit values. `foreachSelector` finds all CSS matches, binds the variable to a temporary selector for each element, and exposes `${index}`. Pointer-aware child actions still use CMG's normal virtual pointer movement, browser events, hover behavior, drag ghosts, and captions when GIF recording is active.
+
 ## Unknown Actions
 
 Unknown actions fail explicitly instead of being ignored. If an action is not listed in this document, CMG reports it as unsupported so agent callers can distinguish a DSL command problem from page behavior.
