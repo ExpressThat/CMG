@@ -29,7 +29,7 @@ cmg browser control [command] [options]
 - [`delay`](delay.md): Pause for a duration.
 - [`html`](html.md): Print an element's outer HTML.
 - [`screenshot`](screenshot.md): Capture an element screenshot.
-- [`screenshotPage`](screenshotPage.md): Capture a full viewport screenshot.
+- [`screenshotPage`](screenshotPage.md): Capture a viewport or full-page screenshot.
 - [`assertText`](assertText.md): Assert that an element contains text.
 - [`evaluate`](evaluate.md): Evaluate JavaScript in the primary page.
 - [`setViewport`](setViewport.md): Set viewport dimensions.

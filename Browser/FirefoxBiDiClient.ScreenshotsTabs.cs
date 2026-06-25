@@ -6,9 +6,14 @@ namespace CMG.Browser;
 
 public sealed partial class FirefoxBiDiClient
 {
-    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true) =>
+    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false) =>
         Run(async () =>
         {
+            if (fullPage)
+            {
+                throw new ChromeDevToolsException("Full-page screenshots are not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for screenshotPage fullPage=true.");
+            }
+
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
             var context = await session.GetPrimaryContext();
             if (promoteMessageBar)

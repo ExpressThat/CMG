@@ -108,7 +108,7 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> ExecuteScreenshotPage(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 0, 0);
-        var bytes = automationClient.GetPageScreenshot(remoteDebuggingUrl);
+        var bytes = automationClient.GetPageScreenshot(remoteDebuggingUrl, fullPage: GetBoolOption(action, "fullPage"));
         return WriteScreenshotOutput(action, bytes);
     }
 

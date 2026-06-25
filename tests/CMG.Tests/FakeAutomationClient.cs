@@ -23,6 +23,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string LastKeyDown { get; private set; } = string.Empty;
     public string LastKeyUp { get; private set; } = string.Empty;
     public string LastInsertedText { get; private set; } = string.Empty;
+    public bool LastFullPageScreenshot { get; private set; }
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) => [];
@@ -64,7 +65,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public void MoveMouse(string remoteDebuggingUrl, ElementPoint point, int buttons) => LastMouseMove = point;
     public void MouseDown(string remoteDebuggingUrl, ElementPoint point) => LastMouseDown = point;
     public void MouseUp(string remoteDebuggingUrl, ElementPoint point) => LastMouseUp = point;
-    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true) => [];
+    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false)
+    {
+        LastFullPageScreenshot = fullPage;
+        return [];
+    }
     public byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options)
     {
         LastPdfOptions = options;

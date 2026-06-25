@@ -3,12 +3,13 @@
 Runs the scripting `screenshotPage` action once from the command line.
 
 ```powershell
-cmg browser control screenshotPage [--output <path>]
+cmg browser control screenshotPage [--output <path>] [--full-page]
 ```
 
 ## Options
 
 - `--output <path>`: Optional PNG output path. Without it, stdout includes a `data:image/png;base64,...` result.
+- `--full-page`: Capture the full scrollable page instead of only the current viewport. Supported for Chrome and Edge. Firefox exits `1` with an explicit unsupported-provider reason.
 
 ## Stdout
 
@@ -36,4 +37,5 @@ Writes browser or capture errors.
 
 ```powershell
 cmg browser control screenshotPage --output page.png
+cmg browser control screenshotPage --full-page --output page-full.png
 ```

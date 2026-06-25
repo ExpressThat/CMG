@@ -69,7 +69,7 @@ public interface IBrowserAutomationClient
 
     void MouseUp(string remoteDebuggingUrl, ElementPoint point);
 
-    byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true);
+    byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false);
 
     byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options);
 

@@ -6,7 +6,7 @@ namespace CMG.Browser;
 
 public sealed partial class ChromeDevToolsClient
 {
-    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true)
+    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false)
     {
         return Run(async () =>
         {
@@ -16,7 +16,9 @@ public sealed partial class ChromeDevToolsClient
                 await PromoteMessageBar(session);
             }
 
-            var screenshot = await session.SendCommand("Page.captureScreenshot", writer => writer.WriteString("format", "png"));
+            var screenshot = fullPage
+                ? await CaptureFullPageScreenshot(session)
+                : await session.SendCommand("Page.captureScreenshot", writer => writer.WriteString("format", "png"));
 
             if (!TryReadString(screenshot, "result", "data", out var data) || string.IsNullOrWhiteSpace(data))
             {
@@ -24,6 +26,30 @@ public sealed partial class ChromeDevToolsClient
             }
 
             return Convert.FromBase64String(data);
+        });
+    }
+
+    private static async Task<JsonElement> CaptureFullPageScreenshot(DevToolsSession session)
+    {
+        var metrics = await session.SendCommand("Page.getLayoutMetrics");
+        if (!TryReadElement(metrics, ["result", "contentSize"], out var size) ||
+            !TryReadDouble(size, "width", out var width) ||
+            !TryReadDouble(size, "height", out var height))
+        {
+            throw new ChromeDevToolsException("Chrome did not return full-page layout metrics.");
+        }
+
+        return await session.SendCommand("Page.captureScreenshot", writer =>
+        {
+            writer.WriteString("format", "png");
+            writer.WriteBoolean("captureBeyondViewport", true);
+            writer.WriteStartObject("clip");
+            writer.WriteNumber("x", 0);
+            writer.WriteNumber("y", 0);
+            writer.WriteNumber("width", Math.Max(1, width));
+            writer.WriteNumber("height", Math.Max(1, height));
+            writer.WriteNumber("scale", 1);
+            writer.WriteEndObject();
         });
     }
 

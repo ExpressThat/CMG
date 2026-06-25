@@ -213,6 +213,15 @@ Line 6: download failed. No download matching '*.csv' appeared in 'C:\Projects\C
 
 Check the browser download directory, file pattern, and timeout. `download` ignores in-progress Chrome `.crdownload` files.
 
+## Screenshot Failure
+
+```text
+Line 4: screenshotPage failed. screenshotPage option fullPage= must be true or false.
+Line 5: screenshotPage failed. Full-page screenshots are not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for screenshotPage fullPage=true.
+```
+
+Use `fullPage=true` only with Chrome or Edge. Leave it unset for the current viewport screenshot on any supported browser.
+
 ## Console Timeout
 
 ```text

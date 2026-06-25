@@ -343,6 +343,7 @@ Options:
 
 ```text
 screenshotPage output="page.png"
+screenshotPage output="page-full.png" fullPage=true
 screenshotPage
 ```
 
@@ -351,6 +352,9 @@ Captures a PNG screenshot of the primary page target.
 Options:
 
 - `output`: Optional file path. Without it, stdout receives a `data:image/png;base64,...` result.
+- `fullPage`: Optional boolean. Default is `false`. When `true`, Chrome and Edge capture the full scrollable page instead of only the current viewport.
+
+Firefox runs with `fullPage=true` fail with an explicit unsupported-provider reason.
 
 ## `printPdf`
 

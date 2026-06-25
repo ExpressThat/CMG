@@ -73,14 +73,27 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Write the PNG screenshot to this file instead of stdout data URL."
         };
-
-        var command = new Command("screenshotPage", "Capture a full viewport screenshot.")
+        var fullPageOption = new Option<bool>("--full-page")
         {
-            outputOption
+            Description = "Capture the full scrollable page instead of only the current viewport."
+        };
+
+        var command = new Command("screenshotPage", "Capture a page screenshot.")
+        {
+            outputOption,
+            fullPageOption
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("screenshotPage", [], ToOutputOptions(parseResult.GetValue(outputOption)))));
+        {
+            var options = ToOutputOptions(parseResult.GetValue(outputOption)).ToList();
+            if (parseResult.GetValue(fullPageOption))
+            {
+                options.Add(("fullPage", "true"));
+            }
+
+            return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("screenshotPage", [], options));
+        });
 
         return command;
     }
