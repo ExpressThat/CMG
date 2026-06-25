@@ -9,14 +9,34 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     [InlineData("expectHidden", "hidden")]
     [InlineData("expectEnabled", "enabled")]
     [InlineData("expectDisabled", "disabled")]
+    [InlineData("expectValue", "value")]
+    [InlineData("expectChecked", "checked")]
+    [InlineData("expectCount", "count")]
     public void RunText_ElementExpectationOutputsExpectationLine(string action, string mode)
     {
         var client = new FakeAutomationClient();
-        var result = Runner().RunText($"{action} \"#target\" timeout=250", "debug", client);
+        var script = action switch
+        {
+            "expectValue" => $"{action} \"#target\" \"saved\" timeout=250",
+            "expectCount" => $"{action} \"#target\" 1 timeout=250",
+            _ => $"{action} \"#target\" timeout=250"
+        };
+        var result = Runner().RunText(script, "debug", client);
 
         Assert.True(result.Success);
         Assert.Contains("document.querySelector", client.LastExpression);
         Assert.Contains($"EXPECT 001 {mode} #target", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_ExpectAttributeUsesDirectExpectation()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("expectAttribute \"#target\" aria-label Save", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("getAttribute", client.LastExpression);
+        Assert.Contains("EXPECT 001 attribute #target", result.StdoutLines);
     }
 
     [Fact]

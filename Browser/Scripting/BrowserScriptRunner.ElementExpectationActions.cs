@@ -16,6 +16,10 @@ public sealed partial class BrowserScriptRunner
             "expecthidden" => "hidden",
             "expectenabled" => "enabled",
             "expectdisabled" => "disabled",
+            "expectvalue" => "value",
+            "expectattribute" => "attribute",
+            "expectchecked" => "checked",
+            "expectcount" => "count",
             _ => throw new ScriptExecutionException($"Unknown element expectation '{action.Name}'.")
         };
         action = NormalizeLocatorArgument(action);
