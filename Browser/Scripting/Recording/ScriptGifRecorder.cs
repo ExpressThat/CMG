@@ -45,7 +45,8 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
         var name = action.Name.ToLowerInvariant();
 
-        if (name is "click" or "dblclick" or "rightclick" or "download" or "type" or "clear" or "hover" or "select")
+        if (name is "click" or "dblclick" or "rightclick" or "download" or "type" or "fill" or "clear" or
+            "hover" or "select" or "selectoption" or "check" or "uncheck" or "focus" or "blur" or "selecttext")
         {
             if (action.Arguments.Count > 0)
             {

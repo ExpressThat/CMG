@@ -12,6 +12,9 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string LastWaitSelector { get; private set; } = string.Empty;
     public string LastTypedSelector { get; private set; } = string.Empty;
     public string LastTypedText { get; private set; } = string.Empty;
+    public string LastClearedSelector { get; private set; } = string.Empty;
+    public string LastSelectedSelector { get; private set; } = string.Empty;
+    public string LastSelectedValue { get; private set; } = string.Empty;
     public string LastElementTextSelector { get; private set; } = string.Empty;
     public string LastElementBoxSelector { get; private set; } = string.Empty;
     public ViewportSize? LastViewport { get; private set; }
@@ -44,14 +47,18 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         LastTypedText = text;
     }
     public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null) { }
-    public void Clear(string remoteDebuggingUrl, string selector) { }
+    public void Clear(string remoteDebuggingUrl, string selector) => LastClearedSelector = selector;
     public void Press(string remoteDebuggingUrl, string key) { }
     public void KeyDown(string remoteDebuggingUrl, string key) => LastKeyDown = key;
     public void KeyUp(string remoteDebuggingUrl, string key) => LastKeyUp = key;
     public void InsertText(string remoteDebuggingUrl, string text) => LastInsertedText = text;
     public void Hover(string remoteDebuggingUrl, string selector) => LastHoveredSelector = selector;
     public void ScrollElementIntoView(string remoteDebuggingUrl, string selector) { }
-    public void Select(string remoteDebuggingUrl, string selector, string value) { }
+    public void Select(string remoteDebuggingUrl, string selector, string value)
+    {
+        LastSelectedSelector = selector;
+        LastSelectedValue = value;
+    }
     public void ShowMessageBar(string remoteDebuggingUrl, string message) { }
     public void PromoteMessageBar(string remoteDebuggingUrl) { }
     public string GetElementText(string remoteDebuggingUrl, string selector)

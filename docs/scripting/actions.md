@@ -282,18 +282,20 @@ Example:
 scrollIntoView "#dragdrop"
 ```
 
-## `select`
+## `select` And `selectOption`
 
 ```text
 select "<selector>" "value"
+selectOption "<selector>" "value"
 ```
 
-Sets a select-like element value and dispatches `input` and `change` events. `select` does not scroll automatically; the element center must already be inside the current viewport.
+Sets a select-like element value and dispatches `input` and `change` events. `selectOption` is a provider-style alias for the same behavior. These actions do not scroll automatically; the element center must already be inside the current viewport.
 
 Example:
 
 ```text
 select "#environment" "prod"
+selectOption "#environment" "prod"
 ```
 
 ## `showMessageBar`
@@ -970,7 +972,7 @@ Alias for `showMessageBar`.
 fill "#name" "CMG"
 ```
 
-Clears the field and types the value. In GIF mode this keeps the same visible pointer and progressive typing behavior as `clear` plus `type`.
+Clears the field and types the value. In GIF mode this keeps the same visible pointer and progressive typing behavior as `clear` plus `type`. This action works in direct browser-control scripts and `cmg run`.
 
 ### `check` And `uncheck`
 
@@ -979,7 +981,7 @@ check "#enabled"
 uncheck "#enabled"
 ```
 
-Sets a checkbox-like element and dispatches `input` and `change` events.
+Sets a checkbox-like element and dispatches `input` and `change` events. These actions work in direct browser-control scripts and `cmg run`.
 
 ### `focus`, `blur`, And `selectText`
 
@@ -989,7 +991,7 @@ selectText "#name"
 blur "#name"
 ```
 
-Runs the corresponding DOM focus/selection behavior.
+Runs the corresponding DOM focus/selection behavior. These actions work in direct browser-control scripts and `cmg run`.
 
 ### `dblclick` And `rightClick`
 

@@ -42,7 +42,7 @@ public sealed class CmgValidator
 
     private static bool ValidatesLocator(string kind) =>
         kind.ToLowerInvariant() is
-            "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or
+            "click" or "type" or "clear" or "hover" or "scrollintoview" or "select" or "selectoption" or
             "html" or "screenshot" or "asserttext" or "download" or "uploadfiles" or
             "fill" or "check" or "uncheck" or "focus" or "blur" or "selecttext" or
             "dblclick" or "rightclick" or "expecttext" or "expectvalue" or

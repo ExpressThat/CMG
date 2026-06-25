@@ -120,6 +120,16 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_SelectOptionPassesThrough()
+    {
+        var lines = new CmgActionLowerer().Lower(Node("selectOption", ["#plan", "pro"], []));
+
+        Assert.Equal(2, lines.Count);
+        Assert.Contains("not actionable", lines[0]);
+        Assert.Equal("selectOption \"#plan\" \"pro\"", lines[1]);
+    }
+
+    [Fact]
     public void Lower_ExpectTextPreservesTimeoutOption()
     {
         var node = new CmgNode(1, "expectText", "expectText", ["#status", "Ready"], new Dictionary<string, string> { ["timeout"] = "500" }, []);

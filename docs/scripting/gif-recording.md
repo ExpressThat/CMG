@@ -20,7 +20,7 @@ cmg run flow.cmgscript --gif demo-output\runner-gifs
 - Drag-and-drop actions move from the source selector to the target selector while keeping the page drag lifecycle active, so pages can show their own native drag preview when one is available.
 - During a block drag, CMG dispatches DOM `pointerdown`/`mousedown` at drag start, held `pointermove`/`mousemove` while moving or delaying, and `pointerup`/`mouseup` at drop. The Chrome/Edge pointer also moves through CDP. This lets page drag state and edge-autoscroll logic react without forcing Chrome into native drag mode.
 - Screenshot actions still scroll the selected element into view before capture.
-- Pointer actions such as `click`, `dblclick`, `rightClick`, `type`, `clear`, `hover`, `select`, and `dragAndDrop` move the virtual pointer before acting so recorded GIFs show the same target the browser receives.
+- Pointer actions such as `click`, `dblclick`, `rightClick`, `type`, `fill`, `clear`, `hover`, `select`, `selectOption`, `check`, `uncheck`, `focus`, `blur`, `selectText`, and `dragAndDrop` move the virtual pointer before acting so recorded GIFs show the same target the browser receives.
 - File, fixture, init-script, PDF, API, explicit wait, navigation wait, dialog, network environment, network mock, worker, coverage, page-error, clock, browser context, accessibility, element-state assertion, and storage actions such as `localStorage`, `sessionStorage`, and `cookie` do not move the virtual pointer. Wrap them in `step`, `caption`, or `gif` blocks when their result should be visible to a GIF viewer.
 - Delay actions capture a hold frame.
 
