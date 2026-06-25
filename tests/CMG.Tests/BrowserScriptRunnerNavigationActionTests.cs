@@ -1,0 +1,57 @@
+using CMG.Browser.Scripting;
+
+namespace CMG.Tests;
+
+public sealed class BrowserScriptRunnerNavigationActionTests
+{
+    [Fact]
+    public void RunText_ReloadNavigatesCurrentUrl()
+    {
+        var result = Runner().RunText("reload", "debug", new FakeAutomationClient());
+
+        Assert.True(result.Success);
+        Assert.Contains("RELOADED 001 {}", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_GoBackUsesHistoryScript()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("goBack timeout=250", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("history.back()", client.LastExpression);
+        Assert.Contains("BACK 001 {}", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_WaitForUrlUsesPollingScript()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("waitForUrl \"/checkout\" timeout=250", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("URL did not match", client.LastExpression);
+        Assert.Contains("URL 001 {}", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_ExpectTitleReturnsTitleOutput()
+    {
+        var result = Runner().RunText("expectTitle \"Dashboard\"", "debug", new FakeAutomationClient());
+
+        Assert.True(result.Success);
+        Assert.Contains("TITLE 001 {}", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_WaitForLoadStateValidatesState()
+    {
+        var result = Runner().RunText("waitForLoadState networkidle", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("loading, interactive, complete, or load", result.Error);
+    }
+
+    private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
+}

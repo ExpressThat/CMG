@@ -13,8 +13,7 @@ public sealed class CmgActionLowerer
             "assertvisible" => LowerSelectorCommand("waitForElement", action),
             "wait" => LowerWait(action),
             "expecttext" => [ToLine("assertText", action.Arguments, action.Options)],
-            "expecturl" => [ToLine("evaluate", [BuildExpectUrl(action)])],
-            "expecttitle" => [ToLine("evaluate", [BuildExpectTitle(action)])],
+            "expecturl" or "expecttitle" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "expectvalue" => CmgExpectationScripts.Element(action, "value"),
             "expectattribute" => CmgExpectationScripts.Element(action, "attribute"),
             "expectchecked" => CmgExpectationScripts.Element(action, "checked"),
@@ -26,10 +25,8 @@ public sealed class CmgActionLowerer
             "selecttext" => ElementScript(action, "element.focus({ preventScroll: true }); element.select?.(); return true;"),
             "dblclick" => LowerMouseEvent(action, "dblclick", button: 0),
             "rightclick" => LowerMouseEvent(action, "contextmenu", button: 2),
-            "reload" => [ToLine("evaluate", ["location.reload()"])],
-            "goback" => [ToLine("evaluate", ["history.back()"])],
-            "goforward" => [ToLine("evaluate", ["history.forward()"])],
-            "waitforurl" => [ToLine("evaluate", [BuildWaitForUrl(action)])],
+            "reload" or "goback" or "goforward" or "waitforurl" or "waitforloadstate" =>
+                [ToLine(action.Kind, action.Arguments, action.Options)],
             "localstorage" => [ToLine("evaluate", [BuildStorage(action, "localStorage")])],
             "sessionstorage" => [ToLine("evaluate", [BuildStorage(action, "sessionStorage")])],
             "cookie" => [ToLine("evaluate", [BuildCookie(action)])],
@@ -127,44 +124,6 @@ public sealed class CmgActionLowerer
             ToLine("hover", [selector]),
             ToLine("evaluate", [expression])
         ];
-    }
-
-    private static string BuildExpectUrl(CmgNode action)
-    {
-        var expected = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
-        return $"(() => {{ if (!location.href.includes({QuoteJs(expected)})) throw new Error(`Expected URL to contain {expected}, got ${{location.href}}`); return location.href; }})()";
-    }
-
-    private static string BuildExpectTitle(CmgNode action)
-    {
-        var expected = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
-        return $"(() => {{ if (!document.title.includes({QuoteJs(expected)})) throw new Error(`Expected title to contain {expected}, got ${{document.title}}`); return document.title; }})()";
-    }
-
-    private static string BuildWaitForUrl(CmgNode action)
-    {
-        var expected = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
-        var timeout = action.Options.TryGetValue("timeout", out var value) && int.TryParse(value, out var parsed) ? parsed : 5000;
-        return $$"""
-        new Promise((resolve, reject) => {
-          const expected = {{QuoteJs(expected)}};
-          const deadline = Date.now() + {{timeout}};
-          const poll = () => {
-            if (location.href.includes(expected)) {
-              resolve(location.href);
-              return;
-            }
-
-            if (Date.now() >= deadline) {
-              reject(new Error(`URL did not match ${expected} within {{timeout}}ms. Last URL: ${location.href}`));
-              return;
-            }
-
-            setTimeout(poll, 50);
-          };
-          poll();
-        })
-        """;
     }
 
     private static string BuildStorage(CmgNode action, string storage)

@@ -87,6 +87,8 @@ public sealed partial class BrowserScriptRunner
         return action.Name.ToLowerInvariant() switch
         {
             "navigate" => ExecuteNavigate(remoteDebuggingUrl, automationClient, action),
+            "reload" or "goback" or "goforward" or "waitforurl" or "expecturl" or "expecttitle" or "waitforloadstate" =>
+                ExecuteNavigationAction(remoteDebuggingUrl, automationClient, action),
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             "click" => ExecuteSelectorAction(action, selector => automationClient.Click(remoteDebuggingUrl, selector)),
             "type" => ExecuteType(remoteDebuggingUrl, automationClient, action, recorder),

@@ -313,6 +313,15 @@ Line 5: setOffline failed. setOffline expects true or false.
 
 Pass headers as quoted name/value pairs and pass `true` or `false` to `setOffline`.
 
+## Navigation Failure
+
+```text
+Line 2: waitForUrl failed. URL did not match /checkout within 5000ms. Last URL: https://example.com/cart
+Line 3: waitForLoadState failed. waitForLoadState expects loading, interactive, complete, or load.
+```
+
+Navigation wait failures include the expected state or URL, timeout, and the last observed browser state when available.
+
 ## Worker Failure
 
 ```text

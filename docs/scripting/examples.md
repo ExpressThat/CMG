@@ -570,3 +570,18 @@ test "uses saved state" {
   reload
 }
 ```
+
+## Navigation Controls
+
+```text
+test "browser history" {
+  navigate "https://example.com/start"
+  navigate "https://example.com/checkout"
+  goBack
+  waitForUrl "/start"
+  goForward
+  waitForUrl "/checkout"
+  reload
+  waitForLoadState "complete"
+}
+```

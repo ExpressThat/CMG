@@ -69,7 +69,7 @@ public sealed class CmgActionLowererTests
 
         Assert.Contains("localStorage", Assert.Single(lowerer.Lower(Node("localStorage", ["set", "token", "abc"], []))));
         Assert.Contains("document.cookie", Assert.Single(lowerer.Lower(Node("cookie", [], []))));
-        Assert.Contains("Expected URL", Assert.Single(lowerer.Lower(Node("expectUrl", ["checkout"], []))));
+        Assert.Equal("expectUrl \"checkout\"", Assert.Single(lowerer.Lower(Node("expectUrl", ["checkout"], []))));
     }
 
     [Fact]
@@ -78,9 +78,7 @@ public sealed class CmgActionLowererTests
         var action = Node("waitForUrl", ["checkout"], []);
         var line = Assert.Single(new CmgActionLowerer().Lower(action));
 
-        Assert.Contains("new Promise", line);
-        Assert.Contains("within 5000ms", line);
-        Assert.Contains("setTimeout(poll, 50)", line);
+        Assert.Equal("waitForUrl \"checkout\"", line);
     }
 
     [Theory]

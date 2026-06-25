@@ -20,6 +20,37 @@ Example:
 navigate "C:\Projects\CMG\index.html"
 ```
 
+## `reload`, `goBack`, `goForward`, `waitForUrl`, And `waitForLoadState`
+
+```text
+reload
+goBack timeout=5000
+goForward timeout=5000
+waitForUrl "/checkout" timeout=10000
+waitForLoadState "complete" timeout=5000
+```
+
+Runs common page navigation controls from both direct browser-control scripts and `cmg run`.
+
+Options:
+
+- `timeout`: Optional for `goBack`, `goForward`, `waitForUrl`, and `waitForLoadState`. Default is `5000`.
+
+Arguments:
+
+- `waitForUrl`: Required URL substring expected in `location.href`.
+- `waitForLoadState`: Optional state. Supports `loading`, `interactive`, `complete`, and `load`. `load` is an alias for `complete`.
+
+Output:
+
+- `RELOADED <line> <url>` after reloading the current URL.
+- `BACK <line> <url>` after browser history moves back.
+- `FORWARD <line> <url>` after browser history moves forward.
+- `URL <line> <url>` when `waitForUrl` matches.
+- `LOAD_STATE <line> <state>` when the requested load state is reached.
+
+These actions do not move the virtual pointer. Use `step`, `caption`, or a `gif` block when a GIF should narrate a non-visual navigation wait.
+
 ## `waitForElement`
 
 ```text
@@ -808,6 +839,13 @@ expectTitle "Checkout"
 ```
 
 Fails unless the current URL or title contains the expected text.
+
+These are shared actions, so they work in both direct browser-control scripts and `cmg run`.
+
+Output:
+
+- `URL <line> <url>` for `expectUrl`.
+- `TITLE <line> <title>` for `expectTitle`.
 
 ### `expectValue`, `expectAttribute`, `expectChecked`, And `expectCount`
 
