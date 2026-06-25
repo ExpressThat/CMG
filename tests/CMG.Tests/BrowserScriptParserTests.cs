@@ -48,4 +48,17 @@ public sealed class BrowserScriptParserTests
         Assert.True(result.Success, result.Error);
         Assert.Equal(["if", "else", "try", "catch", "finally"], result.Actions.Select(action => action.Name.ToLowerInvariant()));
     }
+
+    [Fact]
+    public void Parse_AllowsInlineBlocksWithoutSplittingQuotedBraces()
+    {
+        var result = new BrowserScriptParser().Parse("""
+        if true { setContent "<main>{ok}</main>" } else { evaluate "({ value: 'no' })" }
+        """);
+
+        Assert.True(result.Success, result.Error);
+        var action = Assert.Single(result.Actions);
+        Assert.Equal("if", action.Name);
+        Assert.Equal("<main>{ok}</main>", Assert.Single(action.Children).Arguments[0]);
+    }
 }

@@ -152,4 +152,18 @@ public sealed class CmgDslParserTests
             directory.Delete(recursive: true);
         }
     }
+
+    [Fact]
+    public void Parse_AllowsInlineBlocksAcrossDsl()
+    {
+        var result = new CmgDslParser().Parse("flow.cmgscript", """
+        describe "inline" { before { setContent "<main>{ready}</main>" } it "case" { if true { caption "yes" } else { caption "no" } } after { caption "done" } }
+        """);
+
+        Assert.True(result.Success, result.Error);
+        var suite = Assert.Single(result.Document!.Nodes);
+        Assert.Equal("describe", suite.Kind);
+        Assert.Equal(["before", "it", "after"], suite.Children.Select(node => node.Kind.ToLowerInvariant()));
+        Assert.Equal("<main>{ready}</main>", suite.Children[0].Children[0].Arguments[0]);
+    }
 }

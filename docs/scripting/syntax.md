@@ -36,6 +36,12 @@ try {
 }
 ```
 
+Blocks can also be written inline. Braces inside quoted strings are preserved:
+
+```text
+describe "inline" { before { setContent "<main>{ready}</main>" } it "case" { if true { caption "yes" } else { caption "no" } } }
+```
+
 Supported structural blocks:
 
 - `suite "name" { ... }`, `describe "name" { ... }`, or `context "name" { ... }`

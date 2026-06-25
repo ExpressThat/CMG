@@ -1,0 +1,1 @@
+describe "inline formatting" { before { setContent "<main>{ready}<button id='run'>Run</button><output id='status'>Ready</output></main>" } it "handles inline blocks" { if true { caption "inline if" } else { caption "inline else" } try { assertText "#status" "Ready" } catch error { caption "${error}" } finally { caption "checked" } } }

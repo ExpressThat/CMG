@@ -14,7 +14,7 @@ public sealed class CmgDslParser
         }
 
         script = importResult.Script ?? string.Empty;
-        var lines = ExpandCombinedBranchLines(script.ReplaceLineEndings("\n").Split('\n'));
+        var lines = ScriptLineNormalizer.Normalize(script);
         var result = ParseNodes(lines, 0, stopAtBlockEnd: false);
         if (!result.Success)
         {
@@ -93,54 +93,6 @@ public sealed class CmgDslParser
         return stopAtBlockEnd
             ? CmgNodeListResult.Fail($"Line {lines.Length}: missing block close '}}'.")
             : CmgNodeListResult.Ok(nodes, lines.Length);
-    }
-
-    private static string[] ExpandCombinedBranchLines(string[] lines)
-    {
-        var expanded = new List<string>();
-        foreach (var line in lines)
-        {
-            var trimmed = line.TrimStart();
-            if (!TrySplitCombinedBranch(trimmed, out var branch))
-            {
-                expanded.Add(line);
-                continue;
-            }
-
-            expanded.Add("}");
-            expanded.Add(branch);
-        }
-
-        return expanded.ToArray();
-    }
-
-    private static bool TrySplitCombinedBranch(string trimmed, out string branch)
-    {
-        branch = string.Empty;
-        if (!trimmed.StartsWith('}'))
-        {
-            return false;
-        }
-
-        var remainder = trimmed[1..].TrimStart();
-        foreach (var keyword in new[] { "elseif", "else", "catch", "finally" })
-        {
-            if (!remainder.StartsWith(keyword, StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            var next = remainder.Length == keyword.Length ? '\0' : remainder[keyword.Length];
-            if (next is not ('\0' or ' ' or '\t' or '{'))
-            {
-                continue;
-            }
-
-            branch = keyword + remainder[keyword.Length..];
-            return true;
-        }
-
-        return false;
     }
 
     private static CmgTokenizeResult Tokenize(string line, int lineNumber)

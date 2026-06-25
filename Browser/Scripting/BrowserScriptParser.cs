@@ -4,7 +4,7 @@ public sealed class BrowserScriptParser
 {
     public ScriptParseResult Parse(string script)
     {
-        var lines = ExpandCombinedBranchLines(script.ReplaceLineEndings("\n").Split('\n'));
+        var lines = ScriptLineNormalizer.Normalize(script);
         var parseResult = ParseActions(lines, 0, stopAtBlockEnd: false);
         if (!parseResult.Success)
         {
@@ -109,54 +109,6 @@ public sealed class BrowserScriptParser
         }
 
         return ActionListParseResult.Ok(actions, lines.Length);
-    }
-
-    private static string[] ExpandCombinedBranchLines(string[] lines)
-    {
-        var expanded = new List<string>();
-        foreach (var line in lines)
-        {
-            var trimmed = line.TrimStart();
-            if (!TrySplitCombinedBranch(trimmed, out var branch))
-            {
-                expanded.Add(line);
-                continue;
-            }
-
-            expanded.Add("}");
-            expanded.Add(branch);
-        }
-
-        return expanded.ToArray();
-    }
-
-    private static bool TrySplitCombinedBranch(string trimmed, out string branch)
-    {
-        branch = string.Empty;
-        if (!trimmed.StartsWith('}'))
-        {
-            return false;
-        }
-
-        var remainder = trimmed[1..].TrimStart();
-        foreach (var keyword in new[] { "elseif", "else", "catch", "finally" })
-        {
-            if (!remainder.StartsWith(keyword, StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            var next = remainder.Length == keyword.Length ? '\0' : remainder[keyword.Length];
-            if (next is not ('\0' or ' ' or '\t' or '{'))
-            {
-                continue;
-            }
-
-            branch = keyword + remainder[keyword.Length..];
-            return true;
-        }
-
-        return false;
     }
 
     private static TokenizeResult Tokenize(string line, int lineNumber)
