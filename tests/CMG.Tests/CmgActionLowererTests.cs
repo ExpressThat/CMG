@@ -195,6 +195,15 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_BrowserContextActionsPassThrough()
+    {
+        var lowerer = new CmgActionLowerer();
+
+        Assert.Equal("newContext \"ctx\"", Assert.Single(lowerer.Lower(Node("newContext", ["ctx"], []))));
+        Assert.Equal("useContext \"ctx-1\"", Assert.Single(lowerer.Lower(Node("useContext", ["ctx-1"], []))));
+    }
+
+    [Fact]
     public void Lower_AccessibilityActionsPassThrough()
     {
         var node = new CmgNode(1, "expectAccessible", "expectAccessible", [], new Dictionary<string, string> { ["role"] = "button" }, []);

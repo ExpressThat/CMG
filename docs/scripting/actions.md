@@ -542,6 +542,30 @@ Output:
 
 These actions do not move the virtual pointer. They provide practical context cleanup inside CMG's controlled browser instance; they are not a protocol-native replacement for creating multiple isolated browser contexts.
 
+## `newContext`, `useContext`, `listContexts`, And `closeContext`
+
+```text
+newContext ctx url="about:blank"
+useContext "${ctx}"
+listContexts
+closeContext "${ctx}"
+```
+
+Creates and switches between isolated browser contexts in Chrome and Edge. `newContext` creates a fresh browser context, opens a page in it, activates that page for later actions, and optionally stores the context id in the variable named by the first argument. `useContext` activates a previously created context by context id or target id. `closeContext` disposes a context created during the same script run.
+
+Options:
+
+- `url`: Optional initial URL for `newContext`. Default is `about:blank`.
+
+Output:
+
+- `CONTEXT_CREATED <line> id=<context-id> target=<target-id> url="<url>"` when a context is created.
+- `CONTEXT_ACTIVE <line> <id>` when a context is activated.
+- `CONTEXT <index> id=<context-id> target=<target-id> active=<true|false> url="<url>"` for `listContexts`.
+- `CONTEXT_CLOSED <line> <id>` when a context is closed.
+
+Context actions do not move the virtual pointer. Later pointer-aware actions use the currently active context, so GIF recordings keep the same virtual pointer and event behavior inside that page. Firefox runs fail with an explicit unsupported-provider reason until CMG has a BiDi-backed isolated context implementation.
+
 ## `accessibilitySnapshot` And `expectAccessible`
 
 ```text
@@ -869,7 +893,7 @@ Failure reasons include a missing selector argument, no file paths, a local file
 
 ## Planned Parity Actions
 
-Commands such as worker-level interception and multiple simultaneous isolated browser contexts are reserved for remaining parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
+Commands such as worker-level interception are reserved for remaining parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.
 
 ## Locator Support
 

@@ -42,6 +42,7 @@ public sealed class CmgActionLowerer
             "frameclick" or "frametype" or "framefill" or "framehover" or "framewaitforelement" or "frameasserttext" or "frameevaluate" or
             "clock" or "tick" or "restoreclock" or
             "clearcontext" or "resetcontext" or
+            "newcontext" or "usecontext" or "listcontexts" or "closecontext" or
             "accessibilitysnapshot" or "expectaccessible" or
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" or
             "printpdf" or "pdf" or

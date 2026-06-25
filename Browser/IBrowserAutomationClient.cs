@@ -78,6 +78,14 @@ public interface IBrowserAutomationClient
     void ActivateTab(string remoteDebuggingUrl, int index);
 
     void CloseTab(string remoteDebuggingUrl, int index);
+
+    IReadOnlyList<BrowserContextInfo> ListBrowserContexts(string remoteDebuggingUrl);
+
+    BrowserContextInfo NewBrowserContext(string remoteDebuggingUrl, string initialUrl);
+
+    void UseBrowserContext(string remoteDebuggingUrl, string id);
+
+    void CloseBrowserContext(string remoteDebuggingUrl, string id);
 }
 
 public sealed class BrowserAutomationClientFactory
@@ -102,3 +110,5 @@ public sealed record ViewportSize(double Width, double Height);
 public sealed record ElementBox(double X, double Y, double Width, double Height);
 
 public sealed record PdfPrintOptions(bool Landscape, bool PrintBackground, double Scale);
+
+public sealed record BrowserContextInfo(string Id, string TargetId, string Url, bool Active);

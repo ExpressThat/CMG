@@ -85,4 +85,19 @@ public sealed partial class FirefoxBiDiClient
             await session.SendCommand("browsingContext.close", writer => writer.WriteString("context", context.Id));
             return true;
         });
+
+    public IReadOnlyList<BrowserContextInfo> ListBrowserContexts(string remoteDebuggingUrl) =>
+        throw UnsupportedContextException();
+
+    public BrowserContextInfo NewBrowserContext(string remoteDebuggingUrl, string initialUrl) =>
+        throw UnsupportedContextException();
+
+    public void UseBrowserContext(string remoteDebuggingUrl, string id) =>
+        throw UnsupportedContextException();
+
+    public void CloseBrowserContext(string remoteDebuggingUrl, string id) =>
+        throw UnsupportedContextException();
+
+    private static ChromeDevToolsException UnsupportedContextException() =>
+        new("Isolated browser contexts are not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for newContext/useContext/closeContext.");
 }

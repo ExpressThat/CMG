@@ -10,6 +10,8 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public PdfPrintOptions? LastPdfOptions { get; private set; }
     public Queue<string> TextResponses { get; } = new();
     public Queue<IReadOnlyList<ChromePageTab>> TabResponses { get; } = new();
+    public List<BrowserContextInfo> BrowserContexts { get; } = [];
+    public string ActiveBrowserContext { get; private set; } = string.Empty;
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) => [];
@@ -57,4 +59,14 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         TabResponses.Count > 0 ? TabResponses.Dequeue() : [];
     public void ActivateTab(string remoteDebuggingUrl, int index) { }
     public void CloseTab(string remoteDebuggingUrl, int index) { }
+    public IReadOnlyList<BrowserContextInfo> ListBrowserContexts(string remoteDebuggingUrl) => BrowserContexts;
+    public BrowserContextInfo NewBrowserContext(string remoteDebuggingUrl, string initialUrl)
+    {
+        var info = new BrowserContextInfo($"context-{BrowserContexts.Count + 1}", $"target-{BrowserContexts.Count + 1}", initialUrl, Active: true);
+        BrowserContexts.Add(info);
+        ActiveBrowserContext = info.Id;
+        return info;
+    }
+    public void UseBrowserContext(string remoteDebuggingUrl, string id) => ActiveBrowserContext = id;
+    public void CloseBrowserContext(string remoteDebuggingUrl, string id) => BrowserContexts.RemoveAll(context => context.Id == id || context.TargetId == id);
 }

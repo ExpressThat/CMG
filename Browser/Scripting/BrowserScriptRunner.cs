@@ -123,6 +123,8 @@ public sealed partial class BrowserScriptRunner
                 ExecuteFrameAction(remoteDebuggingUrl, automationClient, action),
             "clock" or "tick" or "restoreclock" => ExecuteClockAction(remoteDebuggingUrl, automationClient, action),
             "clearcontext" or "resetcontext" => ExecuteContextAction(remoteDebuggingUrl, automationClient, action),
+            "newcontext" or "usecontext" or "listcontexts" or "closecontext" =>
+                ExecuteBrowserContextAction(remoteDebuggingUrl, automationClient, action, context),
             "accessibilitysnapshot" => ExecuteAccessibilitySnapshot(remoteDebuggingUrl, automationClient, action),
             "expectaccessible" => ExecuteExpectAccessible(remoteDebuggingUrl, automationClient, action),
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),

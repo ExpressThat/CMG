@@ -463,6 +463,18 @@ test "fresh login state" {
 
 Use `clearContext` when the page should stay loaded, and `resetContext` when the next action should start from `about:blank`.
 
+## Isolated Browser Contexts
+
+```text
+test "separate session" {
+  newContext ctx url="https://example.com/login"
+  fill "#email" "agent@example.com"
+  closeContext "${ctx}"
+}
+```
+
+`newContext` activates the new context immediately. Later pointer-aware actions run in that context, so optional GIF recordings keep the same virtual pointer behavior inside the isolated page.
+
 ## Accessibility Snapshot
 
 ```text

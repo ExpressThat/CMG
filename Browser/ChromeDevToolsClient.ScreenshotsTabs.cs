@@ -84,6 +84,7 @@ public sealed partial class ChromeDevToolsClient
             var target = await GetPageTargetAt(remoteDebuggingUrl, index);
             using var httpClient = new HttpClient { Timeout = CommandTimeout };
             await httpClient.GetStringAsync($"{remoteDebuggingUrl.TrimEnd('/')}/json/activate/{target.Id}");
+            SetActiveTarget(remoteDebuggingUrl, target.Id);
 
             return true;
         });
@@ -96,6 +97,7 @@ public sealed partial class ChromeDevToolsClient
             var target = await GetPageTargetAt(remoteDebuggingUrl, index);
             using var httpClient = new HttpClient { Timeout = CommandTimeout };
             await httpClient.GetStringAsync($"{remoteDebuggingUrl.TrimEnd('/')}/json/close/{target.Id}");
+            ClearActiveTarget(remoteDebuggingUrl, target.Id);
 
             return true;
         });

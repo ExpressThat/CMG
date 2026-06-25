@@ -245,6 +245,15 @@ Line 2: resetContext failed. JavaScript evaluation failed.
 
 Context cleanup runs in the current page. If the page blocks same-origin storage APIs or browser APIs are unavailable, the failing browser evaluation reason is reported in stderr, JSON reports, HTML reports, and traces.
 
+## Browser Context Failure
+
+```text
+Line 3: useContext failed. Browser context 'ctx-2' was not found in this script run.
+Line 4: newContext failed. Isolated browser contexts are not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for newContext/useContext/closeContext.
+```
+
+`useContext` and `closeContext` can only reference contexts created earlier in the same script run. Use the context id stored by `newContext ctx` through `${ctx}` when possible.
+
 ## Accessibility Failure
 
 ```text

@@ -54,7 +54,7 @@ GIF recording is optional.
 
 All recorded actions use CMG's virtual pointer, pointer/mouse event dispatch, captions, and drag ghost behavior.
 
-Shared non-visual actions such as `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, and `printPdf` are also available in `cmg run`. They do not move the virtual pointer, but their output and failure reasons are included in stdout, reports, and traces.
+Shared non-visual actions such as `newContext`, `useContext`, `closeContext`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, and `printPdf` are also available in `cmg run`. They do not move the virtual pointer, but their output and failure reasons are included in stdout, reports, and traces.
 
 ## Exit Codes
 

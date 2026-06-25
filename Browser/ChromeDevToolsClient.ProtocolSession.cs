@@ -16,13 +16,17 @@ public sealed partial class ChromeDevToolsClient
             this.socket = socket;
         }
 
-        public static async Task<DevToolsSession> Connect(Uri webSocketDebuggerUrl)
+        public static async Task<DevToolsSession> Connect(Uri webSocketDebuggerUrl, bool enablePage = true)
         {
             var socket = new ClientWebSocket();
             await socket.ConnectAsync(webSocketDebuggerUrl, CancellationToken.None);
 
             var session = new DevToolsSession(socket);
-            await session.EnableAutoDialogHandling();
+            if (enablePage)
+            {
+                await session.EnableAutoDialogHandling();
+            }
+
             return session;
         }
 

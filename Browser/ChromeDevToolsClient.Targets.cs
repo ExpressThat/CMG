@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -6,6 +7,8 @@ namespace CMG.Browser;
 
 public sealed partial class ChromeDevToolsClient
 {
+    private static readonly ConcurrentDictionary<string, string> ActiveTargets = new();
+
     private async Task<Uri?> TryFindPageWithSelector(string remoteDebuggingUrl, string selector)
     {
         var pageTargets = await GetPageWebSocketDebuggerUrls(remoteDebuggingUrl);
@@ -118,7 +121,7 @@ public sealed partial class ChromeDevToolsClient
             throw new ChromeDevToolsException("No Chrome page target was available through remote debugging.");
         }
 
-        return pageTargets;
+        return PrioritizeActiveTarget(remoteDebuggingUrl, pageTargets);
     }
 
     private static async Task<PageTarget> GetPageTargetAt(string remoteDebuggingUrl, int index)
@@ -131,4 +134,30 @@ public sealed partial class ChromeDevToolsClient
 
         return targets[index];
     }
+
+    private static IReadOnlyList<PageTarget> PrioritizeActiveTarget(string remoteDebuggingUrl, IReadOnlyList<PageTarget> targets)
+    {
+        if (!ActiveTargets.TryGetValue(Key(remoteDebuggingUrl), out var activeId))
+        {
+            return targets;
+        }
+
+        var active = targets.FirstOrDefault(target => target.Id == activeId);
+        return active is null
+            ? targets
+            : [active, .. targets.Where(target => target.Id != activeId)];
+    }
+
+    private static void SetActiveTarget(string remoteDebuggingUrl, string targetId) =>
+        ActiveTargets[Key(remoteDebuggingUrl)] = targetId;
+
+    private static void ClearActiveTarget(string remoteDebuggingUrl, string targetId)
+    {
+        if (ActiveTargets.TryGetValue(Key(remoteDebuggingUrl), out var activeId) && activeId == targetId)
+        {
+            ActiveTargets.TryRemove(Key(remoteDebuggingUrl), out _);
+        }
+    }
+
+    private static string Key(string remoteDebuggingUrl) => remoteDebuggingUrl.TrimEnd('/');
 }
