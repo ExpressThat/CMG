@@ -143,7 +143,7 @@ public sealed partial class BrowserScriptRunner
             "waitfordownload" => ExecuteWaitForDownload(action),
             "captureconsole" => ExecuteCaptureConsole(remoteDebuggingUrl, automationClient, action),
             "waitforconsole" => ExecuteWaitForConsole(remoteDebuggingUrl, automationClient, action),
-            "capturedialogs" or "setdialogbehavior" or "waitfordialog" =>
+            "capturedialogs" or "setdialogbehavior" or "ondialog" or "handledialog" or "dialogbehavior" or "waitfordialog" =>
                 ExecuteDialogAction(remoteDebuggingUrl, automationClient, action),
             "waitforevent" => ExecuteWaitForEvent(remoteDebuggingUrl, automationClient, action),
             "capturepageerrors" => ExecuteCapturePageErrors(remoteDebuggingUrl, automationClient, action),

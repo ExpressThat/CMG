@@ -12,7 +12,8 @@ public sealed partial class BrowserScriptRunner
         return action.Name.ToLowerInvariant() switch
         {
             "capturedialogs" => CaptureDialogs(remoteDebuggingUrl, automationClient, action),
-            "setdialogbehavior" => SetDialogBehavior(remoteDebuggingUrl, automationClient, action),
+            "setdialogbehavior" or "ondialog" or "handledialog" or "dialogbehavior" =>
+                SetDialogBehavior(remoteDebuggingUrl, automationClient, action),
             "waitfordialog" => WaitForDialog(remoteDebuggingUrl, automationClient, action),
             _ => throw new ScriptExecutionException($"Unknown dialog action '{action.Name}'.")
         };

@@ -768,7 +768,7 @@ test "waits for events" {
   openTab "about:blank"
   waitForEvent popup count=2
   captureDialogs
-  setDialogBehavior accept
+  onDialog accept
   evaluate "alert('Saved')"
   waitForEvent dialog "Saved"
 }

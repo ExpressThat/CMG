@@ -788,12 +788,15 @@ Output:
 
 Page-error actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful.
 
-## `captureDialogs`, `setDialogBehavior`, And `waitForDialog`
+## `captureDialogs`, `setDialogBehavior`, `onDialog`, `handleDialog`, `dialogBehavior`, And `waitForDialog`
 
 ```text
 captureDialogs
 setDialogBehavior accept promptText="CMG"
 setDialogBehavior dismiss
+onDialog accept
+handleDialog dismiss
+dialogBehavior accept promptText="CMG"
 waitForDialog "Saved" timeout=5000
 ```
 
@@ -801,7 +804,7 @@ Installs page-side dialog automation for `alert`, `confirm`, and `prompt` calls 
 
 Arguments:
 
-- `setDialogBehavior`: `accept` or `dismiss`.
+- `setDialogBehavior`, `onDialog`, `handleDialog`, and `dialogBehavior`: `accept` or `dismiss`.
 - `waitForDialog`: Text expected in the dialog message.
 
 Options:
@@ -812,7 +815,7 @@ Options:
 Output:
 
 - `DIALOG_CAPTURE <line>` when dialog capture is installed.
-- `DIALOG_BEHAVIOR <line> <accept|dismiss>` when behavior changes.
+- `DIALOG_BEHAVIOR <line> <accept|dismiss>` when behavior changes through any behavior alias.
 - `DIALOG <line> <json>` when a matching dialog is found.
 
 Dialog actions do not move the virtual pointer. Wrap them in `step`, `caption`, or a `gif` block when the recording should narrate dialog handling.

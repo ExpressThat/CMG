@@ -4,6 +4,6 @@ openTab "about:blank"
 waitForEvent popup count=2 timeout=5000
 
 captureDialogs
-setDialogBehavior accept
+onDialog accept
 evaluate "alert('Saved from waitForEvent')"
 waitForEvent dialog "Saved from waitForEvent" timeout=5000

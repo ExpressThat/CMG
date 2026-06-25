@@ -25,6 +25,20 @@ public sealed class BrowserScriptRunnerDialogActionTests
         Assert.Contains("expects accept or dismiss", result.Error);
     }
 
+    [Theory]
+    [InlineData("onDialog accept", "DIALOG_BEHAVIOR 001 accept")]
+    [InlineData("handleDialog dismiss", "DIALOG_BEHAVIOR 001 dismiss")]
+    [InlineData("dialogBehavior accept", "DIALOG_BEHAVIOR 001 accept")]
+    public void RunText_ProviderDialogAliasesInstallBehavior(string script, string expected)
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText(script, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("__cmgDialogBehavior", client.LastInitScript);
+        Assert.Contains(expected, result.StdoutLines);
+    }
+
     [Fact]
     public void RunText_WaitForDialogOutputsDialogJson()
     {

@@ -41,7 +41,8 @@ public sealed class CmgActionLowerer
             "setclipboard" or "writeclipboard" or "readclipboard" or "clearclipboard" or
             "emulate" or "setgeolocation" or "grantpermissions" or "clearpermissions" or
             "setjavascriptenabled" or "javascriptenabled" or "bypasscsp" or "serviceworkers" or "setserviceworkers" or "waitfordownload" or
-            "captureconsole" or "waitforconsole" or "capturedialogs" or "setdialogbehavior" or "waitfordialog" or
+            "captureconsole" or "waitforconsole" or "capturedialogs" or
+            "setdialogbehavior" or "ondialog" or "handledialog" or "dialogbehavior" or "waitfordialog" or
             "waitforevent" or
             "capturepageerrors" or "waitforpageerror" or
             "route" or "mockresponse" or "intercept" or "clearroutes" or "waitforrequest" or "waitforrequestfinished" or "waitforrequestfailed" or "waitforresponse" or "exporthar" or "replayhar" or

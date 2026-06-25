@@ -126,6 +126,14 @@ JSON and HTML reports include the same reason, the test name, output lines, and 
 
 Use `cmg run --trace <directory>` to write per-test trace JSON with every recorded step and failure reason.
 
+## Invalid Dialog Behavior
+
+```text
+Line 3: handleDialog failed. setDialogBehavior expects accept or dismiss.
+```
+
+`setDialogBehavior`, `onDialog`, `handleDialog`, and `dialogBehavior` all require `accept` or `dismiss`. Add `promptText=<text>` when accepting a prompt should return custom text.
+
 ## Invalid Shard
 
 ```text
