@@ -150,6 +150,14 @@ Line 4: click failed. No element matched selector '#missing'.
 
 Use `waitForElement` before actions that require an element.
 
+## `set` Block Without Output
+
+```text
+Line 3: set failed. set 'title' block did not produce output.
+```
+
+The block form stores the payload from the last output-producing action in the block. Wrap an action such as `evaluate`, `url`, `title`, `content`, `html`, `readClipboard`, `waitForResponse`, or another action that writes a parseable output line.
+
 ## Element Outside Viewport
 
 User-like actions such as `click`, `tap`, `touchTap`, `type`, `clear`, `hover`, `select`, and `dragAndDrop` do not scroll automatically:

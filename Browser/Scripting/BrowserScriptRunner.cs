@@ -81,7 +81,8 @@ public sealed partial class BrowserScriptRunner
     {
         if (action.Children.Count > 0 &&
             !string.Equals(action.Name, "dragAndDrop", StringComparison.OrdinalIgnoreCase) &&
-            !IsRecordingBlock(action.Name))
+            !IsRecordingBlock(action.Name) &&
+            !string.Equals(action.Name, "set", StringComparison.OrdinalIgnoreCase))
         {
             throw new ScriptExecutionException($"Action '{action.Name}' does not accept a block body.");
         }
@@ -189,7 +190,7 @@ public sealed partial class BrowserScriptRunner
             "closetab" => ExecuteCloseTab(remoteDebuggingUrl, automationClient, action),
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" =>
                 ExecuteFileAction(action, context),
-            "set" => ExecuteSet(action, context),
+            "set" => ExecuteSet(remoteDebuggingUrl, automationClient, action, context, recorder),
             _ => throw new ScriptExecutionException($"Unknown action '{action.Name}'.")
         };
     }

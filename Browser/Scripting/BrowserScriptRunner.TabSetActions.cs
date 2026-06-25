@@ -58,13 +58,6 @@ public sealed partial class BrowserScriptRunner
         return [];
     }
 
-    private static IReadOnlyList<string> ExecuteSet(BrowserScriptAction action, ScriptExecutionContext context)
-    {
-        RequireArgumentCount(action, 2, 2);
-        context.Variables[action.Arguments[0]] = action.Arguments[1];
-        return [];
-    }
-
     private static IReadOnlyList<string> WriteScreenshotOutput(BrowserScriptAction action, byte[] bytes)
     {
         if (action.Options.TryGetValue("output", out var outputPath) && !string.IsNullOrWhiteSpace(outputPath))

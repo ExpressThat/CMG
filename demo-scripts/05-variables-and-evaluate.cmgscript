@@ -6,7 +6,10 @@ viewport 1100 800
 navigate "${page}"
 waitForElement "${button}" timeout=5000
 
-evaluate "document.title"
+set pageTitle {
+  evaluate "document.title"
+}
+showMessageBar "${pageTitle}"
 assertText "h1" "CMG Browser Control Test Page"
 
 click "${button}"

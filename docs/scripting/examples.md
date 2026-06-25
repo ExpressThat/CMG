@@ -63,6 +63,11 @@ set button "#openProfileDialog"
 navigate "C:\Projects\CMG\index.html"
 waitForElement "${button}"
 click "${button}"
+
+set heading {
+  html "h1"
+}
+showMessageBar "${heading}"
 ```
 
 ## Drag And Drop

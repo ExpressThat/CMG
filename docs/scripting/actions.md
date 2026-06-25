@@ -1011,15 +1011,40 @@ Required options:
 
 ```text
 set name "value"
+set title {
+  evaluate "document.title"
+}
+set currentUrl {
+  url
+}
 ```
 
 Stores a variable for later `${name}` expansion.
+
+The two-argument form stores a literal value. The block form runs the wrapped actions and stores only the payload from the last output-producing action. For example, `set title { evaluate "document.title" }` stores only the document title string, not the `PASS`, `EVALUATE`, or `SET` log text.
+
+Block form rules:
+
+- The first argument is the variable name.
+- The block can contain any action that is valid in the current script type.
+- The stored value comes from the final output line in the block after the output label and line number are removed.
+- If the block does not produce any output, the `set` action fails.
+
+Output:
+
+- Literal `set` writes only the normal `PASS <line> set ...` line.
+- Block `set` includes the wrapped action output and `SET <line> <name> <value>`.
 
 Example:
 
 ```text
 set target "#openProfileDialog"
 click "${target}"
+
+set title {
+  evaluate "document.title"
+}
+showMessageBar "Current page: ${title}"
 ```
 
 ## `readFile`, `fixture`, `writeFile`, `appendFile`, And `expectFile`

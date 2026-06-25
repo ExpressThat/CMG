@@ -62,8 +62,10 @@ public sealed class CmgActionLowerer
             "accessibilitysnapshot" or "expectaccessible" or
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" or
             "printpdf" or "pdf" or
-            "addinitscript" or "evaluateonnewdocument" or "addscripttag" or "addstyletag" or "exposefunction" or "exposebinding" or "url" or "title" or "content" or "setcontent" or
-            "evaluate" or "dispatchevent" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or "set" =>
+            "addinitscript" or "evaluateonnewdocument" or "addscripttag" or "addstyletag" or "exposefunction" or "exposebinding" or "url" or "title" or "content" or "setcontent" =>
+                [ToLine(action.Kind, action.Arguments, action.Options)],
+            "set" => LowerSet(action),
+            "evaluate" or "dispatchevent" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or "draganddrop" or "listtabs" or "activatetab" or "closetab" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),
             "opentab" or "waitfortab" or "waitforpopup" => [ToLine(action.Kind, action.Arguments, action.Options)],
@@ -76,6 +78,20 @@ public sealed class CmgActionLowerer
     {
         var caption = action.Arguments.Count > 0 ? action.Arguments[0] : $"Step at line {action.LineNumber}";
         return [ToLine("showMessageBar", [caption]), .. action.Children.SelectMany(Lower)];
+    }
+
+    private IReadOnlyList<string> LowerSet(CmgNode action)
+    {
+        if (action.Children.Count is 0)
+        {
+            return [ToLine("set", action.Arguments, action.Options)];
+        }
+
+        return [
+            ToLine("set", action.Arguments, action.Options) + " {",
+            .. action.Children.SelectMany(Lower),
+            "}"
+        ];
     }
 
     private static IReadOnlyList<string> LowerFill(CmgNode action)
