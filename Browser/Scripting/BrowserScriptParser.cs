@@ -118,7 +118,9 @@ public sealed class BrowserScriptParser
         {
             var trimmed = line.TrimStart();
             if (trimmed.StartsWith("} elseif", StringComparison.Ordinal) ||
-                trimmed.StartsWith("} else", StringComparison.Ordinal))
+                trimmed.StartsWith("} else", StringComparison.Ordinal) ||
+                trimmed.StartsWith("} catch", StringComparison.Ordinal) ||
+                trimmed.StartsWith("} finally", StringComparison.Ordinal))
             {
                 expanded.Add("}");
                 expanded.Add(trimmed[1..].TrimStart());

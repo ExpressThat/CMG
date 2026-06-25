@@ -598,9 +598,13 @@ Line 7: for failed. for option step= cannot be 0.
 Line 8: while failed. while exceeded max=100 iteration(s).
 break must be inside a loop.
 continue must be inside a loop.
+Line 10: catch failed. catch must follow a try block.
+Line 12: try failed. catch must appear before finally.
 Line 9: if failed. Invalid action condition 'assertText'.
 ```
 
 Define macros before calling them. Top-level macros in `cmg run` are registered for each test; macros declared inside another macro, branch, or loop are scoped to that block and are not available afterward.
 
 Loop variables and macro parameters are scoped to the loop iteration or macro call. Use `set` when a value must be available after the block completes.
+
+`try` can recover from expected action failures with `catch`. If the `catch` or `finally` body fails, that new failure becomes the script failure. If there is no `catch`, `finally` still runs and the original failure is reported.

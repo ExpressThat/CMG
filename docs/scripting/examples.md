@@ -150,6 +150,22 @@ while (${ready} == false) max=3 {
 
 This example is available as `demo-scripts/32-loop-control.cmgscript`.
 
+## Recoverable Failures
+
+```text
+try {
+  click "${missingSelector}"
+} catch error {
+  caption "${error}"
+} finally {
+  screenshotPage output="demo-output\try-catch-finally.png"
+}
+```
+
+Use `try` when a script intentionally probes for optional page state. The `catch` block receives the failure reason as a variable when a name is provided, and `finally` runs for cleanup or diagnostics even when the original failure is not caught.
+
+This example is available as `demo-scripts/33-try-catch-finally.cmgscript`.
+
 ## Drag And Drop
 
 ```text

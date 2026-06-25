@@ -47,6 +47,12 @@ public sealed partial class BrowserScriptRunner
             case "continue":
                 RequireArgumentCount(action, 0, 0);
                 throw new LoopControlException("continue");
+            case "try":
+                ExecuteTry(remoteDebuggingUrl, automationClient, [action], context, recorder, output);
+                return output;
+            case "catch":
+            case "finally":
+                return [];
             default:
                 throw new ScriptExecutionException($"Unknown control action '{action.Name}'.");
         }
@@ -65,5 +71,8 @@ public sealed partial class BrowserScriptRunner
         name.Equals("while", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("repeat", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("break", StringComparison.OrdinalIgnoreCase) ||
-        name.Equals("continue", StringComparison.OrdinalIgnoreCase);
+        name.Equals("continue", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("try", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("catch", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("finally", StringComparison.OrdinalIgnoreCase);
 }

@@ -114,7 +114,7 @@ public sealed partial class BrowserScriptRunner
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" => ExecuteFileAction(action, context),
             "set" => ExecuteSet(remoteDebuggingUrl, automationClient, action, context, recorder),
             "macro" or "call" or "return" or "if" or "elseif" or "else" or "for" or "foreach" or "foreachselector" or
-            "while" or "repeat" or "break" or "continue" =>
+            "while" or "repeat" or "break" or "continue" or "try" or "catch" or "finally" =>
                 ExecuteControlAction(remoteDebuggingUrl, automationClient, action, context, recorder),
             _ => throw new ScriptExecutionException($"Unknown action '{action.Name}'.")
         };

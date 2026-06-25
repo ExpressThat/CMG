@@ -14,6 +14,9 @@ public sealed class CmgActionLowererControlTests
     [InlineData("macro")]
     [InlineData("while")]
     [InlineData("repeat")]
+    [InlineData("try")]
+    [InlineData("catch")]
+    [InlineData("finally")]
     public void Lower_ControlBlocksPreserveChildren(string name)
     {
         var node = new CmgNode(1, name, name, ["x"], new Dictionary<string, string>(), [

@@ -1,0 +1,9 @@
+navigate "index.html"
+
+try {
+  click "${missingSelector}"
+} catch error {
+  caption "${error}"
+} finally {
+  screenshotPage output="demo-output/try-catch-finally.png"
+}

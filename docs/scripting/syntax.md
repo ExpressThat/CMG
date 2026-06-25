@@ -40,6 +40,9 @@ Supported structural blocks:
 - `while <condition> max=100 { ... }`
 - `foreach <variable> <value>... { ... }`
 - `foreachSelector <variable> "<selector>" { ... }`
+- `try { ... }`
+- `catch [errorVariable] { ... }`
+- `finally { ... }`
 - `macro <name> [parameter...] { ... }`
 
 Tests can include options:
@@ -125,6 +128,20 @@ foreachSelector row ".result" {
 `repeat`, `for`, `foreach`, `foreachSelector`, and `while` support `break` and `continue`. `while` has a safety guard and fails after `max=<count>` iterations; the default is `100`.
 
 `foreachSelector` binds the variable to a temporary CSS selector for each matched element and also exposes `${index}`. Macro definitions are block-scoped when declared inside another macro, branch, or loop. Top-level macros in `cmg run` are registered before each test.
+
+Recoverable failure blocks use `try`, optional `catch`, and optional `finally`:
+
+```text
+try {
+  click "#maybe-there"
+} catch error {
+  caption "${error}"
+} finally {
+  screenshotPage output="demo-output\after-try.png"
+}
+```
+
+`catch error` binds the failure message to `${error}` for the catch block. If there is no matching `catch`, the original failure is reported after `finally` runs.
 
 ## Quoting
 

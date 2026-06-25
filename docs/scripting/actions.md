@@ -1704,6 +1704,24 @@ foreachSelector row ".result" {
 
 Pointer-aware child actions still use CMG's normal virtual pointer movement, browser events, hover behavior, drag ghosts, and captions when GIF recording is active.
 
+### `try`, `catch`, And `finally`
+
+```text
+try {
+  click "#maybe-there"
+} catch error {
+  caption "${error}"
+} finally {
+  screenshotPage output="demo-output\after-try.png"
+}
+```
+
+`try` runs its body with normal fail-fast behavior. If an action fails and a following `catch` block exists, CMG binds the failure message to the optional catch variable and runs the catch body. If no catch exists, the original failure is reported after any `finally` block runs.
+
+`finally` always runs after the `try` body and after a matching `catch`. A failure inside `catch` or `finally` fails the script. `catch` and `finally` must immediately follow a `try` block; standalone `catch` or `finally` fails clearly.
+
+These blocks can contain any action, including pointer-aware actions, GIF blocks, macros, loops, and assertions. The structural blocks do not move the virtual pointer by themselves, but their child actions record normally.
+
 ## Unknown Actions
 
 Unknown actions fail explicitly instead of being ignored. If an action is not listed in this document, CMG reports it as unsupported so agent callers can distinguish a DSL command problem from page behavior.

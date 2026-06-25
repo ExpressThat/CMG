@@ -88,9 +88,17 @@ public sealed partial class BrowserScriptRunner
                 continue;
             }
 
-            if (IsConditionalBranch(actions[index].Name))
+            if (actions[index].Name.Equals("try", StringComparison.OrdinalIgnoreCase))
             {
-                throw new ScriptActionFailedException($"Line {actions[index].LineNumber}: {actions[index].Name} failed. {actions[index].Name} must follow an if block.");
+                var branches = CollectTryBranches(actions, ref index);
+                ExecuteTry(remoteDebuggingUrl, automationClient, branches, context, recorder, output);
+                continue;
+            }
+
+            if (IsConditionalBranch(actions[index].Name) || IsTryBranch(actions[index].Name))
+            {
+                var parent = IsTryBranch(actions[index].Name) ? "try" : "if";
+                throw new ScriptActionFailedException($"Line {actions[index].LineNumber}: {actions[index].Name} failed. {actions[index].Name} must follow a {parent} block.");
             }
 
             ExecuteOneAction(remoteDebuggingUrl, automationClient, actions[index], context, recorder, output, index + 1);
@@ -112,6 +120,21 @@ public sealed partial class BrowserScriptRunner
         name.Equals("elseif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("else", StringComparison.OrdinalIgnoreCase);
 
+    private static IReadOnlyList<BrowserScriptAction> CollectTryBranches(IReadOnlyList<BrowserScriptAction> actions, ref int index)
+    {
+        var branches = new List<BrowserScriptAction> { actions[index] };
+        while (index + 1 < actions.Count && IsTryBranch(actions[index + 1].Name))
+        {
+            branches.Add(actions[++index]);
+        }
+
+        return branches;
+    }
+
+    private static bool IsTryBranch(string name) =>
+        name.Equals("catch", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("finally", StringComparison.OrdinalIgnoreCase);
+
     private void ExecuteOneAction(
         string remoteDebuggingUrl,
         IBrowserAutomationClient automationClient,
@@ -121,9 +144,10 @@ public sealed partial class BrowserScriptRunner
         List<string> output,
         int stepNumber)
     {
-        var action = ShouldExpandBeforeDispatch(sourceAction.Name) ? ExpandVariables(sourceAction, context) : sourceAction;
+        var action = sourceAction;
         try
         {
+            action = ShouldExpandBeforeDispatch(sourceAction.Name) ? ExpandVariables(sourceAction, context) : sourceAction;
             recorder?.BeforeAction(action);
             var stepOutput = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
             recorder?.AfterAction(action);
