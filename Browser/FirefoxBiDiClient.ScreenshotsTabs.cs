@@ -26,7 +26,20 @@ public sealed partial class FirefoxBiDiClient
         });
 
     public byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options) =>
-        throw new ChromeDevToolsException("PDF generation is not supported for Firefox WebDriver BiDi in CMG yet. Use Chrome or Edge for printPdf.");
+        Run(async () =>
+        {
+            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            var context = await session.GetPrimaryContext();
+            var response = await session.SendCommand("browsingContext.print", writer =>
+            {
+                writer.WriteString("context", context.Id);
+                writer.WriteBoolean("background", options.PrintBackground);
+                writer.WriteString("orientation", options.Landscape ? "landscape" : "portrait");
+                writer.WriteNumber("scale", options.Scale);
+            });
+
+            return DecodePdf(response);
+        });
 
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) =>
         Run(async () =>
