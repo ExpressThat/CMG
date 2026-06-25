@@ -23,6 +23,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("stopCoverage", null, "stopCoverage")]
     [InlineData("addInitScript", "window.__ready = true;", "addInitScript \"window.__ready = true;\"")]
     [InlineData("evaluateOnNewDocument", "window.__ready = true;", "evaluateOnNewDocument \"window.__ready = true;\"")]
+    [InlineData("setOffline", "true", "setOffline \"true\"")]
+    [InlineData("clearExtraHTTPHeaders", null, "clearExtraHTTPHeaders")]
     public void Lower_SharedActionsPassThrough(string kind, string? arg, string expected, string? secondArg = null)
     {
         var args = new[] { arg, secondArg }.Where(value => value is not null).Cast<string>().ToArray();
@@ -40,6 +42,14 @@ public sealed class CmgActionLowererSharedActionTests
         Assert.Equal("expectAccessible role=\"button\"", Assert.Single(lowerer.Lower(Node("expectAccessible", [], new Dictionary<string, string> { ["role"] = "button" }))));
         Assert.Equal("readFile \"payload\" path=\"fixtures/payload.json\"", Assert.Single(lowerer.Lower(Node("readFile", ["payload"], new Dictionary<string, string> { ["path"] = "fixtures/payload.json" }))));
         Assert.Equal("printPdf path=\"artifacts/page.pdf\"", Assert.Single(lowerer.Lower(Node("printPdf", [], new Dictionary<string, string> { ["path"] = "artifacts/page.pdf" }))));
+    }
+
+    [Fact]
+    public void Lower_SetExtraHttpHeadersPassesHeaderPairsThrough()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("setExtraHTTPHeaders", ["X-CMG", "yes"])));
+
+        Assert.Equal("setExtraHTTPHeaders \"X-CMG\" \"yes\"", line);
     }
 
     private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyDictionary<string, string>? options = null) =>

@@ -325,6 +325,20 @@ test "replays profile traffic" {
 
 CMG's HAR support is page-level and uses the same `fetch`/`XMLHttpRequest` hook as `route`. It is available in both direct browser-control scripts and `cmg run`.
 
+## Network Environment
+
+```text
+test "offline banner" {
+  navigate "https://example.com"
+  setExtraHTTPHeaders "X-CMG-Agent" "true"
+  setOffline true
+  evaluate "fetch('/api/profile').catch(error => error.message)"
+  setOffline false
+}
+```
+
+Network environment actions are shared by direct scripts and `cmg run`. They do not move the virtual pointer, but reports and traces include `HEADERS_SET`, `HEADERS_CLEARED`, and `OFFLINE` lines.
+
 ## Worker Interception
 
 ```text

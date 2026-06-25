@@ -1,0 +1,66 @@
+namespace CMG.Browser.Scripting;
+
+public sealed partial class BrowserScriptRunner
+{
+    private static IReadOnlyList<string> ExecuteNetworkEnvironmentAction(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        return action.Name.ToLowerInvariant() switch
+        {
+            "setextrahttpheaders" or "setheaders" => SetExtraHttpHeaders(remoteDebuggingUrl, automationClient, action),
+            "clearextrahttpheaders" or "clearheaders" => ClearExtraHttpHeaders(remoteDebuggingUrl, automationClient, action),
+            "setoffline" => SetOffline(remoteDebuggingUrl, automationClient, action),
+            _ => throw new ScriptExecutionException($"Unknown network environment action '{action.Name}'.")
+        };
+    }
+
+    private static IReadOnlyList<string> SetExtraHttpHeaders(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        if (action.Arguments.Count < 2 || action.Arguments.Count % 2 is not 0)
+        {
+            throw new ScriptExecutionException($"{action.Name} requires one or more <name> <value> header pairs.");
+        }
+
+        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        for (var index = 0; index < action.Arguments.Count; index += 2)
+        {
+            var name = action.Arguments[index];
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ScriptExecutionException($"{action.Name} header names cannot be empty.");
+            }
+
+            headers[name] = action.Arguments[index + 1];
+        }
+
+        var script = BrowserNetworkEnvironmentScripts.ExtraHeaders(headers);
+        automationClient.AddInitScript(remoteDebuggingUrl, script);
+        automationClient.Evaluate(remoteDebuggingUrl, script);
+        return [$"HEADERS_SET {action.LineNumber:000} {headers.Count}"];
+    }
+
+    private static IReadOnlyList<string> ClearExtraHttpHeaders(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 0, 0);
+        var script = BrowserNetworkEnvironmentScripts.ClearExtraHeaders();
+        automationClient.AddInitScript(remoteDebuggingUrl, script);
+        automationClient.Evaluate(remoteDebuggingUrl, script);
+        return [$"HEADERS_CLEARED {action.LineNumber:000}"];
+    }
+
+    private static IReadOnlyList<string> SetOffline(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        if (!bool.TryParse(action.Arguments[0], out var offline))
+        {
+            throw new ScriptExecutionException("setOffline expects true or false.");
+        }
+
+        var script = BrowserNetworkEnvironmentScripts.Offline(offline);
+        automationClient.AddInitScript(remoteDebuggingUrl, script);
+        automationClient.Evaluate(remoteDebuggingUrl, script);
+        return [$"OFFLINE {action.LineNumber:000} {offline.ToString().ToLowerInvariant()}"];
+    }
+}

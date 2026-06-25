@@ -899,6 +899,29 @@ Output:
 - `HAR_EXPORTED <line> <path>` when a HAR file is written.
 - `HAR_REPLAY <line> routes=<count> <path>` when HAR routes are installed.
 
+### `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, And `setOffline`
+
+```text
+setExtraHTTPHeaders "X-CMG-Agent" "true" "Accept" "application/json"
+clearExtraHTTPHeaders
+setOffline true
+setOffline false
+```
+
+Patches page-side `fetch()` and `XMLHttpRequest` behavior in the current page and future navigations. Extra headers are added to page-originated fetch/XHR requests. Offline mode reports `navigator.onLine=false`, dispatches `offline`/`online`, and makes patched fetch/XHR requests fail while enabled.
+
+Arguments:
+
+- `name value`: Required for `setExtraHTTPHeaders`; repeat pairs to add more request headers.
+
+Output:
+
+- `HEADERS_SET <line> <count>` when headers are installed.
+- `HEADERS_CLEARED <line>` when extra headers are cleared.
+- `OFFLINE <line> <true|false>` when offline mode changes.
+
+These actions do not move the virtual pointer. They affect page-side requests and are included in reports and traces. Browser-level navigation requests are not rewritten; use them before page actions that call `fetch()` or `XMLHttpRequest`.
+
 ### `listWorkers`, `waitForWorker`, `workerEvaluate`, And `workerIntercept`
 
 ```text

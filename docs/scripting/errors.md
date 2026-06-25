@@ -304,6 +304,15 @@ STEP FAIL line=6 action=waitForResponse reason=Line 6: evaluate failed. Timed ou
 
 Install a matching `route` or make sure the page performs a matching `fetch()` before the timeout expires.
 
+## Network Environment Failure
+
+```text
+Line 4: setExtraHTTPHeaders failed. setExtraHTTPHeaders requires one or more <name> <value> header pairs.
+Line 5: setOffline failed. setOffline expects true or false.
+```
+
+Pass headers as quoted name/value pairs and pass `true` or `false` to `setOffline`.
+
 ## Worker Failure
 
 ```text
