@@ -1016,20 +1016,28 @@ Output:
 - `URL <line> <url>` for `expectUrl`.
 - `TITLE <line> <title>` for `expectTitle`.
 
-### `expectValue`, `expectAttribute`, `expectChecked`, And `expectCount`
+### `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `expectValue`, `expectAttribute`, `expectChecked`, And `expectCount`
 
 ```text
+expectVisible "#save" timeout=5000
+expectHidden "#spinner" timeout=5000
+expectEnabled "#save"
+expectDisabled "#archive"
 expectValue "#email" "agent@example.com" timeout=5000
 expectAttribute "#save" "aria-label" "Save"
 expectChecked "#terms" true
 expectCount ".result" 3 timeout=5000
 ```
 
-Runs browser-side assertions for common UI state checks. `expectValue`, `expectAttribute`, and `expectChecked` resolve CMG locators before checking the matched element. `expectCount` counts matching CSS elements and supports zero-count assertions.
+Runs browser-side assertions for common UI state checks. Element assertions resolve CMG locators before checking the matched element. Direct browser-control scripts also accept locator-form options such as `expectVisible text=Save` when the parser would otherwise treat `text=Save` as an option. `expectCount` counts matching CSS elements and supports zero-count assertions.
 
 Options:
 
 - `timeout`: Optional timeout in milliseconds. Default is `0`, which checks once.
+
+Output:
+
+- `EXPECT <line> <visible|hidden|enabled|disabled> <selector>` for direct `expectVisible`, `expectHidden`, `expectEnabled`, and `expectDisabled` actions.
 
 ### `waitForUrl`
 

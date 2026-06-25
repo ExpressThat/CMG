@@ -4,13 +4,25 @@ public static class CmgExpectationScripts
 {
     public static IReadOnlyList<string> Element(CmgNode action, string mode)
     {
+        var plan = Expressions(action, mode);
+        return plan.Error is null
+            ? [.. plan.PrefixExpressions.Select(expression => Line(expression)), Line(plan.Expression)]
+            : [Line(Fail(plan.Error))];
+    }
+
+    public static CmgExpectationPlan Expressions(CmgNode action, string mode)
+    {
+        action = NormalizeLocatorArgument(action);
         if (action.Arguments.Count < RequiredArgumentCount(mode))
         {
-            return [Line(Fail($"{action.Kind} received too few arguments."))];
+            return CmgExpectationPlan.Fail($"{action.Kind} received too few arguments.");
         }
 
         var resolved = CmgLocator.Resolve(action.Arguments[0], action.LineNumber);
-        return [.. resolved.PrefixLines, Line(Build(action, mode, resolved.Selector))];
+        return new CmgExpectationPlan(
+            CmgLocator.PrefixExpressions(action.Arguments[0], action.LineNumber),
+            Build(action, mode, resolved.Selector),
+            null);
     }
 
     private static string Build(CmgNode action, string mode, string selector)
@@ -19,6 +31,10 @@ public static class CmgExpectationScripts
         if (mode.Equals("count", StringComparison.Ordinal))
         {
             return BuildCount(action, selector, timeout);
+        }
+        if (IsStateMode(mode))
+        {
+            return BuildState(action, mode, selector);
         }
 
         var body = mode switch
@@ -48,6 +64,18 @@ public static class CmgExpectationScripts
         """;
     }
 
+    private static string BuildState(CmgNode action, string mode, string selector)
+    {
+        var check = mode switch
+        {
+            "visible" => "const style = getComputedStyle(element); const rect = element.getBoundingClientRect(); const ok = rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none'; const message = 'Expected element to be visible.';",
+            "hidden" => "const style = getComputedStyle(element); const rect = element.getBoundingClientRect(); const ok = rect.width === 0 || rect.height === 0 || style.visibility === 'hidden' || style.display === 'none'; const message = 'Expected element to be hidden.';",
+            "enabled" => "const ok = !element.matches(':disabled,[aria-disabled=\"true\"]'); const message = 'Expected element to be enabled.';",
+            _ => "const ok = element.matches(':disabled,[aria-disabled=\"true\"]'); const message = 'Expected element to be disabled.';"
+        };
+        return $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}.'); {check} if (!ok) throw new Error(message); return true; }})()";
+    }
+
     private static string BuildCount(CmgNode action, string selector, int timeout) =>
         $$"""
         new Promise((resolve, reject) => {
@@ -68,6 +96,7 @@ public static class CmgExpectationScripts
     {
         "attribute" => 3,
         "checked" => 1,
+        "visible" or "hidden" or "enabled" or "disabled" => 1,
         _ => 2
     };
 
@@ -80,6 +109,25 @@ public static class CmgExpectationScripts
     private static int Timeout(CmgNode action) =>
         action.Options.TryGetValue("timeout", out var value) && int.TryParse(value, out var timeout) ? timeout : 0;
 
+    private static bool IsStateMode(string mode) =>
+        mode is "visible" or "hidden" or "enabled" or "disabled";
+
+    private static CmgNode NormalizeLocatorArgument(CmgNode action)
+    {
+        if (action.Arguments.Count > 0)
+        {
+            return action;
+        }
+
+        var locator = action.Options.FirstOrDefault(pair => IsLocatorOption(pair.Key));
+        return string.IsNullOrWhiteSpace(locator.Key)
+            ? action
+            : action with { Arguments = [$"{locator.Key}={locator.Value}"] };
+    }
+
+    private static bool IsLocatorOption(string key) =>
+        key is "css" or "testid" or "text" or "role" or "label" or "placeholder" or "alt" or "title" or "xpath";
+
     private static string Fail(string message) =>
         $"(() => {{ throw new Error({QuoteJs(message)}); }})()";
 
@@ -89,4 +137,12 @@ public static class CmgExpectationScripts
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
 
     private static string QuoteJs(string value) => Quote(value);
+}
+
+public sealed record CmgExpectationPlan(
+    IReadOnlyList<string> PrefixExpressions,
+    string Expression,
+    string? Error)
+{
+    public static CmgExpectationPlan Fail(string error) => new([], string.Empty, error);
 }

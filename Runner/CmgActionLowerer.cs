@@ -14,6 +14,8 @@ public sealed class CmgActionLowerer
             "wait" => LowerWait(action),
             "expecttext" => [ToLine("assertText", action.Arguments, action.Options)],
             "expecturl" or "expecttitle" => [ToLine(action.Kind, action.Arguments, action.Options)],
+            "expectvisible" or "expecthidden" or "expectenabled" or "expectdisabled" =>
+                [ToLine(action.Kind, action.Arguments, action.Options)],
             "expectvalue" => CmgExpectationScripts.Element(action, "value"),
             "expectattribute" => CmgExpectationScripts.Element(action, "attribute"),
             "expectchecked" => CmgExpectationScripts.Element(action, "checked"),

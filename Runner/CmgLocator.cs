@@ -54,12 +54,32 @@ public static class CmgLocator
 
     public static string UnsupportedReason(string locator) => $"Locator '{locator}' is not supported.";
 
+    public static IReadOnlyList<string> PrefixExpressions(string locator, int lineNumber)
+    {
+        if (!locator.Contains('=', StringComparison.Ordinal) ||
+            locator.StartsWith("css=", StringComparison.OrdinalIgnoreCase) ||
+            locator.StartsWith("testid=", StringComparison.OrdinalIgnoreCase) ||
+            locator.StartsWith("placeholder=", StringComparison.OrdinalIgnoreCase) ||
+            locator.StartsWith("alt=", StringComparison.OrdinalIgnoreCase) ||
+            locator.StartsWith("title=", StringComparison.OrdinalIgnoreCase))
+        {
+            return [];
+        }
+
+        return [BuildMarkerExpression(locator, $"__cmg_locator_{lineNumber}")];
+    }
+
     private static string BuildMarkerScript(string locator, string marker)
+    {
+        return $"evaluate \"{EscapeScript(BuildMarkerExpression(locator, marker))}\"";
+    }
+
+    private static string BuildMarkerExpression(string locator, string marker)
     {
         var kind = locator[..locator.IndexOf('=')].ToLowerInvariant();
         var value = locator[(locator.IndexOf('=') + 1)..];
         const string roleHelper = "const implicitRole = e => e.tagName === 'BUTTON' ? 'button' : e.tagName === 'A' && e.hasAttribute('href') ? 'link' : e.tagName === 'INPUT' || e.tagName === 'TEXTAREA' ? 'textbox' : '';";
-        return $"evaluate \"{EscapeScript($"(() => {{ {roleHelper} const element = {BuildElementExpression(kind, value)}; if (!element) throw new Error('No element matched locator {locator}'); element.setAttribute('data-cmg-locator-id', '{marker}'); return true; }})()")}\"";
+        return $"(() => {{ {roleHelper} const element = {BuildElementExpression(kind, value)}; if (!element) throw new Error('No element matched locator {locator}'); element.setAttribute('data-cmg-locator-id', '{marker}'); return true; }})()";
     }
 
     private static string BuildElementExpression(string kind, string value) =>

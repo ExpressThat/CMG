@@ -454,10 +454,11 @@ The `VISUAL_ACTUAL` output line points to the actual PNG written for review. If 
 ## UI State Assertion Failure
 
 ```text
+STEP FAIL line=7 action=expectVisible reason=Expected element to be visible.
 STEP FAIL line=8 action=expectAttribute reason=Expected attribute aria-label to contain Save, got Cancel.
 ```
 
-`expectValue`, `expectAttribute`, `expectChecked`, and `expectCount` run in the page and report the expected state plus the actual state that caused the failure.
+`expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `expectValue`, `expectAttribute`, `expectChecked`, and `expectCount` run in the page and report the expected state plus the actual state that caused the failure.
 
 ## Storage State Failure
 

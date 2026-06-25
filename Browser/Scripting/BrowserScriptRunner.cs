@@ -107,6 +107,8 @@ public sealed partial class BrowserScriptRunner
             "screenshotpage" => ExecuteScreenshotPage(remoteDebuggingUrl, automationClient, action),
             "printpdf" or "pdf" => ExecutePrintPdf(remoteDebuggingUrl, automationClient, action),
             "asserttext" => ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
+            "expectvisible" or "expecthidden" or "expectenabled" or "expectdisabled" =>
+                ExecuteElementExpectation(remoteDebuggingUrl, automationClient, action),
             "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, automationClient, action),
             "url" or "title" or "content" or "setcontent" =>
                 ExecutePageContentAction(remoteDebuggingUrl, automationClient, action),

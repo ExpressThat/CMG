@@ -5,6 +5,7 @@ namespace CMG.Tests;
 internal sealed class FakeAutomationClient : IBrowserAutomationClient
 {
     public string LastExpression { get; private set; } = string.Empty;
+    public List<string> EvaluatedExpressions { get; } = [];
     public string LastInitScript { get; private set; } = string.Empty;
     public string LastClickedSelector { get; private set; } = string.Empty;
     public ViewportSize? LastViewport { get; private set; }
@@ -48,6 +49,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string Evaluate(string remoteDebuggingUrl, string expression)
     {
         LastExpression = expression;
+        EvaluatedExpressions.Add(expression);
         return EvaluateResponses.Count > 0 ? EvaluateResponses.Dequeue() : "{}";
     }
     public string AddInitScript(string remoteDebuggingUrl, string source)

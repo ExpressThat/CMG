@@ -99,6 +99,27 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_ElementExpectationAcceptsLocatorOption()
+    {
+        var node = new CmgNode(1, "expectVisible", "expectVisible", [], new Dictionary<string, string> { ["text"] = "Save" }, []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(node));
+
+        Assert.Equal("expectVisible text=\"Save\"", line);
+    }
+
+    [Theory]
+    [InlineData("expectVisible", "expectVisible \"#target\"")]
+    [InlineData("expectHidden", "expectHidden \"#target\"")]
+    [InlineData("expectEnabled", "expectEnabled \"#target\"")]
+    [InlineData("expectDisabled", "expectDisabled \"#target\"")]
+    public void Lower_ElementStateExpectationsPassThrough(string name, string expected)
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node(name, ["#target"], [])));
+
+        Assert.Equal(expected, line);
+    }
+
+    [Fact]
     public void Lower_ExpectTextPreservesTimeoutOption()
     {
         var node = new CmgNode(1, "expectText", "expectText", ["#status", "Ready"], new Dictionary<string, string> { ["timeout"] = "500" }, []);

@@ -390,6 +390,10 @@ If the baseline does not exist, CMG writes it from the actual screenshot and fai
 ```text
 test "profile form state" {
   navigate "https://example.com/profile"
+  expectVisible "#profileForm" timeout=5000
+  expectHidden "#loading"
+  expectEnabled "#save"
+  expectDisabled "#archive"
   expectValue "#email" "agent@example.com" timeout=5000
   expectAttribute "#save" "aria-label" "Save profile"
   expectChecked "#marketing" false

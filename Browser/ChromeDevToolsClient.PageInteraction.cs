@@ -32,6 +32,10 @@ public sealed partial class ChromeDevToolsClient
                 writer.WriteBoolean("returnByValue", true);
                 writer.WriteBoolean("awaitPromise", true);
             });
+            if (response.TryGetProperty("exceptionDetails", out var exception))
+            {
+                throw new ChromeDevToolsException(ReadEvaluationException(exception));
+            }
 
             if (!TryReadElement(response, ["result", "result"], out var result))
             {
@@ -52,6 +56,19 @@ public sealed partial class ChromeDevToolsClient
 
             return result.TryGetProperty("description", out var description) ? description.GetString() ?? string.Empty : string.Empty;
         });
+    }
+
+    private static string ReadEvaluationException(JsonElement exception)
+    {
+        if (exception.TryGetProperty("exception", out var error) &&
+            error.TryGetProperty("description", out var description))
+        {
+            return description.GetString() ?? "JavaScript evaluation failed.";
+        }
+
+        return exception.TryGetProperty("text", out var text)
+            ? text.GetString() ?? "JavaScript evaluation failed."
+            : "JavaScript evaluation failed.";
     }
 
     public void SetViewport(string remoteDebuggingUrl, ViewportOptions options)
