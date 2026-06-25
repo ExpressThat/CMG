@@ -13,7 +13,7 @@ public sealed class BrowserScriptRunnerScreenshotTests
 
         Assert.True(result.Success);
         Assert.True(client.LastFullPageScreenshot);
-        Assert.Contains("SCREENSHOT 001 data:image/png;base64,", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("SCREENSHOT 001 data:image/png;base64,", StringComparison.Ordinal));
     }
 
     [Fact]

@@ -1,4 +1,6 @@
 using CMG.Browser;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace CMG.Tests;
 
@@ -95,7 +97,10 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false)
     {
         LastFullPageScreenshot = fullPage;
-        return [];
+        using var image = new Image<Rgba32>(1, 1, Color.White);
+        using var stream = new MemoryStream();
+        image.SaveAsPng(stream);
+        return stream.ToArray();
     }
     public byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options)
     {

@@ -99,6 +99,7 @@ dotnet run -- --firefox browser close
 - `16-generic-event-waits.cmgscript`: Demonstrates provider-style `waitForEvent` aliases.
 - `17-http-credentials.cmgscript`: Demonstrates page-side HTTP credential automation for fetch/XHR.
 - `18-expose-function.cmgscript`: Demonstrates page-side exposed functions.
+- `19-direct-gif-block.cmgscript`: Demonstrates direct browser-control `gif` blocks.
 - `20-v2-runner-flow.cmgscript`: Demonstrates the structured runner DSL, `step`, and `gif` blocks.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 

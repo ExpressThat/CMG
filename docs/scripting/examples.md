@@ -251,7 +251,16 @@ test "partial recording" {
 }
 ```
 
-When `cmg run --gif` is used, the whole test is recorded and `gif` blocks are included in that recording instead of producing nested GIF files.
+Direct browser-control scripts can also record a block:
+
+```text
+gif "open-dialog" output="demo-output\open-dialog.gif" {
+  click "#openProfileDialog"
+  waitForElement "#profileDialog[open]"
+}
+```
+
+When command-level `--gif` is used, the whole script or test is recorded and `gif` blocks are included in that recording instead of producing nested GIF files.
 
 ## Runner Reports
 

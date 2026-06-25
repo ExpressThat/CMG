@@ -1,6 +1,6 @@
 # `.cmgscript` Syntax
 
-CMG scripts are structured test files.
+CMG scripts are structured test files for `cmg run`. Direct `browser control script` files use the same action syntax and can also use action blocks such as `dragAndDrop` and `gif`.
 
 ```text
 suite "profile" {
@@ -71,6 +71,6 @@ navigate "C:\Projects\CMG\index.html"
 
 ## GIF Blocks
 
-`gif "name" { ... }` records only the wrapped actions when `cmg run` is used without command-level `--gif`.
+`gif "name" { ... }` records only the wrapped actions when direct `browser control script` or `cmg run` is used without command-level `--gif`.
 
-When `cmg run --gif <directory>` is used, CMG records the entire test and suppresses nested block recordings. Actions inside `gif` blocks still run and are included in the whole-test GIF.
+When command-level `--gif` is used, CMG records the entire script or test and suppresses nested block recordings. Actions inside `gif` blocks still run and are included in the whole-run GIF.

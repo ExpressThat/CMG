@@ -1035,7 +1035,16 @@ gif "open-dialog" {
 }
 ```
 
-Records only the wrapped actions when `cmg run` is used without command-level `--gif`. If `cmg run --gif <directory>` is used, the entire test is recorded and nested `gif` blocks do not create separate GIFs.
+Records only the wrapped actions when direct `browser control script` or `cmg run` is used without command-level `--gif`. If command-level `--gif` is used, the entire script or test is recorded and nested `gif` blocks do not create separate GIFs.
+
+Options:
+
+- `output`: Optional GIF path for direct browser-control scripts. Without `output`, CMG writes `<name>.gif` in the current directory.
+
+Output:
+
+- `GIF <path>` when a script-level block writes its own recording.
+- `GIF_BLOCK_SUPPRESSED <line>` when command-level `--gif` is active and the block is included in the full recording instead.
 
 ## Runner Convenience Actions
 

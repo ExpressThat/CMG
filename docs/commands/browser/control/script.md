@@ -28,6 +28,7 @@ cmg --firefox browser control script --file <path>
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
 - Browser JavaScript dialogs are handled explicitly. CMG does not silently remove, accept, or dismiss dialogs through the browser protocol. Add `captureDialogs` or `setDialogBehavior` before the action that opens an `alert`, `confirm`, or `prompt`.
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
+- Script-level `gif "name" { ... }` blocks record only the wrapped actions when `--gif` is not provided. When `--gif` is provided, the whole script is recorded and nested block recordings are suppressed.
 - Selector actions support the same rich locators as `cmg run`, including `text=`, `role=`, `label=`, `testid=`, `placeholder=`, `alt=`, `title=`, and `xpath=`. Pointer-aware actions resolve the locator to a temporary element marker before moving the virtual pointer.
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
 - GIF pointer movement dispatches browser movement and hover events. This includes automatic pointer movement before `click`, `dblclick`, `rightClick`, `type`, `fill`, `clear`, `hover`, `select`, `selectOption`, `check`, `uncheck`, `focus`, `blur`, `selectText`, and `dragAndDrop`, not only drag movement.
@@ -94,38 +95,39 @@ DIALOG_BEHAVIOR 042 accept
 DIALOG 043 {"type":"alert","message":"Saved","accepted":true}
 INIT_SCRIPT 044 ...
 EXPOSED_FUNCTION 045 cmgAdd
-HEADERS_SET 046 2
-HTTP_CREDENTIALS_SET 047 agent
-HTTP_CREDENTIALS_CLEARED 048
-OFFLINE 049 true
-ROUTE 050 /api/profile
-REQUEST 051 {"method":"GET","url":"/api/profile","type":"fetch","body":""}
-REQUEST_FAILED 052 {"method":"GET","url":"/api/down","type":"fetch","mocked":true,"error":"profile service unavailable"}
-RESPONSE 053 {"url":"/api/profile","status":200,"mocked":true}
-ROUTES_CLEARED 054
-HAR_EXPORTED 055 C:\Projects\CMG\demo-output\network.har
-HAR_REPLAY 056 routes=1 C:\Projects\CMG\demo-output\network.har
-FRAME 057 frameClick
-FRAME_EVALUATE 058 Checkout
-CLOCK 059 1700000000000
-TICK 060 250 now=1700000000250
-CLOCK_RESTORED 061
-CONTEXT_CLEARED 062
-CONTEXT_RESET 063
-ACCESSIBILITY 064 C:\Projects\CMG\demo-output\a11y.json
-ACCESSIBLE 065 role=button name="Save"
-CONTEXT_CREATED 066 id=... target=... url="about:blank"
-CONTEXT_ACTIVE 067 ...
-CONTEXT_CLOSED 068 ...
-WORKER 069 id=... type=worker title="worker.js" url="https://example.com/worker.js"
-WORKER_INTERCEPT 070 routes=1 /api/profile
-COVERAGE_STARTED 071 js=true css=true
-COVERAGE 072 C:\Projects\CMG\demo-output\coverage.json
-FILE_READ 073 payload C:\Projects\CMG\fixtures\payload.json
-FILE_WRITTEN 074 C:\Projects\CMG\demo-output\result.txt
-FILE_APPENDED 075 C:\Projects\CMG\demo-output\result.txt
-FILE_OK 076 C:\Projects\CMG\demo-output\result.txt
-PDF 077 C:\Projects\CMG\demo-output\page.pdf
+GIF_BLOCK_SUPPRESSED 046
+HEADERS_SET 047 2
+HTTP_CREDENTIALS_SET 048 agent
+HTTP_CREDENTIALS_CLEARED 049
+OFFLINE 050 true
+ROUTE 051 /api/profile
+REQUEST 052 {"method":"GET","url":"/api/profile","type":"fetch","body":""}
+REQUEST_FAILED 053 {"method":"GET","url":"/api/down","type":"fetch","mocked":true,"error":"profile service unavailable"}
+RESPONSE 054 {"url":"/api/profile","status":200,"mocked":true}
+ROUTES_CLEARED 055
+HAR_EXPORTED 056 C:\Projects\CMG\demo-output\network.har
+HAR_REPLAY 057 routes=1 C:\Projects\CMG\demo-output\network.har
+FRAME 058 frameClick
+FRAME_EVALUATE 059 Checkout
+CLOCK 060 1700000000000
+TICK 061 250 now=1700000000250
+CLOCK_RESTORED 062
+CONTEXT_CLEARED 063
+CONTEXT_RESET 064
+ACCESSIBILITY 065 C:\Projects\CMG\demo-output\a11y.json
+ACCESSIBLE 066 role=button name="Save"
+CONTEXT_CREATED 067 id=... target=... url="about:blank"
+CONTEXT_ACTIVE 068 ...
+CONTEXT_CLOSED 069 ...
+WORKER 070 id=... type=worker title="worker.js" url="https://example.com/worker.js"
+WORKER_INTERCEPT 071 routes=1 /api/profile
+COVERAGE_STARTED 072 js=true css=true
+COVERAGE 073 C:\Projects\CMG\demo-output\coverage.json
+FILE_READ 074 payload C:\Projects\CMG\fixtures\payload.json
+FILE_WRITTEN 075 C:\Projects\CMG\demo-output\result.txt
+FILE_APPENDED 076 C:\Projects\CMG\demo-output\result.txt
+FILE_OK 077 C:\Projects\CMG\demo-output\result.txt
+PDF 078 C:\Projects\CMG\demo-output\page.pdf
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 ```
 

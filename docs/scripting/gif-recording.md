@@ -105,5 +105,6 @@ Timing is not configurable in v1.
 
 - GIF files can become large for long scripts.
 - Recording can make scripts run slower because screenshots are captured after each action.
-- GIF recording is supported by `browser control script --gif`, `cmg run --gif`, and `gif "name" { ... }` blocks inside `cmg run` scripts.
+- GIF recording is supported by `browser control script --gif`, `cmg run --gif`, and `gif "name" { ... }` blocks inside direct browser-control scripts or `cmg run` scripts.
+- Command-level `--gif` records the whole direct script or test and suppresses nested `gif` block files. Suppressed blocks write `GIF_BLOCK_SUPPRESSED <line>` to stdout.
 - `moveMouse` requires `--gif`; scripts without recording do not create or move a virtual mouse.
