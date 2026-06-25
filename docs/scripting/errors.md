@@ -184,6 +184,14 @@ Line 5: assertText failed. Expected text 'Ready' was not found. Actual text: 'Lo
 
 The assertion checks whether the element text contains the expected text.
 
+## API Request Failure
+
+```text
+STEP FAIL line=3 action=apiRequest reason=Expected status 200, got 500.
+```
+
+`apiRequest` failures include the reason in stderr and reports. The step output includes `API` and `API_BODY` lines when a response was received.
+
 ## Undefined Variable
 
 ```text

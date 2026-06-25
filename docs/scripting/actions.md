@@ -524,6 +524,22 @@ cookie set "mode" "demo"
 
 Reads or mutates page storage from the current page context.
 
+### `apiRequest`
+
+```text
+apiRequest "GET" "https://example.com/api/status" status=200 contains="ok"
+apiRequest "POST" "https://example.com/api/items" body="{\"name\":\"demo\"}" header.Authorization="Bearer token"
+```
+
+Runs an HTTP request from the test runner. This does not move the virtual pointer because it is not a browser UI action, but it is included in reports and step failure diagnostics.
+
+Options:
+
+- `status`: Expected numeric response status.
+- `contains`: Text expected in the response body.
+- `body`: Request body text.
+- `header.<name>`: Request header.
+
 ## Planned Parity Actions
 
 Commands such as `intercept`, `route`, `apiRequest`, `uploadFiles`, `download`, `popup`, `frame`, device emulation, and full network mocking are reserved for parity work. Until implemented, they fail explicitly with a message saying the action is planned but not implemented in the current slice.

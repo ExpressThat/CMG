@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddSingleton<CmgTestPlanner>();
         services.AddSingleton<CmgActionLowerer>();
         services.AddSingleton<CmgValidator>();
+        services.AddSingleton<CmgApiRequestRunner>();
         services.AddSingleton<IBrowserController, BrowserController>();
         services.AddSingleton<IBrowserControlService, BrowserControlService>();
         services.AddSingleton<BrowserAutomationClientFactory>();

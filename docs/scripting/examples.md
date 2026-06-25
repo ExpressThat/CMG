@@ -241,3 +241,13 @@ test "checkout" tag=smoke,critical {
   click "#checkout"
 }
 ```
+
+## API Request
+
+```text
+test "api health" tag=api {
+  apiRequest "GET" "https://example.com/health" status=200 contains="ok"
+}
+```
+
+The request result appears in CLI output and reports. Failures include the expected and actual status or body mismatch reason.

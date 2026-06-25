@@ -17,6 +17,7 @@ public sealed class CmgRunService : ICmgRunService
     private readonly CmgTestPlanner planner;
     private readonly CmgActionLowerer lowerer;
     private readonly CmgValidator validator;
+    private readonly CmgApiRequestRunner apiRequestRunner;
 
     public CmgRunService(
         BrowserStateStore stateStore,
@@ -25,7 +26,8 @@ public sealed class CmgRunService : ICmgRunService
         CmgDslParser parser,
         CmgTestPlanner planner,
         CmgActionLowerer lowerer,
-        CmgValidator validator)
+        CmgValidator validator,
+        CmgApiRequestRunner apiRequestRunner)
     {
         this.stateStore = stateStore;
         this.automationClientFactory = automationClientFactory;
@@ -34,6 +36,7 @@ public sealed class CmgRunService : ICmgRunService
         this.planner = planner;
         this.lowerer = lowerer;
         this.validator = validator;
+        this.apiRequestRunner = apiRequestRunner;
     }
 
     public CmgRunResult Run(string path, CmgRunOptions options)
@@ -112,7 +115,11 @@ public sealed class CmgRunService : ICmgRunService
 
     private CmgTestResult RunTest(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options, int attempt)
     {
-        var executor = new CmgVisualSegmentExecutor(scriptRunner, automationClientFactory.Create(options.BrowserKind), lowerer);
+        var executor = new CmgVisualSegmentExecutor(
+            scriptRunner,
+            automationClientFactory.Create(options.BrowserKind),
+            lowerer,
+            apiRequestRunner);
         return executor.Run(test, remoteDebuggingUrl, options, attempt) with
         {
             Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty

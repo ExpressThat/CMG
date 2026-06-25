@@ -8,15 +8,18 @@ public sealed class CmgVisualSegmentExecutor
     private readonly BrowserScriptRunner scriptRunner;
     private readonly IBrowserAutomationClient automationClient;
     private readonly CmgActionLowerer lowerer;
+    private readonly CmgApiRequestRunner apiRequestRunner;
 
     public CmgVisualSegmentExecutor(
         BrowserScriptRunner scriptRunner,
         IBrowserAutomationClient automationClient,
-        CmgActionLowerer lowerer)
+        CmgActionLowerer lowerer,
+        CmgApiRequestRunner apiRequestRunner)
     {
         this.scriptRunner = scriptRunner;
         this.automationClient = automationClient;
         this.lowerer = lowerer;
+        this.apiRequestRunner = apiRequestRunner;
     }
 
     public CmgTestResult Run(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options, int attempt)
@@ -39,16 +42,33 @@ public sealed class CmgVisualSegmentExecutor
                 }
 
                 var gif = ResolveGifPath(test, action, options);
-                var block = action.Children.SelectMany(lowerer.Lower).ToList();
-                var blockResult = RunLines(block, remoteDebuggingUrl, gif);
                 if (gif is not null)
                 {
                     gifs.Add(gif.FullName);
                 }
 
-                if (!AppendResult(blockResult, output, steps, action, gif, out error))
+                if (!RunActions(action.Children, remoteDebuggingUrl, gif, output, steps, out error))
                 {
                     return Fail(test, output, error, gifs, steps);
+                }
+
+                continue;
+            }
+
+            if (action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase))
+            {
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null);
+                if (!AppendResult(flush, output, steps, action, gif: null, out var error))
+                {
+                    return Fail(test, output, error, gifs, steps);
+                }
+
+                var apiStep = apiRequestRunner.Run(action);
+                output.AddRange(apiStep.Output);
+                steps.Add(apiStep);
+                if (!apiStep.Success)
+                {
+                    return Fail(test, output, apiStep.Error, gifs, steps);
                 }
 
                 continue;
@@ -74,6 +94,43 @@ public sealed class CmgVisualSegmentExecutor
         }
 
         return new CmgTestResult(test.Name, test.SourcePath, true, output, null, string.Join(';', gifs), steps);
+    }
+
+    private bool RunActions(
+        IReadOnlyList<CmgNode> actions,
+        string remoteDebuggingUrl,
+        FileInfo? gif,
+        List<string> output,
+        List<CmgStepResult> steps,
+        out string? error)
+    {
+        var pending = new List<string>();
+        foreach (var action in actions)
+        {
+            if (action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase))
+            {
+                var flush = RunLines(pending, remoteDebuggingUrl, gif);
+                if (!AppendResult(flush, output, steps, action, gif, out error))
+                {
+                    return false;
+                }
+
+                var apiStep = apiRequestRunner.Run(action);
+                output.AddRange(apiStep.Output);
+                steps.Add(apiStep);
+                error = apiStep.Error;
+                if (!apiStep.Success)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                pending.AddRange(lowerer.Lower(action));
+            }
+        }
+
+        return AppendResult(RunLines(pending, remoteDebuggingUrl, gif), output, steps, actions.LastOrDefault(), gif, out error);
     }
 
     private ScriptRunResult RunLines(List<string> lines, string remoteDebuggingUrl, FileInfo? gif)

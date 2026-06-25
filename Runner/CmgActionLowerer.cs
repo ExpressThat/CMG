@@ -34,6 +34,7 @@ public sealed class CmgActionLowerer
             "showmessagebar" or "delay" or "html" or "screenshot" or "screenshotpage" or "asserttext" or
             "evaluate" or "movemouse" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or "set" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
+            "apirequest" => [],
             _ => [ToLine("evaluate", [BuildUnsupportedExpression(action.Kind)])]
         };
     }
