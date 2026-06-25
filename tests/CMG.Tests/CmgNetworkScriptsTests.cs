@@ -39,6 +39,17 @@ public sealed class CmgNetworkScriptsTests
     }
 
     [Fact]
+    public void WaitForRequestFailed_ReportsTimeoutPattern()
+    {
+        var action = Node("waitForRequestFailed", ["/api"], new Dictionary<string, string> { ["timeout"] = "1000" });
+        var script = CmgNetworkScripts.WaitForRequestFailed(action);
+
+        Assert.Contains("__cmgRequestFailures", script);
+        Assert.Contains("1000", script);
+        Assert.Contains("Timed out waiting for failed request", script);
+    }
+
+    [Fact]
     public void ExportHar_BuildsHarFromCapturedResponses()
     {
         var script = CmgNetworkScripts.ExportHar();

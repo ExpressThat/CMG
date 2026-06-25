@@ -45,6 +45,16 @@ public sealed partial class BrowserScriptRunner
         return [$"REQUEST {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
     }
 
+    private static IReadOnlyList<string> ExecuteWaitForRequestFailed(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var result = automationClient.Evaluate(remoteDebuggingUrl, CmgNetworkScripts.WaitForRequestFailed(ToNode(action)));
+        return [$"REQUEST_FAILED {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
+    }
+
     private static string ParseNetworkWaitResult(string result)
     {
         using var document = JsonDocument.Parse(result);

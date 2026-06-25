@@ -371,10 +371,11 @@ Dialog waits match against captured `alert`, `confirm`, and `prompt` messages. I
 
 ```text
 Line 5: waitForRequest failed. Timed out waiting for request /api/profile
-Line 6: waitForResponse failed. Timed out waiting for response /api/profile
+Line 6: waitForRequestFailed failed. Timed out waiting for failed request /api/profile
+Line 7: waitForResponse failed. Timed out waiting for response /api/profile
 ```
 
-Network waits use substring matching against page `fetch()` and `XMLHttpRequest` URLs recorded by CMG's page-side network patch.
+Network waits use substring matching against page `fetch()` and `XMLHttpRequest` URLs recorded by CMG's page-side network patch. `waitForRequestFailed` waits for rejected `fetch()` calls or XHR `error`, `abort`, or `timeout` events.
 
 ## Worker Failure
 

@@ -68,12 +68,31 @@ public static class CmgNetworkScripts
         """;
     }
 
+    public static string WaitForRequestFailed(CmgNode action)
+    {
+        var pattern = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
+        var timeout = action.Options.TryGetValue("timeout", out var timeoutValue) ? timeoutValue : "5000";
+        return InstallPrelude() + $$"""
+        new Promise((resolve, reject) => {
+          const deadline = Date.now() + {{timeout}};
+          const check = () => {
+            const hit = window.__cmgRequestFailures.find(r => r.url.includes({{Quote(pattern)}}));
+            if (hit) { resolve(JSON.stringify({ success: true, value: hit })); return; }
+            if (Date.now() > deadline) { resolve(JSON.stringify({ success: false, error: 'Timed out waiting for failed request {{EscapeMessage(pattern)}}' })); return; }
+            setTimeout(check, 50);
+          };
+          check();
+        })
+        """;
+    }
+
     private static string InstallPrelude() =>
         """
         (() => {
           window.__cmgRoutes = window.__cmgRoutes || [];
           window.__cmgRequests = window.__cmgRequests || [];
           window.__cmgResponses = window.__cmgResponses || [];
+          window.__cmgRequestFailures = window.__cmgRequestFailures || [];
           if (!window.__cmgFetchPatched) {
             window.__cmgFetchPatched = true;
             const originalFetch = window.fetch.bind(window);
@@ -87,10 +106,15 @@ public static class CmgNetworkScripts
                 window.__cmgResponses.push({ method, url, status: route.status, mocked: true, body: route.body, contentType: route.contentType });
                 return response;
               }
-              const response = await originalFetch(input, init);
-              const body = await response.clone().text().catch(() => '');
-              window.__cmgResponses.push({ method, url, status: response.status, mocked: false, body, contentType: response.headers.get('content-type') || 'text/plain' });
-              return response;
+              try {
+                const response = await originalFetch(input, init);
+                const body = await response.clone().text().catch(() => '');
+                window.__cmgResponses.push({ method, url, status: response.status, mocked: false, body, contentType: response.headers.get('content-type') || 'text/plain' });
+                return response;
+              } catch (error) {
+                window.__cmgRequestFailures.push({ method, url, type: 'fetch', error: String(error?.message || error || 'Request failed') });
+                throw error;
+              }
             };
           }
           if (!window.__cmgXhrPatched) {
@@ -112,6 +136,9 @@ public static class CmgNetworkScripts
                 const route = window.__cmgRoutes.find(r => url.includes(r.pattern));
                 if (!route) {
                   xhr.addEventListener('loadend', () => window.__cmgResponses.push({ method, url, status: xhr.status, mocked: false, type: 'xhr', body: xhr.responseText || '', contentType: xhr.getResponseHeader('content-type') || 'text/plain' }), { once: true });
+                  xhr.addEventListener('error', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Network error' }), { once: true });
+                  xhr.addEventListener('abort', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Request aborted' }), { once: true });
+                  xhr.addEventListener('timeout', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Request timed out' }), { once: true });
                   return send(body);
                 }
                 window.__cmgResponses.push({ method, url, status: route.status, mocked: true, type: 'xhr', body: route.body, contentType: route.contentType });

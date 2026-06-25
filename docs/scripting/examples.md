@@ -652,4 +652,11 @@ test "loads profile" {
   waitForRequest "/api/profile"
   waitForResponse "/api/profile"
 }
+
+test "reports offline profile failure" {
+  setOffline true
+  evaluate "fetch('/api/profile').catch(() => 'failed')"
+  waitForRequestFailed "/api/profile"
+  setOffline false
+}
 ```

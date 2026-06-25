@@ -14,6 +14,7 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("route", "/api", "route \"/api\"")]
     [InlineData("intercept", "/api", "intercept \"/api\"")]
     [InlineData("waitForRequest", "/api", "waitForRequest \"/api\"")]
+    [InlineData("waitForRequestFailed", "/api", "waitForRequestFailed \"/api\"")]
     [InlineData("frameClick", "#frame", "frameClick \"#frame\" \"#save\"", "#save")]
     [InlineData("tick", "250", "tick \"250\"")]
     [InlineData("keyDown", "Shift", "keyDown \"Shift\"")]
