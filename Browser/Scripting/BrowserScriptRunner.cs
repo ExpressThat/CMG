@@ -119,7 +119,8 @@ public sealed partial class BrowserScriptRunner
             "screenshot" => ExecuteScreenshot(remoteDebuggingUrl, automationClient, action),
             "screenshotpage" => ExecuteScreenshotPage(remoteDebuggingUrl, automationClient, action),
             "printpdf" or "pdf" => ExecutePrintPdf(remoteDebuggingUrl, automationClient, action),
-            "asserttext" or "expecttext" or "tohavetext" => ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
+            "asserttext" or "expecttext" or "tohavetext" or "containstext" or "contains" or "waitfortext" =>
+                ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
             "expectvisible" or "tobevisible" or "expecthidden" or "tobehidden" or
             "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" or
             "expectvalue" or "tohavevalue" or "expectattribute" or "tohaveattribute" or

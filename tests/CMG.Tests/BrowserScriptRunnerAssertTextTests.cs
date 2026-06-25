@@ -30,5 +30,31 @@ public sealed class BrowserScriptRunnerAssertTextTests
         Assert.Contains("loading", result.Error);
     }
 
+    [Fact]
+    public void RunText_ContainsWithOneArgumentChecksBodyText()
+    {
+        var client = new FakeAutomationClient();
+        client.TextResponses.Enqueue("Welcome back");
+
+        var result = Runner().RunText("contains \"Welcome\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal("body", client.LastElementTextSelector);
+    }
+
+    [Theory]
+    [InlineData("containsText")]
+    [InlineData("waitForText")]
+    public void RunText_TextProviderAliasesCheckSelectorText(string action)
+    {
+        var client = new FakeAutomationClient();
+        client.TextResponses.Enqueue("Saved");
+
+        var result = Runner().RunText($"{action} \"#status\" \"Saved\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal("#status", client.LastElementTextSelector);
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

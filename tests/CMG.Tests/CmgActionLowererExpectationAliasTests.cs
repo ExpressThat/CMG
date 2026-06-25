@@ -6,6 +6,8 @@ public sealed class CmgActionLowererExpectationAliasTests
 {
     [Theory]
     [InlineData("toHaveText", "assertText \"#target\" \"Saved\"", "Saved")]
+    [InlineData("containsText", "assertText \"#target\" \"Saved\"", "Saved")]
+    [InlineData("waitForText", "assertText \"#target\" \"Saved\"", "Saved")]
     [InlineData("toBeVisible", "expectVisible \"#target\"")]
     [InlineData("toBeHidden", "expectHidden \"#target\"")]
     [InlineData("toBeEnabled", "expectEnabled \"#target\"")]
@@ -16,6 +18,14 @@ public sealed class CmgActionLowererExpectationAliasTests
         var line = Assert.Single(new CmgActionLowerer().Lower(Node(name, args)));
 
         Assert.Equal(expected, line);
+    }
+
+    [Fact]
+    public void Lower_CypressContainsDefaultsToBody()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("contains", ["Saved"])));
+
+        Assert.Equal("assertText \"body\" \"Saved\"", line);
     }
 
     [Theory]

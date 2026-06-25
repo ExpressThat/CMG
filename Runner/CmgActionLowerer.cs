@@ -12,7 +12,7 @@ public sealed class CmgActionLowerer
             "fill" => LowerFill(action),
             "assertvisible" => LowerSelectorCommand("waitForElement", action),
             "wait" => LowerWait(action),
-            "expecttext" or "tohavetext" => [ToLine("assertText", action.Arguments, action.Options)],
+            "expecttext" or "tohavetext" or "containstext" or "waitfortext" or "contains" => LowerTextAssertion(action),
             "expecturl" or "expecttitle" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "expectvisible" or "tobevisible" or "expecthidden" or "tobehidden" or
             "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" =>
@@ -117,6 +117,26 @@ public sealed class CmgActionLowerer
         }
 
         return action.Arguments.Count > 0 ? [ToLine("waitForElement", action.Arguments, action.Options)] : [];
+    }
+
+    private static IReadOnlyList<string> LowerTextAssertion(CmgNode action)
+    {
+        if (action.Arguments.Count is 1 &&
+            action.Kind.Equals("contains", StringComparison.OrdinalIgnoreCase))
+        {
+            return [ToLine("assertText", ["body", action.Arguments[0]], action.Options)];
+        }
+
+        if (action.Arguments.Count is 0)
+        {
+            return [ToLine("assertText", action.Arguments, action.Options)];
+        }
+
+        var resolved = CmgLocator.Resolve(action.Arguments[0], action.LineNumber);
+        return [
+            .. resolved.PrefixLines,
+            ToLine("assertText", [resolved.Selector, .. action.Arguments.Skip(1)], action.Options)
+        ];
     }
 
     private static string LowerViewportAlias(CmgNode action)

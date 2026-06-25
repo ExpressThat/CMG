@@ -436,9 +436,15 @@ PDF generation does not move the virtual pointer. It is supported through Chrome
 ```text
 assertText "<selector>" "expected text"
 assertText "<selector>" "expected text" timeout=5000
+contains "expected text"
+contains "<selector>" "expected text"
+containsText "<selector>" "expected text"
+waitForText "<selector>" "expected text" timeout=5000
 ```
 
-Reads an element's visible text and fails unless it contains the expected text. When `timeout` is provided, CMG polls the element text until it matches or the timeout expires. The DSL `expectText` action lowers to this command and supports the same option.
+Reads an element's visible text and fails unless it contains the expected text. When `timeout` is provided, CMG polls the element text until it matches or the timeout expires. The DSL `expectText`, `toHaveText`, `containsText`, `waitForText`, and `contains` actions lower to this command and support the same option.
+
+`contains "text"` checks the page `body`, which matches the common provider pattern for finding text anywhere on the page. `contains "<selector>" "text"`, `containsText`, and `waitForText` check the target selector or rich locator.
 
 Options:
 
@@ -448,6 +454,8 @@ Example:
 
 ```text
 assertText "#lastDialogAction" "None"
+contains "CMG Browser Control Test Page"
+waitForText "h1" "CMG Browser Control Test Page" timeout=5000
 ```
 
 ## `evaluate`

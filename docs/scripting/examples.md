@@ -46,7 +46,12 @@ screenshot "#openProfileDialog"
 ```text
 navigate "C:\Projects\CMG\index.html"
 assertText "h1" "CMG Browser Control Test Page"
+contains "Browser Control"
+containsText "h1" "CMG Browser Control"
+waitForText "h1" "CMG Browser Control Test Page" timeout=5000
 ```
+
+This example is available as `demo-scripts/26-provider-text-assertions.cmgscript`.
 
 ## Page Message Bar
 

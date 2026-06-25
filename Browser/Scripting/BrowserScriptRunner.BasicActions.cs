@@ -125,7 +125,7 @@ public sealed partial class BrowserScriptRunner
 
     private static IReadOnlyList<string> ExecuteAssertText(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
-        action = NormalizeSelectorArgument(action);
+        action = NormalizeTextAssertion(action);
         RequireArgumentCount(action, 2, 2);
         var selector = ResolveSelector(remoteDebuggingUrl, automationClient, action);
         var timeout = GetIntOption(action, "timeout", 0);
@@ -155,6 +155,18 @@ public sealed partial class BrowserScriptRunner
         }
 
         throw new ScriptExecutionException($"Expected text '{action.Arguments[1]}' was not found. Actual text: '{text}'.");
+    }
+
+    private static BrowserScriptAction NormalizeTextAssertion(BrowserScriptAction action)
+    {
+        action = NormalizeSelectorArgument(action);
+        var name = action.Name.ToLowerInvariant();
+        if (name is not "contains" || action.Arguments.Count != 1)
+        {
+            return action;
+        }
+
+        return action with { Arguments = ["body", action.Arguments[0]] };
     }
 
     private static IReadOnlyList<string> ExecuteEvaluate(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)

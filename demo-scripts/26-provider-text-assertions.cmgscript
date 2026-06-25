@@ -1,0 +1,5 @@
+navigate "C:\Projects\CMG\index.html"
+waitForElement "h1" timeout=5000
+contains "Browser Control"
+containsText "h1" "CMG Browser Control"
+waitForText "h1" "CMG Browser Control Test Page" timeout=5000
