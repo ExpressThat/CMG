@@ -16,6 +16,7 @@ cmg browser control wait [command] [options]
 - [`waitForSelector`](waitForSelector.md): Exact scripting alias for `selector`.
 - [`waitForFunction`](waitForFunction.md): Exact scripting alias for `function`.
 - [`waitForTimeout`](waitForTimeout.md): Exact scripting alias for `timeout`.
+- [`auto`](auto.md): CLI form of scripting `wait`; waits by milliseconds or selector.
 
 ## Behavior
 
@@ -34,4 +35,5 @@ cmg browser control wait selector "text=Saved"
 cmg browser control wait function "window.appReady === true" --timeout 10000
 cmg browser control wait timeout 250
 cmg browser control wait waitForSelector "text=Saved"
+cmg browser control wait auto "#ready" --timeout 5000
 ```

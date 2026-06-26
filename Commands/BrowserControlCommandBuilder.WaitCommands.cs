@@ -17,6 +17,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildWaitSelectorCommand(browserOptions, "waitForSelector", "waitForSelector", "Alias for selector."));
         command.Subcommands.Add(BuildWaitFunctionCommand(browserOptions, "waitForFunction"));
         command.Subcommands.Add(BuildWaitTimeoutCommand(browserOptions, "waitForTimeout"));
+        command.Subcommands.Add(BuildWaitAliasCommand(browserOptions));
 
         return command;
     }
@@ -33,6 +34,17 @@ public sealed partial class BrowserControlCommandBuilder
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(selector) ?? string.Empty], TimeoutOptions(parseResult, timeout))));
+        return command;
+    }
+
+    private Command BuildWaitAliasCommand(BrowserSelectionOptions browserOptions)
+    {
+        var target = new Argument<string>("target") { Description = "Milliseconds or selector to wait for." };
+        var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds when target is a selector." };
+        var command = new Command("auto", "Wait for milliseconds or for an element selector.") { target, timeout };
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine("wait", [parseResult.GetValue(target) ?? string.Empty], TimeoutOptions(parseResult, timeout))));
         return command;
     }
 
