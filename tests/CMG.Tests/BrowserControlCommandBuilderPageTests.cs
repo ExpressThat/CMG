@@ -9,6 +9,7 @@ public sealed class BrowserControlCommandBuilderPageTests
     [Theory]
     [InlineData("showMessageBar Working", "showMessageBar \"Working\"")]
     [InlineData("caption Working", "caption \"Working\"")]
+    [InlineData("highlight #save --color #2563eb --message Save --duration 250", "highlight \"#save\" color=\"#2563eb\" message=\"Save\" duration=\"250\"")]
     public void PageCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();

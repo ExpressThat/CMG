@@ -119,6 +119,16 @@ public sealed class CmgActionLowererSharedActionTests
     }
 
     [Fact]
+    public void Lower_HighlightUsesSharedSelectorActionPath()
+    {
+        var lines = new CmgActionLowerer().Lower(Node("highlight", ["#save"], new Dictionary<string, string> { ["message"] = "Save" }));
+
+        Assert.Contains(lines, line => line.Contains("new Promise", StringComparison.Ordinal));
+        Assert.Equal("highlight \"#save\" message=\"Save\"", lines.Last());
+        Assert.Contains("message=\"Save\"", lines.Last(), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Lower_ElementExpectationEscapesGeneratedNewlines()
     {
         var line = new CmgActionLowerer().Lower(Node("expectValue", ["#target", "Save"])).Last();

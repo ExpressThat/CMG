@@ -47,7 +47,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
         if (name is "click" or "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "tap" or "touchtap" or "download" or "type" or
             "presssequentially" or "fill" or "clear" or "hover" or "select" or "selectoption" or "check" or "uncheck" or "focus" or "blur" or
-            "selecttext" or "uploadfiles" or "setinputfiles" or "selectfile" or "expectscreenshot" or "tohavescreenshot")
+            "selecttext" or "highlight" or "uploadfiles" or "setinputfiles" or "selectfile" or "expectscreenshot" or "tohavescreenshot")
         {
             if (action.Arguments.Count > 0)
             {

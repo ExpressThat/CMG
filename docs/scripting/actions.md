@@ -472,6 +472,27 @@ showMessageBar "Opening the profile dialog"
 showMessageBar "Opening profile dialog\nWaiting for dialog content"
 ```
 
+## `highlight`
+
+```text
+highlight "#save"
+highlight "getByRole=button|Save" message="Save button" color="#2563eb" duration=1500
+```
+
+Draws a temporary CMG-owned overlay around a selector or rich locator. This is useful for visual demos, agent feedback, screenshots, and GIFs where the viewer should know which element the script is talking about.
+
+Options:
+
+- `message`: Optional short message shown above the highlighted element.
+- `color`: Optional border and message tag color. Default is `#f59e0b`.
+- `duration`: Optional duration in milliseconds. Default is `1200`.
+
+Output:
+
+- `HIGHLIGHT <line> <selector> duration=<milliseconds>`
+
+In GIF recordings, `highlight` moves the virtual pointer to the target before drawing the overlay, so the pointer, browser target, and visual callout stay aligned. The overlay is temporary and removes itself after the configured duration.
+
 ## `delay`
 
 ```text

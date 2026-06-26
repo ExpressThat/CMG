@@ -15,8 +15,31 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildSetViewportCommand(browserOptions, "setViewportSize"));
         command.Subcommands.Add(BuildShowMessageBarCommand(browserOptions, "showMessageBar"));
         command.Subcommands.Add(BuildShowMessageBarCommand(browserOptions, "caption"));
+        command.Subcommands.Add(BuildHighlightCommand(browserOptions));
         command.Subcommands.Add(BuildDelayCommand(browserOptions));
         command.Subcommands.Add(BuildPageRuntimeGroup(browserOptions));
+
+        return command;
+    }
+
+    private Command BuildHighlightCommand(BrowserSelectionOptions browserOptions)
+    {
+        var selector = CreateSelectorArgument();
+        var color = CliStringOption("--color", "Highlight border and message tag color. Default is #f59e0b.");
+        var message = CliStringOption("--message", "Optional message shown above the highlighted element.");
+        var duration = CliIntOption("--duration", "Highlight duration in milliseconds. Default is 1200.");
+        var command = new Command("highlight", "Draw a temporary visual highlight around an element.")
+        {
+            selector, color, message, duration
+        };
+
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine("highlight", [parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
+                StringOption("color", parseResult.GetValue(color)),
+                StringOption("message", parseResult.GetValue(message)),
+                IntOption("duration", parseResult.GetValue(duration))
+            ]))));
 
         return command;
     }

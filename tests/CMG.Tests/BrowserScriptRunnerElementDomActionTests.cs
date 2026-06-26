@@ -42,5 +42,19 @@ public sealed class BrowserScriptRunnerElementDomActionTests
         Assert.Equal("pro", client.LastSelectedValue);
     }
 
+    [Fact]
+    public void RunText_HighlightDrawsTemporaryOverlay()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("highlight \"#save\" message=Save color=#2563eb duration=250", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("data-cmg-highlight", client.LastExpression);
+        Assert.Contains("#2563eb", client.LastExpression);
+        Assert.Contains("Save", client.LastExpression);
+        Assert.Contains("setTimeout(() => overlay.remove(), 250)", client.LastExpression);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("HIGHLIGHT 001 #save", StringComparison.Ordinal));
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

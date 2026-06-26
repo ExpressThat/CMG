@@ -36,6 +36,7 @@ public sealed partial class BrowserScriptRunner
             "presssequentially" => ExecuteType(remoteDebuggingUrl, automationClient, action with { Name = "type" }, recorder),
             "fill" => ExecuteFill(remoteDebuggingUrl, automationClient, action, recorder),
             "check" or "uncheck" or "focus" or "blur" or "selecttext" => ExecuteElementDomAction(remoteDebuggingUrl, automationClient, action),
+            "highlight" => ExecuteHighlight(remoteDebuggingUrl, automationClient, action),
             "dispatchevent" => ExecuteDispatchEvent(remoteDebuggingUrl, automationClient, action),
             "type" => ExecuteType(remoteDebuggingUrl, automationClient, action, recorder),
             "clear" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Clear(remoteDebuggingUrl, selector)),

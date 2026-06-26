@@ -60,7 +60,7 @@ public sealed partial class CmgActionLowerer
             "localstorage" or "sessionstorage" or "cookie" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "setviewport" => [ToLine("setViewport", action.Arguments, action.Options)],
             "viewport" or "setviewportsize" => [LowerViewportAlias(action)],
-            "click" or "type" or "presssequentially" or "clear" or "hover" or "scrollintoview" or "select" or "selectoption" or "html" or "screenshot" or "asserttext" =>
+            "click" or "type" or "presssequentially" or "clear" or "hover" or "highlight" or "scrollintoview" or "select" or "selectoption" or "html" or "screenshot" or "asserttext" =>
                 LowerSelectorCommand(action.Kind, action),
             "goto" or "visit" => [ToLine("navigate", action.Arguments, action.Options)],
             "navigate" or "waitforelement" or

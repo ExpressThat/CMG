@@ -87,8 +87,11 @@ This example is available as `demo-scripts/26-provider-text-assertions.cmgscript
 ```text
 navigate "C:\Projects\CMG\index.html"
 showMessageBar "Opening the profile dialog"
+highlight "#openProfileDialog" message="Open dialog"
 screenshotPage output="message-bar.png"
 ```
+
+Use `highlight` when a GIF, screenshot, or agent report should visually call out the element being discussed. The direct highlight example is available as `demo-scripts/122-highlight.cmgscript`; the structured `cmg run` form is available as `demo-scripts/123-highlight-runner.cmgscript`.
 
 ## Variables
 
