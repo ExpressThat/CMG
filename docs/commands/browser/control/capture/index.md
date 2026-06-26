@@ -12,6 +12,8 @@ cmg browser control capture [command] [options]
 - [`html`](html.md): Print an element's outer HTML.
 - [`screenshot`](screenshot.md): Capture an element screenshot.
 - [`screenshotPage`](screenshotPage.md): Capture a viewport or full-page screenshot.
+- [`printPdf`](printPdf.md): Print the current page to PDF.
+- [`expectScreenshot`](expectScreenshot.md): Compare an element or page screenshot to a baseline.
 
 ## Behavior
 
@@ -29,4 +31,6 @@ cmg browser control capture getElement "h1" --html
 cmg browser control capture html "#profileDialog"
 cmg browser control capture screenshot "#profileDialog" --output profile-dialog.png
 cmg browser control capture screenshotPage --full-page --output page.png
+cmg browser control capture printPdf --path page.pdf
+cmg browser control capture expectScreenshot "#profileDialog" --baseline baselines/profile-dialog.png --output actual.png
 ```

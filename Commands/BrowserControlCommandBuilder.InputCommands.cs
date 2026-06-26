@@ -34,6 +34,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildScrollGroup(browserOptions));
         command.Subcommands.Add(BuildClipboardGroup(browserOptions));
         command.Subcommands.Add(BuildDispatchEventCommand(browserOptions));
+        command.Subcommands.Add(BuildUploadFilesCommand(browserOptions));
 
         return command;
     }

@@ -33,6 +33,7 @@ cmg browser control input [command] [options]
 - [`scroll`](scroll/index.md): Window, element, and wheel scrolling commands.
 - [`clipboard`](clipboard/index.md): Page-side clipboard shim commands.
 - [`dispatchEvent`](dispatchEvent.md): Dispatch an Event or CustomEvent on an element.
+- [`uploadFiles`](uploadFiles.md): Assign files to an input[type=file] element.
 
 ## Behavior
 
@@ -52,4 +53,5 @@ cmg browser control input keyDown Shift
 cmg browser control input dragAndDrop ".card" "#dropZone"
 cmg browser control input mouse move center
 cmg browser control input scroll wheel "#pane" --delta-y 120
+cmg browser control input uploadFiles "#avatar" fixtures/avatar.png
 ```

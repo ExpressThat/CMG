@@ -13,6 +13,8 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "html", "Print an element's outer HTML."));
         command.Subcommands.Add(BuildScreenshotCommand(browserOptions));
         command.Subcommands.Add(BuildScreenshotPageCommand(browserOptions));
+        command.Subcommands.Add(BuildPrintPdfCommand(browserOptions));
+        command.Subcommands.Add(BuildExpectScreenshotCommand(browserOptions));
 
         return command;
     }

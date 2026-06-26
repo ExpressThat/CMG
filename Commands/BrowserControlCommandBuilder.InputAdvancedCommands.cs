@@ -125,6 +125,28 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
+    private Command BuildUploadFilesCommand(BrowserSelectionOptions browserOptions)
+    {
+        var selector = CreateSelectorArgument();
+        var files = new Argument<FileInfo[]>("files")
+        {
+            Arity = ArgumentArity.OneOrMore,
+            Description = "One or more local files to assign."
+        };
+        var command = new Command("uploadFiles", "Assign files to an input[type=file] element.") { selector, files };
+
+        command.SetAction(parseResult =>
+        {
+            var values = new List<string> { parseResult.GetValue(selector) ?? string.Empty };
+            values.AddRange((parseResult.GetValue(files) ?? []).Select(file => file.FullName));
+            return browserControlCommandHandler.RunScriptAction(
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                ToScriptLine("uploadFiles", values, []));
+        });
+
+        return command;
+    }
+
     private static void AddPointerOptions(Command command, out Option<int?> x, out Option<int?> y, out Option<string?> selector, out Option<string?> edge, out Option<int?> inset)
     {
         x = new Option<int?>("--x") { Description = "Viewport x coordinate." };
