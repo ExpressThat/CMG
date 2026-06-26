@@ -14,6 +14,7 @@ public sealed class CmgActionLowererControlTests
     [InlineData("foreachList")]
     [InlineData("foreachSelector")]
     [InlineData("macro")]
+    [InlineData("return")]
     [InlineData("within")]
     [InlineData("frame")]
     [InlineData("frameLocator")]

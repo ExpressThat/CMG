@@ -135,6 +135,7 @@ Both script types use the same action syntax, control flow, macros, locators, GI
 - [Action index](docs/scripting/action-index.md)
 - [GIF recording](docs/scripting/gif-recording.md)
 - [Script style guide](docs/scripting/style-guide.md)
+- [E2E testing](docs/e2e-testing.md)
 - [Runnable demos](demo-scripts/README.md)
 
 ## Documentation For Agents

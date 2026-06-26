@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CMG E2E Fixture</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; line-height: 1.4; }
+    header, section { margin-bottom: 24px; padding: 16px; border: 1px solid #ccd; }
+    button, input, select, textarea { margin: 4px; padding: 8px; }
+    #hover-card { width: 180px; padding: 16px; background: #eef; }
+    #hover-card:hover { background: #cfc; }
+    #drop-zone { min-height: 60px; border: 2px dashed #777; padding: 12px; }
+    #drag-source { width: 120px; cursor: grab; background: #fee; padding: 10px; }
+    #scroll-pane { height: 120px; overflow: auto; border: 1px solid #999; }
+    #scroll-content { height: 500px; padding-top: 340px; }
+    .hidden { display: none; }
+    .box { width: 80px; height: 40px; background: #58a; color: white; }
+    .masked { background: #222; color: #fff; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="title">CMG E2E Fixture</h1>
+    <p id="status" role="status">ready</p>
+    <p id="counter">0</p>
+  </header>
+
+  <section aria-label="inputs">
+    <input id="name" aria-label="Name" placeholder="Name">
+    <input id="email" type="email" value="ada@example.test">
+    <input id="agree" type="checkbox">
+    <input id="choice-a" type="radio" name="choice" value="a">
+    <input id="choice-b" type="radio" name="choice" value="b">
+    <textarea id="notes">initial note</textarea>
+    <select id="plan">
+      <option value="free">Free</option>
+      <option value="pro">Pro</option>
+      <option value="team">Team</option>
+    </select>
+    <select id="multi" multiple>
+      <option value="alpha">Alpha</option>
+      <option value="beta">Beta</option>
+      <option value="gamma">Gamma</option>
+    </select>
+  </section>
+
+  <section aria-label="buttons">
+    <button id="primary" data-state="idle">Primary action</button>
+    <button id="delayed">Delayed text</button>
+    <button id="hide-target">Hide target</button>
+    <button id="show-target">Show target</button>
+    <button id="dialog-alert">Alert</button>
+    <button id="dialog-confirm">Confirm</button>
+    <button id="dialog-prompt">Prompt</button>
+    <button id="download-link">Download marker</button>
+    <a id="nav-link" href="#linked">Hash link</a>
+  </section>
+
+  <section aria-label="targets">
+    <div id="visible-target" class="box" role="button" aria-label="Visible target">visible</div>
+    <div id="hidden-target" class="hidden">hidden text</div>
+    <div id="editable" contenteditable="true">edit me</div>
+    <div id="empty-target"></div>
+    <div id="class-target" class="alpha beta">class target</div>
+    <div id="css-target" style="color: rgb(10, 20, 30);">css target</div>
+    <div id="masked-secret" class="masked">secret-value</div>
+  </section>
+
+  <section aria-label="lists">
+    <ul id="items">
+      <li class="item" data-id="1">Alpha</li>
+      <li class="item" data-id="2">Beta</li>
+      <li class="item" data-id="3">Gamma</li>
+    </ul>
+    <template id="row-template"><li class="item generated">Generated</li></template>
+  </section>
+
+  <section aria-label="pointer">
+    <div id="hover-card">Hover me</div>
+    <p id="hover-state">not hovered</p>
+    <div id="drag-source" draggable="true">Drag source</div>
+    <div id="drop-zone">Drop here</div>
+    <p id="drop-result">not dropped</p>
+  </section>
+
+  <section aria-label="scrolling">
+    <div id="scroll-pane">
+      <div id="scroll-content">
+        <button id="deep-button">Deep button</button>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="media">
+    <canvas id="canvas" width="160" height="80"></canvas>
+    <input id="file-input" type="file" multiple>
+    <p id="file-result">no files</p>
+  </section>
+
+  <section aria-label="frame-section">
+    <iframe id="fixture-frame" title="Fixture frame" srcdoc="
+      <!doctype html><html><body>
+      <h2 id='frame-title'>Frame Ready</h2>
+      <button id='frame-button'>Frame button</button>
+      <p id='frame-status'>frame idle</p>
+      <script>
+        document.getElementById('frame-button').addEventListener('click', () => {
+          document.getElementById('frame-status').textContent = 'frame clicked';
+        });
+      </script>
+      </body></html>"></iframe>
+  </section>
+
+  <section aria-label="async">
+    <button id="fetch-button">Fetch fixture data</button>
+    <p id="fetch-result">not fetched</p>
+    <button id="worker-button">Start worker</button>
+    <p id="worker-result">worker idle</p>
+  </section>
+
+  <footer id="linked">linked target</footer>
+
+  <script>
+    const status = document.getElementById('status');
+    const counter = document.getElementById('counter');
+    let count = 0;
+
+    document.getElementById('primary').addEventListener('click', event => {
+      count += 1;
+      event.currentTarget.dataset.state = 'clicked';
+      status.textContent = 'clicked';
+      counter.textContent = String(count);
+      localStorage.setItem('cmg-e2e', 'clicked');
+    });
+
+    document.getElementById('delayed').addEventListener('click', () => {
+      setTimeout(() => { status.textContent = 'delayed complete'; }, 120);
+    });
+
+    document.getElementById('hide-target').addEventListener('click', () => {
+      document.getElementById('visible-target').classList.add('hidden');
+    });
+
+    document.getElementById('show-target').addEventListener('click', () => {
+      document.getElementById('hidden-target').classList.remove('hidden');
+    });
+
+    document.getElementById('dialog-alert').addEventListener('click', () => alert('fixture alert'));
+    document.getElementById('dialog-confirm').addEventListener('click', () => {
+      status.textContent = confirm('fixture confirm') ? 'confirm accepted' : 'confirm dismissed';
+    });
+    document.getElementById('dialog-prompt').addEventListener('click', () => {
+      status.textContent = prompt('fixture prompt', 'default') || 'prompt empty';
+    });
+
+    document.getElementById('hover-card').addEventListener('mouseenter', () => {
+      document.getElementById('hover-state').textContent = 'hovered';
+    });
+
+    document.getElementById('drag-source').addEventListener('dragstart', event => {
+      event.dataTransfer.setData('text/plain', 'dragged payload');
+    });
+    document.getElementById('drop-zone').addEventListener('dragover', event => event.preventDefault());
+    document.getElementById('drop-zone').addEventListener('drop', event => {
+      event.preventDefault();
+      document.getElementById('drop-result').textContent = event.dataTransfer.getData('text/plain') || 'dropped';
+    });
+
+    document.getElementById('file-input').addEventListener('change', event => {
+      document.getElementById('file-result').textContent = Array.from(event.target.files).map(file => file.name).join(',');
+    });
+
+    document.getElementById('fetch-button').addEventListener('click', () => {
+      fetch('data:application/json,{"ok":true,"name":"fixture"}')
+        .then(response => response.json())
+        .then(data => { document.getElementById('fetch-result').textContent = data.name; });
+    });
+
+    document.getElementById('worker-button').addEventListener('click', () => {
+      const source = 'onmessage = () => postMessage("worker complete")';
+      const worker = new Worker(URL.createObjectURL(new Blob([source], { type: 'text/javascript' })));
+      worker.onmessage = event => { document.getElementById('worker-result').textContent = event.data; };
+      worker.postMessage('start');
+    });
+
+    const context = document.getElementById('canvas').getContext('2d');
+    context.fillStyle = '#246';
+    context.fillRect(0, 0, 160, 80);
+    context.fillStyle = '#fff';
+    context.fillText('CMG', 60, 42);
+  </script>
+</body>
+</html>

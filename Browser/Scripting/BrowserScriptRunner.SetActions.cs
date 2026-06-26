@@ -22,25 +22,25 @@ public sealed partial class BrowserScriptRunner
         var output = new List<string>();
         ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output);
 
-        var payload = ExtractSetPayload(action, output);
+        var payload = ExtractBlockPayload($"set '{action.Arguments[0]}'", output);
         context.SetVariable(action.Arguments[0], payload);
         output.Add($"SET {action.LineNumber:000} {action.Arguments[0]} {payload}");
         return output;
     }
 
-    private static string ExtractSetPayload(BrowserScriptAction action, IReadOnlyList<string> output)
+    private static string ExtractBlockPayload(string blockName, IReadOnlyList<string> output)
     {
         var line = output.LastOrDefault(IsSetPayloadLine);
         if (line is null)
         {
-            throw new ScriptExecutionException($"set '{action.Arguments[0]}' block did not produce output.");
+            throw new ScriptExecutionException($"{blockName} block did not produce output.");
         }
 
         var first = line.IndexOf(' ');
         var second = first < 0 ? -1 : line.IndexOf(' ', first + 1);
         if (second < 0 || second + 1 >= line.Length)
         {
-            throw new ScriptExecutionException($"set '{action.Arguments[0]}' could not read a payload from '{line}'.");
+            throw new ScriptExecutionException($"{blockName} could not read a payload from '{line}'.");
         }
 
         return line[(second + 1)..];

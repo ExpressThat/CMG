@@ -39,6 +39,27 @@ public sealed partial class BrowserScriptRunner
             ExecuteActions(remoteDebuggingUrl, automationClient, macroAction.Children, context, recorder, output));
     }
 
+    private void ExecuteReturn(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        ScriptExecutionContext context,
+        Recording.ScriptGifRecorder? recorder,
+        List<string> output)
+    {
+        if (action.Children.Count is 0)
+        {
+            output.AddRange(ReturnValue(action));
+            return;
+        }
+
+        RequireArgumentCount(action, 0, 0);
+        var childOutput = new List<string>();
+        ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, childOutput);
+        output.AddRange(childOutput);
+        output.Add($"RETURN {action.LineNumber:000} {ExtractBlockPayload("return", childOutput)}");
+    }
+
     private static IReadOnlyList<string> ReturnValue(BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, int.MaxValue);

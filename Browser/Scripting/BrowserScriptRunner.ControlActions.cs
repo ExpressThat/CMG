@@ -22,7 +22,8 @@ public sealed partial class BrowserScriptRunner
                 ExecuteMacro(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
             case "return":
-                return ReturnValue(action);
+                ExecuteReturn(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
             case "within":
                 ExecuteWithin(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
