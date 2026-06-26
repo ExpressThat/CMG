@@ -13,6 +13,10 @@ public sealed class BrowserControlCommandBuilderWaitTests
     [InlineData("function window.appReady", "waitForFunction \"window.appReady\"")]
     [InlineData("function window.appReady --timeout 5000", "waitForFunction \"window.appReady\" timeout=\"5000\"")]
     [InlineData("timeout 25", "waitForTimeout \"25\"")]
+    [InlineData("waitForElement #ready --timeout 1000", "waitForElement \"#ready\" timeout=\"1000\"")]
+    [InlineData("waitForSelector text=Ready --timeout 250", "waitForSelector \"text=Ready\" timeout=\"250\"")]
+    [InlineData("waitForFunction window.appReady --timeout 5000", "waitForFunction \"window.appReady\" timeout=\"5000\"")]
+    [InlineData("waitForTimeout 25", "waitForTimeout \"25\"")]
     public void WaitCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();
