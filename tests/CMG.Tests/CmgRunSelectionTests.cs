@@ -70,6 +70,25 @@ public sealed class CmgRunSelectionTests
         Assert.Equal(["checkout focused [repeat 2/2]"], selected.Select(test => test.Name).ToArray());
     }
 
+    [Fact]
+    public void FailedTestErrors_IncludesParseFailuresWithoutDuplicatingStepFailures()
+    {
+        var errors = CmgRunCommandHandler.FailedTestErrors([
+            new CmgTestResult("flow.cmgscript", "flow.cmgscript", false, [], "Line 1: invalid.", null, []),
+            new CmgTestResult(
+                "checkout",
+                "flow.cmgscript",
+                false,
+                [],
+                "Line 3: click failed.",
+                null,
+                [new CmgStepResult(3, "click", false, [], "Line 3: click failed.", null)])
+        ]);
+
+        var error = Assert.Single(errors);
+        Assert.Equal("TEST ERROR flow.cmgscript reason=Line 1: invalid.", error);
+    }
+
     private static CmgTestCase Test(string name, IReadOnlyDictionary<string, string>? options = null) =>
         new("flow.cmgscript", name, [], options ?? new Dictionary<string, string>());
 

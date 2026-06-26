@@ -63,7 +63,7 @@ Line 3: unterminated quoted string.
 Common causes:
 
 - Missing closing quote.
-- Using inline comments. Only full-line comments are supported.
+- Starting an inline comment before required tokens on the same physical line.
 - Forgetting to quote arguments with spaces.
 - Opening a block without a closing `}`.
 - Closing a block with `}` when no block is open.
@@ -128,7 +128,14 @@ Line 2: within failed. No element matched locator text=Dialog
 ## Top-Level Action Script Passed To `cmg run`
 
 ```text
-Line 1: cmg run requires test/it/specify or suite/describe/context blocks. Top-level action scripts are not supported; see docs/scripting/migration.md.
+TEST FAIL 01-dialog-flow.cmgscript
+TEST ERROR 01-dialog-flow.cmgscript reason=Line 1: cmg run requires structured tests with test/it/specify or suite/describe/context blocks. Direct browser-control scripts should use browser control script --file; see docs/scripting/migration.md.
+```
+
+The parser error itself is:
+
+```text
+Line 1: cmg run requires structured tests with test/it/specify or suite/describe/context blocks. Direct browser-control scripts should use browser control script --file; see docs/scripting/migration.md.
 ```
 
 Use `browser control script --file <path>` for direct browser-control scripts, or migrate the file to the structured test format for `cmg run`.

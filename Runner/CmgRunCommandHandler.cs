@@ -88,6 +88,20 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             Console.Error.WriteLine($"STEP FAIL line={failed.LineNumber} action={failed.Name} reason={failed.Error}");
         }
 
+        foreach (var error in FailedTestErrors(result.Tests))
+        {
+            Console.Error.WriteLine(error);
+        }
+
         return result.Success ? 0 : 1;
+    }
+
+    internal static IReadOnlyList<string> FailedTestErrors(IEnumerable<CmgTestResult> tests)
+    {
+        return tests
+            .Where(test => !test.Success && !string.IsNullOrWhiteSpace(test.Error))
+            .Where(test => !test.Steps.Any(step => !step.Success && step.Error == test.Error))
+            .Select(test => $"TEST ERROR {test.Name} reason={test.Error}")
+            .ToArray();
     }
 }

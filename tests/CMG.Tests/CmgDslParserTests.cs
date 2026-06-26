@@ -98,7 +98,7 @@ public sealed class CmgDslParserTests
     }
 
     [Fact]
-    public void Parse_RejectsFlatV1Scripts()
+    public void Parse_RejectsDirectScriptsPassedToRun()
     {
         var result = new CmgDslParser().Parse("old.cmgscript", """
         navigate "https://example.com"
@@ -106,7 +106,8 @@ public sealed class CmgDslParserTests
         """);
 
         Assert.False(result.Success);
-        Assert.Contains("test/it/specify or suite/describe/context", result.Error);
+        Assert.Contains("requires structured tests", result.Error);
+        Assert.Contains("browser control script --file", result.Error);
     }
 
     [Fact]

@@ -169,7 +169,7 @@ public sealed partial class CmgDslParser
 
         return invalid is null
             ? null
-            : $"Line {invalid.LineNumber}: cmg run requires the new DSL with test/it/specify or suite/describe/context blocks. V1 flat scripts are not supported; see docs/scripting/migration.md.";
+            : $"Line {invalid.LineNumber}: cmg run requires structured tests with test/it/specify or suite/describe/context blocks. Direct browser-control scripts should use browser control script --file; see docs/scripting/migration.md.";
     }
 
     private static bool IsAny(CmgNode node, params string[] names) =>

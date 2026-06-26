@@ -52,6 +52,12 @@ When a step fails, stderr also includes:
 STEP FAIL line=<line> action=<action> reason=<reason>
 ```
 
+When a file cannot be parsed, imported, or planned into a runnable test, stdout still prints `TEST FAIL <file>` and stderr includes:
+
+```text
+TEST ERROR <file> reason=<reason>
+```
+
 Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON reports include `status` values such as `passed`, `failed`, and `skipped`; JUnit reports emit `<skipped>` nodes for skipped tests.
 
 ## GIF Behavior
