@@ -25,4 +25,11 @@ public static partial class CmgLocator
 
         return $"(() => {{ const matches = Array.from(document.querySelectorAll({QuoteJs(value)})); if (matches.length !== 1) throw new Error('Locator strict= expected exactly one match for {value}, got ' + matches.length + '.'); return matches[0]; }})()";
     }
+
+    private static string BuildInsideExpression(string value)
+    {
+        return SplitLocatorValue(value) is { } parts
+            ? $"document.querySelector({QuoteJs(parts.Left)})?.querySelector({QuoteJs(parts.Right)})"
+            : "(() => { throw new Error('Locator inside= requires <container-selector>|<target-selector>.'); })()";
+    }
 }

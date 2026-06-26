@@ -2102,7 +2102,7 @@ within ".app-shell" {
 
 Inside a `within` block, one-argument body-text assertions such as `contains "Saved"` and `toContainText "Saved"` check the scoped container instead of the whole page body. `foreachSelector` also scopes its match set, so `foreachSelector row ".item"` iterates `.item` elements inside the container.
 
-Rich locators such as `text=Save`, `role=button`, `hasText=.row|Ready`, and `xpath=...` still use CMG's existing locator resolver. To scope rich locator-style matching today, use a filter locator that includes the parent selector, or nest plain CSS actions under `within`.
+Rich locators such as `text=Save`, `role=button`, `hasText=.row|Ready`, and `xpath=...` still use CMG's existing locator resolver. For a one-line scoped target that works in scripts and one-off CLI commands, use `inside=.container|target`; for larger flows, nest plain CSS actions under `within`.
 
 `within` is a script-only structural block. It is available in direct `browser control script` files and in `cmg run`; it is not exposed as a one-shot CLI command because the scoped child actions are the units that perform browser work.
 
@@ -2206,6 +2206,7 @@ Direct browser-control scripts and `cmg run` both support:
   - `"or=.primary|.secondary"` resolves the first `.primary` element, or the first `.secondary` element if no `.primary` exists.
   - `"and=.item|.selected"` resolves the first `.item` element that also matches `.selected`.
   - `"strict=.item"` resolves `.item` only when exactly one element matches; zero or multiple matches fail before pointer movement.
+  - `"inside=.card|button.save"` resolves the first `button.save` inside the first `.card`. This is the one-line locator form of a simple `within` scope and is useful for one-off CLI commands.
 - Open shadow DOM locators:
   - `"shadow=#host|button.save"` resolves `button.save` inside `#host`'s open shadow root.
   - `"shadowText=#host|Shadow Save"` resolves the first descendant inside `#host`'s open shadow root whose text contains `Shadow Save`.
@@ -2228,6 +2229,7 @@ click "has=.card|button.primary"
 click "or=.primary|.secondary"
 click "and=.item|.selected"
 click "strict=.only-choice"
+click "inside=.card|button.save"
 click "shadow=#host|button.save"
 assertText "hasText=.toast|Saved" "Saved"
 mouseMove selector="text=Drop here" edge=center

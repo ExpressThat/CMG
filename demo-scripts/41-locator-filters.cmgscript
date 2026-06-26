@@ -1,4 +1,4 @@
-setContent "<main><button class='cmd primary' onclick='result.textContent=\"first\"'>First</button><button class='cmd secondary' onclick='result.textContent=\"second\"'>Second <span class='badge'>New</span></button><button class='cmd hidden' style='display:none'>Hidden</button><output id='result'>none</output></main>"
+setContent "<main><section class='scope'><button class='cmd primary' onclick='result.textContent=\"first\"'>First</button><button class='cmd secondary' onclick='result.textContent=\"second\"'>Second <span class='badge'>New</span></button></section><button class='cmd outside' onclick='result.textContent=\"outside\"'>Outside</button><button class='cmd hidden' style='display:none'>Hidden</button><output id='result'>none</output></main>"
 
 click "textExact=First"
 expectText "#result" "first"
@@ -40,3 +40,6 @@ expectText "#result" "first"
 
 click "strict=.secondary"
 expectText "#result" "second"
+
+click "inside=.scope|.primary"
+expectText "#result" "first"

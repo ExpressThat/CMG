@@ -61,6 +61,7 @@ public sealed class BrowserScriptRunnerRichLocatorTests
     [InlineData("or=.primary|.secondary", "document.querySelector('.primary') ?? document.querySelector('.secondary')")]
     [InlineData("and=.item|.selected", "e.matches('.selected')")]
     [InlineData("strict=.only", "expected exactly one match for .only")]
+    [InlineData("inside=.card|button.save", "querySelector('button.save')")]
     [InlineData("shadow=#host|button.save", "shadowRoot?.querySelector('button.save')")]
     [InlineData("shadowText=#host|Shadow Save", "shadowRoot?.querySelectorAll('*')")]
     public void RunText_ClickResolvesAdvancedFilterLocatorOptions(string locator, string expectedExpression)
