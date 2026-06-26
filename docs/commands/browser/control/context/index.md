@@ -13,8 +13,10 @@ cmg browser control context [command] [options]
 - [`grantPermissions`](grantPermissions.md): Grant page-side permissions.
 - [`clearPermissions`](clearPermissions.md): Clear page-side permission grants.
 - [`setJavaScriptEnabled`](setJavaScriptEnabled.md): Enable or disable dynamic JavaScript execution.
+- [`javaScriptEnabled`](javaScriptEnabled.md): Enable or disable dynamic JavaScript execution.
 - [`bypassCSP`](bypassCSP.md): Enable or disable page-side CSP bypass.
 - [`serviceWorkers`](serviceWorkers.md): Allow or block service worker registration.
+- [`setServiceWorkers`](setServiceWorkers.md): Allow or block service worker registration.
 - [`clear`](clear.md): Clear storage, cookies, caches, IndexedDB, and service workers.
 - [`reset`](reset.md): Clear context state and navigate to `about:blank`.
 - [`browserContexts`](browserContexts/index.md): Isolated browser context commands.
@@ -33,5 +35,7 @@ cmg browser control context [command] [options]
 cmg browser control context emulate --width 390 --height 844 --mobile --touch --locale en-GB
 cmg browser control context setGeolocation 51.5 -0.1 --accuracy 10
 cmg browser control context grantPermissions geolocation notifications
+cmg browser control context javaScriptEnabled true
+cmg browser control context setServiceWorkers block
 cmg browser control context browserContexts new --url "about:blank"
 ```

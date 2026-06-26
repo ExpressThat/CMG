@@ -14,8 +14,10 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildGrantPermissionsCommand(browserOptions));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "clearPermissions", "Clear page-side permission grants.", "clearPermissions"));
         command.Subcommands.Add(BuildBooleanContextCommand(browserOptions, "setJavaScriptEnabled", "Enable or disable dynamic JavaScript execution."));
+        command.Subcommands.Add(BuildBooleanContextCommand(browserOptions, "javaScriptEnabled", "Enable or disable dynamic JavaScript execution."));
         command.Subcommands.Add(BuildBooleanContextCommand(browserOptions, "bypassCSP", "Enable or disable page-side CSP bypass."));
         command.Subcommands.Add(BuildServiceWorkersCommand(browserOptions));
+        command.Subcommands.Add(BuildServiceWorkersCommand(browserOptions, "setServiceWorkers"));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "clear", "Clear storage, cookies, caches, IndexedDB, and service workers.", "clearContext"));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "reset", "Clear context state and navigate to about:blank.", "resetContext"));
         command.Subcommands.Add(BuildBrowserContextsGroup(browserOptions));
@@ -97,11 +99,16 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildServiceWorkersCommand(BrowserSelectionOptions browserOptions)
     {
+        return BuildServiceWorkersCommand(browserOptions, "serviceWorkers");
+    }
+
+    private Command BuildServiceWorkersCommand(BrowserSelectionOptions browserOptions, string name)
+    {
         var mode = new Argument<string>("mode") { Description = "Service worker mode: allow or block." };
-        var command = new Command("serviceWorkers", "Allow or block service worker registration.") { mode };
+        var command = new Command(name, "Allow or block service worker registration.") { mode };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("serviceWorkers", parseResult.GetValue(mode) ?? string.Empty)));
+            ToScriptLine(name, parseResult.GetValue(mode) ?? string.Empty)));
         return command;
     }
 
