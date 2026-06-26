@@ -933,14 +933,16 @@ For direct browser-control scripts, `openTab "https://example.com/help"` can cre
 ```text
 test "saves checkout frame" {
   navigate "https://example.com/checkout"
-  frameWaitForElement "#checkoutFrame" "#email" timeout=5000
-  frameFill "#checkoutFrame" "#email" "agent@example.com"
-  frameClick "#checkoutFrame" "#save"
-  frameAssertText "#checkoutFrame" "#status" "^Saved$" match=regex ignoreCase=true
+  frame "#checkoutFrame" {
+    waitForSelector "#email" timeout=5000
+    fill "#email" "agent@example.com"
+    click "#save"
+    toContainText "#status" "Saved"
+  }
 }
 ```
 
-Recorded frame pointer actions move the virtual pointer to the element's top-page coordinate inside the iframe. Frame text assertions support `match=contains|exact|regex` and `ignoreCase=true`. Frame actions require a same-origin iframe.
+Recorded frame pointer actions move the virtual pointer to the element's top-page coordinate inside the iframe. Frame text assertions support `match=contains|exact|regex` and `ignoreCase=true`. `frame` and `frameLocator` blocks are script-only scoped forms over the same frame actions. Frame actions require a same-origin iframe.
 
 ## Download Flow
 

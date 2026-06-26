@@ -61,6 +61,7 @@ Supported structural blocks:
 - `recordVideo "name" { ... }`
 - `screencast "name" { ... }`
 - `within "<containerSelector>" { ... }`
+- `frame "<iframeSelector>" { ... }` or `frameLocator "<iframeSelector>" { ... }`
 - `if <condition> { ... }`
 - `elseif <condition> { ... }`
 - `else { ... }`
@@ -211,6 +212,11 @@ within ".dialog" {
   fill "input[name=email]" "agent@example.com"
   click "button.save"
 }
+
+frame "#checkoutFrame" {
+  fill "#email" "agent@example.com"
+  click "#save"
+}
 ```
 
 `repeat`, `for`, `foreach`, `foreachSelector`, `while`, `until`, `doWhile`, and `doUntil` support `break` and `continue`. Condition loops have a safety guard and fail after `max=<count>` iterations; the default is `100`. `doWhile` and `doUntil` run their body once before evaluating the condition.
@@ -218,6 +224,8 @@ within ".dialog" {
 `foreachSelector` binds the variable to a temporary CSS selector for each matched element and also exposes `${index}`. Macro definitions are block-scoped when declared inside another macro, branch, or loop. Top-level macros in `cmg run` are registered before each test.
 
 `within "<container>" { ... }` scopes selector-based child actions to the container. Nested `within` blocks compose selectors. Pointer-aware child actions still use CMG's virtual pointer and GIF event path after scoping.
+
+`frame "<iframe>" { ... }` and `frameLocator "<iframe>" { ... }` scope supported child actions to a same-origin iframe. Pointer-aware child actions are rewritten to frame-aware actions before GIF recording, so the virtual pointer moves to the element's top-page coordinate inside the iframe.
 
 Use `retry` or provider-style `toPass` to rerun a block until it succeeds or the attempt limit is exhausted:
 

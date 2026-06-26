@@ -121,7 +121,7 @@ public sealed partial class BrowserScriptRunner
         "expectproperty", "tohavejsproperty", "expectaccessiblename", "tohaveaccessiblename", "expectrole",
         "tohaverole", "expectchecked", "tobechecked", "expectcount", "tohavecount", "evaluateonselector",
         "evalonselector", "evaluateall", "evalall", "uploadfiles", "setinputfiles", "selectfile", "expectscreenshot",
-        "tohavescreenshot", "download"
+        "tohavescreenshot", "download", "frame", "framelocator"
     };
 
     private static readonly HashSet<string> ScopedTwoArgumentActions = new(StringComparer.OrdinalIgnoreCase)

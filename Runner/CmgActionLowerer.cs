@@ -8,7 +8,7 @@ public sealed partial class CmgActionLowerer
         return name switch
         {
             "step" or "gif" or "recordvideo" or "screencast" => LowerStep(action),
-            "macro" or "within" or "if" or "elseif" or "else" or "for" or "foreach" or "foreachselector" or "while" or "until" or
+            "macro" or "within" or "frame" or "framelocator" or "if" or "elseif" or "else" or "for" or "foreach" or "foreachselector" or "while" or "until" or
             "dowhile" or "dountil" or "repeat" or "retry" or "topass" or "try" or "catch" or "finally" or "switch" or "case" or "default" => LowerControlBlock(action),
             "call" or "return" or "break" or "continue" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "caption" => [ToLine("showMessageBar", action.Arguments)],

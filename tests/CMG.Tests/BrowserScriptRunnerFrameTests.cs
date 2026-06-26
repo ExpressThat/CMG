@@ -53,5 +53,54 @@ public sealed class BrowserScriptRunnerFrameTests
         Assert.Contains("Expected 2 positional", result.Error);
     }
 
+    [Fact]
+    public void RunText_FrameBlockRewritesChildActions()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("""
+        frame "#checkoutFrame" {
+          fill "#email" "agent@example.com"
+          click "#save"
+          contains "Saved"
+          evaluate "document.title"
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
+        Assert.Contains("FRAME 002 frameFill", result.StdoutLines);
+        Assert.Contains("FRAME 003 frameClick", result.StdoutLines);
+        Assert.Contains("FRAME 004 frameAssertText", result.StdoutLines);
+        Assert.Contains("FRAME_EVALUATE 005", string.Join('\n', result.StdoutLines));
+        Assert.Contains("document.title", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_FrameBlockComposesWithinSelectorsBeforeRewrite()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("""
+        frame "#frame" {
+          within ".dialog" {
+            click ".save"
+          }
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
+        Assert.Contains("'#frame'", client.LastExpression);
+        Assert.Contains("'.dialog .save'", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_FrameLocatorAliasSupportsWeirdSpacing()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("""	  frameLocator     "#frame"   {   hover     "#help"  ;  waitForSelector    "#ready" timeout=250   }""", "debug", client);
+
+        Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
+        Assert.Contains("FRAME 001 frameHover", result.StdoutLines);
+        Assert.Contains("FRAME 001 frameWaitForElement", result.StdoutLines);
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

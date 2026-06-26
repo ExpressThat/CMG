@@ -12,6 +12,7 @@ internal sealed class ScriptExecutionContext
 {
     private List<Dictionary<string, string>> variableScopes = [new(StringComparer.Ordinal)];
     private readonly List<string> selectorScopes = [];
+    private readonly List<string> frameScopes = [];
 
     public Dictionary<string, ScriptMacro> Macros { get; } = new(StringComparer.OrdinalIgnoreCase);
 
@@ -20,6 +21,8 @@ internal sealed class ScriptExecutionContext
     public int CurrentVariableScopeIndex => variableScopes.Count - 1;
 
     public string? CurrentSelectorScope => selectorScopes.Count is 0 ? null : selectorScopes[^1];
+
+    public string? CurrentFrameScope => frameScopes.Count is 0 ? null : frameScopes[^1];
 
     public bool TryGetVariable(string name, out string value)
     {
@@ -81,6 +84,19 @@ internal sealed class ScriptExecutionContext
         finally
         {
             selectorScopes.RemoveAt(selectorScopes.Count - 1);
+        }
+    }
+
+    public void PushFrameScope(string selector, Action body)
+    {
+        frameScopes.Add(selector);
+        try
+        {
+            body();
+        }
+        finally
+        {
+            frameScopes.RemoveAt(frameScopes.Count - 1);
         }
     }
 }

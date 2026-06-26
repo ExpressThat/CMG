@@ -1057,9 +1057,19 @@ frameHover "#checkoutFrame" "#help"
 frameWaitForElement "#checkoutFrame" "#ready" timeout=5000
 frameAssertText "#checkoutFrame" "#status" "^Saved$" match=regex ignoreCase=true
 frameEvaluate "#checkoutFrame" "document.title"
+
+frame "#checkoutFrame" {
+  fill "#email" "agent@example.com"
+  click "#save"
+  contains "Saved"
+}
 ```
 
 Runs actions against a same-origin iframe selected from the top page. The first argument is the iframe selector. The second argument is the selector or JavaScript expression inside that frame.
+
+`frame "<iframe>" { ... }` and `frameLocator "<iframe>" { ... }` are script-only structural blocks that scope supported child actions to the iframe. Supported child actions include `click`, `hover`, `type`, `pressSequentially`, `fill`, `waitForElement`, `waitForSelector`, `assertVisible`, `assertText`, `expectText`, `toHaveText`, `toContainText`, `contains`, `waitForText`, and `evaluate`. Child actions are rewritten before GIF recording, so pointer-aware frame actions still move the virtual pointer to the element's top-page coordinate inside the iframe.
+
+`within` can be nested inside a frame block. In that case, child selectors are first composed under the `within` container, then rewritten to frame actions.
 
 GIF behavior:
 
