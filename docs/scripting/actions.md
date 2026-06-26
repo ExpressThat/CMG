@@ -700,14 +700,19 @@ Output:
 ## `emulate`
 
 ```text
+emulate device="Pixel 7"
+emulate "iPhone 13" locale=en-GB timezone=Europe/London
 emulate width=390 height=844 deviceScaleFactor=2 isMobile=true hasTouch=true userAgent="CMG Mobile" locale=en-GB colorScheme=dark reducedMotion=reduce
 emulate timezone=Europe/London geolocation="51.5,-0.1" permissions=geolocation
 ```
 
 Applies browser-environment overrides for both direct browser-control scripts and `cmg run` tests. `width` and `height` use the browser protocol viewport override. Other options install page-side overrides in the current page context.
 
+Named devices expand to viewport, scale, mobile, touch, and user-agent values. Explicit options override the preset values, so `emulate device="iPad Pro" width=1024 height=900` keeps the iPad user agent while changing the viewport size.
+
 Options:
 
+- `device`: Optional named device preset. Supported names are `iPhone 13`, `iPhone SE`, `Pixel 5`, `Pixel 7`, `Galaxy S9+`, `iPad`, `iPad Pro`, and `Desktop Chrome`.
 - `width`: Viewport width in CSS pixels. Must be used with `height`.
 - `height`: Viewport height in CSS pixels. Must be used with `width`.
 - `deviceScaleFactor`: Optional viewport device scale factor. Default is `1`.

@@ -26,6 +26,44 @@ public sealed class BrowserScriptRunnerEmulationTests
     }
 
     [Fact]
+    public void RunText_EmulateNamedDeviceAppliesPreset()
+    {
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText("emulate device=\"Pixel 7\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(new(412, 915), client.LastViewport);
+        Assert.Equal(2.625, client.LastViewportOptions?.DeviceScaleFactor);
+        Assert.True(client.LastViewportOptions?.IsMobile);
+        Assert.True(client.LastViewportOptions?.HasTouch);
+        Assert.Contains("Pixel 7", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_EmulateNamedDeviceAllowsOverrides()
+    {
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText("emulate \"iPhone SE\" width=400 height=700 hasTouch=false", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(new(400, 700), client.LastViewport);
+        Assert.False(client.LastViewportOptions?.HasTouch);
+        Assert.True(client.LastViewportOptions?.IsMobile);
+    }
+
+    [Fact]
+    public void RunText_EmulateNamedDeviceRejectsUnknownDevice()
+    {
+        var result = Runner().RunText("emulate device=\"Pocket Fridge\"", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("Unknown device 'Pocket Fridge'", result.Error);
+        Assert.Contains("Pixel 7", result.Error);
+    }
+
+    [Fact]
     public void RunText_SetViewportPassesAdvancedOptions()
     {
         var client = new FakeAutomationClient();

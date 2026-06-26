@@ -157,6 +157,8 @@ dotnet run -- --firefox browser close
 - `67-frame-match-modes-runner.cmgscript`: Demonstrates frame-local text assertion match modes in `cmg run`.
 - `68-cookie-attributes.cmgscript`: Demonstrates page-context cookie attributes in a direct script.
 - `69-cookie-attributes-runner.cmgscript`: Demonstrates the same cookie attributes in the structured runner DSL.
+- `70-device-emulation.cmgscript`: Demonstrates named-device emulation in a direct script.
+- `71-device-emulation-runner.cmgscript`: Demonstrates named-device emulation in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

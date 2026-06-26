@@ -446,6 +446,14 @@ Line 7: waitForTimeout failed. delay must be a positive integer.
 
 Wait failures include whether the selector, expression, or timeout argument caused the failure.
 
+## Emulation Failure
+
+```text
+Line 2: emulate failed. Unknown device 'Pocket Fridge'. Known devices: iPhone 13, iPhone SE, Pixel 5, Pixel 7, Galaxy S9+, iPad, iPad Pro, Desktop Chrome.
+```
+
+Emulation failures include invalid viewport shapes, invalid page-environment values, and unknown device preset names.
+
 ## Mouse Failure
 
 ```text

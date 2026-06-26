@@ -30,6 +30,7 @@ public sealed partial class BrowserControlCommandBuilder
     private Command BuildEmulateCommand(BrowserSelectionOptions browserOptions)
     {
         var command = new Command("emulate", "Apply page environment and viewport emulation.");
+        var device = CliStringOption("--device", "Named device preset, such as iPhone 13, Pixel 7, or iPad Pro.");
         var width = new Option<int?>("--width") { Description = "Viewport width in CSS pixels." };
         var height = new Option<int?>("--height") { Description = "Viewport height in CSS pixels." };
         var scale = new Option<double?>("--device-scale-factor") { Description = "Viewport device scale factor." };
@@ -43,14 +44,14 @@ public sealed partial class BrowserControlCommandBuilder
         var geolocation = CliStringOption("--geolocation", "Stubbed coordinates as latitude,longitude.");
         var permissions = CliStringOption("--permissions", "Comma-separated granted permission names.");
 
-        foreach (var option in new Option[] { width, height, scale, mobile, touch, userAgent, locale, timezone, colorScheme, reducedMotion, geolocation, permissions })
+        foreach (var option in new Option[] { device, width, height, scale, mobile, touch, userAgent, locale, timezone, colorScheme, reducedMotion, geolocation, permissions })
         {
             command.Options.Add(option);
         }
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("emulate", [], EmulateOptions(parseResult, width, height, scale, mobile, touch, userAgent, locale, timezone, colorScheme, reducedMotion, geolocation, permissions))));
+            ToScriptLine("emulate", [], EmulateOptions(parseResult, device, width, height, scale, mobile, touch, userAgent, locale, timezone, colorScheme, reducedMotion, geolocation, permissions))));
 
         return command;
     }
@@ -155,6 +156,7 @@ public sealed partial class BrowserControlCommandBuilder
 
     private static IReadOnlyList<(string Key, string Value)> EmulateOptions(
         ParseResult parseResult,
+        Option<string?> device,
         Option<int?> width,
         Option<int?> height,
         Option<double?> scale,
@@ -168,6 +170,7 @@ public sealed partial class BrowserControlCommandBuilder
         Option<string?> geolocation,
         Option<string?> permissions) =>
         CompactOptions([
+            StringOption("device", parseResult.GetValue(device)),
             IntOption("width", parseResult.GetValue(width)),
             IntOption("height", parseResult.GetValue(height)),
             StringOption("deviceScaleFactor", parseResult.GetValue(scale)?.ToString()),

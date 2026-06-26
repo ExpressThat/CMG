@@ -839,7 +839,7 @@ This example is available as `demo-scripts/14-pointer-click-variants.cmgscript`.
 
 ```text
 test "mobile dark mode profile" {
-  emulate width=390 height=844 userAgent="CMG Mobile" locale=en-GB colorScheme=dark reducedMotion=reduce
+  emulate device="Pixel 7" locale=en-GB colorScheme=dark reducedMotion=reduce
   navigate "https://example.com/profile"
   expectScreenshot baseline="baselines\profile-mobile-dark.png" output="demo-output\profile-mobile-dark.actual.png"
 }

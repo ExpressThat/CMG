@@ -37,6 +37,16 @@ public sealed class BrowserControlCommandBuilderContextTests
         Assert.Equal(expectedScript, handler.ScriptLine);
     }
 
+    [Fact]
+    public void EmulateCommand_MapsDeviceOptionToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control context emulate --device \"Pixel 7\" --locale en-GB").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("emulate device=\"Pixel 7\" locale=\"en-GB\"", handler.ScriptLine);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");

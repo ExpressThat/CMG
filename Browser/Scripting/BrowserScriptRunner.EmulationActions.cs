@@ -7,6 +7,7 @@ public sealed partial class BrowserScriptRunner
         IBrowserAutomationClient automationClient,
         BrowserScriptAction action)
     {
+        action = ExpandDeviceProfile(action);
         RequireArgumentCount(action, 0, 0);
         ApplyViewport(remoteDebuggingUrl, automationClient, action);
         var script = BrowserEmulationScript.Build(action.Options);
@@ -16,6 +17,39 @@ public sealed partial class BrowserScriptRunner
         }
 
         return [$"EMULATE {action.LineNumber:000} {string.Join(' ', action.Options.Keys)}".TrimEnd()];
+    }
+
+    private static BrowserScriptAction ExpandDeviceProfile(BrowserScriptAction action)
+    {
+        var device = action.Options.GetValueOrDefault("device");
+        if (action.Arguments.Count is 1 && string.IsNullOrWhiteSpace(device))
+        {
+            device = action.Arguments[0];
+        }
+
+        if (string.IsNullOrWhiteSpace(device))
+        {
+            return action;
+        }
+
+        var profile = BrowserDeviceProfiles.Resolve(device);
+        var options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["device"] = profile.Name,
+            ["width"] = profile.Width.ToString(),
+            ["height"] = profile.Height.ToString(),
+            ["deviceScaleFactor"] = profile.DeviceScaleFactor.ToString(),
+            ["isMobile"] = profile.IsMobile.ToString().ToLowerInvariant(),
+            ["hasTouch"] = profile.HasTouch.ToString().ToLowerInvariant(),
+            ["userAgent"] = profile.UserAgent
+        };
+
+        foreach (var option in action.Options.Where(option => !string.Equals(option.Key, "device", StringComparison.OrdinalIgnoreCase)))
+        {
+            options[option.Key] = option.Value;
+        }
+
+        return action with { Arguments = [], Options = options };
     }
 
     private static IReadOnlyList<string> ExecuteGeolocationOrPermission(
