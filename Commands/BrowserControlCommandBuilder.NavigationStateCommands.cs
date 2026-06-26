@@ -42,28 +42,6 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildHistoryCommand(BrowserSelectionOptions browserOptions, string name, string description)
-    {
-        var timeoutOption = new Option<int>("--timeout")
-        {
-            Description = "Timeout in milliseconds.",
-            DefaultValueFactory = _ => 5000
-        };
-
-        var command = new Command(name, description)
-        {
-            timeoutOption
-        };
-
-        command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                name,
-                [],
-                [("timeout", $"{parseResult.GetValue(timeoutOption)}")])));
-
-        return command;
-    }
-
     private Command BuildWaitForNavigationValueCommand(BrowserSelectionOptions browserOptions, string name, string description, string argumentDescription)
     {
         var expectedArgument = new Argument<string>("expected") { Description = argumentDescription };

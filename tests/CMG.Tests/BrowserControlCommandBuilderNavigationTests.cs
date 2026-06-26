@@ -9,6 +9,8 @@ public sealed class BrowserControlCommandBuilderNavigationTests
     [Theory]
     [InlineData("reload", "reload")]
     [InlineData("reload --wait-until networkidle --timeout 250", "reload waitUntil=\"networkidle\" timeout=\"250\"")]
+    [InlineData("goBack", "goBack timeout=\"5000\"")]
+    [InlineData("goForward --wait-until domcontentloaded --timeout 250", "goForward timeout=\"250\" waitUntil=\"domcontentloaded\"")]
     [InlineData("expectUrl checkout", "expectUrl \"checkout\"")]
     [InlineData("expectUrl checkout --match exact --ignore-case", "expectUrl \"checkout\" match=\"exact\" ignoreCase=\"true\"")]
     [InlineData("expectTitle Dashboard", "expectTitle \"Dashboard\"")]

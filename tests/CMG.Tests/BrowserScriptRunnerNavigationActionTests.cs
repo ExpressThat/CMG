@@ -45,6 +45,26 @@ public sealed class BrowserScriptRunnerNavigationActionTests
     }
 
     [Fact]
+    public void RunText_GoBackCanWaitForProviderLoadState()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("goBack waitUntil=load timeout=250", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("document.readyState === 'complete'", client.LastExpression);
+        Assert.Contains("BACK 001 {} waitUntil=load state={}", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_GoForwardValidatesWaitUntil()
+    {
+        var result = Runner().RunText("goForward waitUntil=paint", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("goForward waitUntil= expects load, domcontentloaded, networkidle, or commit", result.Error);
+    }
+
+    [Fact]
     public void RunText_WaitForUrlReturnsMatchedUrl()
     {
         var client = new FakeAutomationClient();

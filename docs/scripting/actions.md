@@ -29,7 +29,7 @@ visit "https://example.com"
 reload
 reload waitUntil=domcontentloaded timeout=5000
 goBack timeout=5000
-goForward timeout=5000
+goForward waitUntil=domcontentloaded timeout=5000
 waitForUrl "/checkout" timeout=10000
 toHaveURL "/checkout" match=exact
 toHaveTitle "checkout" ignoreCase=true
@@ -47,8 +47,8 @@ Options:
 - `timeout`: Optional for `reload` when `waitUntil` is set, and for `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNetworkIdle`, and `waitForNavigation`. Default is `5000`.
 - `match`: Optional for `waitForUrl`, `waitForTitle`, `expectUrl`, `expectTitle`, `toHaveURL`, and `toHaveTitle`. Supports `contains`, `exact`, and `regex`. Default is `contains`.
 - `ignoreCase`: Optional for URL/title match actions. Use `true` for case-insensitive matching.
-- `waitUntil`: Optional for `reload` and `waitForNavigation`. Supports `load`, `domcontentloaded`, `networkidle`, and `commit`. `reload` keeps its original fire-and-settle behavior when omitted.
-- `state`: Alias for `waitUntil` on `reload` and `waitForNavigation`.
+- `waitUntil`: Optional for `reload`, `goBack`, `goForward`, and `waitForNavigation`. Supports `load`, `domcontentloaded`, `networkidle`, and `commit`. `reload`, `goBack`, and `goForward` keep their original URL-change behavior when omitted.
+- `state`: Alias for `waitUntil` on `reload`, `goBack`, `goForward`, and `waitForNavigation`.
 
 Arguments:
 

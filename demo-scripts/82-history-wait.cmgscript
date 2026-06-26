@@ -1,0 +1,6 @@
+set page "C:\Projects\CMG\index.html"
+
+navigate "about:blank"
+navigate "${page}"
+goBack waitUntil=commit timeout=5000
+goForward waitUntil=domcontentloaded timeout=5000

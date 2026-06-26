@@ -50,9 +50,10 @@ public sealed partial class BrowserScriptRunner
         string output)
     {
         RequireArgumentCount(action, 0, 0);
+        var waitUntil = GetHistoryWaitUntil(action);
         var timeout = GetIntOption(action, "timeout", 5_000);
         var url = automationClient.Evaluate(remoteDebuggingUrl, BrowserNavigationScripts.History(direction, timeout));
-        return [$"{output} {action.LineNumber:000} {url}"];
+        return [HistoryOutput(remoteDebuggingUrl, automationClient, action, output, url, waitUntil, timeout)];
     }
 
     private static IReadOnlyList<string> WaitForUrl(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
