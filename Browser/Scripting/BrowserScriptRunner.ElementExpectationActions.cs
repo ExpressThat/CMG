@@ -96,7 +96,8 @@ public sealed partial class BrowserScriptRunner
             return action;
         }
 
-        return action with { Arguments = [$"{locator.Key}={locator.Value}", .. action.Arguments] };
+        var options = action.Options.Where(pair => !pair.Key.Equals(locator.Key, StringComparison.Ordinal)).ToDictionary();
+        return action with { Arguments = [CmgLocatorKeys.Format(locator.Key, locator.Value), .. action.Arguments], Options = options };
     }
 
 }

@@ -127,6 +127,7 @@ public sealed partial class CmgActionLowerer
 
     private static IReadOnlyList<string> LowerFill(CmgNode action)
     {
+        action = NormalizeLocatorOption(action);
         if (action.Arguments.Count < 2)
         {
             return [ToLine("evaluate", [BuildUnsupportedExpression("fill requires selector and text")])];
@@ -174,6 +175,7 @@ public sealed partial class CmgActionLowerer
 
     private static IReadOnlyList<string> LowerSelectorCommand(string command, CmgNode action)
     {
+        action = NormalizeLocatorOption(action);
         if (action.Arguments.Count is 0)
         {
             return [ToLine(command, action.Arguments, action.Options)];
@@ -189,6 +191,7 @@ public sealed partial class CmgActionLowerer
 
     private static IReadOnlyList<string> ElementScript(CmgNode action, string body)
     {
+        action = NormalizeLocatorOption(action);
         var resolved = action.Arguments.Count > 0 ? CmgLocator.Resolve(action.Arguments[0], action.LineNumber) : new CmgResolvedLocator(string.Empty, []);
         return [
             .. resolved.PrefixLines,
@@ -199,6 +202,7 @@ public sealed partial class CmgActionLowerer
 
     private static IReadOnlyList<string> LowerMouseEvent(CmgNode action, string eventName, int button)
     {
+        action = NormalizeLocatorOption(action);
         var resolved = action.Arguments.Count > 0 ? CmgLocator.Resolve(action.Arguments[0], action.LineNumber) : new CmgResolvedLocator(string.Empty, []);
         var selector = resolved.Selector;
         var buttons = button == 2 ? 2 : 1;
@@ -219,6 +223,18 @@ public sealed partial class CmgActionLowerer
         parts.AddRange(args.Select(Quote));
         parts.AddRange(options.Select(option => $"{option.Key}={Quote(option.Value)}"));
         return string.Join(' ', parts);
+    }
+
+    private static CmgNode NormalizeLocatorOption(CmgNode action)
+    {
+        var locator = action.Options.FirstOrDefault(pair => CmgLocatorKeys.IsLocatorOption(pair.Key));
+        if (string.IsNullOrWhiteSpace(locator.Key))
+        {
+            return action;
+        }
+
+        var options = action.Options.Where(pair => !pair.Key.Equals(locator.Key, StringComparison.Ordinal)).ToDictionary();
+        return action with { Arguments = [CmgLocatorKeys.Format(locator.Key, locator.Value), .. action.Arguments], Options = options };
     }
 
     private static string BuildUnsupportedExpression(string action) =>

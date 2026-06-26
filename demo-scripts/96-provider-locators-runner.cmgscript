@@ -1,0 +1,15 @@
+test "provider locators" {
+  setContent "<main><label>Profile name<input id='profileName' placeholder='Name'></label><button data-testid='save' title='Save changes' onclick='result.textContent=\"saved\"'>Save</button><img alt='CMG logo'><output id='result'>none</output></main>"
+
+  type "getByLabel=Profile name" "Agent"
+  click getByText=Save
+  expectText "#result" "saved"
+
+  click getByRole=button|Save
+  expectText "#result" "saved"
+
+  waitForElement getByTestId=save
+  waitForElement getByPlaceholder=Name
+  waitForElement "getByAltText=CMG logo"
+  waitForElement "getByTitle=Save changes"
+}

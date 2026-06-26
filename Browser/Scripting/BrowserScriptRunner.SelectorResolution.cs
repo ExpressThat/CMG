@@ -27,7 +27,7 @@ public sealed partial class BrowserScriptRunner
             return action;
         }
 
-        var locatorArgument = $"{locator.Key}={locator.Value}";
+        var locatorArgument = CmgLocatorKeys.Format(locator.Key, locator.Value);
         if (action.Arguments.Count > 0 && action.Arguments[0].Equals(locatorArgument, StringComparison.Ordinal))
         {
             return action;
@@ -42,11 +42,5 @@ public sealed partial class BrowserScriptRunner
         return argumentIndex < action.Arguments.Count ? action.Arguments[argumentIndex] : string.Empty;
     }
 
-    private static bool IsLocatorOption(string key) =>
-        key is "css" or "testid" or "testId" or "data-testid" or "text" or "textExact" or "textRegex" or
-            "role" or "roleRegex" or "label" or "labelExact" or "labelRegex" or "placeholder" or "placeholderExact" or
-            "placeholderRegex" or "alt" or "altExact" or "altRegex" or "title" or "titleExact" or "titleRegex" or "xpath" or
-            "first" or "last" or "nth" or "has" or "hasNot" or "hasText" or "hasNotText" or "visible" or
-            "or" or "and" or "strict" or "inside" or "closest" or "parent" or "next" or "previous" or
-            "shadow" or "shadowText";
+    private static bool IsLocatorOption(string key) => CmgLocatorKeys.IsLocatorOption(key);
 }

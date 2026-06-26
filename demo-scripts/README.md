@@ -184,6 +184,8 @@ dotnet run -- --firefox browser close
 - `92-negative-assertions.cmgscript`: Demonstrates negative state and unchecked assertions in a direct script.
 - `93-negative-assertions-runner.cmgscript`: Demonstrates negative state and unchecked assertions in the structured runner DSL.
 - `94-provider-declarations-runner.cmgscript`: Demonstrates provider-style `.skip`, `.fixme`, and `.todo` runner declarations.
+- `95-provider-locators.cmgscript`: Demonstrates provider-style `getByText`, `getByRole`, `getByLabel`, `getByTestId`, `getByPlaceholder`, `getByAltText`, and `getByTitle` locators in a direct script.
+- `96-provider-locators-runner.cmgscript`: Demonstrates provider-style `getBy*` locators in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

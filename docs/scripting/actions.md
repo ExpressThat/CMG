@@ -2228,6 +2228,14 @@ Direct browser-control scripts and `cmg run` both support:
 - Exact title locators, for example `"titleExact=Close"`.
 - Regex title locators, for example `"titleRegex=Close$"`.
 - XPath locators, for example `"xpath=//button[.='Save']"`.
+- Provider-style locator aliases:
+  - `"getByText=Save"`, `"getByTextExact=Save"`, `"getByExactText=Save"`, and `"getByTextRegex=^Save"` map to text locators.
+  - `"getByRole=button|Save"` and `"getByRoleRegex=button|^Save"` map to role/name locators.
+  - `"getByLabel=Email"`, `"getByLabelText=Email"`, and their `Exact` / `Regex` variants map to label locators.
+  - `"getByTestId=save"`, `"getByTestID=save"`, and `"getByTestid=save"` map to `[data-testid='save']`.
+  - `"getByPlaceholder=Search"`, `"getByPlaceholderText=Search"`, and their `Exact` / `Regex` variants map to placeholder locators.
+  - `"getByAltText=Logo"` plus `Exact` / `Regex` variants map to alt text locators.
+  - `"getByTitle=Close"` plus `Exact` / `Regex` variants map to title locators.
 - Filter locators:
   - `"first=.item"` resolves the first matching CSS element.
   - `"last=.item"` resolves the last matching CSS element.
@@ -2255,6 +2263,9 @@ Direct browser-control scripts can pass locator forms as normal arguments or as 
 
 ```text
 click text=Save
+click getByText=Save
+click "getByRole=button|Save"
+type getByLabel=Email "agent@example.com"
 click textExact=Save
 click textRegex=^Save
 click "role=button|Save"
@@ -2277,7 +2288,7 @@ assertText "hasText=.toast|Saved" "Saved"
 mouseMove selector="text=Drop here" edge=center
 ```
 
-Quote the whole locator token when the locator value contains spaces or filter separators. Filter and open shadow-root locators are resolved to the same temporary element marker as text/role/xpath locators, so pointer-aware actions and GIF recordings target the resolved element.
+Quote the whole locator token when the locator value contains spaces or filter separators, unless your shell/script parser is passing it as one option-style token. Provider-style `getBy*` aliases, filter locators, and open shadow-root locators are resolved to the same temporary element marker as text/role/xpath locators, so pointer-aware actions and GIF recordings target the resolved element.
 
 ## Actionability
 

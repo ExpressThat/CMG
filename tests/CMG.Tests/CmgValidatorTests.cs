@@ -22,6 +22,15 @@ public sealed class CmgValidatorTests
     }
 
     [Fact]
+    public void Validate_AllowsProviderStyleLocators()
+    {
+        var action = new CmgNode(7, "click", "click", ["getByRole=button|Save"], new Dictionary<string, string>(), []);
+        var result = new CmgValidator().Validate(Test(action));
+
+        Assert.True(result.Success);
+    }
+
+    [Fact]
     public void Validate_DoesNotTreatEvaluateJavaScriptAsLocator()
     {
         var action = new CmgNode(7, "evaluate", "evaluate", ["setTimeout(() => true, 0)"], new Dictionary<string, string>(), []);

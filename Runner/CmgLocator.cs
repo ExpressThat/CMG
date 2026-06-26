@@ -4,37 +4,36 @@ public static partial class CmgLocator
 {
     public static CmgResolvedLocator Resolve(string locator, int lineNumber)
     {
-        if (locator.StartsWith("css=", StringComparison.OrdinalIgnoreCase))
+        if (CmgLocatorKeys.TryParse(locator, out var key, out var value) && key.Equals("css", StringComparison.OrdinalIgnoreCase))
         {
-            return new CmgResolvedLocator(locator[4..], []);
+            return new CmgResolvedLocator(value, []);
         }
 
-        if (locator.StartsWith("testid=", StringComparison.OrdinalIgnoreCase) ||
-            locator.StartsWith("testId=", StringComparison.OrdinalIgnoreCase) ||
-            locator.StartsWith("data-testid=", StringComparison.OrdinalIgnoreCase))
+        if (key.Equals("testid", StringComparison.OrdinalIgnoreCase))
         {
-            return new CmgResolvedLocator($"[data-testid=\"{EscapeCss(locator[(locator.IndexOf('=') + 1)..])}\"]", []);
+            return new CmgResolvedLocator($"[data-testid=\"{EscapeCss(value)}\"]", []);
         }
 
-        if (locator.StartsWith("placeholder=", StringComparison.OrdinalIgnoreCase))
+        if (key.Equals("placeholder", StringComparison.OrdinalIgnoreCase))
         {
-            return new CmgResolvedLocator($"[placeholder=\"{EscapeCss(locator[12..])}\"]", []);
+            return new CmgResolvedLocator($"[placeholder=\"{EscapeCss(value)}\"]", []);
         }
 
-        if (locator.StartsWith("alt=", StringComparison.OrdinalIgnoreCase))
+        if (key.Equals("alt", StringComparison.OrdinalIgnoreCase))
         {
-            return new CmgResolvedLocator($"[alt=\"{EscapeCss(locator[4..])}\"]", []);
+            return new CmgResolvedLocator($"[alt=\"{EscapeCss(value)}\"]", []);
         }
 
-        if (locator.StartsWith("title=", StringComparison.OrdinalIgnoreCase))
+        if (key.Equals("title", StringComparison.OrdinalIgnoreCase))
         {
-            return new CmgResolvedLocator($"[title=\"{EscapeCss(locator[6..])}\"]", []);
+            return new CmgResolvedLocator($"[title=\"{EscapeCss(value)}\"]", []);
         }
 
         if (locator.Contains('=', StringComparison.Ordinal))
         {
             var marker = $"__cmg_locator_{lineNumber}";
-            return new CmgResolvedLocator($"[data-cmg-locator-id=\"{marker}\"]", [BuildMarkerScript(locator, marker)]);
+            var normalized = CmgLocatorKeys.TryParse(locator, out key, out value) ? CmgLocatorKeys.Format(key, value) : locator;
+            return new CmgResolvedLocator($"[data-cmg-locator-id=\"{marker}\"]", [BuildMarkerScript(normalized, marker)]);
         }
 
         return new CmgResolvedLocator(locator, []);
@@ -43,65 +42,18 @@ public static partial class CmgLocator
     public static string ToCssSelector(string locator) => Resolve(locator, lineNumber: 0).Selector;
 
     public static bool IsSupported(string locator) =>
-        !locator.Contains('=', StringComparison.Ordinal) ||
-        locator.StartsWith("css=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("testid=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("testId=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("data-testid=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("text=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("textExact=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("textRegex=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("role=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("roleRegex=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("label=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("labelExact=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("labelRegex=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("placeholder=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("placeholderExact=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("placeholderRegex=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("alt=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("altExact=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("altRegex=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("title=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("titleExact=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("titleRegex=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("xpath=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("first=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("last=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("nth=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("has=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("hasNot=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("hasText=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("hasNotText=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("visible=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("or=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("and=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("strict=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("inside=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("closest=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("parent=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("next=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("previous=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("shadow=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("shadowText=", StringComparison.OrdinalIgnoreCase);
+        !locator.Contains('=', StringComparison.Ordinal) || CmgLocatorKeys.TryParse(locator, out _, out _);
 
     public static string UnsupportedReason(string locator) => $"Locator '{locator}' is not supported.";
 
     public static IReadOnlyList<string> PrefixExpressions(string locator, int lineNumber)
     {
-        if (!locator.Contains('=', StringComparison.Ordinal) ||
-            locator.StartsWith("css=", StringComparison.OrdinalIgnoreCase) ||
-            locator.StartsWith("testid=", StringComparison.OrdinalIgnoreCase) ||
-            locator.StartsWith("testId=", StringComparison.OrdinalIgnoreCase) ||
-            locator.StartsWith("data-testid=", StringComparison.OrdinalIgnoreCase) ||
-            locator.StartsWith("placeholder=", StringComparison.OrdinalIgnoreCase) ||
-            locator.StartsWith("alt=", StringComparison.OrdinalIgnoreCase) ||
-            locator.StartsWith("title=", StringComparison.OrdinalIgnoreCase))
+        if (!CmgLocatorKeys.TryParse(locator, out var key, out var value) || CmgLocatorKeys.IsSimpleSelectorKey(key))
         {
             return [];
         }
 
-        return [BuildMarkerExpression(locator, $"__cmg_locator_{lineNumber}")];
+        return [BuildMarkerExpression(CmgLocatorKeys.Format(key, value), $"__cmg_locator_{lineNumber}")];
     }
 
     private static string BuildMarkerScript(string locator, string marker)
@@ -111,7 +63,7 @@ public static partial class CmgLocator
 
     private static string BuildMarkerExpression(string locator, string marker)
     {
-        var kind = locator[..locator.IndexOf('=')].ToLowerInvariant();
+        var kind = CmgLocatorKeys.Normalize(locator[..locator.IndexOf('=')]).ToLowerInvariant();
         var value = locator[(locator.IndexOf('=') + 1)..];
         const string helpers = "const implicitRole = e => e.tagName === 'BUTTON' ? 'button' : e.tagName === 'A' && e.hasAttribute('href') ? 'link' : e.tagName === 'INPUT' || e.tagName === 'TEXTAREA' ? 'textbox' : ''; const accessibleName = e => e.getAttribute('aria-label') || e.getAttribute('alt') || e.getAttribute('title') || e.innerText || e.textContent || ''; const IsVisible = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };";
         return $"(() => {{ {InstallQueryRegistry()} {helpers} const element = {BuildElementExpression(kind, value)}; if (!element) throw new Error('No element matched locator {locator}'); window.__cmgLocatorElements['{marker}'] = element; element.setAttribute?.('data-cmg-locator-id', '{marker}'); return true; }})()";

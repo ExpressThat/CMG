@@ -811,10 +811,16 @@ click "text=Open profile"
 click "textExact=Open profile"
 click "textRegex=^Open profile$"
 click "role=button|Open profile"
+click "getByRole=button|Open profile"
 click "roleRegex=button|^Open"
 waitForElement "text=Edit Browser Profile"
 type "label=Profile name" "Locator Agent"
+type "getByLabel=Profile name" "Locator Agent"
 type "labelExact=Profile name" "Locator Agent"
+waitForElement getByTestId=save
+waitForElement getByPlaceholder=Search
+waitForElement getByAltText=Logo
+waitForElement "getByTitle=Close settings"
 assertText "text=Edit Browser Profile" "Edit Browser Profile"
 hover "label=Profile name"
 click "nth=.command|1"
@@ -844,7 +850,7 @@ click "shadowText=#shadowHost|Shadow Save"
 expectText "#result" "shadow"
 ```
 
-Filter locator examples are available as `demo-scripts/41-locator-filters.cmgscript`. Shadow DOM locator examples are available as `demo-scripts/90-shadow-locators.cmgscript`. The structured `cmg run` forms are available as `demo-scripts/42-locator-filters-runner.cmgscript` and `demo-scripts/91-shadow-locators-runner.cmgscript`.
+Filter locator examples are available as `demo-scripts/41-locator-filters.cmgscript`. Provider-style `getBy*` locator examples are available as `demo-scripts/95-provider-locators.cmgscript`. Shadow DOM locator examples are available as `demo-scripts/90-shadow-locators.cmgscript`. The structured `cmg run` forms are available as `demo-scripts/42-locator-filters-runner.cmgscript`, `demo-scripts/96-provider-locators-runner.cmgscript`, and `demo-scripts/91-shadow-locators-runner.cmgscript`.
 
 ## Scoped Selectors With `within`
 

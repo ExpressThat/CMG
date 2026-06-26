@@ -48,6 +48,17 @@ public sealed class BrowserScriptRunnerRichLocatorTests
         Assert.Equal("[data-cmg-locator-id=\"__cmg_locator_1\"]", client.LastClickedSelector);
     }
 
+    [Fact]
+    public void RunText_ClickResolvesProviderLocatorOption()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("click getByText=Save", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("No element matched locator text=Save", client.EvaluatedExpressions[0]);
+        Assert.Equal("[data-cmg-locator-id=\"__cmg_locator_1\"]", client.LastClickedSelector);
+    }
+
     [Theory]
     [InlineData("has=.item|.badge", "e.querySelector('.badge')")]
     [InlineData("hasNot=.item|.badge", "!e.querySelector('.badge')")]
@@ -96,6 +107,17 @@ public sealed class BrowserScriptRunnerRichLocatorTests
 
         Assert.True(result.Success, result.Error);
         Assert.Contains("expected exactly one match for .only", client.EvaluatedExpressions[0]);
+        Assert.Contains("__cmgQuery", client.EvaluatedExpressions[1]);
+    }
+
+    [Fact]
+    public void RunText_ExpectationAcceptsProviderLocatorOptions()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("expectVisible getByRole=button|Save", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("accessibleName(e).includes('Save')", client.EvaluatedExpressions[0]);
         Assert.Contains("__cmgQuery", client.EvaluatedExpressions[1]);
     }
 

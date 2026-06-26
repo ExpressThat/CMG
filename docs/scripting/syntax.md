@@ -122,6 +122,8 @@ Indentation, tabs, and repeated spaces between tokens are ignored outside quoted
 		caption          "Done"
 ```
 
+Locator option tokens can use CMG locator names or provider-style aliases such as `getByText=Save`, `getByRole=button|Save`, `getByLabel=Email`, `getByTestId=save`, `getByPlaceholder=Search`, `getByAltText=Logo`, and `getByTitle=Close`. Quote the whole locator, for example `"getByLabel=Profile name"`, when the value contains spaces. They work in direct scripts and structured `cmg run` tests, including inside nested blocks, macros, and GIF blocks.
+
 Spaces and semicolons inside quoted strings are preserved.
 
 ## Imports

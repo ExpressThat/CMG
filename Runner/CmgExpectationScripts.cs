@@ -142,16 +142,11 @@ public static class CmgExpectationScripts
             return action;
         }
 
-        return action with { Arguments = [$"{locator.Key}={locator.Value}", .. action.Arguments] };
+        var options = action.Options.Where(pair => !pair.Key.Equals(locator.Key, StringComparison.Ordinal)).ToDictionary();
+        return action with { Arguments = [CmgLocatorKeys.Format(locator.Key, locator.Value), .. action.Arguments], Options = options };
     }
 
-    private static bool IsLocatorOption(string key) =>
-        key is "css" or "testid" or "testId" or "data-testid" or "text" or "textExact" or "textRegex" or
-            "role" or "roleRegex" or "label" or "labelExact" or "labelRegex" or "placeholder" or "placeholderExact" or
-            "placeholderRegex" or "alt" or "altExact" or "altRegex" or "title" or "titleExact" or "titleRegex" or "xpath" or
-            "first" or "last" or "nth" or "has" or "hasNot" or "hasText" or "hasNotText" or "visible" or
-            "or" or "and" or "strict" or "inside" or "closest" or "parent" or "next" or "previous" or
-            "shadow" or "shadowText";
+    private static bool IsLocatorOption(string key) => CmgLocatorKeys.IsLocatorOption(key);
 
     private static string Fail(string message) =>
         $"(() => {{ throw new Error({QuoteJs(message)}); }})()";

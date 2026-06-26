@@ -4,6 +4,7 @@ public sealed partial class CmgActionLowerer
 {
     private static IReadOnlyList<string> LowerTextAssertion(CmgNode action)
     {
+        action = NormalizeLocatorOption(action);
         if (action.Arguments.Count is 1 && BodyTextAssertionNames.Contains(action.Kind.ToLowerInvariant()))
         {
             var bodyCommand = IsNegativeTextAssertion(action.Kind) ? action.Kind : "assertText";

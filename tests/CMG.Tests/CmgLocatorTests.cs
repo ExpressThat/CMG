@@ -14,6 +14,15 @@ public sealed class CmgLocatorTests
     }
 
     [Theory]
+    [InlineData("getByText=Save", "includes('Save')")]
+    [InlineData("getByTextExact=Save", ".trim() === 'Save'")]
+    [InlineData("getByExactText=Save", ".trim() === 'Save'")]
+    [InlineData("getByTextRegex=^Save", "new RegExp('^Save')")]
+    [InlineData("getByRole=button|Save", "accessibleName(e).includes('Save')")]
+    [InlineData("getByRoleRegex=button|^Save", "new RegExp('^Save').test(accessibleName(e))")]
+    [InlineData("getByLabel=Email", "includes('Email')")]
+    [InlineData("getByLabelTextExact=Email", ".trim() === 'Email'")]
+    [InlineData("getByLabelRegex=^Email", "new RegExp('^Email')")]
     [InlineData("first=.item", "document.querySelector")]
     [InlineData("last=.item", ".at(-1)")]
     [InlineData("nth=.item|2", "Number('2')")]
@@ -87,11 +96,25 @@ public sealed class CmgLocatorTests
     [Theory]
     [InlineData("testId=save")]
     [InlineData("data-testid=save")]
+    [InlineData("getByTestId=save")]
+    [InlineData("getByTestID=save")]
     public void Resolve_TestIdAliasesUseDataTestIdSelector(string locator)
     {
         var resolved = CmgLocator.Resolve(locator, 4);
 
         Assert.Equal("[data-testid=\"save\"]", resolved.Selector);
+        Assert.Empty(resolved.PrefixLines);
+    }
+
+    [Theory]
+    [InlineData("getByPlaceholder=Search", "[placeholder=\"Search\"]")]
+    [InlineData("getByAltText=Logo", "[alt=\"Logo\"]")]
+    [InlineData("getByTitle=Close", "[title=\"Close\"]")]
+    public void Resolve_ProviderAttributeAliasesUseCssAttributeSelectors(string locator, string expected)
+    {
+        var resolved = CmgLocator.Resolve(locator, 4);
+
+        Assert.Equal(expected, resolved.Selector);
         Assert.Empty(resolved.PrefixLines);
     }
 }
