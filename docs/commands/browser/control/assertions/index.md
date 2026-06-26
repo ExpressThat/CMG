@@ -9,6 +9,15 @@ cmg browser control assertions [command] [options]
 ## Subcommands
 
 - [`assertText`](assertText.md): Assert that an element contains text.
+- [`eval`](eval.md): Assert a JavaScript expression result.
+- [`visible`](visible.md): Assert that an element is visible.
+- [`hidden`](hidden.md): Assert that an element is hidden.
+- [`enabled`](enabled.md): Assert that an element is enabled.
+- [`disabled`](disabled.md): Assert that an element is disabled.
+- [`value`](value.md): Assert that an element value contains text.
+- [`attribute`](attribute.md): Assert that an element attribute contains text.
+- [`checked`](checked.md): Assert that an element is checked or unchecked.
+- [`count`](count.md): Assert the number of matching elements.
 
 ## Behavior
 
@@ -22,4 +31,6 @@ cmg browser control assertions [command] [options]
 
 ```powershell
 cmg browser control assertions assertText "h1" "Ready"
+cmg browser control assertions visible "#save" --timeout 5000
+cmg browser control assertions eval "document.title" --equals "Checkout"
 ```

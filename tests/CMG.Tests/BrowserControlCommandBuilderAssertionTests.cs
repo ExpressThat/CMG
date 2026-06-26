@@ -1,0 +1,84 @@
+using System.CommandLine;
+using CMG.Browser;
+using CMG.Commands;
+
+namespace CMG.Tests;
+
+public sealed class BrowserControlCommandBuilderAssertionTests
+{
+    [Theory]
+    [InlineData("visible #save --timeout 5000", "expectVisible \"#save\" timeout=\"5000\"")]
+    [InlineData("hidden text=Done", "expectHidden \"text=Done\"")]
+    [InlineData("enabled #save", "expectEnabled \"#save\"")]
+    [InlineData("disabled #save", "expectDisabled \"#save\"")]
+    [InlineData("value #name CMG --timeout 100", "expectValue \"#name\" \"CMG\" timeout=\"100\"")]
+    [InlineData("attribute #save data-state ready", "expectAttribute \"#save\" \"data-state\" \"ready\"")]
+    [InlineData("checked #agree", "expectChecked \"#agree\"")]
+    [InlineData("checked #agree --expected false", "expectChecked \"#agree\" \"false\"")]
+    [InlineData("count .row 2", "expectCount \".row\" \"2\"")]
+    public void AssertionCommands_MapToScriptActions(string commandTail, string expectedScript)
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse($"control assertions {commandTail}").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(BrowserKind.Chrome, handler.BrowserKind);
+        Assert.Equal(expectedScript, handler.ScriptLine);
+    }
+
+    [Theory]
+    [InlineData("eval document.title --equals Checkout", "expectEval \"document.title\" equals=\"Checkout\"")]
+    [InlineData("eval window.appReady --timeout 5000", "expectEval \"window.appReady\" timeout=\"5000\"")]
+    [InlineData("eval document.body.innerText --contains Ready", "expectEval \"document.body.innerText\" contains=\"Ready\"")]
+    public void EvalAssertionCommand_MapsExpectationOptions(string commandTail, string expectedScript)
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse($"control assertions {commandTail}").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(expectedScript, handler.ScriptLine);
+    }
+
+    [Fact]
+    public void BrowserSelectionRejectsMultipleBrowserOptions()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("--chrome --edge control assertions visible #save").Invoke();
+
+        Assert.Equal(1, exitCode);
+        Assert.Equal(BrowserKind.InvalidSelection, handler.BrowserKind);
+    }
+
+    private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
+    {
+        var chrome = new Option<bool>("--chrome");
+        var edge = new Option<bool>("--edge");
+        var firefox = new Option<bool>("--firefox");
+        var root = new RootCommand();
+        root.Options.Add(chrome);
+        root.Options.Add(edge);
+        root.Options.Add(firefox);
+        root.Subcommands.Add(new BrowserControlCommandBuilder(handler).Build(new BrowserSelectionOptions(chrome, edge, firefox)));
+        return root;
+    }
+
+    private sealed class CapturingBrowserControlCommandHandler : IBrowserControlCommandHandler
+    {
+        public BrowserKind BrowserKind { get; private set; }
+
+        public string? ScriptLine { get; private set; }
+
+        public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output) => 0;
+
+        public int RunScript(BrowserKind browserKind, string file, FileInfo? gif) => 0;
+
+        public int ValidateScript(string file) => 0;
+
+        public int RunScriptAction(BrowserKind browserKind, string scriptLine)
+        {
+            BrowserKind = browserKind;
+            ScriptLine = scriptLine;
+            return browserKind is BrowserKind.InvalidSelection ? 1 : 0;
+        }
+    }
+}
