@@ -15,7 +15,8 @@ public sealed partial class CmgActionLowerer
             "fill" => LowerFill(action),
             "assertvisible" => LowerSelectorCommand("waitForElement", action),
             "wait" => LowerWait(action),
-            "expecttext" or "tohavetext" or "tocontaintext" or "containstext" or "waitfortext" or "contains" => LowerTextAssertion(action),
+            "expecttext" or "tohavetext" or "tocontaintext" or "containstext" or "waitfortext" or "contains" or
+            "expectnotext" or "expectnottext" or "notcontains" or "notcontainstext" or "tonotcontaintext" or "tohavenotext" or "tohavenottext" => LowerTextAssertion(action),
             "expecturl" or "expecttitle" or "tohaveurl" or "tohavetitle" => [ToLine(ToNavigationExpectationName(name), action.Arguments, action.Options)],
             "expectvisible" or "tobevisible" or "waitforvisible" or "expecthidden" or "tobehidden" or "waitforhidden" or
             "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" or
@@ -137,27 +138,6 @@ public sealed partial class CmgActionLowerer
         }
 
         return action.Arguments.Count > 0 ? [ToLine("waitForElement", action.Arguments, action.Options)] : [];
-    }
-
-    private static IReadOnlyList<string> LowerTextAssertion(CmgNode action)
-    {
-        if (action.Arguments.Count is 1 &&
-            (action.Kind.Equals("contains", StringComparison.OrdinalIgnoreCase) ||
-            action.Kind.Equals("toContainText", StringComparison.OrdinalIgnoreCase)))
-        {
-            return [ToLine("assertText", ["body", action.Arguments[0]], action.Options)];
-        }
-
-        if (action.Arguments.Count is 0)
-        {
-            return [ToLine("assertText", action.Arguments, action.Options)];
-        }
-
-        var resolved = CmgLocator.Resolve(action.Arguments[0], action.LineNumber);
-        return [
-            .. resolved.PrefixLines,
-            ToLine("assertText", [resolved.Selector, .. action.Arguments.Skip(1)], action.Options)
-        ];
     }
 
     private static string LowerViewportAlias(CmgNode action)

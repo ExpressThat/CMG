@@ -31,7 +31,13 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "toContainText", "Assert that an element contains text."));
         command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "containsText", "Assert that an element contains text."));
         command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "waitForText", "Wait until an element contains text."));
-        command.Subcommands.Add(BuildBodyContainsCommand(browserOptions));
+        command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "expectNoText", "Assert that an element does not contain text."));
+        command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "expectNotText", "Assert that an element does not contain text."));
+        command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "notContainsText", "Assert that an element does not contain text."));
+        command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "toNotContainText", "Assert that an element does not contain text."));
+        command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "toHaveNoText", "Assert that an element does not contain text."));
+        command.Subcommands.Add(BuildBodyTextAssertionCommand(browserOptions, "contains", "Assert that the page body contains text."));
+        command.Subcommands.Add(BuildBodyTextAssertionCommand(browserOptions, "notContains", "Assert that the page body does not contain text."));
         command.Subcommands.Add(BuildEvaluateAssertionCommand(browserOptions, "eval", "expectEval", "Assert a JavaScript expression result."));
         command.Subcommands.Add(BuildEvaluateAssertionCommand(browserOptions, "expectEval", "expectEval", "Assert a JavaScript expression result."));
         command.Subcommands.Add(BuildEvaluateAssertionCommand(browserOptions, "assertEval", "assertEval", "Assert a JavaScript expression result."));

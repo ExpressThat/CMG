@@ -352,9 +352,10 @@ Use `accessibilitySnapshot output="..."` to inspect the derived role/name tree w
 
 ```text
 Line 5: assertText failed. Expected text 'Ready' was not found. Actual text: 'Loading'.
+Line 6: expectNoText failed. Expected text 'Error' was still found. Actual text: 'Ready Error'.
 ```
 
-The assertion checks whether the element text contains the expected text.
+Positive text assertions check whether the element text contains the expected text. Negative text assertions check that the text is absent. Timeout failures include the timeout and the last text observed.
 
 ## API Request Failure
 

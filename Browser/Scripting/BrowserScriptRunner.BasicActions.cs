@@ -129,52 +129,6 @@ public sealed partial class BrowserScriptRunner
         return WriteScreenshotOutput(action, bytes);
     }
 
-    private static IReadOnlyList<string> ExecuteAssertText(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
-    {
-        action = NormalizeTextAssertion(action);
-        RequireArgumentCount(action, 2, 2);
-        var selector = ResolveSelector(remoteDebuggingUrl, automationClient, action);
-        var timeout = GetIntOption(action, "timeout", 0);
-        var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeout);
-        var text = string.Empty;
-
-        do
-        {
-            text = automationClient.GetElementText(remoteDebuggingUrl, selector);
-            if (text.Contains(action.Arguments[1], StringComparison.Ordinal))
-            {
-                return [];
-            }
-
-            if (timeout <= 0)
-            {
-                break;
-            }
-
-            Thread.Sleep(50);
-        }
-        while (DateTimeOffset.UtcNow < deadline);
-
-        if (timeout > 0)
-        {
-            throw new ScriptExecutionException($"Expected text '{action.Arguments[1]}' was not found within {timeout}ms. Actual text: '{text}'.");
-        }
-
-        throw new ScriptExecutionException($"Expected text '{action.Arguments[1]}' was not found. Actual text: '{text}'.");
-    }
-
-    private static BrowserScriptAction NormalizeTextAssertion(BrowserScriptAction action)
-    {
-        action = NormalizeSelectorArgument(action);
-        var name = action.Name.ToLowerInvariant();
-        if (name is not ("contains" or "tocontaintext") || action.Arguments.Count != 1)
-        {
-            return action;
-        }
-
-        return action with { Arguments = ["body", action.Arguments[0]] };
-    }
-
     private static IReadOnlyList<string> ExecuteEvaluate(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);

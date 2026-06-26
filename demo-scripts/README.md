@@ -112,7 +112,7 @@ dotnet run -- --firefox browser close
 - `23-record-video-alias.cmgscript`: Demonstrates `recordVideo` as a CMG GIF recording alias.
 - `24-touch-clipboard.cmgscript`: Demonstrates touch-style `tap` and deterministic page-side clipboard actions.
 - `25-provider-navigation-aliases.cmgscript`: Demonstrates `visit` and `goto` navigation aliases.
-- `26-provider-text-assertions.cmgscript`: Demonstrates `contains`, `containsText`, and `waitForText` aliases.
+- `26-provider-text-assertions.cmgscript`: Demonstrates positive and negative text assertion aliases.
 - `27-selector-evaluation.cmgscript`: Demonstrates selector-scoped evaluation and `set` block capture.
 - `28-element-getters.cmgscript`: Demonstrates element getter output and `set` block capture.
 - `29-filtered-network-waits.cmgscript`: Demonstrates method/status/body filters for network waits.

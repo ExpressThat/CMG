@@ -15,6 +15,12 @@ cmg browser control assertions [command] [options]
 - [`containsText`](containsText.md): Assert that an element contains text.
 - [`waitForText`](waitForText.md): Wait until an element contains text.
 - [`contains`](contains.md): Assert that the page body contains text.
+- [`notContains`](notContains.md): Assert that the page body does not contain text.
+- [`expectNoText`](expectNoText.md): Assert that an element does not contain text.
+- [`expectNotText`](expectNotText.md): Assert that an element does not contain text.
+- [`notContainsText`](notContainsText.md): Assert that an element does not contain text.
+- [`toNotContainText`](toNotContainText.md): Assert that an element does not contain text.
+- [`toHaveNoText`](toHaveNoText.md): Assert that an element does not contain text.
 - [`eval`](eval.md): Assert a JavaScript expression result.
 - [`expectEval`](expectEval.md): Assert a JavaScript expression result.
 - [`assertEval`](assertEval.md): Assert a JavaScript expression result.

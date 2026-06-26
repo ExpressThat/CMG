@@ -42,13 +42,45 @@ public sealed class BrowserScriptRunnerAssertTextTests
         Assert.Equal("body", client.LastElementTextSelector);
     }
 
+    [Fact]
+    public void RunText_NotContainsWithOneArgumentChecksBodyText()
+    {
+        var client = new FakeAutomationClient();
+        client.TextResponses.Enqueue("Welcome back");
+
+        var result = Runner().RunText("notContains \"Error\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal("body", client.LastElementTextSelector);
+    }
+
+    [Fact]
+    public void RunText_NegativeTextAssertionFailsWhenTextRemains()
+    {
+        var client = new FakeAutomationClient();
+        client.TextResponses.Enqueue("Saved with warning");
+
+        var result = Runner().RunText("expectNoText \"#status\" \"warning\" timeout=1", "debug", client);
+
+        Assert.False(result.Success);
+        Assert.Contains("was still found within 1ms", result.Error);
+        Assert.Contains("Saved with warning", result.Error);
+    }
+
     [Theory]
     [InlineData("containsText")]
     [InlineData("waitForText")]
+    [InlineData("notContainsText")]
+    [InlineData("toNotContainText")]
+    [InlineData("toHaveNoText")]
     public void RunText_TextProviderAliasesCheckSelectorText(string action)
     {
         var client = new FakeAutomationClient();
-        client.TextResponses.Enqueue("Saved");
+        client.TextResponses.Enqueue(action.StartsWith("not", StringComparison.OrdinalIgnoreCase) ||
+            action.StartsWith("toNot", StringComparison.OrdinalIgnoreCase) ||
+            action.StartsWith("toHaveNo", StringComparison.OrdinalIgnoreCase)
+                ? "Ready"
+                : "Saved");
 
         var result = Runner().RunText($"{action} \"#status\" \"Saved\"", "debug", client);
 

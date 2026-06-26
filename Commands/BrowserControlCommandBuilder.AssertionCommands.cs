@@ -20,14 +20,14 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildBodyContainsCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildBodyTextAssertionCommand(BrowserSelectionOptions browserOptions, string action, string description)
     {
         var expected = new Argument<string>("expected") { Description = "Expected body text fragment." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
-        var command = new Command("contains", "Assert that the page body contains text.") { expected, timeout };
+        var command = new Command(action, description) { expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("contains", [parseResult.GetValue(expected) ?? string.Empty], TimeoutOptions(parseResult, timeout))));
+            ToScriptLine(action, [parseResult.GetValue(expected) ?? string.Empty], TimeoutOptions(parseResult, timeout))));
         return command;
     }
 

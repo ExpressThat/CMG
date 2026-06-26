@@ -8,6 +8,10 @@ public sealed class CmgActionLowererExpectationAliasTests
     [InlineData("toHaveText", "assertText \"#target\" \"Saved\"", "Saved")]
     [InlineData("containsText", "assertText \"#target\" \"Saved\"", "Saved")]
     [InlineData("waitForText", "assertText \"#target\" \"Saved\"", "Saved")]
+    [InlineData("expectNoText", "expectNoText \"#target\" \"Saved\"", "Saved")]
+    [InlineData("notContainsText", "notContainsText \"#target\" \"Saved\"", "Saved")]
+    [InlineData("toNotContainText", "toNotContainText \"#target\" \"Saved\"", "Saved")]
+    [InlineData("toHaveNoText", "toHaveNoText \"#target\" \"Saved\"", "Saved")]
     [InlineData("toBeVisible", "expectVisible \"#target\"")]
     [InlineData("waitForVisible", "expectVisible \"#target\"")]
     [InlineData("toBeHidden", "expectHidden \"#target\"")]
@@ -28,6 +32,14 @@ public sealed class CmgActionLowererExpectationAliasTests
         var line = Assert.Single(new CmgActionLowerer().Lower(Node("contains", ["Saved"])));
 
         Assert.Equal("assertText \"body\" \"Saved\"", line);
+    }
+
+    [Fact]
+    public void Lower_NegativeContainsDefaultsToBody()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("notContains", ["Error"])));
+
+        Assert.Equal("notContains \"body\" \"Error\"", line);
     }
 
     [Theory]

@@ -471,11 +471,15 @@ contains "<selector>" "expected text"
 containsText "<selector>" "expected text"
 toContainText "<selector>" "expected text"
 waitForText "<selector>" "expected text" timeout=5000
+notContains "unexpected text"
+notContainsText "<selector>" "unexpected text"
+toNotContainText "<selector>" "unexpected text"
+expectNoText "<selector>" "unexpected text"
 ```
 
-Reads an element's visible text and fails unless it contains the expected text. When `timeout` is provided, CMG polls the element text until it matches or the timeout expires. The DSL `expectText`, `toHaveText`, `toContainText`, `containsText`, `waitForText`, and `contains` actions lower to this command and support the same option.
+Reads an element's visible text and fails unless it contains the expected text. Negative aliases fail when the text is still present. When `timeout` is provided, CMG polls the element text until it matches, becomes absent, or the timeout expires. The DSL `expectText`, `toHaveText`, `toContainText`, `containsText`, `waitForText`, `contains`, `expectNoText`, `expectNotText`, `notContains`, `notContainsText`, `toNotContainText`, and `toHaveNoText` actions use this assertion path and support the same option.
 
-`contains "text"` and `toContainText "text"` check the page `body`, which matches the common provider pattern for finding text anywhere on the page. `contains "<selector>" "text"`, `toContainText "<selector>" "text"`, `containsText`, and `waitForText` check the target selector or rich locator.
+`contains "text"`, `toContainText "text"`, `notContains "text"`, and `toNotContainText "text"` check the page `body`, which matches the common provider pattern for finding text anywhere on the page. Selector forms and the other aliases check the target selector or rich locator.
 
 Options:
 
@@ -486,6 +490,7 @@ Example:
 ```text
 assertText "#lastDialogAction" "None"
 contains "CMG Browser Control Test Page"
+notContains "Unhandled error"
 waitForText "h1" "CMG Browser Control Test Page" timeout=5000
 ```
 
