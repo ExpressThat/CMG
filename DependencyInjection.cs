@@ -15,6 +15,8 @@ public static class DependencyInjection
         services.AddSingleton<BrowserCommandBuilder>();
         services.AddSingleton<BrowserControlCommandBuilder>();
         services.AddSingleton<RunCommandBuilder>();
+        services.AddSingleton<ApiCommandBuilder>();
+        services.AddSingleton<FilesCommandBuilder>();
         services.AddSingleton<IBrowserCommandHandler, BrowserCommandHandler>();
         services.AddSingleton<IBrowserControlCommandHandler, BrowserControlCommandHandler>();
         services.AddSingleton<ICmgRunCommandHandler, CmgRunCommandHandler>();

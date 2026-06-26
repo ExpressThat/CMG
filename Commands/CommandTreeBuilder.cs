@@ -12,11 +12,19 @@ public sealed class CommandTreeBuilder : ICommandTreeBuilder
 {
     private readonly BrowserCommandBuilder browserCommandBuilder;
     private readonly RunCommandBuilder runCommandBuilder;
+    private readonly ApiCommandBuilder apiCommandBuilder;
+    private readonly FilesCommandBuilder filesCommandBuilder;
 
-    public CommandTreeBuilder(BrowserCommandBuilder browserCommandBuilder, RunCommandBuilder runCommandBuilder)
+    public CommandTreeBuilder(
+        BrowserCommandBuilder browserCommandBuilder,
+        RunCommandBuilder runCommandBuilder,
+        ApiCommandBuilder apiCommandBuilder,
+        FilesCommandBuilder filesCommandBuilder)
     {
         this.browserCommandBuilder = browserCommandBuilder;
         this.runCommandBuilder = runCommandBuilder;
+        this.apiCommandBuilder = apiCommandBuilder;
+        this.filesCommandBuilder = filesCommandBuilder;
     }
 
     public RootCommand Build()
@@ -41,6 +49,8 @@ public sealed class CommandTreeBuilder : ICommandTreeBuilder
 
         rootCommand.Subcommands.Add(browserCommandBuilder.Build(browserOptions));
         rootCommand.Subcommands.Add(runCommandBuilder.Build(browserOptions));
+        rootCommand.Subcommands.Add(apiCommandBuilder.Build());
+        rootCommand.Subcommands.Add(filesCommandBuilder.Build());
 
         return rootCommand;
     }
