@@ -222,7 +222,7 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildDragAndDropCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildDragAndDropCommand(BrowserSelectionOptions browserOptions, string name)
     {
         var sourceArgument = new Argument<string>("sourceSelector")
         {
@@ -233,7 +233,7 @@ public sealed partial class BrowserControlCommandBuilder
             Description = "CSS selector for the drop target."
         };
 
-        var command = new Command("dragAndDrop", "Drag one element onto another.")
+        var command = new Command(name, "Drag one element onto another.")
         {
             sourceArgument,
             targetArgument
@@ -241,7 +241,7 @@ public sealed partial class BrowserControlCommandBuilder
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "dragAndDrop",
+                name,
                 parseResult.GetValue(sourceArgument) ?? string.Empty,
                 parseResult.GetValue(targetArgument) ?? string.Empty)));
 

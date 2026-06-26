@@ -9,5 +9,7 @@ cmg browser control input scroll [command] [options]
 ## Subcommands
 
 - [`to`](to.md): Scroll to an absolute position or alias.
+- [`scrollTo`](scrollTo.md): Scroll to an absolute position or alias.
 - [`by`](by.md): Scroll by a delta.
+- [`scrollBy`](scrollBy.md): Scroll by a delta.
 - [`wheel`](wheel.md): Dispatch a wheel event and scroll.

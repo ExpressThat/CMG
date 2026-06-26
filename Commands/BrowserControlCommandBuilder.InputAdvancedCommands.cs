@@ -9,8 +9,11 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command("mouse", "Low-level mouse movement and button commands.");
         command.Subcommands.Add(BuildMouseCommand(browserOptions, "move", "mouseMove", "Move the mouse."));
+        command.Subcommands.Add(BuildMouseCommand(browserOptions, "mouseMove", "mouseMove", "Move the mouse."));
         command.Subcommands.Add(BuildMouseCommand(browserOptions, "down", "mouseDown", "Press the mouse button."));
+        command.Subcommands.Add(BuildMouseCommand(browserOptions, "mouseDown", "mouseDown", "Press the mouse button."));
         command.Subcommands.Add(BuildMouseCommand(browserOptions, "up", "mouseUp", "Release the mouse button."));
+        command.Subcommands.Add(BuildMouseCommand(browserOptions, "mouseUp", "mouseUp", "Release the mouse button."));
         return command;
     }
 
@@ -31,15 +34,17 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command("scroll", "Window, element, and wheel scrolling commands.");
         command.Subcommands.Add(BuildScrollToCommand(browserOptions));
+        command.Subcommands.Add(BuildScrollToCommand(browserOptions, "scrollTo"));
         command.Subcommands.Add(BuildScrollByCommand(browserOptions));
+        command.Subcommands.Add(BuildScrollByCommand(browserOptions, "scrollBy"));
         command.Subcommands.Add(BuildWheelCommand(browserOptions));
         return command;
     }
 
-    private Command BuildScrollToCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildScrollToCommand(BrowserSelectionOptions browserOptions, string name = "to")
     {
         var target = OptionalTextArgument("target", "Alias target: top, bottom, left, or right.");
-        var command = new Command("to", "Scroll to an absolute position or alias.") { target };
+        var command = new Command(name, "Scroll to an absolute position or alias.") { target };
         AddScrollOptions(command, out var x, out var y, out var selector);
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
@@ -49,12 +54,12 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildScrollByCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildScrollByCommand(BrowserSelectionOptions browserOptions, string name = "by")
     {
         var x = new Argument<int>("x") { Description = "Horizontal delta." };
         var y = new Argument<int>("y") { Description = "Vertical delta." };
         var selector = CliStringOption("--selector", "Optional element selector to scroll.");
-        var command = new Command("by", "Scroll by a delta.") { x, y, selector };
+        var command = new Command(name, "Scroll by a delta.") { x, y, selector };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
@@ -90,18 +95,22 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command("clipboard", "Page-side clipboard shim commands.");
         command.Subcommands.Add(BuildClipboardSetCommand(browserOptions));
+        command.Subcommands.Add(BuildClipboardSetCommand(browserOptions, "setClipboard"));
+        command.Subcommands.Add(BuildClipboardSetCommand(browserOptions, "writeClipboard"));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "read", "Read clipboard shim text.", "readClipboard"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "readClipboard", "Read clipboard shim text.", "readClipboard"));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "clear", "Clear clipboard shim text.", "clearClipboard"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "clearClipboard", "Clear clipboard shim text.", "clearClipboard"));
         return command;
     }
 
-    private Command BuildClipboardSetCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildClipboardSetCommand(BrowserSelectionOptions browserOptions, string name = "set")
     {
         var text = new Argument<string>("text") { Description = "Clipboard text." };
-        var command = new Command("set", "Set clipboard shim text.") { text };
+        var command = new Command(name, "Set clipboard shim text.") { text };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("setClipboard", parseResult.GetValue(text) ?? string.Empty)));
+            ToScriptLine(name is "writeClipboard" ? "writeClipboard" : "setClipboard", parseResult.GetValue(text) ?? string.Empty)));
         return command;
     }
 

@@ -9,8 +9,11 @@ cmg browser control input mouse [command] [options]
 ## Subcommands
 
 - [`move`](move.md): Move the mouse.
+- [`mouseMove`](mouseMove.md): Move the mouse.
 - [`down`](down.md): Press the mouse button.
+- [`mouseDown`](mouseDown.md): Press the mouse button.
 - [`up`](up.md): Release the mouse button.
+- [`mouseUp`](mouseUp.md): Release the mouse button.
 
 ## Target Forms
 
