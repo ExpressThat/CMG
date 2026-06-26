@@ -852,6 +852,18 @@ expectText "#result" "shadow"
 
 Filter locator examples are available as `demo-scripts/41-locator-filters.cmgscript`. Provider-style `getBy*` locator examples are available as `demo-scripts/95-provider-locators.cmgscript`. Shadow DOM locator examples are available as `demo-scripts/90-shadow-locators.cmgscript`. The structured `cmg run` forms are available as `demo-scripts/42-locator-filters-runner.cmgscript`, `demo-scripts/96-provider-locators-runner.cmgscript`, and `demo-scripts/91-shadow-locators-runner.cmgscript`.
 
+## Worker Event Waits
+
+```text
+setContent "<main><script>window.worker = new Worker(URL.createObjectURL(new Blob(['self.onmessage = () => postMessage(\"ready\")'], { type: 'text/javascript' })));</script></main>"
+waitForEvent worker "blob:" timeout=5000
+listWorkers
+```
+
+`waitForEvent worker` and `waitForEvent serviceWorker` use the same matcher options as `waitForWorker`: `match=contains|exact|regex`, `ignoreCase=true`, and `timeout=<milliseconds>`. They are non-visual waits, so GIF recordings do not move the virtual pointer for the wait itself, but the wait output and any failure reason are still included in traces and reports.
+
+This direct-script example is available as `demo-scripts/97-worker-event.cmgscript`. The structured `cmg run` form is available as `demo-scripts/98-worker-event-runner.cmgscript`.
+
 ## Scoped Selectors With `within`
 
 ```text

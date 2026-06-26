@@ -1016,6 +1016,8 @@ waitForEvent request "/api/profile"
 waitForEvent requestFinished "/api/profile"
 waitForEvent requestFailed "/api/profile"
 waitForEvent response pattern="/api/profile"
+waitForEvent worker "worker.js"
+waitForEvent serviceWorker "sw.js"
 waitForEvent websocket "/socket"
 waitForEvent websocketMessage "ready"
 waitForEvent download directory="demo-output" pattern="*.csv"
@@ -1025,7 +1027,7 @@ Provider-style event wait that maps to CMG's explicit wait actions. Use it when 
 
 Arguments:
 
-- First argument: event name. Supported values are `popup`, `page`, `tab`, `download`, `dialog`, `console`, `pageError`, `request`, `requestFinished`, `requestFailed`, `response`, `websocket`, and `websocketMessage`.
+- First argument: event name. Supported values are `popup`, `page`, `tab`, `download`, `dialog`, `console`, `pageError`, `request`, `requestFinished`, `requestFailed`, `response`, `worker`, `serviceWorker`, `websocket`, and `websocketMessage`.
 - Second argument: matcher text for events that require a message or URL matcher. `popup`, `page`, `tab`, and `download` do not need a matcher.
 
 Options:
@@ -1036,7 +1038,7 @@ Options:
 
 Output:
 
-- Uses the output shape of the mapped action, such as `TAB_COUNT`, `DOWNLOAD`, `DIALOG`, `CONSOLE`, `PAGE_ERROR`, `REQUEST`, `REQUEST_FINISHED`, `REQUEST_FAILED`, or `RESPONSE`.
+- Uses the output shape of the mapped action, such as `TAB_COUNT`, `DOWNLOAD`, `DIALOG`, `CONSOLE`, `PAGE_ERROR`, `REQUEST`, `REQUEST_FINISHED`, `REQUEST_FAILED`, `RESPONSE`, or `WORKER_READY`.
 - WebSocket event waits use `WEBSOCKET` or `WEBSOCKET_MESSAGE`.
 
 Failures:

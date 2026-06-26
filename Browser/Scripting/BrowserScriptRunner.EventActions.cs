@@ -23,11 +23,13 @@ public sealed partial class BrowserScriptRunner
             "requestfailed" or "request-failed" =>
                 ExecuteWaitForRequestFailed(remoteDebuggingUrl, automationClient, action with { Arguments = [EventMatcher(action)] }),
             "response" => ExecuteWaitForResponse(remoteDebuggingUrl, automationClient, action with { Arguments = [EventMatcher(action)] }),
+            "worker" or "serviceworker" or "service-worker" =>
+                WaitForWorker(remoteDebuggingUrl, automationClient, action with { Arguments = [EventMatcher(action)] }),
             "websocket" or "web-socket" => WaitForWebSocket(remoteDebuggingUrl, automationClient, action with { Arguments = [EventMatcher(action)] }),
             "websocketmessage" or "websocket-message" =>
                 WaitForWebSocketMessage(remoteDebuggingUrl, automationClient, action with { Arguments = [EventMatcher(action)] }),
             _ => throw new ScriptExecutionException(
-                "waitForEvent supports popup, page, tab, download, dialog, console, pageError, request, requestFinished, requestFailed, response, websocket, and websocketMessage.")
+                "waitForEvent supports popup, page, tab, download, dialog, console, pageError, request, requestFinished, requestFailed, response, worker, serviceWorker, websocket, and websocketMessage.")
         };
     }
 

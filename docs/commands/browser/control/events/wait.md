@@ -8,7 +8,7 @@ cmg browser control events wait <event> [matcher] [options]
 
 ## Arguments
 
-- `<event>`: Event name. Supported values include `popup`, `page`, `tab`, `download`, `dialog`, `console`, `pageError`, `request`, `requestFinished`, `requestFailed`, `response`, `websocket`, and `websocketMessage`.
+- `<event>`: Event name. Supported values include `popup`, `page`, `tab`, `download`, `dialog`, `console`, `pageError`, `request`, `requestFinished`, `requestFailed`, `response`, `worker`, `serviceWorker`, `websocket`, and `websocketMessage`.
 - `[matcher]`: Optional event matcher text, such as dialog text, console text, URL text, or WebSocket text.
 
 ## Options

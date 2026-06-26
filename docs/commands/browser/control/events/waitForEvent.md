@@ -8,7 +8,7 @@ cmg browser control events waitForEvent <event> [matcher] [options]
 
 ## Arguments
 
-- `<event>`: Event name, such as `dialog`, `console`, `request`, `response`, or `download`.
+- `<event>`: Event name, such as `dialog`, `console`, `request`, `response`, `worker`, `serviceWorker`, or `download`.
 - `[matcher]`: Optional event matcher text.
 
 ## Options
@@ -46,4 +46,5 @@ Writes browser, argument, timeout, parse, or action errors.
 ```powershell
 cmg browser control events waitForEvent response "/api/profile" --status 200 --timeout 5000
 cmg browser control events waitForEvent console "^Ready$" --match regex --ignore-case
+cmg browser control events waitForEvent worker "worker.js" --match contains
 ```

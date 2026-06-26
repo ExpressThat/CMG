@@ -1,0 +1,5 @@
+test "worker event wait" {
+  setContent "<main><script>window.worker = new Worker(URL.createObjectURL(new Blob(['self.onmessage = () => postMessage(\"ready\")'], { type: 'text/javascript' })));</script></main>"
+  waitForEvent worker "blob:" timeout=5000
+  listWorkers
+}

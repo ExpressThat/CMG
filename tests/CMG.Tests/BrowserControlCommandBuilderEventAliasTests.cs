@@ -24,6 +24,8 @@ public sealed class BrowserControlCommandBuilderEventAliasTests
     [InlineData("pageErrors toHaveNoPageError Boom", "toHaveNoPageError \"Boom\"")]
     [InlineData("waitForEvent response /api --status 200", "waitForEvent \"response\" \"/api\" status=\"200\"")]
     [InlineData("waitForEvent console Ready --match exact --ignore-case", "waitForEvent \"console\" \"Ready\" match=\"exact\" ignoreCase=\"true\"")]
+    [InlineData("waitForEvent worker worker.js --match regex", "waitForEvent \"worker\" \"worker.js\" match=\"regex\"")]
+    [InlineData("wait serviceWorker sw.js --timeout 5000", "waitForEvent \"serviceWorker\" \"sw.js\" timeout=\"5000\"")]
     public void EventAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();

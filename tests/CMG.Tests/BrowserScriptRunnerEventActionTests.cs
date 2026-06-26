@@ -70,12 +70,27 @@ public sealed class BrowserScriptRunnerEventActionTests
     }
 
     [Fact]
-    public void RunText_WaitForEventReportsUnknownEvent()
+    public void RunText_WaitForEventWorkerUsesWorkerWait()
     {
-        var result = Runner().RunText("waitForEvent workerclose \"worker.js\"", "debug", new FakeAutomationClient());
+        var client = new FakeAutomationClient();
+        client.Workers.Add(new BrowserWorkerInfo("w1", "worker", "worker.js", "https://example.test/worker.js"));
 
-        Assert.False(result.Success);
-        Assert.Contains("waitForEvent supports", result.Error);
+        var result = Runner().RunText("waitForEvent worker \"worker.js\" timeout=100", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(result.StdoutLines, line => line.Contains("WORKER_READY", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_WaitForEventServiceWorkerUsesWorkerWait()
+    {
+        var client = new FakeAutomationClient();
+        client.Workers.Add(new BrowserWorkerInfo("sw1", "service_worker", "sw.js", "https://example.test/sw.js"));
+
+        var result = Runner().RunText("waitForEvent serviceWorker pattern=\"sw.js\" timeout=100", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(result.StdoutLines, line => line.Contains("WORKER_READY", StringComparison.Ordinal));
     }
 
     [Fact]

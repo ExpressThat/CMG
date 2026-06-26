@@ -186,6 +186,8 @@ dotnet run -- --firefox browser close
 - `94-provider-declarations-runner.cmgscript`: Demonstrates provider-style `.skip`, `.fixme`, and `.todo` runner declarations.
 - `95-provider-locators.cmgscript`: Demonstrates provider-style `getByText`, `getByRole`, `getByLabel`, `getByTestId`, `getByPlaceholder`, `getByAltText`, and `getByTitle` locators in a direct script.
 - `96-provider-locators-runner.cmgscript`: Demonstrates provider-style `getBy*` locators in the structured runner DSL.
+- `97-worker-event.cmgscript`: Demonstrates provider-style `waitForEvent worker` in a direct script.
+- `98-worker-event-runner.cmgscript`: Demonstrates provider-style `waitForEvent worker` in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

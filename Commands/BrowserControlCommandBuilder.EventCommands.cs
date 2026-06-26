@@ -160,7 +160,7 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildWaitForEventCommand(BrowserSelectionOptions browserOptions, string name = "wait")
     {
-        var eventName = new Argument<string>("event") { Description = "Event name, such as dialog, console, request, response, or download." };
+        var eventName = new Argument<string>("event") { Description = "Event name, such as dialog, console, request, response, worker, or download." };
         var matcher = new Argument<string?>("matcher") { Description = "Optional event matcher text.", Arity = ArgumentArity.ZeroOrOne };
         var command = new Command(name, "Wait for a supported browser event.") { eventName, matcher };
         var timeout = CliIntOption("--timeout", "Timeout in milliseconds.");
