@@ -130,6 +130,8 @@ dotnet run -- --firefox browser close
 - `40-switch-control-runner.cmgscript`: Demonstrates the same switch control flow in the structured runner DSL.
 - `41-locator-filters.cmgscript`: Demonstrates exact text, regex text, role/name, `first=`, `nth=`, `has=`, `hasNot=`, `hasText=`, `hasNotText=`, and `visible=` locators with pointer-aware actions.
 - `42-locator-filters-runner.cmgscript`: Demonstrates the same locator filters in the structured runner DSL.
+- `90-shadow-locators.cmgscript`: Demonstrates `shadow=` and `shadowText=` locators for open shadow roots with pointer-aware actions.
+- `91-shadow-locators-runner.cmgscript`: Demonstrates the same open shadow-root locators in the structured runner DSL.
 - `43-scroll-wheel.cmgscript`: Demonstrates window and element `scrollTo`, `scrollBy`, and wheel input in direct scripts.
 - `44-scroll-wheel-runner.cmgscript`: Demonstrates the same scroll and wheel actions in the structured runner DSL.
 - `45-provider-aliases.cmgscript`: Demonstrates provider-style aliases such as `toHaveTitle`, `toContainText`, `pressSequentially`, `setInputFiles`, and `dragTo`.

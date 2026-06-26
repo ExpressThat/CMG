@@ -20,8 +20,8 @@ public sealed partial class BrowserScriptRunner
     {
         var targetName = many ? "elements" : "element";
         var targetLookup = many
-            ? $"Array.from(document.querySelectorAll({QuoteScriptString(selector)}))"
-            : $"document.querySelector({QuoteScriptString(selector)})";
+            ? $"Array.from({CMG.Browser.BrowserDomScripts.QueryAll(selector)})"
+            : CMG.Browser.BrowserDomScripts.Query(selector);
         var missingCheck = many
             ? $"if ({targetName}.length === 0) throw new Error('No elements matched selector {selector}'); "
             : $"if (!{targetName}) throw new Error('No element matched selector {selector}'); ";

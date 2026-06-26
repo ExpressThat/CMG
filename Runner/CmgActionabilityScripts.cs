@@ -1,3 +1,5 @@
+using CMG.Browser;
+
 namespace CMG.Runner;
 
 public static class CmgActionabilityScripts
@@ -14,7 +16,7 @@ public static class CmgActionabilityScripts
           const deadline = Date.now() + {{timeout}};
           let last = null;
           const check = () => {
-            const element = document.querySelector({{QuoteJs(selector)}});
+            const element = {{BrowserDomScripts.Query(selector)}};
             if (!element) {
               if (Date.now() > deadline) reject(new Error('No element matched selector {{EscapeMessage(selector)}}'));
               else setTimeout(check, 50);

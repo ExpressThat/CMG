@@ -10,7 +10,7 @@ public sealed partial class FirefoxBiDiClient : IBrowserAutomationClient
     private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(100);
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) =>
-        NonEmpty(Evaluate(remoteDebuggingUrl, $"document.querySelector({BrowserDomScripts.JsonString(selector)})?.outerHTML ?? null"), selector);
+        NonEmpty(Evaluate(remoteDebuggingUrl, $"(() => {{ const element = {BrowserDomScripts.Query(selector)}; return element?.outerHTML ?? null; }})()"), selector);
 
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector, ScreenshotOptions? options = null) =>
         Run(async () =>

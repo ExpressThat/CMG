@@ -802,9 +802,19 @@ assertText "hasText=.toast|Saved" "Saved"
 assertText "hasNotText=.toast|Draft" "Saved"
 ```
 
-The same locator resolver is used by direct browser-control scripts and `cmg run`. Filter locators such as `first=`, `last=`, `nth=`, `has=`, `hasNot=`, `hasText=`, `hasNotText=`, and `visible=` resolve CSS matches into a temporary marker. Pointer-aware actions still move the virtual pointer to the resolved element marker, so GIFs keep the pointer, browser events, and drag ghost behavior aligned.
+The same locator resolver is used by direct browser-control scripts and `cmg run`. Filter locators such as `first=`, `last=`, `nth=`, `has=`, `hasNot=`, `hasText=`, `hasNotText=`, `visible=`, `shadow=`, and `shadowText=` resolve matches into a temporary marker. Pointer-aware actions still move the virtual pointer to the resolved element marker, so GIFs keep the pointer, browser events, and drag ghost behavior aligned.
 
-Filter locator examples are available as `demo-scripts/41-locator-filters.cmgscript`. The structured `cmg run` form is available as `demo-scripts/42-locator-filters-runner.cmgscript`.
+Shadow DOM locators require an open shadow root. Use `shadow=hostSelector|innerSelector` when you know the inner CSS selector, or `shadowText=hostSelector|text` to select the first shadow descendant containing text.
+
+```text
+click "shadow=#shadowHost|button.save"
+expectText "#result" "shadow"
+
+click "shadowText=#shadowHost|Shadow Save"
+expectText "#result" "shadow"
+```
+
+Filter locator examples are available as `demo-scripts/41-locator-filters.cmgscript`. Shadow DOM locator examples are available as `demo-scripts/90-shadow-locators.cmgscript`. The structured `cmg run` forms are available as `demo-scripts/42-locator-filters-runner.cmgscript` and `demo-scripts/91-shadow-locators-runner.cmgscript`.
 
 ## Scoped Selectors With `within`
 

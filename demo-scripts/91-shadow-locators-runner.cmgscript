@@ -1,0 +1,11 @@
+test "shadow locators" {
+  setContent "<main><div id='shadowHost'></div><output id='result'>none</output><script>const root=document.querySelector('#shadowHost').attachShadow({mode:'open'});root.innerHTML='<button class=\"save\" onclick=\"document.querySelector(\\'#result\\').textContent=\\'shadow\\'\">Shadow Save</button>';</script></main>"
+
+  click "shadow=#shadowHost|button.save"
+  expectText "#result" "shadow"
+
+  setContent "<main><div id='shadowHost'></div><output id='result'>none</output><script>const root=document.querySelector('#shadowHost').attachShadow({mode:'open'});root.innerHTML='<button class=\"save\" onclick=\"document.querySelector(\\'#result\\').textContent=\\'shadowText\\'\">Shadow Save</button>';</script></main>"
+
+  click "shadowText=#shadowHost|Shadow Save"
+  expectText "#result" "shadowText"
+}

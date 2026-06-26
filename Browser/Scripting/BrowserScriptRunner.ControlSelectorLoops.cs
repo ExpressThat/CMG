@@ -32,13 +32,13 @@ public sealed partial class BrowserScriptRunner
     {
         var result = automationClient.Evaluate(
             remoteDebuggingUrl,
-            $"document.querySelectorAll({QuoteScriptString(selector)}).length");
+            $"{CMG.Browser.BrowserDomScripts.QueryAll(selector)}.length");
         return int.TryParse(result, out var count) ? count : 0;
     }
 
     private static string MarkSelectorMatch(string selector, int index, int lineNumber) =>
         "(() => { "
-        + $"const elements = Array.from(document.querySelectorAll({QuoteScriptString(selector)})); "
+        + $"const elements = Array.from({CMG.Browser.BrowserDomScripts.QueryAll(selector)}); "
         + $"if (!elements[{index}]) throw new Error('No element at index {index} for selector {selector}'); "
         + $"elements[{index}].id = '__cmg_foreach_{lineNumber}_{index}'; "
         + "return true; })()";

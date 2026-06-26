@@ -47,7 +47,7 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 1, 1);
         var selector = ResolveSelector(remoteDebuggingUrl, automationClient, action);
-        var script = $"document.querySelectorAll({QuoteScriptString(selector)}).length";
+        var script = $"{CMG.Browser.BrowserDomScripts.QueryAll(selector)}.length";
         return [$"COUNT {action.LineNumber:000} {automationClient.Evaluate(remoteDebuggingUrl, script)}"];
     }
 
@@ -73,7 +73,7 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 1, 1);
         var selector = ResolveSelector(remoteDebuggingUrl, automationClient, action);
         var property = action.Name.Equals("allInnerTexts", StringComparison.OrdinalIgnoreCase) ? "innerText" : "textContent";
-        var script = $"JSON.stringify(Array.from(document.querySelectorAll({QuoteScriptString(selector)})).map(element => element.{property} ?? ''))";
+        var script = $"JSON.stringify(Array.from({CMG.Browser.BrowserDomScripts.QueryAll(selector)}).map(element => element.{property} ?? ''))";
         return [$"TEXTS {action.LineNumber:000} {automationClient.Evaluate(remoteDebuggingUrl, script)}"];
     }
 

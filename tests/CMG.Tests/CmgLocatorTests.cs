@@ -27,11 +27,14 @@ public sealed class CmgLocatorTests
     [InlineData("hasText=.item|Save", "includes('Save')")]
     [InlineData("hasNotText=.item|Draft", "!")]
     [InlineData("visible=.item", "IsVisible")]
+    [InlineData("shadow=#host|button.save", "shadowRoot?.querySelector('button.save')")]
+    [InlineData("shadowText=#host|Shadow Save", "shadowRoot?.querySelectorAll('*')")]
     public void PrefixExpressions_FilterLocatorsMarkElement(string locator, string expected)
     {
         var expression = Assert.Single(CmgLocator.PrefixExpressions(locator, 7));
 
         Assert.Contains(expected, expression);
+        Assert.Contains("__cmgLocatorElements", expression);
         Assert.Contains("__cmg_locator_7", expression);
     }
 
@@ -50,6 +53,16 @@ public sealed class CmgLocatorTests
         var expression = Assert.Single(CmgLocator.PrefixExpressions("roleRegex=button", 7));
 
         Assert.Contains("Locator roleRegex= requires <role>|<name-regex>", expression);
+    }
+
+    [Theory]
+    [InlineData("shadow=#host", "Locator shadow= requires <host-selector>|<inner-selector>")]
+    [InlineData("shadowText=#host", "Locator shadowText= requires <host-selector>|<text>")]
+    public void PrefixExpressions_ShadowLocatorsRequireHostAndTarget(string locator, string expected)
+    {
+        var expression = Assert.Single(CmgLocator.PrefixExpressions(locator, 7));
+
+        Assert.Contains(expected, expression);
     }
 
     [Theory]

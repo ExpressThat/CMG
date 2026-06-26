@@ -18,7 +18,7 @@ public sealed partial class ChromeDevToolsClient
             await using var session = await DevToolsSession.Connect(pageTarget);
             var response = await session.SendCommand("Runtime.evaluate", writer =>
             {
-                writer.WriteString("expression", $"Boolean(document.querySelector({ToJsonStringLiteral(selector)}))");
+                writer.WriteString("expression", $"Boolean({BrowserDomScripts.Query(selector)})");
                 writer.WriteBoolean("returnByValue", true);
             });
 

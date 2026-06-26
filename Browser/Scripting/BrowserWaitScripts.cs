@@ -7,7 +7,7 @@ public static class BrowserWaitScripts
     public static string SelectorState(string selector) =>
         $$"""
         (() => {
-          const element = document.querySelector({{BrowserDomScripts.JsonString(selector)}});
+          const element = {{BrowserDomScripts.Query(selector)}};
           if (!element) return JSON.stringify({ attached: false, visible: false });
           const rect = element.getBoundingClientRect();
           const style = getComputedStyle(element);

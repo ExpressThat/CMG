@@ -26,7 +26,7 @@ public sealed partial class BrowserScriptRunner
         var eventType = detail is null ? "Event" : "CustomEvent";
 
         return "(() => { "
-            + $"const element = document.querySelector({QuoteScriptString(selector)}); "
+            + $"const element = {CMG.Browser.BrowserDomScripts.Query(selector)}; "
             + $"if (!element) throw new Error('No element matched selector {selector}'); "
             + $"element.dispatchEvent(new {eventType}({eventName}, {options})); "
             + "return true; })()";

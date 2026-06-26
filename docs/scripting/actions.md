@@ -2202,6 +2202,9 @@ Direct browser-control scripts and `cmg run` both support:
   - `"hasText=.item|Save"` resolves the first matching CSS element whose visible/text content includes `Save`.
   - `"hasNotText=.item|Draft"` resolves the first matching CSS element whose visible/text content does not include `Draft`.
   - `"visible=.item"` resolves the first matching CSS element that has a non-empty box and is not hidden by `display:none` or `visibility:hidden`.
+- Open shadow DOM locators:
+  - `"shadow=#host|button.save"` resolves `button.save` inside `#host`'s open shadow root.
+  - `"shadowText=#host|Shadow Save"` resolves the first descendant inside `#host`'s open shadow root whose text contains `Shadow Save`.
 
 For non-CSS locator forms, CMG resolves the element inside the page, marks it with a temporary `data-cmg-locator-id`, and then runs the normal pointer-aware command against that marker. This keeps GIF pointer movement, browser events, drag ghosts, and screenshots connected to the resolved element.
 
@@ -2218,11 +2221,12 @@ type labelExact=Email "agent@example.com"
 click "text=Save changes"
 click "nth=.result|2"
 click "has=.card|button.primary"
+click "shadow=#host|button.save"
 assertText "hasText=.toast|Saved" "Saved"
 mouseMove selector="text=Drop here" edge=center
 ```
 
-Quote the whole locator token when the locator value contains spaces or filter separators. Filter locators are resolved to the same temporary element marker as text/role/xpath locators, so pointer-aware actions and GIF recordings target the resolved element.
+Quote the whole locator token when the locator value contains spaces or filter separators. Filter and open shadow-root locators are resolved to the same temporary element marker as text/role/xpath locators, so pointer-aware actions and GIF recordings target the resolved element.
 
 ## Actionability
 

@@ -53,7 +53,7 @@ public sealed partial class ChromeDevToolsClient
                 "expression",
                 $$"""
                 (() => {
-                  const element = document.querySelector({{ToJsonStringLiteral(selector)}});
+                  const element = {{BrowserDomScripts.Query(selector)}};
                   if (!element) return null;
                   const rect = element.getBoundingClientRect();
                   return {

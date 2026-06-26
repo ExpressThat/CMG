@@ -36,7 +36,7 @@ public sealed partial class FirefoxBiDiClient
             var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeoutMilliseconds);
             while (DateTimeOffset.UtcNow <= deadline)
             {
-                if (Evaluate(remoteDebuggingUrl, $"Boolean(document.querySelector({BrowserDomScripts.JsonString(selector)}))") is "true")
+                if (Evaluate(remoteDebuggingUrl, $"Boolean({BrowserDomScripts.Query(selector)})") is "true")
                 {
                     return true;
                 }
@@ -109,7 +109,7 @@ public sealed partial class FirefoxBiDiClient
         Evaluate(remoteDebuggingUrl, BrowserDomScripts.PromoteMessageBar());
 
     public string GetElementText(string remoteDebuggingUrl, string selector) =>
-        NonEmpty(Evaluate(remoteDebuggingUrl, $"document.querySelector({BrowserDomScripts.JsonString(selector)})?.innerText ?? document.querySelector({BrowserDomScripts.JsonString(selector)})?.textContent ?? null"), selector);
+        NonEmpty(Evaluate(remoteDebuggingUrl, $"(() => {{ const element = {BrowserDomScripts.Query(selector)}; return element?.innerText ?? element?.textContent ?? null; }})()"), selector);
 
     public string Evaluate(string remoteDebuggingUrl, string expression) =>
         Run(async () =>

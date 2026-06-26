@@ -25,7 +25,7 @@ public sealed partial class BrowserScriptRunner
     {
         var buttons = button == 2 ? 2 : 1;
         return "(() => { "
-            + $"const element = document.querySelector({QuoteScriptString(selector)}); "
+            + $"const element = {CMG.Browser.BrowserDomScripts.Query(selector)}; "
             + $"if (!element) throw new Error('No element matched selector {selector}'); "
             + "const rect = element.getBoundingClientRect(); "
             + "const options = { bubbles: true, cancelable: true, "

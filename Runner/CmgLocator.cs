@@ -73,7 +73,9 @@ public static class CmgLocator
         locator.StartsWith("hasNot=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("hasText=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("hasNotText=", StringComparison.OrdinalIgnoreCase) ||
-        locator.StartsWith("visible=", StringComparison.OrdinalIgnoreCase);
+        locator.StartsWith("visible=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("shadow=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("shadowText=", StringComparison.OrdinalIgnoreCase);
 
     public static string UnsupportedReason(string locator) => $"Locator '{locator}' is not supported.";
 
@@ -104,7 +106,7 @@ public static class CmgLocator
         var kind = locator[..locator.IndexOf('=')].ToLowerInvariant();
         var value = locator[(locator.IndexOf('=') + 1)..];
         const string helpers = "const implicitRole = e => e.tagName === 'BUTTON' ? 'button' : e.tagName === 'A' && e.hasAttribute('href') ? 'link' : e.tagName === 'INPUT' || e.tagName === 'TEXTAREA' ? 'textbox' : ''; const accessibleName = e => e.getAttribute('aria-label') || e.getAttribute('alt') || e.getAttribute('title') || e.innerText || e.textContent || ''; const IsVisible = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };";
-        return $"(() => {{ {helpers} const element = {BuildElementExpression(kind, value)}; if (!element) throw new Error('No element matched locator {locator}'); element.setAttribute('data-cmg-locator-id', '{marker}'); return true; }})()";
+        return $"(() => {{ {InstallQueryRegistry()} {helpers} const element = {BuildElementExpression(kind, value)}; if (!element) throw new Error('No element matched locator {locator}'); window.__cmgLocatorElements['{marker}'] = element; element.setAttribute?.('data-cmg-locator-id', '{marker}'); return true; }})()";
     }
 
     private static string BuildElementExpression(string kind, string value) =>
@@ -133,6 +135,8 @@ public static class CmgLocator
             "hastext" => BuildHasTextExpression(value),
             "hasnottext" => BuildHasNotTextExpression(value),
             "visible" => $"Array.from(document.querySelectorAll({QuoteJs(value)})).find(IsVisible)",
+            "shadow" => BuildShadowExpression(value),
+            "shadowtext" => BuildShadowTextExpression(value),
             _ => "null"
         };
 
@@ -180,6 +184,23 @@ public static class CmgLocator
             ? $"Array.from(document.querySelectorAll({QuoteJs(parts.Left)})).find(e => {comparison}e.querySelector({QuoteJs(parts.Right)}))"
             : $"(() => {{ throw new Error('Locator {name}= requires <selector>|<child-selector>.'); }})()";
     }
+
+    private static string BuildShadowExpression(string value)
+    {
+        return SplitLocatorValue(value) is { } parts
+            ? $"document.querySelector({QuoteJs(parts.Left)})?.shadowRoot?.querySelector({QuoteJs(parts.Right)})"
+            : "(() => { throw new Error('Locator shadow= requires <host-selector>|<inner-selector>.'); })()";
+    }
+
+    private static string BuildShadowTextExpression(string value)
+    {
+        return SplitLocatorValue(value) is { } parts
+            ? $"Array.from(document.querySelector({QuoteJs(parts.Left)})?.shadowRoot?.querySelectorAll('*') || []).find(e => (e.innerText || e.textContent || '').includes({QuoteJs(parts.Right)}))"
+            : "(() => { throw new Error('Locator shadowText= requires <host-selector>|<text>.'); })()";
+    }
+
+    private static string InstallQueryRegistry() =>
+        "window.__cmgLocatorElements ||= {}; window.__cmgQuery = selector => { const id = selector.match(/^\\[data-cmg-locator-id=\"([^\"]+)\"\\]$/)?.[1]; return id && window.__cmgLocatorElements[id]?.isConnected ? window.__cmgLocatorElements[id] : document.querySelector(selector); }; window.__cmgQueryAll = selector => { const hit = window.__cmgQuery(selector); const id = selector.match(/^\\[data-cmg-locator-id=\"([^\"]+)\"\\]$/)?.[1]; return id ? (hit ? [hit] : []) : Array.from(document.querySelectorAll(selector)); };";
 
     private static (string Left, string Right)? SplitLocatorValue(string value)
     {

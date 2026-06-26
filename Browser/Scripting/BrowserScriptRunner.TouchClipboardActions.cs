@@ -59,7 +59,7 @@ public sealed partial class BrowserScriptRunner
     }
 
     private static string BuildTapExpression(string selector) =>
-        $"(() => {{ const element = document.querySelector({QuoteScriptString(selector)}); if (!element) throw new Error('No element matched selector {selector}'); const rect = element.getBoundingClientRect(); {TapBody("element", "rect.left + rect.width / 2", "rect.top + rect.height / 2")} }})()";
+        $"(() => {{ const element = {CMG.Browser.BrowserDomScripts.Query(selector)}; if (!element) throw new Error('No element matched selector {selector}'); const rect = element.getBoundingClientRect(); {TapBody("element", "rect.left + rect.width / 2", "rect.top + rect.height / 2")} }})()";
 
     private static string BuildTapExpression(ElementPoint point) =>
         $"(() => {{ const x = {point.X.ToString(System.Globalization.CultureInfo.InvariantCulture)}; const y = {point.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}; const element = document.elementFromPoint(x, y); if (!element) throw new Error('No element at tap target'); {TapBody("element", "x", "y")} }})()";

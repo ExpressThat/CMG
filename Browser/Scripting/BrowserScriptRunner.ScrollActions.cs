@@ -82,7 +82,7 @@ public sealed partial class BrowserScriptRunner
     private static string ScrollScript(string? selector, ScrollTarget target, bool absolute)
     {
         var method = absolute ? "scrollTo" : "scrollBy";
-        var element = string.IsNullOrWhiteSpace(selector) ? "window" : $"document.querySelector({QuoteScriptString(selector)})";
+        var element = string.IsNullOrWhiteSpace(selector) ? "window" : CMG.Browser.BrowserDomScripts.Query(selector);
         var guard = string.IsNullOrWhiteSpace(selector) ? string.Empty : $"if (!target) throw new Error('No element matched selector {selector}'); ";
         return $"(() => {{ const target = {element}; {guard} target.{method}({target.X}, {target.Y}); return true; }})()";
     }
@@ -98,7 +98,7 @@ public sealed partial class BrowserScriptRunner
     private static string WheelTarget(string? selector) =>
         string.IsNullOrWhiteSpace(selector)
             ? "document"
-            : $"document.querySelector({QuoteScriptString(selector)}) || (() => {{ throw new Error('No element matched selector {selector}'); }})()";
+            : $"{CMG.Browser.BrowserDomScripts.Query(selector)} || (() => {{ throw new Error('No element matched selector {selector}'); }})()";
 
     private static string? ReadWheelSelector(BrowserScriptAction action)
     {

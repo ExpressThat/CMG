@@ -52,7 +52,7 @@ public sealed partial class BrowserScriptRunner
         };
 
         return "(() => { "
-            + $"const element = document.querySelector({QuoteScriptString(selector)}); "
+            + $"const element = {CMG.Browser.BrowserDomScripts.Query(selector)}; "
             + $"if (!element) throw new Error('No element matched selector {selector}'); "
             + body
             + " return true; })()";

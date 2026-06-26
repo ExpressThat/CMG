@@ -58,10 +58,12 @@ public sealed class BrowserScriptRunnerRichLocatorTests
     [InlineData("roleRegex=button|^Save", "new RegExp('^Save').test(accessibleName(e))")]
     [InlineData("labelExact=Email", ".trim() === 'Email'")]
     [InlineData("labelRegex=^Email", "new RegExp('^Email')")]
+    [InlineData("shadow=#host|button.save", "shadowRoot?.querySelector('button.save')")]
+    [InlineData("shadowText=#host|Shadow Save", "shadowRoot?.querySelectorAll('*')")]
     public void RunText_ClickResolvesAdvancedFilterLocatorOptions(string locator, string expectedExpression)
     {
         var client = new FakeAutomationClient();
-        var result = Runner().RunText($"click {locator}", "debug", client);
+        var result = Runner().RunText($"click \"{locator}\"", "debug", client);
 
         Assert.True(result.Success, result.Error);
         Assert.Contains(expectedExpression, client.EvaluatedExpressions[0]);
@@ -82,10 +84,11 @@ public sealed class BrowserScriptRunnerRichLocatorTests
     public void RunText_ExpectationAcceptsGenericExactLocatorOptions()
     {
         var client = new FakeAutomationClient();
-        var result = Runner().RunText("expectVisible textRegex=^Save", "debug", client);
+        var result = Runner().RunText("expectVisible shadow=#host|button.save", "debug", client);
 
         Assert.True(result.Success, result.Error);
-        Assert.Contains("new RegExp('^Save')", client.EvaluatedExpressions[0]);
+        Assert.Contains("shadowRoot?.querySelector('button.save')", client.EvaluatedExpressions[0]);
+        Assert.Contains("__cmgQuery", client.EvaluatedExpressions[1]);
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

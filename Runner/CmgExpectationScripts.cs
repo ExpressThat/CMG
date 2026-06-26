@@ -1,3 +1,5 @@
+using CMG.Browser;
+
 namespace CMG.Runner;
 
 public static class CmgExpectationScripts
@@ -51,7 +53,7 @@ public static class CmgExpectationScripts
             _ => $"const actual = Boolean(element.checked); const ok = actual === {ExpectedChecked(action).ToString().ToLowerInvariant()}; const message = 'Expected checked to be {ExpectedChecked(action).ToString().ToLowerInvariant()}, got ' + actual + '.';"
         };
 
-        return $"(() => {{ {AccessibilityHelpers()} const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}.'); {body} if (!ok) throw new Error(message); return true; }})()";
+        return $"(() => {{ {AccessibilityHelpers()} const element = {BrowserDomScripts.Query(selector)}; if (!element) throw new Error('No element matched selector {selector}.'); {body} if (!ok) throw new Error(message); return true; }})()";
     }
 
     private static string BuildState(CmgNode action, string mode, string selector)
@@ -71,14 +73,14 @@ public static class CmgExpectationScripts
         };
         if (mode.Equals("detached", StringComparison.Ordinal))
         {
-            return $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element || !element.isConnected) return true; throw new Error('Expected element to be detached.'); }})()";
+            return $"(() => {{ const element = {BrowserDomScripts.Query(selector)}; if (!element || !element.isConnected) return true; throw new Error('Expected element to be detached.'); }})()";
         }
         if (mode.Equals("hidden", StringComparison.Ordinal))
         {
-            return $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element || !element.isConnected) return true; {check} if (!ok) throw new Error(message); return true; }})()";
+            return $"(() => {{ const element = {BrowserDomScripts.Query(selector)}; if (!element || !element.isConnected) return true; {check} if (!ok) throw new Error(message); return true; }})()";
         }
 
-        return $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}.'); {check} if (!ok) throw new Error(message); return true; }})()";
+        return $"(() => {{ const element = {BrowserDomScripts.Query(selector)}; if (!element) throw new Error('No element matched selector {selector}.'); {check} if (!ok) throw new Error(message); return true; }})()";
     }
 
     private static string BuildCount(CmgNode action, string selector, int timeout) =>
@@ -88,7 +90,7 @@ public static class CmgExpectationScripts
           const expected = {{ExpectedCount(action)}};
           const deadline = Date.now() + {{timeout}};
           const poll = () => {
-            const actual = document.querySelectorAll(selector).length;
+            const actual = window.__cmgQueryAll?.(selector)?.length ?? document.querySelectorAll(selector).length;
             if (actual === expected) { resolve(true); return; }
             if (Date.now() >= deadline) { reject(new Error('Expected ' + expected + ' elements for ' + selector + ', got ' + actual + '.')); return; }
             setTimeout(poll, 50);
@@ -139,7 +141,9 @@ public static class CmgExpectationScripts
     private static bool IsLocatorOption(string key) =>
         key is "css" or "testid" or "testId" or "data-testid" or "text" or "textExact" or "textRegex" or
             "role" or "roleRegex" or "label" or "labelExact" or "labelRegex" or "placeholder" or "placeholderExact" or
-            "placeholderRegex" or "alt" or "altExact" or "altRegex" or "title" or "titleExact" or "titleRegex" or "xpath";
+            "placeholderRegex" or "alt" or "altExact" or "altRegex" or "title" or "titleExact" or "titleRegex" or "xpath" or
+            "first" or "last" or "nth" or "has" or "hasNot" or "hasText" or "hasNotText" or "visible" or
+            "shadow" or "shadowText";
 
     private static string Fail(string message) =>
         $"(() => {{ throw new Error({QuoteJs(message)}); }})()";

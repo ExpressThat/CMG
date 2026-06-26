@@ -8,7 +8,7 @@ public sealed partial class ChromeDevToolsClient
 {
     private static string BuildOuterHtmlExpression(string selector)
     {
-        return $"(() => {{ const element = document.querySelector({ToJsonStringLiteral(selector)}); return element ? element.outerHTML : null; }})()";
+        return $"(() => {{ const element = {BrowserDomScripts.Query(selector)}; return element ? element.outerHTML : null; }})()";
     }
 
     private static string BuildElementActionExpression(string selector, string body) =>

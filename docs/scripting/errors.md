@@ -110,6 +110,7 @@ STEP FAIL line=10 action=click reason=Line 10: evaluate failed. Locator has= req
 STEP FAIL line=11 action=click reason=Line 11: evaluate failed. Locator hasNot= requires <selector>|<child-selector>.
 STEP FAIL line=12 action=click reason=Line 12: evaluate failed. Locator hasNotText= requires <selector>|<text>.
 STEP FAIL line=13 action=click reason=Line 13: evaluate failed. Locator roleRegex= requires <role>|<name-regex>.
+STEP FAIL line=14 action=click reason=Line 14: evaluate failed. Locator shadow= requires <host-selector>|<inner-selector>.
 ```
 
 `within` resolves its container before running child actions. Missing or unmatched containers fail before any scoped child action runs:

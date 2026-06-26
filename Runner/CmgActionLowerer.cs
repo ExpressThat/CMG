@@ -1,3 +1,5 @@
+using CMG.Browser;
+
 namespace CMG.Runner;
 
 public sealed partial class CmgActionLowerer
@@ -184,7 +186,7 @@ public sealed partial class CmgActionLowerer
         return [
             .. resolved.PrefixLines,
             CmgActionabilityScripts.WaitForActionable(resolved.Selector, action),
-            ToLine("evaluate", [$"(() => {{ const element = document.querySelector({QuoteJs(resolved.Selector)}); if (!element) throw new Error('No element matched selector {resolved.Selector}'); {body} }})()"])
+            ToLine("evaluate", [$"(() => {{ const element = {BrowserDomScripts.Query(resolved.Selector)}; if (!element) throw new Error('No element matched selector {resolved.Selector}'); {body} }})()"])
         ];
     }
 
@@ -193,7 +195,7 @@ public sealed partial class CmgActionLowerer
         var resolved = action.Arguments.Count > 0 ? CmgLocator.Resolve(action.Arguments[0], action.LineNumber) : new CmgResolvedLocator(string.Empty, []);
         var selector = resolved.Selector;
         var buttons = button == 2 ? 2 : 1;
-        var expression = $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}'); const rect = element.getBoundingClientRect(); const options = {{ bubbles: true, cancelable: true, button: {button}, buttons: {buttons}, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }}; element.dispatchEvent(new MouseEvent('{eventName}', options)); return true; }})()";
+        var expression = $"(() => {{ const element = {BrowserDomScripts.Query(selector)}; if (!element) throw new Error('No element matched selector {selector}'); const rect = element.getBoundingClientRect(); const options = {{ bubbles: true, cancelable: true, button: {button}, buttons: {buttons}, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }}; element.dispatchEvent(new MouseEvent('{eventName}', options)); return true; }})()";
         return [
             .. resolved.PrefixLines,
             CmgActionabilityScripts.WaitForActionable(selector, action),
