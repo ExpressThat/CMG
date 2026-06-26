@@ -172,23 +172,37 @@ public sealed partial class BrowserControlCommandBuilder
     private Command BuildSelectLikeCommand(BrowserSelectionOptions browserOptions, string name, string description)
     {
         var selectorArgument = CreateSelectorArgument();
-        var valueArgument = new Argument<string>("value")
+        var valueArgument = new Argument<string?>("value")
         {
-            Description = "Value to select."
+            Description = "Value to select.",
+            Arity = ArgumentArity.ZeroOrOne
         };
+        var label = CliStringOption("--label", "Visible option label to select.");
+        var optionValue = CliStringOption("--value", "Option value to select.");
+        var index = CliIntOption("--index", "Zero-based option index to select.");
 
         var command = new Command(name, description)
         {
             selectorArgument,
-            valueArgument
+            valueArgument,
+            label,
+            optionValue,
+            index
         };
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
                 name,
-                parseResult.GetValue(selectorArgument) ?? string.Empty,
-                parseResult.GetValue(valueArgument) ?? string.Empty)));
+                CompactArguments(parseResult.GetValue(selectorArgument), parseResult.GetValue(valueArgument)),
+                CompactOptions([
+                    StringOption("optionLabel", parseResult.GetValue(label)),
+                    StringOption("optionValue", parseResult.GetValue(optionValue)),
+                    IntOption("index", parseResult.GetValue(index))
+                ]))));
 
         return command;
     }
+
+    private static IReadOnlyList<string> CompactArguments(params string?[] values) =>
+        values.Where(value => !string.IsNullOrEmpty(value)).Cast<string>().ToArray();
 }

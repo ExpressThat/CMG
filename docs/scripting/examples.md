@@ -937,6 +937,19 @@ assertText "body" "CMG"
 
 This direct-script example is available as `demo-scripts/102-typing-delay.cmgscript`. The structured `cmg run` form is available as `demo-scripts/103-typing-delay-runner.cmgscript`.
 
+## Select Option Targets
+
+```text
+setContent "<main><label>Plan <select id='plan'><option value='free'>Free</option><option value='pro'>Pro</option><option value='team'>Team</option></select></label></main>"
+selectOption "#plan" optionLabel=Pro
+selectOption "#plan" index=2
+selectOption label=Plan optionValue=free
+```
+
+`select` and `selectOption` can target options by positional value, `optionValue=`, `optionLabel=`, or zero-based `index=`. Rich locator keys such as `label=` still identify the select element itself.
+
+This direct-script example is available as `demo-scripts/104-select-option-targets.cmgscript`. The structured `cmg run` form is available as `demo-scripts/105-select-option-targets-runner.cmgscript`.
+
 ## Pointer Click Variants
 
 ```text

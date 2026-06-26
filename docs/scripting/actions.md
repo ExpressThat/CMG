@@ -401,15 +401,21 @@ Selectors support CMG rich locators. In GIF recordings, `wheel` moves the virtua
 ```text
 select "<selector>" "value"
 selectOption "<selector>" "value"
+selectOption "<selector>" optionLabel="Visible label"
+selectOption "<selector>" optionValue="value"
+selectOption "<selector>" index=2
 ```
 
-Sets a select-like element value and dispatches `input` and `change` events. `selectOption` is a provider-style alias for the same behavior. These actions do not scroll automatically; the element center must already be inside the current viewport.
+Sets a select-like element value and dispatches `input` and `change` events. `selectOption` is a provider-style alias for the same behavior. Use a positional value for the fast native path, or use `optionLabel=`, `optionValue=`, or `index=` for provider-style selection by visible label, value, or zero-based option index. These actions do not scroll automatically; the element center must already be inside the current viewport.
+
+`label=` is reserved for CMG rich locators such as `selectOption label=Plan optionValue=pro`, so script selection by visible option text uses `optionLabel=`. The grouped CLI exposes this as `--label`.
 
 Example:
 
 ```text
 select "#environment" "prod"
 selectOption "#environment" "prod"
+selectOption "#plan" optionLabel="Pro"
 ```
 
 ## `showMessageBar`

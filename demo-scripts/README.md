@@ -193,5 +193,7 @@ dotnet run -- --firefox browser close
 - `101-click-options-runner.cmgscript`: Demonstrates optioned click dispatch in the structured runner DSL.
 - `102-typing-delay.cmgscript`: Demonstrates provider-style typing delay in a direct script.
 - `103-typing-delay-runner.cmgscript`: Demonstrates provider-style typing delay in the structured runner DSL.
+- `104-select-option-targets.cmgscript`: Demonstrates provider-style select option targets in a direct script.
+- `105-select-option-targets-runner.cmgscript`: Demonstrates provider-style select option targets in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.

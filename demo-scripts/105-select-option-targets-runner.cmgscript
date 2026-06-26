@@ -1,0 +1,9 @@
+test "select option targets" {
+  setContent "<!doctype html><title>Select Targets</title><main><label>Plan <select id='plan'><option value='free'>Free</option><option value='pro'>Pro</option><option value='team'>Team</option></select></label><output id='choice'></output><script>const plan=document.querySelector('#plan'); const out=document.querySelector('#choice'); plan.addEventListener('change', () => out.textContent = plan.value);</script></main>"
+  selectOption "#plan" optionLabel=Pro
+  assertText "#choice" "pro"
+  selectOption "#plan" index=2
+  assertText "#choice" "team"
+  selectOption label=Plan optionValue=free
+  assertText "#choice" "free"
+}

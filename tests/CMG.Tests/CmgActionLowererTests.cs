@@ -165,6 +165,15 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_SelectOptionPreservesProviderTargetOptions()
+    {
+        var lines = new CmgActionLowerer().Lower(Node("selectOption", ["#plan"], new Dictionary<string, string> { ["optionLabel"] = "Pro" }));
+
+        Assert.Equal(2, lines.Count);
+        Assert.Equal("selectOption \"#plan\" optionLabel=\"Pro\"", lines[1]);
+    }
+
+    [Fact]
     public void Lower_ExpectTextPreservesTimeoutOption()
     {
         var node = new CmgNode(1, "expectText", "expectText", ["#status", "Ready"], new Dictionary<string, string> { ["timeout"] = "500" }, []);

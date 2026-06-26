@@ -34,8 +34,8 @@ cmg browser control input [command] [options]
 - [`insertText`](insertText.md): Insert text at the active element.
 - [`hover`](hover.md): Hover an element.
 - [`scrollIntoView`](scrollIntoView.md): Scroll an element into view.
-- [`select`](select.md): Set a select-like element value.
-- [`selectOption`](selectOption.md): Set a select-like element value.
+- [`select`](select.md): Set a select-like element value by value, label, or index.
+- [`selectOption`](selectOption.md): Set a select-like element value by value, label, or index.
 - [`dragAndDrop`](dragAndDrop.md): Drag one element onto another.
 - [`dragTo`](dragTo.md): Drag one element onto another.
 - [`mouse`](mouse/index.md): Low-level mouse movement and button commands.
