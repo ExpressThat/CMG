@@ -17,3 +17,17 @@ while (${ready} == false) max=3 {
   set ready true
   caption "Ready"
 }
+
+until (${ready} == true) max=3 {
+  caption "Waiting"
+}
+
+set postCheck false
+doWhile (${postCheck} == true) max=2 {
+  caption "Runs before doWhile checks"
+}
+
+doUntil (${postCheck} == true) max=2 {
+  set postCheck true
+  caption "Runs until ready"
+}

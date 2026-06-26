@@ -1846,7 +1846,7 @@ set label {
 
 `return` requires at least one argument and emits `RETURN <line> <value>` when run directly.
 
-### `for`, `repeat`, `while`, `foreach`, `foreachSelector`, `break`, And `continue`
+### `for`, `repeat`, `while`, `until`, `doWhile`, `doUntil`, `foreach`, `foreachSelector`, `break`, And `continue`
 
 ```text
 for 3 {
@@ -1859,6 +1859,20 @@ repeat i 3 {
 
 while (${ready} != true) max=10 {
   waitForTimeout 250
+  set ready {
+    evaluate "window.ready === true"
+  }
+}
+
+until (${ready} == true) max=10 {
+  waitForTimeout 250
+}
+
+doWhile (${shouldPoll} == true) max=10 {
+  caption "poll once before checking"
+}
+
+doUntil (${ready} == true) max=10 {
   set ready {
     evaluate "window.ready === true"
   }
@@ -1882,7 +1896,7 @@ foreachSelector row ".result" {
 
 `for <count>` iterates from `0` up to but not including `<count>` and exposes `${index}`. `for <variable> <start> <end>` uses an exclusive end value and exposes the named variable. `step=<integer>` changes the increment and cannot be `0`.
 
-`repeat <count>` repeats a fixed number of times and exposes `${index}`. `repeat <variable> <count>` exposes the named variable instead. `while <condition>` repeats while the same condition syntax used by `if` remains true. `while` has a safety guard: `max=<count>` defaults to `100` and the action fails if that many iterations are exceeded.
+`repeat <count>` repeats a fixed number of times and exposes `${index}`. `repeat <variable> <count>` exposes the named variable instead. `while <condition>` repeats while the same condition syntax used by `if` remains true. `until <condition>` repeats while that condition remains false. `doWhile <condition>` and `doUntil <condition>` run the body once before evaluating the condition, then repeat while the condition is true or false respectively. Condition loops have a safety guard: `max=<count>` defaults to `100` and the action fails if that many iterations are exceeded.
 
 `foreach` iterates over explicit values. `foreachSelector` finds all CSS matches, binds the variable to a temporary selector for each element, and exposes `${index}`. `break` exits the nearest loop. `continue` skips the rest of the current iteration. Using either action outside a loop fails clearly.
 

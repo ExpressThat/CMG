@@ -69,6 +69,9 @@ Supported structural blocks:
 - `repeat <count> { ... }`
 - `repeat <variable> <count> { ... }`
 - `while <condition> max=100 { ... }`
+- `until <condition> max=100 { ... }`
+- `doWhile <condition> max=100 { ... }`
+- `doUntil <condition> max=100 { ... }`
 - `retry [count|max=<count>] delay=<milliseconds> { ... }`
 - `foreach <variable> <value>... { ... }`
 - `foreachSelector <variable> "<selector>" { ... }`
@@ -203,7 +206,7 @@ foreachSelector row ".result" {
 }
 ```
 
-`repeat`, `for`, `foreach`, `foreachSelector`, and `while` support `break` and `continue`. `while` has a safety guard and fails after `max=<count>` iterations; the default is `100`.
+`repeat`, `for`, `foreach`, `foreachSelector`, `while`, `until`, `doWhile`, and `doUntil` support `break` and `continue`. Condition loops have a safety guard and fail after `max=<count>` iterations; the default is `100`. `doWhile` and `doUntil` run their body once before evaluating the condition.
 
 `foreachSelector` binds the variable to a temporary CSS selector for each matched element and also exposes `${index}`. Macro definitions are block-scoped when declared inside another macro, branch, or loop. Top-level macros in `cmg run` are registered before each test.
 

@@ -39,6 +39,24 @@ public sealed class CmgDslFormattingRobustnessTests
         Assert.Equal("test", result.Document.Nodes[1].Kind);
     }
 
+    [Fact]
+    public void Parse_PostConditionLoopsAllowOddSpacingAndCasing()
+    {
+        var result = new CmgDslParser().Parse("flow.cmgscript", """
+        test "loops" {
+              UNTIL      ( ${ready} == true )       max=3       { caption "waiting" }
+          doWhile    ( ${again} == true )    max=2 { caption "again" }
+         doUntil (evaluate "window.ready" == "true") { caption "ready" }
+        }
+        """);
+
+        Assert.True(result.Success, result.Error);
+        var test = Assert.Single(result.Document!.Nodes);
+        Assert.Equal(["UNTIL", "doWhile", "doUntil"], test.Children.Select(node => node.Kind));
+        Assert.Equal("3", test.Children[0].Options["max"]);
+        Assert.Equal("2", test.Children[1].Options["max"]);
+    }
+
     private sealed class TempScriptDirectory : IDisposable
     {
         private readonly string root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));

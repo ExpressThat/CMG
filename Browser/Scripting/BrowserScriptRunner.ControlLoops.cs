@@ -87,6 +87,56 @@ public sealed partial class BrowserScriptRunner
         }
     }
 
+    private void ExecuteUntil(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        ScriptExecutionContext context,
+        Recording.ScriptGifRecorder? recorder,
+        List<string> output)
+    {
+        RequireArgumentCount(action, 1, int.MaxValue);
+        var max = GetIntOption(action, "max", 100);
+        var iterations = 0;
+        while (!EvaluateCondition(remoteDebuggingUrl, automationClient, action, context, recorder))
+        {
+            if (iterations++ >= max)
+            {
+                throw new ScriptExecutionException($"until exceeded max={max} iteration(s).");
+            }
+
+            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [("index", (iterations - 1).ToString())]);
+            if (control == "break") break;
+        }
+    }
+
+    private void ExecutePostConditionLoop(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        ScriptExecutionContext context,
+        Recording.ScriptGifRecorder? recorder,
+        List<string> output,
+        bool repeatWhenConditionIsTrue)
+    {
+        RequireArgumentCount(action, 1, int.MaxValue);
+        var max = GetIntOption(action, "max", 100);
+        var iterations = 0;
+        while (true)
+        {
+            if (iterations++ >= max)
+            {
+                throw new ScriptExecutionException($"{action.Name} exceeded max={max} iteration(s).");
+            }
+
+            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [("index", (iterations - 1).ToString())]);
+            if (control == "break") break;
+
+            var condition = EvaluateCondition(remoteDebuggingUrl, automationClient, action, context, recorder);
+            if (condition != repeatWhenConditionIsTrue) break;
+        }
+    }
+
     private string ExecuteLoopIteration(
         string remoteDebuggingUrl,
         IBrowserAutomationClient automationClient,

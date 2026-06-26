@@ -38,6 +38,15 @@ public sealed partial class BrowserScriptRunner
             case "while":
                 ExecuteWhile(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
+            case "until":
+                ExecuteUntil(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
+            case "dowhile":
+                ExecutePostConditionLoop(remoteDebuggingUrl, automationClient, action, context, recorder, output, repeatWhenConditionIsTrue: true);
+                return output;
+            case "dountil":
+                ExecutePostConditionLoop(remoteDebuggingUrl, automationClient, action, context, recorder, output, repeatWhenConditionIsTrue: false);
+                return output;
             case "repeat":
                 ExecuteRepeat(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
@@ -78,6 +87,9 @@ public sealed partial class BrowserScriptRunner
         name.Equals("foreach", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("foreachSelector", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("while", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("until", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("doWhile", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("doUntil", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("repeat", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("retry", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("break", StringComparison.OrdinalIgnoreCase) ||

@@ -208,9 +208,22 @@ while (${ready} == false) max=3 {
   set ready true
   caption "Ready"
 }
+
+until (${ready} == true) max=3 {
+  caption "Waiting"
+}
+
+doWhile (${ready} == false) max=2 {
+  caption "Runs before checking"
+}
+
+doUntil (${ready} == true) max=2 {
+  set ready true
+  caption "Runs until ready"
+}
 ```
 
-`repeat`, `for`, `foreach`, `foreachSelector`, and `while` can contain nested macros, conditionals, and GIF blocks. `while` is bounded with `max=` to prevent scripts from hanging indefinitely.
+`repeat`, `for`, `foreach`, `foreachSelector`, `while`, `until`, `doWhile`, and `doUntil` can contain nested macros, conditionals, and GIF blocks. Condition loops are bounded with `max=` to prevent scripts from hanging indefinitely. `doWhile` and `doUntil` always run their body once before checking the condition.
 
 This example is available as `demo-scripts/32-loop-control.cmgscript`.
 
