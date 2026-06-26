@@ -20,20 +20,20 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildShowMessageBarCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildShowMessageBarCommand(BrowserSelectionOptions browserOptions, string action)
     {
         var messageArgument = new Argument<string>("message")
         {
             Description = "Message to show in a fixed bar at the top of the page."
         };
 
-        var command = new Command("showMessageBar", "Inject or update a fixed message bar at the top of the page.")
+        var command = new Command(action, "Inject or update a fixed message bar at the top of the page.")
         {
             messageArgument
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("showMessageBar", parseResult.GetValue(messageArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(action, parseResult.GetValue(messageArgument) ?? string.Empty)));
 
         return command;
     }
