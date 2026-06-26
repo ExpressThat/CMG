@@ -122,11 +122,14 @@ Use `browser control script --file <path>` for direct browser-control scripts, o
 
 ```text
 STEP FAIL line=8 action=click reason=Line 8: click failed. No element matched selector '#missing'.
+RUN STOP maxFailures=1
 ```
 
 JSON and HTML reports include the same reason, the test name, output lines, and any GIF path connected to the failure.
 
 Use `cmg run --trace <directory>` to write per-test trace JSON with every recorded step and failure reason.
+
+`RUN STOP maxFailures=<count>` means `cmg run --max-failures <count>` reached its failure threshold and stopped scheduling more tests. Reports, traces, and GIF output include tests that ran before the stop.
 
 ## Invalid Dialog Behavior
 

@@ -15,6 +15,7 @@ public interface ICmgRunCommandHandler
         string? grep,
         string? tag,
         int retries,
+        int maxFailures,
         string? shard);
 }
 
@@ -38,6 +39,7 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         string? grep,
         string? tag,
         int retries,
+        int maxFailures,
         string? shard)
     {
         if (browserKind is BrowserKind.InvalidSelection)
@@ -62,6 +64,7 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             grep,
             tag,
             Math.Max(0, retries),
+            Math.Max(0, maxFailures),
             shardIndex,
             shardCount));
         foreach (var line in result.StdoutLines)

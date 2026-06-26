@@ -53,6 +53,11 @@ public sealed class RunCommandBuilder
             Description = "Retry failed tests this many times.",
             DefaultValueFactory = _ => 0
         };
+        var maxFailuresOption = new Option<int>("--max-failures")
+        {
+            Description = "Stop the run after this many failed tests.",
+            DefaultValueFactory = _ => 0
+        };
         var shardOption = new Option<string?>("--shard")
         {
             Description = "Run one shard as index/count, for example 1/3."
@@ -68,6 +73,7 @@ public sealed class RunCommandBuilder
             grepOption,
             tagOption,
             retriesOption,
+            maxFailuresOption,
             shardOption
         };
 
@@ -83,6 +89,7 @@ public sealed class RunCommandBuilder
                 parseResult.GetValue(grepOption),
                 parseResult.GetValue(tagOption),
                 parseResult.GetValue(retriesOption),
+                parseResult.GetValue(maxFailuresOption),
                 parseResult.GetValue(shardOption)));
 
         return command;

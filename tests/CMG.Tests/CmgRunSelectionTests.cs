@@ -23,6 +23,25 @@ public sealed class CmgRunSelectionTests
         Assert.Equal("focused", selected.Name);
     }
 
+    [Fact]
+    public void HasReachedMaxFailures_StopsWhenThresholdIsReached()
+    {
+        var tests = new[]
+        {
+            Result("a", success: false),
+            Result("b", success: true),
+            Result("c", success: false)
+        };
+
+        Assert.False(CmgRunService.HasReachedMaxFailures(tests, 0));
+        Assert.True(CmgRunService.HasReachedMaxFailures(tests, 1));
+        Assert.True(CmgRunService.HasReachedMaxFailures(tests, 2));
+        Assert.False(CmgRunService.HasReachedMaxFailures(tests, 3));
+    }
+
     private static CmgTestCase Test(string name, IReadOnlyDictionary<string, string>? options = null) =>
         new("flow.cmgscript", name, [], options ?? new Dictionary<string, string>());
+
+    private static CmgTestResult Result(string name, bool success) =>
+        new(name, "flow.cmgscript", success, [], success ? null : "failed", null, []);
 }

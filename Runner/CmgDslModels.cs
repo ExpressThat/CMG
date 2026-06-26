@@ -42,6 +42,7 @@ public sealed record CmgRunOptions(
     string? Grep,
     string? Tag,
     int Retries,
+    int MaxFailures,
     int ShardIndex,
     int ShardCount);
 

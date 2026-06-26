@@ -24,6 +24,7 @@ Runner hooks include `beforeAll`, `afterAll`, `beforeEach`, and `afterEach`. Onc
 - `--grep <text>`: Run tests whose names contain the text.
 - `--tag <tag>`: Run tests with a matching `tag=` option.
 - `--retries <count>`: Retry failed tests this many times.
+- `--max-failures <count>`: Stop scheduling tests after this many failed tests. `0` disables fail-fast behavior.
 - `--shard <index/count>`: Run a deterministic shard, for example `1/3`.
 - `--chrome`: Use Chrome. This is the default.
 - `--edge`: Use Microsoft Edge.
@@ -37,9 +38,10 @@ Stdout prints one parseable line per test:
 TEST PASS <name>
 TEST FAIL <name>
 TEST SKIP <name>
+RUN STOP maxFailures=<count>
 ```
 
-Failures may include action output before the failing test line. Skipped tests do not run actions or produce GIFs. Stderr contains the final error when one is available.
+Failures may include action output before the failing test line. Skipped tests do not run actions or produce GIFs. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. Stderr contains the final error when one is available.
 
 When a step fails, stderr also includes:
 
@@ -56,6 +58,7 @@ GIF recording is optional.
 - With `--gif` or `-gif`, CMG records the whole execution of each test.
 - When command-level GIF recording is active, script-level `gif { ... }`, `recordVideo { ... }`, and `screencast { ... }` blocks do not create nested recordings; their actions are flattened into the whole-test GIF.
 - Without command-level GIF recording, script-level `gif "name" { ... }`, `recordVideo "name" { ... }`, or `screencast "name" { ... }` records only the wrapped block.
+- If `--max-failures` stops the run, GIFs and reports include only tests that actually ran before the stop.
 
 All recorded actions use CMG's virtual pointer, pointer/mouse event dispatch, captions, and drag ghost behavior.
 
@@ -79,6 +82,7 @@ cmg run tests\flows --gif artifacts\gifs
 cmg run checkout.cmgscript --report-json artifacts\checkout.json --report-html artifacts\checkout.html
 cmg run checkout.cmgscript --trace artifacts\traces
 cmg run tests\flows --grep checkout --tag smoke --retries 2 --shard 1/3
+cmg run tests\flows --max-failures 1
 ```
 
 Use runner options on test declarations for provider-style focus and skip behavior:

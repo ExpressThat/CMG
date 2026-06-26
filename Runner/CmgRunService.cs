@@ -66,7 +66,10 @@ public sealed partial class CmgRunService : ICmgRunService
         var output = new List<string>();
         foreach (var file in files)
         {
-            RunFile(file, state.RemoteDebuggingUrl, options, tests, output);
+            if (!RunFile(file, state.RemoteDebuggingUrl, options, tests, output))
+            {
+                break;
+            }
         }
 
         WriteReports(options, tests);
@@ -74,14 +77,14 @@ public sealed partial class CmgRunService : ICmgRunService
         return new CmgRunResult(tests.All(test => test.Success), output, tests, null);
     }
 
-    private void RunFile(string file, string remoteDebuggingUrl, CmgRunOptions options, List<CmgTestResult> tests, List<string> output)
+    private bool RunFile(string file, string remoteDebuggingUrl, CmgRunOptions options, List<CmgTestResult> tests, List<string> output)
     {
         var parse = parser.Parse(file, File.ReadAllText(file));
         if (!parse.Success || parse.Document is null)
         {
             tests.Add(new CmgTestResult(Path.GetFileName(file), file, false, [], parse.Error, null, []));
             output.Add($"TEST FAIL {Path.GetFileName(file)}");
-            return;
+            return ContinueAfterFailureLimit(options, tests, output);
         }
 
         var plannedTests = SelectFocusedTests(planner.Plan(parse.Document).Where(test => ShouldRun(test, options)).ToArray());
@@ -107,13 +110,17 @@ public sealed partial class CmgRunService : ICmgRunService
                     null,
                     [new CmgStepResult(validation.LineNumber, validation.Action, false, [], validation.Error, null)]));
                 output.Add($"TEST FAIL {test.Name}");
+                if (!ContinueAfterFailureLimit(options, tests, output)) return false;
                 continue;
             }
 
             var result = RunTestWithRetries(test, remoteDebuggingUrl, options);
             tests.Add(result);
             output.Add($"TEST {(result.Success ? "PASS" : "FAIL")} {result.Name}");
+            if (!ContinueAfterFailureLimit(options, tests, output)) return false;
         }
+
+        return true;
     }
 
     private CmgTestResult RunTestWithRetries(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options)
