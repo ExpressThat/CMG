@@ -11,7 +11,7 @@ public sealed class BrowserScriptRunnerWaitActionTests
         client.EvaluateResponses.Enqueue("""{"success":true,"value":"true"}""");
         var result = Runner().RunText("waitForFunction \"window.ready === true\" timeout=250", "debug", client);
 
-        Assert.True(result.Success);
+        Assert.True(result.Success, $"{result.Error} | {string.Join(" | ", result.StdoutLines)}");
         Assert.Contains("window.ready === true", client.LastExpression);
         Assert.Contains("FUNCTION 001 true", result.StdoutLines);
     }
@@ -33,8 +33,17 @@ public sealed class BrowserScriptRunnerWaitActionTests
     {
         var result = Runner().RunText("waitForSelector \"#ready\"", "debug", new FakeAutomationClient());
 
-        Assert.True(result.Success);
+        Assert.True(result.Success, result.Error);
         Assert.Contains("SELECTOR 001 #ready", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_WaitForSelectorNormalizesRichLocator()
+    {
+        var result = Runner().RunText("waitForSelector text=Ready", "debug", new FakeAutomationClient());
+
+        Assert.True(result.Success, $"{result.Error} | {string.Join(" | ", result.StdoutLines)}");
+        Assert.Contains("SELECTOR 001 text=Ready", result.StdoutLines);
     }
 
     [Fact]

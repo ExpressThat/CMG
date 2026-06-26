@@ -17,6 +17,17 @@ public sealed class BrowserScriptParserTests
     }
 
     [Fact]
+    public void Parse_TreatsRichLocatorTokenAsOption()
+    {
+        var result = new BrowserScriptParser().Parse("waitForSelector text=Ready");
+        var action = Assert.Single(result.Actions);
+
+        Assert.True(result.Success);
+        Assert.Empty(action.Arguments);
+        Assert.Equal("Ready", action.Options["text"]);
+    }
+
+    [Fact]
     public void Parse_PreservesEmptyQuotedStrings()
     {
         var result = new BrowserScriptParser().Parse("if \"\" == \"\" {\n  evaluate \"true\"\n}");

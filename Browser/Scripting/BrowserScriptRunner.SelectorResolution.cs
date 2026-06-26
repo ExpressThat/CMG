@@ -27,7 +27,13 @@ public sealed partial class BrowserScriptRunner
             return action;
         }
 
-        return action with { Arguments = [$"{locator.Key}={locator.Value}", .. action.Arguments] };
+        var locatorArgument = $"{locator.Key}={locator.Value}";
+        if (action.Arguments.Count > 0 && action.Arguments[0].Equals(locatorArgument, StringComparison.Ordinal))
+        {
+            return action;
+        }
+
+        return action with { Arguments = [locatorArgument, .. action.Arguments] };
     }
 
     private static string SelectorArgument(BrowserScriptAction action, int argumentIndex)

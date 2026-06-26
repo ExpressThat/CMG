@@ -23,6 +23,7 @@ public sealed partial class BrowserScriptRunner
         IBrowserAutomationClient automationClient,
         BrowserScriptAction action)
     {
+        action = NormalizeSelectorArgument(action);
         ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action);
         return [$"SELECTOR {action.LineNumber:000} {action.Arguments[0]}"];
     }

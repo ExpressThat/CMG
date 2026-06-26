@@ -27,6 +27,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildScriptCommand(browserOptions));
         command.Subcommands.Add(BuildValidateScriptCommand());
         command.Subcommands.Add(BuildNavigationGroup(browserOptions));
+        command.Subcommands.Add(BuildWaitGroup(browserOptions));
         command.Subcommands.Add(BuildInputGroup(browserOptions));
         command.Subcommands.Add(BuildTabsGroup(browserOptions));
         command.Subcommands.Add(BuildCaptureGroup(browserOptions));
