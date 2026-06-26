@@ -11,7 +11,7 @@ public static class ScriptImportExpander
         foreach (var line in script.ReplaceLineEndings("\n").Split('\n'))
         {
             var trimmed = line.Trim();
-            if (!trimmed.StartsWith("import ", StringComparison.OrdinalIgnoreCase))
+            if (!StartsWithImport(trimmed))
             {
                 output.Add(line);
                 continue;
@@ -49,11 +49,16 @@ public static class ScriptImportExpander
 
     private static string? ReadImportPath(string trimmed)
     {
-        var value = trimmed["import ".Length..].Trim();
+        var value = trimmed["import".Length..].Trim();
         return value.Length >= 2 && value[0] == '"' && value[^1] == '"'
             ? value[1..^1]
             : null;
     }
+
+    private static bool StartsWithImport(string trimmed) =>
+        trimmed.Length > "import".Length &&
+        trimmed.StartsWith("import", StringComparison.OrdinalIgnoreCase) &&
+        char.IsWhiteSpace(trimmed["import".Length]);
 }
 
 public sealed record ScriptImportResult(bool Success, string? Script, string? Error)

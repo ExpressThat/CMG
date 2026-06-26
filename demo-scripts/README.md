@@ -135,8 +135,8 @@ dotnet run -- --firefox browser close
 - `45-provider-aliases.cmgscript`: Demonstrates provider-style aliases such as `toHaveTitle`, `toContainText`, `pressSequentially`, `setInputFiles`, and `dragTo`.
 - `46-provider-aliases-runner.cmgscript`: Demonstrates the same provider-style aliases in the structured runner DSL.
 - `47-provider-structure-runner.cmgscript`: Demonstrates `describe`, `it`, `specify`, `before`, and `after` runner aliases.
-- `48-weird-formatting.cmgscript`: Demonstrates direct-script inline blocks, quoted braces, and repeated spacing.
-- `49-weird-formatting-runner.cmgscript`: Demonstrates runner inline blocks, quoted braces, and repeated spacing.
+- `48-weird-formatting.cmgscript`: Demonstrates direct-script inline blocks, quoted braces, semicolon separators, and repeated spacing.
+- `49-weird-formatting-runner.cmgscript`: Demonstrates runner inline blocks, quoted braces, semicolon separators, and repeated spacing.
 - `50-retry-block.cmgscript`: Demonstrates direct-script `retry` around pointer-aware actions.
 - `51-retry-block-runner.cmgscript`: Demonstrates the same `retry` block in the structured runner DSL.
 - `52-explicit-fail.cmgscript`: Demonstrates catchable explicit `fail` in a direct script.

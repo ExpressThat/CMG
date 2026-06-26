@@ -461,7 +461,7 @@ Weird but valid formatting is accepted when an AI emits dense scripts:
           describe          "inline formatting"          {          before          {          setContent          "<main>{ready}</main>"          }          it          "handles inline blocks"          {          if          true          {          caption          "inline if"          }          else          {          caption          "inline else"          }          }          }
 ```
 
-Direct-script inline and spacing-tolerant formatting is available as `demo-scripts/48-weird-formatting.cmgscript`. The structured `cmg run` form is available as `demo-scripts/49-weird-formatting-runner.cmgscript`.
+Direct-script inline, semicolon-separated, and spacing-tolerant formatting is available as `demo-scripts/48-weird-formatting.cmgscript`. The structured `cmg run` form is available as `demo-scripts/49-weird-formatting-runner.cmgscript`.
 
 Retry a flaky page transition without retrying the whole test:
 

@@ -16,11 +16,11 @@ public sealed class BrowserScriptValidatorTests
                               }
                     }
 
-                    call        show        "Ready"
+                    call        show        "Ready"; caption "done; not a split"
         """);
 
         Assert.True(result.Success, result.Error);
-        Assert.Equal(2, result.ActionCount);
+        Assert.Equal(3, result.ActionCount);
     }
 
     [Fact]

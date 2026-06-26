@@ -113,4 +113,17 @@ public sealed class BrowserScriptParserTests
         Assert.Equal("#save", Assert.Single(action.Children).Arguments[0]);
         Assert.Equal("else", result.Actions[1].Name);
     }
+
+    [Fact]
+    public void Parse_AllowsSemicolonSeparatedActionsOutsideQuotes()
+    {
+        var result = new BrowserScriptParser().Parse("""
+        caption "one;still one"; if true { caption "two"; caption "three" }; caption "four"
+        """);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(["caption", "if", "caption"], result.Actions.Select(action => action.Name.ToLowerInvariant()));
+        Assert.Equal("one;still one", result.Actions[0].Arguments[0]);
+        Assert.Equal(["caption", "caption"], result.Actions[1].Children.Select(action => action.Name.ToLowerInvariant()));
+    }
 }

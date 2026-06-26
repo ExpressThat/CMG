@@ -42,6 +42,12 @@ Blocks can also be written inline. Braces inside quoted strings are preserved:
 describe "inline" { before { setContent "<main>{ready}</main>" } it "case" { if true { caption "yes" } else { caption "no" } } }
 ```
 
+Semicolons can separate actions on the same line outside quoted strings:
+
+```text
+caption "one;still one"; if true { caption "two"; caption "three" }; caption "four"
+```
+
 Supported structural blocks:
 
 - `suite "name" { ... }`, `describe "name" { ... }`, or `context "name" { ... }`
@@ -98,7 +104,7 @@ Indentation, tabs, and repeated spaces between tokens are ignored outside quoted
 		caption          "Done"
 ```
 
-Spaces inside quoted strings are preserved.
+Spaces and semicolons inside quoted strings are preserved.
 
 ## Imports
 
@@ -110,10 +116,11 @@ import "shared.cmgscript"
 
 Imports are expanded before parsing. Relative paths resolve from the importing file's directory. Imported files can import other files; cycles and missing files fail before any action runs.
 
-`import` is case-insensitive and tolerates extra spacing before the quoted path:
+`import` is case-insensitive and tolerates any whitespace before the quoted path, including tabs:
 
 ```text
   IMPORT    "shared.cmgscript"
+import	"shared.cmgscript"
 ```
 
 ## Variables And Capture

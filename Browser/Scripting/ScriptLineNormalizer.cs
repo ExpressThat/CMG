@@ -70,6 +70,13 @@ public static class ScriptLineNormalizer
                 continue;
             }
 
+            if (!inQuotes && character is ';')
+            {
+                AddIfNotBlank(lines, current);
+                current.Clear();
+                continue;
+            }
+
             current.Add(character);
         }
 

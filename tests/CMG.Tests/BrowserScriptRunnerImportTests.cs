@@ -37,5 +37,30 @@ public sealed class BrowserScriptRunnerImportTests
         }
     }
 
+    [Fact]
+    public void Run_ImportsWithTabWhitespaceAfterKeyword()
+    {
+        var directory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
+        try
+        {
+            File.WriteAllText(Path.Combine(directory.FullName, "shared.cmgscript"), """
+            macro speak {
+              caption "Imported"
+            }
+            """);
+            var main = Path.Combine(directory.FullName, "main.cmgscript");
+            File.WriteAllText(main, "import\t\"shared.cmgscript\"\ncall speak");
+
+            var result = Runner().Run(main, "debug", new FakeAutomationClient(), gif: null);
+
+            Assert.True(result.Success, result.Error);
+            Assert.Contains("PASS 001 caption Imported", result.StdoutLines);
+        }
+        finally
+        {
+            directory.Delete(recursive: true);
+        }
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }
