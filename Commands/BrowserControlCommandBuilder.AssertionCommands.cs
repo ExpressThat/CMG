@@ -87,6 +87,28 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
+    private Command BuildElementValuesAssertionCommand(
+        BrowserSelectionOptions browserOptions,
+        string name,
+        string action)
+    {
+        var selector = CreateSelectorArgument();
+        var expected = new Argument<string[]>("expected")
+        {
+            Description = "Expected selected values in order.",
+            Arity = ArgumentArity.OneOrMore
+        };
+        var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
+        var command = new Command(name, "Assert that selected values match in order.") { selector, expected, timeout };
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine(action, [
+                parseResult.GetValue(selector) ?? string.Empty,
+                .. (parseResult.GetValue(expected) ?? [])
+            ], TimeoutOptions(parseResult, timeout))));
+        return command;
+    }
+
     private Command BuildElementAttributeAssertionCommand(
         BrowserSelectionOptions browserOptions,
         string commandName,

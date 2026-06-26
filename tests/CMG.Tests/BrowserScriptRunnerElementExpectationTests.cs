@@ -24,6 +24,7 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     [InlineData("expectProperty", "property")]
     [InlineData("expectChecked", "checked")]
     [InlineData("expectCount", "count")]
+    [InlineData("expectValues", "values")]
     public void RunText_ElementExpectationOutputsExpectationLine(string action, string mode)
     {
         var client = new FakeAutomationClient();
@@ -35,6 +36,7 @@ public sealed class BrowserScriptRunnerElementExpectationTests
             "expectCSS" => $"{action} \"#target\" \"display\" \"block\" timeout=250",
             "expectProperty" => $"{action} \"#target\" \"dataset.ready\" \"true\" timeout=250",
             "expectCount" => $"{action} \"#target\" 1 timeout=250",
+            "expectValues" => $"{action} \"#target\" one two timeout=250",
             _ => $"{action} \"#target\" timeout=250"
         };
         var result = Runner().RunText(script, "debug", client);
@@ -42,6 +44,19 @@ public sealed class BrowserScriptRunnerElementExpectationTests
         Assert.True(result.Success);
         Assert.Contains("document.querySelector", client.LastExpression);
         Assert.Contains($"EXPECT 001 {mode} #target", result.StdoutLines);
+    }
+
+    [Theory]
+    [InlineData("expectValues")]
+    [InlineData("toHaveValues")]
+    public void RunText_ElementValuesExpectationUsesSelectedOptions(string action)
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText($"{action} \"#plans\" basic pro", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("selectedOptions", client.LastExpression);
+        Assert.Contains("EXPECT 001 values #plans", result.StdoutLines);
     }
 
     [Fact]

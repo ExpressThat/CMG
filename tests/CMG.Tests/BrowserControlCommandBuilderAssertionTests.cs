@@ -38,6 +38,8 @@ public sealed class BrowserControlCommandBuilderAssertionTests
     [InlineData("value #name CMG --timeout 100", "expectValue \"#name\" \"CMG\" timeout=\"100\"")]
     [InlineData("expectValue #name CMG", "expectValue \"#name\" \"CMG\"")]
     [InlineData("toHaveValue #name CMG", "toHaveValue \"#name\" \"CMG\"")]
+    [InlineData("expectValues #plans basic pro", "expectValues \"#plans\" \"basic\" \"pro\"")]
+    [InlineData("toHaveValues #plans basic pro --timeout 100", "toHaveValues \"#plans\" \"basic\" \"pro\" timeout=\"100\"")]
     [InlineData("attribute #save data-state ready", "expectAttribute \"#save\" \"data-state\" \"ready\"")]
     [InlineData("expectAttribute #save data-state ready", "expectAttribute \"#save\" \"data-state\" \"ready\"")]
     [InlineData("toHaveAttribute #save data-state ready", "toHaveAttribute \"#save\" \"data-state\" \"ready\"")]

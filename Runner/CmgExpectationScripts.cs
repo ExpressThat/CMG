@@ -40,6 +40,7 @@ public static class CmgExpectationScripts
         var body = mode switch
         {
             "value" => $"const actual = element.value ?? ''; const ok = actual.includes({QuoteJs(action.Arguments[1])}); const message = 'Expected value to contain {action.Arguments[1]}, got ' + actual + '.';",
+            "values" => $"const actual = Array.from(element.selectedOptions || []).map(option => option.value); const expected = {ExpectedValuesJs(action)}; const ok = actual.length === expected.length && expected.every((value, index) => actual[index] === value); const message = 'Expected values ' + expected.join(',') + ', got ' + actual.join(',') + '.';",
             "attribute" => $"const actual = element.getAttribute({QuoteJs(action.Arguments[1])}); const ok = actual?.includes({QuoteJs(action.Arguments[2])}); const message = 'Expected attribute {action.Arguments[1]} to contain {action.Arguments[2]}, got ' + actual + '.';",
             "class" => $"const actual = element.className || ''; const ok = String(actual).split(/\\s+/).includes({QuoteJs(action.Arguments[1])}) || String(actual).includes({QuoteJs(action.Arguments[1])}); const message = 'Expected class to contain {action.Arguments[1]}, got ' + actual + '.';",
             "id" => $"const actual = element.id || ''; const ok = actual === {QuoteJs(action.Arguments[1])}; const message = 'Expected id to be {action.Arguments[1]}, got ' + actual + '.';",
@@ -108,6 +109,9 @@ public static class CmgExpectationScripts
 
     private static int ExpectedCount(CmgNode action) =>
         int.TryParse(action.Arguments[1], out var count) ? count : -1;
+
+    private static string ExpectedValuesJs(CmgNode action) =>
+        "[" + string.Join(", ", action.Arguments.Skip(1).Select(QuoteJs)) + "]";
 
     private static int Timeout(CmgNode action) =>
         action.Options.TryGetValue("timeout", out var value) && int.TryParse(value, out var timeout) ? timeout : 0;

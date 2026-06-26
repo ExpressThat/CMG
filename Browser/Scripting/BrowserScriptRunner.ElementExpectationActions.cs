@@ -23,6 +23,7 @@ public sealed partial class BrowserScriptRunner
             "expectfocused" or "tobefocused" => "focused",
             "expectinviewport" or "tobeinviewport" => "inviewport",
             "expectvalue" or "tohavevalue" => "value",
+            "expectvalues" or "tohavevalues" => "values",
             "expectattribute" or "tohaveattribute" => "attribute",
             "expectclass" or "tohaveclass" => "class",
             "expectid" or "tohaveid" => "id",

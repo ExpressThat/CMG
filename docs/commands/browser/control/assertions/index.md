@@ -50,6 +50,8 @@ cmg browser control assertions [command] [options]
 - [`value`](value.md): Assert that an element value contains text.
 - [`expectValue`](expectValue.md): Exact scripting alias for `value`.
 - [`toHaveValue`](toHaveValue.md): Exact scripting alias for `value`.
+- [`expectValues`](expectValues.md): Assert that selected values match in order.
+- [`toHaveValues`](toHaveValues.md): Playwright-style alias for `expectValues`.
 - [`attribute`](attribute.md): Assert that an element attribute contains text.
 - [`expectAttribute`](expectAttribute.md): Exact scripting alias for `attribute`.
 - [`toHaveAttribute`](toHaveAttribute.md): Exact scripting alias for `attribute`.
@@ -88,6 +90,7 @@ cmg browser control assertions toBeVisible "#save"
 cmg browser control assertions toBeEditable "#name"
 cmg browser control assertions toBeInViewport "#save"
 cmg browser control assertions toHaveValue "#name" "Ada"
+cmg browser control assertions toHaveValues "#plans" "basic" "pro"
 cmg browser control assertions toHaveClass "#save" "ready"
 cmg browser control assertions toHaveCSS "#save" "display" "block"
 cmg browser control assertions eval "document.title" --equals "Checkout"

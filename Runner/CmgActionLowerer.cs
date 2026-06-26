@@ -24,6 +24,7 @@ public sealed partial class CmgActionLowerer
             "expectfocused" or "tobefocused" or "expectinviewport" or "tobeinviewport" =>
                 [ToLine(ToExpectationName(name), action.Arguments, action.Options)],
             "expectvalue" or "tohavevalue" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "value"),
+            "expectvalues" or "tohavevalues" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "values"),
             "expectattribute" or "tohaveattribute" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "attribute"),
             "expectclass" or "tohaveclass" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "class"),
             "expectid" or "tohaveid" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "id"),

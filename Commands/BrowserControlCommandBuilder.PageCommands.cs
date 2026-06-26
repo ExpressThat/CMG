@@ -67,6 +67,8 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "value", "expectValue"));
         command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "expectValue", "expectValue"));
         command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "toHaveValue", "toHaveValue"));
+        command.Subcommands.Add(BuildElementValuesAssertionCommand(browserOptions, "expectValues", "expectValues"));
+        command.Subcommands.Add(BuildElementValuesAssertionCommand(browserOptions, "toHaveValues", "toHaveValues"));
         command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "attribute", "expectAttribute"));
         command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "expectAttribute", "expectAttribute"));
         command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "toHaveAttribute", "toHaveAttribute"));

@@ -32,6 +32,7 @@ public sealed class CmgActionLowererExpectationAliasTests
 
     [Theory]
     [InlineData("toHaveValue", "Expected value")]
+    [InlineData("toHaveValues", "Expected values")]
     [InlineData("toHaveAttribute", "Expected attribute")]
     [InlineData("toBeChecked", "Expected checked")]
     [InlineData("toHaveCount", "Expected ' + expected + ' elements")]
@@ -39,7 +40,9 @@ public sealed class CmgActionLowererExpectationAliasTests
     {
         var args = name.Equals("toHaveAttribute", StringComparison.OrdinalIgnoreCase)
             ? new[] { "#target", "aria-label", "Save" }
-            : new[] { "#target", "Save" };
+            : name.Equals("toHaveValues", StringComparison.OrdinalIgnoreCase)
+                ? new[] { "#target", "one", "two" }
+                : new[] { "#target", "Save" };
 
         var line = new CmgActionLowerer().Lower(Node(name, args)).Last();
 
