@@ -10,17 +10,25 @@ Browser JavaScript dialogs are not silently removed, accepted, or dismissed thro
 navigate "<url-or-path>"
 goto "<url-or-path>"
 visit "<url-or-path>"
+navigate "<url-or-path>" waitUntil=load timeout=10000
 ```
 
 Navigates the primary page target to a URL, data URL, or local file path. `goto` is a Playwright/Puppeteer-style alias and `visit` is a Cypress-style alias. All three use the same output and failure behavior.
 
-On success, stdout includes a `NAVIGATED <line> <final-url>` line after the `PASS` line. Local file paths must exist; missing path-like targets fail before the browser is asked to navigate.
+Options:
+
+- `waitUntil`: Optional post-navigation state. Supports `load`, `domcontentloaded`, `networkidle`, and `commit`.
+- `state`: Alias for `waitUntil`.
+- `timeout`: Optional timeout for `waitUntil`. Default is `5000`.
+
+On success, stdout includes a `NAVIGATED <line> <final-url>` line after the `PASS` line. With `waitUntil`, the same line includes `waitUntil=<state> state=<document-state>`. Local file paths must exist; missing path-like targets fail before the browser is asked to navigate.
 
 Example:
 
 ```text
 navigate "C:\Projects\CMG\index.html"
 visit "https://example.com"
+goto "https://example.com" waitUntil=domcontentloaded timeout=10000
 ```
 
 ## `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNetworkIdle`, And `waitForNavigation`

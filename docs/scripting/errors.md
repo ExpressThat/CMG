@@ -421,11 +421,12 @@ Line 2: toHaveURL failed. Expected URL to match /checkout using exact match, got
 Line 2: toHaveTitle failed. Expected title to match Checkout using exact match, got Cart.
 Line 2: expectUrl failed. expectUrl option match= must be contains, exact, or regex.
 Line 2: expectTitle failed. Invalid navigation regex '[': Invalid pattern '[' at offset 1. Unterminated [] set.
-Line 3: reload failed. reload waitUntil= expects load, domcontentloaded, networkidle, or commit.
-Line 4: goForward failed. goForward waitUntil= expects load, domcontentloaded, networkidle, or commit.
-Line 5: waitForLoadState failed. waitForLoadState expects loading, interactive, complete, load, or networkidle.
-Line 6: waitForNavigation failed. waitForNavigation waitUntil= expects load, domcontentloaded, networkidle, or commit.
-Line 7: waitForNavigation failed. Navigation did not reach load within 5000ms. Last URL: https://example.com/cart; state: loading
+Line 3: goto failed. goto waitUntil= expects load, domcontentloaded, networkidle, or commit.
+Line 4: reload failed. reload waitUntil= expects load, domcontentloaded, networkidle, or commit.
+Line 5: goForward failed. goForward waitUntil= expects load, domcontentloaded, networkidle, or commit.
+Line 6: waitForLoadState failed. waitForLoadState expects loading, interactive, complete, load, or networkidle.
+Line 7: waitForNavigation failed. waitForNavigation waitUntil= expects load, domcontentloaded, networkidle, or commit.
+Line 8: waitForNavigation failed. Navigation did not reach load within 5000ms. Last URL: https://example.com/cart; state: loading
 ```
 
 Navigation wait failures include the expected state or URL, timeout, and the last observed browser state when available.

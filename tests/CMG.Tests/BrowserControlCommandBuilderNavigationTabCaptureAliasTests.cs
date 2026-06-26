@@ -7,7 +7,9 @@ namespace CMG.Tests;
 public sealed class BrowserControlCommandBuilderNavigationTabCaptureAliasTests
 {
     [Theory]
+    [InlineData("navigate https://example.test --wait-until load --timeout 250", "navigate \"https://example.test\" waitUntil=\"load\" timeout=\"250\"")]
     [InlineData("goto https://example.test", "goto \"https://example.test\"")]
+    [InlineData("goto https://example.test --wait-until domcontentloaded", "goto \"https://example.test\" waitUntil=\"domcontentloaded\"")]
     [InlineData("visit https://example.test", "visit \"https://example.test\"")]
     [InlineData("waitForNetworkIdle", "waitForNetworkIdle timeout=\"5000\"")]
     [InlineData("waitForNetworkIdle --timeout 250", "waitForNetworkIdle timeout=\"250\"")]

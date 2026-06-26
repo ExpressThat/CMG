@@ -7,8 +7,14 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> ExecuteNavigate(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
+        var waitUntil = GetHistoryWaitUntil(action);
         var finalUrl = automationClient.Navigate(remoteDebuggingUrl, NormalizeNavigationTarget(action.Arguments[0]));
-        return string.IsNullOrWhiteSpace(finalUrl) ? [] : [$"NAVIGATED {action.LineNumber:000} {finalUrl}"];
+        if (string.IsNullOrWhiteSpace(finalUrl))
+        {
+            return [];
+        }
+
+        return [HistoryOutput(remoteDebuggingUrl, automationClient, action, "NAVIGATED", finalUrl, waitUntil, GetIntOption(action, "timeout", 5_000))];
     }
 
     private static IReadOnlyList<string> ExecuteWaitForElement(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
