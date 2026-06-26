@@ -24,17 +24,14 @@ public sealed partial class BrowserControlCommandBuilder
             return 1;
         });
 
-        command.Subcommands.Add(BuildGetElementCommand(browserOptions));
         command.Subcommands.Add(BuildScriptCommand(browserOptions));
         command.Subcommands.Add(BuildValidateScriptCommand());
         command.Subcommands.Add(BuildNavigationGroup(browserOptions));
         command.Subcommands.Add(BuildInputGroup(browserOptions));
         command.Subcommands.Add(BuildTabsGroup(browserOptions));
+        command.Subcommands.Add(BuildCaptureGroup(browserOptions));
         command.Subcommands.Add(BuildShowMessageBarCommand(browserOptions));
         command.Subcommands.Add(BuildDelayCommand(browserOptions));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "html", "Print an element's outer HTML."));
-        command.Subcommands.Add(BuildScreenshotCommand(browserOptions));
-        command.Subcommands.Add(BuildScreenshotPageCommand(browserOptions));
         command.Subcommands.Add(BuildAssertTextCommand(browserOptions));
         command.Subcommands.Add(BuildEvaluateCommand(browserOptions));
         command.Subcommands.Add(BuildSetViewportCommand(browserOptions));

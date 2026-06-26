@@ -5,6 +5,18 @@ namespace CMG.Commands;
 
 public sealed partial class BrowserControlCommandBuilder
 {
+    private Command BuildCaptureGroup(BrowserSelectionOptions browserOptions)
+    {
+        var command = new Command("capture", "Element and page capture commands.");
+
+        command.Subcommands.Add(BuildGetElementCommand(browserOptions));
+        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "html", "Print an element's outer HTML."));
+        command.Subcommands.Add(BuildScreenshotCommand(browserOptions));
+        command.Subcommands.Add(BuildScreenshotPageCommand(browserOptions));
+
+        return command;
+    }
+
     private Command BuildShowMessageBarCommand(BrowserSelectionOptions browserOptions)
     {
         var messageArgument = new Argument<string>("message")

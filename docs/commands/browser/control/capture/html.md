@@ -1,9 +1,9 @@
-# `browser control html`
+# `browser control capture html`
 
 Runs the scripting `html` action once from the command line.
 
 ```powershell
-cmg browser control html "<selector>"
+cmg browser control capture html "<selector>"
 ```
 
 ## Arguments
@@ -31,5 +31,5 @@ Writes browser or missing-element errors.
 ## Example
 
 ```powershell
-cmg browser control html "#openProfileDialog"
+cmg browser control capture html "#openProfileDialog"
 ```

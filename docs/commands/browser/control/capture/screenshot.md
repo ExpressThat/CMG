@@ -1,9 +1,9 @@
-# `browser control screenshot`
+# `browser control capture screenshot`
 
 Runs the scripting `screenshot` action once from the command line.
 
 ```powershell
-cmg browser control screenshot "<selector>" [--output <path>]
+cmg browser control capture screenshot "<selector>" [--output <path>]
 ```
 
 ## Arguments
@@ -41,5 +41,5 @@ Unlike user-like actions such as `click`, `type`, and `dragAndDrop`, `screenshot
 ## Example
 
 ```powershell
-cmg browser control screenshot "#profileDialog" --output profile-dialog.png
+cmg browser control capture screenshot "#profileDialog" --output profile-dialog.png
 ```

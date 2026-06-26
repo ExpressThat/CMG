@@ -14,17 +14,14 @@ cmg browser control [command] [options]
 
 ## Subcommands
 
-- [`getElement`](getElement.md): Return HTML or a screenshot for a selected element.
 - [`script`](script.md): Run a `.cmgscript` browser automation script.
 - [`validateScript`](validateScript.md): Validate a `.cmgscript` browser automation script without running it.
 - [`navigation`](navigation/index.md): Navigation and page state commands.
 - [`input`](input/index.md): Pointer, keyboard, and form input commands.
 - [`tabs`](tabs/index.md): Tab and popup target commands.
+- [`capture`](capture/index.md): Element and page capture commands.
 - [`showMessageBar`](showMessageBar.md): Inject or update a fixed message bar at the top of the page.
 - [`delay`](delay.md): Pause for a duration.
-- [`html`](html.md): Print an element's outer HTML.
-- [`screenshot`](screenshot.md): Capture an element screenshot.
-- [`screenshotPage`](screenshotPage.md): Capture a viewport or full-page screenshot.
 - [`assertText`](assertText.md): Assert that an element contains text.
 - [`evaluate`](evaluate.md): Evaluate JavaScript in the primary page.
 - [`setViewport`](setViewport.md): Set viewport dimensions.
@@ -36,12 +33,12 @@ cmg browser control [command] [options]
 cmg browser control --help
 cmg --edge browser control --help
 cmg --firefox browser control --help
-cmg browser control getElement "h1" --html
+cmg browser control capture getElement "h1" --html
 cmg browser control validateScript --file flow.cmgscript
 cmg browser control script --file flow.cmgscript
 cmg browser control navigation title
 cmg browser control navigation waitForLoadState complete
 cmg browser control input click "#openProfileDialog"
 cmg browser control tabs list
-cmg browser control screenshot "#profileDialog" --output profile-dialog.png
+cmg browser control capture screenshot "#profileDialog" --output profile-dialog.png
 ```

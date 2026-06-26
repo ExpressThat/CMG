@@ -1,9 +1,9 @@
-# `browser control getElement`
+# `browser control capture getElement`
 
 Returns HTML or a screenshot for a selected element on the active page.
 
 ```powershell
-cmg browser control getElement <selector> (--html | --screenshot) [--output <path>]
+cmg browser control capture getElement <selector> (--html | --screenshot) [--output <path>]
 ```
 
 ## Arguments
@@ -67,9 +67,9 @@ Validation and runtime errors are written to stderr, including:
 cmg browser launch https://example.com
 cmg --edge browser launch https://example.com
 cmg --firefox browser launch https://example.com
-cmg browser control getElement "h1" --html
-cmg browser control getElement "text=Save changes" --html
-cmg --edge browser control getElement "h1" --html
-cmg browser control getElement "#hero" --screenshot
-cmg browser control getElement ".card" --screenshot --output card.png
+cmg browser control capture getElement "h1" --html
+cmg browser control capture getElement "text=Save changes" --html
+cmg --edge browser control capture getElement "h1" --html
+cmg browser control capture getElement "#hero" --screenshot
+cmg browser control capture getElement ".card" --screenshot --output card.png
 ```

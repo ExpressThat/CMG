@@ -1,9 +1,9 @@
-# `browser control screenshotPage`
+# `browser control capture screenshotPage`
 
 Runs the scripting `screenshotPage` action once from the command line.
 
 ```powershell
-cmg browser control screenshotPage [--output <path>] [--full-page]
+cmg browser control capture screenshotPage [--output <path>] [--full-page]
 ```
 
 ## Options
@@ -36,6 +36,6 @@ Writes browser or capture errors.
 ## Example
 
 ```powershell
-cmg browser control screenshotPage --output page.png
-cmg browser control screenshotPage --full-page --output page-full.png
+cmg browser control capture screenshotPage --output page.png
+cmg browser control capture screenshotPage --full-page --output page-full.png
 ```
