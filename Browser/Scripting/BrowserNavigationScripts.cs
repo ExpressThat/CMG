@@ -25,28 +25,6 @@ public static class BrowserNavigationScripts
         })
         """;
 
-    public static string WaitForUrl(string expected, int timeoutMilliseconds) =>
-        $$"""
-        new Promise((resolve, reject) => {
-          const expected = {{Quote(expected)}};
-          const deadline = Date.now() + {{timeoutMilliseconds}};
-          const poll = () => {
-            if (location.href.includes(expected)) {
-              resolve(location.href);
-              return;
-            }
-
-            if (Date.now() >= deadline) {
-              reject(new Error(`URL did not match ${expected} within {{timeoutMilliseconds}}ms. Last URL: ${location.href}`));
-              return;
-            }
-
-            setTimeout(poll, 50);
-          };
-          poll();
-        })
-        """;
-
     public static string ExpectUrl(string expected) =>
         $"(() => {{ if (!location.href.includes({Quote(expected)})) throw new Error(`Expected URL to contain {expected}, got ${{location.href}}`); return location.href; }})()";
 

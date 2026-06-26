@@ -5,13 +5,12 @@ namespace CMG.Tests;
 public sealed class BrowserNavigationScriptsTests
 {
     [Fact]
-    public void WaitForUrlPollsWithClearTimeoutFailure()
+    public void ExpectUrlReportsCurrentUrlOnMismatch()
     {
-        var script = BrowserNavigationScripts.WaitForUrl("/checkout", 250);
+        var script = BrowserNavigationScripts.ExpectUrl("/checkout");
 
-        Assert.Contains("new Promise", script);
-        Assert.Contains("within 250ms", script);
-        Assert.Contains("Last URL", script);
+        Assert.Contains("Expected URL to contain /checkout", script);
+        Assert.Contains("location.href", script);
     }
 
     [Fact]

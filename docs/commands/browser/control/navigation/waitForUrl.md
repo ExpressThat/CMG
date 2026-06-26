@@ -23,12 +23,12 @@ URL 001 https://example.com/checkout
 
 ## Stderr
 
-Writes browser, timeout, or URL mismatch errors.
+Writes browser, timeout, or URL mismatch errors. Timeout failures include the expected text, timeout, and last URL seen.
 
 ## Exit Codes
 
 - `0`: The current URL matched before the timeout.
-- `1`: Browser is not running or the action failed.
+- `1`: Browser is not running, the URL did not match before the timeout, or the action failed.
 
 ## Example
 

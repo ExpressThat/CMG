@@ -56,7 +56,14 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 1, 1);
         var timeout = GetIntOption(action, "timeout", 5_000);
-        var url = automationClient.Evaluate(remoteDebuggingUrl, BrowserNavigationScripts.WaitForUrl(action.Arguments[0], timeout));
+        var url = PollPageValue(
+            remoteDebuggingUrl,
+            automationClient,
+            "location.href",
+            action.Arguments[0],
+            timeout,
+            "URL",
+            "URL");
         return [$"URL {action.LineNumber:000} {url}"];
     }
 
@@ -71,24 +78,34 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 1, 1);
         var timeout = GetIntOption(action, "timeout", 5_000);
-        var title = PollTitle(remoteDebuggingUrl, automationClient, action.Arguments[0], timeout);
+        var title = PollPageValue(
+            remoteDebuggingUrl,
+            automationClient,
+            "document.title",
+            action.Arguments[0],
+            timeout,
+            "Title",
+            "title");
         return [$"TITLE {action.LineNumber:000} {title}"];
     }
 
-    private static string PollTitle(
+    private static string PollPageValue(
         string remoteDebuggingUrl,
         IBrowserAutomationClient automationClient,
+        string expression,
         string expected,
-        int timeout)
+        int timeout,
+        string label,
+        string lastValueLabel)
     {
         var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeout);
-        var title = string.Empty;
+        var actual = string.Empty;
         do
         {
-            title = automationClient.Evaluate(remoteDebuggingUrl, "document.title");
-            if (title.Contains(expected, StringComparison.Ordinal))
+            actual = automationClient.Evaluate(remoteDebuggingUrl, expression);
+            if (actual.Contains(expected, StringComparison.Ordinal))
             {
-                return title;
+                return actual;
             }
 
             Thread.Sleep(50);
@@ -96,7 +113,7 @@ public sealed partial class BrowserScriptRunner
         while (DateTimeOffset.UtcNow < deadline);
 
         throw new ScriptExecutionException(
-            $"Title did not match {expected} within {timeout}ms. Last title: {title}");
+            $"{label} did not match {expected} within {timeout}ms. Last {lastValueLabel}: {actual}");
     }
 
     private static IReadOnlyList<string> ExpectTitle(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)

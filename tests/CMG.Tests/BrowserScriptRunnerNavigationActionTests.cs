@@ -25,14 +25,26 @@ public sealed class BrowserScriptRunnerNavigationActionTests
     }
 
     [Fact]
-    public void RunText_WaitForUrlUsesPollingScript()
+    public void RunText_WaitForUrlReturnsMatchedUrl()
     {
         var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("https://example.test/checkout");
         var result = Runner().RunText("waitForUrl \"/checkout\" timeout=250", "debug", client);
 
         Assert.True(result.Success);
-        Assert.Contains("URL did not match", client.LastExpression);
-        Assert.Contains("URL 001 {}", result.StdoutLines);
+        Assert.Equal("location.href", client.LastExpression);
+        Assert.Contains("URL 001 https://example.test/checkout", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_WaitForUrlReportsTimeoutReason()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("https://example.test/cart");
+        var result = Runner().RunText("waitForUrl \"/checkout\" timeout=1", "debug", client);
+
+        Assert.False(result.Success);
+        Assert.Contains("URL did not match /checkout within 1ms", result.Error);
     }
 
     [Fact]
