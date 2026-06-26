@@ -44,6 +44,41 @@ public static class BrowserFrameScripts
     public static string Evaluate(string frameSelector, string expression) =>
         Wrap(frameSelector, $"return frame.contentWindow.eval({Quote(expression)});");
 
+    public static string TextGetter(string frameSelector, string selector, string property) =>
+        ElementValue(frameSelector, selector, $"return element.{property} ?? '';");
+
+    public static string Attribute(string frameSelector, string selector, string name) =>
+        ElementValue(frameSelector, selector, $"return element.getAttribute({Quote(name)}) ?? '';");
+
+    public static string ComputedStyle(string frameSelector, string selector, string property) =>
+        ElementValue(frameSelector, selector, $"return getComputedStyle(element).getPropertyValue({Quote(property)}) ?? '';");
+
+    public static string Property(string frameSelector, string selector, string path) =>
+        ElementValue(frameSelector, selector, $$"""
+        const path = {{Quote(path)}}.split('.');
+        let value = element;
+        for (const part of path) value = value?.[part];
+        return typeof value === 'string' ? value : JSON.stringify(value ?? '');
+        """);
+
+    public static string Count(string frameSelector, string selector) =>
+        Wrap(frameSelector, $$"""
+        const raw = {{Quote(selector)}};
+        const isLocator = /^[A-Za-z][A-Za-z0-9_-]*=/.test(raw);
+        return isLocator ? (resolveFrameElement(raw) ? '1' : '0') : document.querySelectorAll(raw).length.toString();
+        """);
+
+    public static string BoundingBox(string frameSelector, string selector) =>
+        ElementValue(frameSelector, selector, "const r = element.getBoundingClientRect(); return JSON.stringify({ x: r.x, y: r.y, width: r.width, height: r.height });");
+
+    public static string AllText(string frameSelector, string selector, string property) =>
+        Wrap(frameSelector, $$"""
+        const raw = {{Quote(selector)}};
+        const isLocator = /^[A-Za-z][A-Za-z0-9_-]*=/.test(raw);
+        const elements = isLocator ? [resolveFrameElement(raw)].filter(Boolean) : Array.from(document.querySelectorAll(raw));
+        return JSON.stringify(elements.map(element => element.{{property}} ?? ''));
+        """);
+
     public static string WaitForElement(string frameSelector, string selector, int timeout) =>
         Wrap(frameSelector, $$"""
         return new Promise((resolve, reject) => {
@@ -57,6 +92,9 @@ public static class BrowserFrameScripts
           poll();
         });
         """);
+
+    private static string ElementValue(string frameSelector, string selector, string body) =>
+        Element(frameSelector, selector, body);
 
     private static string Element(string frameSelector, string selector, string body) =>
         Wrap(frameSelector, $$"""

@@ -69,6 +69,23 @@ public sealed class BrowserScriptRunnerWithinTests
         Assert.Equal(".list #__cmg_foreach_2_1", client.LastClickedSelector);
     }
 
+    [Theory]
+    [InlineData("computedStyle \".status\" \"display\"", ".panel .status")]
+    [InlineData("property \".status\" \"dataset.state\"", ".panel .status")]
+    public void RunText_WithinScopesInspectionGetters(string childAction, string expectedSelector)
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("ready");
+        var result = Runner().RunText($$"""
+        within ".panel" {
+          {{childAction}}
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
+        Assert.Contains($"__cmgQuery?.(\"{expectedSelector}\")", client.LastExpression);
+    }
+
     [Fact]
     public void RunText_WithinToleratesWeirdSpacingAndInlineBlocks()
     {

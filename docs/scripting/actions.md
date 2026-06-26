@@ -1170,11 +1170,15 @@ frameToHaveText "#checkoutFrame" "#status" "Saved"
 frameToContainText "#checkoutFrame" "#status" "Saved"
 frameContains "#checkoutFrame" "#status" "Saved"
 frameEvaluate "#checkoutFrame" "document.title"
+frameComputedStyle "#checkoutFrame" "#status" "display"
+frameProperty "#checkoutFrame" "#status" "dataset.state"
 
 frame "#checkoutFrame" {
   fill "#email" "agent@example.com"
   click "#save"
   contains "Saved"
+  computedStyle "#save" "display"
+  property "#save" "dataset.state"
 }
 ```
 
@@ -1182,7 +1186,7 @@ Runs actions against a same-origin iframe selected from the top page. The first 
 
 The iframe selector itself is a top-page CSS selector. Element targets inside the frame accept CSS and CMG rich/provider locators such as `getByRole=button|Save`, `text=Saved`, `getByTestId=status`, `xpath=//button`, and `hasText=.row|Ready`.
 
-`frame "<iframe>" { ... }` and `frameLocator "<iframe>" { ... }` are script-only structural blocks that scope supported child actions to the iframe. Supported child actions include `click`, `hover`, `type`, `pressSequentially`, `fill`, `waitForElement`, `waitForSelector`, `assertVisible`, `assertText`, `expectText`, `toHaveText`, `toContainText`, `contains`, `waitForText`, and `evaluate`. Child actions are rewritten before GIF recording, so pointer-aware frame actions still move the virtual pointer to the element's top-page coordinate inside the iframe.
+`frame "<iframe>" { ... }` and `frameLocator "<iframe>" { ... }` are script-only structural blocks that scope supported child actions to the iframe. Supported child actions include `click`, `hover`, `type`, `pressSequentially`, `fill`, `waitForElement`, `waitForSelector`, `assertVisible`, text assertions, `evaluate`, and element getters such as `textContent`, `computedStyle`, and `property`. Child actions are rewritten before GIF recording, so pointer-aware frame actions still move the virtual pointer to the element's top-page coordinate inside the iframe.
 
 `within` can be nested inside a frame block. In that case, child selectors are first composed under the `within` container, then rewritten to frame actions.
 
@@ -1197,6 +1201,7 @@ Output:
 
 - `FRAME <line> <action>` for successful frame actions.
 - `FRAME_EVALUATE <line> <result>` for `frameEvaluate`.
+- `FRAME_TEXT`, `FRAME_VALUE`, `FRAME_ATTRIBUTE`, `FRAME_STYLE`, `FRAME_PROPERTY`, `FRAME_COUNT`, `FRAME_BOUNDING_BOX`, and `FRAME_TEXTS` for frame getter payloads.
 
 Cross-origin iframes cannot be accessed from page JavaScript. Those fail with a clear same-origin/not-ready reason.
 
@@ -2258,7 +2263,7 @@ within ".app-shell" {
 
 `within "<containerSelector>" { ... }` scopes selector-based child actions to a container, similar to provider scoped locators. Plain CSS selectors and explicit `css=` selectors are composed under the current container. Nested `within` blocks compose their containers.
 
-Inside a `within` block, one-argument body-text assertions such as `contains "Saved"` and `toContainText "Saved"` check the scoped container instead of the whole page body. `foreachSelector` also scopes its match set, so `foreachSelector row ".item"` iterates `.item` elements inside the container.
+Inside a `within` block, one-argument body-text assertions such as `contains "Saved"` and `toContainText "Saved"` check the scoped container instead of the whole page body. `foreachSelector` also scopes its match set, so `foreachSelector row ".item"` iterates `.item` elements inside the container. Selector-based getters, including `computedStyle` and `property`, read from the scoped element.
 
 Rich locators such as `text=Save`, `role=button`, `hasText=.row|Ready`, and `xpath=...` still use CMG's existing locator resolver. For a one-line scoped target that works in scripts and one-off CLI commands, use `inside=.container|target`; for larger flows, nest plain CSS actions under `within`.
 

@@ -79,6 +79,9 @@ public sealed partial class CmgActionLowerer
             "sethttpcredentials" or "httpcredentials" or "authenticate" or "clearhttpcredentials" or
             "setproxy" or "proxy" or "clearproxy" or "setoffline" or
             "frameclick" or "frametype" or "framefill" or "framehover" or "framewaitforelement" or "frameasserttext" or "frameevaluate" or
+            "frametextcontent" or "frameinnertext" or "frameinputvalue" or "framegetattribute" or
+            "framecomputedstyle" or "frameproperty" or "framecount" or "framelocatorcount" or
+            "frameboundingbox" or "framealltextcontents" or "frameallinnertexts" or
             "clock" or "tick" or "restoreclock" or
             "clearcontext" or "resetcontext" or
             "newcontext" or "usecontext" or "listcontexts" or "closecontext" or

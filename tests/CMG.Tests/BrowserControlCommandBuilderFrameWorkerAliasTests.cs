@@ -20,6 +20,14 @@ public sealed class BrowserControlCommandBuilderFrameWorkerAliasTests
     [InlineData("frameWaitForElement iframe #ready --timeout 1000", "frameWaitForElement \"iframe\" \"#ready\" timeout=\"1000\"")]
     [InlineData("waitForSelector iframe #ready --timeout 1000", "frameWaitForSelector \"iframe\" \"#ready\" timeout=\"1000\"")]
     [InlineData("frameEvaluate iframe document.title", "frameEvaluate \"iframe\" \"document.title\"")]
+    [InlineData("textContent iframe #status", "frameTextContent \"iframe\" \"#status\"")]
+    [InlineData("frameInputValue iframe #email", "frameInputValue \"iframe\" \"#email\"")]
+    [InlineData("getAttribute iframe #profile href", "frameGetAttribute \"iframe\" \"#profile\" \"href\"")]
+    [InlineData("computedStyle iframe #status display", "frameComputedStyle \"iframe\" \"#status\" \"display\"")]
+    [InlineData("property iframe #status dataset.state", "frameProperty \"iframe\" \"#status\" \"dataset.state\"")]
+    [InlineData("count iframe .item", "frameCount \"iframe\" \".item\"")]
+    [InlineData("boundingBox iframe #card", "frameBoundingBox \"iframe\" \"#card\"")]
+    [InlineData("allTextContents iframe .item", "frameAllTextContents \"iframe\" \".item\"")]
     public void FrameAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();

@@ -943,6 +943,8 @@ This direct-script example is available as `demo-scripts/100-click-options.cmgsc
 setContent "<main><section class='card'><input name='email'><button class='save'>Save</button><p>Ready</p></section></main>"
 within ".card" {
   fill "input[name=email]" "agent@example.com"
+  property ".save" "className"
+  computedStyle ".save" "display"
   contains "Ready"
   click ".save"
 }
@@ -1138,17 +1140,20 @@ test "saves checkout frame" {
     fill "#email" "agent@example.com"
     click "getByRole=button|Save"
     toContainText "getByTestId=status" "Saved"
+    computedStyle "getByRole=button|Save" "display"
+    property "getByRole=button|Save" "dataset.state"
   }
 }
 ```
 
-Recorded frame pointer actions move the virtual pointer to the element's top-page coordinate inside the iframe. Frame element targets support CSS selectors and CMG rich/provider locators. Frame text assertions support `match=contains|exact|regex` and `ignoreCase=true`. `frame` and `frameLocator` blocks are script-only scoped forms over the same frame actions. Frame actions require a same-origin iframe.
+Recorded frame pointer actions move the virtual pointer to the element's top-page coordinate inside the iframe. Frame element targets support CSS selectors and CMG rich/provider locators. Frame text assertions support `match=contains|exact|regex` and `ignoreCase=true`. Frame getters are non-visual and return parseable payload lines. `frame` and `frameLocator` blocks are script-only scoped forms over the same frame actions. Frame actions require a same-origin iframe.
 
 The direct frame aliases are available outside frame blocks too:
 
 ```text
 frameWaitForSelector "#checkoutFrame" "#status" timeout=5000
 frameToContainText "#checkoutFrame" "getByTestId=status" "Saved"
+frameComputedStyle "#checkoutFrame" "#status" "display"
 ```
 
 ## Download Flow

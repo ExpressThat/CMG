@@ -2,6 +2,8 @@ setContent "<!doctype html><title>Within Demo</title><main><section class='card'
 within ".card" {
   fill "input[name=email]" "agent@example.com"
   contains "Ready"
+  property ".save" "className"
+  computedStyle ".save" "display"
   foreachSelector row ".item" {
     click "${row}"
   }

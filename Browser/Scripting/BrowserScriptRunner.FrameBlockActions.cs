@@ -36,6 +36,16 @@ public sealed partial class BrowserScriptRunner
                 FrameTextAssertion(action, "frameAssertText", frame),
             "contains" => FrameContains(action, frame),
             "evaluate" => FrameAction(action, "frameEvaluate", frame, min: 1, max: 1),
+            "textcontent" => FrameAction(action, "frameTextContent", frame, min: 1, max: 1),
+            "innertext" => FrameAction(action, "frameInnerText", frame, min: 1, max: 1),
+            "inputvalue" => FrameAction(action, "frameInputValue", frame, min: 1, max: 1),
+            "getattribute" => FrameAction(action, "frameGetAttribute", frame, min: 2, max: 2),
+            "computedstyle" => FrameAction(action, "frameComputedStyle", frame, min: 2, max: 2),
+            "property" => FrameAction(action, "frameProperty", frame, min: 2, max: 2),
+            "count" or "locatorcount" => FrameAction(action, "frameCount", frame, min: 1, max: 1),
+            "boundingbox" => FrameAction(action, "frameBoundingBox", frame, min: 1, max: 1),
+            "alltextcontents" => FrameAction(action, "frameAllTextContents", frame, min: 1, max: 1),
+            "allinnertexts" => FrameAction(action, "frameAllInnerTexts", frame, min: 1, max: 1),
             _ => action
         };
     }

@@ -123,7 +123,10 @@ public sealed partial class BrowserScriptRunner
             "setproxy" or "proxy" or "clearproxy" or "setoffline" => ExecuteNetworkEnvironmentAction(remoteDebuggingUrl, automationClient, action),
             "frameclick" or "frametype" or "framefill" or "framehover" or
             "framewaitforelement" or "framewaitforselector" or "frameasserttext" or "frameexpecttext" or
-            "frametohavetext" or "frametocontaintext" or "framecontains" or "frameevaluate" =>
+            "frametohavetext" or "frametocontaintext" or "framecontains" or "frameevaluate" or
+            "frametextcontent" or "frameinnertext" or "frameinputvalue" or "framegetattribute" or
+            "framecomputedstyle" or "frameproperty" or "framecount" or "framelocatorcount" or
+            "frameboundingbox" or "framealltextcontents" or "frameallinnertexts" =>
                 ExecuteFrameAction(remoteDebuggingUrl, automationClient, action),
             "clock" or "tick" or "restoreclock" => ExecuteClockAction(remoteDebuggingUrl, automationClient, action),
             "clearcontext" or "resetcontext" => ExecuteContextAction(remoteDebuggingUrl, automationClient, action),

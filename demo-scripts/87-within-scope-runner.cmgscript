@@ -3,6 +3,8 @@ test "within scope" {
   within ".card" {
     fill "input[name=email]" "agent@example.com"
     contains "Ready"
+    property ".save" "className"
+    computedStyle ".save" "display"
     foreachSelector row ".item" {
       click "${row}"
     }

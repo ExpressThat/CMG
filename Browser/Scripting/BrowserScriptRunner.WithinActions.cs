@@ -111,7 +111,7 @@ public sealed partial class BrowserScriptRunner
         "waitforelement", "waitforselector", "assertvisible", "click", "dblclick", "doubleclick", "rightclick",
         "contextclick", "tap", "touchtap", "presssequentially", "fill", "check", "uncheck", "focus", "blur",
         "selecttext", "dispatchevent", "type", "clear", "hover", "scrollintoview", "select", "selectoption",
-        "html", "screenshot", "textcontent", "innertext", "inputvalue", "getattribute", "count", "locatorcount",
+        "html", "screenshot", "textcontent", "innertext", "inputvalue", "getattribute", "computedstyle", "property", "count", "locatorcount",
         "boundingbox", "alltextcontents", "allinnertexts", "expectvisible", "tobevisible", "waitforvisible",
         "expectnothidden", "tobenothidden", "expecthidden", "tobehidden", "waitforhidden", "expectnotvisible",
         "tobenotvisible", "expectenabled", "tobeenabled", "expectnotdisabled", "tobenotdisabled", "expectdisabled",

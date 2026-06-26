@@ -33,6 +33,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildFrameWaitCommand(browserOptions, "frameWaitForSelector", "frameWaitForSelector"));
         command.Subcommands.Add(BuildFrameEvaluateCommand(browserOptions, "evaluate"));
         command.Subcommands.Add(BuildFrameEvaluateCommand(browserOptions, "frameEvaluate"));
+        AddFrameGetterCommands(command, browserOptions);
 
         return command;
     }

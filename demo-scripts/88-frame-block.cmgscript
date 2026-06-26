@@ -1,7 +1,9 @@
-setContent "<main><iframe id='checkoutFrame'></iframe><script>const frame=document.querySelector('#checkoutFrame'); const doc=frame.contentDocument; doc.open(); doc.write(`<main><input id='email'><button id='save'>Save</button><p id='status'>Saved</p></main>`); doc.close();</script></main>"
+setContent "<main><iframe id='checkoutFrame'></iframe><script>const frame=document.querySelector('#checkoutFrame'); const doc=frame.contentDocument; doc.open(); doc.write(`<main><input id='email'><button id='save' data-state='ready' style='display:block'>Save</button><p id='status'>Saved</p></main>`); doc.close();</script></main>"
 frame "#checkoutFrame" {
   waitForSelector "#email" timeout=5000
   fill "#email" "agent@example.com"
   click "#save"
   contains "Saved"
+  computedStyle "#save" "display"
+  property "#save" "dataset.state"
 }
