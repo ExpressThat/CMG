@@ -34,6 +34,36 @@ public sealed class BrowserScriptRunnerStorageActionTests
     }
 
     [Fact]
+    public void RunText_CookieSetPassesCookieOptions()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("cookie set \"mode\" \"demo\" path=\"/app\" sameSite=\"Lax\" secure=\"true\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("path=/app", client.LastExpression);
+        Assert.Contains("SameSite=Lax", client.LastExpression);
+        Assert.Contains("Secure", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_CookieRejectsUnsupportedOptionForGet()
+    {
+        var result = Runner().RunText("cookie get \"mode\" sameSite=\"Lax\"", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("cookie get does not support option 'sameSite'", result.Error);
+    }
+
+    [Fact]
+    public void RunText_CookieRejectsInvalidSameSite()
+    {
+        var result = Runner().RunText("cookie set \"mode\" \"demo\" sameSite=\"Maybe\"", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("cookie sameSite expects Strict, Lax, or None", result.Error);
+    }
+
+    [Fact]
     public void RunText_LocalStorageSetValidatesValue()
     {
         var result = Runner().RunText("localStorage set \"token\"", "debug", new FakeAutomationClient());

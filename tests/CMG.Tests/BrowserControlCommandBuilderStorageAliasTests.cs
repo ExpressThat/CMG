@@ -19,6 +19,17 @@ public sealed class BrowserControlCommandBuilderStorageAliasTests
         Assert.Equal(expectedScript, handler.ScriptLine);
     }
 
+    [Fact]
+    public void CookieCommand_MapsCookieOptionsToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control storage cookie set mode demo --path /app --same-site Lax --max-age 60 --secure").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("cookie \"set\" \"mode\" \"demo\" path=\"/app\" maxAge=\"60\" sameSite=\"Lax\" secure=\"true\"", handler.ScriptLine);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");

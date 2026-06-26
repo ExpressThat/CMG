@@ -1056,6 +1056,7 @@ test "sets browser storage" {
   localStorage set "token" "abc"
   sessionStorage set "mode" "test"
   cookie set "cmg" "demo"
+  cookie set "scoped" "yes" path="/app" sameSite="Lax" secure="true"
   localStorage get "token"
   cookie get "cmg"
 }

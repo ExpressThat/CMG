@@ -1539,6 +1539,7 @@ localStorage get "token"
 localStorage clear
 sessionStorage remove "token"
 cookie set "mode" "demo"
+cookie set "scoped" "yes" path="/app" sameSite="Lax" secure="true"
 cookie get "mode"
 cookie clear
 ```
@@ -1549,6 +1550,17 @@ Arguments:
 
 - `localStorage` and `sessionStorage`: `get <key>`, `set <key> <value>`, `remove <key>`, or `clear`.
 - `cookie`: `get [key]`, `set <key> <value>`, `remove <key>`, or `clear`.
+
+Cookie options:
+
+- `domain`: Cookie domain for `set`, `remove`, or `clear`.
+- `path`: Cookie path for `set`, `remove`, or `clear`. Defaults to `/`.
+- `expires`: Cookie expiry date string for `set`.
+- `maxAge`: Cookie `Max-Age` in seconds for `set`.
+- `sameSite`: Cookie `SameSite` value for `set`; accepts `Strict`, `Lax`, or `None`.
+- `secure`: `true` or `false`; when `true`, adds the `Secure` attribute for `set`.
+
+`HttpOnly` is not available from the `cookie` action because it runs in the page context and browsers do not allow JavaScript to set `HttpOnly` cookies.
 
 Output:
 

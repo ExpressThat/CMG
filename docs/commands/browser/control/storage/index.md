@@ -29,6 +29,7 @@ cmg browser control storage local set token abc
 cmg browser control storage local get token
 cmg browser control storage session clear
 cmg browser control storage cookie get
+cmg browser control storage cookie set mode demo --path /app --same-site Lax --secure
 cmg browser control storage state save --path artifacts\auth.json
 cmg browser control storage storageState load --path artifacts\auth.json
 ```

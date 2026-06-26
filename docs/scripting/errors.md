@@ -432,9 +432,10 @@ Navigation wait failures include the expected state or URL, timeout, and the las
 ```text
 Line 4: localStorage failed. localStorage set expects a key and value.
 Line 5: cookie failed. cookie expects get, set, remove, or clear.
+Line 6: cookie failed. cookie sameSite expects Strict, Lax, or None.
 ```
 
-Storage actions validate the operation and required key/value arguments before mutating browser state.
+Storage actions validate the operation, required key/value arguments, and supported cookie options before mutating browser state.
 
 ## Wait Failure
 

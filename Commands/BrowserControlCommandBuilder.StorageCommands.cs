@@ -47,6 +47,22 @@ public sealed partial class BrowserControlCommandBuilder
             valueArgument
         };
 
+        var domain = new Option<string?>("--domain") { Description = "Cookie domain for set, remove, or clear." };
+        var path = new Option<string?>("--path") { Description = "Cookie path. Defaults to /." };
+        var expires = new Option<string?>("--expires") { Description = "Cookie expiry date string for set." };
+        var maxAge = new Option<int?>("--max-age") { Description = "Cookie Max-Age in seconds for set." };
+        var sameSite = new Option<string?>("--same-site") { Description = "Cookie SameSite value: Strict, Lax, or None." };
+        var secure = new Option<bool>("--secure") { Description = "Set the Secure cookie attribute." };
+        if (action is "cookie")
+        {
+            command.Options.Add(domain);
+            command.Options.Add(path);
+            command.Options.Add(expires);
+            command.Options.Add(maxAge);
+            command.Options.Add(sameSite);
+            command.Options.Add(secure);
+        }
+
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
                 action,
@@ -55,7 +71,9 @@ public sealed partial class BrowserControlCommandBuilder
                     parseResult.GetValue(keyArgument),
                     parseResult.GetValue(valueArgument)
                 ]),
-                [])));
+                action is "cookie"
+                    ? CookieOptions(parseResult, domain, path, expires, maxAge, sameSite, secure)
+                    : [])));
 
         return command;
     }
@@ -91,4 +109,28 @@ public sealed partial class BrowserControlCommandBuilder
 
     private static IReadOnlyList<string> Compact(IReadOnlyList<string?> values) =>
         values.Where(value => !string.IsNullOrWhiteSpace(value)).Select(value => value!).ToArray();
+
+    private static IReadOnlyList<(string Key, string Value)> CookieOptions(
+        ParseResult parseResult,
+        Option<string?> domain,
+        Option<string?> path,
+        Option<string?> expires,
+        Option<int?> maxAge,
+        Option<string?> sameSite,
+        Option<bool> secure)
+    {
+        var options = CompactOptions([
+            StringOption("domain", parseResult.GetValue(domain)),
+            StringOption("path", parseResult.GetValue(path)),
+            StringOption("expires", parseResult.GetValue(expires)),
+            IntOption("maxAge", parseResult.GetValue(maxAge)),
+            StringOption("sameSite", parseResult.GetValue(sameSite))
+        ]).ToList();
+        if (parseResult.GetValue(secure))
+        {
+            options.Add(("secure", "true"));
+        }
+
+        return options;
+    }
 }

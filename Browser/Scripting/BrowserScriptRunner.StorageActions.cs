@@ -33,10 +33,44 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> Cookie(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         var (operation, key, value) = ParseStorageArguments(action, allowGetAll: true);
-        var result = automationClient.Evaluate(remoteDebuggingUrl, BrowserStorageScripts.Cookie(operation, key, value));
+        ValidateCookieOptions(action, operation);
+        var result = automationClient.Evaluate(remoteDebuggingUrl, BrowserStorageScripts.Cookie(operation, key, value, action.Options));
         return operation is "get"
             ? [$"COOKIE {action.LineNumber:000} get {key} {result}".TrimEnd()]
             : [$"COOKIE {action.LineNumber:000} {operation} {key}".TrimEnd()];
+    }
+
+    private static void ValidateCookieOptions(BrowserScriptAction action, string operation)
+    {
+        var allowed = operation is "set"
+            ? new[] { "domain", "path", "expires", "maxAge", "sameSite", "secure" }
+            : operation is "remove" or "clear"
+                ? ["domain", "path"]
+                : Array.Empty<string>();
+
+        foreach (var option in action.Options.Keys)
+        {
+            if (!allowed.Contains(option, StringComparer.OrdinalIgnoreCase))
+            {
+                throw new ScriptExecutionException($"cookie {operation} does not support option '{option}'.");
+            }
+        }
+
+        if (action.Options.TryGetValue("sameSite", out var sameSite) &&
+            !new[] { "Strict", "Lax", "None" }.Contains(sameSite, StringComparer.OrdinalIgnoreCase))
+        {
+            throw new ScriptExecutionException("cookie sameSite expects Strict, Lax, or None.");
+        }
+
+        if (action.Options.TryGetValue("maxAge", out var maxAge) && !int.TryParse(maxAge, out _))
+        {
+            throw new ScriptExecutionException("cookie maxAge expects an integer number of seconds.");
+        }
+
+        if (action.Options.TryGetValue("secure", out var secure) && !bool.TryParse(secure, out _))
+        {
+            throw new ScriptExecutionException("cookie secure expects true or false.");
+        }
     }
 
     private static (string Operation, string Key, string Value) ParseStorageArguments(BrowserScriptAction action, bool allowGetAll)
