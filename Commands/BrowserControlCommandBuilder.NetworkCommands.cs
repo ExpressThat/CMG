@@ -9,7 +9,9 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command("network", "Network routing, waits, HAR, and environment commands.");
 
-        command.Subcommands.Add(BuildRouteCommand(browserOptions));
+        command.Subcommands.Add(BuildRouteCommand(browserOptions, "route", "Install a fetch/XHR route."));
+        command.Subcommands.Add(BuildRouteCommand(browserOptions, "intercept", "Alias a fetch/XHR route as an intercept."));
+        command.Subcommands.Add(BuildRouteCommand(browserOptions, "mockResponse", "Alias a fetch/XHR route as a mocked response."));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "clearRoutes", "Clear network routes.", "clearRoutes"));
         command.Subcommands.Add(BuildNetworkWaitCommand(browserOptions, "waitForRequest", "Wait for a matching request."));
         command.Subcommands.Add(BuildNetworkWaitCommand(browserOptions, "waitForRequestFinished", "Wait for a matching completed request."));
@@ -29,7 +31,7 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildRouteCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildRouteCommand(BrowserSelectionOptions browserOptions, string name, string description)
     {
         var pattern = new Argument<string>("pattern") { Description = "URL substring to match." };
         var status = new Option<int?>("--status") { Description = "Mocked response status." };
@@ -39,10 +41,10 @@ public sealed partial class BrowserControlCommandBuilder
         var times = new Option<int?>("--times") { Description = "Remove route after this many matches." };
         var delay = new Option<int?>("--delay") { Description = "Response delay in milliseconds." };
         var abort = new Option<bool>("--abort") { Description = "Abort matching requests." };
-        var command = new Command("route", "Install a fetch/XHR route.") { pattern, status, body, contentType, method, times, delay, abort };
+        var command = new Command(name, description) { pattern, status, body, contentType, method, times, delay, abort };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("route", [parseResult.GetValue(pattern) ?? string.Empty], RouteOptions(parseResult, status, body, contentType, method, times, delay, abort))));
+            ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], RouteOptions(parseResult, status, body, contentType, method, times, delay, abort))));
         return command;
     }
 
