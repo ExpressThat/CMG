@@ -15,6 +15,11 @@ public static class CmgHtmlReportWriter
         {
             var state = Status(test);
             builder.AppendLine($"<section><h2 class=\"{state}\">{Encode(test.Name)} - {state}</h2>");
+            if (!string.IsNullOrWhiteSpace(test.Project))
+            {
+                builder.AppendLine($"<p>Project: {Encode(test.Project)}</p>");
+            }
+
             if (!string.IsNullOrWhiteSpace(test.Error))
             {
                 builder.AppendLine($"<p>{Encode(test.Error)}</p>");

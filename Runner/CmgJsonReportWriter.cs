@@ -14,6 +14,7 @@ public static class CmgJsonReportWriter
         {
             writer.WriteStartObject();
             writer.WriteString("name", test.Name);
+            writer.WriteString("project", test.Project);
             writer.WriteString("sourcePath", test.SourcePath);
             writer.WriteString("status", Status(test));
             writer.WriteBoolean("success", test.Success);

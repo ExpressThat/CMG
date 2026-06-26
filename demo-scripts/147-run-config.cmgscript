@@ -1,6 +1,6 @@
 suite "config demo" tag=smoke {
   test "uses config variables" {
-    setContent "<main><h1>Config ${tenant}</h1><p id='mode'>${mode}</p></main>"
+    setContent "<main><h1>Config ${tenant}</h1><p id='mode'>${mode}</p><p id='browser'>${browserName}</p></main>"
     expectText "#mode" "config"
   }
 }

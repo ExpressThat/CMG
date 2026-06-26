@@ -15,9 +15,14 @@ public static class CmgJUnitReportWriter
         foreach (var test in tests)
         {
             builder.AppendLine($"  <testcase classname=\"CMG\" name=\"{Encode(test.Name)}\">");
-            if (test.Annotations.Count > 0)
+            if (test.Annotations.Count > 0 || !string.IsNullOrWhiteSpace(test.Project))
             {
                 builder.AppendLine("    <properties>");
+                if (!string.IsNullOrWhiteSpace(test.Project))
+                {
+                    builder.AppendLine($"      <property name=\"cmg.project\" value=\"{Encode(test.Project)}\" />");
+                }
+
                 foreach (var annotation in test.Annotations)
                 {
                     builder.AppendLine($"      <property name=\"cmg.annotation.{Encode(annotation.Type)}\" value=\"{Encode(annotation.Description)}\" />");

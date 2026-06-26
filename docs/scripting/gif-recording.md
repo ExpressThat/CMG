@@ -117,6 +117,7 @@ Timing is intentionally automatic for now.
 - GIF files can become large for long scripts.
 - Recording can make scripts run slower because screenshots are captured after each action.
 - GIF recording is supported by `browser control script --gif`, `cmg run --gif`, and `gif "name" { ... }` blocks inside direct browser-control scripts or `cmg run` scripts.
+- `cmg run --gif` prefixes runner GIF filenames with the selected `--project` name, so matrix jobs can write Chrome, Firefox, and Edge artifacts into the same directory without overwriting each other.
 - `recordVideo "name" { ... }` and `screencast "name" { ... }` are provider-style aliases for CMG GIF blocks. They write animated GIF files, not MP4/WebM files.
 - Command-level `--gif` records the whole direct script or test and suppresses nested `gif` block files. Suppressed blocks write `GIF_BLOCK_SUPPRESSED <line>` to stdout.
 - `moveMouse` requires `--gif`; scripts without recording do not create or move a virtual mouse.

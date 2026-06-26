@@ -4,7 +4,7 @@ using CMG.Runner;
 
 namespace CMG.Commands;
 
-public sealed class RunCommandBuilder
+public sealed partial class RunCommandBuilder
 {
     private readonly ICmgRunCommandHandler handler;
 
@@ -22,6 +22,15 @@ public sealed class RunCommandBuilder
         var configOption = new Option<FileInfo?>("--config")
         {
             Description = "JSON run config file. CLI options override config values."
+        };
+        var projectOption = new Option<string?>("--project")
+        {
+            Description = "Named project from the run config."
+        };
+        var workersOption = new Option<int>("--workers")
+        {
+            Description = "Number of selected tests to run concurrently.",
+            DefaultValueFactory = _ => 1
         };
         var gifOption = new Option<DirectoryInfo?>("--gif")
         {
@@ -103,6 +112,8 @@ public sealed class RunCommandBuilder
         {
             pathArgument,
             configOption,
+            projectOption,
+            workersOption,
             gifOption,
             jsonOption,
             htmlOption,
@@ -130,6 +141,11 @@ public sealed class RunCommandBuilder
                 Console.Error.WriteLine(configError);
                 return 1;
             }
+            if (!TrySelectProject(parseResult.GetValue(projectOption), config, out var project, out var projectError))
+            {
+                Console.Error.WriteLine(projectError);
+                return 1;
+            }
 
             var variableValues = (parseResult.GetValue(variableOption) ?? [])
                 .Concat(parseResult.GetValue(envOption) ?? []);
@@ -138,65 +154,40 @@ public sealed class RunCommandBuilder
                 Console.Error.WriteLine(error);
                 return 1;
             }
-            variables = MergeVariables(config.Variables, variables);
+            variables = MergeVariables(MergeVariables(config.Variables, project?.Variables), variables);
+            var projectBrowser = BrowserKindFor(project?.Browser);
+            if (projectBrowser is BrowserKind.InvalidSelection)
+            {
+                Console.Error.WriteLine($"Run config project '{project?.Name}' has unknown browser '{project?.Browser}'.");
+                return 1;
+            }
 
             return
             handler.Run(
-                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                projectBrowser ?? CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 parseResult.GetValue(pathArgument) ?? string.Empty,
                 DirectoryValue(parseResult, gifOption, config.Gif),
                 FileValue(parseResult, jsonOption, config.ReportJson),
                 FileValue(parseResult, htmlOption, config.ReportHtml),
                 FileValue(parseResult, junitOption, config.ReportJunit),
                 DirectoryValue(parseResult, traceOption, config.Trace),
-                StringValue(parseResult, grepOption, config.Grep),
-                StringValue(parseResult, tagOption, config.Tag),
-                IntValue(parseResult, retriesOption, config.Retries),
+                StringValue(parseResult, grepOption, project?.Grep ?? config.Grep),
+                StringValue(parseResult, tagOption, project?.Tag ?? config.Tag),
+                IntValue(parseResult, retriesOption, project?.Retries ?? config.Retries),
                 IntValue(parseResult, maxFailuresOption, config.MaxFailures),
                 IntValue(parseResult, repeatEachOption, config.RepeatEach),
                 parseResult.GetValue(listOption),
                 StringValue(parseResult, shardOption, config.Shard),
-                IntValue(parseResult, timeoutOption, config.Timeout),
-                IntValue(parseResult, navigationTimeoutOption, config.NavigationTimeout),
-                IntValue(parseResult, assertionTimeoutOption, config.AssertionTimeout),
-                StringValue(parseResult, baseUrlOption, config.BaseUrl),
-                variables);
+                IntValue(parseResult, timeoutOption, project?.Timeout ?? config.Timeout),
+                IntValue(parseResult, navigationTimeoutOption, project?.NavigationTimeout ?? config.NavigationTimeout),
+                IntValue(parseResult, assertionTimeoutOption, project?.AssertionTimeout ?? config.AssertionTimeout),
+                StringValue(parseResult, baseUrlOption, project?.BaseUrl ?? config.BaseUrl),
+                variables,
+                project?.Name ?? string.Empty,
+                Math.Max(1, parseResult.GetValue(workersOption)));
         });
 
         return command;
     }
 
-    private static bool WasProvided(ParseResult parseResult, Option option)
-    {
-        var names = option.Aliases.Prepend(option.Name).ToArray();
-        return parseResult.Tokens.Any(token => names.Contains(token.Value, StringComparer.Ordinal));
-    }
-
-    private static DirectoryInfo? DirectoryValue(ParseResult parseResult, Option<DirectoryInfo?> option, DirectoryInfo? fallback) =>
-        WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback;
-
-    private static FileInfo? FileValue(ParseResult parseResult, Option<FileInfo?> option, FileInfo? fallback) =>
-        WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback;
-
-    private static string? StringValue(ParseResult parseResult, Option<string?> option, string? fallback) =>
-        WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback;
-
-    private static int IntValue(ParseResult parseResult, Option<int> option, int? fallback) =>
-        WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback ?? parseResult.GetValue(option);
-
-    private static int? IntValue(ParseResult parseResult, Option<int?> option, int? fallback) =>
-        WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback;
-
-    private static IReadOnlyDictionary<string, string> MergeVariables(
-        IReadOnlyDictionary<string, string> configVariables,
-        IReadOnlyDictionary<string, string> cliVariables)
-    {
-        var merged = new Dictionary<string, string>(configVariables, StringComparer.OrdinalIgnoreCase);
-        foreach (var (key, value) in cliVariables)
-        {
-            merged[key] = value;
-        }
-
-        return merged;
-    }
 }

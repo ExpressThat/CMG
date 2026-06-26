@@ -87,47 +87,15 @@ public sealed partial class CmgRunService : ICmgRunService
         var parse = parser.Parse(file, File.ReadAllText(file));
         if (!parse.Success || parse.Document is null)
         {
-            tests.Add(new CmgTestResult(Path.GetFileName(file), file, false, [], parse.Error, null, []));
-            output.Add($"TEST FAIL {Path.GetFileName(file)}");
+            tests.Add(new CmgTestResult(Path.GetFileName(file), file, false, [], parse.Error, null, []) { Project = options.ProjectName });
+            output.Add(TestOutput("FAIL", Path.GetFileName(file), options));
             return ContinueAfterFailureLimit(options, tests, output);
         }
 
         var plannedTests = SelectFocusedTests(planner.Plan(parse.Document).Where(test => ShouldRun(test, options)).ToArray());
         var repeatedTests = RepeatTests(plannedTests, options.RepeatEach);
         var selectedTests = ApplyOnceHooks(ApplyShard(repeatedTests, options).ToArray());
-        foreach (var test in selectedTests)
-        {
-            if (IsSkipped(test))
-            {
-                tests.Add(SkippedTest(test));
-                output.Add($"TEST SKIP {test.Name}");
-                continue;
-            }
-
-            var validation = validator.Validate(test);
-            if (!validation.Success)
-            {
-                tests.Add(new CmgTestResult(
-                    test.Name,
-                    test.SourcePath,
-                    false,
-                    [],
-                    validation.Error,
-                    null,
-                    [new CmgStepResult(validation.LineNumber, validation.Action, false, [], validation.Error, null)])
-                { Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty, Annotations = test.Annotations });
-                output.Add($"TEST FAIL {test.Name}");
-                if (!ContinueAfterFailureLimit(options, tests, output)) return false;
-                continue;
-            }
-
-            var result = RunTestWithRetries(test, remoteDebuggingUrl, options);
-            tests.Add(result);
-            output.Add($"TEST {(result.Status.Equals("skipped", StringComparison.OrdinalIgnoreCase) ? "SKIP" : result.Success ? "PASS" : "FAIL")} {result.Name}");
-            if (!ContinueAfterFailureLimit(options, tests, output)) return false;
-        }
-
-        return true;
+        return RunSelectedTests(selectedTests.ToArray(), remoteDebuggingUrl, options, tests, output);
     }
 
     private CmgTestResult RunTestWithRetries(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options)
@@ -158,17 +126,19 @@ public sealed partial class CmgRunService : ICmgRunService
         return executor.Run(test, remoteDebuggingUrl, options, attempt) with
         {
             Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty,
-            Annotations = test.Annotations
+            Annotations = test.Annotations,
+            Project = options.ProjectName
         };
     }
 
-    private static CmgTestResult SkippedTest(CmgTestCase test)
+    private static CmgTestResult SkippedTest(CmgTestCase test, CmgRunOptions options)
     {
         var reason = test.Options.TryGetValue("reason", out var value) ? value : "Skipped by test option.";
         return new CmgTestResult(test.Name, test.SourcePath, true, [], reason, null, [])
         {
             Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty,
             Status = "skipped",
+            Project = options.ProjectName,
             Annotations = test.Annotations
         };
     }
@@ -205,45 +175,4 @@ public sealed partial class CmgRunService : ICmgRunService
         }
     }
 
-    internal static IReadOnlyList<string> ResolveFiles(string path)
-    {
-        if (File.Exists(path))
-        {
-            return [Path.GetFullPath(path)];
-        }
-
-        return Directory.Exists(path)
-            ? Directory.GetFiles(path, "*.cmgscript", SearchOption.AllDirectories).Order(StringComparer.Ordinal).ToArray()
-            : [];
-    }
-
-    internal static FileInfo? BuildGifPath(CmgTestCase test, CmgRunOptions options)
-    {
-        if (options.GifDirectory is null)
-        {
-            return null;
-        }
-
-        options.GifDirectory.Create();
-        var safeName = string.Concat(test.Name.Select(character => char.IsLetterOrDigit(character) ? character : '-'));
-        return new FileInfo(Path.Combine(options.GifDirectory.FullName, $"{safeName}.gif"));
-    }
-
-    private static void WriteReports(CmgRunOptions options, IReadOnlyList<CmgTestResult> tests)
-    {
-        WriteReport(options.JsonReport, CmgJsonReportWriter.Write(tests));
-        WriteReport(options.HtmlReport, CmgHtmlReportWriter.Write(tests));
-        WriteReport(options.JUnitReport, CmgJUnitReportWriter.Write(tests));
-    }
-
-    private static void WriteReport(FileInfo? report, string content)
-    {
-        if (report is null)
-        {
-            return;
-        }
-
-        report.Directory?.Create();
-        File.WriteAllText(report.FullName, content);
-    }
 }

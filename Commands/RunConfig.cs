@@ -18,10 +18,23 @@ internal sealed record RunConfig(
     int? NavigationTimeout,
     int? AssertionTimeout,
     string? BaseUrl,
-    IReadOnlyDictionary<string, string> Variables)
+    IReadOnlyDictionary<string, string> Variables,
+    IReadOnlyDictionary<string, RunProjectConfig> Projects)
 {
-    public static RunConfig Empty { get; } = new(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Dictionary<string, string>());
+    public static RunConfig Empty { get; } = new(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Dictionary<string, string>(), new Dictionary<string, RunProjectConfig>());
 }
+
+internal sealed record RunProjectConfig(
+    string Name,
+    string? Browser,
+    string? BaseUrl,
+    string? Grep,
+    string? Tag,
+    int? Retries,
+    int? Timeout,
+    int? NavigationTimeout,
+    int? AssertionTimeout,
+    IReadOnlyDictionary<string, string> Variables);
 
 internal static class RunConfigReader
 {
@@ -79,7 +92,8 @@ internal static class RunConfigReader
         IntOption(root, "navigationTimeout"),
         IntOption(root, "assertionTimeout"),
         StringOption(root, "baseUrl"),
-        Variables(root));
+        Variables(root),
+        Projects(root));
 
     private static FileInfo? FileOption(JsonElement root, string name, string baseDirectory) =>
         StringOption(root, name) is { } value ? new FileInfo(ResolvePath(baseDirectory, value)) : null;
@@ -115,6 +129,47 @@ internal static class RunConfigReader
 
         return variables.EnumerateObject()
             .ToDictionary(property => property.Name, property => property.Value.ToString(), StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static IReadOnlyDictionary<string, RunProjectConfig> Projects(JsonElement root)
+    {
+        if (!root.TryGetProperty("projects", out var projects))
+        {
+            return new Dictionary<string, RunProjectConfig>();
+        }
+        if (projects.ValueKind is not JsonValueKind.Array)
+        {
+            throw new RunConfigException("Run config option 'projects' must be an array.");
+        }
+
+        return projects.EnumerateArray().Select(Project)
+            .ToDictionary(project => project.Name, project => project, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static RunProjectConfig Project(JsonElement element)
+    {
+        if (element.ValueKind is not JsonValueKind.Object)
+        {
+            throw new RunConfigException("Each run config project must be an object.");
+        }
+
+        var name = StringOption(element, "name");
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new RunConfigException("Each run config project requires a string 'name'.");
+        }
+
+        return new(
+            name,
+            StringOption(element, "browser"),
+            StringOption(element, "baseUrl"),
+            StringOption(element, "grep"),
+            StringOption(element, "tag"),
+            IntOption(element, "retries"),
+            IntOption(element, "timeout"),
+            IntOption(element, "navigationTimeout"),
+            IntOption(element, "assertionTimeout"),
+            Variables(element));
     }
 
     private static string ResolvePath(string baseDirectory, string value) =>

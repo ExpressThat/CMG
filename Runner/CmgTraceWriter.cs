@@ -15,7 +15,8 @@ public static class CmgTraceWriter
         directory.Create();
         foreach (var test in tests)
         {
-            var file = Path.Combine(directory.FullName, $"{SafeName(test.Name)}.trace.json");
+            var project = string.IsNullOrWhiteSpace(test.Project) ? string.Empty : $"{SafeName(test.Project)}-";
+            var file = Path.Combine(directory.FullName, $"{project}{SafeName(test.Name)}.trace.json");
             File.WriteAllText(file, WriteTrace(test));
         }
     }
@@ -26,6 +27,7 @@ public static class CmgTraceWriter
         using var writer = new Utf8JsonWriter(new StringBuilderBuffer(builder), new JsonWriterOptions { Indented = true });
         writer.WriteStartObject();
         writer.WriteString("name", test.Name);
+        writer.WriteString("project", test.Project);
         writer.WriteString("sourcePath", test.SourcePath);
         writer.WriteBoolean("success", test.Success);
         writer.WriteString("error", test.Error);

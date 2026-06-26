@@ -71,6 +71,17 @@ public sealed class CmgRunSelectionTests
     }
 
     [Fact]
+    public void BuildGifPath_PrefixesProjectName()
+    {
+        var path = CmgRunService.BuildGifPath(Test("checkout"), Options(projectName: "firefox-smoke") with
+        {
+            GifDirectory = new DirectoryInfo(Path.GetTempPath())
+        });
+
+        Assert.StartsWith("firefox-smoke-checkout", Path.GetFileName(path!.FullName));
+    }
+
+    [Fact]
     public void FailedTestErrors_IncludesParseFailuresWithoutDuplicatingStepFailures()
     {
         var errors = CmgRunCommandHandler.FailedTestErrors([
@@ -100,7 +111,8 @@ public sealed class CmgRunSelectionTests
         string? tag = null,
         int repeatEach = 1,
         int shardIndex = 1,
-        int shardCount = 1) =>
+        int shardCount = 1,
+        string projectName = "") =>
         new(
             Browser.BrowserKind.Chrome,
             null,
@@ -120,5 +132,6 @@ public sealed class CmgRunSelectionTests
             null,
             null,
             null,
-            new Dictionary<string, string>());
+            new Dictionary<string, string>(),
+            projectName);
 }

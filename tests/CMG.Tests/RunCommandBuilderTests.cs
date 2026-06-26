@@ -119,6 +119,8 @@ public sealed class RunCommandBuilderTests
     {
         public string? Path { get; private set; }
 
+        public BrowserKind BrowserKind { get; private set; }
+
         public int? Timeout { get; private set; }
 
         public int? NavigationTimeout { get; private set; }
@@ -148,6 +150,10 @@ public sealed class RunCommandBuilderTests
 
         public string? Shard { get; private set; }
 
+        public string ProjectName { get; private set; } = string.Empty;
+
+        public int Workers { get; private set; }
+
         public int Run(
             BrowserKind browserKind,
             string path,
@@ -167,8 +173,11 @@ public sealed class RunCommandBuilderTests
             int? navigationTimeout,
             int? assertionTimeout,
             string? baseUrl,
-            IReadOnlyDictionary<string, string> variables)
+            IReadOnlyDictionary<string, string> variables,
+            string projectName = "",
+            int workers = 1)
         {
+            BrowserKind = browserKind;
             Path = path;
             Artifacts = artifacts;
             JsonReport = jsonReport;
@@ -184,6 +193,8 @@ public sealed class RunCommandBuilderTests
             AssertionTimeout = assertionTimeout;
             BaseUrl = baseUrl;
             Variables = variables;
+            ProjectName = projectName;
+            Workers = workers;
             return 0;
         }
     }

@@ -54,7 +54,9 @@ public sealed record CmgRunOptions(
     int? NavigationTimeout,
     int? AssertionTimeout,
     string? BaseUrl,
-    IReadOnlyDictionary<string, string> Variables);
+    IReadOnlyDictionary<string, string> Variables,
+    string ProjectName = "",
+    int Workers = 1);
 
 public sealed partial record CmgRunResult(
     bool Success,
@@ -73,5 +75,6 @@ public sealed record CmgTestResult(
 {
     public string Tags { get; init; } = string.Empty;
     public string Status { get; init; } = string.Empty;
+    public string Project { get; init; } = string.Empty;
     public IReadOnlyList<CmgAnnotation> Annotations { get; init; } = [];
 }

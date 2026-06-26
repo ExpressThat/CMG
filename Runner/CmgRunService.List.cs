@@ -19,11 +19,12 @@ public sealed partial class CmgRunService
             foreach (var test in SelectedTestsForList(planner.Plan(parse.Document), options))
             {
                 var status = IsSkipped(test) ? "skip" : "run";
-                output.Add($"TEST LIST {status} {test.Name}");
+                output.Add(ListOutput(status, test.Name, options));
                 listed.Add(new CmgTestResult(test.Name, test.SourcePath, true, [], null, null, [])
                 {
                     Status = status == "skip" ? "skipped" : "listed",
                     Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty,
+                    Project = options.ProjectName,
                     Annotations = test.Annotations
                 });
             }
@@ -39,4 +40,9 @@ public sealed partial class CmgRunService
         var repeated = RepeatTests(focused, options.RepeatEach);
         return ApplyShard(repeated, options).ToArray();
     }
+
+    private static string ListOutput(string status, string name, CmgRunOptions options) =>
+        string.IsNullOrWhiteSpace(options.ProjectName)
+            ? $"TEST LIST {status} {name}"
+            : $"TEST LIST {status} [{options.ProjectName}] {name}";
 }

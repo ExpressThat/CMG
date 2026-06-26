@@ -66,6 +66,16 @@ public sealed class CmgReportWriterTests
         Assert.Contains("cmg.annotation.issue", CmgJUnitReportWriter.Write([annotated]));
     }
 
+    [Fact]
+    public void Reports_IncludeProject()
+    {
+        var projected = FailedTest() with { Project = "firefox-smoke" };
+
+        Assert.Contains("\"project\": \"firefox-smoke\"", CmgJsonReportWriter.Write([projected]));
+        Assert.Contains("Project: firefox-smoke", CmgHtmlReportWriter.Write([projected]));
+        Assert.Contains("cmg.project", CmgJUnitReportWriter.Write([projected]));
+    }
+
     private static CmgTestResult FailedTest() =>
         new(
             "checkout",
