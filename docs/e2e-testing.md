@@ -10,7 +10,7 @@ dotnet test tests\CMG.E2E.Tests\CMG.E2E.Tests.csproj /p:UseSharedCompilation=fal
 
 ## What It Does
 
-- Launches CMG through `dotnet run --project CMG.csproj -- ...`.
+- Launches the built CMG app as an external process.
 - Starts Chrome headless with `cmg browser launch --headless`.
 - Uses an isolated temporary `LOCALAPPDATA` directory so tests do not touch a developer's normal CMG browser state.
 - Drives the browser through real CLI commands, direct `.cmgscript` files, and `cmg run` test files.
@@ -46,6 +46,8 @@ The first E2E slice covers:
 
 - Browser lifecycle launch/close behavior.
 - App attach validation failure.
+- All documented leaf commands expose working `--help` output.
+- A broad browser action-surface script covering navigation, input, assertions, dialogs, frames, storage, emulation, clocks, looping, branching, try/catch, and trace output.
 - Navigation, runtime text reads, input, assertions, screenshots, element HTML, and failure reasons.
 - Direct script execution with GIF and trace output.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.

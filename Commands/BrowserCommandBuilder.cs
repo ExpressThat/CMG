@@ -87,13 +87,17 @@ public sealed class BrowserCommandBuilder
             Description = "Remote debugging port to expose.",
             DefaultValueFactory = _ => 9222
         };
+        var host = CreateHostOption();
+        var timeout = CreateConnectTimeoutOption();
 
         var command = new Command("launch", "Launch an Electron or Windows WebView2 app with debugging enabled.")
         {
             executable,
             arguments,
             kind,
-            port
+            port,
+            host,
+            timeout
         };
 
         command.SetAction(parseResult =>
@@ -102,7 +106,10 @@ public sealed class BrowserCommandBuilder
                 CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 parseResult.GetValue(executable)!,
                 parseResult.GetValue(kind) ?? "electron",
-                parseResult.GetValue(port),
+                new BrowserAppDebugOptions(
+                    parseResult.GetValue(port),
+                    parseResult.GetValue(host) ?? "127.0.0.1",
+                    parseResult.GetValue(timeout)),
                 parseResult.GetValue(arguments) ?? []);
         });
 
@@ -121,18 +128,25 @@ public sealed class BrowserCommandBuilder
             Description = "Optional app process id for later close tracking.",
             DefaultValueFactory = _ => 0
         };
+        var host = CreateHostOption();
+        var timeout = CreateConnectTimeoutOption();
 
         var command = new Command("attach", "Use an existing Electron or WebView2 debugging endpoint.")
         {
             port,
-            pid
+            pid,
+            host,
+            timeout
         };
 
         command.SetAction(parseResult =>
         {
             return browserCommandHandler.AttachApp(
                 CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-                parseResult.GetValue(port),
+                new BrowserAppDebugOptions(
+                    parseResult.GetValue(port),
+                    parseResult.GetValue(host) ?? "127.0.0.1",
+                    parseResult.GetValue(timeout)),
                 parseResult.GetValue(pid));
         });
 
@@ -163,6 +177,24 @@ public sealed class BrowserCommandBuilder
         {
             Arity = ArgumentArity.ZeroOrMore,
             Description = description
+        };
+    }
+
+    private static Option<string> CreateHostOption()
+    {
+        return new Option<string>("--host")
+        {
+            Description = "Remote debugging host.",
+            DefaultValueFactory = _ => "127.0.0.1"
+        };
+    }
+
+    private static Option<int> CreateConnectTimeoutOption()
+    {
+        return new Option<int>("--connect-timeout")
+        {
+            Description = "Milliseconds to wait for the debugging endpoint. Use 0 to skip verification.",
+            DefaultValueFactory = _ => 10_000
         };
     }
 }

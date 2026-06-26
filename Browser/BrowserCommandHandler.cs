@@ -4,9 +4,14 @@ public interface IBrowserCommandHandler
 {
     int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url);
 
-    int LaunchApp(BrowserKind browserKind, FileInfo executable, string kind, int port, IReadOnlyList<string> arguments);
+    int LaunchApp(
+        BrowserKind browserKind,
+        FileInfo executable,
+        string kind,
+        BrowserAppDebugOptions options,
+        IReadOnlyList<string> arguments);
 
-    int AttachApp(BrowserKind browserKind, int port, int processId);
+    int AttachApp(BrowserKind browserKind, BrowserAppDebugOptions options, int processId);
 
     int Close(BrowserKind browserKind, IReadOnlyList<string> arguments);
 }
@@ -42,9 +47,14 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
         return result.ExitCode;
     }
 
-    public int LaunchApp(BrowserKind browserKind, FileInfo executable, string kind, int port, IReadOnlyList<string> arguments)
+    public int LaunchApp(
+        BrowserKind browserKind,
+        FileInfo executable,
+        string kind,
+        BrowserAppDebugOptions options,
+        IReadOnlyList<string> arguments)
     {
-        if (!ValidateAppTarget(browserKind, port, out var exitCode))
+        if (!ValidateAppTarget(browserKind, options, out var exitCode))
         {
             return exitCode;
         }
@@ -55,14 +65,14 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
             return 1;
         }
 
-        var result = browserAppController.Launch(browserKind, executable, appKind, port, arguments);
+        var result = browserAppController.Launch(browserKind, executable, appKind, options, arguments);
         WriteLaunchResult(result);
         return result.ExitCode;
     }
 
-    public int AttachApp(BrowserKind browserKind, int port, int processId)
+    public int AttachApp(BrowserKind browserKind, BrowserAppDebugOptions options, int processId)
     {
-        if (!ValidateAppTarget(browserKind, port, out var exitCode))
+        if (!ValidateAppTarget(browserKind, options, out var exitCode))
         {
             return exitCode;
         }
@@ -73,7 +83,7 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
             return 1;
         }
 
-        var result = browserAppController.Attach(browserKind, port, processId);
+        var result = browserAppController.Attach(browserKind, options, processId);
         WriteLaunchResult(result);
         return result.ExitCode;
     }
@@ -118,7 +128,7 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
         return result.ExitCode;
     }
 
-    private static bool ValidateAppTarget(BrowserKind browserKind, int port, out int exitCode)
+    private static bool ValidateAppTarget(BrowserKind browserKind, BrowserAppDebugOptions options, out int exitCode)
     {
         exitCode = 1;
         if (browserKind is BrowserKind.InvalidSelection)
@@ -133,9 +143,21 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
             return false;
         }
 
-        if (port < 1 || port > 65535)
+        if (options.Port < 1 || options.Port > 65535)
         {
             Console.Error.WriteLine("--port must be between 1 and 65535.");
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(options.Host))
+        {
+            Console.Error.WriteLine("--host must not be empty.");
+            return false;
+        }
+
+        if (options.ConnectTimeoutMilliseconds < 0)
+        {
+            Console.Error.WriteLine("--connect-timeout must be 0 or greater.");
             return false;
         }
 

@@ -18,6 +18,8 @@ public sealed class BrowserAppCommandBuilderTests
         Assert.Equal("C:\\apps\\demo.exe", handler.Executable?.FullName);
         Assert.Equal("electron", handler.Kind);
         Assert.Equal(9222, handler.Port);
+        Assert.Equal("127.0.0.1", handler.Host);
+        Assert.Equal(10_000, handler.ConnectTimeoutMilliseconds);
         Assert.Equal(["--profile", "demo"], handler.Arguments);
     }
 
@@ -37,11 +39,13 @@ public sealed class BrowserAppCommandBuilderTests
     public void AppAttach_MapsPortAndPid()
     {
         var handler = new CapturingBrowserCommandHandler();
-        var exitCode = BuildRoot(handler).Parse("browser app attach --port 9444 --pid 123").Invoke();
+        var exitCode = BuildRoot(handler).Parse("browser app attach --port 9444 --host localhost --connect-timeout 1 --pid 123").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal(BrowserKind.Chrome, handler.BrowserKind);
         Assert.Equal(9444, handler.Port);
+        Assert.Equal("localhost", handler.Host);
+        Assert.Equal(1, handler.ConnectTimeoutMilliseconds);
         Assert.Equal(123, handler.ProcessId);
     }
 
@@ -72,31 +76,47 @@ public sealed class BrowserAppCommandBuilderTests
 
         public int Port { get; private set; }
 
+        public string? Host { get; private set; }
+
+        public int ConnectTimeoutMilliseconds { get; private set; }
+
         public int ProcessId { get; private set; }
 
         public IReadOnlyList<string> Arguments { get; private set; } = [];
 
         public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url) => 0;
 
-        public int LaunchApp(BrowserKind browserKind, FileInfo executable, string kind, int port, IReadOnlyList<string> arguments)
+        public int LaunchApp(
+            BrowserKind browserKind,
+            FileInfo executable,
+            string kind,
+            BrowserAppDebugOptions options,
+            IReadOnlyList<string> arguments)
         {
             BrowserKind = browserKind;
             Executable = executable;
             Kind = kind;
-            Port = port;
+            CaptureOptions(options);
             Arguments = arguments;
             return 0;
         }
 
-        public int AttachApp(BrowserKind browserKind, int port, int processId)
+        public int AttachApp(BrowserKind browserKind, BrowserAppDebugOptions options, int processId)
         {
             BrowserKind = browserKind;
-            Port = port;
+            CaptureOptions(options);
             ProcessId = processId;
             return 0;
         }
 
         public int Close(BrowserKind browserKind, IReadOnlyList<string> arguments) => 0;
+
+        private void CaptureOptions(BrowserAppDebugOptions options)
+        {
+            Port = options.Port;
+            Host = options.Host;
+            ConnectTimeoutMilliseconds = options.ConnectTimeoutMilliseconds;
+        }
     }
 
     private sealed class NoopBrowserControlCommandHandler : IBrowserControlCommandHandler

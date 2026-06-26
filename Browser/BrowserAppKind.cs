@@ -6,6 +6,11 @@ public enum BrowserAppKind
     WebView2
 }
 
+public sealed record BrowserAppDebugOptions(
+    int Port,
+    string Host,
+    int ConnectTimeoutMilliseconds);
+
 public static class BrowserAppKindParser
 {
     public static bool TryParse(string? value, out BrowserAppKind kind)

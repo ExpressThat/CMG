@@ -4,13 +4,17 @@ namespace CMG.E2E.Tests.Support;
 
 public sealed class CmgCli
 {
-    private readonly string root;
     private readonly string localAppData;
+    private readonly string executable;
 
     public CmgCli(string root, string localAppData)
     {
-        this.root = root;
         this.localAppData = localAppData;
+        executable = Path.Combine(AppContext.BaseDirectory, "CMG.dll");
+        if (!File.Exists(executable))
+        {
+            executable = Path.Combine(root, "bin", "Debug", "net10.0", "CMG.dll");
+        }
     }
 
     public CmgResult Run(params string[] arguments)
@@ -18,17 +22,13 @@ public sealed class CmgCli
         var startInfo = new ProcessStartInfo
         {
             FileName = "dotnet",
-            WorkingDirectory = root,
+            WorkingDirectory = E2ePaths.RepositoryRoot(),
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false
         };
 
-        startInfo.ArgumentList.Add("run");
-        startInfo.ArgumentList.Add("--project");
-        startInfo.ArgumentList.Add(Path.Combine(root, "CMG.csproj"));
-        startInfo.ArgumentList.Add("/p:UseSharedCompilation=false");
-        startInfo.ArgumentList.Add("--");
+        startInfo.ArgumentList.Add(executable);
 
         foreach (var argument in arguments)
         {

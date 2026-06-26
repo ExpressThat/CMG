@@ -1,0 +1,148 @@
+navigate "${fixtureUrl}"
+setViewport 1280 1400
+waitForElement "#title" timeout=3000
+expectTitle "CMG E2E Fixture"
+expectUrl "index.html"
+title
+url
+content
+textContent "#title"
+innerText "#title"
+getAttribute "#primary" "data-state"
+computedStyle "#css-target" "color"
+property "#primary" "dataset.state"
+count ".item"
+locatorCount ".item"
+allTextContents ".item"
+allInnerTexts ".item"
+evaluate "document.title"
+evaluateOnSelector "#title" "element.textContent"
+evalOnSelector "#title" "element => element.textContent"
+evaluateAll ".item" "elements => elements.length"
+evalAll ".item" "elements.map(element => element.textContent).join('|')"
+expectEval "document.querySelectorAll('.item').length" equals="3"
+assertExpression "document.querySelector('#title').textContent" contains="CMG"
+waitForFunction "document.readyState === 'complete'" timeout=3000
+waitForTimeout 10
+captureConsole
+capturePageErrors
+expectNoConsole "fatal" timeout=10
+expectNoPageError "fatal" timeout=10
+setDefaultTimeout 3000
+setDefaultNavigationTimeout 3000
+setDefaultAssertionTimeout 3000
+setDefaultExpectTimeout 3000
+scrollIntoView "#name"
+fill "#name" "Action Surface"
+expectValue "#name" "Action Surface"
+clear "#name"
+type "#name" "Typed Name"
+pressSequentially "#notes" " plus" delay=1
+focus "#name"
+insertText " Inserted"
+press "Control+A"
+keyDown "Shift"
+keyUp "Shift"
+keyboardShortcut "Control+A"
+hotkey "Control+A"
+shortcut "Control+A"
+expectValue "#name" "Typed Name Inserted"
+check "#agree"
+expectChecked "#agree"
+uncheck "#agree"
+expectUnchecked "#agree"
+select "#plan" "team"
+expectValue "#plan" "team"
+scrollIntoView "#primary"
+click "#primary"
+expectText "#status" "clicked"
+dblclick "#primary"
+doubleClick "#primary"
+rightClick "#primary"
+contextClick "#primary"
+hover "#hover-card"
+expectText "#hover-state" "hovered"
+tap "#primary"
+touchTap "#primary"
+highlight "#primary"
+caption "pointer commands complete"
+scrollIntoView "#deep-button"
+scrollTo bottom
+scrollBy 0 -50
+wheel "#scroll-pane" deltaY=25
+mouseMove center
+mouseDown center
+mouseUp center
+dragAndDrop "#drag-source" "#drop-zone"
+expectText "#drop-result" "dragged payload"
+uploadFiles "#file-input" "${uploadPath}"
+expectText "#file-result" "upload-one.txt"
+setClipboard "clip text"
+readClipboard
+clearClipboard
+localStorage set "surface" "ok"
+localStorage get "surface"
+sessionStorage set "session-surface" "ok"
+sessionStorage get "session-surface"
+cookie set "surface-cookie" "ok"
+cookie get "surface-cookie"
+captureDialogs
+setDialogBehavior accept promptText="dialog text"
+scrollIntoView "#dialog-alert"
+click "#dialog-alert"
+waitForDialog "fixture alert"
+scrollIntoView "#dialog-confirm"
+click "#dialog-confirm"
+waitForDialog "fixture confirm"
+expectText "#status" "confirm accepted"
+scrollIntoView "#dialog-prompt"
+click "#dialog-prompt"
+waitForDialog "fixture prompt"
+expectText "#status" "dialog text"
+frame "#fixture-frame" {
+  assertText "#frame-title" "Frame Ready"
+  click "#frame-button"
+  assertText "#frame-status" "frame clicked"
+}
+frameTextContent "#fixture-frame" "#frame-status"
+frameEvaluate "#fixture-frame" "document.querySelector('#frame-status').textContent"
+accessibilitySnapshot
+expectAccessible role=button name="Primary action"
+emulateMedia colorScheme=dark reducedMotion=reduce
+setGeolocation latitude=51.5 longitude=-0.12 accuracy=5
+grantPermissions geolocation
+clearPermissions
+setJavaScriptEnabled true
+bypassCSP true
+serviceWorkers block
+setServiceWorkers allow
+clock now=1000
+tick 250
+restoreClock
+set extraValue { evaluate "document.querySelector('#counter').textContent" }
+if (${extraValue} >= 1) {
+  caption "counter increased"
+} else {
+  fail "counter did not increase"
+}
+foreachList item "alpha,beta" {
+  caption "${item}"
+}
+repeat i 2 {
+  caption "repeat ${i}"
+}
+try {
+  fail "catch me"
+} catch error {
+  caption "${error}"
+} finally {
+  caption "finally ran"
+}
+switch title {
+  case contains "CMG" {
+    caption "switch matched"
+  }
+  default {
+    fail "switch did not match"
+  }
+}
