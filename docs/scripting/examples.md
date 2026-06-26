@@ -77,6 +77,13 @@ cmg run profile.test.cmgscript --report-html demo-output\report.html --report-js
 
 Add `--gif demo-output\gifs` when every selected test should produce a whole-test GIF.
 
+Use a runner config when CI or an agent should reuse the same reports, traces, retries, variables, and selection defaults:
+
+```powershell
+cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --list
+cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --var mode=cli
+```
+
 ## Visual Evidence
 
 Pointer-aware actions move the same virtual pointer that appears in GIFs. This keeps the visible pointer, browser events, hover state, screenshots, drag ghosts, and captions aligned.

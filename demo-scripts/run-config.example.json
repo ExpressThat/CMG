@@ -1,0 +1,18 @@
+{
+  "trace": "../demo-output/traces",
+  "reportJson": "../demo-output/run-config-report.json",
+  "reportHtml": "../demo-output/run-config-report.html",
+  "grep": "config",
+  "tag": "smoke",
+  "retries": 1,
+  "maxFailures": 2,
+  "repeatEach": 1,
+  "shard": "1/1",
+  "timeout": 10000,
+  "navigationTimeout": 15000,
+  "assertionTimeout": 5000,
+  "variables": {
+    "tenant": "demo",
+    "mode": "config"
+  }
+}

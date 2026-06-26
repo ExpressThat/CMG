@@ -29,7 +29,7 @@ Chrome is the default browser. `--chrome`, `--edge`, and `--firefox` are mutuall
 ## Command Groups
 
 - [`browser`](commands/browser/index.md): Browser lifecycle and capture commands.
-- [`run`](commands/run.md): Run CMG DSL tests with optional GIF recordings.
+- [`run`](commands/run.md): Run CMG DSL tests with optional GIF recordings, reports, traces, and JSON config defaults.
 - [`api`](commands/api/index.md): HTTP API utility commands.
 - [`files`](commands/files/index.md): Local file utility commands.
 

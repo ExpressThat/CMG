@@ -8,6 +8,8 @@ cmg run <path> [options]
 
 `<path>` can be one `.cmgscript` file or a directory. Directories are searched recursively for `.cmgscript` files.
 
+Use `--config <file>` to load repeatable runner defaults from a JSON file. CLI options override config values, and `--var` / `--env` override values from the config `variables` object. Relative artifact paths inside the config resolve from the config file's directory.
+
 `cmg run` executes structured `.cmgscript` tests. Top-level browser actions must be wrapped in `test`/`it`/`specify` or `suite`/`describe`/`context` blocks. Direct browser-control scripts run with [`browser control script`](browser/control/script.md). See the [migration guide](../scripting/migration.md) when moving a direct script into the runner.
 
 The runner supports line-level `import "path"` statements. Relative imports resolve from the importing file's directory before parsing. Top-level macros from the file or imported files are registered before each test, and suite-level macros are registered before tests in that suite.
@@ -25,6 +27,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 ## Options
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
+- `--config <file>`: JSON run config file. CLI options override config values.
 - `--report-json <file>`: Write a JSON test report.
 - `--report-html <file>`: Write an HTML test report.
 - `--report-junit <file>`: Write a JUnit XML test report.
@@ -73,6 +76,8 @@ When a file cannot be parsed, imported, or planned into a runnable test, stdout 
 TEST ERROR <file> reason=<reason>
 ```
 
+Invalid run config files fail before browser connection or test listing. Stderr names the config problem, for example `Run config option 'retries' must be an integer.` or `Run config '<path>' was not valid JSON. ...`.
+
 Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON reports include `status` values such as `passed`, `failed`, and `skipped`; JUnit reports emit `<skipped>` nodes for declaration-skipped tests and runtime skips.
 Report annotations are emitted as `annotations` in JSON, visible list items in HTML, and JUnit `<property name="cmg.annotation.<type>" ... />` entries.
 
@@ -112,6 +117,32 @@ cmg run tests\flows --list --grep checkout
 cmg run tests\flows --timeout 10000 --navigation-timeout 15000 --assertion-timeout 5000
 cmg run tests\flows --var user=Ada --env mode=demo
 cmg run tests\flows --base-url https://example.test/app/
+cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --list
+```
+
+Example config:
+
+```json
+{
+  "gif": "../demo-output/runner-gifs",
+  "trace": "../demo-output/traces",
+  "reportJson": "../demo-output/run-report.json",
+  "reportHtml": "../demo-output/run-report.html",
+  "grep": "config",
+  "tag": "smoke",
+  "retries": 1,
+  "maxFailures": 2,
+  "repeatEach": 1,
+  "shard": "1/1",
+  "timeout": 10000,
+  "navigationTimeout": 15000,
+  "assertionTimeout": 5000,
+  "baseUrl": "https://example.test/app/",
+  "variables": {
+    "tenant": "demo",
+    "mode": "config"
+  }
+}
 ```
 
 Use runner options on test declarations for provider-style focus and skip behavior:

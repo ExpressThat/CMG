@@ -643,9 +643,11 @@ notContains "unexpected text"
 notContainsText "<selector>" "unexpected text"
 toNotContainText "<selector>" "unexpected text"
 expectNoText "<selector>" "unexpected text"
+toHaveNoText "<selector>" "unexpected text"
+toHaveNotText "<selector>" "unexpected text"
 ```
 
-Reads an element's visible text and fails unless it matches the expected text. Negative aliases fail when matching text is still present. When `timeout` is provided, CMG polls the element text until it matches, becomes absent, or the timeout expires. The DSL `expectText`, `toHaveText`, `toContainText`, `containsText`, `waitForText`, `contains`, `expectNoText`, `expectNotText`, `notContains`, `notContainsText`, `toNotContainText`, and `toHaveNoText` actions use this assertion path and support the same options.
+Reads an element's visible text and fails unless it matches the expected text. Negative aliases fail when matching text is still present. When `timeout` is provided, CMG polls the element text until it matches, becomes absent, or the timeout expires. The DSL `expectText`, `toHaveText`, `toContainText`, `containsText`, `waitForText`, `contains`, `expectNoText`, `expectNotText`, `notContains`, `notContainsText`, `toNotContainText`, `toHaveNoText`, and `toHaveNotText` actions use this assertion path and support the same options.
 
 `contains "text"`, `toContainText "text"`, `notContains "text"`, and `toNotContainText "text"` check the page `body`, which matches the common provider pattern for finding text anywhere on the page. Selector forms and the other aliases check the target selector or rich locator.
 
@@ -911,6 +913,7 @@ javaScriptEnabled true
 bypassCSP true
 serviceWorkers block
 serviceWorkers allow
+setServiceWorkers block
 ```
 
 Controls page-visible geolocation and permission query state without changing the rest of the emulated environment. These actions are available in both direct browser-control scripts and `cmg run`.
@@ -921,7 +924,7 @@ Arguments:
 - `grantPermissions`: One or more permission names. Alternatively, pass a comma-separated `permissions=` option.
 - `setJavaScriptEnabled` or `javaScriptEnabled`: `true` or `false` for CMG's dynamic-script blocker.
 - `bypassCSP`: `true` or `false` for removing page CSP meta tags.
-- `serviceWorkers`: `allow` or `block` for page `navigator.serviceWorker.register()`.
+- `serviceWorkers` or `setServiceWorkers`: `allow` or `block` for page `navigator.serviceWorker.register()`.
 
 Options:
 
@@ -1209,8 +1212,17 @@ frameToHaveText "#checkoutFrame" "#status" "Saved"
 frameToContainText "#checkoutFrame" "#status" "Saved"
 frameContains "#checkoutFrame" "#status" "Saved"
 frameEvaluate "#checkoutFrame" "document.title"
+frameTextContent "#checkoutFrame" "#status"
+frameInnerText "#checkoutFrame" "#status"
+frameInputValue "#checkoutFrame" "#email"
+frameGetAttribute "#checkoutFrame" "#save" "disabled"
 frameComputedStyle "#checkoutFrame" "#status" "display"
 frameProperty "#checkoutFrame" "#status" "dataset.state"
+frameCount "#checkoutFrame" ".row"
+frameLocatorCount "#checkoutFrame" "getByRole=button|Save"
+frameBoundingBox "#checkoutFrame" "#save"
+frameAllTextContents "#checkoutFrame" ".row"
+frameAllInnerTexts "#checkoutFrame" ".row"
 
 frame "#checkoutFrame" {
   fill "#email" "agent@example.com"
@@ -1237,6 +1249,7 @@ GIF behavior:
 - Non-visual frame actions do not move the pointer, but their outputs and failures are captured in reports and traces.
 - `frameWaitForSelector` is an alias for `frameWaitForElement`.
 - `frameAssertText`, `frameExpectText`, `frameToHaveText`, `frameToContainText`, and `frameContains` support `match=contains|exact|regex` plus `ignoreCase=true` for frame-local text assertions.
+- Frame getter aliases include `frameTextContent`, `frameInnerText`, `frameInputValue`, `frameGetAttribute`, `frameComputedStyle`, `frameProperty`, `frameCount`, `frameLocatorCount`, `frameBoundingBox`, `frameAllTextContents`, and `frameAllInnerTexts`.
 
 Output:
 
@@ -2028,11 +2041,13 @@ Output:
 
 These actions do not move the virtual pointer. Wrap them in `step`, `caption`, or `gif` blocks when a GIF should narrate WebSocket setup or waits.
 
-### `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHttpCredentials`, `clearHttpCredentials`, And `setOffline`
+### `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHeaders`, `clearHeaders`, `setHttpCredentials`, `clearHttpCredentials`, And `setOffline`
 
 ```text
 setExtraHTTPHeaders "X-CMG-Agent" "true" "Accept" "application/json"
 clearExtraHTTPHeaders
+setHeaders "X-CMG-Agent" "true"
+clearHeaders
 setHttpCredentials "agent" "secret"
 clearHttpCredentials
 setProxy "https://proxy.local/?url="
@@ -2041,7 +2056,7 @@ setOffline true
 setOffline false
 ```
 
-Patches page-side `fetch()` and `XMLHttpRequest` behavior in the current page and future navigations. Extra headers are added to page-originated fetch/XHR requests. HTTP credentials add a Basic `Authorization` header to page-originated fetch/XHR requests. Offline mode reports `navigator.onLine=false`, dispatches `offline`/`online`, and makes patched fetch/XHR requests fail while enabled.
+Patches page-side `fetch()` and `XMLHttpRequest` behavior in the current page and future navigations. `setHeaders` and `clearHeaders` are concise aliases for `setExtraHTTPHeaders` and `clearExtraHTTPHeaders`. Extra headers are added to page-originated fetch/XHR requests. HTTP credentials add a Basic `Authorization` header to page-originated fetch/XHR requests. Offline mode reports `navigator.onLine=false`, dispatches `offline`/`online`, and makes patched fetch/XHR requests fail while enabled.
 `setProxy` rewrites page fetch/XHR request URLs to `<prefix><encoded-url>`.
 
 Arguments:

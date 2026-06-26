@@ -19,6 +19,10 @@ public sealed class RunCommandBuilder
         {
             Description = "A CMG script file or folder containing .cmgscript files."
         };
+        var configOption = new Option<FileInfo?>("--config")
+        {
+            Description = "JSON run config file. CLI options override config values."
+        };
         var gifOption = new Option<DirectoryInfo?>("--gif")
         {
             Description = "Write per-test GIF recordings to this directory."
@@ -98,6 +102,7 @@ public sealed class RunCommandBuilder
         var command = new Command("run", "Run CMG DSL tests with visual artifacts.")
         {
             pathArgument,
+            configOption,
             gifOption,
             jsonOption,
             htmlOption,
@@ -120,6 +125,12 @@ public sealed class RunCommandBuilder
 
         command.SetAction(parseResult =>
         {
+            if (!RunConfigReader.TryRead(parseResult.GetValue(configOption), out var config, out var configError))
+            {
+                Console.Error.WriteLine(configError);
+                return 1;
+            }
+
             var variableValues = (parseResult.GetValue(variableOption) ?? [])
                 .Concat(parseResult.GetValue(envOption) ?? []);
             if (!VariableOptionParser.TryParse(variableValues, out var variables, out var error))
@@ -127,30 +138,65 @@ public sealed class RunCommandBuilder
                 Console.Error.WriteLine(error);
                 return 1;
             }
+            variables = MergeVariables(config.Variables, variables);
 
             return
             handler.Run(
                 CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 parseResult.GetValue(pathArgument) ?? string.Empty,
-                parseResult.GetValue(gifOption),
-                parseResult.GetValue(jsonOption),
-                parseResult.GetValue(htmlOption),
-                parseResult.GetValue(junitOption),
-                parseResult.GetValue(traceOption),
-                parseResult.GetValue(grepOption),
-                parseResult.GetValue(tagOption),
-                parseResult.GetValue(retriesOption),
-                parseResult.GetValue(maxFailuresOption),
-                parseResult.GetValue(repeatEachOption),
+                DirectoryValue(parseResult, gifOption, config.Gif),
+                FileValue(parseResult, jsonOption, config.ReportJson),
+                FileValue(parseResult, htmlOption, config.ReportHtml),
+                FileValue(parseResult, junitOption, config.ReportJunit),
+                DirectoryValue(parseResult, traceOption, config.Trace),
+                StringValue(parseResult, grepOption, config.Grep),
+                StringValue(parseResult, tagOption, config.Tag),
+                IntValue(parseResult, retriesOption, config.Retries),
+                IntValue(parseResult, maxFailuresOption, config.MaxFailures),
+                IntValue(parseResult, repeatEachOption, config.RepeatEach),
                 parseResult.GetValue(listOption),
-                parseResult.GetValue(shardOption),
-                parseResult.GetValue(timeoutOption),
-                parseResult.GetValue(navigationTimeoutOption),
-                parseResult.GetValue(assertionTimeoutOption),
-                parseResult.GetValue(baseUrlOption),
+                StringValue(parseResult, shardOption, config.Shard),
+                IntValue(parseResult, timeoutOption, config.Timeout),
+                IntValue(parseResult, navigationTimeoutOption, config.NavigationTimeout),
+                IntValue(parseResult, assertionTimeoutOption, config.AssertionTimeout),
+                StringValue(parseResult, baseUrlOption, config.BaseUrl),
                 variables);
         });
 
         return command;
+    }
+
+    private static bool WasProvided(ParseResult parseResult, Option option)
+    {
+        var names = option.Aliases.Prepend(option.Name).ToArray();
+        return parseResult.Tokens.Any(token => names.Contains(token.Value, StringComparer.Ordinal));
+    }
+
+    private static DirectoryInfo? DirectoryValue(ParseResult parseResult, Option<DirectoryInfo?> option, DirectoryInfo? fallback) =>
+        WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback;
+
+    private static FileInfo? FileValue(ParseResult parseResult, Option<FileInfo?> option, FileInfo? fallback) =>
+        WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback;
+
+    private static string? StringValue(ParseResult parseResult, Option<string?> option, string? fallback) =>
+        WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback;
+
+    private static int IntValue(ParseResult parseResult, Option<int> option, int? fallback) =>
+        WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback ?? parseResult.GetValue(option);
+
+    private static int? IntValue(ParseResult parseResult, Option<int?> option, int? fallback) =>
+        WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback;
+
+    private static IReadOnlyDictionary<string, string> MergeVariables(
+        IReadOnlyDictionary<string, string> configVariables,
+        IReadOnlyDictionary<string, string> cliVariables)
+    {
+        var merged = new Dictionary<string, string>(configVariables, StringComparer.OrdinalIgnoreCase);
+        foreach (var (key, value) in cliVariables)
+        {
+            merged[key] = value;
+        }
+
+        return merged;
     }
 }

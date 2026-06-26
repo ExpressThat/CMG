@@ -34,6 +34,74 @@ public sealed class RunCommandBuilderTests
         Assert.Null(handler.Path);
     }
 
+    [Fact]
+    public void RunCommand_MergesConfigWithCliOverrides()
+    {
+        using var directory = new TempRunDirectory();
+        var config = directory.Write("cmg.run.json", """
+        {
+          "gif": "artifacts/gifs",
+          "reportJson": "artifacts/report.json",
+          "trace": "artifacts/traces",
+          "grep": "checkout",
+          "tag": "smoke",
+          "retries": 1,
+          "maxFailures": 2,
+          "repeatEach": 3,
+          "shard": "1/2",
+          "timeout": 1000,
+          "navigationTimeout": 2000,
+          "assertionTimeout": 3000,
+          "baseUrl": "https://config.test/app/",
+          "variables": { "tenant": "demo", "mode": "config" }
+        }
+        """);
+        var handler = new CapturingRunCommandHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            $"run flows --config \"{config}\" --retries 4 --base-url https://cli.test/ --var mode=cli").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(Path.Combine(directory.Root, "artifacts", "gifs"), handler.Artifacts?.FullName);
+        Assert.Equal(Path.Combine(directory.Root, "artifacts", "report.json"), handler.JsonReport?.FullName);
+        Assert.Equal(Path.Combine(directory.Root, "artifacts", "traces"), handler.TraceDirectory?.FullName);
+        Assert.Equal("checkout", handler.Grep);
+        Assert.Equal("smoke", handler.Tag);
+        Assert.Equal(4, handler.Retries);
+        Assert.Equal(2, handler.MaxFailures);
+        Assert.Equal(3, handler.RepeatEach);
+        Assert.Equal("1/2", handler.Shard);
+        Assert.Equal(1000, handler.Timeout);
+        Assert.Equal(2000, handler.NavigationTimeout);
+        Assert.Equal(3000, handler.AssertionTimeout);
+        Assert.Equal("https://cli.test/", handler.BaseUrl);
+        Assert.Equal("demo", handler.Variables["tenant"]);
+        Assert.Equal("cli", handler.Variables["mode"]);
+    }
+
+    [Fact]
+    public void RunCommand_RejectsInvalidConfig()
+    {
+        using var directory = new TempRunDirectory();
+        var config = directory.Write("cmg.run.json", "{ nope");
+        var handler = new CapturingRunCommandHandler();
+        var exitCode = BuildRoot(handler).Parse($"run flows --config \"{config}\"").Invoke();
+
+        Assert.Equal(1, exitCode);
+        Assert.Null(handler.Path);
+    }
+
+    [Fact]
+    public void RunCommand_RejectsInvalidConfigFieldType()
+    {
+        using var directory = new TempRunDirectory();
+        var config = directory.Write("cmg.run.json", """{ "retries": "many" }""");
+        var handler = new CapturingRunCommandHandler();
+        var exitCode = BuildRoot(handler).Parse($"run flows --config \"{config}\"").Invoke();
+
+        Assert.Equal(1, exitCode);
+        Assert.Null(handler.Path);
+    }
+
     private static RootCommand BuildRoot(CapturingRunCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");
@@ -62,6 +130,24 @@ public sealed class RunCommandBuilderTests
         public IReadOnlyDictionary<string, string> Variables { get; private set; } =
             new Dictionary<string, string>();
 
+        public DirectoryInfo? Artifacts { get; private set; }
+
+        public FileInfo? JsonReport { get; private set; }
+
+        public DirectoryInfo? TraceDirectory { get; private set; }
+
+        public string? Grep { get; private set; }
+
+        public string? Tag { get; private set; }
+
+        public int Retries { get; private set; }
+
+        public int MaxFailures { get; private set; }
+
+        public int RepeatEach { get; private set; }
+
+        public string? Shard { get; private set; }
+
         public int Run(
             BrowserKind browserKind,
             string path,
@@ -84,12 +170,42 @@ public sealed class RunCommandBuilderTests
             IReadOnlyDictionary<string, string> variables)
         {
             Path = path;
+            Artifacts = artifacts;
+            JsonReport = jsonReport;
+            TraceDirectory = traceDirectory;
+            Grep = grep;
+            Tag = tag;
+            Retries = retries;
+            MaxFailures = maxFailures;
+            RepeatEach = repeatEach;
+            Shard = shard;
             Timeout = timeout;
             NavigationTimeout = navigationTimeout;
             AssertionTimeout = assertionTimeout;
             BaseUrl = baseUrl;
             Variables = variables;
             return 0;
+        }
+    }
+
+    private sealed class TempRunDirectory : IDisposable
+    {
+        public string Root { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+
+        public string Write(string relativePath, string content)
+        {
+            var fullPath = Path.Combine(Root, relativePath);
+            Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+            File.WriteAllText(fullPath, content);
+            return fullPath;
+        }
+
+        public void Dispose()
+        {
+            if (Directory.Exists(Root))
+            {
+                Directory.Delete(Root, recursive: true);
+            }
         }
     }
 }

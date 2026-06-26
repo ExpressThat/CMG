@@ -265,5 +265,7 @@ dotnet run -- --firefox browser close
 - `144-screenshot-mask-runner.cmgscript`: Demonstrates screenshot artifact masks in the structured runner DSL.
 - `145-screenshot-deterministic.cmgscript`: Demonstrates artifact-only animation and caret stabilization in a direct script.
 - `146-screenshot-deterministic-runner.cmgscript`: Demonstrates artifact-only animation and caret stabilization in the structured runner DSL.
+- `147-run-config.cmgscript`: Demonstrates `cmg run --config` defaults with variables, selection, reports, traces, and retries.
+- `run-config.example.json`: Example JSON config for `cmg run --config`.
 
 Generated screenshots are written to `demo-output/`.
