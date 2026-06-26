@@ -14,7 +14,10 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildHistoryCommand(browserOptions, "goBack", "Navigate one step back in page history."));
         command.Subcommands.Add(BuildHistoryCommand(browserOptions, "goForward", "Navigate one step forward in page history."));
         command.Subcommands.Add(BuildWaitForUrlCommand(browserOptions));
+        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "expectUrl", "Assert that the current URL contains text."));
+        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "expectTitle", "Assert that the current page title contains text."));
         command.Subcommands.Add(BuildWaitForLoadStateCommand(browserOptions));
+        command.Subcommands.Add(BuildWaitForNavigationCommand(browserOptions));
         command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "url", "Print the current page URL."));
         command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "title", "Print the current page title."));
         command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "content", "Print the current page HTML."));
@@ -82,6 +85,26 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
+    private Command BuildExpectNavigationValueCommand(BrowserSelectionOptions browserOptions, string name, string description)
+    {
+        var expectedArgument = new Argument<string>("expected")
+        {
+            Description = name.Equals("expectTitle", StringComparison.Ordinal) ? "Expected title substring." : "Expected URL substring."
+        };
+
+        var command = new Command(name, description)
+        {
+            expectedArgument
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+                name,
+                parseResult.GetValue(expectedArgument) ?? string.Empty)));
+
+        return command;
+    }
+
     private Command BuildWaitForLoadStateCommand(BrowserSelectionOptions browserOptions)
     {
         var stateArgument = new Argument<string>("state")
@@ -106,6 +129,41 @@ public sealed partial class BrowserControlCommandBuilder
                 "waitForLoadState",
                 [parseResult.GetValue(stateArgument) ?? "load"],
                 [("timeout", parseResult.GetValue(timeoutOption).ToString())])));
+
+        return command;
+    }
+
+    private Command BuildWaitForNavigationCommand(BrowserSelectionOptions browserOptions)
+    {
+        var expectedArgument = new Argument<string?>("expected")
+        {
+            Arity = ArgumentArity.ZeroOrOne,
+            Description = "Optional URL substring expected after navigation."
+        };
+        var waitUntilOption = new Option<string?>("--wait-until")
+        {
+            Description = "Load state: load, domcontentloaded, networkidle, or commit."
+        };
+        var timeoutOption = new Option<int?>("--timeout")
+        {
+            Description = "Timeout in milliseconds."
+        };
+
+        var command = new Command("waitForNavigation", "Wait until navigation reaches a state.")
+        {
+            expectedArgument,
+            waitUntilOption,
+            timeoutOption
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+                "waitForNavigation",
+                Compact([parseResult.GetValue(expectedArgument)]),
+                CompactOptions([
+                    StringOption("waitUntil", parseResult.GetValue(waitUntilOption)),
+                    IntOption("timeout", parseResult.GetValue(timeoutOption))
+                ]))));
 
         return command;
     }
