@@ -28,6 +28,15 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildScriptCommand(browserOptions));
         command.Subcommands.Add(BuildValidateScriptCommand());
         command.Subcommands.Add(BuildNavigateCommand(browserOptions));
+        command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "reload", "Reload the primary page target."));
+        command.Subcommands.Add(BuildHistoryCommand(browserOptions, "goBack", "Navigate one step back in page history."));
+        command.Subcommands.Add(BuildHistoryCommand(browserOptions, "goForward", "Navigate one step forward in page history."));
+        command.Subcommands.Add(BuildWaitForUrlCommand(browserOptions));
+        command.Subcommands.Add(BuildWaitForLoadStateCommand(browserOptions));
+        command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "url", "Print the current page URL."));
+        command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "title", "Print the current page title."));
+        command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "content", "Print the current page HTML."));
+        command.Subcommands.Add(BuildSetContentCommand(browserOptions));
         command.Subcommands.Add(BuildWaitForElementCommand(browserOptions));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "click", "Click an element."));
         command.Subcommands.Add(BuildTypeCommand(browserOptions));

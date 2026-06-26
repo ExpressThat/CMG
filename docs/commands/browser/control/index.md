@@ -18,6 +18,15 @@ cmg browser control [command] [options]
 - [`script`](script.md): Run a `.cmgscript` browser automation script.
 - [`validateScript`](validateScript.md): Validate a `.cmgscript` browser automation script without running it.
 - [`navigate`](navigate.md): Navigate the primary page target.
+- [`reload`](reload.md): Reload the primary page target.
+- [`goBack`](goBack.md): Navigate one step back in page history.
+- [`goForward`](goForward.md): Navigate one step forward in page history.
+- [`waitForUrl`](waitForUrl.md): Wait until the current URL contains text.
+- [`waitForLoadState`](waitForLoadState.md): Wait until the page reaches a load state.
+- [`url`](url.md): Print the current page URL.
+- [`title`](title.md): Print the current page title.
+- [`content`](content.md): Print the current page HTML.
+- [`setContent`](setContent.md): Replace the current page HTML.
 - [`waitForElement`](waitForElement.md): Wait until an element exists.
 - [`click`](click.md): Click an element.
 - [`type`](type.md): Type text into an element.
@@ -49,6 +58,8 @@ cmg --firefox browser control --help
 cmg browser control getElement "h1" --html
 cmg browser control validateScript --file flow.cmgscript
 cmg browser control script --file flow.cmgscript
+cmg browser control title
+cmg browser control waitForLoadState complete
 cmg browser control click "#openProfileDialog"
 cmg browser control screenshot "#profileDialog" --output profile-dialog.png
 ```
