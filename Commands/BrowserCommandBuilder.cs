@@ -21,6 +21,7 @@ public sealed class BrowserCommandBuilder
         var browserCommand = new Command("browser", "Browser lifecycle and capture commands.");
 
         browserCommand.Subcommands.Add(BuildLaunchCommand(browserOptions));
+        browserCommand.Subcommands.Add(BuildAppCommand(browserOptions));
         browserCommand.Subcommands.Add(BuildCloseCommand(browserOptions));
         browserCommand.Subcommands.Add(browserControlCommandBuilder.Build(browserOptions));
 
@@ -54,6 +55,85 @@ public sealed class BrowserCommandBuilder
                 values,
                 parseResult.GetValue(headlessOption),
                 parseResult.GetValue(urlOption));
+        });
+
+        return command;
+    }
+
+    private Command BuildAppCommand(BrowserSelectionOptions browserOptions)
+    {
+        var command = new Command("app", "Attach CMG to Chromium-based desktop apps.");
+
+        command.Subcommands.Add(BuildAppLaunchCommand(browserOptions));
+        command.Subcommands.Add(BuildAppAttachCommand(browserOptions));
+
+        return command;
+    }
+
+    private Command BuildAppLaunchCommand(BrowserSelectionOptions browserOptions)
+    {
+        var executable = new Argument<FileInfo>("executable")
+        {
+            Description = "Electron or WebView2 application executable."
+        };
+        var arguments = CreateTrailingArguments("Additional app launch arguments.");
+        var kind = new Option<string>("--kind")
+        {
+            Description = "App engine: electron or webview2.",
+            DefaultValueFactory = _ => "electron"
+        };
+        var port = new Option<int>("--port")
+        {
+            Description = "Remote debugging port to expose.",
+            DefaultValueFactory = _ => 9222
+        };
+
+        var command = new Command("launch", "Launch an Electron or Windows WebView2 app with debugging enabled.")
+        {
+            executable,
+            arguments,
+            kind,
+            port
+        };
+
+        command.SetAction(parseResult =>
+        {
+            return browserCommandHandler.LaunchApp(
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                parseResult.GetValue(executable)!,
+                parseResult.GetValue(kind) ?? "electron",
+                parseResult.GetValue(port),
+                parseResult.GetValue(arguments) ?? []);
+        });
+
+        return command;
+    }
+
+    private Command BuildAppAttachCommand(BrowserSelectionOptions browserOptions)
+    {
+        var port = new Option<int>("--port")
+        {
+            Description = "Remote debugging port already exposed by the app.",
+            DefaultValueFactory = _ => 9222
+        };
+        var pid = new Option<int>("--pid")
+        {
+            Description = "Optional app process id for later close tracking.",
+            DefaultValueFactory = _ => 0
+        };
+
+        var command = new Command("attach", "Use an existing Electron or WebView2 debugging endpoint.")
+        {
+            port,
+            pid
+        };
+
+        command.SetAction(parseResult =>
+        {
+            return browserCommandHandler.AttachApp(
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                parseResult.GetValue(port),
+                parseResult.GetValue(pid));
         });
 
         return command;

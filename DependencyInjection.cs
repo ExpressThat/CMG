@@ -30,6 +30,7 @@ public static class DependencyInjection
         services.AddSingleton<CmgVisualAssertionRunner>();
         services.AddSingleton<CmgUploadRunner>();
         services.AddSingleton<IBrowserController, BrowserController>();
+        services.AddSingleton<IBrowserAppController, BrowserAppController>();
         services.AddSingleton<IBrowserControlService, BrowserControlService>();
         services.AddSingleton<BrowserAutomationClientFactory>();
         services.AddSingleton<ChromeDevToolsClient>();
