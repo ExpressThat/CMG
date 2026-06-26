@@ -805,9 +805,12 @@ click "and=.command|.enabled"
 click "strict=.single-result"
 click "inside=.toolbar|button.save"
 click "closest=.badge|.command"
+click "parent=.badge|.command"
+click "next=.current|.target"
+click "previous=.current|.target"
 ```
 
-The same locator resolver is used by direct browser-control scripts and `cmg run`. Filter locators such as `first=`, `last=`, `nth=`, `has=`, `hasNot=`, `hasText=`, `hasNotText=`, `visible=`, `or=`, `and=`, `strict=`, `inside=`, `closest=`, `shadow=`, and `shadowText=` resolve matches into a temporary marker. Pointer-aware actions still move the virtual pointer to the resolved element marker, so GIFs keep the pointer, browser events, and drag ghost behavior aligned. `strict=` is useful when an AI-authored script should fail rather than pick the first of several ambiguous matches; `inside=` is useful when a one-off CLI command needs scoped targeting without a `within` block; `closest=` targets an ancestor from a known child.
+The same locator resolver is used by direct browser-control scripts and `cmg run`. Filter locators such as `first=`, `last=`, `nth=`, `has=`, `hasNot=`, `hasText=`, `hasNotText=`, `visible=`, `or=`, `and=`, `strict=`, `inside=`, `closest=`, `parent=`, `next=`, `previous=`, `shadow=`, and `shadowText=` resolve matches into a temporary marker. Pointer-aware actions still move the virtual pointer to the resolved element marker, so GIFs keep the pointer, browser events, and drag ghost behavior aligned. `strict=` is useful when an AI-authored script should fail rather than pick the first of several ambiguous matches; `inside=` is useful when a one-off CLI command needs scoped targeting without a `within` block; `closest=`, `parent=`, `next=`, and `previous=` cover traversal from a known element.
 
 Shadow DOM locators require an open shadow root. Use `shadow=hostSelector|innerSelector` when you know the inner CSS selector, or `shadowText=hostSelector|text` to select the first shadow descendant containing text.
 

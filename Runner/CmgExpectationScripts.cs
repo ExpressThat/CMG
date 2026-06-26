@@ -143,7 +143,8 @@ public static class CmgExpectationScripts
             "role" or "roleRegex" or "label" or "labelExact" or "labelRegex" or "placeholder" or "placeholderExact" or
             "placeholderRegex" or "alt" or "altExact" or "altRegex" or "title" or "titleExact" or "titleRegex" or "xpath" or
             "first" or "last" or "nth" or "has" or "hasNot" or "hasText" or "hasNotText" or "visible" or
-            "or" or "and" or "strict" or "inside" or "closest" or "shadow" or "shadowText";
+            "or" or "and" or "strict" or "inside" or "closest" or "parent" or "next" or "previous" or
+            "shadow" or "shadowText";
 
     private static string Fail(string message) =>
         $"(() => {{ throw new Error({QuoteJs(message)}); }})()";

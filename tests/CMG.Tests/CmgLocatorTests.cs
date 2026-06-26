@@ -32,6 +32,12 @@ public sealed class CmgLocatorTests
     [InlineData("strict=.only", "expected exactly one match for .only")]
     [InlineData("inside=.card|button.save", "querySelector('button.save')")]
     [InlineData("closest=.badge|.card", "closest('.card')")]
+    [InlineData("parent=.badge", "parentElement")]
+    [InlineData("parent=.badge|.cmd", "parentElement?.matches('.cmd')")]
+    [InlineData("next=.primary", "nextElementSibling")]
+    [InlineData("next=.primary|.secondary", "n.matches('.secondary')")]
+    [InlineData("previous=.secondary", "previousElementSibling")]
+    [InlineData("previous=.secondary|.primary", "n.matches('.primary')")]
     [InlineData("shadow=#host|button.save", "shadowRoot?.querySelector('button.save')")]
     [InlineData("shadowText=#host|Shadow Save", "shadowRoot?.querySelectorAll('*')")]
     public void PrefixExpressions_FilterLocatorsMarkElement(string locator, string expected)
@@ -66,6 +72,9 @@ public sealed class CmgLocatorTests
     [InlineData("strict=", "Locator strict= requires <selector>")]
     [InlineData("inside=.card", "Locator inside= requires <container-selector>|<target-selector>")]
     [InlineData("closest=.badge", "Locator closest= requires <child-selector>|<ancestor-selector>")]
+    [InlineData("parent=", "Locator parent= requires <child-selector>")]
+    [InlineData("next=", "Locator next= requires <selector>")]
+    [InlineData("previous=", "Locator previous= requires <selector>")]
     [InlineData("shadow=#host", "Locator shadow= requires <host-selector>|<inner-selector>")]
     [InlineData("shadowText=#host", "Locator shadowText= requires <host-selector>|<text>")]
     public void PrefixExpressions_CompositeLocatorsRequireTwoParts(string locator, string expected)

@@ -2208,6 +2208,8 @@ Direct browser-control scripts and `cmg run` both support:
   - `"strict=.item"` resolves `.item` only when exactly one element matches; zero or multiple matches fail before pointer movement.
   - `"inside=.card|button.save"` resolves the first `button.save` inside the first `.card`. This is the one-line locator form of a simple `within` scope and is useful for one-off CLI commands.
   - `"closest=.badge|.card"` resolves the nearest `.card` ancestor of the first `.badge`, matching common traversal flows.
+  - `"parent=.badge"` resolves the immediate parent of `.badge`; `"parent=.badge|.row"` requires that parent to match `.row`.
+  - `"next=.current|.target"` and `"previous=.current|.target"` resolve the next or previous matching sibling. Without the second selector they return the immediate sibling.
 - Open shadow DOM locators:
   - `"shadow=#host|button.save"` resolves `button.save` inside `#host`'s open shadow root.
   - `"shadowText=#host|Shadow Save"` resolves the first descendant inside `#host`'s open shadow root whose text contains `Shadow Save`.
@@ -2232,6 +2234,9 @@ click "and=.item|.selected"
 click "strict=.only-choice"
 click "inside=.card|button.save"
 click "closest=.badge|.card"
+click "parent=.badge|.card"
+click "next=.current|.target"
+click "previous=.current|.target"
 click "shadow=#host|button.save"
 assertText "hasText=.toast|Saved" "Saved"
 mouseMove selector="text=Drop here" edge=center

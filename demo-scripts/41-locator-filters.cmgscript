@@ -46,3 +46,12 @@ expectText "#result" "first"
 
 click "closest=.badge|.secondary"
 expectText "#result" "second"
+
+click "parent=.badge|.secondary"
+expectText "#result" "second"
+
+click "next=.primary|.secondary"
+expectText "#result" "second"
+
+click "previous=.secondary|.primary"
+expectText "#result" "first"

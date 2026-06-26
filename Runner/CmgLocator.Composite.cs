@@ -39,4 +39,30 @@ public static partial class CmgLocator
             ? $"document.querySelector({QuoteJs(parts.Left)})?.closest({QuoteJs(parts.Right)})"
             : "(() => { throw new Error('Locator closest= requires <child-selector>|<ancestor-selector>.'); })()";
     }
+
+    private static string BuildParentExpression(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "(() => { throw new Error('Locator parent= requires <child-selector>.'); })()";
+        }
+
+        return SplitLocatorValue(value) is { } parts
+            ? $"((e) => e?.parentElement?.matches({QuoteJs(parts.Right)}) ? e.parentElement : null)(document.querySelector({QuoteJs(parts.Left)}))"
+            : $"document.querySelector({QuoteJs(value)})?.parentElement";
+    }
+
+    private static string BuildSiblingExpression(string value, bool next)
+    {
+        var name = next ? "next" : "previous";
+        var property = next ? "nextElementSibling" : "previousElementSibling";
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return $"(() => {{ throw new Error('Locator {name}= requires <selector>.'); }})()";
+        }
+
+        return SplitLocatorValue(value) is { } parts
+            ? $"((e) => {{ for (let n = e?.{property}; n; n = n.{property}) {{ if (n.matches({QuoteJs(parts.Right)})) return n; }} return null; }})(document.querySelector({QuoteJs(parts.Left)}))"
+            : $"document.querySelector({QuoteJs(value)})?.{property}";
+    }
 }
