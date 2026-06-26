@@ -43,6 +43,7 @@ public sealed record CmgRunOptions(
     string? Tag,
     int Retries,
     int MaxFailures,
+    int RepeatEach,
     int ShardIndex,
     int ShardCount);
 

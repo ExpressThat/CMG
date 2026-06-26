@@ -544,10 +544,13 @@ dotnet run -- run demo-scripts --grep runner
 dotnet run -- run demo-scripts --tag smoke
 dotnet run -- run demo-scripts --retries 2
 dotnet run -- run demo-scripts --max-failures 1
+dotnet run -- run demo-scripts --repeat-each 3
 dotnet run -- run demo-scripts --shard 1/2
 ```
 
 When `--max-failures` reaches its threshold, stdout includes `RUN STOP maxFailures=<count>`. Reports, traces, and GIF output include only tests that actually ran before the stop.
+
+`--repeat-each` schedules each selected test multiple times with names such as `checkout [repeat 2/3]`. Each repeated test gets its own report entry, trace, retry attempts, and command-level GIF when `--gif` is active.
 
 Use `tag=` on tests:
 

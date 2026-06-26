@@ -58,6 +58,11 @@ public sealed class RunCommandBuilder
             Description = "Stop the run after this many failed tests.",
             DefaultValueFactory = _ => 0
         };
+        var repeatEachOption = new Option<int>("--repeat-each")
+        {
+            Description = "Run each selected test this many times.",
+            DefaultValueFactory = _ => 1
+        };
         var shardOption = new Option<string?>("--shard")
         {
             Description = "Run one shard as index/count, for example 1/3."
@@ -74,6 +79,7 @@ public sealed class RunCommandBuilder
             tagOption,
             retriesOption,
             maxFailuresOption,
+            repeatEachOption,
             shardOption
         };
 
@@ -90,6 +96,7 @@ public sealed class RunCommandBuilder
                 parseResult.GetValue(tagOption),
                 parseResult.GetValue(retriesOption),
                 parseResult.GetValue(maxFailuresOption),
+                parseResult.GetValue(repeatEachOption),
                 parseResult.GetValue(shardOption)));
 
         return command;

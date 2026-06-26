@@ -88,7 +88,8 @@ public sealed partial class CmgRunService : ICmgRunService
         }
 
         var plannedTests = SelectFocusedTests(planner.Plan(parse.Document).Where(test => ShouldRun(test, options)).ToArray());
-        var selectedTests = ApplyOnceHooks(ApplyShard(plannedTests, options).ToArray());
+        var repeatedTests = RepeatTests(plannedTests, options.RepeatEach);
+        var selectedTests = ApplyOnceHooks(ApplyShard(repeatedTests, options).ToArray());
         foreach (var test in selectedTests)
         {
             if (IsSkipped(test))
@@ -154,9 +155,6 @@ public sealed partial class CmgRunService : ICmgRunService
         };
     }
 
-    internal static IReadOnlyList<CmgTestCase> SelectFocusedTests(IReadOnlyList<CmgTestCase> tests) =>
-        tests.Any(IsOnly) ? tests.Where(IsOnly).ToArray() : tests;
-
     private static CmgTestResult SkippedTest(CmgTestCase test)
     {
         var reason = test.Options.TryGetValue("reason", out var value) ? value : "Skipped by test option.";
@@ -166,8 +164,6 @@ public sealed partial class CmgRunService : ICmgRunService
             Status = "skipped"
         };
     }
-
-    private static bool IsOnly(CmgTestCase test) => IsTruthyOption(test, "only");
 
     private static bool IsSkipped(CmgTestCase test) => IsTruthyOption(test, "skip");
 

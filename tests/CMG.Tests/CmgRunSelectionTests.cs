@@ -39,6 +39,24 @@ public sealed class CmgRunSelectionTests
         Assert.False(CmgRunService.HasReachedMaxFailures(tests, 3));
     }
 
+    [Fact]
+    public void RepeatTests_AppendsStableRepeatNames()
+    {
+        var repeated = CmgRunService.RepeatTests([Test("checkout"), Test("profile")], 2);
+
+        Assert.Equal(
+            ["checkout [repeat 1/2]", "checkout [repeat 2/2]", "profile [repeat 1/2]", "profile [repeat 2/2]"],
+            repeated.Select(test => test.Name).ToArray());
+    }
+
+    [Fact]
+    public void RepeatTests_ReturnsOriginalScheduleWhenRepeatIsOne()
+    {
+        var tests = new[] { Test("checkout") };
+
+        Assert.Same(tests, CmgRunService.RepeatTests(tests, 1));
+    }
+
     private static CmgTestCase Test(string name, IReadOnlyDictionary<string, string>? options = null) =>
         new("flow.cmgscript", name, [], options ?? new Dictionary<string, string>());
 
