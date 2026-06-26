@@ -77,6 +77,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("addStyleTag", "body { color: red; }", "addStyleTag \"body { color: red; }\"")]
     [InlineData("setOffline", "true", "setOffline \"true\"")]
     [InlineData("clearExtraHTTPHeaders", null, "clearExtraHTTPHeaders")]
+    [InlineData("toBeEditable", "#name", "tobeeditable \"#name\"")]
+    [InlineData("expectInViewport", "#save", "expectinviewport \"#save\"")]
     [InlineData("apiRequest", "GET", "apiRequest \"GET\" \"https://example.test\"", "https://example.test")]
     [InlineData("fail", "Missing setup", "fail \"Missing setup\"")]
     public void Lower_SharedActionsPassThrough(

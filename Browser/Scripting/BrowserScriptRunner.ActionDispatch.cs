@@ -56,6 +56,9 @@ public sealed partial class BrowserScriptRunner
                 ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
             "expectvisible" or "tobevisible" or "waitforvisible" or "expecthidden" or "tobehidden" or "waitforhidden" or
             "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" or
+            "expectattached" or "tobeattached" or "expectdetached" or "tobedetached" or
+            "expecteditable" or "tobeeditable" or "expectempty" or "tobeempty" or
+            "expectfocused" or "tobefocused" or "expectinviewport" or "tobeinviewport" or
             "expectvalue" or "tohavevalue" or "expectattribute" or "tohaveattribute" or
             "expectchecked" or "tobechecked" or "expectcount" or "tohavecount" => ExecuteElementExpectation(remoteDebuggingUrl, automationClient, action),
             "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, automationClient, action),

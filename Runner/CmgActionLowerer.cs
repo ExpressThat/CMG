@@ -18,7 +18,10 @@ public sealed partial class CmgActionLowerer
             "expecttext" or "tohavetext" or "tocontaintext" or "containstext" or "waitfortext" or "contains" => LowerTextAssertion(action),
             "expecturl" or "expecttitle" or "tohaveurl" or "tohavetitle" => [ToLine(ToNavigationExpectationName(name), action.Arguments, action.Options)],
             "expectvisible" or "tobevisible" or "waitforvisible" or "expecthidden" or "tobehidden" or "waitforhidden" or
-            "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" =>
+            "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" or
+            "expectattached" or "tobeattached" or "expectdetached" or "tobedetached" or
+            "expecteditable" or "tobeeditable" or "expectempty" or "tobeempty" or
+            "expectfocused" or "tobefocused" or "expectinviewport" or "tobeinviewport" =>
                 [ToLine(ToExpectationName(name), action.Arguments, action.Options)],
             "expectvalue" or "tohavevalue" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "value"),
             "expectattribute" or "tohaveattribute" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "attribute"),

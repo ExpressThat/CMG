@@ -52,6 +52,18 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeEnabled", "toBeEnabled", "Assert that an element is enabled."));
         command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "expectDisabled", "expectDisabled", "Assert that an element is disabled."));
         command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeDisabled", "toBeDisabled", "Assert that an element is disabled."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "expectAttached", "expectAttached", "Assert that an element is attached."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeAttached", "toBeAttached", "Assert that an element is attached."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "expectDetached", "expectDetached", "Assert that an element is detached."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeDetached", "toBeDetached", "Assert that an element is detached."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "expectEditable", "expectEditable", "Assert that an element is editable."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeEditable", "toBeEditable", "Assert that an element is editable."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "expectEmpty", "expectEmpty", "Assert that an element is empty."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeEmpty", "toBeEmpty", "Assert that an element is empty."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "expectFocused", "expectFocused", "Assert that an element is focused."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeFocused", "toBeFocused", "Assert that an element is focused."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "expectInViewport", "expectInViewport", "Assert that an element intersects the viewport."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeInViewport", "toBeInViewport", "Assert that an element intersects the viewport."));
         command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "value", "expectValue"));
         command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "expectValue", "expectValue"));
         command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "toHaveValue", "toHaveValue"));

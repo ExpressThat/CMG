@@ -35,6 +35,18 @@ cmg browser control assertions [command] [options]
 - [`toBeEnabled`](toBeEnabled.md): Exact scripting alias for `enabled`.
 - [`expectDisabled`](expectDisabled.md): Exact scripting alias for `disabled`.
 - [`toBeDisabled`](toBeDisabled.md): Exact scripting alias for `disabled`.
+- [`expectAttached`](expectAttached.md): Assert that an element is attached.
+- [`toBeAttached`](toBeAttached.md): Playwright-style alias for `expectAttached`.
+- [`expectDetached`](expectDetached.md): Assert that an element is detached.
+- [`toBeDetached`](toBeDetached.md): Playwright-style alias for `expectDetached`.
+- [`expectEditable`](expectEditable.md): Assert that an element is editable.
+- [`toBeEditable`](toBeEditable.md): Playwright-style alias for `expectEditable`.
+- [`expectEmpty`](expectEmpty.md): Assert that an element is empty.
+- [`toBeEmpty`](toBeEmpty.md): Playwright-style alias for `expectEmpty`.
+- [`expectFocused`](expectFocused.md): Assert that an element is focused.
+- [`toBeFocused`](toBeFocused.md): Playwright-style alias for `expectFocused`.
+- [`expectInViewport`](expectInViewport.md): Assert that an element intersects the viewport.
+- [`toBeInViewport`](toBeInViewport.md): Playwright-style alias for `expectInViewport`.
 - [`value`](value.md): Assert that an element value contains text.
 - [`expectValue`](expectValue.md): Exact scripting alias for `value`.
 - [`toHaveValue`](toHaveValue.md): Exact scripting alias for `value`.
@@ -65,6 +77,8 @@ cmg browser control assertions contains "Welcome"
 cmg browser control assertions assertVisible "#save" --timeout 5000
 cmg browser control assertions visible "#save" --timeout 5000
 cmg browser control assertions toBeVisible "#save"
+cmg browser control assertions toBeEditable "#name"
+cmg browser control assertions toBeInViewport "#save"
 cmg browser control assertions toHaveValue "#name" "Ada"
 cmg browser control assertions eval "document.title" --equals "Checkout"
 cmg browser control assertions expectExpression "window.appReady" --timeout 5000

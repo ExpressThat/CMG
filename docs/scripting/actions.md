@@ -1409,6 +1409,12 @@ expectHidden "#spinner" timeout=5000
 waitForHidden "#spinner" timeout=5000
 expectEnabled "#save"
 expectDisabled "#archive"
+expectAttached "#save"
+expectDetached "#toast"
+expectEditable "#email"
+expectEmpty "#empty"
+expectFocused "#email"
+expectInViewport "#save"
 expectValue "#email" "agent@example.com" timeout=5000
 expectAttribute "#save" "aria-label" "Save"
 expectChecked "#terms" true
@@ -1418,13 +1424,19 @@ toBeVisible "#save"
 toBeHidden "#spinner"
 toBeEnabled "#save"
 toBeDisabled "#archive"
+toBeAttached "#save"
+toBeDetached "#toast"
+toBeEditable "#email"
+toBeEmpty "#empty"
+toBeFocused "#email"
+toBeInViewport "#save"
 toHaveValue "#email" "agent@example.com"
 toHaveAttribute "#save" "aria-label" "Save"
 toBeChecked "#terms" true
 toHaveCount ".result" 3
 ```
 
-Runs browser-side assertions for common UI state checks. The `toHave*` and `toBe*` forms are Playwright-style aliases over the matching CMG assertions. `waitForVisible` and `waitForHidden` are provider-style wait aliases for the visible and hidden assertions. Element assertions resolve CMG locators before checking the matched element. Direct browser-control scripts also accept locator-form options such as `expectVisible text=Save` when the parser would otherwise treat `text=Save` as an option. `expectCount` and `toHaveCount` count matching CSS elements and support zero-count assertions.
+Runs browser-side assertions for common UI state checks. The `toHave*` and `toBe*` forms are Playwright-style aliases over the matching CMG assertions. `waitForVisible` and `waitForHidden` are provider-style wait aliases for the visible and hidden assertions. Element assertions resolve CMG locators before checking the matched element. Direct browser-control scripts also accept locator-form options such as `expectVisible text=Save` when the parser would otherwise treat `text=Save` as an option. `expectDetached` and `toBeDetached` pass when no connected matching element exists. `expectCount` and `toHaveCount` count matching CSS elements and support zero-count assertions.
 
 Options:
 
@@ -1432,7 +1444,7 @@ Options:
 
 Output:
 
-- `EXPECT <line> <visible|hidden|enabled|disabled|value|attribute|checked|count> <selector>` for direct element assertion actions and aliases.
+- `EXPECT <line> <visible|hidden|enabled|disabled|attached|detached|editable|empty|focused|inviewport|value|attribute|checked|count> <selector>` for direct element assertion actions and aliases.
 
 ### `waitForUrl`
 

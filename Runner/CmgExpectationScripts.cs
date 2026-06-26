@@ -71,8 +71,19 @@ public static class CmgExpectationScripts
             "visible" => "const style = getComputedStyle(element); const rect = element.getBoundingClientRect(); const ok = rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none'; const message = 'Expected element to be visible.';",
             "hidden" => "const style = getComputedStyle(element); const rect = element.getBoundingClientRect(); const ok = rect.width === 0 || rect.height === 0 || style.visibility === 'hidden' || style.display === 'none'; const message = 'Expected element to be hidden.';",
             "enabled" => "const ok = !element.matches(':disabled,[aria-disabled=\"true\"]'); const message = 'Expected element to be enabled.';",
-            _ => "const ok = element.matches(':disabled,[aria-disabled=\"true\"]'); const message = 'Expected element to be disabled.';"
+            "disabled" => "const ok = element.matches(':disabled,[aria-disabled=\"true\"]'); const message = 'Expected element to be disabled.';",
+            "attached" => "const ok = element.isConnected; const message = 'Expected element to be attached.';",
+            "editable" => "const formEditable = element.matches('input,textarea,select') && !element.matches(':disabled,[readonly],[aria-disabled=\"true\"]'); const ok = formEditable || element.isContentEditable; const message = 'Expected element to be editable.';",
+            "empty" => "const value = 'value' in element ? element.value : element.textContent; const ok = String(value ?? '').length === 0; const message = 'Expected element to be empty.';",
+            "focused" => "const ok = document.activeElement === element; const message = 'Expected element to be focused.';",
+            "inviewport" => "const rect = element.getBoundingClientRect(); const ok = rect.bottom > 0 && rect.right > 0 && rect.top < innerHeight && rect.left < innerWidth; const message = 'Expected element to intersect the viewport.';",
+            _ => string.Empty
         };
+        if (mode.Equals("detached", StringComparison.Ordinal))
+        {
+            return $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element || !element.isConnected) return true; throw new Error('Expected element to be detached.'); }})()";
+        }
+
         return $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}.'); {check} if (!ok) throw new Error(message); return true; }})()";
     }
 
@@ -96,7 +107,8 @@ public static class CmgExpectationScripts
     {
         "attribute" => 3,
         "checked" => 1,
-        "visible" or "hidden" or "enabled" or "disabled" => 1,
+        "visible" or "hidden" or "enabled" or "disabled" or "attached" or "detached" or
+        "editable" or "empty" or "focused" or "inviewport" => 1,
         _ => 2
     };
 
@@ -110,7 +122,8 @@ public static class CmgExpectationScripts
         action.Options.TryGetValue("timeout", out var value) && int.TryParse(value, out var timeout) ? timeout : 0;
 
     private static bool IsStateMode(string mode) =>
-        mode is "visible" or "hidden" or "enabled" or "disabled";
+        mode is "visible" or "hidden" or "enabled" or "disabled" or "attached" or "detached" or
+        "editable" or "empty" or "focused" or "inviewport";
 
     private static CmgNode NormalizeLocatorArgument(CmgNode action)
     {
