@@ -950,6 +950,18 @@ selectOption label=Plan optionValue=free
 
 This direct-script example is available as `demo-scripts/104-select-option-targets.cmgscript`. The structured `cmg run` form is available as `demo-scripts/105-select-option-targets-runner.cmgscript`.
 
+## Hover Options
+
+```text
+setContent "<main><button id='target'>Hover target</button><output id='result'>none</output><script>const target=document.querySelector('#target'); const result=document.querySelector('#result'); target.addEventListener('mousemove', event => result.textContent = `${event.clientX > 0}:${event.ctrlKey}`);</script></main>"
+hover "#target" modifiers=Control x=4 y=8
+assertText "#result" "true:true"
+```
+
+`hover` accepts `x=`, `y=`, and `modifiers=` so GIF recordings can show the virtual pointer at the same element-relative point that receives page hover events.
+
+This direct-script example is available as `demo-scripts/106-hover-options.cmgscript`. The structured `cmg run` form is available as `demo-scripts/107-hover-options-runner.cmgscript`.
+
 ## Pointer Click Variants
 
 ```text

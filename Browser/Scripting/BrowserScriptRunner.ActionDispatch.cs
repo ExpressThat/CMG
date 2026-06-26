@@ -43,7 +43,7 @@ public sealed partial class BrowserScriptRunner
             "keyboardshortcut" or "shortcut" or "hotkey" => ExecuteKeyboardShortcut(remoteDebuggingUrl, automationClient, action),
             "keydown" or "keyup" or "inserttext" => ExecuteKeyboardAction(remoteDebuggingUrl, automationClient, action),
             "setclipboard" or "writeclipboard" or "readclipboard" or "clearclipboard" => ExecuteClipboardAction(remoteDebuggingUrl, automationClient, action),
-            "hover" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Hover(remoteDebuggingUrl, selector)),
+            "hover" => ExecuteHover(remoteDebuggingUrl, automationClient, action),
             "scrollintoview" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
             "select" or "selectoption" => ExecuteSelect(remoteDebuggingUrl, automationClient, action),
             "showmessagebar" or "caption" => ExecuteShowMessageBar(remoteDebuggingUrl, automationClient, action),

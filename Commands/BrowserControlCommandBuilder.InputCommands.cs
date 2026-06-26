@@ -30,7 +30,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildKeyboardCommand(browserOptions, "keyDown", "Dispatch a keydown event."));
         command.Subcommands.Add(BuildKeyboardCommand(browserOptions, "keyUp", "Dispatch a keyup event."));
         command.Subcommands.Add(BuildKeyboardCommand(browserOptions, "insertText", "Insert text at the active element."));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "hover", "Hover an element."));
+        command.Subcommands.Add(BuildHoverCommand(browserOptions));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "scrollIntoView", "Scroll an element into view."));
         command.Subcommands.Add(BuildSelectCommand(browserOptions));
         command.Subcommands.Add(BuildSelectLikeCommand(browserOptions, "selectOption", "Set a select-like element value."));
@@ -134,6 +134,23 @@ public sealed partial class BrowserControlCommandBuilder
                 StringOption("button", parseResult.GetValue(button)),
                 IntOption("clickCount", parseResult.GetValue(clickCount)),
                 IntOption("delay", parseResult.GetValue(delay)),
+                StringOption("modifiers", parseResult.GetValue(modifiers)),
+                IntOption("x", parseResult.GetValue(x)),
+                IntOption("y", parseResult.GetValue(y))
+            ]))));
+        return command;
+    }
+
+    private Command BuildHoverCommand(BrowserSelectionOptions browserOptions)
+    {
+        var selector = CreateSelectorArgument();
+        var modifiers = CliStringOption("--modifiers", "Comma- or plus-separated modifiers: Alt, Control, Meta, Shift.");
+        var x = CliIntOption("--x", "X offset inside the element.");
+        var y = CliIntOption("--y", "Y offset inside the element.");
+        var command = new Command("hover", "Hover an element.") { selector, modifiers, x, y };
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine("hover", [parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
                 StringOption("modifiers", parseResult.GetValue(modifiers)),
                 IntOption("x", parseResult.GetValue(x)),
                 IntOption("y", parseResult.GetValue(y))

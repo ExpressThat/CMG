@@ -32,7 +32,7 @@ cmg browser control input [command] [options]
 - [`keyDown`](keyDown.md): Dispatch a keydown event.
 - [`keyUp`](keyUp.md): Dispatch a keyup event.
 - [`insertText`](insertText.md): Insert text at the active element.
-- [`hover`](hover.md): Hover an element.
+- [`hover`](hover.md): Hover an element, with optional modifier and element-offset controls.
 - [`scrollIntoView`](scrollIntoView.md): Scroll an element into view.
 - [`select`](select.md): Set a select-like element value by value, label, or index.
 - [`selectOption`](selectOption.md): Set a select-like element value by value, label, or index.

@@ -274,14 +274,21 @@ Clipboard actions do not move the virtual pointer. In GIF recordings, wrap them 
 
 ```text
 hover "<selector>"
+hover "<selector>" modifiers=Control+Shift x=8 y=12
 ```
 
-Dispatches mouseover and mousemove events at the element center. `hover` does not scroll automatically; the element center must already be inside the current viewport.
+Dispatches mouseover and mousemove events at the element center. With `x=`, `y=`, or `modifiers=`, CMG dispatches a page-facing pointer/mouse hover sequence at the configured element-relative point with the requested modifier flags. `hover` does not scroll automatically; the target point must already be inside the current viewport.
+
+Options:
+
+- `modifiers`: Optional comma- or plus-separated modifiers: `Alt`, `Control`, `Meta`, and `Shift`.
+- `x` / `y`: Optional offsets inside the target element. Defaults to the element center. GIF recordings move the virtual pointer to the same offset.
 
 Example:
 
 ```text
 hover "#openProfileDialog"
+hover "#canvas" modifiers=Control+Shift x=12 y=8
 ```
 
 ## `moveMouse`
