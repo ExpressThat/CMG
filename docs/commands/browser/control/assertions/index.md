@@ -20,6 +20,7 @@ cmg browser control assertions [command] [options]
 - [`assertEval`](assertEval.md): Assert a JavaScript expression result.
 - [`expectExpression`](expectExpression.md): Assert a JavaScript expression result.
 - [`assertExpression`](assertExpression.md): Assert a JavaScript expression result.
+- [`assertVisible`](assertVisible.md): Assert that an element exists and is visible.
 - [`visible`](visible.md): Assert that an element is visible.
 - [`hidden`](hidden.md): Assert that an element is hidden.
 - [`enabled`](enabled.md): Assert that an element is enabled.
@@ -61,6 +62,7 @@ cmg browser control assertions [command] [options]
 cmg browser control assertions assertText "h1" "Ready"
 cmg browser control assertions waitForText "#status" "Saved" --timeout 5000
 cmg browser control assertions contains "Welcome"
+cmg browser control assertions assertVisible "#save" --timeout 5000
 cmg browser control assertions visible "#save" --timeout 5000
 cmg browser control assertions toBeVisible "#save"
 cmg browser control assertions toHaveValue "#name" "Ada"

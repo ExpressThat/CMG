@@ -14,6 +14,7 @@ public sealed class BrowserControlCommandBuilderAssertionTests
     [InlineData("containsText #status Ready", "containsText \"#status\" \"Ready\"")]
     [InlineData("waitForText #status Ready --timeout 1000", "waitForText \"#status\" \"Ready\" timeout=\"1000\"")]
     [InlineData("contains Ready --timeout 250", "contains \"Ready\" timeout=\"250\"")]
+    [InlineData("assertVisible #save --timeout 5000", "assertVisible \"#save\" timeout=\"5000\"")]
     [InlineData("visible #save --timeout 5000", "expectVisible \"#save\" timeout=\"5000\"")]
     [InlineData("hidden text=Done", "expectHidden \"text=Done\"")]
     [InlineData("enabled #save", "expectEnabled \"#save\"")]
