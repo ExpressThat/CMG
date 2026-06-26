@@ -2,7 +2,7 @@
 
 CMG is a browser automation CLI for producing choreographed, human-readable, pointer-accurate visual evidence.
 
-It drives a real browser from scripts or one-shot CLI commands, records animated GIFs with a live virtual pointer, and reports exactly which step failed and why. It is built for AI agents and people who need automation runs that are easy to inspect, explain, replay, and share.
+It drives a real browser from scripts, test files, or one-shot CLI commands. When you ask it to record a GIF, CMG shows the journey with a live virtual pointer, real pointer events, hover states, drag ghosts, captions, and partial recordings when something fails. The result is automation evidence that people can understand quickly and agents can parse reliably.
 
 ## Why CMG
 
@@ -13,9 +13,21 @@ Most browser automation tools prove that something happened. CMG is designed to 
 - **Readable scripts**: `.cmgscript` is intentionally compact, whitespace-tolerant, and friendly to AI-generated browser control.
 - **Tests and browser control**: use `cmg run` for structured tests, reports, retries, traces, and sharding; use `browser control script` when an agent needs to control the browser directly.
 - **Useful failures**: failed steps include the action, line number, and reason in stderr, reports, and traces.
-- **Real automation surface**: navigation, locators, assertions, dialogs, frames, network waits/mocks, storage, contexts, workers, files, screenshots, PDF output, accessibility, and visual assertions are documented as script actions and CLI command groups.
+- **Broad automation without hiding the story**: browser control, assertions, locators, frames, network, storage, files, screenshots, accessibility, and visual checks are covered in the [action index](docs/scripting/action-index.md), but recorded runs still look like a guided browser journey.
 
 CMG is not trying to be a clone of Cypress, Puppeteer, or Playwright. It gives you the automation coverage you expect, but its center of gravity is different: CMG creates inspectable visual evidence that reads like a guided browser performance.
+
+## When To Use CMG
+
+| Job | CMG fit |
+| --- | --- |
+| Make a PR demo GIF | Strong fit: record the actual browser journey with pointer movement, captions, hovers, and drag behavior. |
+| Reproduce a visual bug | Strong fit: capture the steps and the failure as a shareable artifact. |
+| Let an AI inspect or control a browser | Strong fit: scripts are compact, output is parseable, and failures explain what broke. |
+| Run repeatable smoke tests with reports | Strong fit: use `cmg run` with reports, traces, retries, sharding, and optional per-test GIFs. |
+| Maintain a very large CI regression suite | Possible, but Playwright or Cypress may still be the default choice when ecosystem maturity matters more than visual evidence. |
+
+The useful difference is not "CMG has aliases like other tools." The useful difference is that CMG turns automation into evidence that a human can watch and an agent can reason about.
 
 ## Install And Run Locally
 

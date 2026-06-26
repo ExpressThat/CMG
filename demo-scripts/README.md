@@ -2,6 +2,21 @@
 
 These `.cmgscript` files demonstrate the browser scripting language against the repository's `index.html` test page.
 
+## Start Here
+
+The full list below is a catalogue. If you are learning CMG, run these first:
+
+| Goal | Demo |
+| --- | --- |
+| Make a first browser-control GIF | `01-dialog-flow.cmgscript` |
+| See pointer-accurate hover behavior | `10-css-hover-states.cmgscript` |
+| Watch drag ghosts and pointer movement | `07-complex-drag-flow.cmgscript` |
+| Run a structured test | `20-runner-flow.cmgscript` |
+| Learn variables, loops, and macros | `30-control-flow-macros.cmgscript` |
+| See script formatting tolerance | `48-weird-formatting.cmgscript` |
+
+For a guided introduction, use the [Quick Start](../docs/quick-start.md) before treating this folder as a reference.
+
 ## Run A Demo
 
 Start the CMG-controlled browser:

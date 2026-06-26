@@ -15,8 +15,16 @@ The same action surface is available in both script types unless a command page 
 
 - `browser control script` is the direct browser-control surface for agents.
 - `cmg run` is the structured test DSL with suites, hooks, reports, retries, sharding, traces, and optional per-test GIFs.
-- Shared actions include pointer-aware browser actions, explicit waits, default timeout policy, navigation controls, browser contexts, worker control, init scripts, dialog handling, coverage collection, page-error capture, storage state, API requests, network environment controls, network fetch mocks, fixtures and file assertions, PDF output, file upload, tab/popup controls, and visual assertions.
+- Shared actions are grouped in the [action index](action-index.md), with full syntax and failure behavior in the [action reference](actions.md).
 - Shared language features include imports, variables, `set` block capture, conditionals, loops, selector iteration, scoped macros, and nested blocks.
+
+If you are new to CMG, read this guide in order:
+
+1. [Quick Start](../quick-start.md): make a GIF, run a test, and use CMG from an agent.
+2. [Script Vs Runner](script-vs-runner.md): choose the right execution mode.
+3. [Style Guide](style-guide.md): write scripts that stay readable as they grow.
+4. [Action Index](action-index.md): find the action family you need.
+5. [Detailed Action Reference](actions.md): look up exact options, output, and failure behavior.
 
 ## Guides
 

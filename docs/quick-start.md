@@ -2,6 +2,14 @@
 
 CMG is a browser automation CLI for producing choreographed, human-readable, pointer-accurate visual evidence. Start with one of these paths, then move into the reference docs when you need more control.
 
+## How CMG Is Different
+
+Playwright, Cypress, and Puppeteer are excellent automation libraries. CMG is a CLI and DSL built around a different first question: "Can a person or agent understand what happened?"
+
+That is why GIF recording is a first-class workflow. Pointer-aware actions move CMG's virtual pointer, dispatch the browser events a page expects, show hover and drag states, and keep captions, reports, traces, and failure reasons attached to the same run.
+
+Use CMG when the output should be evidence, not just a pass/fail result.
+
 ## Path 1: Make A GIF
 
 Use this when you want a visual proof of what happened.
