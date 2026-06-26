@@ -13,6 +13,8 @@ public sealed class BrowserControlCommandBuilderNavigationTabCaptureAliasTests
     [InlineData("visit https://example.test", "visit \"https://example.test\"")]
     [InlineData("waitForNetworkIdle", "waitForNetworkIdle timeout=\"5000\"")]
     [InlineData("waitForNetworkIdle --timeout 250", "waitForNetworkIdle timeout=\"250\"")]
+    [InlineData("networkIdle", "networkIdle timeout=\"5000\"")]
+    [InlineData("networkIdle --timeout 250", "networkIdle timeout=\"250\"")]
     public void NavigationAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();

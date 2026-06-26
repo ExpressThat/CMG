@@ -22,7 +22,8 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "toHaveURL", "Assert that the current URL matches text."));
         command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "toHaveTitle", "Assert that the current page title matches text."));
         command.Subcommands.Add(BuildWaitForLoadStateCommand(browserOptions));
-        command.Subcommands.Add(BuildWaitForNetworkIdleCommand(browserOptions));
+        command.Subcommands.Add(BuildWaitForNetworkIdleCommand(browserOptions, "waitForNetworkIdle"));
+        command.Subcommands.Add(BuildWaitForNetworkIdleCommand(browserOptions, "networkIdle"));
         command.Subcommands.Add(BuildWaitForNavigationCommand(browserOptions));
         command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "url", "Print the current page URL."));
         command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "title", "Print the current page title."));
@@ -140,7 +141,7 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildWaitForNetworkIdleCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildWaitForNetworkIdleCommand(BrowserSelectionOptions browserOptions, string name)
     {
         var timeoutOption = new Option<int>("--timeout")
         {
@@ -148,14 +149,14 @@ public sealed partial class BrowserControlCommandBuilder
             DefaultValueFactory = _ => 5000
         };
 
-        var command = new Command("waitForNetworkIdle", "Wait until the page reaches CMG network idle.")
+        var command = new Command(name, "Wait until the page reaches CMG network idle.")
         {
             timeoutOption
         };
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "waitForNetworkIdle",
+                name,
                 [],
                 CompactOptions([
                     IntOption("timeout", parseResult.GetValue(timeoutOption))
