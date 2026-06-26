@@ -52,6 +52,8 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "captureConsole", "Capture future console messages.", "captureConsole"));
         command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "wait", "waitForConsole", "Wait for a matching console message.", includeLevel: true));
         command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "waitForConsole", "waitForConsole", "Wait for a matching console message.", includeLevel: true));
+        command.Subcommands.Add(BuildNoConsoleCommand(browserOptions, "expectNoConsole", "expectNoConsole"));
+        command.Subcommands.Add(BuildNoConsoleCommand(browserOptions, "toHaveNoConsole", "toHaveNoConsole"));
         return command;
     }
 
@@ -117,6 +119,20 @@ public sealed partial class BrowserControlCommandBuilder
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(text) ?? string.Empty], EventWaitOptions(parseResult, timeout, includeLevel ? level : null))));
+
+        return command;
+    }
+
+    private Command BuildNoConsoleCommand(BrowserSelectionOptions browserOptions, string name, string action)
+    {
+        var text = OptionalTextArgument("text", "Optional console text substring to reject.");
+        var timeout = CliIntOption("--timeout", "Observation window in milliseconds.");
+        var level = CliStringOption("--level", "Console level filter: log, info, warn, or error. Default is error.");
+        var command = new Command(name, "Assert that no matching console message is captured.") { text, timeout, level };
+
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine(action, OptionalArgument(parseResult, text), EventWaitOptions(parseResult, timeout, level))));
 
         return command;
     }

@@ -913,10 +913,11 @@ test "logs save result" {
   captureConsole
   click "#save"
   waitForConsole "settings saved" level=info timeout=5000
+  expectNoConsole level=error timeout=250
 }
 ```
 
-Console waits are useful when an app reports diagnostics through the browser console. Reports and traces include the `CONSOLE` output line.
+Console waits are useful when an app reports diagnostics through the browser console. No-console assertions catch unexpected errors or warnings without moving the virtual pointer. Reports and traces include the `CONSOLE` or `CONSOLE_OK` output line.
 
 ## Page Error Feedback
 

@@ -287,6 +287,14 @@ Line 7: waitForConsole failed. Console message 'settings saved' was not seen wit
 
 Call `captureConsole` before the action that should log the message, and check the optional `level=` filter.
 
+## Unexpected Console Output
+
+```text
+Line 8: expectNoConsole failed. Unexpected console error: Save failed
+```
+
+Call `captureConsole` before the action under observation. Use `level=`, optional text, and `timeout=` to narrow the rejected messages.
+
 ## Page Error Timeout
 
 ```text

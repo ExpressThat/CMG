@@ -141,6 +141,8 @@ dotnet run -- --firefox browser close
 - `51-retry-block-runner.cmgscript`: Demonstrates the same `retry` block in the structured runner DSL.
 - `52-explicit-fail.cmgscript`: Demonstrates catchable explicit `fail` in a direct script.
 - `53-explicit-fail-runner.cmgscript`: Demonstrates catchable explicit `fail` in the structured runner DSL.
+- `54-console-absence.cmgscript`: Demonstrates `expectNoConsole` and `toHaveNoConsole` in a direct script.
+- `55-console-absence-runner.cmgscript`: Demonstrates the same console absence assertions in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

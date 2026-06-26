@@ -27,5 +27,47 @@ public sealed class BrowserScriptRunnerConsoleTests
         Assert.Contains(result.StdoutLines, line => line.Contains("CONSOLE", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void RunText_WaitForConsoleRejectsInvalidLevel()
+    {
+        var result = Runner().RunText("waitForConsole \"saved\" level=verbose", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("level= must be log, info, warn, or error", result.Error);
+    }
+
+    [Fact]
+    public void RunText_ExpectNoConsoleUsesDefaultErrorLevel()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("expectNoConsole timeout=100", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("const level = \"error\";", client.LastExpression);
+        Assert.Contains("Unexpected console", client.LastExpression);
+        Assert.Contains(result.StdoutLines, line => line.Contains("CONSOLE_OK", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_ToHaveNoConsoleUsesTextAndLevelFilter()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("toHaveNoConsole \"deprecated\" level=warn timeout=50", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("deprecated", client.LastExpression);
+        Assert.Contains("const level = \"warn\";", client.LastExpression);
+        Assert.Contains(result.StdoutLines, line => line.Contains("level=warn", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_ExpectNoConsoleRejectsInvalidLevel()
+    {
+        var result = Runner().RunText("expectNoConsole level=verbose", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("level= must be log, info, warn, or error", result.Error);
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

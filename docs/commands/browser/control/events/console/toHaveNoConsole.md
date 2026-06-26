@@ -1,0 +1,39 @@
+# `browser control events console toHaveNoConsole`
+
+Provider-style alias for [`expectNoConsole`](expectNoConsole.md).
+
+```powershell
+cmg browser control events console toHaveNoConsole [text] [--level <level>] [--timeout <milliseconds>]
+```
+
+## Arguments
+
+- `[text]`: Optional console message substring to reject. If omitted, any matching-level console message fails.
+
+## Options
+
+- `--level <level>`: Console level filter: `log`, `info`, `warn`, or `error`. Default is `error`.
+- `--timeout <milliseconds>`: Observation window in milliseconds. Default is `0`.
+
+## Stdout
+
+```text
+PASS 001 toHaveNoConsole deprecated
+CONSOLE_OK 001 level=warn
+```
+
+## Stderr
+
+Writes browser, argument, option, parse, or action errors. A matching console message fails with the message text.
+
+## Exit Codes
+
+- `0`: No matching console message was captured during the observation window.
+- `1`: Browser is not running, arguments or options are invalid, or a matching console message was captured.
+
+## Examples
+
+```powershell
+cmg browser control events console captureConsole
+cmg browser control events console toHaveNoConsole "deprecated" --level warn --timeout 500
+```

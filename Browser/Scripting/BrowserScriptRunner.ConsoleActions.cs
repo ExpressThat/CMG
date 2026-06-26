@@ -20,10 +20,34 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 1, 1);
         var timeout = GetIntOption(action, "timeout", 5_000);
         var level = action.Options.TryGetValue("level", out var value) ? value : string.Empty;
+        ValidateConsoleLevel(action, level);
         var result = automationClient.Evaluate(
             remoteDebuggingUrl,
             BrowserConsoleScripts.WaitFor(action.Arguments[0], level, timeout));
         return [$"CONSOLE {action.LineNumber:000} {result}"];
+    }
+
+    private static IReadOnlyList<string> ExecuteExpectNoConsole(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 0, 1);
+        var timeout = GetIntOption(action, "timeout", 0);
+        var level = action.Options.TryGetValue("level", out var levelValue) ? levelValue : "error";
+        ValidateConsoleLevel(action, level);
+        automationClient.Evaluate(remoteDebuggingUrl, BrowserConsoleScripts.ExpectNone(action.Arguments.FirstOrDefault() ?? string.Empty, level, timeout));
+        return [$"CONSOLE_OK {action.LineNumber:000} level={level}"];
+    }
+
+    private static void ValidateConsoleLevel(BrowserScriptAction action, string level)
+    {
+        if (string.IsNullOrWhiteSpace(level) || level is "log" or "info" or "warn" or "error")
+        {
+            return;
+        }
+
+        throw new ScriptExecutionException($"{action.Name} option level= must be log, info, warn, or error.");
     }
 
     private static IReadOnlyList<string> ExecuteCapturePageErrors(

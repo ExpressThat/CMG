@@ -9,6 +9,8 @@ public sealed class BrowserControlCommandBuilderEventAliasTests
     [Theory]
     [InlineData("console captureConsole", "captureConsole")]
     [InlineData("console waitForConsole Ready --level error", "waitForConsole \"Ready\" level=\"error\"")]
+    [InlineData("console expectNoConsole --timeout 100", "expectNoConsole timeout=\"100\"")]
+    [InlineData("console toHaveNoConsole deprecated --level warn", "toHaveNoConsole \"deprecated\" level=\"warn\"")]
     [InlineData("dialogs captureDialogs --prompt-text ok", "captureDialogs promptText=\"ok\"")]
     [InlineData("dialogs setDialogBehavior dismiss", "setDialogBehavior \"dismiss\"")]
     [InlineData("dialogs onDialog accept --prompt-text yes", "onDialog \"accept\" promptText=\"yes\"")]

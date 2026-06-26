@@ -865,24 +865,27 @@ Output:
 
 - `DOWNLOAD <line> <path>` on success.
 
-## `captureConsole` And `waitForConsole`
+## `captureConsole`, `waitForConsole`, `expectNoConsole`, And `toHaveNoConsole`
 
 ```text
 captureConsole
 waitForConsole "saved" level=info timeout=5000
+expectNoConsole level=error timeout=250
+toHaveNoConsole "deprecated" level=warn
 ```
 
-Installs a page-side console hook and waits for a captured console message. Call `captureConsole` before the page action that is expected to log. `waitForConsole` checks captured `log`, `info`, `warn`, and `error` calls.
+Installs a page-side console hook, waits for a captured console message, or asserts that no matching console message was captured. Call `captureConsole` before the page action that is expected to log. `waitForConsole` checks captured `log`, `info`, `warn`, and `error` calls. `expectNoConsole` and `toHaveNoConsole` default to the `error` level and can watch a short future window with `timeout=`.
 
 Options:
 
 - `level`: Optional console level filter: `log`, `info`, `warn`, or `error`.
-- `timeout`: Optional timeout in milliseconds. Default is `5000`.
+- `timeout`: Optional timeout in milliseconds. Default is `5000` for `waitForConsole` and `0` for no-console assertions.
 
 Output:
 
 - `CONSOLE_CAPTURE <line>` when the hook is installed.
 - `CONSOLE <line> <level>: <text>` when a matching message is found.
+- `CONSOLE_OK <line> level=<level>` when no matching console message is found.
 
 ## `capturePageErrors` And `waitForPageError`
 
