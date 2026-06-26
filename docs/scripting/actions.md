@@ -146,7 +146,7 @@ Options:
 - `clickCount` or `count`: Optional number of clicks. Must be at least `1`.
 - `delay`: Optional milliseconds between repeated clicks. Must be zero or greater.
 - `modifiers`: Optional comma- or plus-separated modifiers: `Alt`, `Control`, `Meta`, and `Shift`.
-- `x` / `y`: Optional offsets inside the target element. Defaults to the element center.
+- `x` / `y`: Optional offsets inside the target element. Defaults to the element center. GIF recordings move the virtual pointer to the same offset.
 
 Example:
 
