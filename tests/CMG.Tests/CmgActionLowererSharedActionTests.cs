@@ -40,6 +40,7 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("toHaveURL", "/checkout", "expectUrl \"/checkout\"")]
     [InlineData("toHaveTitle", "Checkout", "expectTitle \"Checkout\"")]
     [InlineData("waitForLoadState", "complete", "waitForLoadState \"complete\"")]
+    [InlineData("waitForNetworkIdle", null, "waitForNetworkIdle")]
     [InlineData("waitForNavigation", "/checkout", "waitForNavigation \"/checkout\"")]
     [InlineData("setViewportSize", null, "setViewport width=\"390\" height=\"844\"", null, "390", "844")]
     [InlineData("waitForPopup", null, "waitForPopup")]

@@ -23,7 +23,7 @@ navigate "C:\Projects\CMG\index.html"
 visit "https://example.com"
 ```
 
-## `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, And `waitForNavigation`
+## `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNetworkIdle`, And `waitForNavigation`
 
 ```text
 reload
@@ -34,6 +34,8 @@ toHaveURL "/checkout" match=exact
 toHaveTitle "checkout" ignoreCase=true
 waitForLoadState "complete" timeout=5000
 waitForLoadState "networkidle" timeout=5000
+waitForNetworkIdle timeout=5000
+networkIdle timeout=5000
 waitForNavigation "/checkout" waitUntil=domcontentloaded timeout=10000
 ```
 
@@ -41,7 +43,7 @@ Runs common page navigation controls from both direct browser-control scripts an
 
 Options:
 
-- `timeout`: Optional for `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, and `waitForNavigation`. Default is `5000`.
+- `timeout`: Optional for `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNetworkIdle`, and `waitForNavigation`. Default is `5000`.
 - `match`: Optional for `waitForUrl`, `waitForTitle`, `expectUrl`, `expectTitle`, `toHaveURL`, and `toHaveTitle`. Supports `contains`, `exact`, and `regex`. Default is `contains`.
 - `ignoreCase`: Optional for URL/title match actions. Use `true` for case-insensitive matching.
 - `waitUntil`: Optional for `waitForNavigation`. Supports `load`, `domcontentloaded`, `networkidle`, and `commit`. Default is `load`.
@@ -52,6 +54,7 @@ Arguments:
 - `waitForUrl`, `toHaveURL`: Required URL text expected in `location.href`.
 - `toHaveTitle`: Required title text expected in `document.title`.
 - `waitForLoadState`: Optional state. Supports `loading`, `interactive`, `complete`, `load`, and `networkidle`. `load` is an alias for `complete`; `networkidle` waits for a complete document and a 500ms quiet window in CMG's page-side request log.
+- `waitForNetworkIdle`: No positional arguments. This is the first-class provider-style action for `waitForLoadState "networkidle"`. `networkIdle` is an alias.
 - `waitForNavigation`: Optional URL substring expected in `location.href`.
 
 Output:
@@ -62,11 +65,12 @@ Output:
 - `URL <line> <url>` when `waitForUrl` or `toHaveURL` matches.
 - `TITLE <line> <title>` when `toHaveTitle` matches.
 - `LOAD_STATE <line> <state>` when the requested load state is reached.
+- `NETWORK_IDLE <line> <state>` when the provider-style network idle action succeeds.
 - `NAVIGATION <line> <json>` when the requested navigation URL and state are reached.
 
 These actions do not move the virtual pointer. Use `step`, `caption`, or a `gif` block when a GIF should narrate a non-visual navigation wait.
 
-`waitForLoadState "networkidle"` and `waitForNavigation waitUntil=networkidle` use CMG's in-page request log as a quiet-window signal, so they work best after CMG has installed page network hooks through route, request waits, or network environment actions.
+`waitForLoadState "networkidle"`, `waitForNetworkIdle`, `networkIdle`, and `waitForNavigation waitUntil=networkidle` use CMG's in-page request log as a quiet-window signal, so they work best after CMG has installed page network hooks through route, request waits, or network environment actions.
 
 ## `waitForElement`
 

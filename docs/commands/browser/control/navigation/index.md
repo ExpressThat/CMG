@@ -21,6 +21,7 @@ cmg browser control navigation [command] [options]
 - [`toHaveURL`](toHaveURL.md): Assert that the current URL matches text.
 - [`toHaveTitle`](toHaveTitle.md): Assert that the current page title matches text.
 - [`waitForLoadState`](waitForLoadState.md): Wait until the page reaches a load state.
+- [`waitForNetworkIdle`](waitForNetworkIdle.md): Wait until the page reaches CMG network idle.
 - [`waitForNavigation`](waitForNavigation.md): Wait until navigation reaches a state.
 - [`url`](url.md): Print the current page URL.
 - [`title`](title.md): Print the current page title.
@@ -46,5 +47,6 @@ cmg browser control navigation waitForTitle "Checkout" --match exact --timeout 5
 cmg browser control navigation expectTitle "checkout" --ignore-case
 cmg browser control navigation toHaveURL "checkout/\\d+" --match regex
 cmg browser control navigation waitForLoadState complete
+cmg browser control navigation waitForNetworkIdle --timeout 10000
 cmg browser control navigation waitForNavigation "checkout" --wait-until domcontentloaded
 ```

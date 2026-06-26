@@ -27,6 +27,7 @@ public sealed partial class BrowserScriptRunner
             "expecturl" => ExpectUrl(remoteDebuggingUrl, automationClient, action),
             "expecttitle" => ExpectTitle(remoteDebuggingUrl, automationClient, action),
             "waitforloadstate" => WaitForLoadState(remoteDebuggingUrl, automationClient, action),
+            "waitfornetworkidle" or "networkidle" => WaitForNetworkIdle(remoteDebuggingUrl, automationClient, action),
             "waitfornavigation" => WaitForNavigation(remoteDebuggingUrl, automationClient, action),
             _ => throw new ScriptExecutionException($"Unknown navigation action '{action.Name}'.")
         };
@@ -191,6 +192,17 @@ public sealed partial class BrowserScriptRunner
         var timeout = GetIntOption(action, "timeout", 5_000);
         var actual = automationClient.Evaluate(remoteDebuggingUrl, BrowserNavigationScripts.WaitForLoadState(state, timeout));
         return [$"LOAD_STATE {action.LineNumber:000} {actual}"];
+    }
+
+    private static IReadOnlyList<string> WaitForNetworkIdle(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 0, 0);
+        var timeout = GetIntOption(action, "timeout", 5_000);
+        var actual = automationClient.Evaluate(remoteDebuggingUrl, BrowserNavigationScripts.WaitForLoadState("networkidle", timeout));
+        return [$"NETWORK_IDLE {action.LineNumber:000} {actual}"];
     }
 
     private static IReadOnlyList<string> WaitForNavigation(

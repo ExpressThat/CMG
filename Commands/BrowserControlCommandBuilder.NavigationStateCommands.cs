@@ -22,6 +22,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "toHaveURL", "Assert that the current URL matches text."));
         command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "toHaveTitle", "Assert that the current page title matches text."));
         command.Subcommands.Add(BuildWaitForLoadStateCommand(browserOptions));
+        command.Subcommands.Add(BuildWaitForNetworkIdleCommand(browserOptions));
         command.Subcommands.Add(BuildWaitForNavigationCommand(browserOptions));
         command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "url", "Print the current page URL."));
         command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "title", "Print the current page title."));
@@ -58,7 +59,7 @@ public sealed partial class BrowserControlCommandBuilder
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
                 name,
                 [],
-                [("timeout", parseResult.GetValue(timeoutOption).ToString())])));
+                [("timeout", $"{parseResult.GetValue(timeoutOption)}")])));
 
         return command;
     }
@@ -157,6 +158,30 @@ public sealed partial class BrowserControlCommandBuilder
                 "waitForLoadState",
                 [parseResult.GetValue(stateArgument) ?? "load"],
                 [("timeout", parseResult.GetValue(timeoutOption).ToString())])));
+
+        return command;
+    }
+
+    private Command BuildWaitForNetworkIdleCommand(BrowserSelectionOptions browserOptions)
+    {
+        var timeoutOption = new Option<int>("--timeout")
+        {
+            Description = "Timeout in milliseconds.",
+            DefaultValueFactory = _ => 5000
+        };
+
+        var command = new Command("waitForNetworkIdle", "Wait until the page reaches CMG network idle.")
+        {
+            timeoutOption
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+                "waitForNetworkIdle",
+                [],
+                CompactOptions([
+                    IntOption("timeout", parseResult.GetValue(timeoutOption))
+                ]))));
 
         return command;
     }

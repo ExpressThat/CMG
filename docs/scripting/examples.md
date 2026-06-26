@@ -1090,10 +1090,11 @@ test "browser history" {
   waitForNavigation "/checkout" waitUntil=load
   reload
   waitForLoadState "complete"
+  waitForNetworkIdle timeout=10000
 }
 ```
 
-Direct-script navigation match modes are available as `demo-scripts/60-navigation-match-modes.cmgscript`. The structured runner form is available as `demo-scripts/61-navigation-match-modes-runner.cmgscript`.
+Direct-script navigation match modes are available as `demo-scripts/60-navigation-match-modes.cmgscript`. The structured runner form is available as `demo-scripts/61-navigation-match-modes-runner.cmgscript`. Network-idle waits are available as `demo-scripts/76-network-idle.cmgscript` and `demo-scripts/77-network-idle-runner.cmgscript`.
 
 ## Explicit Waits
 

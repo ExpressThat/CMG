@@ -163,6 +163,8 @@ dotnet run -- --firefox browser close
 - `73-script-tracing-runner.cmgscript`: Demonstrates partial trace capture in the structured runner DSL.
 - `74-element-inspection.cmgscript`: Demonstrates element count, text array, and bounding box getters in a direct script.
 - `75-element-inspection-runner.cmgscript`: Demonstrates element inspection getters in the structured runner DSL.
+- `76-network-idle.cmgscript`: Demonstrates provider-style network-idle waits in a direct script.
+- `77-network-idle-runner.cmgscript`: Demonstrates provider-style network-idle waits in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

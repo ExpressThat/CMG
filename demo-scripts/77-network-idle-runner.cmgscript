@@ -1,0 +1,5 @@
+test "network idle wait" {
+  navigate "C:\Projects\CMG\index.html"
+  waitForNetworkIdle timeout=5000
+  networkIdle timeout=5000
+}

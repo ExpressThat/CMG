@@ -124,6 +124,28 @@ public sealed class BrowserScriptRunnerNavigationActionTests
         Assert.Contains("LOAD_STATE 001 {}", result.StdoutLines);
     }
 
+    [Theory]
+    [InlineData("waitForNetworkIdle")]
+    [InlineData("networkIdle")]
+    public void RunText_WaitForNetworkIdleUsesNetworkIdleLoadState(string action)
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText($"{action} timeout=250", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("networkidle", client.LastExpression);
+        Assert.Contains("NETWORK_IDLE 001 {}", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_WaitForNetworkIdleRejectsArguments()
+    {
+        var result = Runner().RunText("waitForNetworkIdle extra", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("Expected 0 positional argument(s)", result.Error);
+    }
+
     [Fact]
     public void RunText_WaitForLoadStateValidatesState()
     {

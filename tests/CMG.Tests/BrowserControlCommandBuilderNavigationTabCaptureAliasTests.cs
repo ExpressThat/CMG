@@ -9,6 +9,8 @@ public sealed class BrowserControlCommandBuilderNavigationTabCaptureAliasTests
     [Theory]
     [InlineData("goto https://example.test", "goto \"https://example.test\"")]
     [InlineData("visit https://example.test", "visit \"https://example.test\"")]
+    [InlineData("waitForNetworkIdle", "waitForNetworkIdle timeout=\"5000\"")]
+    [InlineData("waitForNetworkIdle --timeout 250", "waitForNetworkIdle timeout=\"250\"")]
     public void NavigationAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();
