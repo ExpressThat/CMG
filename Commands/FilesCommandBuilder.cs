@@ -8,17 +8,27 @@ public sealed class FilesCommandBuilder
     {
         var command = new Command("files", "Local file utility commands.");
         command.Subcommands.Add(BuildReadCommand());
+        command.Subcommands.Add(BuildReadCommand("readFile"));
+        command.Subcommands.Add(BuildReadCommand("fixture"));
         command.Subcommands.Add(BuildWriteCommand("write", append: false));
+        command.Subcommands.Add(BuildWriteCommand("writeFile", append: false));
         command.Subcommands.Add(BuildWriteCommand("append", append: true));
+        command.Subcommands.Add(BuildWriteCommand("appendFile", append: true));
         command.Subcommands.Add(BuildExpectCommand());
+        command.Subcommands.Add(BuildExpectCommand("expectFile"));
         return command;
     }
 
     private static Command BuildReadCommand()
     {
+        return BuildReadCommand("read");
+    }
+
+    private static Command BuildReadCommand(string name)
+    {
         var path = RequiredPath();
         var encoding = new Option<string?>("--encoding") { Description = "Use base64 for binary output." };
-        var command = new Command("read", "Read a local file.") { path, encoding };
+        var command = new Command(name, "Read a local file.") { path, encoding };
         command.SetAction(parseResult =>
         {
             var fullPath = FullPath(parseResult.GetValue(path));
@@ -65,9 +75,14 @@ public sealed class FilesCommandBuilder
 
     private static Command BuildExpectCommand()
     {
+        return BuildExpectCommand("expect");
+    }
+
+    private static Command BuildExpectCommand(string name)
+    {
         var path = RequiredPath();
         var contains = new Option<string?>("--contains") { Description = "Required text in the file." };
-        var command = new Command("expect", "Assert that a local file exists and optionally contains text.") { path, contains };
+        var command = new Command(name, "Assert that a local file exists and optionally contains text.") { path, contains };
         command.SetAction(parseResult =>
         {
             var fullPath = FullPath(parseResult.GetValue(path));
