@@ -7,6 +7,8 @@ namespace CMG.Tests;
 public sealed class BrowserControlCommandBuilderNavigationTests
 {
     [Theory]
+    [InlineData("reload", "reload")]
+    [InlineData("reload --wait-until networkidle --timeout 250", "reload waitUntil=\"networkidle\" timeout=\"250\"")]
     [InlineData("expectUrl checkout", "expectUrl \"checkout\"")]
     [InlineData("expectUrl checkout --match exact --ignore-case", "expectUrl \"checkout\" match=\"exact\" ignoreCase=\"true\"")]
     [InlineData("expectTitle Dashboard", "expectTitle \"Dashboard\"")]

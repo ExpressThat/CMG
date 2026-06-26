@@ -39,7 +39,7 @@ public sealed partial class BrowserScriptRunner
         var currentUrl = automationClient.Evaluate(remoteDebuggingUrl, "location.href");
         automationClient.Evaluate(remoteDebuggingUrl, "location.reload(); location.href");
         Thread.Sleep(100);
-        return [$"RELOADED {action.LineNumber:000} {currentUrl}"];
+        return [ReloadOutput(remoteDebuggingUrl, automationClient, action, currentUrl)];
     }
 
     private static IReadOnlyList<string> MoveHistory(

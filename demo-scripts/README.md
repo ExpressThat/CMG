@@ -167,6 +167,8 @@ dotnet run -- --firefox browser close
 - `77-network-idle-runner.cmgscript`: Demonstrates provider-style network-idle waits in the structured runner DSL.
 - `78-media-emulation.cmgscript`: Demonstrates provider-style media emulation in a direct script.
 - `79-media-emulation-runner.cmgscript`: Demonstrates provider-style media emulation in the structured runner DSL.
+- `80-reload-wait.cmgscript`: Demonstrates provider-style reload wait options in a direct script.
+- `81-reload-wait-runner.cmgscript`: Demonstrates provider-style reload wait options in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

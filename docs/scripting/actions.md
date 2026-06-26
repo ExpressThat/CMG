@@ -27,6 +27,7 @@ visit "https://example.com"
 
 ```text
 reload
+reload waitUntil=domcontentloaded timeout=5000
 goBack timeout=5000
 goForward timeout=5000
 waitForUrl "/checkout" timeout=10000
@@ -43,11 +44,11 @@ Runs common page navigation controls from both direct browser-control scripts an
 
 Options:
 
-- `timeout`: Optional for `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNetworkIdle`, and `waitForNavigation`. Default is `5000`.
+- `timeout`: Optional for `reload` when `waitUntil` is set, and for `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNetworkIdle`, and `waitForNavigation`. Default is `5000`.
 - `match`: Optional for `waitForUrl`, `waitForTitle`, `expectUrl`, `expectTitle`, `toHaveURL`, and `toHaveTitle`. Supports `contains`, `exact`, and `regex`. Default is `contains`.
 - `ignoreCase`: Optional for URL/title match actions. Use `true` for case-insensitive matching.
-- `waitUntil`: Optional for `waitForNavigation`. Supports `load`, `domcontentloaded`, `networkidle`, and `commit`. Default is `load`.
-- `state`: Alias for `waitUntil` on `waitForNavigation`.
+- `waitUntil`: Optional for `reload` and `waitForNavigation`. Supports `load`, `domcontentloaded`, `networkidle`, and `commit`. `reload` keeps its original fire-and-settle behavior when omitted.
+- `state`: Alias for `waitUntil` on `reload` and `waitForNavigation`.
 
 Arguments:
 

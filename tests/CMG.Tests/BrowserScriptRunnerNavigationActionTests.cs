@@ -14,6 +14,26 @@ public sealed class BrowserScriptRunnerNavigationActionTests
     }
 
     [Fact]
+    public void RunText_ReloadCanWaitForProviderLoadState()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("reload waitUntil=domcontentloaded timeout=250", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("interactive", client.LastExpression);
+        Assert.Contains("RELOADED 001 {} waitUntil=domcontentloaded state={}", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_ReloadValidatesWaitUntil()
+    {
+        var result = Runner().RunText("reload waitUntil=paint", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("load, domcontentloaded, networkidle, or commit", result.Error);
+    }
+
+    [Fact]
     public void RunText_GoBackUsesHistoryScript()
     {
         var client = new FakeAutomationClient();
