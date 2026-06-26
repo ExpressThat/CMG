@@ -1204,7 +1204,9 @@ WebSocket routing is page-side and works in direct browser-control scripts and `
 ```text
 test "creates item through api" {
   apiRequest "POST" "https://example.com/api/items" json="{\"name\":\"demo\"}" query.preview=true header.Authorization="Bearer token" status=201 contains="demo"
+  apiRequest "POST" "https://example.com/login" form.user="agent" form.mode="test" auth="user:pass" ok=true
+  apiRequest "GET" "https://example.com/api/items" status="200-299" expectHeader.Content-Type="json" output="demo-output\items.json"
 }
 ```
 
-`apiRequest` is runner-side HTTP and does not move the virtual pointer. Its `API` and `API_BODY` output is included in reports and traces.
+`apiRequest` is runner-side HTTP and does not move the virtual pointer. Its `API`, `API_BODY`, and `API_BODY_FILE` output is included in reports and traces.

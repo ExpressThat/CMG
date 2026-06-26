@@ -28,16 +28,29 @@ public sealed class ApiCommandBuilder
         var contentType = new Option<string?>("--content-type") { Description = "Request content type." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds. Default is 30000." };
         var status = new Option<int?>("--status") { Description = "Expected response status." };
+        var statusText = new Option<string?>("--status-match") { Description = "Expected status list or range, such as 200,201 or 200-299." };
+        var ok = new Option<bool>("--ok") { Description = "Require a 2xx response status." };
         var contains = new Option<string?>("--contains") { Description = "Expected response body text." };
+        var notContains = new Option<string?>("--not-contains") { Description = "Text that must not appear in the response body." };
+        var auth = new Option<string?>("--auth") { Description = "Basic auth credentials as username:password." };
+        var output = new Option<FileInfo?>("--output") { Description = "Write response body to this file." };
         var headers = PairOption("--header", "Header as Name=Value. Repeatable.");
         var queries = PairOption("--query", "Query parameter as Name=Value. Repeatable.");
-        var command = new Command("request", "Send an HTTP request.") { method, url, body, json, contentType, timeout, status, contains, headers, queries };
+        var forms = PairOption("--form", "Form field as Name=Value. Repeatable.");
+        var expectHeaders = PairOption("--expect-header", "Expected response header as Name=Value. Repeatable.");
+        var command = new Command("request", "Send an HTTP request.")
+        {
+            method, url, body, json, contentType, timeout, status, statusText, ok, contains,
+            notContains, auth, output, headers, queries, forms, expectHeaders
+        };
 
         command.SetAction(parseResult =>
         {
-            var options = Options(parseResult, body, json, contentType, timeout, status, contains);
+            var options = Options(parseResult, body, json, contentType, timeout, status, statusText, ok, contains, notContains, auth, output);
             AddPairs(options, "header.", parseResult.GetValue(headers) ?? []);
             AddPairs(options, "query.", parseResult.GetValue(queries) ?? []);
+            AddPairs(options, "form.", parseResult.GetValue(forms) ?? []);
+            AddPairs(options, "expectHeader.", parseResult.GetValue(expectHeaders) ?? []);
             var step = runner.Run(new CmgNode(1, "apiRequest", "apiRequest", [parseResult.GetValue(method) ?? string.Empty, parseResult.GetValue(url) ?? string.Empty], options, []));
             foreach (var line in step.Output)
             {
@@ -70,15 +83,27 @@ public sealed class ApiCommandBuilder
         Option<string?> contentType,
         Option<int?> timeout,
         Option<int?> status,
-        Option<string?> contains)
+        Option<string?> statusText,
+        Option<bool> ok,
+        Option<string?> contains,
+        Option<string?> notContains,
+        Option<string?> auth,
+        Option<FileInfo?> output)
     {
         var options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         Add(options, "body", parseResult.GetValue(body));
         Add(options, "json", parseResult.GetValue(json));
         Add(options, "contentType", parseResult.GetValue(contentType));
         Add(options, "timeout", parseResult.GetValue(timeout)?.ToString());
-        Add(options, "status", parseResult.GetValue(status)?.ToString());
+        Add(options, "status", parseResult.GetValue(statusText) ?? parseResult.GetValue(status)?.ToString());
+        if (parseResult.GetValue(ok))
+        {
+            Add(options, "ok", "true");
+        }
         Add(options, "contains", parseResult.GetValue(contains));
+        Add(options, "notContains", parseResult.GetValue(notContains));
+        Add(options, "auth", parseResult.GetValue(auth));
+        Add(options, "output", parseResult.GetValue(output)?.FullName);
         return options;
     }
 

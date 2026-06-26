@@ -387,9 +387,13 @@ Positive text assertions check whether the element text matches the expected tex
 ```text
 STEP FAIL line=3 action=apiRequest reason=Expected status 200, got 500.
 STEP FAIL line=4 action=apiRequest reason=apiRequest option timeout= must be a positive number of milliseconds.
+STEP FAIL line=5 action=apiRequest reason=Expected ok=true, got status 500.
+STEP FAIL line=6 action=apiRequest reason=Expected response body not to contain 'secret'.
+STEP FAIL line=7 action=apiRequest reason=Expected response header 'Content-Type' to contain 'json'.
+STEP FAIL line=8 action=apiRequest reason=apiRequest option ok= must be true or false.
 ```
 
-`apiRequest` failures include the reason in stderr and reports. The step output includes `API` and `API_BODY` lines when a response was received.
+`apiRequest` failures include the reason in stderr and reports. The step output includes `API` and `API_BODY` lines when a response was received, or `API_BODY_FILE` when `output=` wrote the response body to disk.
 
 ## Network Wait Failure
 

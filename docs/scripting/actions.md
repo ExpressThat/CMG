@@ -1562,25 +1562,34 @@ Output:
 apiRequest "GET" "https://example.com/api/status" status=200 contains="ok"
 apiRequest "POST" "https://example.com/api/items" body="{\"name\":\"demo\"}" header.Authorization="Bearer token"
 apiRequest "POST" "https://example.com/api/items" json="{\"name\":\"demo\"}" query.preview=true timeout=10000
+apiRequest "POST" "https://example.com/login" form.user="agent" form.mode="test" auth="user:pass" ok=true
+apiRequest "GET" "https://example.com/api/items" status="200-299" expectHeader.Content-Type="json" output="demo-output\items.json"
 ```
 
 Runs an HTTP request from direct browser-control scripts or `cmg run`. This does not move the virtual pointer because it is not a browser UI action, but it is included in stdout, reports, traces, and step failure diagnostics.
 
 Options:
 
-- `status`: Expected numeric response status.
+- `status`: Expected response status. Accepts one status, a comma-separated list, or ranges such as `200-299`.
+- `ok`: Optional boolean. When `true`, requires a 2xx response. When `false`, requires a non-2xx response.
 - `contains`: Text expected in the response body.
+- `notContains`: Text that must not appear in the response body.
 - `body`: Request body text.
 - `json`: Request body text with `Content-Type: application/json` unless `contentType=` is also set.
+- `form.<name>`: Form value. When any form field is present, CMG sends `application/x-www-form-urlencoded`.
 - `contentType`: Request content type for `body` or `json`.
 - `query.<name>`: Query string value to append to the request URL.
 - `header.<name>`: Request header.
+- `expectHeader.<name>`: Expected response header substring.
+- `auth`: Basic auth credentials as `username:password`.
+- `output`: Optional response body output path. When set, stdout writes `API_BODY_FILE` instead of `API_BODY`.
 - `timeout`: Request timeout in milliseconds. Default is `30000`.
 
 Output:
 
 - `API <line> <status> <url>` after receiving a response.
 - `API_BODY <line> <body>` with the response body.
+- `API_BODY_FILE <line> <path>` when `output=` writes the response body to disk.
 
 ### `storageState`
 

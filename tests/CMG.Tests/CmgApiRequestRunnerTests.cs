@@ -52,6 +52,84 @@ public sealed class CmgApiRequestRunnerTests
     }
 
     [Fact]
+    public void Run_SendsFormAuthAndWritesBodyFile()
+    {
+        HttpRequestMessage? request = null;
+        using var files = new TempFiles();
+        var runner = new CmgApiRequestRunner(new HttpClient(new Handler(message =>
+        {
+            request = message;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("saved"),
+                RequestMessage = message
+            };
+        })));
+
+        var result = runner.Run(Node("apiRequest", ["POST", "https://example.test/login"], new Dictionary<string, string>
+        {
+            ["form.user"] = "agent",
+            ["form.mode"] = "test",
+            ["auth"] = "user:pass",
+            ["output"] = files.Body
+        }));
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("Basic dXNlcjpwYXNz", request?.Headers.Authorization?.ToString());
+        Assert.Equal("application/x-www-form-urlencoded", request?.Content?.Headers.ContentType?.MediaType);
+        Assert.Equal("saved", File.ReadAllText(files.Body));
+        Assert.Contains(result.Output, line => line.StartsWith("API_BODY_FILE 003 ", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Run_ValidatesStatusRangesAndHeaders()
+    {
+        var runner = new CmgApiRequestRunner(new HttpClient(new Handler(message =>
+            new HttpResponseMessage(HttpStatusCode.Accepted)
+            {
+                Content = new StringContent("ready"),
+                RequestMessage = message,
+                Headers = { { "X-Mode", "preview" } }
+            })));
+
+        var result = runner.Run(Node("apiRequest", ["GET", "https://example.test"], new Dictionary<string, string>
+        {
+            ["status"] = "200-299",
+            ["expectHeader.X-Mode"] = "view"
+        }));
+
+        Assert.True(result.Success, result.Error);
+    }
+
+    [Fact]
+    public void Run_ValidatesOkAndNotContains()
+    {
+        var runner = new CmgApiRequestRunner(new HttpClient(new Handler(message =>
+            new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent("secret"), RequestMessage = message })));
+
+        var result = runner.Run(Node("apiRequest", ["GET", "https://example.test"], new Dictionary<string, string>
+        {
+            ["ok"] = "true",
+            ["notContains"] = "secret"
+        }));
+
+        Assert.False(result.Success);
+        Assert.Contains("Expected ok=true", result.Error);
+    }
+
+    [Fact]
+    public void Run_RejectsInvalidOkOption()
+    {
+        var runner = new CmgApiRequestRunner(new HttpClient(new Handler(message =>
+            new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("ok"), RequestMessage = message })));
+
+        var result = runner.Run(Node("apiRequest", ["GET", "https://example.test"], new Dictionary<string, string> { ["ok"] = "maybe" }));
+
+        Assert.False(result.Success);
+        Assert.Contains("ok= must be true or false", result.Error);
+    }
+
+    [Fact]
     public void Run_ReturnsResponseOutputOnStatusFailure()
     {
         var runner = new CmgApiRequestRunner(new HttpClient(new Handler(_ =>
@@ -90,5 +168,13 @@ public sealed class CmgApiRequestRunnerTests
 
         protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken) =>
             handle(request);
+    }
+
+    private sealed class TempFiles : IDisposable
+    {
+        private readonly string directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        public string Body => Path.Combine(directory, "body.txt");
+        public TempFiles() => Directory.CreateDirectory(directory);
+        public void Dispose() => Directory.Delete(directory, recursive: true);
     }
 }
