@@ -1,0 +1,7 @@
+set featureEnabled false
+
+if (${featureEnabled} == false) {
+  skip "Feature flag disabled"
+}
+
+caption "This line is not reached"

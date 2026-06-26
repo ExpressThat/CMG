@@ -122,7 +122,7 @@ public sealed partial class CmgRunService : ICmgRunService
 
             var result = RunTestWithRetries(test, remoteDebuggingUrl, options);
             tests.Add(result);
-            output.Add($"TEST {(result.Success ? "PASS" : "FAIL")} {result.Name}");
+            output.Add($"TEST {(result.Status.Equals("skipped", StringComparison.OrdinalIgnoreCase) ? "SKIP" : result.Success ? "PASS" : "FAIL")} {result.Name}");
             if (!ContinueAfterFailureLimit(options, tests, output)) return false;
         }
 

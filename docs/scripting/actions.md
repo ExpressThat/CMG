@@ -1,6 +1,6 @@
 # `.cmgscript` Actions
 
-All actions fail fast. If an action fails, later actions are not executed.
+Actions fail fast unless documented otherwise. If an action fails, later actions are not executed. `softExpect` records a later failure while continuing, and `skip` stops execution as skipped rather than failed.
 
 Browser JavaScript dialogs are not silently removed, accepted, or dismissed through the browser protocol. Use `captureDialogs` and `setDialogBehavior` before the page action that is expected to call `alert`, `confirm`, or `prompt`.
 
@@ -1384,6 +1384,26 @@ Output:
 - The failure reason is `Line <line>: fail failed. <message>`.
 
 `fail` is non-visual and does not move the virtual pointer. In GIF mode, frames captured before the failure are still written as a partial GIF. Wrap a preceding `caption` or `step` around the guard when the recording should explain why the run stopped.
+
+## `skip`
+
+```text
+skip "Feature flag disabled"
+```
+
+Stops the current direct script or `cmg run` test as skipped. Use it for runtime guard clauses when a discovered browser, account, feature-flag, environment, or fixture state makes the rest of the flow not applicable.
+
+Output:
+
+- `SKIP <line> <reason>`
+
+Behavior:
+
+- In `browser control script`, `skip` stops later actions and exits successfully.
+- In `cmg run`, `skip` marks the current test as `skipped`, writes `TEST SKIP <name>`, and emits skipped entries in JSON, HTML, and JUnit reports.
+- A skipped test does not count toward `--max-failures`.
+
+`skip` is non-visual and does not move the virtual pointer. In GIF mode, frames captured before the skip are still written.
 
 ## `expect`, `assert`, `softExpect`, And `softAssert`
 

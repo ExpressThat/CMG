@@ -87,6 +87,7 @@ waitForResponse "/api/profile" status=200 timeout=5000
 ```
 
 Use `fail "message"` inside control flow when the script has enough context to explain the problem.
+Use `skip "reason"` when the current environment makes the flow intentionally not applicable, such as a missing feature flag or account capability.
 
 Use generic `expect` / `assert` when the condition is about values or action output rather than one element state:
 

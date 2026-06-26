@@ -17,6 +17,7 @@ The full list below is a catalogue. If you are learning CMG, run these first:
 | Assert values and action output | `126-generic-expect.cmgscript` |
 | Collect non-fatal assertion diagnostics | `128-soft-expect.cmgscript` |
 | Iterate JSON and delimited collections | `130-collection-loops.cmgscript` |
+| Stop as skipped from runtime state | `132-runtime-skip.cmgscript` |
 
 For a guided introduction, use the [Quick Start](../docs/quick-start.md) before treating this folder as a reference.
 
@@ -239,5 +240,7 @@ dotnet run -- --firefox browser close
 - `129-soft-expect-runner.cmgscript`: Demonstrates soft generic assertions in the structured runner DSL.
 - `130-collection-loops.cmgscript`: Demonstrates `foreachJson` and `foreachList` over action output and delimited values.
 - `131-collection-loops-runner.cmgscript`: Demonstrates collection loops in the structured runner DSL.
+- `132-runtime-skip.cmgscript`: Demonstrates runtime `skip` in a direct script.
+- `133-runtime-skip-runner.cmgscript`: Demonstrates runtime `skip` in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.

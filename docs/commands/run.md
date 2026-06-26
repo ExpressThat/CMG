@@ -47,7 +47,7 @@ RUN STOP maxFailures=<count>
 TEST LIST <run|skip> <name>
 ```
 
-Failures may include action output before the failing test line. Skipped tests do not run actions or produce GIFs. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
+Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
 
 When a step fails, stderr also includes:
 
@@ -61,7 +61,7 @@ When a file cannot be parsed, imported, or planned into a runnable test, stdout 
 TEST ERROR <file> reason=<reason>
 ```
 
-Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON reports include `status` values such as `passed`, `failed`, and `skipped`; JUnit reports emit `<skipped>` nodes for skipped tests.
+Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON reports include `status` values such as `passed`, `failed`, and `skipped`; JUnit reports emit `<skipped>` nodes for declaration-skipped tests and runtime skips.
 
 ## GIF Behavior
 

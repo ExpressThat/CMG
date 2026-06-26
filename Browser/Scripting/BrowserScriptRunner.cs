@@ -97,6 +97,13 @@ public sealed partial class BrowserScriptRunner
             FinishTrace(context, success: false, $"{exception.Kind} must be inside a loop.", output);
             return ScriptRunResult.Fail($"{exception.Kind} must be inside a loop.", output);
         }
+        catch (ScriptSkipException exception)
+        {
+            output.Add($"SKIP {exception.LineNumber:000} {exception.Reason}");
+            FinishRecording(recorder, output);
+            FinishTrace(context, success: true, exception.Reason, output);
+            return ScriptRunResult.Skip(exception.Reason, output);
+        }
 
         FinishRecording(recorder, output);
         FinishTrace(context, success: true, error: null, output);

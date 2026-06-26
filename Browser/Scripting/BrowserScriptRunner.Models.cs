@@ -1,11 +1,13 @@
 
 namespace CMG.Browser.Scripting;
 
-public sealed record ScriptRunResult(bool Success, IReadOnlyList<string> StdoutLines, string? Error)
+public sealed record ScriptRunResult(bool Success, IReadOnlyList<string> StdoutLines, string? Error, bool Skipped = false)
 {
     public static ScriptRunResult Ok(IReadOnlyList<string> stdoutLines) => new(true, stdoutLines, null);
 
     public static ScriptRunResult Fail(string error, IReadOnlyList<string>? stdoutLines = null) => new(false, stdoutLines ?? [], error);
+
+    public static ScriptRunResult Skip(string reason, IReadOnlyList<string>? stdoutLines = null) => new(false, stdoutLines ?? [], reason, true);
 }
 
 public sealed record ScriptTimeoutOptions(
@@ -155,4 +157,18 @@ internal sealed class LoopControlException : Exception
     }
 
     public string Kind { get; }
+}
+
+internal sealed class ScriptSkipException : Exception
+{
+    public ScriptSkipException(int lineNumber, string reason)
+        : base(reason)
+    {
+        LineNumber = lineNumber;
+        Reason = reason;
+    }
+
+    public int LineNumber { get; }
+
+    public string Reason { get; }
 }

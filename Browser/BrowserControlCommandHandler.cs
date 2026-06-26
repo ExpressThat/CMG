@@ -147,11 +147,11 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
             Console.WriteLine(line);
         }
 
-        if (!result.Success && !string.IsNullOrWhiteSpace(result.Error))
+        if (!result.Success && !result.Skipped && !string.IsNullOrWhiteSpace(result.Error))
         {
             Console.Error.WriteLine(result.Error);
         }
 
-        return result.Success ? 0 : 1;
+        return result.Success || result.Skipped ? 0 : 1;
     }
 }

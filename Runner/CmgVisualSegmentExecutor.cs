@@ -185,7 +185,7 @@ public sealed partial class CmgVisualSegmentExecutor
     {
         output.AddRange(result.StdoutLines);
         error = result.Error;
-        if (!result.Success && action is not null)
+        if (!result.Success && !result.Skipped && action is not null)
         {
             steps.Add(new CmgStepResult(action.LineNumber, action.Kind, false, result.StdoutLines, result.Error, gif?.FullName));
         }
@@ -198,8 +198,18 @@ public sealed partial class CmgVisualSegmentExecutor
         IReadOnlyList<string> output,
         string? error,
         IReadOnlyList<string> gifs,
-        IReadOnlyList<CmgStepResult> steps) =>
-        new(test.Name, test.SourcePath, false, output, error, string.Join(';', gifs), steps);
+        IReadOnlyList<CmgStepResult> steps)
+    {
+        if (output.Any(line => line.StartsWith("SKIP ", StringComparison.Ordinal)))
+        {
+            return new CmgTestResult(test.Name, test.SourcePath, true, output, error, string.Join(';', gifs), steps)
+            {
+                Status = "skipped"
+            };
+        }
+
+        return new CmgTestResult(test.Name, test.SourcePath, false, output, error, string.Join(';', gifs), steps);
+    }
 
     private static FileInfo? ResolveGifPath(CmgTestCase test, CmgNode action, CmgRunOptions options)
     {

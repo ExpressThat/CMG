@@ -30,6 +30,7 @@ cmg --firefox browser control script --file <path>
 - Requires a browser started with [`browser launch`](../launch.md). For Edge, use `cmg --edge browser launch`. For Firefox, use `cmg --firefox browser launch`.
 - Use [`validateScript`](validateScript.md) to check imports and syntax before connecting to a browser.
 - Executes actions in file order and stops on the first failed action.
+- `skip "reason"` stops the script as skipped, writes `SKIP <line> <reason>` to stdout, and exits `0`.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
 - Supports line-level `import "path"` statements. Relative imports resolve from the script file's directory.
@@ -70,6 +71,7 @@ PASS 006 evaluate document.title
 EVALUATE 006 CMG Browser Control Test Page
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 TRACE C:\Projects\CMG\demo-output\dialog-flow.trace.json
+SKIP 007 Feature flag disabled
 ```
 
 Action-specific payload lines are documented in the [action reference](../../../scripting/actions.md).
@@ -85,6 +87,7 @@ Line 4: waitForElement failed. No element matched selector '#missing'.
 ## Exit Codes
 
 - `0`: Script completed successfully.
+- `0`: Script stopped with `skip "reason"`.
 - `1`: Browser is not running, script cannot be read, script syntax is invalid, or an action fails.
 
 ## Example

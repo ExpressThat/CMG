@@ -48,6 +48,7 @@ public sealed class CmgActionLowererControlTests
     [InlineData("return", "return \"login\" \"agent\"")]
     [InlineData("break", "break")]
     [InlineData("continue", "continue")]
+    [InlineData("skip", "skip \"login\" \"agent\"")]
     public void Lower_ControlActionsPassThrough(string name, string expected)
     {
         var line = Assert.Single(new CmgActionLowerer().Lower(

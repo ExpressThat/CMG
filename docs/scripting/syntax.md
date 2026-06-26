@@ -198,6 +198,14 @@ softExpect (${count} > 10) message="Count was lower than expected"
 
 Use `expect` or `assert` when a condition should fail the current script or test instead of selecting a branch. Use `softExpect`, `softAssert`, `expect.soft`, or `assert.soft` when a failed condition should be reported after later actions run.
 
+Use `skip "reason"` inside a branch or macro when runtime state makes the rest of a direct script or test not applicable:
+
+```text
+if (${featureEnabled} == false) {
+  skip "Feature flag disabled"
+}
+```
+
 Use `switch` when a value has several branches. `case` defaults to equality and also supports `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`, `matches`, and `in`:
 
 ```text

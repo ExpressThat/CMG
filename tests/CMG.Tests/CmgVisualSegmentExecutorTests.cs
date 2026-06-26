@@ -38,6 +38,23 @@ public sealed class CmgVisualSegmentExecutorTests
         Assert.Equal(250, client.LastWaitTimeout);
     }
 
+    [Fact]
+    public void Run_RuntimeSkipMarksTestSkipped()
+    {
+        var test = new CmgTestCase(
+            "flow.cmgscript",
+            "conditional flow",
+            [Node("skip", ["Feature unavailable"])],
+            new Dictionary<string, string>());
+
+        var result = Executor(new FakeAutomationClient()).Run(test, "debug", Options(), attempt: 1);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("skipped", result.Status);
+        Assert.Equal("Feature unavailable", result.Error);
+        Assert.Contains("SKIP 001 Feature unavailable", result.Output);
+    }
+
     private static CmgVisualSegmentExecutor Executor(IBrowserAutomationClient client) =>
         new(
             new BrowserScriptRunner(new BrowserScriptParser()),
