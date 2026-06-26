@@ -18,6 +18,7 @@ The full list below is a catalogue. If you are learning CMG, run these first:
 | Collect non-fatal assertion diagnostics | `128-soft-expect.cmgscript` |
 | Iterate JSON and delimited collections | `130-collection-loops.cmgscript` |
 | Stop as skipped from runtime state | `132-runtime-skip.cmgscript` |
+| Scope timeout policy for one section | `134-scoped-timeouts.cmgscript` |
 
 For a guided introduction, use the [Quick Start](../docs/quick-start.md) before treating this folder as a reference.
 
@@ -242,5 +243,7 @@ dotnet run -- --firefox browser close
 - `131-collection-loops-runner.cmgscript`: Demonstrates collection loops in the structured runner DSL.
 - `132-runtime-skip.cmgscript`: Demonstrates runtime `skip` in a direct script.
 - `133-runtime-skip-runner.cmgscript`: Demonstrates runtime `skip` in the structured runner DSL.
+- `134-scoped-timeouts.cmgscript`: Demonstrates scoped timeout blocks in a direct script.
+- `135-scoped-timeouts-runner.cmgscript`: Demonstrates scoped timeout blocks in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.

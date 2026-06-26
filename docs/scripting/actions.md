@@ -11,14 +11,36 @@ setDefaultTimeout 10000
 setDefaultNavigationTimeout 15000
 setDefaultAssertionTimeout 5000
 setDefaultExpectTimeout 5000
+withTimeout 10000 {
+  waitForSelector "#slow-panel"
+}
+withTimeout default=5000 navigation=15000 assertion=2000 {
+  navigate "https://example.com" waitUntil=load
+  expectText "#status" "Ready"
+}
+withDefaultTimeout 10000 {
+  waitForResponse "/api/slow"
+}
+withNavigationTimeout 15000 {
+  navigate "https://example.com" waitUntil=load
+}
+withAssertionTimeout 5000 {
+  expectText "#status" "Ready"
+}
 ```
 
 Default timeout actions change later timeout-capable actions in the current direct script or `cmg run` test. They are useful when a flow runs against a slow app and repeating `timeout=` on every wait would make the script harder to read.
+Scoped timeout blocks change defaults only for their child actions and restore the previous values afterward, even when a child action fails and a surrounding `try` catches the failure.
 
 - `setDefaultTimeout`: Applies to waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions unless a more specific default exists.
 - `setDefaultNavigationTimeout`: Applies to navigation actions and navigation waits.
 - `setDefaultAssertionTimeout`: Applies to text, evaluated, element-state, accessibility, and related assertion actions.
 - `setDefaultExpectTimeout`: Alias for `setDefaultAssertionTimeout`.
+- `withTimeout <milliseconds>`: Temporarily sets the general default timeout for the block.
+- `withTimeout default=<milliseconds> navigation=<milliseconds> assertion=<milliseconds>`: Temporarily sets one or more timeout families for the block. `timeout=` aliases `default=` and `expect=` aliases `assertion=`.
+- `withDefaultTimeout <milliseconds>`: Temporarily sets the general default timeout for the block.
+- `withNavigationTimeout <milliseconds>`: Temporarily sets the navigation default timeout for the block.
+- `withAssertionTimeout <milliseconds>` / `withExpectTimeout <milliseconds>`: Temporarily sets the assertion default timeout for the block.
 
 Explicit action-level `timeout=<milliseconds>` always wins. The `browser control script` and `cmg run` commands also accept `--timeout`, `--navigation-timeout`, and `--assertion-timeout` to set whole-run defaults before the first action.
 
@@ -29,6 +51,8 @@ Output:
 - `DEFAULT_ASSERTION_TIMEOUT <line> <milliseconds>`
 
 These actions do not move the virtual pointer. In GIF recordings, put them inside a `step` or pair them with a `caption` when the timeout policy should be visible to viewers.
+
+Scoped timeout blocks are structural. They do not emit their own stdout line, and they do not move the virtual pointer by themselves. Pointer-aware child actions inside the block still use normal virtual pointer, pointer event, caption, drag ghost, and GIF frame behavior.
 
 ## `navigate`, `goto`, And `visit`
 

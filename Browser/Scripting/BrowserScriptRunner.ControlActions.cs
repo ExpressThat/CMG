@@ -70,6 +70,13 @@ public sealed partial class BrowserScriptRunner
             case "topass":
                 ExecuteRetry(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
+            case "withtimeout":
+            case "withdefaulttimeout":
+            case "withnavigationtimeout":
+            case "withassertiontimeout":
+            case "withexpecttimeout":
+                ExecuteScopedTimeout(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
             case "break":
                 RequireArgumentCount(action, 0, 0);
                 throw new LoopControlException("break");
@@ -116,6 +123,11 @@ public sealed partial class BrowserScriptRunner
         name.Equals("repeat", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("retry", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("toPass", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("withTimeout", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("withDefaultTimeout", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("withNavigationTimeout", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("withAssertionTimeout", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("withExpectTimeout", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("break", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("continue", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("try", StringComparison.OrdinalIgnoreCase) ||

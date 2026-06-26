@@ -82,6 +82,69 @@ public sealed class BrowserScriptRunnerWaitActionTests
     }
 
     [Fact]
+    public void RunText_WithTimeoutAppliesOnlyInsideBlock()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("""
+        setDefaultTimeout 100
+        withTimeout 900 {
+          waitForSelector "#inside"
+        }
+        waitForSelector "#outside"
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(100, client.LastWaitTimeout);
+        Assert.Contains("SELECTOR 003 #inside", result.StdoutLines);
+        Assert.Contains("SELECTOR 005 #outside", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_WithTimeoutCanScopeSpecificTimeoutFamilies()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("""
+        withTimeout default=300 navigation=700 {
+          waitForSelector "#ready"
+          navigate "https://example.test" waitUntil=load
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(300, client.LastWaitTimeout);
+        Assert.Contains("Date.now() + 700", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_WithTimeoutRestoresDefaultsAfterFailure()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"attached":true,"visible":false}""");
+        var result = Runner().RunText("""
+        setDefaultTimeout 100
+        try {
+          withTimeout 5 {
+            waitForSelector "#toast" state=visible
+          }
+        } catch error {
+          waitForSelector "#fallback"
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
+        Assert.Equal(100, client.LastWaitTimeout);
+    }
+
+    [Fact]
+    public void RunText_WithTimeoutRequiresTimeoutValue()
+    {
+        var result = Runner().RunText("withTimeout { waitForSelector \"#ready\" }", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("withTimeout requires a positional timeout", result.Error);
+    }
+
+    [Fact]
     public void RunText_NavigationTimeoutAppliesToNavigationActions()
     {
         var client = new FakeAutomationClient();

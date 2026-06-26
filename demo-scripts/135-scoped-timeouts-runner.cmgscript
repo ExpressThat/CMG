@@ -1,0 +1,11 @@
+test "scoped timeout blocks restore defaults" {
+  navigate "C:\Projects\CMG\index.html"
+  setDefaultTimeout 500
+
+  withTimeout default=5000 assertion=2000 {
+    waitForSelector "#openProfileDialog"
+    expectText "#status" "Ready"
+  }
+
+  waitForSelector "#openProfileDialog"
+}

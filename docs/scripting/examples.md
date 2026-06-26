@@ -13,6 +13,7 @@ For the full catalogue of advanced examples, see the [cookbook reference](cookbo
 | Show pointer behavior | [Visual Evidence](#visual-evidence) | `demo-scripts\10-css-hover-states.cmgscript` |
 | Reuse script logic | [Variables And Macros](#variables-and-macros) | `demo-scripts\30-control-flow-macros.cmgscript` |
 | Handle failures clearly | [Failure Feedback](#failure-feedback) | `demo-scripts\52-explicit-fail.cmgscript` |
+| Tune one slow section | [Scoped Timeouts](#scoped-timeouts) | `demo-scripts\134-scoped-timeouts.cmgscript` |
 
 Start the browser before running direct scripts:
 
@@ -160,6 +161,23 @@ try {
 ```
 
 Runner failures include `STEP FAIL` diagnostics on stderr and report entries with the line, action, and reason.
+
+## Scoped Timeouts
+
+Use scoped timeout blocks when one slow section needs longer waits without changing the rest of the script:
+
+```text
+withTimeout 10000 {
+  waitForSelector "#slow-panel"
+}
+
+withTimeout default=5000 navigation=15000 assertion=2000 {
+  navigate "C:\Projects\CMG\index.html" waitUntil=load
+  expectText "#status" "Ready"
+}
+```
+
+The old timeout defaults are restored after the block, even if a child action fails and a surrounding `try` catches it. The block itself is non-visual; pointer-aware child actions still record through CMG's normal virtual pointer path.
 
 ## Common Next Steps
 

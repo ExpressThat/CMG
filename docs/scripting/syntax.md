@@ -77,6 +77,11 @@ Supported structural blocks:
 - `doUntil <condition> max=100 { ... }`
 - `retry [count|max=<count>] delay=<milliseconds> { ... }`
 - `toPass [count|max=<count>] delay=<milliseconds> { ... }`
+- `withTimeout <milliseconds> { ... }`
+- `withTimeout default=<milliseconds> navigation=<milliseconds> assertion=<milliseconds> { ... }`
+- `withDefaultTimeout <milliseconds> { ... }`
+- `withNavigationTimeout <milliseconds> { ... }`
+- `withAssertionTimeout <milliseconds> { ... }` or `withExpectTimeout <milliseconds> { ... }`
 - `foreach <variable> <value>... { ... }`
 - `foreachSelector <variable> "<selector>" { ... }`
 - `try { ... }`
@@ -278,6 +283,21 @@ toPass max=3 delay=100 {
 ```
 
 `retry 3 { ... }` and `toPass 3 { ... }` are positional forms. `max=` must be greater than `0`; `delay=` is an optional pause in milliseconds between failed attempts.
+
+Use scoped timeout blocks when one part of a script needs different defaults without changing the rest of the run:
+
+```text
+withTimeout 10000 {
+  waitForSelector "#slow-panel"
+}
+
+withTimeout default=5000 navigation=15000 assertion=2000 {
+  navigate "https://example.com" waitUntil=load
+  expectText "#status" "Ready"
+}
+```
+
+Scoped timeout blocks can be nested inside macros, loops, `try`/`catch`, `within`, frame blocks, and GIF blocks. Previous timeout defaults are restored after the block, even when a child action fails and is caught by a surrounding `try`.
 
 Recoverable failure blocks use `try`, optional `catch`, and optional `finally`:
 
