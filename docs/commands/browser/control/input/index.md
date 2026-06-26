@@ -10,10 +10,14 @@ cmg browser control input [command] [options]
 
 - [`waitForElement`](waitForElement.md): Wait until an element exists.
 - [`click`](click.md): Click an element.
+- [`dblclick`](dblclick.md): Double-click an element.
 - [`doubleClick`](doubleClick.md): Double-click an element.
 - [`rightClick`](rightClick.md): Right-click an element.
+- [`contextClick`](contextClick.md): Right-click an element.
 - [`tap`](tap.md): Tap an element with touch-style events.
+- [`touchTap`](touchTap.md): Tap an element with touch-style events.
 - [`type`](type.md): Type text into an element.
+- [`pressSequentially`](pressSequentially.md): Type text into an element using sequential key presses.
 - [`fill`](fill.md): Replace an input-like element value.
 - [`clear`](clear.md): Clear an input-like element.
 - [`check`](check.md): Check a checkbox-like element.
@@ -28,12 +32,15 @@ cmg browser control input [command] [options]
 - [`hover`](hover.md): Hover an element.
 - [`scrollIntoView`](scrollIntoView.md): Scroll an element into view.
 - [`select`](select.md): Set a select-like element value.
+- [`selectOption`](selectOption.md): Set a select-like element value.
 - [`dragAndDrop`](dragAndDrop.md): Drag one element onto another.
 - [`mouse`](mouse/index.md): Low-level mouse movement and button commands.
 - [`scroll`](scroll/index.md): Window, element, and wheel scrolling commands.
 - [`clipboard`](clipboard/index.md): Page-side clipboard shim commands.
 - [`dispatchEvent`](dispatchEvent.md): Dispatch an Event or CustomEvent on an element.
 - [`uploadFiles`](uploadFiles.md): Assign files to an input[type=file] element.
+- [`setInputFiles`](setInputFiles.md): Assign files to an input[type=file] element.
+- [`selectFile`](selectFile.md): Assign files to an input[type=file] element.
 
 ## Behavior
 
@@ -48,7 +55,9 @@ cmg browser control input [command] [options]
 
 ```powershell
 cmg browser control input click "#save"
+cmg browser control input dblclick "#save"
 cmg browser control input fill "#name" "CMG Test"
+cmg browser control input pressSequentially "#name" "CMG"
 cmg browser control input keyDown Shift
 cmg browser control input dragAndDrop ".card" "#dropZone"
 cmg browser control input mouse move center

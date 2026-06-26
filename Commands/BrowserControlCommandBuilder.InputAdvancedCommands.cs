@@ -127,13 +127,18 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildUploadFilesCommand(BrowserSelectionOptions browserOptions)
     {
+        return BuildUploadFilesCommand(browserOptions, "uploadFiles");
+    }
+
+    private Command BuildUploadFilesCommand(BrowserSelectionOptions browserOptions, string name)
+    {
         var selector = CreateSelectorArgument();
         var files = new Argument<FileInfo[]>("files")
         {
             Arity = ArgumentArity.OneOrMore,
             Description = "One or more local files to assign."
         };
-        var command = new Command("uploadFiles", "Assign files to an input[type=file] element.") { selector, files };
+        var command = new Command(name, "Assign files to an input[type=file] element.") { selector, files };
 
         command.SetAction(parseResult =>
         {
@@ -141,7 +146,7 @@ public sealed partial class BrowserControlCommandBuilder
             values.AddRange((parseResult.GetValue(files) ?? []).Select(file => file.FullName));
             return browserControlCommandHandler.RunScriptAction(
                 CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-                ToScriptLine("uploadFiles", values, []));
+                ToScriptLine(name, values, []));
         });
 
         return command;

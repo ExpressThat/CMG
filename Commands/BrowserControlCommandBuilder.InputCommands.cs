@@ -11,10 +11,14 @@ public sealed partial class BrowserControlCommandBuilder
 
         command.Subcommands.Add(BuildWaitForElementCommand(browserOptions));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "click", "Click an element."));
+        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "dblclick", "Double-click an element."));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "doubleClick", "Double-click an element."));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "rightClick", "Right-click an element."));
+        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "contextClick", "Right-click an element."));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "tap", "Tap an element with touch-style events."));
+        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "touchTap", "Tap an element with touch-style events."));
         command.Subcommands.Add(BuildTypeCommand(browserOptions));
+        command.Subcommands.Add(BuildTextInputCommand(browserOptions, "pressSequentially", "Type text into an element using sequential key presses."));
         command.Subcommands.Add(BuildFillCommand(browserOptions));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "clear", "Clear an input-like element."));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "check", "Check a checkbox-like element."));
@@ -29,12 +33,15 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "hover", "Hover an element."));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "scrollIntoView", "Scroll an element into view."));
         command.Subcommands.Add(BuildSelectCommand(browserOptions));
+        command.Subcommands.Add(BuildSelectLikeCommand(browserOptions, "selectOption", "Set a select-like element value."));
         command.Subcommands.Add(BuildDragAndDropCommand(browserOptions));
         command.Subcommands.Add(BuildMouseGroup(browserOptions));
         command.Subcommands.Add(BuildScrollGroup(browserOptions));
         command.Subcommands.Add(BuildClipboardGroup(browserOptions));
         command.Subcommands.Add(BuildDispatchEventCommand(browserOptions));
         command.Subcommands.Add(BuildUploadFilesCommand(browserOptions));
+        command.Subcommands.Add(BuildUploadFilesCommand(browserOptions, "setInputFiles"));
+        command.Subcommands.Add(BuildUploadFilesCommand(browserOptions, "selectFile"));
 
         return command;
     }
@@ -97,13 +104,18 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildTypeCommand(BrowserSelectionOptions browserOptions)
     {
+        return BuildTextInputCommand(browserOptions, "type", "Type text into an element.");
+    }
+
+    private Command BuildTextInputCommand(BrowserSelectionOptions browserOptions, string name, string description)
+    {
         var selectorArgument = CreateSelectorArgument();
         var textArgument = new Argument<string>("text")
         {
             Description = "Text to append to the element value."
         };
 
-        var command = new Command("type", "Type text into an element.")
+        var command = new Command(name, description)
         {
             selectorArgument,
             textArgument
@@ -111,7 +123,7 @@ public sealed partial class BrowserControlCommandBuilder
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "type",
+                name,
                 parseResult.GetValue(selectorArgument) ?? string.Empty,
                 parseResult.GetValue(textArgument) ?? string.Empty)));
 
@@ -181,13 +193,18 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildSelectCommand(BrowserSelectionOptions browserOptions)
     {
+        return BuildSelectLikeCommand(browserOptions, "select", "Set a select-like element value.");
+    }
+
+    private Command BuildSelectLikeCommand(BrowserSelectionOptions browserOptions, string name, string description)
+    {
         var selectorArgument = CreateSelectorArgument();
         var valueArgument = new Argument<string>("value")
         {
             Description = "Value to select."
         };
 
-        var command = new Command("select", "Set a select-like element value.")
+        var command = new Command(name, description)
         {
             selectorArgument,
             valueArgument
@@ -195,7 +212,7 @@ public sealed partial class BrowserControlCommandBuilder
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "select",
+                name,
                 parseResult.GetValue(selectorArgument) ?? string.Empty,
                 parseResult.GetValue(valueArgument) ?? string.Empty)));
 
