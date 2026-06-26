@@ -58,6 +58,10 @@ public sealed class BrowserControlService : IBrowserControlService
         {
             return ElementResult.Fail(exception.Message);
         }
+        catch (System.Net.Http.HttpRequestException exception)
+        {
+            return ElementResult.Fail(BuildBrowserConnectionMessage(browserKind, exception));
+        }
     }
 
     public ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif)
@@ -78,7 +82,14 @@ public sealed class BrowserControlService : IBrowserControlService
             return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind));
         }
 
-        return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace);
+        try
+        {
+            return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace);
+        }
+        catch (System.Net.Http.HttpRequestException exception)
+        {
+            return ScriptRunResult.Fail(BuildBrowserConnectionMessage(browserKind, exception));
+        }
     }
 
     public ScriptRunResult RunScriptAction(BrowserKind browserKind, string scriptLine)
@@ -89,11 +100,21 @@ public sealed class BrowserControlService : IBrowserControlService
             return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind));
         }
 
-        return scriptRunner.RunText(scriptLine, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind));
+        try
+        {
+            return scriptRunner.RunText(scriptLine, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind));
+        }
+        catch (System.Net.Http.HttpRequestException exception)
+        {
+            return ScriptRunResult.Fail(BuildBrowserConnectionMessage(browserKind, exception));
+        }
     }
 
     private static string BuildBrowserNotRunningMessage(BrowserKind browserKind) =>
         $"No CMG-controlled {browserKind.DisplayName()} instance is running. Run 'cmg {browserKind.CommandOptionPrefix()}browser launch' first.";
+
+    private static string BuildBrowserConnectionMessage(BrowserKind browserKind, Exception exception) =>
+        $"Could not connect to the CMG-controlled {browserKind.DisplayName()} browser endpoint. Run 'cmg {browserKind.CommandOptionPrefix()}browser launch' again. Reason: {exception.Message}";
 
     private static string ResolveSelector(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, string selector)
     {

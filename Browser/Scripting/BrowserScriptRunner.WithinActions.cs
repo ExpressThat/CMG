@@ -113,13 +113,14 @@ public sealed partial class BrowserScriptRunner
         "selecttext", "dispatchevent", "type", "clear", "hover", "scrollintoview", "select", "selectoption",
         "html", "screenshot", "textcontent", "innertext", "inputvalue", "getattribute", "count", "locatorcount",
         "boundingbox", "alltextcontents", "allinnertexts", "expectvisible", "tobevisible", "waitforvisible",
-        "expecthidden", "tobehidden", "waitforhidden", "expectenabled", "tobeenabled", "expectdisabled",
-        "tobedisabled", "expectattached", "tobeattached", "expectdetached", "tobedetached", "expecteditable",
+        "expectnothidden", "tobenothidden", "expecthidden", "tobehidden", "waitforhidden", "expectnotvisible",
+        "tobenotvisible", "expectenabled", "tobeenabled", "expectnotdisabled", "tobenotdisabled", "expectdisabled",
+        "tobedisabled", "expectnotenabled", "tobenotenabled", "expectattached", "tobeattached", "expectdetached", "tobedetached", "expecteditable",
         "tobeeditable", "expectempty", "tobeempty", "expectfocused", "tobefocused", "expectinviewport",
         "tobeinviewport", "expectvalue", "tohavevalue", "expectvalues", "tohavevalues", "expectattribute",
         "tohaveattribute", "expectclass", "tohaveclass", "expectid", "tohaveid", "expectcss", "tohavecss",
         "expectproperty", "tohavejsproperty", "expectaccessiblename", "tohaveaccessiblename", "expectrole",
-        "tohaverole", "expectchecked", "tobechecked", "expectcount", "tohavecount", "evaluateonselector",
+        "tohaverole", "expectchecked", "tobechecked", "unchecked", "expectunchecked", "tobeunchecked", "expectcount", "tohavecount", "evaluateonselector",
         "evalonselector", "evaluateall", "evalall", "uploadfiles", "setinputfiles", "selectfile", "expectscreenshot",
         "tohavescreenshot", "download", "frame", "framelocator"
     };

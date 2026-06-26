@@ -59,8 +59,10 @@ public sealed partial class BrowserScriptRunner
             "asserttext" or "expecttext" or "tohavetext" or "tocontaintext" or "containstext" or "contains" or "waitfortext" or
             "expectnotext" or "expectnottext" or "notcontains" or "notcontainstext" or "tonotcontaintext" or "tohavenotext" or "tohavenottext" =>
                 ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
-            "expectvisible" or "tobevisible" or "waitforvisible" or "expecthidden" or "tobehidden" or "waitforhidden" or
-            "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" or
+            "expectvisible" or "tobevisible" or "waitforvisible" or "expectnothidden" or "tobenothidden" or
+            "expecthidden" or "tobehidden" or "waitforhidden" or "expectnotvisible" or "tobenotvisible" or
+            "expectenabled" or "tobeenabled" or "expectnotdisabled" or "tobenotdisabled" or
+            "expectdisabled" or "tobedisabled" or "expectnotenabled" or "tobenotenabled" or
             "expectattached" or "tobeattached" or "expectdetached" or "tobedetached" or
             "expecteditable" or "tobeeditable" or "expectempty" or "tobeempty" or
             "expectfocused" or "tobefocused" or "expectinviewport" or "tobeinviewport" or
@@ -68,7 +70,8 @@ public sealed partial class BrowserScriptRunner
             "expectclass" or "tohaveclass" or "expectid" or "tohaveid" or
             "expectcss" or "tohavecss" or "expectproperty" or "tohavejsproperty" or
             "expectaccessiblename" or "tohaveaccessiblename" or "expectrole" or "tohaverole" or
-            "expectchecked" or "tobechecked" or "expectcount" or "tohavecount" => ExecuteElementExpectation(remoteDebuggingUrl, automationClient, action),
+            "expectchecked" or "tobechecked" or "unchecked" or "expectunchecked" or "tobeunchecked" or
+            "expectcount" or "tohavecount" => ExecuteElementExpectation(remoteDebuggingUrl, automationClient, action),
             "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, automationClient, action),
             "expecteval" or "asserteval" or "expectexpression" or "assertexpression" =>
                 ExecuteEvaluateAssertion(remoteDebuggingUrl, automationClient, action),

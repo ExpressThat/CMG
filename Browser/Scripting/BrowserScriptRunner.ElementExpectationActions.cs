@@ -12,10 +12,10 @@ public sealed partial class BrowserScriptRunner
     {
         var mode = action.Name.ToLowerInvariant() switch
         {
-            "expectvisible" or "tobevisible" or "waitforvisible" => "visible",
-            "expecthidden" or "tobehidden" or "waitforhidden" => "hidden",
-            "expectenabled" or "tobeenabled" => "enabled",
-            "expectdisabled" or "tobedisabled" => "disabled",
+            "expectvisible" or "tobevisible" or "waitforvisible" or "expectnothidden" or "tobenothidden" => "visible",
+            "expecthidden" or "tobehidden" or "waitforhidden" or "expectnotvisible" or "tobenotvisible" => "hidden",
+            "expectenabled" or "tobeenabled" or "expectnotdisabled" or "tobenotdisabled" => "enabled",
+            "expectdisabled" or "tobedisabled" or "expectnotenabled" or "tobenotenabled" => "disabled",
             "expectattached" or "tobeattached" => "attached",
             "expectdetached" or "tobedetached" => "detached",
             "expecteditable" or "tobeeditable" => "editable",
@@ -32,6 +32,7 @@ public sealed partial class BrowserScriptRunner
             "expectaccessiblename" or "tohaveaccessiblename" => "accessiblename",
             "expectrole" or "tohaverole" => "role",
             "expectchecked" or "tobechecked" => "checked",
+            "unchecked" or "expectunchecked" or "tobeunchecked" => "unchecked",
             "expectcount" or "tohavecount" => "count",
             _ => throw new ScriptExecutionException($"Unknown element expectation '{action.Name}'.")
         };

@@ -46,9 +46,12 @@ public sealed class CmgValidator
             "html" or "screenshot" or "asserttext" or "download" or "uploadfiles" or "setinputfiles" or "selectfile" or
             "fill" or "check" or "uncheck" or "focus" or "blur" or "selecttext" or
             "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "dispatchevent" or "expecttext" or "expectvalue" or
-            "expectattribute" or "expectchecked" or "expectcount" or "expectscreenshot" or "tohavescreenshot" or "dragto" or "tocontaintext" or
+            "expectattribute" or "expectchecked" or "unchecked" or "expectunchecked" or "tobeunchecked" or
+            "expectcount" or "expectscreenshot" or "tohavescreenshot" or "dragto" or "tocontaintext" or
             "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or
             "textcontent" or "innertext" or "inputvalue" or "getattribute" or
+            "expectnotvisible" or "tobenotvisible" or "expectnothidden" or "tobenothidden" or
+            "expectnotenabled" or "tobenotenabled" or "expectnotdisabled" or "tobenotdisabled" or
             "waitforvisible" or "waitforhidden";
 }
 

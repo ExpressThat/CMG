@@ -15,9 +15,17 @@ public sealed class CmgActionLowererExpectationAliasTests
     [InlineData("toBeVisible", "expectVisible \"#target\"")]
     [InlineData("waitForVisible", "expectVisible \"#target\"")]
     [InlineData("toBeHidden", "expectHidden \"#target\"")]
+    [InlineData("expectNotVisible", "expectHidden \"#target\"")]
+    [InlineData("toBeNotVisible", "expectHidden \"#target\"")]
+    [InlineData("expectNotHidden", "expectVisible \"#target\"")]
+    [InlineData("toBeNotHidden", "expectVisible \"#target\"")]
     [InlineData("waitForHidden", "expectHidden \"#target\"")]
     [InlineData("toBeEnabled", "expectEnabled \"#target\"")]
+    [InlineData("expectNotDisabled", "expectEnabled \"#target\"")]
+    [InlineData("toBeNotDisabled", "expectEnabled \"#target\"")]
     [InlineData("toBeDisabled", "expectDisabled \"#target\"")]
+    [InlineData("expectNotEnabled", "expectDisabled \"#target\"")]
+    [InlineData("toBeNotEnabled", "expectDisabled \"#target\"")]
     public void Lower_PlaywrightExpectationAliasesUseCmgAssertions(string name, string expected, string? value = null)
     {
         var args = value is null ? ["#target"] : new[] { "#target", value };
@@ -64,6 +72,18 @@ public sealed class CmgActionLowererExpectationAliasTests
 
         Assert.StartsWith("evaluate", line);
         Assert.Contains(expected, line);
+    }
+
+    [Theory]
+    [InlineData("unchecked")]
+    [InlineData("expectUnchecked")]
+    [InlineData("toBeUnchecked")]
+    public void Lower_UncheckedAliasesExpectFalseCheckedState(string name)
+    {
+        var line = new CmgActionLowerer().Lower(Node(name, ["#target"])).Last();
+
+        Assert.StartsWith("evaluate", line);
+        Assert.Contains("const expected = false", line);
     }
 
     [Fact]

@@ -1,0 +1,15 @@
+test "negative assertion aliases" {
+  setContent "<main><button id='save'>Save</button><button id='archive' disabled>Archive</button><div id='spinner' style='display:none'>Loading</div><input id='terms' type='checkbox' checked><input id='marketing' type='checkbox'></main>"
+  expectNotVisible "#spinner"
+  toBeNotVisible "#spinner"
+  expectNotHidden "#save"
+  toBeNotHidden "#save"
+  expectNotEnabled "#archive"
+  toBeNotEnabled "#archive"
+  expectNotDisabled "#save"
+  toBeNotDisabled "#save"
+  unchecked "#marketing"
+  expectUnchecked "#marketing"
+  toBeUnchecked "#marketing"
+  toBeChecked "#terms"
+}

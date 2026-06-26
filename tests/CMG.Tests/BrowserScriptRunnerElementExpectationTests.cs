@@ -75,13 +75,49 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     }
 
     [Theory]
+    [InlineData("expectNotVisible", "hidden")]
+    [InlineData("toBeNotVisible", "hidden")]
+    [InlineData("expectNotHidden", "visible")]
+    [InlineData("toBeNotHidden", "visible")]
+    [InlineData("expectNotEnabled", "disabled")]
+    [InlineData("toBeNotEnabled", "disabled")]
+    [InlineData("expectNotDisabled", "enabled")]
+    [InlineData("toBeNotDisabled", "enabled")]
+    public void RunText_NegativeElementStateAliasesUseInverseExpectation(string action, string mode)
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText($"{action} \"#target\" timeout=250", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains($"EXPECT 001 {mode} #target", result.StdoutLines);
+    }
+
+    [Theory]
+    [InlineData("unchecked")]
+    [InlineData("expectUnchecked")]
+    [InlineData("toBeUnchecked")]
+    public void RunText_UncheckedAliasesExpectFalseCheckedState(string action)
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText($"{action} \"#agree\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("const expected = false", client.LastExpression);
+        Assert.Contains("EXPECT 001 unchecked #agree", result.StdoutLines);
+    }
+
+    [Theory]
     [InlineData("toHaveText \"#status\" \"Saved\"")]
     [InlineData("toBeVisible \"#status\"")]
+    [InlineData("toBeNotVisible \"#status\"")]
     [InlineData("waitForVisible \"#status\"")]
     [InlineData("toBeHidden \"#status\"")]
+    [InlineData("toBeNotHidden \"#status\"")]
     [InlineData("waitForHidden \"#status\"")]
     [InlineData("toBeEnabled \"#status\"")]
+    [InlineData("toBeNotEnabled \"#status\"")]
     [InlineData("toBeDisabled \"#status\"")]
+    [InlineData("toBeNotDisabled \"#status\"")]
     [InlineData("toBeAttached \"#status\"")]
     [InlineData("toBeDetached \"#status\"")]
     [InlineData("toBeEditable \"#status\"")]
@@ -97,6 +133,7 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     [InlineData("toHaveAccessibleName \"#status\" \"Save\"")]
     [InlineData("toHaveRole \"#status\" \"button\"")]
     [InlineData("toBeChecked \"#status\"")]
+    [InlineData("toBeUnchecked \"#status\"")]
     [InlineData("toHaveCount \"#status\" 1")]
     public void RunText_PlaywrightExpectationAliasesExecute(string script)
     {

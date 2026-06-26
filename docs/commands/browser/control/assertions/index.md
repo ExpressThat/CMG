@@ -33,14 +33,22 @@ cmg browser control assertions [command] [options]
 - [`disabled`](disabled.md): Assert that an element is disabled.
 - [`expectVisible`](expectVisible.md): Exact scripting alias for `visible`.
 - [`toBeVisible`](toBeVisible.md): Exact scripting alias for `visible`.
+- [`expectNotVisible`](expectNotVisible.md): Assert that an element is not visible.
+- [`toBeNotVisible`](toBeNotVisible.md): Playwright-style negative visibility alias.
 - [`waitForVisible`](waitForVisible.md): Wait until an element is visible.
 - [`expectHidden`](expectHidden.md): Exact scripting alias for `hidden`.
 - [`toBeHidden`](toBeHidden.md): Exact scripting alias for `hidden`.
+- [`expectNotHidden`](expectNotHidden.md): Assert that an element is visible.
+- [`toBeNotHidden`](toBeNotHidden.md): Playwright-style negative hidden alias.
 - [`waitForHidden`](waitForHidden.md): Wait until an element is hidden.
 - [`expectEnabled`](expectEnabled.md): Exact scripting alias for `enabled`.
 - [`toBeEnabled`](toBeEnabled.md): Exact scripting alias for `enabled`.
+- [`expectNotEnabled`](expectNotEnabled.md): Assert that an element is disabled.
+- [`toBeNotEnabled`](toBeNotEnabled.md): Playwright-style negative enabled alias.
 - [`expectDisabled`](expectDisabled.md): Exact scripting alias for `disabled`.
 - [`toBeDisabled`](toBeDisabled.md): Exact scripting alias for `disabled`.
+- [`expectNotDisabled`](expectNotDisabled.md): Assert that an element is enabled.
+- [`toBeNotDisabled`](toBeNotDisabled.md): Playwright-style negative disabled alias.
 - [`expectAttached`](expectAttached.md): Assert that an element is attached.
 - [`toBeAttached`](toBeAttached.md): Playwright-style alias for `expectAttached`.
 - [`expectDetached`](expectDetached.md): Assert that an element is detached.
@@ -76,6 +84,9 @@ cmg browser control assertions [command] [options]
 - [`checked`](checked.md): Assert that an element is checked or unchecked.
 - [`expectChecked`](expectChecked.md): Exact scripting alias for `checked`.
 - [`toBeChecked`](toBeChecked.md): Exact scripting alias for `checked`.
+- [`unchecked`](unchecked.md): Assert that an element is unchecked.
+- [`expectUnchecked`](expectUnchecked.md): Exact scripting alias for `unchecked`.
+- [`toBeUnchecked`](toBeUnchecked.md): Playwright-style alias for `expectUnchecked`.
 - [`count`](count.md): Assert the number of matching elements.
 - [`expectCount`](expectCount.md): Exact scripting alias for `count`.
 - [`toHaveCount`](toHaveCount.md): Exact scripting alias for `count`.
@@ -97,6 +108,7 @@ cmg browser control assertions contains "Welcome"
 cmg browser control assertions assertVisible "#save" --timeout 5000
 cmg browser control assertions visible "#save" --timeout 5000
 cmg browser control assertions toBeVisible "#save"
+cmg browser control assertions toBeNotVisible "#spinner"
 cmg browser control assertions toBeEditable "#name"
 cmg browser control assertions toBeInViewport "#save"
 cmg browser control assertions toHaveValue "#name" "Ada"
@@ -105,6 +117,7 @@ cmg browser control assertions toHaveClass "#save" "ready"
 cmg browser control assertions toHaveCSS "#save" "display" "block"
 cmg browser control assertions toHaveAccessibleName "#save" "Save"
 cmg browser control assertions toHaveRole "#save" "button"
+cmg browser control assertions toBeUnchecked "#marketing"
 cmg browser control assertions eval "document.title" --equals "Checkout"
 cmg browser control assertions expectExpression "window.appReady" --timeout 5000
 ```

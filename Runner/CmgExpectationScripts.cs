@@ -50,7 +50,7 @@ public static class CmgExpectationScripts
             "property" => $"const actual = {QuoteJs(action.Arguments[1])}.split('.').reduce((value, key) => value?.[key], element); const ok = String(actual ?? '').includes({QuoteJs(action.Arguments[2])}); const message = 'Expected property {action.Arguments[1]} to contain {action.Arguments[2]}, got ' + String(actual ?? '') + '.';",
             "accessiblename" => $"const actual = accessibleName(element); const ok = actual.includes({QuoteJs(action.Arguments[1])}); const message = 'Expected accessible name to contain {action.Arguments[1]}, got ' + actual + '.';",
             "role" => $"const actual = element.getAttribute('role') || implicitRole(element); const ok = actual === {QuoteJs(action.Arguments[1])}; const message = 'Expected role to be {action.Arguments[1]}, got ' + actual + '.';",
-            _ => $"const actual = Boolean(element.checked); const ok = actual === {ExpectedChecked(action).ToString().ToLowerInvariant()}; const message = 'Expected checked to be {ExpectedChecked(action).ToString().ToLowerInvariant()}, got ' + actual + '.';"
+            _ => $"const actual = Boolean(element.checked); const expected = {ExpectedChecked(action, mode).ToString().ToLowerInvariant()}; const ok = actual === expected; const message = 'Expected checked to be ' + expected + ', got ' + actual + '.';"
         };
 
         return $"(() => {{ {AccessibilityHelpers()} const element = {BrowserDomScripts.Query(selector)}; if (!element) throw new Error('No element matched selector {selector}.'); {body} if (!ok) throw new Error(message); return true; }})()";
@@ -102,14 +102,15 @@ public static class CmgExpectationScripts
     private static int RequiredArgumentCount(string mode) => mode switch
     {
         "attribute" or "css" or "property" => 3,
-        "checked" => 1,
+        "checked" or "unchecked" => 1,
         "visible" or "hidden" or "enabled" or "disabled" or "attached" or "detached" or
         "editable" or "empty" or "focused" or "inviewport" => 1,
         _ => 2
     };
 
-    private static bool ExpectedChecked(CmgNode action) =>
-        action.Arguments.Count < 2 || !action.Arguments[1].Equals("false", StringComparison.OrdinalIgnoreCase);
+    private static bool ExpectedChecked(CmgNode action, string mode) =>
+        !mode.Equals("unchecked", StringComparison.Ordinal) &&
+        (action.Arguments.Count < 2 || !action.Arguments[1].Equals("false", StringComparison.OrdinalIgnoreCase));
 
     private static int ExpectedCount(CmgNode action) =>
         int.TryParse(action.Arguments[1], out var count) ? count : -1;

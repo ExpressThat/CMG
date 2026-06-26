@@ -179,6 +179,10 @@ dotnet run -- --firefox browser close
 - `87-within-scope-runner.cmgscript`: Demonstrates scoped selector actions with `within` in the structured runner DSL.
 - `88-frame-block.cmgscript`: Demonstrates provider-style frame-scoped blocks in a direct script.
 - `89-frame-block-runner.cmgscript`: Demonstrates provider-style frame-scoped blocks in the structured runner DSL.
+- `90-shadow-locators.cmgscript`: Demonstrates shadow DOM locators in a direct script.
+- `91-shadow-locators-runner.cmgscript`: Demonstrates shadow DOM locators in the structured runner DSL.
+- `92-negative-assertions.cmgscript`: Demonstrates negative state and unchecked assertions in a direct script.
+- `93-negative-assertions-runner.cmgscript`: Demonstrates negative state and unchecked assertions in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

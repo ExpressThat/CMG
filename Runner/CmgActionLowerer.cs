@@ -20,8 +20,10 @@ public sealed partial class CmgActionLowerer
             "expecttext" or "tohavetext" or "tocontaintext" or "containstext" or "waitfortext" or "contains" or
             "expectnotext" or "expectnottext" or "notcontains" or "notcontainstext" or "tonotcontaintext" or "tohavenotext" or "tohavenottext" => LowerTextAssertion(action),
             "expecturl" or "expecttitle" or "tohaveurl" or "tohavetitle" => [ToLine(ToNavigationExpectationName(name), action.Arguments, action.Options)],
-            "expectvisible" or "tobevisible" or "waitforvisible" or "expecthidden" or "tobehidden" or "waitforhidden" or
-            "expectenabled" or "tobeenabled" or "expectdisabled" or "tobedisabled" or
+            "expectvisible" or "tobevisible" or "waitforvisible" or "expectnothidden" or "tobenothidden" or
+            "expecthidden" or "tobehidden" or "waitforhidden" or "expectnotvisible" or "tobenotvisible" or
+            "expectenabled" or "tobeenabled" or "expectnotdisabled" or "tobenotdisabled" or
+            "expectdisabled" or "tobedisabled" or "expectnotenabled" or "tobenotenabled" or
             "expectattached" or "tobeattached" or "expectdetached" or "tobedetached" or
             "expecteditable" or "tobeeditable" or "expectempty" or "tobeempty" or
             "expectfocused" or "tobefocused" or "expectinviewport" or "tobeinviewport" =>
@@ -36,6 +38,7 @@ public sealed partial class CmgActionLowerer
             "expectaccessiblename" or "tohaveaccessiblename" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "accessiblename"),
             "expectrole" or "tohaverole" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "role"),
             "expectchecked" or "tobechecked" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "checked"),
+            "unchecked" or "expectunchecked" or "tobeunchecked" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "unchecked"),
             "expectcount" or "tohavecount" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "count"),
             "check" => ElementScript(action, "element.checked = true; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;"),
             "uncheck" => ElementScript(action, "element.checked = false; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;"),

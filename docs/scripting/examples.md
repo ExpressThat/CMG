@@ -756,17 +756,25 @@ test "profile form state" {
   expectVisible "#profileForm" timeout=5000
   waitForVisible "#save" timeout=5000
   expectHidden "#loading"
+  expectNotVisible "#loading"
   waitForHidden "#loading"
   expectEnabled "#save"
+  expectNotDisabled "#save"
   expectDisabled "#archive"
+  expectNotEnabled "#archive"
   expectValue "#email" "agent@example.com" timeout=5000
   expectAttribute "#save" "aria-label" "Save profile"
   expectChecked "#marketing" false
+  expectUnchecked "#newsletter"
   expectCount ".validation-error" 0
 }
 ```
 
 These assertions run in the page and report clear step failures. Wrap them in `step` blocks when a GIF should show a caption for the checked state.
+
+Negative state aliases are available in both script types: `expectNotVisible` and `toBeNotVisible` use hidden semantics, `expectNotHidden` and `toBeNotHidden` use visible semantics, `expectNotEnabled` and `toBeNotEnabled` use disabled semantics, and `expectNotDisabled` and `toBeNotDisabled` use enabled semantics. `unchecked`, `expectUnchecked`, and `toBeUnchecked` assert a false checked state.
+
+These examples are available as `demo-scripts/92-negative-assertions.cmgscript` and `demo-scripts/93-negative-assertions-runner.cmgscript`.
 
 ## Evaluated Assertions
 
