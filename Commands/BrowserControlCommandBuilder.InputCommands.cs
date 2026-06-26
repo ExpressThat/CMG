@@ -30,6 +30,10 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "scrollIntoView", "Scroll an element into view."));
         command.Subcommands.Add(BuildSelectCommand(browserOptions));
         command.Subcommands.Add(BuildDragAndDropCommand(browserOptions));
+        command.Subcommands.Add(BuildMouseGroup(browserOptions));
+        command.Subcommands.Add(BuildScrollGroup(browserOptions));
+        command.Subcommands.Add(BuildClipboardGroup(browserOptions));
+        command.Subcommands.Add(BuildDispatchEventCommand(browserOptions));
 
         return command;
     }

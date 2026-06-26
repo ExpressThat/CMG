@@ -29,6 +29,10 @@ cmg browser control input [command] [options]
 - [`scrollIntoView`](scrollIntoView.md): Scroll an element into view.
 - [`select`](select.md): Set a select-like element value.
 - [`dragAndDrop`](dragAndDrop.md): Drag one element onto another.
+- [`mouse`](mouse/index.md): Low-level mouse movement and button commands.
+- [`scroll`](scroll/index.md): Window, element, and wheel scrolling commands.
+- [`clipboard`](clipboard/index.md): Page-side clipboard shim commands.
+- [`dispatchEvent`](dispatchEvent.md): Dispatch an Event or CustomEvent on an element.
 
 ## Behavior
 
@@ -46,4 +50,6 @@ cmg browser control input click "#save"
 cmg browser control input fill "#name" "CMG Test"
 cmg browser control input keyDown Shift
 cmg browser control input dragAndDrop ".card" "#dropZone"
+cmg browser control input mouse move center
+cmg browser control input scroll wheel "#pane" --delta-y 120
 ```
