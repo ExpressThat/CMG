@@ -105,32 +105,6 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildSetCommand(BrowserSelectionOptions browserOptions)
-    {
-        var nameArgument = new Argument<string>("name")
-        {
-            Description = "Variable name."
-        };
-        var valueArgument = new Argument<string>("value")
-        {
-            Description = "Variable value."
-        };
-
-        var command = new Command("set", "Set a script variable for this one action invocation.")
-        {
-            nameArgument,
-            valueArgument
-        };
-
-        command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "set",
-                parseResult.GetValue(nameArgument) ?? string.Empty,
-                parseResult.GetValue(valueArgument) ?? string.Empty)));
-
-        return command;
-    }
-
     private static Argument<string> CreateSelectorArgument()
     {
         return new Argument<string>("selector")

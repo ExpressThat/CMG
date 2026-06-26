@@ -23,6 +23,7 @@ cmg browser control [command] [options]
 - [`page`](page/index.md): Page evaluation, viewport, and utility commands.
 - [`assertions`](assertions/index.md): Page and element assertion commands.
 - [`storage`](storage/index.md): Storage and persisted browser state commands.
+- [`network`](network/index.md): Network routing, waits, HAR, and environment commands.
 
 ## Examples
 
@@ -41,4 +42,5 @@ cmg browser control capture screenshot "#profileDialog" --output profile-dialog.
 cmg browser control page evaluate "document.title"
 cmg browser control assertions assertText "h1" "Ready"
 cmg browser control storage local set token abc
+cmg browser control network waitForResponse "/api/profile" --status 200
 ```
