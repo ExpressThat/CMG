@@ -1,3 +1,4 @@
+using CMG.Browser;
 using CMG.Browser.Scripting;
 
 namespace CMG.Tests;
@@ -25,6 +26,19 @@ public sealed class BrowserScriptRunnerTouchClipboardTests
         Assert.True(result.Success);
         Assert.Contains("document.elementFromPoint", client.LastExpression);
         Assert.Contains("TAP 001 12,24", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_TapCoordinatesMoveGifPointer()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+
+        var result = Runner().RunText("tap x=12 y=24", "debug", client, new FileInfo(path));
+
+        Assert.True(result.Success);
+        Assert.Equal(new ElementPoint(12, 24), client.LastMouseMove);
+        File.Delete(path);
     }
 
     [Fact]

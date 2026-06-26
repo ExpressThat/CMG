@@ -99,7 +99,7 @@ public sealed partial class BrowserScriptRunner
     }
 
     private static bool IsRichLocator(string selector) =>
-        selector.Contains('=', StringComparison.Ordinal) &&
+        CMG.Runner.CmgLocatorKeys.TryParse(selector, out _, out _) &&
         !selector.StartsWith("css=", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsViewportAlias(string value) =>

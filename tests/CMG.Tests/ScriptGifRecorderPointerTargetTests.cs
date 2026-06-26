@@ -15,11 +15,11 @@ public sealed class ScriptGifRecorderPointerTargetTests
         using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(path));
         recorder.Start("debug");
 
-        recorder.BeforeAction(new BrowserScriptAction(1, "hover", ["#save"], new Dictionary<string, string>
+        recorder.BeforeAction(new BrowserScriptAction(1, "hover", "hover", ["#save"], new Dictionary<string, string>
         {
             ["x"] = "4",
             ["y"] = "8"
-        }));
+        }, []));
 
         Assert.Equal(new ElementPoint(14, 28), client.LastMouseMove);
     }

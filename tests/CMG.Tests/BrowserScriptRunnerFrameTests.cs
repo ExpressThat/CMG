@@ -87,8 +87,8 @@ public sealed class BrowserScriptRunnerFrameTests
         """, "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("'#frame'", client.LastExpression);
-        Assert.Contains("'.dialog .save'", client.LastExpression);
+        Assert.Contains("\"#frame\"", client.LastExpression);
+        Assert.Contains("\".dialog .save\"", client.LastExpression);
     }
 
     [Fact]
@@ -98,8 +98,8 @@ public sealed class BrowserScriptRunnerFrameTests
         var result = Runner().RunText("""	  frameLocator     "#frame"   {   hover     "#help"  ;  waitForSelector    "#ready" timeout=250   }""", "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("FRAME 001 frameHover", result.StdoutLines);
-        Assert.Contains("FRAME 001 frameWaitForElement", result.StdoutLines);
+        Assert.Contains("FRAME 002 frameHover", result.StdoutLines);
+        Assert.Contains("FRAME 003 frameWaitForElement", result.StdoutLines);
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

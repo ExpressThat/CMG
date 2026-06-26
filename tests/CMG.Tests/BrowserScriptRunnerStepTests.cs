@@ -37,7 +37,7 @@ public sealed class BrowserScriptRunnerStepTests
 
         Assert.True(result.Success, result.Error);
         Assert.Equal("#save", client.LastClickedSelector);
-        Assert.Contains("PASS 002 step Use #save", result.StdoutLines);
+        Assert.Contains("PASS 002 step \"Use #save\"", result.StdoutLines);
     }
 
     [Fact]

@@ -29,10 +29,10 @@ public static partial class CmgLocator
             return new CmgResolvedLocator($"[title=\"{EscapeCss(value)}\"]", []);
         }
 
-        if (locator.Contains('=', StringComparison.Ordinal))
+        if (CmgLocatorKeys.TryParse(locator, out key, out value))
         {
             var marker = $"__cmg_locator_{lineNumber}";
-            var normalized = CmgLocatorKeys.TryParse(locator, out key, out value) ? CmgLocatorKeys.Format(key, value) : locator;
+            var normalized = CmgLocatorKeys.Format(key, value);
             return new CmgResolvedLocator($"[data-cmg-locator-id=\"{marker}\"]", [BuildMarkerScript(normalized, marker)]);
         }
 
@@ -41,8 +41,7 @@ public static partial class CmgLocator
 
     public static string ToCssSelector(string locator) => Resolve(locator, lineNumber: 0).Selector;
 
-    public static bool IsSupported(string locator) =>
-        !locator.Contains('=', StringComparison.Ordinal) || CmgLocatorKeys.TryParse(locator, out _, out _);
+    public static bool IsSupported(string locator) => true;
 
     public static string UnsupportedReason(string locator) => $"Locator '{locator}' is not supported.";
 

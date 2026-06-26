@@ -14,8 +14,8 @@ cmg browser control input [command] [options]
 - [`doubleClick`](doubleClick.md): Double-click an element, with optional modifier and element-offset controls.
 - [`rightClick`](rightClick.md): Right-click an element, with optional modifier and element-offset controls.
 - [`contextClick`](contextClick.md): Right-click an element, with optional modifier and element-offset controls.
-- [`tap`](tap.md): Tap an element with touch-style events.
-- [`touchTap`](touchTap.md): Tap an element with touch-style events.
+- [`tap`](tap.md): Tap an element or viewport coordinate with touch-style events.
+- [`touchTap`](touchTap.md): Tap an element or viewport coordinate with touch-style events.
 - [`type`](type.md): Type text into an element, optionally with per-character delay.
 - [`pressSequentially`](pressSequentially.md): Type text into an element using sequential key presses, optionally with per-character delay.
 - [`fill`](fill.md): Replace an input-like element value.
@@ -59,6 +59,7 @@ cmg browser control input [command] [options]
 
 ```powershell
 cmg browser control input click "#save"
+cmg browser control input tap --x 120 --y 240
 cmg browser control input dblclick "#canvas" --x 12 --y 8
 cmg browser control input fill "#name" "CMG Test"
 cmg browser control input pressSequentially "#name" "CMG"

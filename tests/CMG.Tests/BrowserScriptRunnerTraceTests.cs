@@ -11,7 +11,7 @@ public sealed class BrowserScriptRunnerTraceTests
         var directory = TempDirectory();
         var path = Path.Combine(directory.FullName, "trace.json");
         var result = Runner().RunText(
-            $"startTracing path=\"{path}\"\ntitle\nstopTracing",
+            $"startTracing path=\"{Slash(path)}\"\ntitle\nstopTracing",
             "debug",
             new FakeAutomationClient());
 
@@ -29,7 +29,7 @@ public sealed class BrowserScriptRunnerTraceTests
         var directory = TempDirectory();
         var path = Path.Combine(directory.FullName, "failed-trace.json");
         var result = Runner().RunText(
-            $"startTracing path=\"{path}\"\nfail \"boom\"",
+            $"startTracing path=\"{Slash(path)}\"\nfail \"boom\"",
             "debug",
             new FakeAutomationClient());
 
@@ -79,4 +79,6 @@ public sealed class BrowserScriptRunnerTraceTests
         directory.Create();
         return directory;
     }
+
+    private static string Slash(string path) => path.Replace('\\', '/');
 }

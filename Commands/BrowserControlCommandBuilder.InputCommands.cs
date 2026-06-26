@@ -15,8 +15,8 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildMouseClickVariantCommand(browserOptions, "doubleClick", "Double-click an element."));
         command.Subcommands.Add(BuildMouseClickVariantCommand(browserOptions, "rightClick", "Right-click an element."));
         command.Subcommands.Add(BuildMouseClickVariantCommand(browserOptions, "contextClick", "Right-click an element."));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "tap", "Tap an element with touch-style events."));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "touchTap", "Tap an element with touch-style events."));
+        command.Subcommands.Add(BuildTapCommand(browserOptions, "tap"));
+        command.Subcommands.Add(BuildTapCommand(browserOptions, "touchTap"));
         command.Subcommands.Add(BuildTypeCommand(browserOptions));
         command.Subcommands.Add(BuildTextInputCommand(browserOptions, "pressSequentially", "Type text into an element using sequential key presses."));
         command.Subcommands.Add(BuildFillCommand(browserOptions));

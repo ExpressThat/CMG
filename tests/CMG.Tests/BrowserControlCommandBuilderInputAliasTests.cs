@@ -12,6 +12,8 @@ public sealed class BrowserControlCommandBuilderInputAliasTests
     [InlineData("contextClick #save", "contextClick \"#save\"")]
     [InlineData("contextClick #save --modifiers Alt --x 6 --y 10", "contextClick \"#save\" modifiers=\"Alt\" x=\"6\" y=\"10\"")]
     [InlineData("touchTap #save", "touchTap \"#save\"")]
+    [InlineData("touchTap --x 12 --y 24", "touchTap x=\"12\" y=\"24\"")]
+    [InlineData("tap --x 30 --y 40", "tap x=\"30\" y=\"40\"")]
     [InlineData("pressSequentially #name CMG", "pressSequentially \"#name\" \"CMG\"")]
     [InlineData("type #name CMG --delay 25", "type \"#name\" \"CMG\" delay=\"25\"")]
     [InlineData("pressSequentially #name CMG --delay 25", "pressSequentially \"#name\" \"CMG\" delay=\"25\"")]

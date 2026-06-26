@@ -65,7 +65,7 @@ public sealed class BrowserScriptRunnerWithinTests
         """, "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("document.querySelectorAll('.list .item').length", client.EvaluatedExpressions[0]);
+        Assert.Contains("__cmgQueryAll?.(\".list .item\")", client.EvaluatedExpressions[0]);
         Assert.Equal(".list #__cmg_foreach_2_1", client.LastClickedSelector);
     }
 

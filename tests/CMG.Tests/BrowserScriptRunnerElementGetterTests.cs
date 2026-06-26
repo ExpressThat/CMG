@@ -41,7 +41,7 @@ public sealed class BrowserScriptRunnerElementGetterTests
         var result = Runner().RunText("count \".row\"", "debug", client);
 
         Assert.True(result.Success);
-        Assert.Contains("querySelectorAll(\".row\").length", client.LastExpression);
+        Assert.Contains("__cmgQueryAll?.(\".row\")", client.LastExpression);
         Assert.Contains("COUNT 001 3", result.StdoutLines);
     }
 

@@ -110,7 +110,7 @@ dotnet run -- --firefox browser close
 - `21-websocket-routing.cmgscript`: Demonstrates page-side WebSocket routing, waits, and match modes.
 - `22-browser-environment.cmgscript`: Demonstrates page-side browser environment controls.
 - `23-record-video-alias.cmgscript`: Demonstrates `recordVideo` as a CMG GIF recording alias.
-- `24-touch-clipboard.cmgscript`: Demonstrates touch-style `tap` and deterministic page-side clipboard actions.
+- `24-touch-clipboard.cmgscript`: Demonstrates selector and coordinate touch-style `tap` plus deterministic page-side clipboard actions.
 - `25-provider-navigation-aliases.cmgscript`: Demonstrates `visit` and `goto` navigation aliases.
 - `26-provider-text-assertions.cmgscript`: Demonstrates positive and negative text assertion aliases.
 - `27-selector-evaluation.cmgscript`: Demonstrates selector-scoped evaluation and `set` block capture.

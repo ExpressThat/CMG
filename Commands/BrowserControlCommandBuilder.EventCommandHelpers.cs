@@ -57,7 +57,10 @@ public sealed partial class BrowserControlCommandBuilder
         CompactOptions(options.Select<Option, (string Key, string Value)?>(option =>
         {
             var value = EventOptionValue(parseResult, option);
-            return string.IsNullOrWhiteSpace(value) ? null : (option.Name.TrimStart('-'), value);
+            var key = option.Name.Equals("--ignore-case", StringComparison.Ordinal)
+                ? "ignoreCase"
+                : option.Name.TrimStart('-');
+            return string.IsNullOrWhiteSpace(value) ? null : (key, value);
         }).ToArray());
 
     private static string? EventOptionValue(ParseResult parseResult, Option option) =>

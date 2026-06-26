@@ -50,7 +50,7 @@ public sealed class BrowserControlCommandBuilderNetworkAliasTests
         var exitCode = BuildRoot(handler).Parse($"control network route /api --body-file \"{file.FullName}\"").Invoke();
 
         Assert.Equal(0, exitCode);
-        Assert.Equal($"route \"/api\" bodyFile=\"{file.FullName}\"", handler.ScriptLine);
+        Assert.Equal($"route \"/api\" bodyFile=\"{file.FullName.Replace("\\", "\\\\", StringComparison.Ordinal)}\"", handler.ScriptLine);
     }
 
     [Theory]

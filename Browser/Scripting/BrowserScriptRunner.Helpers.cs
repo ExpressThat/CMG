@@ -114,7 +114,7 @@ public sealed partial class BrowserScriptRunner
     {
         if (!int.TryParse(value, out var number) || number < 0)
         {
-            throw new ScriptExecutionException($"'{name}' must be a positive whole number.");
+            throw new ScriptExecutionException($"{name}= must be zero or greater.");
         }
 
         return number;
