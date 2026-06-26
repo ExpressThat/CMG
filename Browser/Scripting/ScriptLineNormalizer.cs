@@ -43,6 +43,11 @@ public static class ScriptLineNormalizer
                 continue;
             }
 
+            if (!inQuotes && !inVariable && character is '#' && IsCommentStart(line, index))
+            {
+                break;
+            }
+
             if (!inQuotes && inVariable)
             {
                 current.Add(character);
@@ -81,6 +86,17 @@ public static class ScriptLineNormalizer
         }
 
         AddIfNotBlank(lines, current);
+    }
+
+    private static bool IsCommentStart(string line, int index)
+    {
+        if (index is 0)
+        {
+            return true;
+        }
+
+        return char.IsWhiteSpace(line[index - 1]) &&
+            (index + 1 == line.Length || char.IsWhiteSpace(line[index + 1]));
     }
 
     private static void AddIfNotBlank(List<string> lines, List<char> current)

@@ -137,4 +137,23 @@ public sealed class BrowserScriptParserTests
         Assert.Equal("one;still one", result.Actions[0].Arguments[0]);
         Assert.Equal(["caption", "caption"], result.Actions[1].Children.Select(action => action.Name.ToLowerInvariant()));
     }
+
+    [Fact]
+    public void Parse_IgnoresInlineCommentsOutsideQuotesAndSelectors()
+    {
+        var result = new BrowserScriptParser().Parse("""
+        # full-line comment
+        click #save # css id token stays intact
+        caption "literal # comment stays text"; assertText "#status" "Saved #1" # trailing note
+        if true { caption "# inside dense block" # comment before close
+        }
+        """);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(["click", "caption", "assertText", "if"], result.Actions.Select(action => action.Name));
+        Assert.Equal("#save", result.Actions[0].Arguments[0]);
+        Assert.Equal("literal # comment stays text", result.Actions[1].Arguments[0]);
+        Assert.Equal("Saved #1", result.Actions[2].Arguments[1]);
+        Assert.Equal("# inside dense block", Assert.Single(result.Actions[3].Children).Arguments[0]);
+    }
 }

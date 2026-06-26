@@ -63,6 +63,31 @@ public sealed class CmgDslFormattingRobustnessTests
     }
 
     [Fact]
+    public void Parse_ImportsAndDenseRunnerBlocksIgnoreInlineComments()
+    {
+        using var directory = new TempScriptDirectory();
+        directory.Write("shared.cmgscript", """
+        macro announce value { caption "${value}" } # imported helper note
+        """);
+        var main = directory.Write("flows/main.cmgscript", """
+        import "../shared.cmgscript" # import note
+        test "comments" { call announce "value # kept"; click #save # css id token is not a comment
+        if true { caption "done # kept" # child note
+        } }
+        """);
+
+        var result = new CmgDslParser().Parse(main, File.ReadAllText(main));
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("macro", result.Document!.Nodes[0].Kind);
+        var test = result.Document.Nodes[1];
+        Assert.Equal(["call", "click", "if"], test.Children.Select(node => node.Kind.ToLowerInvariant()));
+        Assert.Equal("value # kept", test.Children[0].Arguments[1]);
+        Assert.Equal("#save", test.Children[1].Arguments[0]);
+        Assert.Equal("done # kept", Assert.Single(test.Children[2].Children).Arguments[0]);
+    }
+
+    [Fact]
     public void Parse_PostConditionLoopsAllowOddSpacingAndCasing()
     {
         var result = new CmgDslParser().Parse("flow.cmgscript", """
