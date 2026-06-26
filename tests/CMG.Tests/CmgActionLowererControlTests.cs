@@ -12,6 +12,7 @@ public sealed class CmgActionLowererControlTests
     [InlineData("foreach")]
     [InlineData("foreachSelector")]
     [InlineData("macro")]
+    [InlineData("within")]
     [InlineData("while")]
     [InlineData("until")]
     [InlineData("doWhile")]

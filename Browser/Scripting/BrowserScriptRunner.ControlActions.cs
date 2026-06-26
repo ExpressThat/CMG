@@ -20,6 +20,9 @@ public sealed partial class BrowserScriptRunner
                 return output;
             case "return":
                 return ReturnValue(action);
+            case "within":
+                ExecuteWithin(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
             case "if":
                 ExecuteIf(remoteDebuggingUrl, automationClient, [action], context, recorder, output);
                 return output;
@@ -81,6 +84,7 @@ public sealed partial class BrowserScriptRunner
         name.Equals("macro", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("call", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("return", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("within", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("if", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("elseif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("else", StringComparison.OrdinalIgnoreCase) ||

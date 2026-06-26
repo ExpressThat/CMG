@@ -11,12 +11,15 @@ public sealed record ScriptRunResult(bool Success, IReadOnlyList<string> StdoutL
 internal sealed class ScriptExecutionContext
 {
     private List<Dictionary<string, string>> variableScopes = [new(StringComparer.Ordinal)];
+    private readonly List<string> selectorScopes = [];
 
     public Dictionary<string, ScriptMacro> Macros { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     public BrowserScriptTraceSession? Trace { get; set; }
 
     public int CurrentVariableScopeIndex => variableScopes.Count - 1;
+
+    public string? CurrentSelectorScope => selectorScopes.Count is 0 ? null : selectorScopes[^1];
 
     public bool TryGetVariable(string name, out string value)
     {
@@ -65,6 +68,19 @@ internal sealed class ScriptExecutionContext
         finally
         {
             variableScopes.RemoveAt(variableScopes.Count - 1);
+        }
+    }
+
+    public void PushSelectorScope(string selector, Action body)
+    {
+        selectorScopes.Add(selector);
+        try
+        {
+            body();
+        }
+        finally
+        {
+            selectorScopes.RemoveAt(selectorScopes.Count - 1);
         }
     }
 }

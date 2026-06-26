@@ -111,6 +111,13 @@ STEP FAIL line=11 action=click reason=Line 11: evaluate failed. Locator hasNot= 
 STEP FAIL line=12 action=click reason=Line 12: evaluate failed. Locator hasNotText= requires <selector>|<text>.
 ```
 
+`within` resolves its container before running child actions. Missing or unmatched containers fail before any scoped child action runs:
+
+```text
+Line 2: within failed. Expected 1 positional argument(s), got 0.
+Line 2: within failed. No element matched locator text=Dialog
+```
+
 ## V1 Script Passed To `cmg run`
 
 ```text

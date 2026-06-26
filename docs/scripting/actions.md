@@ -2072,6 +2072,32 @@ foreachSelector row ".result" {
 
 Pointer-aware child actions still use CMG's normal virtual pointer movement, browser events, hover behavior, drag ghosts, and captions when GIF recording is active.
 
+### `within`
+
+```text
+within ".dialog" {
+  fill "input[name=email]" "agent@example.com"
+  contains "Saved"
+  click "button.save"
+}
+
+within ".app-shell" {
+  within ".toolbar" {
+    click ".refresh"
+  }
+}
+```
+
+`within "<containerSelector>" { ... }` scopes selector-based child actions to a container, similar to provider scoped locators. Plain CSS selectors and explicit `css=` selectors are composed under the current container. Nested `within` blocks compose their containers.
+
+Inside a `within` block, one-argument body-text assertions such as `contains "Saved"` and `toContainText "Saved"` check the scoped container instead of the whole page body. `foreachSelector` also scopes its match set, so `foreachSelector row ".item"` iterates `.item` elements inside the container.
+
+Rich locators such as `text=Save`, `role=button`, `hasText=.row|Ready`, and `xpath=...` still use CMG's existing locator resolver. To scope rich locator-style matching today, use a filter locator that includes the parent selector, or nest plain CSS actions under `within`.
+
+`within` is a script-only structural block. It is available in direct `browser control script` files and in `cmg run`; it is not exposed as a one-shot CLI command because the scoped child actions are the units that perform browser work.
+
+The structural `within` block does not move the virtual pointer by itself. Pointer-aware child actions are rewritten before recording, so GIF pointer movement, pointer events, drag ghosts, screenshots, and captions target the scoped selector.
+
 ### `retry` And `toPass`
 
 ```text

@@ -158,6 +158,7 @@ public sealed partial class BrowserScriptRunner
         try
         {
             action = ShouldExpandBeforeDispatch(sourceAction.Name) ? ExpandVariables(sourceAction, context) : sourceAction;
+            action = ApplySelectorScope(action, context);
             recorder?.BeforeAction(action);
             var stepOutput = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
             recorder?.AfterAction(action);

@@ -1,0 +1,9 @@
+setContent "<!doctype html><title>Within Demo</title><main><section class='card'><input name='email'><button class='save'>Save</button><p class='status'>Ready</p><ul><li class='item'>One</li><li class='item'>Two</li></ul></section></main>"
+within ".card" {
+  fill "input[name=email]" "agent@example.com"
+  contains "Ready"
+  foreachSelector row ".item" {
+    click "${row}"
+  }
+  click ".save"
+}

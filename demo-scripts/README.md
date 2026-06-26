@@ -173,6 +173,8 @@ dotnet run -- --firefox browser close
 - `83-history-wait-runner.cmgscript`: Demonstrates provider-style history navigation wait options in the structured runner DSL.
 - `84-navigation-wait.cmgscript`: Demonstrates provider-style initial navigation wait options in a direct script.
 - `85-navigation-wait-runner.cmgscript`: Demonstrates provider-style initial navigation wait options in the structured runner DSL.
+- `86-within-scope.cmgscript`: Demonstrates scoped selector actions with `within` in a direct script.
+- `87-within-scope-runner.cmgscript`: Demonstrates scoped selector actions with `within` in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

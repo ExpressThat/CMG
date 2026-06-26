@@ -60,6 +60,7 @@ Supported structural blocks:
 - `gif "name" { ... }`
 - `recordVideo "name" { ... }`
 - `screencast "name" { ... }`
+- `within "<containerSelector>" { ... }`
 - `if <condition> { ... }`
 - `elseif <condition> { ... }`
 - `else { ... }`
@@ -205,11 +206,18 @@ macro choose item label {
 foreachSelector row ".result" {
   call choose "${row}" "open"
 }
+
+within ".dialog" {
+  fill "input[name=email]" "agent@example.com"
+  click "button.save"
+}
 ```
 
 `repeat`, `for`, `foreach`, `foreachSelector`, `while`, `until`, `doWhile`, and `doUntil` support `break` and `continue`. Condition loops have a safety guard and fail after `max=<count>` iterations; the default is `100`. `doWhile` and `doUntil` run their body once before evaluating the condition.
 
 `foreachSelector` binds the variable to a temporary CSS selector for each matched element and also exposes `${index}`. Macro definitions are block-scoped when declared inside another macro, branch, or loop. Top-level macros in `cmg run` are registered before each test.
+
+`within "<container>" { ... }` scopes selector-based child actions to the container. Nested `within` blocks compose selectors. Pointer-aware child actions still use CMG's virtual pointer and GIF event path after scoping.
 
 Use `retry` or provider-style `toPass` to rerun a block until it succeeds or the attempt limit is exhausted:
 

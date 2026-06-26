@@ -801,6 +801,21 @@ The same locator resolver is used by direct browser-control scripts and `cmg run
 
 Filter locator examples are available as `demo-scripts/41-locator-filters.cmgscript`. The structured `cmg run` form is available as `demo-scripts/42-locator-filters-runner.cmgscript`.
 
+## Scoped Selectors With `within`
+
+```text
+setContent "<main><section class='card'><input name='email'><button class='save'>Save</button><p>Ready</p></section></main>"
+within ".card" {
+  fill "input[name=email]" "agent@example.com"
+  contains "Ready"
+  click ".save"
+}
+```
+
+`within` composes plain CSS child selectors under the container before actions run. In GIF mode, the child action receives the scoped selector before pointer movement, so the virtual pointer and browser events still target the actual element.
+
+Scoped selector examples are available as `demo-scripts/86-within-scope.cmgscript`. The structured `cmg run` form is available as `demo-scripts/87-within-scope-runner.cmgscript`.
+
 ## Scroll And Wheel
 
 ```text
