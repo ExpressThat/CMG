@@ -18,7 +18,9 @@ cmg browser control context [command] [options]
 - [`serviceWorkers`](serviceWorkers.md): Allow or block service worker registration.
 - [`setServiceWorkers`](setServiceWorkers.md): Allow or block service worker registration.
 - [`clear`](clear.md): Clear storage, cookies, caches, IndexedDB, and service workers.
+- [`clearContext`](clearContext.md): Clear storage, cookies, caches, IndexedDB, and service workers.
 - [`reset`](reset.md): Clear context state and navigate to `about:blank`.
+- [`resetContext`](resetContext.md): Clear context state and navigate to `about:blank`.
 - [`browserContexts`](browserContexts/index.md): Isolated browser context commands.
 
 ## Behavior

@@ -4,36 +4,18 @@ using CMG.Commands;
 
 namespace CMG.Tests;
 
-public sealed class BrowserControlCommandBuilderContextTests
+public sealed class BrowserControlCommandBuilderStorageAliasTests
 {
     [Theory]
-    [InlineData("setJavaScriptEnabled false", "setJavaScriptEnabled \"false\"")]
-    [InlineData("javaScriptEnabled true", "javaScriptEnabled \"true\"")]
-    [InlineData("serviceWorkers block", "serviceWorkers \"block\"")]
-    [InlineData("setServiceWorkers allow", "setServiceWorkers \"allow\"")]
-    [InlineData("clearContext", "clearContext")]
-    [InlineData("resetContext", "resetContext")]
-    public void ContextAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
+    [InlineData("state save --path C:\\temp\\state.json", "storageState \"save\" path=\"C:\\\\temp\\\\state.json\"")]
+    [InlineData("storageState load --path C:\\temp\\state.json", "storageState \"load\" path=\"C:\\\\temp\\\\state.json\"")]
+    public void StorageStateAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();
-        var exitCode = BuildRoot(handler).Parse($"control context {commandTail}").Invoke();
+        var exitCode = BuildRoot(handler).Parse($"control storage {commandTail}").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal(BrowserKind.Chrome, handler.BrowserKind);
-        Assert.Equal(expectedScript, handler.ScriptLine);
-    }
-
-    [Theory]
-    [InlineData("newContext --url about:blank", "newContext url=\"about:blank\"")]
-    [InlineData("useContext ctx-1", "useContext \"ctx-1\"")]
-    [InlineData("listContexts", "listContexts")]
-    [InlineData("closeContext ctx-1", "closeContext \"ctx-1\"")]
-    public void BrowserContextAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
-    {
-        var handler = new CapturingBrowserControlCommandHandler();
-        var exitCode = BuildRoot(handler).Parse($"control context browserContexts {commandTail}").Invoke();
-
-        Assert.Equal(0, exitCode);
         Assert.Equal(expectedScript, handler.ScriptLine);
     }
 

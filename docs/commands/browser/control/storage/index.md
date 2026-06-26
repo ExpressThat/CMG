@@ -12,6 +12,7 @@ cmg browser control storage [command] [options]
 - [`session`](session.md): Read or mutate `sessionStorage`.
 - [`cookie`](cookie.md): Read or mutate `document.cookie`.
 - [`state`](state.md): Save or load localStorage, sessionStorage, and cookies.
+- [`storageState`](storageState.md): Save or load localStorage, sessionStorage, and cookies.
 
 ## Behavior
 
@@ -29,4 +30,5 @@ cmg browser control storage local get token
 cmg browser control storage session clear
 cmg browser control storage cookie get
 cmg browser control storage state save --path artifacts\auth.json
+cmg browser control storage storageState load --path artifacts\auth.json
 ```

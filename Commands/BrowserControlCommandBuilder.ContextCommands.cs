@@ -19,7 +19,9 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildServiceWorkersCommand(browserOptions));
         command.Subcommands.Add(BuildServiceWorkersCommand(browserOptions, "setServiceWorkers"));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "clear", "Clear storage, cookies, caches, IndexedDB, and service workers.", "clearContext"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "clearContext", "Clear storage, cookies, caches, IndexedDB, and service workers.", "clearContext"));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "reset", "Clear context state and navigate to about:blank.", "resetContext"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "resetContext", "Clear context state and navigate to about:blank.", "resetContext"));
         command.Subcommands.Add(BuildBrowserContextsGroup(browserOptions));
 
         return command;
@@ -116,16 +118,25 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command("browserContexts", "Isolated browser context commands.");
         command.Subcommands.Add(BuildNewBrowserContextCommand(browserOptions));
+        command.Subcommands.Add(BuildNewBrowserContextCommand(browserOptions, "newContext"));
         command.Subcommands.Add(BuildContextIdCommand(browserOptions, "use", "Activate a browser context by id or target id.", "useContext"));
+        command.Subcommands.Add(BuildContextIdCommand(browserOptions, "useContext", "Activate a browser context by id or target id.", "useContext"));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "list", "List browser contexts.", "listContexts"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "listContexts", "List browser contexts.", "listContexts"));
         command.Subcommands.Add(BuildContextIdCommand(browserOptions, "close", "Close a browser context by id or target id.", "closeContext"));
+        command.Subcommands.Add(BuildContextIdCommand(browserOptions, "closeContext", "Close a browser context by id or target id.", "closeContext"));
         return command;
     }
 
     private Command BuildNewBrowserContextCommand(BrowserSelectionOptions browserOptions)
     {
+        return BuildNewBrowserContextCommand(browserOptions, "new");
+    }
+
+    private Command BuildNewBrowserContextCommand(BrowserSelectionOptions browserOptions, string name)
+    {
         var url = CliStringOption("--url", "Initial URL. Default is about:blank.");
-        var command = new Command("new", "Create and activate a fresh browser context.") { url };
+        var command = new Command(name, "Create and activate a fresh browser context.") { url };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine("newContext", [], CompactOptions([StringOption("url", parseResult.GetValue(url))]))));

@@ -12,7 +12,8 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildStorageAreaCommand(browserOptions, "local", "localStorage", "Read or mutate localStorage.", "Storage key."));
         command.Subcommands.Add(BuildStorageAreaCommand(browserOptions, "session", "sessionStorage", "Read or mutate sessionStorage.", "Storage key."));
         command.Subcommands.Add(BuildStorageAreaCommand(browserOptions, "cookie", "cookie", "Read or mutate document cookies.", "Cookie name. Optional for get."));
-        command.Subcommands.Add(BuildStorageStateCommand(browserOptions));
+        command.Subcommands.Add(BuildStorageStateCommand(browserOptions, "state"));
+        command.Subcommands.Add(BuildStorageStateCommand(browserOptions, "storageState"));
 
         return command;
     }
@@ -59,7 +60,7 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildStorageStateCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildStorageStateCommand(BrowserSelectionOptions browserOptions, string name)
     {
         var operationArgument = new Argument<string>("operation")
         {
@@ -70,7 +71,7 @@ public sealed partial class BrowserControlCommandBuilder
             Description = "Storage state JSON file path. Defaults to cmg-storage-state.json."
         };
 
-        var command = new Command("state", "Save or load localStorage, sessionStorage, and cookies.")
+        var command = new Command(name, "Save or load localStorage, sessionStorage, and cookies.")
         {
             operationArgument,
             pathOption
