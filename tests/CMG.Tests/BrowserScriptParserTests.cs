@@ -57,9 +57,10 @@ public sealed class BrowserScriptParserTests
         """);
 
         Assert.True(result.Success, result.Error);
-        var action = Assert.Single(result.Actions);
+        var action = result.Actions[0];
         Assert.Equal("if", action.Name);
         Assert.Equal("<main>{ok}</main>", Assert.Single(action.Children).Arguments[0]);
+        Assert.Equal("else", result.Actions[1].Name);
     }
 
     [Fact]

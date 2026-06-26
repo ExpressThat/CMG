@@ -615,6 +615,9 @@ Line 3: macro failed. macro requires a block body.
 Line 5: call failed. Macro 'fillProfile' expects 2 argument(s), got 1.
 Line 7: for failed. for option step= cannot be 0.
 Line 8: while failed. while exceeded max=100 iteration(s).
+Line 9: retry failed. retry requires a block body.
+Line 9: retry failed. retry max must be greater than 0.
+Line 9: retry failed. retry exhausted 3 attempt(s). Last error: Line 10: assertText failed. Expected text 'Ready' was not found. Actual text: 'Waiting'.
 break must be inside a loop.
 continue must be inside a loop.
 Line 10: catch failed. catch must follow a try block.
@@ -628,5 +631,7 @@ Line 7: switch failed. switch can have only one default block.
 Define macros before calling them. Top-level macros in `cmg run` are registered for each test; macros declared inside another macro, branch, or loop are scoped to that block and are not available afterward.
 
 Loop variables and macro parameters are scoped to the loop iteration or macro call. `if`, `elseif`, `while`, and `switch` comparisons support `contains`, `matches`, and `in` in addition to numeric/string comparison operators. Inline actions in conditions are true when they succeed; value-producing actions can be compared by payload. Use `set` when a value must be available after the block completes.
+
+`retry` reruns a failing child block until it succeeds or its attempt limit is exhausted. Failed attempts are written to stdout with `RETRY <line> attempt=<n> failed=<reason>`, and an exhausted block reports the final child-action reason.
 
 `try` can recover from expected action failures with `catch`. If the `catch` or `finally` body fails, that new failure becomes the script failure. If there is no `catch`, `finally` still runs and the original failure is reported.

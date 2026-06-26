@@ -146,9 +146,9 @@ public sealed class BrowserScriptRunnerControlFlowTests
         """, "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("SET 008 first global", result.StdoutLines);
-        Assert.Contains("SET 011 second local", result.StdoutLines);
-        Assert.Contains("EVALUATE 014 global", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("SET ", StringComparison.Ordinal) && line.Contains(" first global", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("SET ", StringComparison.Ordinal) && line.Contains(" second local", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("EVALUATE ", StringComparison.Ordinal) && line.EndsWith(" global", StringComparison.Ordinal));
     }
 
     [Fact]

@@ -37,7 +37,7 @@ public sealed class CmgOnceHookTests
         var tests = CmgRunService.ApplyOnceHooks([first, second]);
 
         Assert.Equal(["click"], tests[0].Actions.Select(action => action.Kind).ToArray());
-        Assert.Equal(["before", "#run", "after"], tests[1].Actions.Select(FirstArgument).ToArray());
+        Assert.Equal(["before", "click", "after"], tests[1].Actions.Select(FirstArgument).ToArray());
     }
 
     private static CmgTestCase Test(string name, bool skip = false) =>

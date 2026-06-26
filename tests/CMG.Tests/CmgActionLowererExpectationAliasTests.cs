@@ -34,7 +34,7 @@ public sealed class CmgActionLowererExpectationAliasTests
     [InlineData("toHaveValue", "Expected value")]
     [InlineData("toHaveAttribute", "Expected attribute")]
     [InlineData("toBeChecked", "Expected checked")]
-    [InlineData("toHaveCount", "Expected ${expected} elements")]
+    [InlineData("toHaveCount", "Expected ' + expected + ' elements")]
     public void Lower_PlaywrightElementExpectationAliasesEmitBrowserAssertions(string name, string expected)
     {
         var args = name.Equals("toHaveAttribute", StringComparison.OrdinalIgnoreCase)

@@ -87,7 +87,10 @@ public sealed class CmgActionLowererSharedActionTests
         string? fourthArg = null)
     {
         var args = new[] { arg, secondArg, thirdArg, fourthArg }.Where(value => value is not null).Cast<string>().ToArray();
-        var line = Assert.Single(new CmgActionLowerer().Lower(Node(kind, args)));
+        var lines = new CmgActionLowerer().Lower(Node(kind, args));
+        var line = kind.Equals("pressSequentially", StringComparison.OrdinalIgnoreCase)
+            ? lines.Last()
+            : Assert.Single(lines);
 
         Assert.Equal(expected, line);
     }

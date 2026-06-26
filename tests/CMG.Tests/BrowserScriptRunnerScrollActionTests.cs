@@ -11,7 +11,8 @@ public sealed class BrowserScriptRunnerScrollActionTests
         var result = Runner().RunText("scrollTo 0 250", "debug", client);
 
         Assert.True(result.Success, result.Error);
-        Assert.Contains("window.scrollTo(0, 250)", client.LastExpression);
+        Assert.Contains("const target = window", client.LastExpression);
+        Assert.Contains("target.scrollTo(0, 250)", client.LastExpression);
         Assert.Contains("SCROLL_TO 001 0,250", result.StdoutLines);
     }
 

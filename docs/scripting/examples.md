@@ -463,6 +463,19 @@ Weird but valid formatting is accepted when an AI emits dense scripts:
 
 Direct-script inline and spacing-tolerant formatting is available as `demo-scripts/48-weird-formatting.cmgscript`. The structured `cmg run` form is available as `demo-scripts/49-weird-formatting-runner.cmgscript`.
 
+Retry a flaky page transition without retrying the whole test:
+
+```text
+test "save eventually completes" {
+  retry max=3 delay=100 {
+    click "#save"
+    assertText "#status" "Saved"
+  }
+}
+```
+
+Failed attempts write `RETRY <line> attempt=<n> failed=<reason>` to stdout, and the successful attempt continues the script. Direct-script retry formatting is available as `demo-scripts/50-retry-block.cmgscript`. The structured `cmg run` form is available as `demo-scripts/51-retry-block-runner.cmgscript`.
+
 Record only one block from inside the script:
 
 ```text

@@ -61,6 +61,7 @@ public sealed class BrowserScriptRunnerConditionOperatorTests
         var client = new FakeAutomationClient();
         client.EvaluateResponses.Enqueue("CMG");
         client.EvaluateResponses.Enqueue("queued");
+        client.EvaluateResponses.Enqueue("queued");
         client.EvaluateResponses.Enqueue("true");
         client.EvaluateResponses.Enqueue("false");
         client.EvaluateResponses.Enqueue("checkout");

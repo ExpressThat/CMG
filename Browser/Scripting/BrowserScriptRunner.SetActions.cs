@@ -30,7 +30,7 @@ public sealed partial class BrowserScriptRunner
 
     private static string ExtractSetPayload(BrowserScriptAction action, IReadOnlyList<string> output)
     {
-        var line = output.LastOrDefault(line => !string.IsNullOrWhiteSpace(line));
+        var line = output.LastOrDefault(IsSetPayloadLine);
         if (line is null)
         {
             throw new ScriptExecutionException($"set '{action.Arguments[0]}' block did not produce output.");
@@ -44,5 +44,19 @@ public sealed partial class BrowserScriptRunner
         }
 
         return line[(second + 1)..];
+    }
+
+    private static bool IsSetPayloadLine(string line)
+    {
+        if (string.IsNullOrWhiteSpace(line))
+        {
+            return false;
+        }
+
+        var label = line.Split(' ', 2)[0];
+        return !label.Equals("PASS", StringComparison.Ordinal) &&
+            !label.Equals("MACRO", StringComparison.Ordinal) &&
+            !label.Equals("RETRY", StringComparison.Ordinal) &&
+            !label.Equals("GIF_BLOCK_SUPPRESSED", StringComparison.Ordinal);
     }
 }

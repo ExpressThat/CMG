@@ -14,6 +14,7 @@ public sealed class CmgActionLowererControlTests
     [InlineData("macro")]
     [InlineData("while")]
     [InlineData("repeat")]
+    [InlineData("retry")]
     [InlineData("try")]
     [InlineData("catch")]
     [InlineData("finally")]
@@ -33,7 +34,6 @@ public sealed class CmgActionLowererControlTests
         Assert.Equal("}", lines[2]);
     }
 
-    [Fact]
     [Theory]
     [InlineData("call", "call \"login\" \"agent\"")]
     [InlineData("return", "return \"login\" \"agent\"")]

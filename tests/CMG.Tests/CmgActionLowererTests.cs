@@ -95,7 +95,7 @@ public sealed class CmgActionLowererTests
 
         Assert.Equal("localStorage \"set\" \"token\" \"abc\"", Assert.Single(lowerer.Lower(Node("localStorage", ["set", "token", "abc"], []))));
         Assert.Equal("cookie", Assert.Single(lowerer.Lower(Node("cookie", [], []))));
-        Assert.Equal("expectUrl \"checkout\"", Assert.Single(lowerer.Lower(Node("expectUrl", ["checkout"], []))));
+        Assert.Equal("expecturl \"checkout\"", Assert.Single(lowerer.Lower(Node("expectUrl", ["checkout"], []))));
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public sealed class CmgActionLowererTests
     [InlineData("expectValue", "Expected value")]
     [InlineData("expectAttribute", "Expected attribute")]
     [InlineData("expectChecked", "Expected checked")]
-    [InlineData("expectCount", "Expected ${expected} elements")]
+    [InlineData("expectCount", "Expected ' + expected + ' elements")]
     public void Lower_ElementExpectationsEmitBrowserAssertions(string name, string expected)
     {
         var args = name.Equals("expectAttribute", StringComparison.OrdinalIgnoreCase)

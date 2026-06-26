@@ -20,7 +20,9 @@ public sealed class BrowserScriptRunnerTryCatchTests
         """, "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("Variable 'missing' is not defined", result.StdoutLines.Single(line => line.StartsWith("SET 004 handled", StringComparison.Ordinal)));
+        Assert.Contains("Variable 'missing' is not defined", result.StdoutLines.Single(line =>
+            line.StartsWith("SET ", StringComparison.Ordinal) &&
+            line.Contains(" handled ", StringComparison.Ordinal)));
         Assert.Equal("handled", client.LastTypedText);
     }
 

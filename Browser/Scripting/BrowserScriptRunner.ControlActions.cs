@@ -41,6 +41,9 @@ public sealed partial class BrowserScriptRunner
             case "repeat":
                 ExecuteRepeat(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
+            case "retry":
+                ExecuteRetry(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
             case "break":
                 RequireArgumentCount(action, 0, 0);
                 throw new LoopControlException("break");
@@ -76,6 +79,7 @@ public sealed partial class BrowserScriptRunner
         name.Equals("foreachSelector", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("while", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("repeat", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("retry", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("break", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("continue", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("try", StringComparison.OrdinalIgnoreCase) ||

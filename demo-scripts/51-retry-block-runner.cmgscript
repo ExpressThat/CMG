@@ -1,0 +1,7 @@
+test "retry block" {
+  setContent "<main><button id='run'>Run</button><output id='status'>Waiting</output><script>let attempts = 0; document.querySelector('#run').addEventListener('click', () => { attempts += 1; document.querySelector('#status').textContent = attempts >= 2 ? 'Ready' : 'Waiting'; });</script></main>"
+  retry max=3 delay=10 {
+    click "#run"
+    assertText "#status" "Ready"
+  }
+}

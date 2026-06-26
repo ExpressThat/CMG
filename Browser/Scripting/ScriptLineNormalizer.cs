@@ -17,6 +17,7 @@ public static class ScriptLineNormalizer
     {
         var current = new List<char>();
         var inQuotes = false;
+        var inVariable = false;
         for (var index = 0; index < line.Length; index++)
         {
             var character = line[index];
@@ -31,6 +32,25 @@ public static class ScriptLineNormalizer
             {
                 inQuotes = !inQuotes;
                 current.Add(character);
+                continue;
+            }
+
+            if (!inQuotes && character is '$' && index + 1 < line.Length && line[index + 1] is '{')
+            {
+                current.Add(character);
+                current.Add(line[++index]);
+                inVariable = true;
+                continue;
+            }
+
+            if (!inQuotes && inVariable)
+            {
+                current.Add(character);
+                if (character is '}')
+                {
+                    inVariable = false;
+                }
+
                 continue;
             }
 

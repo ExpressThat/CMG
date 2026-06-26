@@ -1831,6 +1831,36 @@ foreachSelector row ".result" {
 
 Pointer-aware child actions still use CMG's normal virtual pointer movement, browser events, hover behavior, drag ghosts, and captions when GIF recording is active.
 
+### `retry`
+
+```text
+retry max=3 delay=100 {
+  click "#save"
+  assertText "#status" "Saved"
+}
+
+retry 2 {
+  waitForText "#status" "Ready"
+}
+```
+
+`retry` reruns its child block until the block succeeds or the attempt limit is exhausted. Use either a positional attempt count, such as `retry 2`, or `max=<count>`. If neither is provided, CMG uses `max=3`. `max` must be greater than `0`. `delay=<milliseconds>` is optional and waits between failed attempts.
+
+Failed attempts write parseable diagnostic output before the next attempt:
+
+```text
+RETRY 012 attempt=1 failed=Line 13: assertText failed. Expected text 'Saved' was not found. Actual text: 'Saving'.
+RETRY 012 success attempt=2
+```
+
+If all attempts fail, the block fails with the last child-action reason:
+
+```text
+Line 12: retry failed. retry exhausted 3 attempt(s). Last error: Line 13: assertText failed. Expected text 'Saved' was not found. Actual text: 'Error'.
+```
+
+The structural `retry` action does not move the virtual pointer by itself. Pointer-aware actions inside it still use normal GIF recording behavior, including virtual pointer movement, browser pointer events, captions, and drag ghosts on every attempt.
+
 ### `try`, `catch`, And `finally`
 
 ```text
