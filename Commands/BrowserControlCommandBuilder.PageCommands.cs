@@ -40,10 +40,28 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "hidden", "expectHidden", "Assert that an element is hidden."));
         command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "enabled", "expectEnabled", "Assert that an element is enabled."));
         command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "disabled", "expectDisabled", "Assert that an element is disabled."));
-        command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions));
-        command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions));
-        command.Subcommands.Add(BuildElementCheckedAssertionCommand(browserOptions));
-        command.Subcommands.Add(BuildElementCountAssertionCommand(browserOptions));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "expectVisible", "expectVisible", "Assert that an element is visible."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeVisible", "toBeVisible", "Assert that an element is visible."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "waitForVisible", "waitForVisible", "Wait until an element is visible."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "expectHidden", "expectHidden", "Assert that an element is hidden."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeHidden", "toBeHidden", "Assert that an element is hidden."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "waitForHidden", "waitForHidden", "Wait until an element is hidden."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "expectEnabled", "expectEnabled", "Assert that an element is enabled."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeEnabled", "toBeEnabled", "Assert that an element is enabled."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "expectDisabled", "expectDisabled", "Assert that an element is disabled."));
+        command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "toBeDisabled", "toBeDisabled", "Assert that an element is disabled."));
+        command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "value", "expectValue"));
+        command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "expectValue", "expectValue"));
+        command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "toHaveValue", "toHaveValue"));
+        command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "attribute", "expectAttribute"));
+        command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "expectAttribute", "expectAttribute"));
+        command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "toHaveAttribute", "toHaveAttribute"));
+        command.Subcommands.Add(BuildElementCheckedAssertionCommand(browserOptions, "checked", "expectChecked"));
+        command.Subcommands.Add(BuildElementCheckedAssertionCommand(browserOptions, "expectChecked", "expectChecked"));
+        command.Subcommands.Add(BuildElementCheckedAssertionCommand(browserOptions, "toBeChecked", "toBeChecked"));
+        command.Subcommands.Add(BuildElementCountAssertionCommand(browserOptions, "count", "expectCount"));
+        command.Subcommands.Add(BuildElementCountAssertionCommand(browserOptions, "expectCount", "expectCount"));
+        command.Subcommands.Add(BuildElementCountAssertionCommand(browserOptions, "toHaveCount", "toHaveCount"));
 
         return command;
     }

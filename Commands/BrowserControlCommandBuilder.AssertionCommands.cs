@@ -67,31 +67,37 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildElementValueAssertionCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildElementValueAssertionCommand(
+        BrowserSelectionOptions browserOptions,
+        string name,
+        string action)
     {
         var selector = CreateSelectorArgument();
         var expected = new Argument<string>("expected") { Description = "Expected value fragment." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
-        var command = new Command("value", "Assert that an element value contains text.") { selector, expected, timeout };
+        var command = new Command(name, "Assert that an element value contains text.") { selector, expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("expectValue", [
+            ToScriptLine(action, [
                 parseResult.GetValue(selector) ?? string.Empty,
                 parseResult.GetValue(expected) ?? string.Empty
             ], TimeoutOptions(parseResult, timeout))));
         return command;
     }
 
-    private Command BuildElementAttributeAssertionCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildElementAttributeAssertionCommand(
+        BrowserSelectionOptions browserOptions,
+        string commandName,
+        string action)
     {
         var selector = CreateSelectorArgument();
         var name = new Argument<string>("name") { Description = "Attribute name." };
         var expected = new Argument<string>("expected") { Description = "Expected attribute value fragment." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
-        var command = new Command("attribute", "Assert that an element attribute contains text.") { selector, name, expected, timeout };
+        var command = new Command(commandName, "Assert that an element attribute contains text.") { selector, name, expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("expectAttribute", [
+            ToScriptLine(action, [
                 parseResult.GetValue(selector) ?? string.Empty,
                 parseResult.GetValue(name) ?? string.Empty,
                 parseResult.GetValue(expected) ?? string.Empty
@@ -99,27 +105,33 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildElementCheckedAssertionCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildElementCheckedAssertionCommand(
+        BrowserSelectionOptions browserOptions,
+        string name,
+        string action)
     {
         var selector = CreateSelectorArgument();
         var expected = new Option<bool?>("--expected") { Description = "Expected checked state. Defaults to true." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
-        var command = new Command("checked", "Assert that an element is checked or unchecked.") { selector, expected, timeout };
+        var command = new Command(name, "Assert that an element is checked or unchecked.") { selector, expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("expectChecked", CheckedArguments(parseResult, selector, expected), TimeoutOptions(parseResult, timeout))));
+            ToScriptLine(action, CheckedArguments(parseResult, selector, expected), TimeoutOptions(parseResult, timeout))));
         return command;
     }
 
-    private Command BuildElementCountAssertionCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildElementCountAssertionCommand(
+        BrowserSelectionOptions browserOptions,
+        string name,
+        string action)
     {
         var selector = CreateSelectorArgument();
         var expected = new Argument<int>("expected") { Description = "Expected matching element count." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
-        var command = new Command("count", "Assert the number of matching elements.") { selector, expected, timeout };
+        var command = new Command(name, "Assert the number of matching elements.") { selector, expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("expectCount", [
+            ToScriptLine(action, [
                 parseResult.GetValue(selector) ?? string.Empty,
                 parseResult.GetValue(expected).ToString()
             ], TimeoutOptions(parseResult, timeout))));
