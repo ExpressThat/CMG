@@ -22,6 +22,7 @@ cmg browser control [command] [options]
 - [`capture`](capture/index.md): Element and page capture commands.
 - [`page`](page/index.md): Page evaluation, viewport, and utility commands.
 - [`assertions`](assertions/index.md): Page and element assertion commands.
+- [`storage`](storage/index.md): Storage and persisted browser state commands.
 
 ## Examples
 
@@ -39,4 +40,5 @@ cmg browser control tabs list
 cmg browser control capture screenshot "#profileDialog" --output profile-dialog.png
 cmg browser control page evaluate "document.title"
 cmg browser control assertions assertText "h1" "Ready"
+cmg browser control storage local set token abc
 ```
