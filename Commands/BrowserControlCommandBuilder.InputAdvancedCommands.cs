@@ -56,14 +56,26 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildScrollByCommand(BrowserSelectionOptions browserOptions, string name = "by")
     {
-        var x = new Argument<int>("x") { Description = "Horizontal delta." };
-        var y = new Argument<int>("y") { Description = "Vertical delta." };
+        var xArgument = new Argument<int?>("x")
+        {
+            Arity = ArgumentArity.ZeroOrOne,
+            Description = "Horizontal delta."
+        };
+        var yArgument = new Argument<int?>("y")
+        {
+            Arity = ArgumentArity.ZeroOrOne,
+            Description = "Vertical delta."
+        };
+        var xOption = new Option<int?>("--x") { Description = "Horizontal delta." };
+        var yOption = new Option<int?>("--y") { Description = "Vertical delta." };
         var selector = CliStringOption("--selector", "Optional element selector to scroll.");
-        var command = new Command(name, "Scroll by a delta.") { x, y, selector };
+        var command = new Command(name, "Scroll by a delta.") { xArgument, yArgument, xOption, yOption, selector };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("scrollBy", [parseResult.GetValue(x).ToString(), parseResult.GetValue(y).ToString()], CompactOptions([
+            ToScriptLine("scrollBy", CompactIntArguments(parseResult.GetValue(xArgument), parseResult.GetValue(yArgument)), CompactOptions([
+                IntOption("x", parseResult.GetValue(xOption)),
+                IntOption("y", parseResult.GetValue(yOption)),
                 StringOption("selector", parseResult.GetValue(selector))
             ]))));
 
@@ -210,4 +222,7 @@ public sealed partial class BrowserControlCommandBuilder
             IntOption("y", parseResult.GetValue(y)),
             StringOption("selector", parseResult.GetValue(selector))
         ]);
+
+    private static IReadOnlyList<string> CompactIntArguments(params int?[] values) =>
+        values.Where(value => value.HasValue).Select(value => value!.Value.ToString()).ToArray();
 }

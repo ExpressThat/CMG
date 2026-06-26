@@ -932,6 +932,7 @@ scrollTo bottom
 expectEval "window.scrollY > 0"
 scrollTo top
 scrollBy 0 180 selector="#pane"
+scrollBy x=0 y=-80 selector="text=Panel"
 wheel "#pane" deltaY=120
 expectEval "document.querySelector('#pane').scrollTop > 0"
 ```

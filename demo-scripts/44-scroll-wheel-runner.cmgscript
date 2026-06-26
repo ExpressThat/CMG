@@ -11,6 +11,7 @@ test "scroll and wheel" {
   expectEval "document.querySelector('#pane').scrollTop > 0"
 
   scrollTo 0 0 selector="#pane"
+  scrollBy x=0 y=-80 selector="text=Panel"
   wheel "#pane" deltaY=120
   expectEval "document.querySelector('#pane').scrollTop > 0"
 }

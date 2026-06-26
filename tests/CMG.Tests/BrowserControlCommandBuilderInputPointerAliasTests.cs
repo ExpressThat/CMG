@@ -12,6 +12,8 @@ public sealed class BrowserControlCommandBuilderInputPointerAliasTests
     [InlineData("mouse mouseUp --selector #save --edge center", "mouseUp selector=\"#save\" edge=\"center\"")]
     [InlineData("scroll scrollTo bottom", "scrollTo \"bottom\"")]
     [InlineData("scroll scrollBy 0 250 --selector #panel", "scrollBy \"0\" \"250\" selector=\"#panel\"")]
+    [InlineData("scroll scrollBy --x 0 --y -80 --selector text=Panel", "scrollBy x=\"0\" y=\"-80\" selector=\"text=Panel\"")]
+    [InlineData("scroll by --x 12 --y 24", "scrollBy x=\"12\" y=\"24\"")]
     [InlineData("clipboard setClipboard hello", "setClipboard \"hello\"")]
     [InlineData("clipboard writeClipboard hello", "writeClipboard \"hello\"")]
     [InlineData("clipboard readClipboard", "readClipboard")]
