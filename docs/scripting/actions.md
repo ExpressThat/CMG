@@ -153,7 +153,7 @@ tap x=120 y=240
 
 Dispatches a touch-style pointer sequence and click against a selector or viewport coordinate. `touchTap` is an alias for `tap`.
 
-Selector targets support the same rich locators as other pointer-aware actions, including `text=`, `role=`, `label=`, `testid=`, `placeholder=`, `alt=`, `title=`, and `xpath=`.
+Selector targets support the same rich locators as other pointer-aware actions, including `text=`, `role=`, `label=`, `testid=`, provider-style `getByText=`, `getByRole=`, `getByLabel=`, `getByTestId=`, `getByPlaceholder=`, `getByAltText=`, `getByTitle=`, `placeholder=`, `alt=`, `title=`, and `xpath=`.
 
 Options:
 
