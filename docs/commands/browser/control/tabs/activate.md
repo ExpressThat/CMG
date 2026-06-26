@@ -1,14 +1,14 @@
-# `browser control activateTab`
+# `browser control tabs activate`
 
 Runs the scripting `activateTab` action once from the command line.
 
 ```powershell
-cmg browser control activateTab --index <index>
+cmg browser control tabs activate --index <index>
 ```
 
 ## Options
 
-- `--index <index>`: Required zero-based tab index from `listTabs`.
+- `--index <index>`: Required zero-based tab index from `tabs list`.
 
 ## Stdout
 
@@ -28,5 +28,5 @@ Writes browser or invalid-index errors.
 ## Example
 
 ```powershell
-cmg browser control activateTab --index 0
+cmg browser control tabs activate --index 0
 ```

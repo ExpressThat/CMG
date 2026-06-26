@@ -1,14 +1,14 @@
-# `browser control closeTab`
+# `browser control tabs close`
 
 Runs the scripting `closeTab` action once from the command line.
 
 ```powershell
-cmg browser control closeTab --index <index>
+cmg browser control tabs close --index <index>
 ```
 
 ## Options
 
-- `--index <index>`: Required zero-based tab index from `listTabs`.
+- `--index <index>`: Required zero-based tab index from `tabs list`.
 
 ## Stdout
 
@@ -28,5 +28,5 @@ Writes browser or invalid-index errors.
 ## Example
 
 ```powershell
-cmg browser control closeTab --index 1
+cmg browser control tabs close --index 1
 ```

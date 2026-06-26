@@ -29,6 +29,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildValidateScriptCommand());
         command.Subcommands.Add(BuildNavigationGroup(browserOptions));
         command.Subcommands.Add(BuildInputGroup(browserOptions));
+        command.Subcommands.Add(BuildTabsGroup(browserOptions));
         command.Subcommands.Add(BuildShowMessageBarCommand(browserOptions));
         command.Subcommands.Add(BuildDelayCommand(browserOptions));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "html", "Print an element's outer HTML."));
@@ -37,9 +38,6 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildAssertTextCommand(browserOptions));
         command.Subcommands.Add(BuildEvaluateCommand(browserOptions));
         command.Subcommands.Add(BuildSetViewportCommand(browserOptions));
-        command.Subcommands.Add(BuildNoArgumentCommand(browserOptions, "listTabs", "List available page targets."));
-        command.Subcommands.Add(BuildIndexedCommand(browserOptions, "activateTab", "Activate a page target by index."));
-        command.Subcommands.Add(BuildIndexedCommand(browserOptions, "closeTab", "Close a page target by index."));
         command.Subcommands.Add(BuildSetCommand(browserOptions));
 
         return command;

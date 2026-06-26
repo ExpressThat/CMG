@@ -1,9 +1,9 @@
-# `browser control listTabs`
+# `browser control tabs list`
 
 Runs the scripting `listTabs` action once from the command line.
 
 ```powershell
-cmg browser control listTabs
+cmg browser control tabs list
 ```
 
 ## Stdout
@@ -27,5 +27,5 @@ Writes browser errors.
 ## Example
 
 ```powershell
-cmg browser control listTabs
+cmg browser control tabs list
 ```

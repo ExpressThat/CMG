@@ -19,6 +19,7 @@ cmg browser control [command] [options]
 - [`validateScript`](validateScript.md): Validate a `.cmgscript` browser automation script without running it.
 - [`navigation`](navigation/index.md): Navigation and page state commands.
 - [`input`](input/index.md): Pointer, keyboard, and form input commands.
+- [`tabs`](tabs/index.md): Tab and popup target commands.
 - [`showMessageBar`](showMessageBar.md): Inject or update a fixed message bar at the top of the page.
 - [`delay`](delay.md): Pause for a duration.
 - [`html`](html.md): Print an element's outer HTML.
@@ -27,9 +28,6 @@ cmg browser control [command] [options]
 - [`assertText`](assertText.md): Assert that an element contains text.
 - [`evaluate`](evaluate.md): Evaluate JavaScript in the primary page.
 - [`setViewport`](setViewport.md): Set viewport dimensions.
-- [`listTabs`](listTabs.md): List available page targets.
-- [`activateTab`](activateTab.md): Activate a tab by index.
-- [`closeTab`](closeTab.md): Close a tab by index.
 - [`set`](set.md): Run the script variable action once.
 
 ## Examples
@@ -44,5 +42,6 @@ cmg browser control script --file flow.cmgscript
 cmg browser control navigation title
 cmg browser control navigation waitForLoadState complete
 cmg browser control input click "#openProfileDialog"
+cmg browser control tabs list
 cmg browser control screenshot "#profileDialog" --output profile-dialog.png
 ```
