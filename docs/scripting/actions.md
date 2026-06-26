@@ -2207,6 +2207,7 @@ Direct browser-control scripts and `cmg run` both support:
   - `"and=.item|.selected"` resolves the first `.item` element that also matches `.selected`.
   - `"strict=.item"` resolves `.item` only when exactly one element matches; zero or multiple matches fail before pointer movement.
   - `"inside=.card|button.save"` resolves the first `button.save` inside the first `.card`. This is the one-line locator form of a simple `within` scope and is useful for one-off CLI commands.
+  - `"closest=.badge|.card"` resolves the nearest `.card` ancestor of the first `.badge`, matching common traversal flows.
 - Open shadow DOM locators:
   - `"shadow=#host|button.save"` resolves `button.save` inside `#host`'s open shadow root.
   - `"shadowText=#host|Shadow Save"` resolves the first descendant inside `#host`'s open shadow root whose text contains `Shadow Save`.
@@ -2230,6 +2231,7 @@ click "or=.primary|.secondary"
 click "and=.item|.selected"
 click "strict=.only-choice"
 click "inside=.card|button.save"
+click "closest=.badge|.card"
 click "shadow=#host|button.save"
 assertText "hasText=.toast|Saved" "Saved"
 mouseMove selector="text=Drop here" edge=center

@@ -78,6 +78,7 @@ public static partial class CmgLocator
         locator.StartsWith("and=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("strict=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("inside=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("closest=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("shadow=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("shadowText=", StringComparison.OrdinalIgnoreCase);
 
@@ -143,6 +144,7 @@ public static partial class CmgLocator
             "and" => BuildAndExpression(value),
             "strict" => BuildStrictExpression(value),
             "inside" => BuildInsideExpression(value),
+            "closest" => BuildClosestExpression(value),
             "shadow" => BuildShadowExpression(value),
             "shadowtext" => BuildShadowTextExpression(value),
             _ => "null"

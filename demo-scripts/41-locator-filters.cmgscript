@@ -43,3 +43,6 @@ expectText "#result" "second"
 
 click "inside=.scope|.primary"
 expectText "#result" "first"
+
+click "closest=.badge|.secondary"
+expectText "#result" "second"

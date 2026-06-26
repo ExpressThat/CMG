@@ -31,6 +31,7 @@ public sealed class CmgLocatorTests
     [InlineData("and=.item|.selected", "e.matches('.selected')")]
     [InlineData("strict=.only", "expected exactly one match for .only")]
     [InlineData("inside=.card|button.save", "querySelector('button.save')")]
+    [InlineData("closest=.badge|.card", "closest('.card')")]
     [InlineData("shadow=#host|button.save", "shadowRoot?.querySelector('button.save')")]
     [InlineData("shadowText=#host|Shadow Save", "shadowRoot?.querySelectorAll('*')")]
     public void PrefixExpressions_FilterLocatorsMarkElement(string locator, string expected)
@@ -64,6 +65,7 @@ public sealed class CmgLocatorTests
     [InlineData("and=.item", "Locator and= requires <selector>|<selector>")]
     [InlineData("strict=", "Locator strict= requires <selector>")]
     [InlineData("inside=.card", "Locator inside= requires <container-selector>|<target-selector>")]
+    [InlineData("closest=.badge", "Locator closest= requires <child-selector>|<ancestor-selector>")]
     [InlineData("shadow=#host", "Locator shadow= requires <host-selector>|<inner-selector>")]
     [InlineData("shadowText=#host", "Locator shadowText= requires <host-selector>|<text>")]
     public void PrefixExpressions_CompositeLocatorsRequireTwoParts(string locator, string expected)

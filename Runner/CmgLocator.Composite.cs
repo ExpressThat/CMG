@@ -32,4 +32,11 @@ public static partial class CmgLocator
             ? $"document.querySelector({QuoteJs(parts.Left)})?.querySelector({QuoteJs(parts.Right)})"
             : "(() => { throw new Error('Locator inside= requires <container-selector>|<target-selector>.'); })()";
     }
+
+    private static string BuildClosestExpression(string value)
+    {
+        return SplitLocatorValue(value) is { } parts
+            ? $"document.querySelector({QuoteJs(parts.Left)})?.closest({QuoteJs(parts.Right)})"
+            : "(() => { throw new Error('Locator closest= requires <child-selector>|<ancestor-selector>.'); })()";
+    }
 }

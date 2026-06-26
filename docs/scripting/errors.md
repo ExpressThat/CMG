@@ -114,6 +114,7 @@ STEP FAIL line=14 action=click reason=Line 14: evaluate failed. Locator shadow= 
 STEP FAIL line=15 action=click reason=Line 15: evaluate failed. Locator or= requires <selector>|<selector>.
 STEP FAIL line=16 action=click reason=Line 16: evaluate failed. Locator strict= expected exactly one match for .item, got 2.
 STEP FAIL line=17 action=click reason=Line 17: evaluate failed. Locator inside= requires <container-selector>|<target-selector>.
+STEP FAIL line=18 action=click reason=Line 18: evaluate failed. Locator closest= requires <child-selector>|<ancestor-selector>.
 ```
 
 `within` resolves its container before running child actions. Missing or unmatched containers fail before any scoped child action runs:

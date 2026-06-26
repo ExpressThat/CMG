@@ -62,6 +62,7 @@ public sealed class BrowserScriptRunnerRichLocatorTests
     [InlineData("and=.item|.selected", "e.matches('.selected')")]
     [InlineData("strict=.only", "expected exactly one match for .only")]
     [InlineData("inside=.card|button.save", "querySelector('button.save')")]
+    [InlineData("closest=.badge|.card", "closest('.card')")]
     [InlineData("shadow=#host|button.save", "shadowRoot?.querySelector('button.save')")]
     [InlineData("shadowText=#host|Shadow Save", "shadowRoot?.querySelectorAll('*')")]
     public void RunText_ClickResolvesAdvancedFilterLocatorOptions(string locator, string expectedExpression)
