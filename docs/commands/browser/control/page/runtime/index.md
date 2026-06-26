@@ -1,0 +1,29 @@
+# `browser control page runtime`
+
+Element getters, selector evaluation, and page setup commands.
+
+```powershell
+cmg browser control page runtime [command] [options]
+```
+
+## Subcommands
+
+- [`textContent`](textContent.md): Read element `textContent`.
+- [`innerText`](innerText.md): Read element `innerText`.
+- [`inputValue`](inputValue.md): Read an input-like element value.
+- [`getAttribute`](getAttribute.md): Read an element attribute.
+- [`evaluateOnSelector`](evaluateOnSelector.md): Evaluate JavaScript with one selected element.
+- [`evaluateAll`](evaluateAll.md): Evaluate JavaScript with all matching elements.
+- [`addInitScript`](addInitScript.md): Register JavaScript for future documents.
+- [`addScriptTag`](addScriptTag.md): Inject a script tag.
+- [`addStyleTag`](addStyleTag.md): Inject a style tag or stylesheet link.
+- [`exposeFunction`](exposeFunction.md): Expose a deterministic page-side function.
+- [`exposeBinding`](exposeBinding.md): Expose a deterministic page-side binding.
+
+## Behavior
+
+- Requires a browser started with [`browser launch`](../../../launch.md).
+- Runs the same underlying scripting actions as `browser control script`.
+- Writes `PASS` and parseable action output lines to stdout.
+- Writes browser, selector, file, parse, or action errors to stderr.
+- Exits `0` on success and `1` on failure.

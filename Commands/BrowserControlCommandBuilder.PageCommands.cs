@@ -13,6 +13,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildSetViewportCommand(browserOptions));
         command.Subcommands.Add(BuildShowMessageBarCommand(browserOptions));
         command.Subcommands.Add(BuildDelayCommand(browserOptions));
+        command.Subcommands.Add(BuildPageRuntimeGroup(browserOptions));
 
         return command;
     }

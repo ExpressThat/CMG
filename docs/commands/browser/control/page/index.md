@@ -12,6 +12,7 @@ cmg browser control page [command] [options]
 - [`setViewport`](setViewport.md): Set viewport dimensions.
 - [`showMessageBar`](showMessageBar.md): Inject or update a fixed message bar at the top of the page.
 - [`delay`](delay.md): Pause for a duration.
+- [`runtime`](runtime/index.md): Element getters, selector evaluation, and page setup commands.
 
 ## Behavior
 
@@ -28,4 +29,5 @@ cmg browser control page evaluate "document.title"
 cmg browser control page setViewport --width 1280 --height 720
 cmg browser control page showMessageBar "Working"
 cmg browser control page delay 250
+cmg browser control page runtime textContent "h1"
 ```
