@@ -9,7 +9,9 @@ cmg browser control accessibility [command] [options]
 ## Subcommands
 
 - [`snapshot`](snapshot.md): Create an accessibility snapshot.
+- [`accessibilitySnapshot`](accessibilitySnapshot.md): Create an accessibility snapshot.
 - [`expect`](expect.md): Assert that an accessible element exists.
+- [`expectAccessible`](expectAccessible.md): Assert that an accessible element exists.
 
 ## Behavior
 

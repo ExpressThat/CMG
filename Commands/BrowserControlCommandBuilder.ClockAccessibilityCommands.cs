@@ -9,9 +9,10 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command("clock", "Deterministic page-side time commands.");
 
-        command.Subcommands.Add(BuildClockInstallCommand(browserOptions));
+        command.Subcommands.Add(BuildClockInstallCommand(browserOptions, "install", "Install deterministic page-side time control."));
         command.Subcommands.Add(BuildClockTickCommand(browserOptions));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "restore", "Restore native page clock APIs.", "restoreClock"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "restoreClock", "Restore native page clock APIs.", "restoreClock"));
 
         return command;
     }
@@ -20,16 +21,18 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command("accessibility", "Accessibility snapshot and assertion commands.");
 
-        command.Subcommands.Add(BuildAccessibilitySnapshotCommand(browserOptions));
-        command.Subcommands.Add(BuildExpectAccessibleCommand(browserOptions));
+        command.Subcommands.Add(BuildAccessibilitySnapshotCommand(browserOptions, "snapshot", "Create an accessibility snapshot."));
+        command.Subcommands.Add(BuildAccessibilitySnapshotCommand(browserOptions, "accessibilitySnapshot", "Create an accessibility snapshot."));
+        command.Subcommands.Add(BuildExpectAccessibleCommand(browserOptions, "expect", "Assert that an accessible element exists."));
+        command.Subcommands.Add(BuildExpectAccessibleCommand(browserOptions, "expectAccessible", "Assert that an accessible element exists."));
 
         return command;
     }
 
-    private Command BuildClockInstallCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildClockInstallCommand(BrowserSelectionOptions browserOptions, string commandName, string description)
     {
         var now = new Option<long?>("--now") { Description = "Epoch milliseconds. Default is current host time." };
-        var command = new Command("install", "Install deterministic page-side time control.") { now };
+        var command = new Command(commandName, description) { now };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
@@ -52,11 +55,11 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildAccessibilitySnapshotCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildAccessibilitySnapshotCommand(BrowserSelectionOptions browserOptions, string commandName, string description)
     {
         var selector = OptionalTextArgument("selector", "Optional CSS selector to snapshot.");
         var output = new Option<FileInfo?>("--output") { Description = "Write snapshot JSON to this file." };
-        var command = new Command("snapshot", "Create an accessibility snapshot.") { selector, output };
+        var command = new Command(commandName, description) { selector, output };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
@@ -67,7 +70,7 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildExpectAccessibleCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildExpectAccessibleCommand(BrowserSelectionOptions browserOptions, string commandName, string description)
     {
         var role = new Option<string>("--role")
         {
@@ -75,7 +78,7 @@ public sealed partial class BrowserControlCommandBuilder
             Required = true
         };
         var name = CliStringOption("--name", "Optional text expected in the accessible name.");
-        var command = new Command("expect", "Assert that an accessible element exists.") { role, name };
+        var command = new Command(commandName, description) { role, name };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),

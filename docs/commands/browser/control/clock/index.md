@@ -11,6 +11,7 @@ cmg browser control clock [command] [options]
 - [`install`](install.md): Install deterministic page-side time control.
 - [`tick`](tick.md): Advance deterministic page-side time.
 - [`restore`](restore.md): Restore native page clock APIs.
+- [`restoreClock`](restoreClock.md): Restore native page clock APIs.
 
 ## Behavior
 
