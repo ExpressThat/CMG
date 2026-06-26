@@ -77,6 +77,13 @@ public sealed partial class BrowserScriptRunner
         try
         {
             ExecuteActions(remoteDebuggingUrl, automationClient, parseResult.Actions, context, recorder, output);
+            if (context.SoftFailures.Count > 0)
+            {
+                var error = $"Soft assertion failure(s): {string.Join(" | ", context.SoftFailures)}";
+                FinishRecording(recorder, output);
+                FinishTrace(context, success: false, error, output);
+                return ScriptRunResult.Fail(error, output);
+            }
         }
         catch (ScriptActionFailedException exception)
         {

@@ -29,6 +29,8 @@ internal sealed class ScriptExecutionContext
 
     public int? AssertionTimeout { get; set; }
 
+    public List<string> SoftFailures { get; } = [];
+
     public int CurrentVariableScopeIndex => variableScopes.Count - 1;
 
     public string? CurrentSelectorScope => selectorScopes.Count is 0 ? null : selectorScopes[^1];

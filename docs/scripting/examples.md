@@ -113,6 +113,7 @@ if (${title} contains "CMG") {
 
 expect (${title} contains "CMG")
 expect evaluate "document.title" contains "CMG"
+softExpect (${title} contains "Dashboard") message="Dashboard title was not shown"
 ```
 
 Macros are reusable, scoped blocks:
@@ -133,10 +134,11 @@ Variables set inside a macro are local to that macro call. A macro can read vari
 
 ## Failure Feedback
 
-Assertions and explicit failures explain what broke. Use `expect` or `assert` for generic conditions, and `fail` when a script has its own reason to abort:
+Assertions and explicit failures explain what broke. Use `expect` or `assert` for generic conditions, `softExpect` when later diagnostics should still run, and `fail` when a script has its own reason to abort:
 
 ```text
 expect (${savedName} != "") message="Profile name was not saved"
+softExpect evaluate "window.optionalPanelReady" == "true" message="Optional panel did not load"
 
 try {
   fail "Expected optional panel"

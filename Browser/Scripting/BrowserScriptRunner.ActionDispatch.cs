@@ -49,7 +49,8 @@ public sealed partial class BrowserScriptRunner
             "select" or "selectoption" => ExecuteSelect(remoteDebuggingUrl, automationClient, action),
             "showmessagebar" or "caption" => ExecuteShowMessageBar(remoteDebuggingUrl, automationClient, action),
             "fail" => ExecuteFail(action),
-            "expect" or "assert" => ExecuteGenericExpect(remoteDebuggingUrl, automationClient, action, context, recorder),
+            "expect" or "assert" or "softexpect" or "softassert" or "expect.soft" or "assert.soft" =>
+                ExecuteGenericExpect(remoteDebuggingUrl, automationClient, action, context, recorder),
             "setdefaulttimeout" or "setdefaultnavigationtimeout" or "setdefaultassertiontimeout" or "setdefaultexpecttimeout" =>
                 ExecuteTimeoutDefaultAction(action, context),
             "delay" => ExecuteDelay(action),

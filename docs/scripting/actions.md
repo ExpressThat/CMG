@@ -1385,15 +1385,19 @@ Output:
 
 `fail` is non-visual and does not move the virtual pointer. In GIF mode, frames captured before the failure are still written as a partial GIF. Wrap a preceding `caption` or `step` around the guard when the recording should explain why the run stopped.
 
-## `expect` And `assert`
+## `expect`, `assert`, `softExpect`, And `softAssert`
 
 ```text
 expect (${count} > 5)
 assert (${mode} in "checkout" "billing") message="Unexpected mode"
 expect evaluate "document.title" contains "CMG"
+softExpect (${optionalCount} > 0) message="Optional widgets were missing"
+expect.soft textContent "#status" == "ready"
 ```
 
 Asserts a generic CMG condition without adding an `if` block. It uses the same condition engine as `if`, `elseif`, `while`, `until`, `doWhile`, and `doUntil`.
+
+`expect` and `assert` fail immediately. `softExpect`, `softAssert`, `expect.soft`, and `assert.soft` record the failure, continue running later actions, and fail the direct script or `cmg run` test after all remaining actions finish. This is useful when a visual evidence run should collect several independent diagnostics before stopping.
 
 Supported condition inputs:
 
@@ -1412,13 +1416,16 @@ Options:
 Output:
 
 - `EXPECT <line> true` when the condition passes.
+- `SOFT_EXPECT <line> true` when a soft condition passes.
+- `SOFT_EXPECT <line> false <reason>` when a soft condition fails and execution continues.
 
 Failure output:
 
 - The action fails with the custom message when `message=` or `reason=` is provided.
 - Otherwise the failure reason is `Expected condition to pass: <condition>`.
+- If one or more soft assertions fail, the final run failure is `Soft assertion failure(s): <reason> | <reason>`.
 
-`expect` and `assert` are non-visual by themselves. If a condition runs a pointer-aware action, that child action still uses CMG's normal virtual pointer and GIF recorder hooks.
+These assertions are non-visual by themselves. If a condition runs a pointer-aware action, that child action still uses CMG's normal virtual pointer and GIF recorder hooks. With command-level `--gif`, soft assertion failures allow later visual actions to continue into the same recording before the final run is marked failed.
 
 ## `readFile`, `fixture`, `writeFile`, `appendFile`, And `expectFile`
 

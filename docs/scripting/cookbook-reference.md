@@ -184,9 +184,10 @@ if (evaluate "'checkout'" in "checkout" "billing" && ${count} > 5) {
 
 expect (${count} > 5)
 expect evaluate "'checkout'" in "checkout" "billing"
+softExpect evaluate "'checkout'" == "profile" message="Profile mode was not active"
 ```
 
-`switch` supports equality cases plus `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`, `matches`, and `in`. The word operators `contains`, `matches`, and `in` also work in `if`, `elseif`, `while`, `expect`, and `assert` conditions. Value-producing actions such as `evaluate`, page getters, element getters, file reads, and macro calls can be used inline in those conditions.
+`switch` supports equality cases plus `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`, `matches`, and `in`. The word operators `contains`, `matches`, and `in` also work in `if`, `elseif`, `while`, `expect`, `assert`, and soft assertion conditions. Value-producing actions such as `evaluate`, page getters, element getters, file reads, and macro calls can be used inline in those conditions.
 
 This direct-script example is available as `demo-scripts/39-switch-control.cmgscript`. The structured `cmg run` form is available as `demo-scripts/40-switch-control-runner.cmgscript`.
 

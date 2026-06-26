@@ -42,5 +42,25 @@ public sealed class BrowserScriptRunnerGenericExpectTests
         Assert.Contains("math guard failed", result.Error);
     }
 
+    [Theory]
+    [InlineData("softExpect")]
+    [InlineData("softAssert")]
+    [InlineData("expect.soft")]
+    [InlineData("assert.soft")]
+    public void RunText_SoftExpectContinuesAndFailsAtEnd(string action)
+    {
+        var result = Runner().RunText($$"""
+        {{action}} (1 > 2) message="first soft failure"
+        type "#after" "continued"
+        {{action}} ("ready" == "ready")
+        """, "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("first soft failure", result.Error);
+        Assert.Contains(result.StdoutLines, line => line.Contains("SOFT_EXPECT 001 false first soft failure", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("type #after continued", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("SOFT_EXPECT 003 true", StringComparison.Ordinal));
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

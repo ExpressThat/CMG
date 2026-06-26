@@ -7,6 +7,9 @@ public sealed class CmgActionLowererGenericExpectTests
     [Theory]
     [InlineData("expect")]
     [InlineData("assert")]
+    [InlineData("softExpect")]
+    [InlineData("softAssert")]
+    [InlineData("expect.soft")]
     public void Lower_GenericExpectPassesThroughForRunnerScripts(string name)
     {
         var node = new CmgNode(

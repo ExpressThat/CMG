@@ -95,6 +95,12 @@ expect (${mode} in "checkout" "billing") message="Unsupported checkout mode"
 expect evaluate "window.appReady" == "true"
 ```
 
+Use `softExpect` sparingly for diagnostic sweeps where the rest of the script should still collect screenshots, logs, or GIF evidence:
+
+```text
+softExpect evaluate "window.optionalPanelReady" == "true" message="Optional panel was not ready"
+```
+
 ## Keep GIFs Watchable
 
 Use captions or steps for non-visual work:

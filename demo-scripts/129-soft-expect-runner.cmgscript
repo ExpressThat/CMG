@@ -1,0 +1,7 @@
+test "soft expect collects failures" {
+  setContent "<main><h1>CMG Soft Expect</h1><output id='status'>ready</output></main>"
+
+  softExpect (1 > 2) message="First soft check failed but the test continues"
+  caption "The test still records useful evidence"
+  softExpect textContent "#status" == "ready"
+}
