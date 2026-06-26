@@ -1,9 +1,9 @@
-# `browser control delay`
+# `browser control page delay`
 
 Runs the scripting `delay` action once from the command line.
 
 ```powershell
-cmg browser control delay <milliseconds>
+cmg browser control page delay <milliseconds>
 ```
 
 ## Arguments
@@ -28,5 +28,5 @@ Writes browser or validation errors. Like other control actions, this command re
 ## Example
 
 ```powershell
-cmg browser control delay 1000
+cmg browser control page delay 1000
 ```

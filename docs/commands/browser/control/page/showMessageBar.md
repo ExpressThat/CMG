@@ -1,9 +1,9 @@
-# `browser control showMessageBar`
+# `browser control page showMessageBar`
 
 Runs the scripting `showMessageBar` action once from the command line.
 
 ```powershell
-cmg browser control showMessageBar "<message>"
+cmg browser control page showMessageBar "<message>"
 ```
 
 ## Arguments
@@ -34,7 +34,7 @@ Writes browser or action errors.
 ## Example
 
 ```powershell
-cmg browser control showMessageBar "Opening the profile dialog"
+cmg browser control page showMessageBar "Opening the profile dialog"
 ```
 
 Multi-line captions can use escaped newlines in scripts:

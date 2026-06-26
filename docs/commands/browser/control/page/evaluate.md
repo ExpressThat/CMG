@@ -1,9 +1,9 @@
-# `browser control evaluate`
+# `browser control page evaluate`
 
 Runs the scripting `evaluate` action once from the command line.
 
 ```powershell
-cmg browser control evaluate "<expression>"
+cmg browser control page evaluate "<expression>"
 ```
 
 ## Arguments
@@ -31,5 +31,5 @@ Writes browser or JavaScript evaluation errors.
 ## Example
 
 ```powershell
-cmg browser control evaluate "document.title"
+cmg browser control page evaluate "document.title"
 ```

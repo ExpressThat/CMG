@@ -1,9 +1,9 @@
-# `browser control setViewport`
+# `browser control page setViewport`
 
 Runs the scripting `setViewport` action once from the command line.
 
 ```powershell
-cmg browser control setViewport --width <pixels> --height <pixels> [--device-scale-factor <number>] [--mobile] [--touch]
+cmg browser control page setViewport --width <pixels> --height <pixels> [--device-scale-factor <number>] [--mobile] [--touch]
 ```
 
 ## Options
@@ -32,6 +32,6 @@ Writes browser or validation errors.
 ## Example
 
 ```powershell
-cmg browser control setViewport --width 1280 --height 720
-cmg browser control setViewport --width 390 --height 844 --device-scale-factor 2 --mobile --touch
+cmg browser control page setViewport --width 1280 --height 720
+cmg browser control page setViewport --width 390 --height 844 --device-scale-factor 2 --mobile --touch
 ```

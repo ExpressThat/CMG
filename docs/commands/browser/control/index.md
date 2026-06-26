@@ -20,12 +20,8 @@ cmg browser control [command] [options]
 - [`input`](input/index.md): Pointer, keyboard, and form input commands.
 - [`tabs`](tabs/index.md): Tab and popup target commands.
 - [`capture`](capture/index.md): Element and page capture commands.
-- [`showMessageBar`](showMessageBar.md): Inject or update a fixed message bar at the top of the page.
-- [`delay`](delay.md): Pause for a duration.
-- [`assertText`](assertText.md): Assert that an element contains text.
-- [`evaluate`](evaluate.md): Evaluate JavaScript in the primary page.
-- [`setViewport`](setViewport.md): Set viewport dimensions.
-- [`set`](set.md): Run the script variable action once.
+- [`page`](page/index.md): Page evaluation, viewport, and utility commands.
+- [`assertions`](assertions/index.md): Page and element assertion commands.
 
 ## Examples
 
@@ -41,4 +37,6 @@ cmg browser control navigation waitForLoadState complete
 cmg browser control input click "#openProfileDialog"
 cmg browser control tabs list
 cmg browser control capture screenshot "#profileDialog" --output profile-dialog.png
+cmg browser control page evaluate "document.title"
+cmg browser control assertions assertText "h1" "Ready"
 ```

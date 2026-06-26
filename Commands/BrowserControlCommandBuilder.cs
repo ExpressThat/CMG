@@ -30,12 +30,8 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildInputGroup(browserOptions));
         command.Subcommands.Add(BuildTabsGroup(browserOptions));
         command.Subcommands.Add(BuildCaptureGroup(browserOptions));
-        command.Subcommands.Add(BuildShowMessageBarCommand(browserOptions));
-        command.Subcommands.Add(BuildDelayCommand(browserOptions));
-        command.Subcommands.Add(BuildAssertTextCommand(browserOptions));
-        command.Subcommands.Add(BuildEvaluateCommand(browserOptions));
-        command.Subcommands.Add(BuildSetViewportCommand(browserOptions));
-        command.Subcommands.Add(BuildSetCommand(browserOptions));
+        command.Subcommands.Add(BuildPageGroup(browserOptions));
+        command.Subcommands.Add(BuildAssertionsGroup(browserOptions));
 
         return command;
     }

@@ -1,9 +1,9 @@
-# `browser control assertText`
+# `browser control assertions assertText`
 
 Runs the scripting `assertText` action once from the command line.
 
 ```powershell
-cmg browser control assertText "<selector>" "<expected>"
+cmg browser control assertions assertText "<selector>" "<expected>"
 ```
 
 ## Arguments
@@ -29,5 +29,5 @@ Writes assertion, browser, or missing-element errors.
 ## Example
 
 ```powershell
-cmg browser control assertText "h1" "CMG Browser Control Test Page"
+cmg browser control assertions assertText "h1" "CMG Browser Control Test Page"
 ```
