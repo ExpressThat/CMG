@@ -27,6 +27,8 @@ cmg browser control [command] [options]
 - [`events`](events/index.md): Downloads, dialogs, console, page-error, and generic event waits.
 - [`context`](context/index.md): Browser context, emulation, permission, and environment commands.
 - [`frames`](frames/index.md): Same-origin iframe interaction commands.
+- [`workers`](workers/index.md): Worker inspection, evaluation, and interception commands.
+- [`coverage`](coverage/index.md): JavaScript and CSS coverage commands.
 
 ## Examples
 
@@ -49,4 +51,6 @@ cmg browser control network waitForResponse "/api/profile" --status 200
 cmg browser control events dialogs behavior accept --prompt-text "yes"
 cmg browser control context emulate --width 390 --height 844 --mobile --touch
 cmg browser control frames fill "#checkoutFrame" "#email" "agent@example.com"
+cmg browser control workers list
+cmg browser control coverage start --js true --css true
 ```
