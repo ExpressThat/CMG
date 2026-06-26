@@ -1,7 +1,23 @@
+using CMG.Browser;
+
 namespace CMG.Browser.Scripting;
 
 public static class BrowserWaitScripts
 {
+    public static string SelectorState(string selector) =>
+        $$"""
+        (() => {
+          const element = document.querySelector({{BrowserDomScripts.JsonString(selector)}});
+          if (!element) return JSON.stringify({ attached: false, visible: false });
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          const visible = rect.width > 0 && rect.height > 0 &&
+            style.visibility !== 'hidden' && style.display !== 'none' &&
+            Number(style.opacity || '1') !== 0;
+          return JSON.stringify({ attached: true, visible });
+        })()
+        """;
+
     public static string Function(string expression, int timeoutMilliseconds) =>
         $$"""
         new Promise((resolve) => {

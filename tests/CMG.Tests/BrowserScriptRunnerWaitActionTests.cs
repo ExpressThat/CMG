@@ -47,6 +47,50 @@ public sealed class BrowserScriptRunnerWaitActionTests
     }
 
     [Fact]
+    public void RunText_WaitForSelectorSupportsVisibleState()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"attached":true,"visible":true}""");
+        var result = Runner().RunText("waitForSelector \"#ready\" state=visible timeout=250", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("SELECTOR 001 #ready state=visible", result.StdoutLines);
+        Assert.Contains("getBoundingClientRect", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_WaitForSelectorSupportsDetachedState()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"attached":false,"visible":false}""");
+        var result = Runner().RunText("waitForSelector \"#toast\" state=detached timeout=250", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("SELECTOR 001 #toast state=detached", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_WaitForSelectorReportsStateTimeout()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"attached":true,"visible":false}""");
+        var result = Runner().RunText("waitForSelector \"#ready\" state=visible timeout=1", "debug", client);
+
+        Assert.False(result.Success);
+        Assert.Contains("did not reach state visible within 1ms", result.Error);
+        Assert.Contains("attached=true, visible=false", result.Error);
+    }
+
+    [Fact]
+    public void RunText_WaitForSelectorValidatesState()
+    {
+        var result = Runner().RunText("waitForSelector \"#ready\" state=stable", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("attached, detached, visible, or hidden", result.Error);
+    }
+
+    [Fact]
     public void RunText_WaitForTimeoutReturnsOutput()
     {
         var result = Runner().RunText("waitForTimeout 1", "debug", new FakeAutomationClient());

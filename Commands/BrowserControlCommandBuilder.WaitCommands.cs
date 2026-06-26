@@ -9,12 +9,12 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command("wait", "Page synchronization wait commands.");
 
-        command.Subcommands.Add(BuildWaitSelectorCommand(browserOptions, "element", "waitForElement", "Wait until an element exists."));
-        command.Subcommands.Add(BuildWaitSelectorCommand(browserOptions, "selector", "waitForSelector", "Wait until a selector exists."));
+        command.Subcommands.Add(BuildWaitSelectorCommand(browserOptions, "element", "waitForElement", "Wait until an element exists.", includeState: false));
+        command.Subcommands.Add(BuildWaitSelectorCommand(browserOptions, "selector", "waitForSelector", "Wait until a selector reaches a state.", includeState: true));
         command.Subcommands.Add(BuildWaitFunctionCommand(browserOptions, "function"));
         command.Subcommands.Add(BuildWaitTimeoutCommand(browserOptions, "timeout"));
-        command.Subcommands.Add(BuildWaitSelectorCommand(browserOptions, "waitForElement", "waitForElement", "Alias for element."));
-        command.Subcommands.Add(BuildWaitSelectorCommand(browserOptions, "waitForSelector", "waitForSelector", "Alias for selector."));
+        command.Subcommands.Add(BuildWaitSelectorCommand(browserOptions, "waitForElement", "waitForElement", "Alias for element.", includeState: false));
+        command.Subcommands.Add(BuildWaitSelectorCommand(browserOptions, "waitForSelector", "waitForSelector", "Alias for selector.", includeState: true));
         command.Subcommands.Add(BuildWaitFunctionCommand(browserOptions, "waitForFunction"));
         command.Subcommands.Add(BuildWaitTimeoutCommand(browserOptions, "waitForTimeout"));
         command.Subcommands.Add(BuildWaitAliasCommand(browserOptions));
@@ -26,16 +26,36 @@ public sealed partial class BrowserControlCommandBuilder
         BrowserSelectionOptions browserOptions,
         string name,
         string action,
-        string description)
+        string description,
+        bool includeState)
     {
         var selector = CreateSelectorArgument();
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
+        var state = new Option<string?>("--state")
+        {
+            Description = "Selector state: attached, detached, visible, or hidden."
+        };
         var command = new Command(name, description) { selector, timeout };
+        if (includeState)
+        {
+            command.Options.Add(state);
+        }
+
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine(action, [parseResult.GetValue(selector) ?? string.Empty], TimeoutOptions(parseResult, timeout))));
+            ToScriptLine(action, [parseResult.GetValue(selector) ?? string.Empty], WaitSelectorOptions(parseResult, timeout, state, includeState))));
         return command;
     }
+
+    private static IReadOnlyList<(string Key, string Value)> WaitSelectorOptions(
+        ParseResult parseResult,
+        Option<int?> timeout,
+        Option<string?> state,
+        bool includeState) =>
+        CompactOptions([
+            IntOption("timeout", parseResult.GetValue(timeout)),
+            includeState ? StringOption("state", parseResult.GetValue(state)) : null
+        ]);
 
     private Command BuildWaitAliasCommand(BrowserSelectionOptions browserOptions)
     {

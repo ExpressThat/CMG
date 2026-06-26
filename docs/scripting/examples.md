@@ -1034,6 +1034,7 @@ test "browser history" {
 test "waits for app readiness" {
   navigate "https://example.com/app"
   waitForSelector "#app"
+  waitForSelector "#app" state=visible timeout=5000
   waitForFunction "window.appReady === true" timeout=10000
   waitForTimeout 250
 }

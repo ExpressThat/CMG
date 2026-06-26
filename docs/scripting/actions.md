@@ -71,22 +71,27 @@ These actions do not move the virtual pointer. Use `step`, `caption`, or a `gif`
 ```text
 waitForElement "<selector>" timeout=5000
 waitForSelector "<selector>" timeout=5000
+waitForSelector "<selector>" state=visible timeout=5000
 ```
 
-Waits until a selector exists in any available page target. `waitForSelector` is an alias for Playwright/Puppeteer-style scripts and reports a parseable output line.
+`waitForElement` waits until a selector exists in any available page target. `waitForSelector` is a Playwright/Puppeteer-style wait that can target selector states and reports a parseable output line.
 
 Options:
 
 - `timeout`: Optional timeout in milliseconds. Default is `5000`.
+- `state`: Optional for `waitForSelector`. Supports `attached`, `detached`, `visible`, and `hidden`. Default is `attached`.
 
 Output:
 
 - `SELECTOR <line> <selector>` for `waitForSelector`.
+- `SELECTOR <line> <selector> state=<state>` when `waitForSelector` uses an explicit state.
 
 Example:
 
 ```text
 waitForElement "#openProfileDialog" timeout=5000
+waitForSelector "#profileDialog" state=visible timeout=5000
+waitForSelector "#toast" state=hidden timeout=10000
 ```
 
 ## `waitForFunction` And `waitForTimeout`

@@ -1,6 +1,7 @@
 setContent "<!doctype html><title>Alias Demo</title><main><h1>Alias Demo</h1><input id='name'><input id='file' type='file'><div id='source' draggable='true'>Drag me</div><div id='target'>Drop here</div><script>const target=document.querySelector('#target'); target.addEventListener('dragover', event => event.preventDefault()); target.addEventListener('drop', event => { event.preventDefault(); target.textContent='Dropped'; });</script></main>"
 
 toHaveTitle "Alias Demo"
+waitForSelector "#name" state=visible
 toContainText "Alias Demo"
 pressSequentially "#name" "CMG"
 expectValue "#name" "CMG"
