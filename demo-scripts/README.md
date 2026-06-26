@@ -133,6 +133,8 @@ dotnet run -- --firefox browser close
 - `49-weird-formatting-runner.cmgscript`: Demonstrates runner inline blocks, quoted braces, and repeated spacing.
 - `50-retry-block.cmgscript`: Demonstrates direct-script `retry` around pointer-aware actions.
 - `51-retry-block-runner.cmgscript`: Demonstrates the same `retry` block in the structured runner DSL.
+- `52-explicit-fail.cmgscript`: Demonstrates catchable explicit `fail` in a direct script.
+- `53-explicit-fail-runner.cmgscript`: Demonstrates catchable explicit `fail` in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

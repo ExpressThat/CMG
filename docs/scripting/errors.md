@@ -165,6 +165,14 @@ Line 3: set failed. set 'title' block did not produce output.
 
 The block form stores the payload from the last output-producing action in the block. Wrap an action such as `evaluate`, `url`, `title`, `content`, `html`, `readClipboard`, `waitForResponse`, or another action that writes a parseable output line.
 
+## Explicit Failure
+
+```text
+Line 4: fail failed. Missing required setup
+```
+
+`fail "message"` intentionally stops the current direct script or `cmg run` test with the supplied reason. Inside `try`, it triggers the matching `catch` block and the catch variable receives the full failure text.
+
 ## Element Outside Viewport
 
 User-like actions such as `click`, `tap`, `touchTap`, `type`, `clear`, `hover`, `select`, and `dragAndDrop` do not scroll automatically:

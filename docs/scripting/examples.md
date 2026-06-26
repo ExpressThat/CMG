@@ -476,6 +476,18 @@ test "save eventually completes" {
 
 Failed attempts write `RETRY <line> attempt=<n> failed=<reason>` to stdout, and the successful attempt continues the script. Direct-script retry formatting is available as `demo-scripts/50-retry-block.cmgscript`. The structured `cmg run` form is available as `demo-scripts/51-retry-block-runner.cmgscript`.
 
+Use explicit `fail` for intentional guard clauses. It is catchable inside `try`:
+
+```text
+try {
+  fail "Expected optional panel"
+} catch error {
+  caption "${error}"
+}
+```
+
+Direct-script explicit failure handling is available as `demo-scripts/52-explicit-fail.cmgscript`. The structured `cmg run` form is available as `demo-scripts/53-explicit-fail-runner.cmgscript`.
+
 Record only one block from inside the script:
 
 ```text

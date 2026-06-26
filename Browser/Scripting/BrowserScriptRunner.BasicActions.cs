@@ -101,6 +101,12 @@ public sealed partial class BrowserScriptRunner
         return [];
     }
 
+    private static IReadOnlyList<string> ExecuteFail(BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, int.MaxValue);
+        throw new ScriptExecutionException(string.Join(' ', action.Arguments));
+    }
+
     private static IReadOnlyList<string> ExecuteHtml(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         action = NormalizeSelectorArgument(action);

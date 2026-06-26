@@ -78,6 +78,7 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("setOffline", "true", "setOffline \"true\"")]
     [InlineData("clearExtraHTTPHeaders", null, "clearExtraHTTPHeaders")]
     [InlineData("apiRequest", "GET", "apiRequest \"GET\" \"https://example.test\"", "https://example.test")]
+    [InlineData("fail", "Missing setup", "fail \"Missing setup\"")]
     public void Lower_SharedActionsPassThrough(
         string kind,
         string? arg,

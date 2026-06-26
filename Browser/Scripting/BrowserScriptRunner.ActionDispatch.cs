@@ -45,6 +45,7 @@ public sealed partial class BrowserScriptRunner
             "scrollintoview" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
             "select" or "selectoption" => ExecuteSelect(remoteDebuggingUrl, automationClient, action),
             "showmessagebar" or "caption" => ExecuteShowMessageBar(remoteDebuggingUrl, automationClient, action),
+            "fail" => ExecuteFail(action),
             "delay" => ExecuteDelay(action),
             "html" => ExecuteHtml(remoteDebuggingUrl, automationClient, action),
             "textcontent" or "innertext" or "inputvalue" or "getattribute" => ExecuteElementGetter(remoteDebuggingUrl, automationClient, action),

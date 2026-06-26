@@ -1140,6 +1140,31 @@ set title {
 showMessageBar "Current page: ${title}"
 ```
 
+## `fail`
+
+```text
+fail "Missing required setup"
+```
+
+Fails the current direct script or `cmg run` test with a custom reason. Use it for guard clauses inside macros, branches, loops, retries, and `try` blocks when an AI-authored script knows the current state should abort.
+
+Inside a `try` block, `fail` is catchable like any other action failure:
+
+```text
+try {
+  fail "Expected optional panel"
+} catch error {
+  caption "${error}"
+}
+```
+
+Output:
+
+- No action-specific stdout is emitted because the action fails immediately.
+- The failure reason is `Line <line>: fail failed. <message>`.
+
+`fail` is non-visual and does not move the virtual pointer. In GIF mode, frames captured before the failure are still written as a partial GIF. Wrap a preceding `caption` or `step` around the guard when the recording should explain why the run stopped.
+
 ## `readFile`, `fixture`, `writeFile`, `appendFile`, And `expectFile`
 
 ```text

@@ -1,0 +1,5 @@
+try {
+  fail "Expected optional panel"
+} catch error {
+  caption "${error}"
+}

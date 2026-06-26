@@ -72,7 +72,7 @@ public sealed partial class CmgActionLowerer
             "evaluate" or "expecteval" or "asserteval" or "expectexpression" or "assertexpression" or
             "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or
             "dispatchevent" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or
-            "scrollto" or "scrollby" or "wheel" or "draganddrop" or "listtabs" or "activatetab" or "closetab" =>
+            "scrollto" or "scrollby" or "wheel" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or "fail" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "dragto" => [ToLine("dragAndDrop", action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),
