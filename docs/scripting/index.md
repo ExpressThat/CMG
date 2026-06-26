@@ -20,6 +20,8 @@ The same action surface is available in both script types unless a command page 
 
 ## Guides
 
+- [Quick Start](../quick-start.md)
+- [Script Vs Runner](script-vs-runner.md)
 - [Syntax](syntax.md)
 - [Action Index](action-index.md)
 - [Detailed Action Reference](actions.md)

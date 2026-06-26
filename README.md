@@ -34,6 +34,18 @@ cmg browser launch
 
 While developing in this repo, replace `cmg` with `dotnet run --`.
 
+## 60-Second Happy Path
+
+```powershell
+cmg browser launch
+cmg browser control script --file demo.cmgscript --gif demo.gif
+cmg run tests --report-html report.html
+```
+
+That is the shape of CMG: launch a controlled browser, drive it with readable scripts, record visual proof when useful, and run structured tests when you need reports.
+
+For the full three-path walkthrough, see the [Quick Start](docs/quick-start.md).
+
 ## Make Your First GIF
 
 Create `first-gif.cmgscript`:
@@ -93,25 +105,21 @@ When `--gif` is used, CMG records the entire selected test and suppresses nested
 
 ## Script Or Test?
 
-Use `browser control script` when you want direct browser automation:
+| Use case | Command | Best for |
+| --- | --- | --- |
+| Direct browser control | `cmg browser control script --file flow.cmgscript --gif flow.gif` | Agent-controlled exploration, demos, bug reproduction, and short visual journeys. |
+| Structured test runs | `cmg run tests --report-html report.html --gif gifs` | Repeatable checks, PR evidence, reports, retries, sharding, and per-test traces. |
+| One-shot CLI actions | `cmg browser control input click "#save"` | Simple agent operations without writing a script file. |
 
-```powershell
-cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
-```
-
-Use `cmg run` when you want a test runner:
-
-```powershell
-cmg run tests\flows --grep checkout --retries 2 --trace demo-output\traces
-```
-
-Both script types use the same action syntax, control flow, macros, locators, GIF behavior, and virtual pointer model. The runner adds suites, hooks, selection, retries, sharding, reports, and per-test traces.
+Both script types use the same action syntax, control flow, macros, locators, GIF behavior, and virtual pointer model. The runner adds suites, hooks, selection, retries, sharding, reports, and per-test traces. See [Script vs Runner](docs/scripting/script-vs-runner.md) for the longer comparison.
 
 ## Learn More
 
 - [Docs overview](docs/README.md)
+- [Quick Start](docs/quick-start.md)
 - [Command reference](docs/commands.md)
 - [Scripting guide](docs/scripting/index.md)
+- [Script vs Runner](docs/scripting/script-vs-runner.md)
 - [Action index](docs/scripting/action-index.md)
 - [GIF recording](docs/scripting/gif-recording.md)
 - [Script style guide](docs/scripting/style-guide.md)

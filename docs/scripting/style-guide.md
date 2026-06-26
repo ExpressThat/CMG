@@ -114,6 +114,16 @@ macro login email {
 
 Nested macros, loops, conditionals, `try`/`catch`, `within`, `frame`, and `gif` blocks are supported. Keep nesting readable; extract a macro when a block becomes hard to scan.
 
+## Prefer A Linear Story First
+
+Write the simplest readable journey before adding abstraction:
+
+- Start with a linear script or test.
+- Add a macro when the same journey repeats.
+- Add `retry` or `toPass` around genuinely flaky waits or eventually-consistent checks.
+- Use `fail "reason"` for guard clauses when the script can explain the problem better than a generic assertion.
+- Avoid deeply nested control flow unless the nesting mirrors the user journey. Split a large branch into a macro when it becomes hard to scan.
+
 ## Format For Diffability
 
 - Put one action per line unless a tiny inline expression is clearer.

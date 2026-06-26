@@ -11,6 +11,16 @@ This page is a cookbook reference. If you are learning CMG for the first time, s
 3. Use the [action index](action-index.md) to find a capability area.
 4. Use this cookbook when you want a ready pattern to adapt.
 
+## Cookbook Map
+
+| Goal | Start With |
+| --- | --- |
+| Basic browser control | [Dialog Flow](#dialog-flow), [Validate Text](#validate-text), [Variables](#variables) |
+| Visual demos | [Page Message Bar](#page-message-bar), [Drag Pointer Movement](#drag-pointer-movement), [CSS Hover States](#css-hover-states) |
+| Runner tests | [Runner DSL](#runner-dsl), [Runner Reports](#runner-reports), [Filtering, Sharding, And Retries](#filtering-sharding-and-retries) |
+| Advanced automation | [Network Mocking](#network-mocking), [Browser Environment](#browser-environment), [Worker Interception](#worker-interception), [Storage State](#storage-state) |
+| Provider-style features | [Provider Navigation Aliases](#provider-navigation-aliases), [Provider Aliases](#provider-aliases), [Direct Rich Locators](#direct-rich-locators) |
+
 Record a demo as a GIF:
 
 ```powershell

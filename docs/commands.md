@@ -1,6 +1,8 @@
 # CMG Command Reference
 
-CMG is a CLI for controlling a browser and capturing browser content. It is intended to be called by AI agents, so command output should stay predictable and parseable.
+CMG is a CLI for controlling a browser and producing choreographed, human-readable, pointer-accurate visual evidence. It is intended to be called by AI agents, so command output should stay predictable and parseable.
+
+New users should start with the [Quick Start](quick-start.md). Use this page when you need exact command groups, arguments, options, stdout, stderr, and exit codes.
 
 ## Development Invocation
 
