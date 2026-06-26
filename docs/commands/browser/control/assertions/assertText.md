@@ -3,13 +3,17 @@
 Runs the scripting `assertText` action once from the command line.
 
 ```powershell
-cmg browser control assertions assertText "<selector>" "<expected>"
+cmg browser control assertions assertText "<selector>" "<expected>" [--timeout <ms>]
 ```
 
 ## Arguments
 
 - `<selector>`: CSS selector.
 - `<expected>`: Text fragment expected in the element's visible text.
+
+## Options
+
+- `--timeout <ms>`: Poll until the element text contains the expected text or the timeout expires.
 
 ## Stdout
 
@@ -29,5 +33,5 @@ Writes assertion, browser, or missing-element errors.
 ## Example
 
 ```powershell
-cmg browser control assertions assertText "h1" "CMG Browser Control Test Page"
+cmg browser control assertions assertText "h1" "CMG Browser Control Test Page" --timeout 5000
 ```

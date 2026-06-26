@@ -23,6 +23,12 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command("assertions", "Page and element assertion commands.");
 
         command.Subcommands.Add(BuildAssertTextCommand(browserOptions));
+        command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "expectText", "Assert that an element contains text."));
+        command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "toHaveText", "Assert that an element contains text."));
+        command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "toContainText", "Assert that an element contains text."));
+        command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "containsText", "Assert that an element contains text."));
+        command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "waitForText", "Wait until an element contains text."));
+        command.Subcommands.Add(BuildBodyContainsCommand(browserOptions));
         command.Subcommands.Add(BuildEvaluateAssertionCommand(browserOptions));
         command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "visible", "expectVisible", "Assert that an element is visible."));
         command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "hidden", "expectHidden", "Assert that an element is hidden."));

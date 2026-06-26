@@ -7,6 +7,13 @@ namespace CMG.Tests;
 public sealed class BrowserControlCommandBuilderAssertionTests
 {
     [Theory]
+    [InlineData("assertText #status Ready --timeout 500", "assertText \"#status\" \"Ready\" timeout=\"500\"")]
+    [InlineData("expectText #status Ready", "expectText \"#status\" \"Ready\"")]
+    [InlineData("toHaveText #status Ready", "toHaveText \"#status\" \"Ready\"")]
+    [InlineData("toContainText #status Ready", "toContainText \"#status\" \"Ready\"")]
+    [InlineData("containsText #status Ready", "containsText \"#status\" \"Ready\"")]
+    [InlineData("waitForText #status Ready --timeout 1000", "waitForText \"#status\" \"Ready\" timeout=\"1000\"")]
+    [InlineData("contains Ready --timeout 250", "contains \"Ready\" timeout=\"250\"")]
     [InlineData("visible #save --timeout 5000", "expectVisible \"#save\" timeout=\"5000\"")]
     [InlineData("hidden text=Done", "expectHidden \"text=Done\"")]
     [InlineData("enabled #save", "expectEnabled \"#save\"")]

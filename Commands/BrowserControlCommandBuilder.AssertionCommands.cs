@@ -5,6 +5,32 @@ namespace CMG.Commands;
 
 public sealed partial class BrowserControlCommandBuilder
 {
+    private Command BuildTextAssertionCommand(BrowserSelectionOptions browserOptions, string action, string description)
+    {
+        var selector = CreateSelectorArgument();
+        var expected = new Argument<string>("expected") { Description = "Expected text fragment." };
+        var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
+        var command = new Command(action, description) { selector, expected, timeout };
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine(action, [
+                parseResult.GetValue(selector) ?? string.Empty,
+                parseResult.GetValue(expected) ?? string.Empty
+            ], TimeoutOptions(parseResult, timeout))));
+        return command;
+    }
+
+    private Command BuildBodyContainsCommand(BrowserSelectionOptions browserOptions)
+    {
+        var expected = new Argument<string>("expected") { Description = "Expected body text fragment." };
+        var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
+        var command = new Command("contains", "Assert that the page body contains text.") { expected, timeout };
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine("contains", [parseResult.GetValue(expected) ?? string.Empty], TimeoutOptions(parseResult, timeout))));
+        return command;
+    }
+
     private Command BuildEvaluateAssertionCommand(BrowserSelectionOptions browserOptions)
     {
         var expression = new Argument<string>("expression") { Description = "JavaScript expression to evaluate." };

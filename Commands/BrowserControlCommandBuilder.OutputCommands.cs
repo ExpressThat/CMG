@@ -119,18 +119,26 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Expected text fragment."
         };
+        var timeoutOption = new Option<int?>("--timeout")
+        {
+            Description = "Timeout in milliseconds."
+        };
 
         var command = new Command("assertText", "Assert that an element contains text.")
         {
             selectorArgument,
-            expectedArgument
+            expectedArgument,
+            timeoutOption
         };
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
                 "assertText",
-                parseResult.GetValue(selectorArgument) ?? string.Empty,
-                parseResult.GetValue(expectedArgument) ?? string.Empty)));
+                [
+                    parseResult.GetValue(selectorArgument) ?? string.Empty,
+                    parseResult.GetValue(expectedArgument) ?? string.Empty
+                ],
+                TimeoutOptions(parseResult, timeoutOption))));
 
         return command;
     }
