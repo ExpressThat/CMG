@@ -57,6 +57,16 @@ public sealed class BrowserControlCommandBuilderCaptureTests
     }
 
     [Fact]
+    public void ScreenshotCommand_MapsTemporaryStyleOptionsToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control capture screenshot #card --style .clock{display:none}").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("screenshot \"#card\" style=\".clock{display:none}\"", handler.ScriptLine);
+    }
+
+    [Fact]
     public void ScreenshotPageCommand_MapsImageOptionsToScriptAction()
     {
         var handler = new CapturingBrowserControlCommandHandler();
@@ -75,6 +85,16 @@ public sealed class BrowserControlCommandBuilderCaptureTests
 
         Assert.Equal(0, exitCode);
         Assert.Equal("screenshotPage clipX=\"10\" clipY=\"20\" clipWidth=\"300\" clipHeight=\"180\"", handler.ScriptLine);
+    }
+
+    [Fact]
+    public void ScreenshotPageCommand_MapsStylePathToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control capture screenshotPage --style-path C:\\temp\\hide.css").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("screenshotPage stylePath=\"C:\\\\temp\\\\hide.css\"", handler.ScriptLine);
     }
 
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)

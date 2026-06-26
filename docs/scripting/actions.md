@@ -499,6 +499,7 @@ html "#openProfileDialog"
 ```text
 screenshot "<selector>" output="element.png"
 screenshot "<selector>" output="element.jpg" type=jpeg quality=80
+screenshot "<selector>" output="stable.png" style=".clock{visibility:hidden}"
 screenshot "<selector>"
 ```
 
@@ -510,6 +511,8 @@ Options:
 - `type`: Optional `png`, `jpeg`, or `jpg`. Default is `png`.
 - `quality`: Optional JPEG quality from `0` to `100`. Valid only when `type=jpeg` or `type=jpg`.
 - `omitBackground`: Optional boolean. Allows a transparent background when the browser supports it.
+- `style`: Optional CSS applied only while the screenshot artifact is captured, then removed.
+- `stylePath`: Optional CSS file applied only while the screenshot artifact is captured, then removed. Cannot be combined with `style`.
 
 ## `screenshotPage`
 
@@ -518,6 +521,7 @@ screenshotPage output="page.png"
 screenshotPage output="page-full.png" fullPage=true
 screenshotPage output="page.jpg" type=jpeg quality=85
 screenshotPage output="viewport-card.png" clipX=40 clipY=120 clipWidth=640 clipHeight=360
+screenshotPage output="stable-page.png" stylePath="fixtures\screenshot.css"
 screenshotPage
 ```
 
@@ -530,9 +534,11 @@ Options:
 - `type`: Optional `png`, `jpeg`, or `jpg`. Default is `png`.
 - `quality`: Optional JPEG quality from `0` to `100`. Valid only when `type=jpeg` or `type=jpg`.
 - `omitBackground`: Optional boolean. Allows a transparent background when the browser supports it.
+- `style`: Optional CSS applied only while the screenshot artifact is captured, then removed.
+- `stylePath`: Optional CSS file applied only while the screenshot artifact is captured, then removed. Cannot be combined with `style`.
 - `clipX` / `clipY` / `clipWidth` / `clipHeight`: Optional page or viewport clip rectangle in CSS pixels. `clipWidth` and `clipHeight` must be greater than `0`. With `fullPage=true`, the clip is relative to the page document; otherwise it is relative to the current viewport.
 
-Clipped page screenshots do not move the virtual pointer. Wrap the action in `step` or pair it with a `caption` when the GIF should explain the cropped artifact.
+Clipped and styled page screenshots do not move the virtual pointer. Element screenshots still move the pointer before capture in GIF mode. Temporary screenshot styles affect only the artifact capture and are removed before later actions continue.
 
 ## `printPdf`
 

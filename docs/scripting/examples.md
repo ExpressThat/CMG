@@ -60,9 +60,12 @@ waitForElement "#openProfileDialog"
 html "#openProfileDialog"
 screenshot "#openProfileDialog"
 screenshotPage output="demo-output\viewport-crop.png" clipX=40 clipY=80 clipWidth=640 clipHeight=360
+screenshotPage output="demo-output\stable-page.png" style=".clock{visibility:hidden}"
 ```
 
 Use `clipX`, `clipY`, `clipWidth`, and `clipHeight` when a page-level artifact should capture only the meaningful viewport or full-page region. The direct clipped screenshot example is available as `demo-scripts/118-screenshot-clip.cmgscript`; the structured `cmg run` form is available as `demo-scripts/119-screenshot-clip-runner.cmgscript`.
+
+Use `style=` or `stylePath=` when a screenshot artifact should temporarily hide volatile UI such as timestamps, cursors, ads, or loading spinners. The temporary CSS is removed before later actions continue. The direct styled screenshot example is available as `demo-scripts/120-screenshot-style.cmgscript`; the structured `cmg run` form is available as `demo-scripts/121-screenshot-style-runner.cmgscript`.
 
 ## Validate Text
 

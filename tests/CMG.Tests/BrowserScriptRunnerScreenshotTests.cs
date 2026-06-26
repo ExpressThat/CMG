@@ -46,6 +46,40 @@ public sealed class BrowserScriptRunnerScreenshotTests
     }
 
     [Fact]
+    public void RunText_ScreenshotPageAppliesTemporaryStyle()
+    {
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText("screenshotPage style=\".clock{visibility:hidden}\"", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("data-cmg-screenshot-style", StringComparison.Ordinal) &&
+            expression.Contains(".clock{visibility:hidden}", StringComparison.Ordinal));
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("?.remove(); true", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_ScreenshotReadsTemporaryStyleFromFile()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"cmg-style-{Guid.NewGuid():N}.css");
+        File.WriteAllText(path, ".ad{display:none}");
+        var client = new FakeAutomationClient();
+
+        try
+        {
+            var scriptPath = path.Replace("\\", "\\\\", StringComparison.Ordinal);
+            var result = Runner().RunText($"screenshotPage stylePath=\"{scriptPath}\"", "debug", client);
+
+            Assert.True(result.Success, result.Error);
+            Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains(".ad{display:none}", StringComparison.Ordinal));
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
     public void RunText_ElementScreenshotPassesImageOptions()
     {
         var client = new FakeAutomationClient();
@@ -108,6 +142,15 @@ public sealed class BrowserScriptRunnerScreenshotTests
 
         Assert.False(result.Success);
         Assert.Contains("clip options are only valid with screenshotPage", result.Error);
+    }
+
+    [Fact]
+    public void RunText_ScreenshotRejectsStyleAndStylePathTogether()
+    {
+        var result = Runner().RunText("screenshotPage style=\"body{}\" stylePath=\"style.css\"", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("style= and stylePath= cannot be used together", result.Error);
     }
 
     [Fact]

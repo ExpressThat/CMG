@@ -224,5 +224,7 @@ dotnet run -- --firefox browser close
 - `117-slow-runner.cmgscript`: Demonstrates provider-style `test.slow`, `describe.slow`, and inherited slow timeout policy.
 - `118-screenshot-clip.cmgscript`: Demonstrates clipped page screenshot artifacts in a direct script.
 - `119-screenshot-clip-runner.cmgscript`: Demonstrates clipped page screenshot artifacts in the structured runner DSL.
+- `120-screenshot-style.cmgscript`: Demonstrates temporary CSS applied only to screenshot artifacts in a direct script.
+- `121-screenshot-style-runner.cmgscript`: Demonstrates temporary CSS applied only to screenshot artifacts in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.

@@ -13,7 +13,12 @@ public sealed partial class BrowserScriptRunner
         {
             throw new ScriptExecutionException("screenshot clip options are only valid with screenshotPage.");
         }
-        var bytes = automationClient.GetElementScreenshot(remoteDebuggingUrl, ResolveSelector(remoteDebuggingUrl, automationClient, action), options);
+        var selector = ResolveSelector(remoteDebuggingUrl, automationClient, action);
+        var bytes = CaptureWithTemporaryStyle(
+            action,
+            remoteDebuggingUrl,
+            automationClient,
+            () => automationClient.GetElementScreenshot(remoteDebuggingUrl, selector, options));
         return WriteScreenshotOutput(action, bytes, options.Type);
     }
 
@@ -21,8 +26,32 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 0, 0);
         var options = ScreenshotOptionsFor(action, GetBoolOption(action, "fullPage"));
-        var bytes = automationClient.GetPageScreenshot(remoteDebuggingUrl, options: options);
+        var bytes = CaptureWithTemporaryStyle(
+            action,
+            remoteDebuggingUrl,
+            automationClient,
+            () => automationClient.GetPageScreenshot(remoteDebuggingUrl, options: options));
         return WriteScreenshotOutput(action, bytes, options.Type);
+    }
+
+    private static byte[] CaptureWithTemporaryStyle(
+        BrowserScriptAction action,
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        Func<byte[]> capture)
+    {
+        var id = AddTemporaryScreenshotStyle(action, remoteDebuggingUrl, automationClient);
+        try
+        {
+            return capture();
+        }
+        finally
+        {
+            if (id is not null)
+            {
+                automationClient.Evaluate(remoteDebuggingUrl, $"document.querySelector('[data-cmg-screenshot-style=\"{id}\"]')?.remove(); true");
+            }
+        }
     }
 
     private static ScreenshotOptions ScreenshotOptionsFor(BrowserScriptAction action, bool fullPage)
@@ -80,6 +109,40 @@ public sealed partial class BrowserScriptRunner
         return double.TryParse(value, out var parsed) && parsed >= 0
             ? parsed
             : throw new ScriptExecutionException($"{action.Name} option {name}= must be zero or a positive number.");
+    }
+
+    private static string? AddTemporaryScreenshotStyle(
+        BrowserScriptAction action,
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient)
+    {
+        var inline = action.Options.TryGetValue("style", out var style) ? style : null;
+        var file = action.Options.TryGetValue("stylePath", out var stylePath) ? stylePath : null;
+        if (string.IsNullOrWhiteSpace(inline) && string.IsNullOrWhiteSpace(file))
+        {
+            return null;
+        }
+        if (!string.IsNullOrWhiteSpace(inline) && !string.IsNullOrWhiteSpace(file))
+        {
+            throw new ScriptExecutionException($"{action.Name} options style= and stylePath= cannot be used together.");
+        }
+
+        var css = !string.IsNullOrWhiteSpace(file) ? ReadScreenshotStyleFile(action, file!) : inline!;
+        var id = $"cmg-{Guid.NewGuid():N}";
+        automationClient.Evaluate(
+            remoteDebuggingUrl,
+            $"(() => {{ const style = document.createElement('style'); style.setAttribute('data-cmg-screenshot-style', '{id}'); style.textContent = {QuoteScriptString(css)}; document.documentElement.appendChild(style); return true; }})()");
+        return id;
+    }
+
+    private static string ReadScreenshotStyleFile(BrowserScriptAction action, string path)
+    {
+        if (!File.Exists(path))
+        {
+            throw new ScriptExecutionException($"{action.Name} stylePath= file '{path}' did not exist.");
+        }
+
+        return File.ReadAllText(path);
     }
 
     private static IReadOnlyList<string> ExecutePageContentAction(

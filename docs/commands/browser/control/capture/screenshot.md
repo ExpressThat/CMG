@@ -16,6 +16,8 @@ cmg browser control capture screenshot "<selector>" [--output <path>] [options]
 - `--type <png|jpeg|jpg>`: Screenshot type. Default is `png`.
 - `--quality <0-100>`: JPEG quality. Valid only with `--type jpeg` or `--type jpg`.
 - `--omit-background`: Allow transparent page background when the browser supports it.
+- `--style <css>`: Temporary CSS applied only while the screenshot artifact is captured.
+- `--style-path <file>`: CSS file applied only while the screenshot artifact is captured. Cannot be combined with `--style`.
 
 ## Stdout
 
@@ -34,7 +36,7 @@ For JPEG output without `--output`, the data URL starts with `data:image/jpeg;ba
 
 ## Stderr
 
-Writes browser, option, or missing-element errors. Invalid screenshot options report the specific option, such as `type= must be png, jpeg, or jpg`, `quality= must be between 0 and 100`, or `quality= is only valid when type=jpeg`.
+Writes browser, option, style file, or missing-element errors. Invalid screenshot options report the specific option, such as `type= must be png, jpeg, or jpg`, `quality= must be between 0 and 100`, `quality= is only valid when type=jpeg`, or `style= and stylePath= cannot be used together`.
 
 Unlike user-like actions such as `click`, `type`, and `dragAndDrop`, `screenshot` scrolls the selected element into view before capture.
 
@@ -48,4 +50,5 @@ Unlike user-like actions such as `click`, `type`, and `dragAndDrop`, `screenshot
 ```powershell
 cmg browser control capture screenshot "#profileDialog" --output profile-dialog.png
 cmg browser control capture screenshot "#profileDialog" --type jpeg --quality 80 --output profile-dialog.jpg
+cmg browser control capture screenshot "#profileDialog" --style ".clock{visibility:hidden}" --output stable-dialog.png
 ```

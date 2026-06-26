@@ -10,6 +10,8 @@ public sealed partial class BrowserControlCommandBuilder
         Option<string?> typeOption,
         Option<int?> qualityOption,
         Option<bool> omitBackgroundOption,
+        Option<string?>? styleOption = null,
+        Option<FileInfo?>? stylePathOption = null,
         Option<double?>? clipXOption = null,
         Option<double?>? clipYOption = null,
         Option<double?>? clipWidthOption = null,
@@ -27,6 +29,14 @@ public sealed partial class BrowserControlCommandBuilder
         if (parseResult.GetValue(omitBackgroundOption))
         {
             options.Add(("omitBackground", "true"));
+        }
+        if (styleOption is not null && !string.IsNullOrWhiteSpace(parseResult.GetValue(styleOption)))
+        {
+            options.Add(("style", parseResult.GetValue(styleOption)!));
+        }
+        if (stylePathOption is not null && parseResult.GetValue(stylePathOption) is { } stylePath)
+        {
+            options.Add(("stylePath", stylePath.FullName));
         }
         AddClipOption(parseResult, options, clipXOption, "clipX");
         AddClipOption(parseResult, options, clipYOption, "clipY");

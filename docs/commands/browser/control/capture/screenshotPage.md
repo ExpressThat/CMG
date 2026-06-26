@@ -13,6 +13,8 @@ cmg browser control capture screenshotPage [--output <path>] [--full-page] [opti
 - `--type <png|jpeg|jpg>`: Screenshot type. Default is `png`.
 - `--quality <0-100>`: JPEG quality. Valid only with `--type jpeg` or `--type jpg`.
 - `--omit-background`: Allow transparent page background when the browser supports it.
+- `--style <css>`: Temporary CSS applied only while the screenshot artifact is captured.
+- `--style-path <file>`: CSS file applied only while the screenshot artifact is captured. Cannot be combined with `--style`.
 - `--clip-x <pixels>`: Optional page or viewport clip X coordinate in CSS pixels.
 - `--clip-y <pixels>`: Optional page or viewport clip Y coordinate in CSS pixels.
 - `--clip-width <pixels>`: Optional clip width in CSS pixels. Must be greater than `0` when any clip option is used.
@@ -35,7 +37,7 @@ For JPEG output without `--output`, the data URL starts with `data:image/jpeg;ba
 
 ## Stderr
 
-Writes browser, capture, or option errors. Invalid screenshot options report the specific option, such as `type= must be png, jpeg, or jpg`, `quality= must be between 0 and 100`, or `quality= is only valid when type=jpeg`.
+Writes browser, capture, style file, or option errors. Invalid screenshot options report the specific option, such as `type= must be png, jpeg, or jpg`, `quality= must be between 0 and 100`, `quality= is only valid when type=jpeg`, or `style= and stylePath= cannot be used together`.
 
 Clip options map to scripting `clipX`, `clipY`, `clipWidth`, and `clipHeight`. With `--full-page`, the clip is relative to the page document; otherwise it is relative to the current viewport.
 
@@ -51,4 +53,5 @@ cmg browser control capture screenshotPage --output page.png
 cmg browser control capture screenshotPage --full-page --output page-full.png
 cmg browser control capture screenshotPage --type jpeg --quality 85 --output page.jpg
 cmg browser control capture screenshotPage --clip-x 40 --clip-y 120 --clip-width 640 --clip-height 360 --output crop.png
+cmg browser control capture screenshotPage --style-path fixtures\screenshot.css --output stable-page.png
 ```
