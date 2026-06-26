@@ -1,0 +1,4 @@
+test.each "parameter row ${page}" as=page values="profile,checkout" tag=smoke {
+  set selectedPage "${page}"
+  expect (${selectedPage} in "profile" "checkout")
+}

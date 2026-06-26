@@ -14,6 +14,8 @@ The runner supports line-level `import "path"` statements. Relative imports reso
 
 Runner hooks include `beforeAll`, `afterAll`, `beforeEach`, and `afterEach`. Once hooks run for the first or last non-skipped selected test in their file or suite scope, so grep/tag/only/shard selection controls which scopes execute setup and teardown.
 
+Parameterized runner tests use `test.each`, `it.each`, or `specify.each` with `values=`, `each=`, or `json=` data. They expand during planning into normal test cases before grep, tag filtering, `only`, retries, repeats, sharding, reports, traces, and per-test GIF paths are calculated.
+
 ## Options
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
@@ -48,6 +50,7 @@ TEST LIST <run|skip> <name>
 ```
 
 Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
+Parameterized tests print and report their expanded names, for example `TEST LIST run opens profile`.
 
 When a step fails, stderr also includes:
 
@@ -131,6 +134,14 @@ describe.slow "slow area" {
   it "inherits slow timeout policy" {
     waitForSelector "#eventual"
   }
+}
+
+test.each "opens ${page}" as=page values="profile,checkout" tag=smoke {
+  click "#${page}"
+}
+
+test.each "opens ${case.name}" as=case json="[{\"name\":\"Profile\",\"selector\":\"#profile\"}]" {
+  click "${case.selector}"
 }
 ```
 

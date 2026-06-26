@@ -152,6 +152,6 @@ public sealed partial class BrowserScriptRunner
         output.Add($"TRACE {path}");
     }
 
-    [GeneratedRegex(@"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")]
+    [GeneratedRegex(@"\$\{([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\}")]
     private static partial Regex VariableRegex();
 }

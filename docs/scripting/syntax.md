@@ -53,6 +53,7 @@ Supported structural blocks:
 - `suite "name" { ... }`, `describe "name" { ... }`, or `context "name" { ... }`
 - `test "name" { ... }`, `it "name" { ... }`, or `specify "name" { ... }`
 - Provider-style declaration aliases: `test.only`, `test.skip`, `test.fixme`, `test.todo`, `test.slow`, `it.only`, `describe.skip`, `describe.slow`, `context.only`, and the same suffixes on `suite`, `describe`, `context`, `test`, `it`, and `specify`
+- Parameterized runner test declarations: `test.each`, `it.each`, and `specify.each`
 - `beforeAll { ... }` or `before { ... }`
 - `afterAll { ... }` or `after { ... }`
 - `beforeEach { ... }`
@@ -113,6 +114,21 @@ describe.slow "slow area" { it "eventual case" { expectText "#status" "Saved" } 
 Suite-level `only`, `skip`, `fixme`, and `todo` options cascade to child tests. A skipped suite keeps child tests skipped even if a child sets `skip=false`.
 Suite-level `slow` also cascades unless a child test sets `slow=false`. `slow=true` uses a `3x` multiplier for inherited default wait, navigation, and assertion timeouts; `slow=<number>` uses that numeric multiplier. Explicit action-level `timeout=` still wins.
 
+Parameterized runner tests expand one declaration into one scheduled test per row:
+
+```text
+test.each "opens ${page}" as=page values="profile,checkout" tag=smoke {
+  click "#${page}"
+}
+
+test.each "opens ${case.name}" as=case json="[{\"name\":\"Profile\",\"selector\":\"#profile\"}]" {
+  click "${case.selector}"
+}
+```
+
+Use `values=` or `each=` for delimited primitive rows. Use `json=` for a JSON array. Primitive rows bind `${item}` by default, or the variable named by `as=`.
+JSON object rows bind the raw object to `${item}` and each top-level property to dotted variables such as `${item.name}`. `${index}` is also available. Expanded tests participate in grep, tags, focus, skip, retries, sharding, reports, traces, and per-test GIFs as ordinary tests.
+
 ## Actions
 
 Actions use:
@@ -169,7 +185,7 @@ set title {
 
 Block capture stores only the final payload value from the wrapped actions. It does not store the `PASS`, `EVALUATE`, or other output prefixes. This also works with `call`, so `set result { call helper }` stores the macro body's final payload value. A macro can return an action result by making that action the final payload, or it can return a variable/static value with `return "${value}"`.
 
-Variables are referenced as `${name}`. A macro reads from its own parameters and local `set` values first, then walks upward through the parent tree scopes where that macro was defined until it finds a matching variable. It does not read unrelated local variables from a caller outside that definition tree. Macro parameters and every `set` performed inside a macro are scoped to that macro call and do not mutate variables with the same name in a parent scope. Loop variables are scoped to the loop iteration. Explicit `set` variables outside macros remain available to later actions.
+Variables are referenced as `${name}`. Dotted names such as `${case.name}` are supported for data-driven runner rows and can also be set manually. A macro reads from its own parameters and local `set` values first, then walks upward through the parent tree scopes where that macro was defined until it finds a matching variable. It does not read unrelated local variables from a caller outside that definition tree. Macro parameters and every `set` performed inside a macro are scoped to that macro call and do not mutate variables with the same name in a parent scope. Loop variables are scoped to the loop iteration. Explicit `set` variables outside macros remain available to later actions.
 
 ## Control Flow And Macros
 

@@ -1,6 +1,6 @@
 namespace CMG.Runner;
 
-public sealed class CmgTestPlanner
+public sealed partial class CmgTestPlanner
 {
     public IReadOnlyList<CmgTestCase> Plan(CmgDocument document)
     {
@@ -15,11 +15,14 @@ public sealed class CmgTestPlanner
         {
             if (IsTest(node))
             {
-                tests.Add(BuildTest(document.SourcePath, node, rootMacros, rootBeforeEach, rootAfterEach, null) with
+                foreach (var test in ExpandParameterizedTests(node))
                 {
-                    RootBeforeAll = rootBeforeAll,
-                    RootAfterAll = rootAfterAll
-                });
+                    tests.Add(BuildTest(document.SourcePath, test, rootMacros, rootBeforeEach, rootAfterEach, null) with
+                    {
+                        RootBeforeAll = rootBeforeAll,
+                        RootAfterAll = rootAfterAll
+                    });
+                }
             }
             else if (IsSuite(node))
             {
@@ -49,7 +52,7 @@ public sealed class CmgTestPlanner
         var beforeEach = rootBeforeEach.Concat(suiteBeforeEach).ToArray();
         var afterEach = suiteAfterEach.Concat(rootAfterEach).ToArray();
 
-        foreach (var child in suite.Children.Where(IsTest))
+        foreach (var child in suite.Children.Where(IsTest).SelectMany(ExpandParameterizedTests))
         {
             tests.Add(BuildTest(document.SourcePath, child, macros, beforeEach, afterEach, suite.Name, suite.Options) with
             {

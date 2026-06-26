@@ -31,6 +31,9 @@ public static class CmgDeclarationAliases
             case "slow":
                 normalized["slow"] = "true";
                 break;
+            case "each" when IsTestDeclaration(parts[0]):
+                normalized.TryAdd("each", "true");
+                break;
             default:
                 return new(kind, options);
         }
@@ -45,6 +48,11 @@ public static class CmgDeclarationAliases
         kind.Equals("suite", StringComparison.OrdinalIgnoreCase) ||
         kind.Equals("describe", StringComparison.OrdinalIgnoreCase) ||
         kind.Equals("context", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsTestDeclaration(string kind) =>
+        kind.Equals("test", StringComparison.OrdinalIgnoreCase) ||
+        kind.Equals("it", StringComparison.OrdinalIgnoreCase) ||
+        kind.Equals("specify", StringComparison.OrdinalIgnoreCase);
 }
 
 public sealed record CmgDeclaration(string Kind, IReadOnlyDictionary<string, string> Options);

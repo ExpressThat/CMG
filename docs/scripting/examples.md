@@ -14,6 +14,7 @@ For the full catalogue of advanced examples, see the [cookbook reference](cookbo
 | Reuse script logic | [Variables And Macros](#variables-and-macros) | `demo-scripts\30-control-flow-macros.cmgscript` |
 | Handle failures clearly | [Failure Feedback](#failure-feedback) | `demo-scripts\52-explicit-fail.cmgscript` |
 | Tune one slow section | [Scoped Timeouts](#scoped-timeouts) | `demo-scripts\134-scoped-timeouts.cmgscript` |
+| Run the same test for data rows | [Parameterized Tests](#parameterized-tests) | `demo-scripts\136-parameterized-tests.cmgscript` |
 
 Start the browser before running direct scripts:
 
@@ -178,6 +179,22 @@ withTimeout default=5000 navigation=15000 assertion=2000 {
 ```
 
 The old timeout defaults are restored after the block, even if a child action fails and a surrounding `try` catches it. The block itself is non-visual; pointer-aware child actions still record through CMG's normal virtual pointer path.
+
+## Parameterized Tests
+
+Use `test.each`, `it.each`, or `specify.each` when one runner test should execute once per data row:
+
+```text
+test.each "opens ${page}" as=page values="profile,checkout" tag=smoke {
+  click "#${page}"
+}
+
+test.each "opens ${case.name}" as=case json="[{\"name\":\"Profile\",\"selector\":\"#profile\"}]" {
+  click "${case.selector}"
+}
+```
+
+Expanded tests are ordinary scheduled tests. They work with `--list`, `--grep`, `--tag`, retries, sharding, reports, traces, and per-test GIF recording.
 
 ## Common Next Steps
 

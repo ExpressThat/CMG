@@ -19,6 +19,7 @@ The full list below is a catalogue. If you are learning CMG, run these first:
 | Iterate JSON and delimited collections | `130-collection-loops.cmgscript` |
 | Stop as skipped from runtime state | `132-runtime-skip.cmgscript` |
 | Scope timeout policy for one section | `134-scoped-timeouts.cmgscript` |
+| Expand a runner test for data rows | `136-parameterized-tests.cmgscript` |
 
 For a guided introduction, use the [Quick Start](../docs/quick-start.md) before treating this folder as a reference.
 
@@ -245,5 +246,7 @@ dotnet run -- --firefox browser close
 - `133-runtime-skip-runner.cmgscript`: Demonstrates runtime `skip` in the structured runner DSL.
 - `134-scoped-timeouts.cmgscript`: Demonstrates scoped timeout blocks in a direct script.
 - `135-scoped-timeouts-runner.cmgscript`: Demonstrates scoped timeout blocks in the structured runner DSL.
+- `136-parameterized-tests.cmgscript`: Demonstrates runner `test.each` with primitive list rows.
+- `137-parameterized-json-tests.cmgscript`: Demonstrates runner `test.each` with JSON object rows and dotted variables.
 
 Generated screenshots are written to `demo-output/`.

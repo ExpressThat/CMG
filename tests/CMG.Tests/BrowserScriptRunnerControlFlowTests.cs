@@ -219,5 +219,19 @@ public sealed class BrowserScriptRunnerControlFlowTests
         Assert.Contains("EVALUATE 007 Agent", result.StdoutLines);
     }
 
+    [Fact]
+    public void RunText_SetSupportsDottedVariableNames()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("Profile");
+        var result = Runner().RunText("""
+        set case.name "Profile"
+        evaluate "'${case.name}'"
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
+        Assert.Contains("EVALUATE 002 Profile", result.StdoutLines);
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

@@ -108,5 +108,52 @@ public sealed class CmgTestPlannerTests
         Assert.Equal("Disabled", tests[2].Options["reason"]);
     }
 
+    [Fact]
+    public void Plan_ExpandsParameterizedListTests()
+    {
+        var document = new CmgDslParser().Parse("flow.cmgscript", """
+        test.each "opens ${page}" as=page values="profile,checkout" tag=smoke {
+          caption "${page}"
+        }
+        """).Document!;
+
+        var tests = new CmgTestPlanner().Plan(document);
+
+        Assert.Equal(["opens profile", "opens checkout"], tests.Select(test => test.Name));
+        Assert.All(tests, test => Assert.Equal("smoke", test.Options["tag"]));
+        Assert.Equal(["set", "set", "caption"], tests[0].Actions.Select(action => action.Kind));
+        Assert.Equal(["page", "profile"], tests[0].Actions[1].Arguments);
+    }
+
+    [Fact]
+    public void Plan_TestEachCanUseEachOptionForRows()
+    {
+        var document = new CmgDslParser().Parse("flow.cmgscript", """
+        test.each "case ${item}" each="one,two" {
+          caption "${item}"
+        }
+        """).Document!;
+
+        var tests = new CmgTestPlanner().Plan(document);
+
+        Assert.Equal(["case one", "case two"], tests.Select(test => test.Name));
+    }
+
+    [Fact]
+    public void Plan_ExpandsParameterizedJsonObjectTests()
+    {
+        var document = new CmgDslParser().Parse("flow.cmgscript", """
+        test.each "opens ${case.name}" as=case json="[{\"name\":\"Profile\",\"selector\":\"#profile\"}]" {
+          click "${case.selector}"
+        }
+        """).Document!;
+
+        var test = Assert.Single(new CmgTestPlanner().Plan(document));
+
+        Assert.Equal("opens Profile", test.Name);
+        Assert.Contains(test.Actions, action => action.Kind == "set" && action.Arguments.SequenceEqual(["case.name", "Profile"]));
+        Assert.Contains(test.Actions, action => action.Kind == "set" && action.Arguments.SequenceEqual(["case.selector", "#profile"]));
+    }
+
     private static string FirstArgument(CmgNode node) => node.Arguments.FirstOrDefault() ?? node.Name;
 }
