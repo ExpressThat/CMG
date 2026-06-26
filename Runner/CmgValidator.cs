@@ -52,6 +52,10 @@ public sealed class CmgValidator
             "textcontent" or "innertext" or "inputvalue" or "getattribute" or
             "expectnotvisible" or "tobenotvisible" or "expectnothidden" or "tobenothidden" or
             "expectnotenabled" or "tobenotenabled" or "expectnotdisabled" or "tobenotdisabled" or
+            "expectnotattached" or "tobenotattached" or "expectnotdetached" or "tobenotdetached" or
+            "expectnoteditable" or "tobenoteditable" or "expectnotempty" or "tobenotempty" or
+            "expectnotfocused" or "tobenotfocused" or "expectnotinviewport" or "tobenotinviewport" or
+            "expectnotchecked" or "tobenotchecked" or
             "waitforvisible" or "waitforhidden";
 }
 

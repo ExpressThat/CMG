@@ -34,6 +34,26 @@ public sealed class CmgActionLowererExpectationAliasTests
         Assert.Equal(expected, line);
     }
 
+    [Theory]
+    [InlineData("expectNotAttached", "expectDetached \"#target\"")]
+    [InlineData("toBeNotAttached", "expectDetached \"#target\"")]
+    [InlineData("expectNotDetached", "expectAttached \"#target\"")]
+    [InlineData("toBeNotDetached", "expectAttached \"#target\"")]
+    [InlineData("expectNotEditable", "expectNotEditable \"#target\"")]
+    [InlineData("toBeNotEditable", "expectNotEditable \"#target\"")]
+    [InlineData("expectNotEmpty", "expectNotEmpty \"#target\"")]
+    [InlineData("toBeNotEmpty", "expectNotEmpty \"#target\"")]
+    [InlineData("expectNotFocused", "expectNotFocused \"#target\"")]
+    [InlineData("toBeNotFocused", "expectNotFocused \"#target\"")]
+    [InlineData("expectNotInViewport", "expectNotInViewport \"#target\"")]
+    [InlineData("toBeNotInViewport", "expectNotInViewport \"#target\"")]
+    public void Lower_NegativeStateAliasesUseCmgAssertions(string name, string expected)
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node(name, ["#target"])));
+
+        Assert.Equal(expected, line);
+    }
+
     [Fact]
     public void Lower_CypressContainsDefaultsToBody()
     {
@@ -78,6 +98,8 @@ public sealed class CmgActionLowererExpectationAliasTests
     [InlineData("unchecked")]
     [InlineData("expectUnchecked")]
     [InlineData("toBeUnchecked")]
+    [InlineData("expectNotChecked")]
+    [InlineData("toBeNotChecked")]
     public void Lower_UncheckedAliasesExpectFalseCheckedState(string name)
     {
         var line = new CmgActionLowerer().Lower(Node(name, ["#target"])).Last();

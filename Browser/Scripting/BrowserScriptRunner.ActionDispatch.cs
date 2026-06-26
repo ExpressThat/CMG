@@ -63,14 +63,18 @@ public sealed partial class BrowserScriptRunner
             "expecthidden" or "tobehidden" or "waitforhidden" or "expectnotvisible" or "tobenotvisible" or
             "expectenabled" or "tobeenabled" or "expectnotdisabled" or "tobenotdisabled" or
             "expectdisabled" or "tobedisabled" or "expectnotenabled" or "tobenotenabled" or
-            "expectattached" or "tobeattached" or "expectdetached" or "tobedetached" or
-            "expecteditable" or "tobeeditable" or "expectempty" or "tobeempty" or
-            "expectfocused" or "tobefocused" or "expectinviewport" or "tobeinviewport" or
+            "expectattached" or "tobeattached" or "expectnotdetached" or "tobenotdetached" or
+            "expectdetached" or "tobedetached" or "expectnotattached" or "tobenotattached" or
+            "expecteditable" or "tobeeditable" or "expectnoteditable" or "tobenoteditable" or
+            "expectempty" or "tobeempty" or "expectnotempty" or "tobenotempty" or
+            "expectfocused" or "tobefocused" or "expectnotfocused" or "tobenotfocused" or
+            "expectinviewport" or "tobeinviewport" or "expectnotinviewport" or "tobenotinviewport" or
             "expectvalue" or "tohavevalue" or "expectvalues" or "tohavevalues" or "expectattribute" or "tohaveattribute" or
             "expectclass" or "tohaveclass" or "expectid" or "tohaveid" or
             "expectcss" or "tohavecss" or "expectproperty" or "tohavejsproperty" or
             "expectaccessiblename" or "tohaveaccessiblename" or "expectrole" or "tohaverole" or
-            "expectchecked" or "tobechecked" or "unchecked" or "expectunchecked" or "tobeunchecked" or
+            "expectchecked" or "tobechecked" or "expectnotchecked" or "tobenotchecked" or
+            "unchecked" or "expectunchecked" or "tobeunchecked" or
             "expectcount" or "tohavecount" => ExecuteElementExpectation(remoteDebuggingUrl, automationClient, action),
             "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, automationClient, action),
             "expecteval" or "asserteval" or "expectexpression" or "assertexpression" =>

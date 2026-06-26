@@ -115,12 +115,14 @@ public sealed partial class BrowserScriptRunner
         "boundingbox", "alltextcontents", "allinnertexts", "expectvisible", "tobevisible", "waitforvisible",
         "expectnothidden", "tobenothidden", "expecthidden", "tobehidden", "waitforhidden", "expectnotvisible",
         "tobenotvisible", "expectenabled", "tobeenabled", "expectnotdisabled", "tobenotdisabled", "expectdisabled",
-        "tobedisabled", "expectnotenabled", "tobenotenabled", "expectattached", "tobeattached", "expectdetached", "tobedetached", "expecteditable",
-        "tobeeditable", "expectempty", "tobeempty", "expectfocused", "tobefocused", "expectinviewport",
-        "tobeinviewport", "expectvalue", "tohavevalue", "expectvalues", "tohavevalues", "expectattribute",
+        "tobedisabled", "expectnotenabled", "tobenotenabled", "expectattached", "tobeattached", "expectnotdetached",
+        "tobenotdetached", "expectdetached", "tobedetached", "expectnotattached", "tobenotattached", "expecteditable",
+        "tobeeditable", "expectnoteditable", "tobenoteditable", "expectempty", "tobeempty", "expectnotempty", "tobenotempty",
+        "expectfocused", "tobefocused", "expectnotfocused", "tobenotfocused", "expectinviewport",
+        "tobeinviewport", "expectnotinviewport", "tobenotinviewport", "expectvalue", "tohavevalue", "expectvalues", "tohavevalues", "expectattribute",
         "tohaveattribute", "expectclass", "tohaveclass", "expectid", "tohaveid", "expectcss", "tohavecss",
         "expectproperty", "tohavejsproperty", "expectaccessiblename", "tohaveaccessiblename", "expectrole",
-        "tohaverole", "expectchecked", "tobechecked", "unchecked", "expectunchecked", "tobeunchecked", "expectcount", "tohavecount", "evaluateonselector",
+        "tohaverole", "expectchecked", "tobechecked", "expectnotchecked", "tobenotchecked", "unchecked", "expectunchecked", "tobeunchecked", "expectcount", "tohavecount", "evaluateonselector",
         "evalonselector", "evaluateall", "evalall", "uploadfiles", "setinputfiles", "selectfile", "expectscreenshot",
         "tohavescreenshot", "download", "frame", "framelocator"
     };

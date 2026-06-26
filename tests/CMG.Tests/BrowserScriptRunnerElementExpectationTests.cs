@@ -83,7 +83,29 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     [InlineData("toBeNotEnabled", "disabled")]
     [InlineData("expectNotDisabled", "enabled")]
     [InlineData("toBeNotDisabled", "enabled")]
+    [InlineData("expectNotAttached", "detached")]
+    [InlineData("toBeNotAttached", "detached")]
+    [InlineData("expectNotDetached", "attached")]
+    [InlineData("toBeNotDetached", "attached")]
     public void RunText_NegativeElementStateAliasesUseInverseExpectation(string action, string mode)
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText($"{action} \"#target\" timeout=250", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains($"EXPECT 001 {mode} #target", result.StdoutLines);
+    }
+
+    [Theory]
+    [InlineData("expectNotEditable", "noteditable")]
+    [InlineData("toBeNotEditable", "noteditable")]
+    [InlineData("expectNotEmpty", "notempty")]
+    [InlineData("toBeNotEmpty", "notempty")]
+    [InlineData("expectNotFocused", "notfocused")]
+    [InlineData("toBeNotFocused", "notfocused")]
+    [InlineData("expectNotInViewport", "notinviewport")]
+    [InlineData("toBeNotInViewport", "notinviewport")]
+    public void RunText_NegativeElementStateAliasesUseNegativeModes(string action, string mode)
     {
         var client = new FakeAutomationClient();
         var result = Runner().RunText($"{action} \"#target\" timeout=250", "debug", client);
@@ -96,6 +118,8 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     [InlineData("unchecked")]
     [InlineData("expectUnchecked")]
     [InlineData("toBeUnchecked")]
+    [InlineData("expectNotChecked")]
+    [InlineData("toBeNotChecked")]
     public void RunText_UncheckedAliasesExpectFalseCheckedState(string action)
     {
         var client = new FakeAutomationClient();
@@ -120,10 +144,16 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     [InlineData("toBeNotDisabled \"#status\"")]
     [InlineData("toBeAttached \"#status\"")]
     [InlineData("toBeDetached \"#status\"")]
+    [InlineData("toBeNotAttached \"#status\"")]
+    [InlineData("toBeNotDetached \"#status\"")]
     [InlineData("toBeEditable \"#status\"")]
+    [InlineData("toBeNotEditable \"#status\"")]
     [InlineData("toBeEmpty \"#status\"")]
+    [InlineData("toBeNotEmpty \"#status\"")]
     [InlineData("toBeFocused \"#status\"")]
+    [InlineData("toBeNotFocused \"#status\"")]
     [InlineData("toBeInViewport \"#status\"")]
+    [InlineData("toBeNotInViewport \"#status\"")]
     [InlineData("toHaveValue \"#status\" \"Saved\"")]
     [InlineData("toHaveAttribute \"#status\" \"aria-label\" \"Saved\"")]
     [InlineData("toHaveClass \"#status\" \"ready\"")]
@@ -134,6 +164,7 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     [InlineData("toHaveRole \"#status\" \"button\"")]
     [InlineData("toBeChecked \"#status\"")]
     [InlineData("toBeUnchecked \"#status\"")]
+    [InlineData("toBeNotChecked \"#status\"")]
     [InlineData("toHaveCount \"#status\" 1")]
     public void RunText_PlaywrightExpectationAliasesExecute(string script)
     {

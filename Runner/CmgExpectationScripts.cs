@@ -66,9 +66,13 @@ public static class CmgExpectationScripts
             "disabled" => "const ok = element.matches(':disabled,[aria-disabled=\"true\"]'); const message = 'Expected element to be disabled.';",
             "attached" => "const ok = element.isConnected; const message = 'Expected element to be attached.';",
             "editable" => "const formEditable = element.matches('input,textarea,select') && !element.matches(':disabled,[readonly],[aria-disabled=\"true\"]'); const ok = formEditable || element.isContentEditable; const message = 'Expected element to be editable.';",
+            "noteditable" => "const formEditable = element.matches('input,textarea,select') && !element.matches(':disabled,[readonly],[aria-disabled=\"true\"]'); const ok = !(formEditable || element.isContentEditable); const message = 'Expected element not to be editable.';",
             "empty" => "const value = 'value' in element ? element.value : element.textContent; const ok = String(value ?? '').length === 0; const message = 'Expected element to be empty.';",
+            "notempty" => "const value = 'value' in element ? element.value : element.textContent; const ok = String(value ?? '').length > 0; const message = 'Expected element not to be empty.';",
             "focused" => "const ok = document.activeElement === element; const message = 'Expected element to be focused.';",
+            "notfocused" => "const ok = document.activeElement !== element; const message = 'Expected element not to be focused.';",
             "inviewport" => "const rect = element.getBoundingClientRect(); const ok = rect.bottom > 0 && rect.right > 0 && rect.top < innerHeight && rect.left < innerWidth; const message = 'Expected element to intersect the viewport.';",
+            "notinviewport" => "const rect = element.getBoundingClientRect(); const ok = rect.bottom <= 0 || rect.right <= 0 || rect.top >= innerHeight || rect.left >= innerWidth; const message = 'Expected element not to intersect the viewport.';",
             _ => string.Empty
         };
         if (mode.Equals("detached", StringComparison.Ordinal))
@@ -104,7 +108,8 @@ public static class CmgExpectationScripts
         "attribute" or "css" or "property" => 3,
         "checked" or "unchecked" => 1,
         "visible" or "hidden" or "enabled" or "disabled" or "attached" or "detached" or
-        "editable" or "empty" or "focused" or "inviewport" => 1,
+        "editable" or "noteditable" or "empty" or "notempty" or "focused" or "notfocused" or
+        "inviewport" or "notinviewport" => 1,
         _ => 2
     };
 
@@ -126,7 +131,8 @@ public static class CmgExpectationScripts
 
     private static bool IsStateMode(string mode) =>
         mode is "visible" or "hidden" or "enabled" or "disabled" or "attached" or "detached" or
-        "editable" or "empty" or "focused" or "inviewport";
+        "editable" or "noteditable" or "empty" or "notempty" or "focused" or "notfocused" or
+        "inviewport" or "notinviewport";
 
     private static CmgNode NormalizeLocatorArgument(CmgNode action)
     {

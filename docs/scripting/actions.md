@@ -1517,11 +1517,17 @@ expectNotEnabled "#archive"
 expectDisabled "#archive"
 expectNotDisabled "#save"
 expectAttached "#save"
+expectNotAttached "#toast"
 expectDetached "#toast"
+expectNotDetached "#save"
 expectEditable "#email"
+expectNotEditable "#readonly"
 expectEmpty "#empty"
+expectNotEmpty "#status"
 expectFocused "#email"
+expectNotFocused "#save"
 expectInViewport "#save"
+expectNotInViewport "#offscreen"
 expectValue "#email" "agent@example.com" timeout=5000
 expectValues "#plans" "basic" "pro" timeout=5000
 expectAttribute "#save" "aria-label" "Save"
@@ -1532,6 +1538,7 @@ expectProperty "#save" "dataset.ready" "true"
 expectAccessibleName "#save" "Save"
 expectRole "#save" "button"
 expectChecked "#terms" true
+expectNotChecked "#marketing"
 expectUnchecked "#marketing"
 expectCount ".result" 3 timeout=5000
 toHaveText "#status" "Saved"
@@ -1544,11 +1551,17 @@ toBeNotEnabled "#archive"
 toBeDisabled "#archive"
 toBeNotDisabled "#save"
 toBeAttached "#save"
+toBeNotAttached "#toast"
 toBeDetached "#toast"
+toBeNotDetached "#save"
 toBeEditable "#email"
+toBeNotEditable "#readonly"
 toBeEmpty "#empty"
+toBeNotEmpty "#status"
 toBeFocused "#email"
+toBeNotFocused "#save"
 toBeInViewport "#save"
+toBeNotInViewport "#offscreen"
 toHaveValue "#email" "agent@example.com"
 toHaveValues "#plans" "basic" "pro"
 toHaveAttribute "#save" "aria-label" "Save"
@@ -1559,11 +1572,12 @@ toHaveJSProperty "#save" "dataset.ready" "true"
 toHaveAccessibleName "#save" "Save"
 toHaveRole "#save" "button"
 toBeChecked "#terms" true
+toBeNotChecked "#marketing"
 toBeUnchecked "#marketing"
 toHaveCount ".result" 3
 ```
 
-Runs browser-side assertions for common UI state checks. The `toHave*` and `toBe*` forms are Playwright-style aliases over the matching CMG assertions. Negative state aliases map to the inverse state checks: `expectNotVisible`/`toBeNotVisible` use hidden semantics, `expectNotHidden`/`toBeNotHidden` use visible semantics, `expectNotEnabled`/`toBeNotEnabled` use disabled semantics, and `expectNotDisabled`/`toBeNotDisabled` use enabled semantics. `unchecked`, `expectUnchecked`, and `toBeUnchecked` assert a false checked state. `waitForVisible` and `waitForHidden` are provider-style wait aliases for the visible and hidden assertions. Element assertions resolve CMG locators before checking the matched element. Direct browser-control scripts also accept locator-form options such as `expectVisible text=Save` when the parser would otherwise treat `text=Save` as an option. `expectHidden`, `toBeHidden`, `waitForHidden`, `expectNotVisible`, and `toBeNotVisible` pass when no connected matching element exists. `expectDetached` and `toBeDetached` pass when no connected matching element exists. `expectValues` and `toHaveValues` compare selected option values in order. `expectAccessibleName` and `toHaveAccessibleName` check aria-label, alt, title, or text-derived accessible names. `expectRole` and `toHaveRole` check explicit roles and common implicit roles. `expectClass` accepts a class token or class-name fragment. `expectCSS` checks computed style values. `expectProperty` and `toHaveJSProperty` accept dotted DOM property paths such as `dataset.ready`. `expectCount` and `toHaveCount` count matching CSS elements and support zero-count assertions.
+Runs browser-side assertions for common UI state checks. The `toHave*` and `toBe*` forms are Playwright-style aliases over the matching CMG assertions. Negative state aliases map to inverse state checks, including `expectNotVisible`/`toBeNotVisible`, `expectNotAttached`/`toBeNotAttached`, `expectNotEditable`/`toBeNotEditable`, `expectNotEmpty`/`toBeNotEmpty`, `expectNotFocused`/`toBeNotFocused`, and `expectNotInViewport`/`toBeNotInViewport`. `expectNotChecked`, `unchecked`, `expectUnchecked`, and `toBeUnchecked` assert a false checked state. `waitForVisible` and `waitForHidden` are provider-style wait aliases for the visible and hidden assertions. Element assertions resolve CMG locators before checking the matched element. Direct browser-control scripts also accept locator-form options such as `expectVisible text=Save` when the parser would otherwise treat `text=Save` as an option. `expectHidden`, `toBeHidden`, `waitForHidden`, `expectNotVisible`, and `toBeNotVisible` pass when no connected matching element exists. `expectDetached`, `toBeDetached`, `expectNotAttached`, and `toBeNotAttached` pass when no connected matching element exists. `expectValues` and `toHaveValues` compare selected option values in order. `expectAccessibleName` and `toHaveAccessibleName` check aria-label, alt, title, or text-derived accessible names. `expectRole` and `toHaveRole` check explicit roles and common implicit roles. `expectClass` accepts a class token or class-name fragment. `expectCSS` checks computed style values. `expectProperty` and `toHaveJSProperty` accept dotted DOM property paths such as `dataset.ready`. `expectCount` and `toHaveCount` count matching CSS elements and support zero-count assertions.
 
 Options:
 
@@ -1571,7 +1585,7 @@ Options:
 
 Output:
 
-- `EXPECT <line> <visible|hidden|enabled|disabled|attached|detached|editable|empty|focused|inviewport|value|values|attribute|class|id|css|property|accessiblename|role|checked|unchecked|count> <selector>` for direct element assertion actions and aliases.
+- `EXPECT <line> <visible|hidden|enabled|disabled|attached|detached|editable|noteditable|empty|notempty|focused|notfocused|inviewport|notinviewport|value|values|attribute|class|id|css|property|accessiblename|role|checked|unchecked|count> <selector>` for direct element assertion actions and aliases.
 
 ### `waitForUrl`
 
