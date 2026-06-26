@@ -21,7 +21,7 @@ cmg browser control capture getElement <selector> (--html | --screenshot) [--out
 
 - Connects to the selected CMG browser automation endpoint.
 - Searches available page targets until the selector or locator is found.
-- Supports the same rich locators as scripts, including `text=`, `textExact=`, `textRegex=`, `role=`, `role=role|name`, `roleRegex=role|nameRegex`, `label=`, `labelExact=`, `labelRegex=`, `testid=`, `testId=`, `data-testid=`, `placeholder=`, `placeholderExact=`, `placeholderRegex=`, `alt=`, `altExact=`, `altRegex=`, `title=`, `titleExact=`, `titleRegex=`, `xpath=`, `first=`, `last=`, `nth=selector|index`, `has=selector|childSelector`, `hasNot=selector|childSelector`, `hasText=selector|text`, `hasNotText=selector|text`, `visible=`, `shadow=hostSelector|innerSelector`, and `shadowText=hostSelector|text`.
+- Supports the same rich locators as scripts, including `text=`, `textExact=`, `textRegex=`, `role=`, `role=role|name`, `roleRegex=role|nameRegex`, `label=`, `labelExact=`, `labelRegex=`, `testid=`, `testId=`, `data-testid=`, `placeholder=`, `placeholderExact=`, `placeholderRegex=`, `alt=`, `altExact=`, `altRegex=`, `title=`, `titleExact=`, `titleRegex=`, `xpath=`, `first=`, `last=`, `nth=selector|index`, `has=selector|childSelector`, `hasNot=selector|childSelector`, `hasText=selector|text`, `hasNotText=selector|text`, `visible=`, `or=selector|selector`, `and=selector|selector`, `shadow=hostSelector|innerSelector`, and `shadowText=hostSelector|text`.
 - `--html` reads the selected element without scrolling.
 - `--screenshot` scrolls the selected element into view before capture.
 - Exactly one output mode must be provided: `--html` or `--screenshot`.

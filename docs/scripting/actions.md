@@ -2202,6 +2202,9 @@ Direct browser-control scripts and `cmg run` both support:
   - `"hasText=.item|Save"` resolves the first matching CSS element whose visible/text content includes `Save`.
   - `"hasNotText=.item|Draft"` resolves the first matching CSS element whose visible/text content does not include `Draft`.
   - `"visible=.item"` resolves the first matching CSS element that has a non-empty box and is not hidden by `display:none` or `visibility:hidden`.
+- Composition locators:
+  - `"or=.primary|.secondary"` resolves the first `.primary` element, or the first `.secondary` element if no `.primary` exists.
+  - `"and=.item|.selected"` resolves the first `.item` element that also matches `.selected`.
 - Open shadow DOM locators:
   - `"shadow=#host|button.save"` resolves `button.save` inside `#host`'s open shadow root.
   - `"shadowText=#host|Shadow Save"` resolves the first descendant inside `#host`'s open shadow root whose text contains `Shadow Save`.
@@ -2221,6 +2224,8 @@ type labelExact=Email "agent@example.com"
 click "text=Save changes"
 click "nth=.result|2"
 click "has=.card|button.primary"
+click "or=.primary|.secondary"
+click "and=.item|.selected"
 click "shadow=#host|button.save"
 assertText "hasText=.toast|Saved" "Saved"
 mouseMove selector="text=Drop here" edge=center

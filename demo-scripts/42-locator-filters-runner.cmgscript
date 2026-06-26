@@ -1,5 +1,5 @@
 test "locator filters" {
-  setContent "<main><button class='cmd' onclick='result.textContent=\"first\"'>First</button><button class='cmd' onclick='result.textContent=\"second\"'>Second <span class='badge'>New</span></button><button class='cmd hidden' style='display:none'>Hidden</button><output id='result'>none</output></main>"
+  setContent "<main><button class='cmd primary' onclick='result.textContent=\"first\"'>First</button><button class='cmd secondary' onclick='result.textContent=\"second\"'>Second <span class='badge'>New</span></button><button class='cmd hidden' style='display:none'>Hidden</button><output id='result'>none</output></main>"
 
   click "textExact=First"
   expectText "#result" "first"
@@ -32,4 +32,10 @@ test "locator filters" {
   expectText "#result" "first"
 
   click "visible=.cmd"
+
+  click "or=.missing|.secondary"
+  expectText "#result" "second"
+
+  click "and=.cmd|.primary"
+  expectText "#result" "first"
 }

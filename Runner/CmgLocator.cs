@@ -1,6 +1,6 @@
 namespace CMG.Runner;
 
-public static class CmgLocator
+public static partial class CmgLocator
 {
     public static CmgResolvedLocator Resolve(string locator, int lineNumber)
     {
@@ -74,6 +74,8 @@ public static class CmgLocator
         locator.StartsWith("hasText=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("hasNotText=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("visible=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("or=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("and=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("shadow=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("shadowText=", StringComparison.OrdinalIgnoreCase);
 
@@ -135,6 +137,8 @@ public static class CmgLocator
             "hastext" => BuildHasTextExpression(value),
             "hasnottext" => BuildHasNotTextExpression(value),
             "visible" => $"Array.from(document.querySelectorAll({QuoteJs(value)})).find(IsVisible)",
+            "or" => BuildOrExpression(value),
+            "and" => BuildAndExpression(value),
             "shadow" => BuildShadowExpression(value),
             "shadowtext" => BuildShadowTextExpression(value),
             _ => "null"

@@ -47,5 +47,5 @@ public sealed partial class BrowserScriptRunner
             "role" or "roleRegex" or "label" or "labelExact" or "labelRegex" or "placeholder" or "placeholderExact" or
             "placeholderRegex" or "alt" or "altExact" or "altRegex" or "title" or "titleExact" or "titleRegex" or "xpath" or
             "first" or "last" or "nth" or "has" or "hasNot" or "hasText" or "hasNotText" or "visible" or
-            "shadow" or "shadowText";
+            "or" or "and" or "shadow" or "shadowText";
 }

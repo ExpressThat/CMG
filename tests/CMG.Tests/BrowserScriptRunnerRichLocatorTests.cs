@@ -58,6 +58,8 @@ public sealed class BrowserScriptRunnerRichLocatorTests
     [InlineData("roleRegex=button|^Save", "new RegExp('^Save').test(accessibleName(e))")]
     [InlineData("labelExact=Email", ".trim() === 'Email'")]
     [InlineData("labelRegex=^Email", "new RegExp('^Email')")]
+    [InlineData("or=.primary|.secondary", "document.querySelector('.primary') ?? document.querySelector('.secondary')")]
+    [InlineData("and=.item|.selected", "e.matches('.selected')")]
     [InlineData("shadow=#host|button.save", "shadowRoot?.querySelector('button.save')")]
     [InlineData("shadowText=#host|Shadow Save", "shadowRoot?.querySelectorAll('*')")]
     public void RunText_ClickResolvesAdvancedFilterLocatorOptions(string locator, string expectedExpression)

@@ -800,9 +800,11 @@ click "has=.command|.badge"
 click "hasNot=.command|.badge"
 assertText "hasText=.toast|Saved" "Saved"
 assertText "hasNotText=.toast|Draft" "Saved"
+click "or=.primary|.fallback"
+click "and=.command|.enabled"
 ```
 
-The same locator resolver is used by direct browser-control scripts and `cmg run`. Filter locators such as `first=`, `last=`, `nth=`, `has=`, `hasNot=`, `hasText=`, `hasNotText=`, `visible=`, `shadow=`, and `shadowText=` resolve matches into a temporary marker. Pointer-aware actions still move the virtual pointer to the resolved element marker, so GIFs keep the pointer, browser events, and drag ghost behavior aligned.
+The same locator resolver is used by direct browser-control scripts and `cmg run`. Filter locators such as `first=`, `last=`, `nth=`, `has=`, `hasNot=`, `hasText=`, `hasNotText=`, `visible=`, `or=`, `and=`, `shadow=`, and `shadowText=` resolve matches into a temporary marker. Pointer-aware actions still move the virtual pointer to the resolved element marker, so GIFs keep the pointer, browser events, and drag ghost behavior aligned.
 
 Shadow DOM locators require an open shadow root. Use `shadow=hostSelector|innerSelector` when you know the inner CSS selector, or `shadowText=hostSelector|text` to select the first shadow descendant containing text.
 
