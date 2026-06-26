@@ -13,6 +13,11 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "innerText", "Read element innerText."));
         command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "inputValue", "Read input-like element value."));
         command.Subcommands.Add(BuildGetAttributeCommand(browserOptions));
+        command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "count", "Count matching elements."));
+        command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "locatorCount", "Count matching elements."));
+        command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "boundingBox", "Read an element bounding box."));
+        command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "allTextContents", "Read textContent for all matching elements."));
+        command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "allInnerTexts", "Read innerText for all matching elements."));
         command.Subcommands.Add(BuildSelectorEvaluateCommand(browserOptions, "evaluateOnSelector", "Evaluate JavaScript with one selected element."));
         command.Subcommands.Add(BuildSelectorEvaluateCommand(browserOptions, "evalOnSelector", "Evaluate JavaScript with one selected element."));
         command.Subcommands.Add(BuildSelectorEvaluateCommand(browserOptions, "evaluateAll", "Evaluate JavaScript with all matching elements."));

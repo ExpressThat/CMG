@@ -10,6 +10,11 @@ public sealed class BrowserControlCommandBuilderPageRuntimeAliasTests
     [InlineData("runtime evalOnSelector #title \"el => el.textContent\"", "evalOnSelector \"#title\" \"el => el.textContent\"")]
     [InlineData("runtime evalAll .row \"els => els.length\"", "evalAll \".row\" \"els => els.length\"")]
     [InlineData("runtime evaluateOnNewDocument \"window.ready = true\"", "evaluateOnNewDocument \"window.ready = true\"")]
+    [InlineData("runtime count .row", "count \".row\"")]
+    [InlineData("runtime locatorCount .row", "locatorCount \".row\"")]
+    [InlineData("runtime boundingBox #card", "boundingBox \"#card\"")]
+    [InlineData("runtime allTextContents .item", "allTextContents \".item\"")]
+    [InlineData("runtime allInnerTexts .item", "allInnerTexts \".item\"")]
     public void RuntimeAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();

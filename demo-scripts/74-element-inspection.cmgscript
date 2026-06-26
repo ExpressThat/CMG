@@ -1,0 +1,8 @@
+setContent "<!doctype html><title>Element Inspection</title><main><h1>Inventory</h1><ul><li>One</li><li>Two</li><li>Three</li></ul></main>"
+set itemCount {
+  count "li"
+}
+allTextContents "li"
+allInnerTexts "li"
+boundingBox "h1"
+expectEval "'${itemCount}' === '3'"

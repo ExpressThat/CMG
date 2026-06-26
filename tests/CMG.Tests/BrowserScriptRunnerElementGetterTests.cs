@@ -33,6 +33,47 @@ public sealed class BrowserScriptRunnerElementGetterTests
     }
 
     [Fact]
+    public void RunText_CountReturnsCountPayload()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("3");
+
+        var result = Runner().RunText("count \".row\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("querySelectorAll(\".row\").length", client.LastExpression);
+        Assert.Contains("COUNT 001 3", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_BoundingBoxReturnsJsonPayload()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"x":1,"y":2,"width":3,"height":4}""");
+
+        var result = Runner().RunText("boundingBox \"#card\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("getBoundingClientRect", client.LastExpression);
+        Assert.Contains("""BOUNDING_BOX 001 {"x":1,"y":2,"width":3,"height":4}""", result.StdoutLines);
+    }
+
+    [Theory]
+    [InlineData("allTextContents", "textContent")]
+    [InlineData("allInnerTexts", "innerText")]
+    public void RunText_AllTextGettersReturnJsonPayload(string action, string property)
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""["One","Two"]""");
+
+        var result = Runner().RunText($"{action} \".item\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains($".{property}", client.LastExpression);
+        Assert.Contains("""TEXTS 001 ["One","Two"]""", result.StdoutLines);
+    }
+
+    [Fact]
     public void RunText_SetBlockStoresAttributePayload()
     {
         var client = new FakeAutomationClient();
@@ -49,6 +90,24 @@ public sealed class BrowserScriptRunnerElementGetterTests
         Assert.True(result.Success);
         Assert.Contains("ATTRIBUTE 002 /profile", result.StdoutLines);
         Assert.Contains("SET 001 href /profile", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_SetBlockStoresCountPayload()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("2");
+        client.EvaluateResponses.Enqueue("2");
+
+        var result = Runner().RunText("""
+        set total {
+          count ".item"
+        }
+        evaluate "'${total}'"
+        """, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("SET 001 total 2", result.StdoutLines);
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

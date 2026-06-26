@@ -77,7 +77,7 @@ public sealed partial class CmgActionLowerer
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" or
             "printpdf" or "pdf" or
             "addinitscript" or "evaluateonnewdocument" or "addscripttag" or "addstyletag" or "exposefunction" or "exposebinding" or "url" or "title" or "content" or "setcontent" or
-            "textcontent" or "innertext" or "inputvalue" or "getattribute" =>
+            "textcontent" or "innertext" or "inputvalue" or "getattribute" or "count" or "locatorcount" or "boundingbox" or "alltextcontents" or "allinnertexts" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "set" => LowerSet(action),
             "evaluate" or "expecteval" or "asserteval" or "expectexpression" or "assertexpression" or

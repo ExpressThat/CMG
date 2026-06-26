@@ -869,15 +869,18 @@ Use `emulate` before navigation when the page reads environment values during st
 
 ```text
 test "inspects generated page" {
-  setContent "<main><h1>CMG</h1></main>"
+  setContent "<main><h1>CMG</h1><ul><li>One</li><li>Two</li></ul></main>"
   title
   url
   content
+  count "li"
+  allTextContents "li"
+  boundingBox "h1"
   toHaveText "h1" "CMG"
 }
 ```
 
-Use `url`, `title`, and `content` when a script needs page state as parseable output. Use `setContent` for generated test pages or AI-driven browser setup.
+Use `url`, `title`, `content`, element counts, text arrays, and bounding boxes when a script needs page state as parseable output. Use `setContent` for generated test pages or AI-driven browser setup.
 
 ## File Upload
 

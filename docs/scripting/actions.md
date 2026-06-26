@@ -587,9 +587,15 @@ textContent "#status"
 innerText "#status"
 inputValue "#email"
 getAttribute "#profile" "href"
+count ".row"
+boundingBox "#card"
+allTextContents ".item"
+allInnerTexts ".item"
 ```
 
 Reads element values from a selector or rich locator. These are non-visual getter actions for direct browser-control scripts and `cmg run`; they do not move the virtual pointer. Missing elements fail with the selector-specific reason from the browser.
+
+`count` and `locatorCount` return the number of matching elements. `boundingBox` returns a JSON object with `x`, `y`, `width`, and `height`. `allTextContents` and `allInnerTexts` return JSON arrays.
 
 The output payload is just the retrieved value, so a `set` block stores only that value:
 
@@ -604,6 +610,9 @@ Output:
 - `TEXT <line> <text>` for `textContent` and `innerText`.
 - `VALUE <line> <value>` for `inputValue`.
 - `ATTRIBUTE <line> <value>` for `getAttribute`.
+- `COUNT <line> <number>` for `count` and `locatorCount`.
+- `BOUNDING_BOX <line> <json>` for `boundingBox`.
+- `TEXTS <line> <json-array>` for `allTextContents` and `allInnerTexts`.
 
 ## `addInitScript` And `evaluateOnNewDocument`
 

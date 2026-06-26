@@ -12,6 +12,11 @@ cmg browser control page runtime [command] [options]
 - [`innerText`](innerText.md): Read element `innerText`.
 - [`inputValue`](inputValue.md): Read an input-like element value.
 - [`getAttribute`](getAttribute.md): Read an element attribute.
+- [`count`](count.md): Count matching elements.
+- [`locatorCount`](locatorCount.md): Count matching elements.
+- [`boundingBox`](boundingBox.md): Read an element bounding box.
+- [`allTextContents`](allTextContents.md): Read `textContent` for all matching elements.
+- [`allInnerTexts`](allInnerTexts.md): Read `innerText` for all matching elements.
 - [`evaluateOnSelector`](evaluateOnSelector.md): Evaluate JavaScript with one selected element.
 - [`evalOnSelector`](evalOnSelector.md): Evaluate JavaScript with one selected element.
 - [`evaluateAll`](evaluateAll.md): Evaluate JavaScript with all matching elements.
@@ -30,3 +35,11 @@ cmg browser control page runtime [command] [options]
 - Writes `PASS` and parseable action output lines to stdout.
 - Writes browser, selector, file, parse, or action errors to stderr.
 - Exits `0` on success and `1` on failure.
+
+## Examples
+
+```powershell
+cmg browser control page runtime count ".row"
+cmg browser control page runtime boundingBox "#card"
+cmg browser control page runtime allTextContents ".item"
+```

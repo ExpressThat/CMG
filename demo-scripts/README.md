@@ -161,6 +161,8 @@ dotnet run -- --firefox browser close
 - `71-device-emulation-runner.cmgscript`: Demonstrates named-device emulation in the structured runner DSL.
 - `72-script-tracing.cmgscript`: Demonstrates direct-script partial trace capture.
 - `73-script-tracing-runner.cmgscript`: Demonstrates partial trace capture in the structured runner DSL.
+- `74-element-inspection.cmgscript`: Demonstrates element count, text array, and bounding box getters in a direct script.
+- `75-element-inspection-runner.cmgscript`: Demonstrates element inspection getters in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.
