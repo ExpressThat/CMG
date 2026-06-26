@@ -8,7 +8,7 @@ cmg browser control events waitForEvent <event> [matcher] [options]
 
 ## Arguments
 
-- `<event>`: Event name, such as `dialog`, `console`, `request`, `response`, `worker`, `serviceWorker`, or `download`.
+- `<event>`: Event name, such as `dialog`, `console`, `request`, `response`, `worker`, `serviceWorker`, `websocket`, `websocketMessage`, or `download`.
 - `[matcher]`: Optional event matcher text.
 
 ## Options
@@ -18,6 +18,9 @@ cmg browser control events waitForEvent <event> [matcher] [options]
 - `--count <count>`: Expected tab or popup count.
 - `--directory <directory>`: Download directory.
 - `--pattern <pattern>`: Download file glob or URL/message matcher.
+- `--url <url>`: URL matcher alias for network, WebSocket, worker, tab, or page events.
+- `--message <message>`: Message matcher alias for dialog, console, page-error, or WebSocket-message events.
+- `--text <text>`: Text matcher alias for dialog, console, and page-error events.
 - `--method <method>`: HTTP method filter.
 - `--status <status>`: HTTP status filter.
 - `--contains <text>`: Body, response, or error text filter.
@@ -47,4 +50,6 @@ Writes browser, argument, timeout, parse, or action errors.
 cmg browser control events waitForEvent response "/api/profile" --status 200 --timeout 5000
 cmg browser control events waitForEvent console "^Ready$" --match regex --ignore-case
 cmg browser control events waitForEvent worker "worker.js" --match contains
+cmg browser control events waitForEvent websocket --url "/socket" --match exact
+cmg browser control events waitForEvent websocketMessage --message "ready"
 ```

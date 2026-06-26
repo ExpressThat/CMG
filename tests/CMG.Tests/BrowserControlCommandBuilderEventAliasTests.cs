@@ -26,6 +26,9 @@ public sealed class BrowserControlCommandBuilderEventAliasTests
     [InlineData("waitForEvent console Ready --match exact --ignore-case", "waitForEvent \"console\" \"Ready\" match=\"exact\" ignoreCase=\"true\"")]
     [InlineData("waitForEvent worker worker.js --match regex", "waitForEvent \"worker\" \"worker.js\" match=\"regex\"")]
     [InlineData("wait serviceWorker sw.js --timeout 5000", "waitForEvent \"serviceWorker\" \"sw.js\" timeout=\"5000\"")]
+    [InlineData("wait websocket --url /socket --match exact", "waitForEvent \"websocket\" url=\"/socket\" match=\"exact\"")]
+    [InlineData("waitForEvent websocketMessage --message ready --ignore-case", "waitForEvent \"websocketMessage\" message=\"ready\" ignoreCase=\"true\"")]
+    [InlineData("wait pageError --text Boom", "waitForEvent \"pageError\" text=\"Boom\"")]
     public void EventAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();

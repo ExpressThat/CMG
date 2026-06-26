@@ -18,6 +18,8 @@ Start here:
 - `commands/<group>/<command>.md`: leaf command documentation.
 - `scripting/action-index.md`: compact table of script action groups.
 - `scripting/script-vs-runner.md`: comparison of direct browser-control scripts and structured runner tests.
+- `scripting/examples.md`: guided learning examples for the first GIF, first test, visual evidence, variables, macros, and failures.
+- `scripting/cookbook-reference.md`: full advanced cookbook for specific automation patterns.
 - `scripting/actions.md`: detailed action reference.
 - `scripting/style-guide.md`: conventions for maintainable CMG scripts and tests.
 

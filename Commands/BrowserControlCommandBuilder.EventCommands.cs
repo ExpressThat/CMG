@@ -160,7 +160,7 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildWaitForEventCommand(BrowserSelectionOptions browserOptions, string name = "wait")
     {
-        var eventName = new Argument<string>("event") { Description = "Event name, such as dialog, console, request, response, worker, or download." };
+        var eventName = new Argument<string>("event") { Description = "Event name, such as dialog, console, request, response, worker, websocket, websocketMessage, or download." };
         var matcher = new Argument<string?>("matcher") { Description = "Optional event matcher text.", Arity = ArgumentArity.ZeroOrOne };
         var command = new Command(name, "Wait for a supported browser event.") { eventName, matcher };
         var timeout = CliIntOption("--timeout", "Timeout in milliseconds.");
@@ -168,20 +168,23 @@ public sealed partial class BrowserControlCommandBuilder
         var count = CliIntOption("--count", "Expected tab or popup count.");
         var directory = new Option<DirectoryInfo?>("--directory") { Description = "Download directory." };
         var pattern = CliStringOption("--pattern", "Download file glob or URL/message matcher.");
+        var url = CliStringOption("--url", "URL matcher alias for network, websocket, worker, or page events.");
+        var message = CliStringOption("--message", "Message matcher alias for dialog, console, page-error, or websocket-message events.");
+        var text = CliStringOption("--text", "Text matcher alias for dialog, console, and page-error events.");
         var method = CliStringOption("--method", "HTTP method filter.");
         var status = CliIntOption("--status", "HTTP status filter.");
         var contains = CliStringOption("--contains", "Body, response, or error text filter.");
         var mocked = CliStringOption("--mocked", "Whether to match mocked or real traffic: true or false.");
         var match = NavigationMatchOption();
         var ignoreCase = NavigationIgnoreCaseOption();
-        foreach (var option in new Option[] { timeout, level, count, directory, pattern, method, status, contains, mocked, match, ignoreCase })
+        foreach (var option in new Option[] { timeout, level, count, directory, pattern, url, message, text, method, status, contains, mocked, match, ignoreCase })
         {
             command.Options.Add(option);
         }
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("waitForEvent", EventArguments(parseResult, eventName, matcher), EventOptions(parseResult, timeout, level, count, directory, pattern, method, status, contains, mocked, match, ignoreCase))));
+            ToScriptLine("waitForEvent", EventArguments(parseResult, eventName, matcher), EventOptions(parseResult, timeout, level, count, directory, pattern, url, message, text, method, status, contains, mocked, match, ignoreCase))));
 
         return command;
     }

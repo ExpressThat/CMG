@@ -30,4 +30,5 @@ cmg browser control events [command] [options]
 cmg browser control events dialogs behavior accept --prompt-text "CMG"
 cmg browser control events console wait "ready" --level log --timeout 5000
 cmg browser control events wait response "/api/profile" --status 200
+cmg browser control events wait websocket --url "/socket" --match exact
 ```

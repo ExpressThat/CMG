@@ -36,6 +36,7 @@ If you are new to CMG, read this guide in order:
 - [GIF Recording](gif-recording.md)
 - [Style Guide](style-guide.md)
 - [Examples](examples.md)
+- [Cookbook Reference](cookbook-reference.md)
 - [Errors](errors.md)
 - [Migration Guide](migration.md)
 
