@@ -10,6 +10,8 @@ cmg browser control page [command] [options]
 
 - [`evaluate`](evaluate.md): Evaluate JavaScript in the primary page.
 - [`setViewport`](setViewport.md): Set viewport dimensions.
+- [`viewport`](viewport.md): Set viewport dimensions.
+- [`setViewportSize`](setViewportSize.md): Set viewport dimensions.
 - [`showMessageBar`](showMessageBar.md): Inject or update a fixed message bar at the top of the page.
 - [`delay`](delay.md): Pause for a duration.
 - [`runtime`](runtime/index.md): Element getters, selector evaluation, and page setup commands.
@@ -27,6 +29,7 @@ cmg browser control page [command] [options]
 ```powershell
 cmg browser control page evaluate "document.title"
 cmg browser control page setViewport --width 1280 --height 720
+cmg browser control page viewport --width 390 --height 844 --mobile --touch
 cmg browser control page showMessageBar "Working"
 cmg browser control page delay 250
 cmg browser control page runtime textContent "h1"

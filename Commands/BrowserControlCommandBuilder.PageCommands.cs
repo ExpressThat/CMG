@@ -10,7 +10,9 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command("page", "Page evaluation, viewport, and utility commands.");
 
         command.Subcommands.Add(BuildEvaluateCommand(browserOptions));
-        command.Subcommands.Add(BuildSetViewportCommand(browserOptions));
+        command.Subcommands.Add(BuildSetViewportCommand(browserOptions, "setViewport"));
+        command.Subcommands.Add(BuildSetViewportCommand(browserOptions, "viewport"));
+        command.Subcommands.Add(BuildSetViewportCommand(browserOptions, "setViewportSize"));
         command.Subcommands.Add(BuildShowMessageBarCommand(browserOptions));
         command.Subcommands.Add(BuildDelayCommand(browserOptions));
         command.Subcommands.Add(BuildPageRuntimeGroup(browserOptions));

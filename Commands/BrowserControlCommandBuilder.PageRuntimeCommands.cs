@@ -14,8 +14,11 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "inputValue", "Read input-like element value."));
         command.Subcommands.Add(BuildGetAttributeCommand(browserOptions));
         command.Subcommands.Add(BuildSelectorEvaluateCommand(browserOptions, "evaluateOnSelector", "Evaluate JavaScript with one selected element."));
+        command.Subcommands.Add(BuildSelectorEvaluateCommand(browserOptions, "evalOnSelector", "Evaluate JavaScript with one selected element."));
         command.Subcommands.Add(BuildSelectorEvaluateCommand(browserOptions, "evaluateAll", "Evaluate JavaScript with all matching elements."));
-        command.Subcommands.Add(BuildInitScriptCommand(browserOptions));
+        command.Subcommands.Add(BuildSelectorEvaluateCommand(browserOptions, "evalAll", "Evaluate JavaScript with all matching elements."));
+        command.Subcommands.Add(BuildInitScriptCommand(browserOptions, "addInitScript", "addInitScript"));
+        command.Subcommands.Add(BuildInitScriptCommand(browserOptions, "evaluateOnNewDocument", "evaluateOnNewDocument"));
         command.Subcommands.Add(BuildTagCommand(browserOptions, "addScriptTag", "Inject a script tag."));
         command.Subcommands.Add(BuildTagCommand(browserOptions, "addStyleTag", "Inject a style tag or stylesheet link."));
         command.Subcommands.Add(BuildExposeCommand(browserOptions, "exposeFunction", "Expose a deterministic page-side function."));
@@ -56,14 +59,14 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildInitScriptCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildInitScriptCommand(BrowserSelectionOptions browserOptions, string name, string action)
     {
         var source = OptionalTextArgument("source", "Inline JavaScript source.");
         var path = new Option<FileInfo?>("--path") { Description = "JavaScript file to register." };
-        var command = new Command("addInitScript", "Register JavaScript for future documents.") { source, path };
+        var command = new Command(name, "Register JavaScript for future documents.") { source, path };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("addInitScript", OptionalArgument(parseResult, source), CompactOptions([
+            ToScriptLine(action, OptionalArgument(parseResult, source), CompactOptions([
                 StringOption("path", parseResult.GetValue(path)?.FullName)
             ]))));
         return command;

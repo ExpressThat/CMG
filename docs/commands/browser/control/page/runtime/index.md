@@ -13,8 +13,11 @@ cmg browser control page runtime [command] [options]
 - [`inputValue`](inputValue.md): Read an input-like element value.
 - [`getAttribute`](getAttribute.md): Read an element attribute.
 - [`evaluateOnSelector`](evaluateOnSelector.md): Evaluate JavaScript with one selected element.
+- [`evalOnSelector`](evalOnSelector.md): Evaluate JavaScript with one selected element.
 - [`evaluateAll`](evaluateAll.md): Evaluate JavaScript with all matching elements.
+- [`evalAll`](evalAll.md): Evaluate JavaScript with all matching elements.
 - [`addInitScript`](addInitScript.md): Register JavaScript for future documents.
+- [`evaluateOnNewDocument`](evaluateOnNewDocument.md): Register JavaScript for future documents.
 - [`addScriptTag`](addScriptTag.md): Inject a script tag.
 - [`addStyleTag`](addStyleTag.md): Inject a style tag or stylesheet link.
 - [`exposeFunction`](exposeFunction.md): Expose a deterministic page-side function.

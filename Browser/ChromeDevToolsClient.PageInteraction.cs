@@ -86,7 +86,10 @@ public sealed partial class ChromeDevToolsClient
             await session.SendCommand("Emulation.setTouchEmulationEnabled", writer =>
             {
                 writer.WriteBoolean("enabled", options.HasTouch);
-                writer.WriteNumber("maxTouchPoints", options.HasTouch ? 1 : 0);
+                if (options.HasTouch)
+                {
+                    writer.WriteNumber("maxTouchPoints", 1);
+                }
             });
             if (options.HasTouch || options.IsMobile)
             {

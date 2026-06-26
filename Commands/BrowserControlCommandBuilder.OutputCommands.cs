@@ -161,7 +161,7 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildSetViewportCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildSetViewportCommand(BrowserSelectionOptions browserOptions, string name)
     {
         var widthOption = new Option<int>("--width")
         {
@@ -186,7 +186,7 @@ public sealed partial class BrowserControlCommandBuilder
             Description = "Enable touch viewport hints."
         };
 
-        var command = new Command("setViewport", "Set viewport dimensions.")
+        var command = new Command(name, "Set viewport dimensions.")
         {
             widthOption,
             heightOption,
