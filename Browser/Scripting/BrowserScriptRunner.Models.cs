@@ -31,6 +31,8 @@ internal sealed class ScriptExecutionContext
 
     public int? AssertionTimeout { get; set; }
 
+    public string? BaseUrl { get; set; }
+
     public List<string> SoftFailures { get; } = [];
 
     public int CurrentVariableScopeIndex => variableScopes.Count - 1;

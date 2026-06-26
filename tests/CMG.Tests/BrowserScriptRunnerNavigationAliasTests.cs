@@ -16,6 +16,32 @@ public sealed class BrowserScriptRunnerNavigationAliasTests
     }
 
     [Fact]
+    public void RunText_NavigateResolvesRelativeTargetAgainstBaseUrl()
+    {
+        var result = Runner().RunText(
+            "navigate \"checkout\"",
+            "debug",
+            new FakeAutomationClient(),
+            baseUrl: "https://example.test/app/");
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("NAVIGATED 001 https://example.test/app/checkout", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_NavigateReportsInvalidBaseUrl()
+    {
+        var result = Runner().RunText(
+            "navigate \"checkout\"",
+            "debug",
+            new FakeAutomationClient(),
+            baseUrl: "example.test");
+
+        Assert.False(result.Success);
+        Assert.Contains("baseUrl must be an absolute URL", result.Error);
+    }
+
+    [Fact]
     public void RunText_NavigateCanWaitForProviderLoadState()
     {
         var client = new FakeAutomationClient();

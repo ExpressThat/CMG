@@ -57,11 +57,21 @@ public sealed partial class BrowserScriptRunner
             : ScriptReadResult.Fail(expanded.Error ?? "Could not import script.");
     }
 
-    private static string NormalizeNavigationTarget(string target)
+    private static string NormalizeNavigationTarget(string target, string? baseUrl = null)
     {
         if (File.Exists(target))
         {
             return new Uri(Path.GetFullPath(target)).AbsoluteUri;
+        }
+
+        if (IsAbsoluteUri(target))
+        {
+            return target;
+        }
+
+        if (!string.IsNullOrWhiteSpace(baseUrl))
+        {
+            return new Uri(new Uri(baseUrl), target).AbsoluteUri;
         }
 
         if (LooksLikeLocalPath(target))
@@ -71,6 +81,21 @@ public sealed partial class BrowserScriptRunner
 
         return target;
     }
+
+    private static string? NormalizeBaseUrl(string? baseUrl)
+    {
+        if (string.IsNullOrWhiteSpace(baseUrl))
+        {
+            return null;
+        }
+
+        return Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri)
+            ? uri.AbsoluteUri
+            : throw new ScriptExecutionException($"baseUrl must be an absolute URL, got '{baseUrl}'.");
+    }
+
+    private static bool IsAbsoluteUri(string target) =>
+        Uri.TryCreate(target, UriKind.Absolute, out _);
 
     private static bool LooksLikeLocalPath(string target) =>
         !target.Contains("://", StringComparison.Ordinal) &&

@@ -72,6 +72,38 @@ public sealed class CmgVisualSegmentExecutorTests
         Assert.Equal("Ada", client.LastTypedText);
     }
 
+    [Fact]
+    public void Run_AppliesBaseUrlToRelativeNavigation()
+    {
+        var test = new CmgTestCase(
+            "flow.cmgscript",
+            "relative navigation",
+            [Node("navigate", ["checkout"])],
+            new Dictionary<string, string>());
+        var options = Options(baseUrl: "https://example.test/app/");
+
+        var result = Executor(new FakeAutomationClient()).Run(test, "debug", options, attempt: 1);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("NAVIGATED 001 https://example.test/app/checkout", result.Output);
+    }
+
+    [Fact]
+    public void Run_DeclarationBaseUrlOverridesCommandBaseUrl()
+    {
+        var test = new CmgTestCase(
+            "flow.cmgscript",
+            "relative navigation",
+            [Node("navigate", ["checkout"])],
+            new Dictionary<string, string> { ["baseUrl"] = "https://override.test/" });
+        var options = Options(baseUrl: "https://example.test/app/");
+
+        var result = Executor(new FakeAutomationClient()).Run(test, "debug", options, attempt: 1);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("NAVIGATED 001 https://override.test/checkout", result.Output);
+    }
+
     private static CmgVisualSegmentExecutor Executor(IBrowserAutomationClient client) =>
         new(
             new BrowserScriptRunner(new BrowserScriptParser()),
@@ -85,7 +117,9 @@ public sealed class CmgVisualSegmentExecutorTests
     private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyDictionary<string, string>? options = null) =>
         new(1, kind, kind, args, options ?? new Dictionary<string, string>(), []);
 
-    private static CmgRunOptions Options(IReadOnlyDictionary<string, string>? variables = null) =>
+    private static CmgRunOptions Options(
+        IReadOnlyDictionary<string, string>? variables = null,
+        string? baseUrl = null) =>
         new(
             BrowserKind.Chrome,
             null,
@@ -104,5 +138,6 @@ public sealed class CmgVisualSegmentExecutorTests
             null,
             null,
             null,
+            baseUrl,
             variables ?? new Dictionary<string, string>());
 }

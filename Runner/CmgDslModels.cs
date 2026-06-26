@@ -53,6 +53,7 @@ public sealed record CmgRunOptions(
     int? DefaultTimeout,
     int? NavigationTimeout,
     int? AssertionTimeout,
+    string? BaseUrl,
     IReadOnlyDictionary<string, string> Variables);
 
 public sealed partial record CmgRunResult(

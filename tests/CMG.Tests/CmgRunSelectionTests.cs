@@ -119,5 +119,6 @@ public sealed class CmgRunSelectionTests
             null,
             null,
             null,
+            null,
             new Dictionary<string, string>());
 }

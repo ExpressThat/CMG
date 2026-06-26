@@ -40,12 +40,13 @@ public sealed partial class CmgVisualSegmentExecutor
         var commandGif = BuildGifPath(test, options, attempt);
         var suppressGifBlocks = commandGif is not null;
         var timeouts = BuildTimeoutOptions(test, options);
+        var baseUrl = CmgNavigationOptions.BaseUrl(test, options);
 
         foreach (var action in CmgVariables.FromRunOptions(options).Concat(test.Actions))
         {
             if (IsRecordingBlock(action.Kind) && !suppressGifBlocks)
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts);
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
                 if (!AppendResult(flush, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
@@ -57,7 +58,7 @@ public sealed partial class CmgVisualSegmentExecutor
                     gifs.Add(gif.FullName);
                 }
 
-                if (!RunActions(action.Children, remoteDebuggingUrl, gif, timeouts, output, steps, out error))
+                if (!RunActions(action.Children, remoteDebuggingUrl, gif, timeouts, baseUrl, output, steps, out error))
                 {
                     return Fail(test, output, error, gifs, steps);
                 }
@@ -67,7 +68,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts);
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
                 if (!AppendResult(flush, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
@@ -86,7 +87,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("storageState", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts);
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
                 if (!AppendResult(flush, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
@@ -105,7 +106,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("expectScreenshot", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts);
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
                 if (!AppendResult(flush, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
@@ -124,7 +125,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("uploadFiles", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts);
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
                 if (!AppendResult(flush, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
@@ -149,7 +150,7 @@ public sealed partial class CmgVisualSegmentExecutor
             }
         }
 
-        var final = RunLines(pending, remoteDebuggingUrl, commandGif, timeouts);
+        var final = RunLines(pending, remoteDebuggingUrl, commandGif, timeouts, baseUrl);
         if (!AppendResult(final, output, steps, test.Actions.LastOrDefault(), commandGif, out var finalError))
         {
             return Fail(test, output, finalError, gifs, steps);
@@ -163,7 +164,12 @@ public sealed partial class CmgVisualSegmentExecutor
         return new CmgTestResult(test.Name, test.SourcePath, true, output, null, string.Join(';', gifs), steps) { Annotations = test.Annotations };
     }
 
-    private ScriptRunResult RunLines(List<string> lines, string remoteDebuggingUrl, FileInfo? gif, ScriptTimeoutOptions? timeouts)
+    private ScriptRunResult RunLines(
+        List<string> lines,
+        string remoteDebuggingUrl,
+        FileInfo? gif,
+        ScriptTimeoutOptions? timeouts,
+        string? baseUrl)
     {
         if (lines.Count is 0)
         {
@@ -172,7 +178,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
         var script = string.Join(Environment.NewLine, lines);
         lines.Clear();
-        return scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, timeouts);
+        return scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, timeouts, baseUrl);
     }
 
     private static bool AppendResult(
@@ -206,36 +212,6 @@ public sealed partial class CmgVisualSegmentExecutor
         }
 
         return new CmgTestResult(test.Name, test.SourcePath, false, output, error, string.Join(';', gifs), steps) { Annotations = test.Annotations };
-    }
-
-    private static FileInfo? ResolveGifPath(CmgTestCase test, CmgNode action, CmgRunOptions options)
-    {
-        if (action.Options.TryGetValue("output", out var output) && !string.IsNullOrWhiteSpace(output))
-        {
-            return new FileInfo(output);
-        }
-
-        var name = action.Arguments.Count > 0 ? action.Arguments[0] : test.Name;
-        var safeName = string.Concat(name.Select(character => char.IsLetterOrDigit(character) ? character : '-'));
-        var directory = options.GifDirectory?.FullName ?? Directory.GetCurrentDirectory();
-        return new FileInfo(Path.Combine(directory, $"{safeName}.gif"));
-    }
-
-    private static FileInfo? BuildGifPath(CmgTestCase test, CmgRunOptions options, int attempt)
-    {
-        if (options.GifDirectory is null)
-        {
-            return null;
-        }
-
-        var path = CmgRunService.BuildGifPath(test, options);
-        if (attempt <= 1 || path is null)
-        {
-            return path;
-        }
-
-        var name = Path.GetFileNameWithoutExtension(path.Name);
-        return new FileInfo(Path.Combine(path.DirectoryName ?? string.Empty, $"{name}-attempt-{attempt}.gif"));
     }
 
     private static bool IsRecordingBlock(string name) =>

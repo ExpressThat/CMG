@@ -78,6 +78,10 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Default timeout in milliseconds for assertion actions."
         };
+        var baseUrlOption = new Option<string?>("--base-url")
+        {
+            Description = "Base URL used to resolve relative navigation targets."
+        };
         var variableOption = new Option<string[]>("--var")
         {
             Description = "Initial script variable as name=value. Can be repeated."
@@ -95,6 +99,7 @@ public sealed partial class BrowserControlCommandBuilder
             timeoutOption,
             navigationTimeoutOption,
             assertionTimeoutOption,
+            baseUrlOption,
             variableOption,
             envOption
         };
@@ -122,6 +127,7 @@ public sealed partial class BrowserControlCommandBuilder
                 gif,
                 trace,
                 timeouts,
+                parseResult.GetValue(baseUrlOption),
                 variables);
         });
 

@@ -17,6 +17,7 @@ For the full catalogue of advanced examples, see the [cookbook reference](cookbo
 | Run the same test for data rows | [Parameterized Tests](#parameterized-tests) | `demo-scripts\136-parameterized-tests.cmgscript` |
 | Add report metadata | [Report Annotations](#report-annotations) | `demo-scripts\138-report-annotations.cmgscript` |
 | Parameterize scripts from outside | [Initial Variables](#initial-variables) | `demo-scripts\139-cli-variables.cmgscript` |
+| Use relative navigation | [Base URL](#base-url) | `demo-scripts\141-base-url.cmgscript` |
 
 Start the browser before running direct scripts:
 
@@ -168,6 +169,27 @@ describe "tenant flow" var.tenant=demo {
 ```
 
 Declaration variables are inserted before macros and hooks, so helper macros can read them. Test-level values override suite-level values, and explicit `set` actions can still change values later in the current script scope.
+
+## Base URL
+
+Use `--base-url` when scripts should navigate relative to an app root:
+
+```powershell
+cmg browser control script --file demo-scripts\141-base-url.cmgscript --base-url https://example.test/app/
+cmg run demo-scripts\142-base-url-runner.cmgscript --base-url https://example.test/app/
+```
+
+Runner suites and tests can declare their own base URL:
+
+```text
+describe "app" baseUrl="https://example.test/app/" {
+  test "opens profile" {
+    navigate "profile"
+  }
+}
+```
+
+Base URL resolution affects `navigate`, `goto`, `visit`, `openTab`, and `newContext url=`. It does not move the virtual pointer by itself; pointer-aware actions after navigation keep their normal GIF behavior.
 
 ## Failure Feedback
 

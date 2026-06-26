@@ -21,6 +21,7 @@ public interface IBrowserControlService
         FileInfo? gif,
         FileInfo? trace,
         ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
         IReadOnlyDictionary<string, string> variables) =>
         RunScript(browserKind, file, gif, trace, timeouts);
 
@@ -88,7 +89,7 @@ public sealed class BrowserControlService : IBrowserControlService
 
     public ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts)
     {
-        return RunScript(browserKind, file, gif, trace, timeouts, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        return RunScript(browserKind, file, gif, trace, timeouts, baseUrl: null, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
     }
 
     public ScriptRunResult RunScript(
@@ -97,6 +98,7 @@ public sealed class BrowserControlService : IBrowserControlService
         FileInfo? gif,
         FileInfo? trace,
         ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
         IReadOnlyDictionary<string, string> variables)
     {
         if (file is not "-" && !File.Exists(file))
@@ -112,7 +114,7 @@ public sealed class BrowserControlService : IBrowserControlService
 
         try
         {
-            return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, variables);
+            return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables);
         }
         catch (System.Net.Http.HttpRequestException exception)
         {

@@ -65,6 +65,8 @@ navigate "<url-or-path>" waitUntil=load timeout=10000
 
 Navigates the primary page target to a URL, data URL, or local file path. `goto` is a Playwright/Puppeteer-style alias and `visit` is a Cypress-style alias. All three use the same output and failure behavior.
 
+Relative targets are resolved against command-line `--base-url` in direct scripts and runner tests. Runner files can also use `baseUrl=` or `baseURL=` on suites and tests; suite values cascade and test values override suite/command values. The same base URL resolution is used by `openTab` and `newContext url=`.
+
 Options:
 
 - `waitUntil`: Optional post-navigation state. Supports `load`, `domcontentloaded`, `networkidle`, and `commit`.
@@ -79,6 +81,7 @@ Example:
 navigate "C:\Projects\CMG\index.html"
 visit "https://example.com"
 goto "https://example.com" waitUntil=domcontentloaded timeout=10000
+navigate "profile" # with --base-url https://example.test/app/
 ```
 
 ## `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, `waitForNetworkIdle`, And `waitForNavigation`

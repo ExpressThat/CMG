@@ -83,6 +83,10 @@ public sealed class RunCommandBuilder
         {
             Description = "Default timeout in milliseconds for assertion actions."
         };
+        var baseUrlOption = new Option<string?>("--base-url")
+        {
+            Description = "Base URL used to resolve relative navigation targets."
+        };
         var variableOption = new Option<string[]>("--var")
         {
             Description = "Initial runner variable as name=value. Can be repeated."
@@ -109,6 +113,7 @@ public sealed class RunCommandBuilder
             timeoutOption,
             navigationTimeoutOption,
             assertionTimeoutOption,
+            baseUrlOption,
             variableOption,
             envOption
         };
@@ -142,6 +147,7 @@ public sealed class RunCommandBuilder
                 parseResult.GetValue(timeoutOption),
                 parseResult.GetValue(navigationTimeoutOption),
                 parseResult.GetValue(assertionTimeoutOption),
+                parseResult.GetValue(baseUrlOption),
                 variables);
         });
 

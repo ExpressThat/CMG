@@ -22,7 +22,7 @@ public sealed partial class BrowserScriptRunner
 
         return action.Name.ToLowerInvariant() switch
         {
-            "navigate" or "goto" or "visit" => ExecuteNavigate(remoteDebuggingUrl, automationClient, action),
+            "navigate" or "goto" or "visit" => ExecuteNavigate(remoteDebuggingUrl, automationClient, action, context),
             "reload" or "goback" or "goforward" or "waitforurl" or "waitfortitle" or "expecturl" or "expecttitle" or "tohaveurl" or "tohavetitle" or
             "waitforloadstate" or "waitfornetworkidle" or "networkidle" or "waitfornavigation" =>
                 ExecuteNavigationAction(remoteDebuggingUrl, automationClient, NormalizeNavigationAlias(action)),
@@ -145,7 +145,7 @@ public sealed partial class BrowserScriptRunner
             "draganddrop" or "dragto" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action with { Name = "dragAndDrop" }, recorder),
             "gif" or "recordvideo" or "screencast" => ExecuteGifBlock(remoteDebuggingUrl, automationClient, action, context, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),
-            "opentab" => ExecuteOpenTab(remoteDebuggingUrl, automationClient, action),
+            "opentab" => ExecuteOpenTab(remoteDebuggingUrl, automationClient, action, context),
             "waitfortab" or "waitforpopup" => ExecuteWaitForTab(remoteDebuggingUrl, automationClient, action),
             "activatetab" => ExecuteActivateTab(remoteDebuggingUrl, automationClient, action),
             "closetab" => ExecuteCloseTab(remoteDebuggingUrl, automationClient, action),

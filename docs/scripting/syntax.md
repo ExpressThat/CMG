@@ -119,6 +119,16 @@ describe "tenant" var.tenant=demo {
 }
 ```
 
+Runner declarations can provide `baseUrl=` or `baseURL=` for relative navigation. Suite values cascade to child tests, and test-level values override suite and command-line `--base-url` values:
+
+```text
+describe "tenant" baseUrl="https://example.test/app/" {
+  test "opens profile" {
+    navigate "profile"
+  }
+}
+```
+
 `only`, `skip`, `fixme`, `todo`, and `slow` can be written either as options or provider-style dotted declarations. Dotted declarations normalize before planning:
 
 ```text

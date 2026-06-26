@@ -22,13 +22,14 @@ public sealed class BrowserControlCommandBuilderScriptTests
     {
         var handler = new CapturingBrowserControlCommandHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --trace C:\\temp\\flow.trace.json --timeout 700 --navigation-timeout 800 --assertion-timeout 900 --var user=Ada --env mode=demo").Invoke();
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --trace C:\\temp\\flow.trace.json --timeout 700 --navigation-timeout 800 --assertion-timeout 900 --base-url https://example.test/app/ --var user=Ada --env mode=demo").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal("flow.cmgscript", handler.File);
         Assert.Equal("C:\\temp\\flow.gif", handler.Gif?.FullName);
         Assert.Equal("C:\\temp\\flow.trace.json", handler.Trace?.FullName);
         Assert.Equal(new ScriptTimeoutOptions(700, 800, 900), handler.Timeouts);
+        Assert.Equal("https://example.test/app/", handler.BaseUrl);
         Assert.Equal("Ada", handler.Variables["user"]);
         Assert.Equal("demo", handler.Variables["mode"]);
     }
@@ -69,6 +70,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
 
         public ScriptTimeoutOptions? Timeouts { get; private set; }
 
+        public string? BaseUrl { get; private set; }
+
         public IReadOnlyDictionary<string, string> Variables { get; private set; } =
             new Dictionary<string, string>();
 
@@ -102,9 +105,11 @@ public sealed class BrowserControlCommandBuilderScriptTests
             FileInfo? gif,
             FileInfo? trace,
             ScriptTimeoutOptions? timeouts,
+            string? baseUrl,
             IReadOnlyDictionary<string, string> variables)
         {
             RunScript(browserKind, file, gif, trace, timeouts);
+            BaseUrl = baseUrl;
             Variables = variables;
             return 0;
         }

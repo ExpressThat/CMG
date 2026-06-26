@@ -20,12 +20,12 @@ After that, use the learning groups below before treating the full script list a
 
 | Need | Demos |
 | --- | --- |
-| Browser-control basics | `01-dialog-flow.cmgscript`, `02-validation-flow.cmgscript`, `05-variables-and-evaluate.cmgscript` |
+| Browser-control basics | `01-dialog-flow.cmgscript`, `02-validation-flow.cmgscript`, `05-variables-and-evaluate.cmgscript`, `141-base-url.cmgscript` |
 | Visual evidence | `07-complex-drag-flow.cmgscript`, `08-gif-move-mouse.cmgscript`, `09-drag-autoscroll.cmgscript`, `10-css-hover-states.cmgscript` |
 | Structured tests | `20-runner-flow.cmgscript`, `36-runner-selection.cmgscript`, `38-before-after-all.cmgscript` |
 | Control flow and reuse | `30-control-flow-macros.cmgscript`, `32-loop-control.cmgscript`, `33-try-catch-finally.cmgscript`, `34-macro-scoping.cmgscript` |
 | Assertions and failure feedback | `52-explicit-fail.cmgscript`, `126-generic-expect.cmgscript`, `128-soft-expect.cmgscript`, `132-runtime-skip.cmgscript` |
-| Runner reporting and data | `134-scoped-timeouts.cmgscript`, `136-parameterized-tests.cmgscript`, `137-parameterized-json-tests.cmgscript`, `138-report-annotations.cmgscript`, `140-runner-variables.cmgscript` |
+| Runner reporting and data | `134-scoped-timeouts.cmgscript`, `136-parameterized-tests.cmgscript`, `137-parameterized-json-tests.cmgscript`, `138-report-annotations.cmgscript`, `140-runner-variables.cmgscript`, `142-base-url-runner.cmgscript` |
 
 For a guided introduction, use the [Quick Start](../docs/quick-start.md), [examples guide](../docs/scripting/examples.md), and [style guide](../docs/scripting/style-guide.md).
 
@@ -50,6 +50,7 @@ Run a script:
 ```powershell
 dotnet run -- browser control script --file demo-scripts\01-dialog-flow.cmgscript
 dotnet run -- browser control script --file demo-scripts\139-cli-variables.cmgscript --var user=Ada
+dotnet run -- browser control script --file demo-scripts\141-base-url.cmgscript --base-url https://example.test/app/
 ```
 
 Validate a script without connecting to a browser:
@@ -258,5 +259,7 @@ dotnet run -- --firefox browser close
 - `138-report-annotations.cmgscript`: Demonstrates suite and test report annotations.
 - `139-cli-variables.cmgscript`: Demonstrates command-line `--var` / `--env` values in a direct script.
 - `140-runner-variables.cmgscript`: Demonstrates suite and test `var.*` declaration variables.
+- `141-base-url.cmgscript`: Demonstrates command-line `--base-url` for relative navigation in a direct script.
+- `142-base-url-runner.cmgscript`: Demonstrates runner `baseUrl=` declarations for relative navigation.
 
 Generated screenshots are written to `demo-output/`.

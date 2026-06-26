@@ -10,6 +10,7 @@ public sealed partial class CmgVisualSegmentExecutor
         string remoteDebuggingUrl,
         FileInfo? gif,
         ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
         List<string> output,
         List<CmgStepResult> steps,
         out string? error)
@@ -17,7 +18,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var pending = new List<string>();
         foreach (var action in actions)
         {
-            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, pending, output, steps, out error))
+            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, pending, output, steps, out error))
             {
                 if (error is not null)
                 {
@@ -30,7 +31,7 @@ public sealed partial class CmgVisualSegmentExecutor
             pending.AddRange(lowerer.Lower(action));
         }
 
-        return AppendResult(RunLines(pending, remoteDebuggingUrl, gif, timeouts), output, steps, actions.LastOrDefault(), gif, out error);
+        return AppendResult(RunLines(pending, remoteDebuggingUrl, gif, timeouts, baseUrl), output, steps, actions.LastOrDefault(), gif, out error);
     }
 
     private bool TryRunDirectAction(
@@ -38,6 +39,7 @@ public sealed partial class CmgVisualSegmentExecutor
         string remoteDebuggingUrl,
         FileInfo? gif,
         ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
         List<string> pending,
         List<string> output,
         List<CmgStepResult> steps,
@@ -49,7 +51,7 @@ public sealed partial class CmgVisualSegmentExecutor
             return false;
         }
 
-        var flush = RunLines(pending, remoteDebuggingUrl, gif, timeouts);
+        var flush = RunLines(pending, remoteDebuggingUrl, gif, timeouts, baseUrl);
         if (!AppendResult(flush, output, steps, action, gif, out error))
         {
             return true;

@@ -20,6 +20,8 @@ Runner declarations can include report annotations with `owner=`, `issue=`, `lin
 
 Runner declarations can also include initial variables as `var.<name>=<value>`. Suite variables cascade to child tests, and test-level variables override suite values. Command-line `--var` and `--env` values are injected before declaration variables, so a test declaration can intentionally override a command-provided default.
 
+Relative navigation targets can be resolved with command-line `--base-url` or declaration `baseUrl=` / `baseURL=`. Suite base URLs cascade to child tests, and test-level base URLs override suite and command values.
+
 ## Options
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
@@ -37,6 +39,7 @@ Runner declarations can also include initial variables as `var.<name>=<value>`. 
 - `--timeout <milliseconds>`: Default timeout for timeout-capable waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions that do not set `timeout=`.
 - `--navigation-timeout <milliseconds>`: Default timeout for navigation actions and navigation waits.
 - `--assertion-timeout <milliseconds>`: Default timeout for assertions. Overrides `--timeout` for assertion actions.
+- `--base-url <url>`: Absolute base URL used to resolve relative `navigate`, `goto`, `visit`, `openTab`, and `newContext url=` targets in every selected test.
 - `--var <name=value>`: Initial variable for every selected test. Can be repeated. Later entries with the same name replace earlier entries.
 - `--env <name=value>`: Alias for `--var`, intended for CI and agent-provided environment values.
 - `--chrome`: Use Chrome. This is the default.
@@ -108,6 +111,7 @@ cmg run tests\flows --repeat-each 3
 cmg run tests\flows --list --grep checkout
 cmg run tests\flows --timeout 10000 --navigation-timeout 15000 --assertion-timeout 5000
 cmg run tests\flows --var user=Ada --env mode=demo
+cmg run tests\flows --base-url https://example.test/app/
 ```
 
 Use runner options on test declarations for provider-style focus and skip behavior:
@@ -163,6 +167,12 @@ describe "tenant flow" var.tenant=demo {
 
   test "overrides suite variables" var.tenant=staging {
     expect (${tenant} == "staging")
+  }
+}
+
+describe "relative navigation" baseUrl="https://example.test/app/" {
+  test "opens profile" {
+    navigate "profile"
   }
 }
 ```

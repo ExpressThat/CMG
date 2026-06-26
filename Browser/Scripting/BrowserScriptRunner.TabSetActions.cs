@@ -13,10 +13,14 @@ public sealed partial class BrowserScriptRunner
             .ToArray();
     }
 
-    private static IReadOnlyList<string> ExecuteOpenTab(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    private static IReadOnlyList<string> ExecuteOpenTab(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        ScriptExecutionContext context)
     {
         RequireArgumentCount(action, 1, 1);
-        var target = NormalizeNavigationTarget(action.Arguments[0]);
+        var target = NormalizeNavigationTarget(action.Arguments[0], context.BaseUrl);
         automationClient.Evaluate(remoteDebuggingUrl, $"window.open({QuoteJs(target)}, '_blank')");
         return [$"TAB_OPENED {action.LineNumber:000} {target}"];
     }

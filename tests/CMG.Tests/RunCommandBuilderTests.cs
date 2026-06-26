@@ -12,13 +12,14 @@ public sealed class RunCommandBuilderTests
     {
         var handler = new CapturingRunCommandHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "run flows --timeout 700 --navigation-timeout 800 --assertion-timeout 900 --var user=Ada --env mode=demo").Invoke();
+            "run flows --timeout 700 --navigation-timeout 800 --assertion-timeout 900 --base-url https://example.test/app/ --var user=Ada --env mode=demo").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal("flows", handler.Path);
         Assert.Equal(700, handler.Timeout);
         Assert.Equal(800, handler.NavigationTimeout);
         Assert.Equal(900, handler.AssertionTimeout);
+        Assert.Equal("https://example.test/app/", handler.BaseUrl);
         Assert.Equal("Ada", handler.Variables["user"]);
         Assert.Equal("demo", handler.Variables["mode"]);
     }
@@ -56,6 +57,8 @@ public sealed class RunCommandBuilderTests
 
         public int? AssertionTimeout { get; private set; }
 
+        public string? BaseUrl { get; private set; }
+
         public IReadOnlyDictionary<string, string> Variables { get; private set; } =
             new Dictionary<string, string>();
 
@@ -77,12 +80,14 @@ public sealed class RunCommandBuilderTests
             int? timeout,
             int? navigationTimeout,
             int? assertionTimeout,
+            string? baseUrl,
             IReadOnlyDictionary<string, string> variables)
         {
             Path = path;
             Timeout = timeout;
             NavigationTimeout = navigationTimeout;
             AssertionTimeout = assertionTimeout;
+            BaseUrl = baseUrl;
             Variables = variables;
             return 0;
         }

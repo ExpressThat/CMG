@@ -19,6 +19,7 @@ public sealed partial class BrowserScriptRunner
         FileInfo? gif,
         FileInfo? trace = null,
         ScriptTimeoutOptions? timeouts = null,
+        string? baseUrl = null,
         IReadOnlyDictionary<string, string>? variables = null)
     {
         var readResult = ReadScript(file);
@@ -27,7 +28,7 @@ public sealed partial class BrowserScriptRunner
             return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
         }
 
-        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, variables);
+        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables);
     }
 
     public ScriptRunResult RunText(
@@ -36,9 +37,10 @@ public sealed partial class BrowserScriptRunner
         IBrowserAutomationClient automationClient,
         FileInfo? gif = null,
         ScriptTimeoutOptions? timeouts = null,
+        string? baseUrl = null,
         IReadOnlyDictionary<string, string>? variables = null)
     {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts, variables);
+        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts, baseUrl, variables);
     }
 
     private ScriptRunResult RunParsedScript(
@@ -48,6 +50,7 @@ public sealed partial class BrowserScriptRunner
         FileInfo? gif,
         FileInfo? trace,
         ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
         IReadOnlyDictionary<string, string>? variables)
     {
         var importResult = ScriptImportExpander.Expand(script, Directory.GetCurrentDirectory());
@@ -63,12 +66,23 @@ public sealed partial class BrowserScriptRunner
             return ScriptRunResult.Fail(parseResult.Error ?? "Could not parse script.");
         }
 
+        string? normalizedBaseUrl;
+        try
+        {
+            normalizedBaseUrl = NormalizeBaseUrl(baseUrl);
+        }
+        catch (ScriptExecutionException exception)
+        {
+            return ScriptRunResult.Fail(exception.Message);
+        }
+
         var context = new ScriptExecutionContext
         {
             Trace = trace is null ? null : new BrowserScriptTraceSession(trace.FullName, suppressNested: true),
             DefaultTimeout = timeouts?.DefaultTimeout,
             NavigationTimeout = timeouts?.NavigationTimeout,
-            AssertionTimeout = timeouts?.AssertionTimeout
+            AssertionTimeout = timeouts?.AssertionTimeout,
+            BaseUrl = normalizedBaseUrl
         };
         foreach (var variable in variables ?? EmptyVariables)
         {

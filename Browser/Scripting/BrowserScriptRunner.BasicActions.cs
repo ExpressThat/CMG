@@ -4,11 +4,15 @@ namespace CMG.Browser.Scripting;
 
 public sealed partial class BrowserScriptRunner
 {
-    private static IReadOnlyList<string> ExecuteNavigate(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    private static IReadOnlyList<string> ExecuteNavigate(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        ScriptExecutionContext context)
     {
         RequireArgumentCount(action, 1, 1);
         var waitUntil = GetHistoryWaitUntil(action);
-        var finalUrl = automationClient.Navigate(remoteDebuggingUrl, NormalizeNavigationTarget(action.Arguments[0]));
+        var finalUrl = automationClient.Navigate(remoteDebuggingUrl, NormalizeNavigationTarget(action.Arguments[0], context.BaseUrl));
         if (string.IsNullOrWhiteSpace(finalUrl))
         {
             return [];

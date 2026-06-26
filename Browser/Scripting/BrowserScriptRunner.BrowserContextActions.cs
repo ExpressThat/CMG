@@ -25,7 +25,7 @@ public sealed partial class BrowserScriptRunner
         ScriptExecutionContext context)
     {
         RequireArgumentCount(action, 0, 1);
-        var initialUrl = action.Options.TryGetValue("url", out var url) ? NormalizeNavigationTarget(url) : "about:blank";
+        var initialUrl = action.Options.TryGetValue("url", out var url) ? NormalizeNavigationTarget(url, context.BaseUrl) : "about:blank";
         var info = automationClient.NewBrowserContext(remoteDebuggingUrl, initialUrl);
         if (action.Arguments.Count is 1)
         {

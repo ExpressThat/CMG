@@ -22,6 +22,7 @@ public interface ICmgRunCommandHandler
         int? timeout,
         int? navigationTimeout,
         int? assertionTimeout,
+        string? baseUrl,
         IReadOnlyDictionary<string, string> variables);
 }
 
@@ -52,6 +53,7 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         int? timeout,
         int? navigationTimeout,
         int? assertionTimeout,
+        string? baseUrl,
         IReadOnlyDictionary<string, string> variables)
     {
         if (browserKind is BrowserKind.InvalidSelection)
@@ -84,6 +86,7 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             NonNegative(timeout),
             NonNegative(navigationTimeout),
             NonNegative(assertionTimeout),
+            baseUrl,
             variables));
         foreach (var line in result.StdoutLines)
         {

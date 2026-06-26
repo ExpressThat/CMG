@@ -10,6 +10,7 @@ cmg browser control script --file -
 cmg browser control script --file <path> --gif <path>
 cmg browser control script --file <path> --trace <path>
 cmg browser control script --file <path> --timeout 10000 --assertion-timeout 5000
+cmg browser control script --file <path> --base-url https://example.test/app/
 cmg browser control script --file <path> --var user=Ada --env mode=demo
 cmg --chrome browser control script --file <path>
 cmg --edge browser control script --file <path>
@@ -25,6 +26,7 @@ cmg --firefox browser control script --file <path>
 - `--timeout <milliseconds>`: Default timeout for timeout-capable waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions that do not set `timeout=`.
 - `--navigation-timeout <milliseconds>`: Default timeout for navigation actions and navigation waits.
 - `--assertion-timeout <milliseconds>`: Default timeout for assertions. Overrides `--timeout` for assertion actions.
+- `--base-url <url>`: Absolute base URL used to resolve relative `navigate`, `goto`, `visit`, `openTab`, and `newContext url=` targets.
 - `--var <name=value>`: Initial script variable. Can be repeated. Later entries with the same name replace earlier entries.
 - `--env <name=value>`: Alias for `--var`, intended for CI and agent-provided environment values.
 
@@ -39,6 +41,7 @@ cmg --firefox browser control script --file <path>
 - Supports line-level `import "path"` statements. Relative imports resolve from the script file's directory.
 - Supports the shared CMG action surface documented in the [action index](../../../scripting/action-index.md) and [action reference](../../../scripting/actions.md).
 - Supports control flow, scoped variables, `set` block capture, macros, loops, `try`/`catch`/`finally`, `within`, frame blocks, `step`, and `gif` blocks.
+- Relative navigation targets are resolved against `--base-url` before the browser is asked to navigate.
 - Initial `--var` and `--env` values are available as `${name}` before the first action, macro call, condition, or `set` block runs.
 - `set` is a script action for scoped variables and command-result capture. It is intentionally not a CLI command because it only has meaning inside a script scope.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
@@ -115,6 +118,7 @@ Run a script with initial variables:
 
 ```powershell
 cmg browser control script --file demo-scripts\139-cli-variables.cmgscript --var user=Ada
+cmg browser control script --file demo-scripts\141-base-url.cmgscript --base-url https://example.test/app/
 ```
 
 More syntax and action details are documented in the [scripting guide](../../../scripting/index.md). Style guidance is in the [CMG script style guide](../../../scripting/style-guide.md).
