@@ -39,6 +39,7 @@ public sealed partial class BrowserScriptRunner
             "type" => ExecuteType(remoteDebuggingUrl, automationClient, action, recorder),
             "clear" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Clear(remoteDebuggingUrl, selector)),
             "press" => ExecutePress(remoteDebuggingUrl, automationClient, action),
+            "keyboardshortcut" or "shortcut" or "hotkey" => ExecuteKeyboardShortcut(remoteDebuggingUrl, automationClient, action),
             "keydown" or "keyup" or "inserttext" => ExecuteKeyboardAction(remoteDebuggingUrl, automationClient, action),
             "setclipboard" or "writeclipboard" or "readclipboard" or "clearclipboard" => ExecuteClipboardAction(remoteDebuggingUrl, automationClient, action),
             "hover" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Hover(remoteDebuggingUrl, selector)),

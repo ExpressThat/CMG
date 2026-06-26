@@ -54,7 +54,7 @@ public sealed partial class CmgActionLowerer
                 LowerSelectorCommand(action.Kind, action),
             "goto" or "visit" => [ToLine("navigate", action.Arguments, action.Options)],
             "navigate" or "waitforelement" or
-            "press" or "keydown" or "keyup" or "inserttext" or "showmessagebar" or "delay" or "screenshotpage" or
+            "press" or "keyboardshortcut" or "shortcut" or "hotkey" or "keydown" or "keyup" or "inserttext" or "showmessagebar" or "delay" or "screenshotpage" or
             "setclipboard" or "writeclipboard" or "readclipboard" or "clearclipboard" or
             "emulate" or "setgeolocation" or "grantpermissions" or "clearpermissions" or
             "setjavascriptenabled" or "javascriptenabled" or "bypasscsp" or "serviceworkers" or "setserviceworkers" or "waitfordownload" or

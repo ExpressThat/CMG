@@ -1105,10 +1105,9 @@ test "canvas drag" {
 ```text
 test "keyboard shortcut" {
   click "#editor"
-  keyDown "Control"
-  press "A"
-  keyUp "Control"
+  keyboardShortcut "Control+A"
   insertText "Replacement text"
+  shortcut "Control+S"
 }
 ```
 

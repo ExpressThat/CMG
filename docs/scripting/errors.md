@@ -453,9 +453,10 @@ Scroll actions validate whole-number coordinates and known aliases before changi
 ```text
 Line 3: keyDown failed. Expected 1 positional argument(s), got 0.
 Line 4: insertText failed. Expected 1 positional argument(s), got 0.
+Line 5: keyboardShortcut failed. keyboardShortcut expects a key chord such as Control+S.
 ```
 
-Keyboard actions require one key or text argument and operate on the current browser focus.
+Keyboard actions require one key, text, or shortcut chord argument and operate on the current browser focus. Chords use `+`, for example `Control+S` or `Control+Shift+P`.
 
 ## Dialog Failure
 

@@ -38,6 +38,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string LastKeyDown { get; private set; } = string.Empty;
     public string LastKeyUp { get; private set; } = string.Empty;
     public string LastInsertedText { get; private set; } = string.Empty;
+    public List<string> KeyEvents { get; } = [];
     public bool LastFullPageScreenshot { get; private set; }
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
@@ -52,9 +53,17 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     }
     public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null) { }
     public void Clear(string remoteDebuggingUrl, string selector) => LastClearedSelector = selector;
-    public void Press(string remoteDebuggingUrl, string key) { }
-    public void KeyDown(string remoteDebuggingUrl, string key) => LastKeyDown = key;
-    public void KeyUp(string remoteDebuggingUrl, string key) => LastKeyUp = key;
+    public void Press(string remoteDebuggingUrl, string key) => KeyEvents.Add($"press:{key}");
+    public void KeyDown(string remoteDebuggingUrl, string key)
+    {
+        LastKeyDown = key;
+        KeyEvents.Add($"down:{key}");
+    }
+    public void KeyUp(string remoteDebuggingUrl, string key)
+    {
+        LastKeyUp = key;
+        KeyEvents.Add($"up:{key}");
+    }
     public void InsertText(string remoteDebuggingUrl, string text) => LastInsertedText = text;
     public void Hover(string remoteDebuggingUrl, string selector) => LastHoveredSelector = selector;
     public void ScrollElementIntoView(string remoteDebuggingUrl, string selector) { }

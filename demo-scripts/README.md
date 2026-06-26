@@ -94,7 +94,7 @@ dotnet run -- --firefox browser close
 - `03-drag-drop-flow.cmgscript`: Drags command tiles into the queue and asserts the result.
 - `04-capture-elements.cmgscript`: Captures HTML, element screenshots, and a full page screenshot.
 - `05-variables-and-evaluate.cmgscript`: Demonstrates variables, assertions, JavaScript evaluation, and viewport sizing.
-- `06-tabs-and-keys.cmgscript`: Demonstrates tab listing, tab activation, keyboard input, and dialog dismissal.
+- `06-tabs-and-keys.cmgscript`: Demonstrates tab listing, tab activation, keyboard input, shortcut chords, and dialog dismissal.
 - `07-complex-drag-flow.cmgscript`: Demonstrates block `dragAndDrop` with delay, hover, and drop steps.
 - `08-gif-move-mouse.cmgscript`: Demonstrates GIF-only `moveMouse` and visible pointer movement.
 - `09-drag-autoscroll.cmgscript`: Demonstrates `moveMouse "bottom"` inside a GIF drag block.

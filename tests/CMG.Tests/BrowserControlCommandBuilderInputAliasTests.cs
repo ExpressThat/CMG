@@ -11,6 +11,9 @@ public sealed class BrowserControlCommandBuilderInputAliasTests
     [InlineData("contextClick #save", "contextClick \"#save\"")]
     [InlineData("touchTap #save", "touchTap \"#save\"")]
     [InlineData("pressSequentially #name CMG", "pressSequentially \"#name\" \"CMG\"")]
+    [InlineData("shortcut Control+S", "keyboardShortcut \"Control+S\"")]
+    [InlineData("hotkey Control+Shift+P", "keyboardShortcut \"Control+Shift+P\"")]
+    [InlineData("keyboardShortcut Meta+K", "keyboardShortcut \"Meta+K\"")]
     [InlineData("selectOption #plan pro", "selectOption \"#plan\" \"pro\"")]
     public void InputAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {

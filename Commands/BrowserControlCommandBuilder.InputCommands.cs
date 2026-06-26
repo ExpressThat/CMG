@@ -36,6 +36,9 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildSelectLikeCommand(browserOptions, "selectOption", "Set a select-like element value."));
         command.Subcommands.Add(BuildDragAndDropCommand(browserOptions, "dragAndDrop"));
         command.Subcommands.Add(BuildDragAndDropCommand(browserOptions, "dragTo"));
+        command.Subcommands.Add(BuildKeyboardShortcutCommand(browserOptions, "shortcut"));
+        command.Subcommands.Add(BuildKeyboardShortcutCommand(browserOptions, "hotkey"));
+        command.Subcommands.Add(BuildKeyboardShortcutCommand(browserOptions, "keyboardShortcut"));
         command.Subcommands.Add(BuildMouseGroup(browserOptions));
         command.Subcommands.Add(BuildScrollGroup(browserOptions));
         command.Subcommands.Add(BuildClipboardGroup(browserOptions));
@@ -150,44 +153,6 @@ public sealed partial class BrowserControlCommandBuilder
                 "fill",
                 parseResult.GetValue(selectorArgument) ?? string.Empty,
                 parseResult.GetValue(textArgument) ?? string.Empty)));
-
-        return command;
-    }
-
-    private Command BuildPressCommand(BrowserSelectionOptions browserOptions)
-    {
-        var keyArgument = new Argument<string>("key")
-        {
-            Description = "Key name to press, such as Enter or Escape."
-        };
-
-        var command = new Command("press", "Press a keyboard key.")
-        {
-            keyArgument
-        };
-
-        command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("press", parseResult.GetValue(keyArgument) ?? string.Empty)));
-
-        return command;
-    }
-
-    private Command BuildKeyboardCommand(BrowserSelectionOptions browserOptions, string name, string description)
-    {
-        var valueArgument = new Argument<string>("value")
-        {
-            Description = name.Equals("insertText", StringComparison.Ordinal) ? "Text to insert." : "Key name."
-        };
-
-        var command = new Command(name, description)
-        {
-            valueArgument
-        };
-
-        command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                name,
-                parseResult.GetValue(valueArgument) ?? string.Empty)));
 
         return command;
     }

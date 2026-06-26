@@ -187,9 +187,10 @@ clear "#profileName"
 
 ```text
 press "Enter"
+press "Control+A"
 ```
 
-Dispatches key down and key up behavior in the selected browser.
+Dispatches key down and key up behavior in the selected browser. When the key contains `+`, CMG treats it as a shortcut chord: modifier keys are pressed first, the final key is pressed, and modifiers are released in reverse order.
 
 Example:
 
@@ -197,18 +198,22 @@ Example:
 press "Escape"
 ```
 
-## `keyDown`, `keyUp`, And `insertText`
+## `keyboardShortcut`, `shortcut`, `hotkey`, `keyDown`, `keyUp`, And `insertText`
 
 ```text
+keyboardShortcut "Control+Shift+P"
+shortcut "Control+S"
+hotkey "Meta+K"
 keyDown "Shift"
 insertText "ABC"
 keyUp "Shift"
 ```
 
-Runs lower-level keyboard primitives similar to Playwright and Puppeteer. `keyDown` and `keyUp` hold or release a single key. `insertText` inserts text into the currently focused editable element.
+Runs lower-level keyboard primitives similar to Playwright and Puppeteer. `keyboardShortcut`, `shortcut`, and `hotkey` press a chord such as `Control+S`, `Control+Shift+P`, or `Meta+K`. `Ctrl` normalizes to `Control`, `Cmd`/`Command` normalizes to `Meta`, `Option` normalizes to `Alt`, and `Esc` normalizes to `Escape`. `keyDown` and `keyUp` hold or release a single key. `insertText` inserts text into the currently focused editable element.
 
 Output:
 
+- `KEYBOARD_SHORTCUT <line> <chord>`
 - `KEY_DOWN <line> <key>`
 - `KEY_UP <line> <key>`
 - `TEXT_INSERTED <line> <character-count>`

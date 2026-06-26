@@ -25,7 +25,10 @@ cmg browser control input [command] [options]
 - [`focus`](focus.md): Focus an element.
 - [`blur`](blur.md): Blur an element.
 - [`selectText`](selectText.md): Select text inside an element.
-- [`press`](press.md): Press a keyboard key.
+- [`press`](press.md): Press a keyboard key or shortcut chord.
+- [`shortcut`](shortcut.md): Press a keyboard shortcut chord.
+- [`hotkey`](hotkey.md): Press a keyboard shortcut chord.
+- [`keyboardShortcut`](keyboardShortcut.md): Press a keyboard shortcut chord.
 - [`keyDown`](keyDown.md): Dispatch a keydown event.
 - [`keyUp`](keyUp.md): Dispatch a keyup event.
 - [`insertText`](insertText.md): Insert text at the active element.
@@ -59,6 +62,7 @@ cmg browser control input click "#save"
 cmg browser control input dblclick "#save"
 cmg browser control input fill "#name" "CMG Test"
 cmg browser control input pressSequentially "#name" "CMG"
+cmg browser control input shortcut Control+S
 cmg browser control input keyDown Shift
 cmg browser control input dragAndDrop ".card" "#dropZone"
 cmg browser control input dragTo ".card" "#dropZone"
