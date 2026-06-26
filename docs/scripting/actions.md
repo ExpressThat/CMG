@@ -2046,7 +2046,10 @@ Direct browser-control scripts and `cmg run` both support:
   - `"first=.item"` resolves the first matching CSS element.
   - `"last=.item"` resolves the last matching CSS element.
   - `"nth=.item|2"` resolves the zero-based matching CSS element at index `2`.
+  - `"has=.item|.badge"` resolves the first matching CSS element that contains a descendant matching `.badge`.
+  - `"hasNot=.item|.badge"` resolves the first matching CSS element that does not contain a descendant matching `.badge`.
   - `"hasText=.item|Save"` resolves the first matching CSS element whose visible/text content includes `Save`.
+  - `"hasNotText=.item|Draft"` resolves the first matching CSS element whose visible/text content does not include `Draft`.
   - `"visible=.item"` resolves the first matching CSS element that has a non-empty box and is not hidden by `display:none` or `visibility:hidden`.
 
 For non-CSS locator forms, CMG resolves the element inside the page, marks it with a temporary `data-cmg-locator-id`, and then runs the normal pointer-aware command against that marker. This keeps GIF pointer movement, browser events, drag ghosts, and screenshots connected to the resolved element.
@@ -2058,6 +2061,7 @@ click text=Save
 type label=Email "agent@example.com"
 click "text=Save changes"
 click "nth=.result|2"
+click "has=.card|button.primary"
 assertText "hasText=.toast|Saved" "Saved"
 mouseMove selector="text=Drop here" edge=center
 ```

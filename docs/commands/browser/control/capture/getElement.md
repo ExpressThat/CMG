@@ -21,7 +21,7 @@ cmg browser control capture getElement <selector> (--html | --screenshot) [--out
 
 - Connects to the selected CMG browser automation endpoint.
 - Searches available page targets until the selector or locator is found.
-- Supports the same rich locators as scripts, including `text=`, `role=`, `label=`, `testid=`, `placeholder=`, `alt=`, `title=`, and `xpath=`.
+- Supports the same rich locators as scripts, including `text=`, `role=`, `label=`, `testid=`, `placeholder=`, `alt=`, `title=`, `xpath=`, `first=`, `last=`, `nth=selector|index`, `has=selector|childSelector`, `hasNot=selector|childSelector`, `hasText=selector|text`, `hasNotText=selector|text`, and `visible=`.
 - `--html` reads the selected element without scrolling.
 - `--screenshot` scrolls the selected element into view before capture.
 - Exactly one output mode must be provided: `--html` or `--screenshot`.

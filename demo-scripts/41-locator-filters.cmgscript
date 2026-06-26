@@ -1,4 +1,4 @@
-setContent "<main><button class='cmd' onclick='result.textContent=\"first\"'>First</button><button class='cmd' onclick='result.textContent=\"second\"'>Second</button><button class='cmd hidden' style='display:none'>Hidden</button><output id='result'>none</output></main>"
+setContent "<main><button class='cmd' onclick='result.textContent=\"first\"'>First</button><button class='cmd' onclick='result.textContent=\"second\"'>Second <span class='badge'>New</span></button><button class='cmd hidden' style='display:none'>Hidden</button><output id='result'>none</output></main>"
 
 click "nth=.cmd|1"
 expectText "#result" "second"
@@ -8,5 +8,14 @@ expectText "#result" "first"
 
 click "hasText=.cmd|Second"
 expectText "#result" "second"
+
+click "has=.cmd|.badge"
+expectText "#result" "second"
+
+click "hasNot=.cmd|.badge"
+expectText "#result" "first"
+
+click "hasNotText=.cmd|Hidden"
+expectText "#result" "first"
 
 click "visible=.cmd"

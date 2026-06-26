@@ -54,7 +54,10 @@ public static class CmgLocator
         locator.StartsWith("first=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("last=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("nth=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("has=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("hasNot=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("hasText=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("hasNotText=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("visible=", StringComparison.OrdinalIgnoreCase);
 
     public static string UnsupportedReason(string locator) => $"Locator '{locator}' is not supported.";
@@ -97,7 +100,10 @@ public static class CmgLocator
             "first" => $"document.querySelector({QuoteJs(value)})",
             "last" => $"Array.from(document.querySelectorAll({QuoteJs(value)})).at(-1)",
             "nth" => BuildNthExpression(value),
+            "has" => BuildHasExpression(value, expected: true),
+            "hasnot" => BuildHasExpression(value, expected: false),
             "hastext" => BuildHasTextExpression(value),
+            "hasnottext" => BuildHasNotTextExpression(value),
             "visible" => $"Array.from(document.querySelectorAll({QuoteJs(value)})).find(IsVisible)",
             _ => "null"
         };
@@ -114,6 +120,22 @@ public static class CmgLocator
         return SplitLocatorValue(value) is { } parts
             ? $"Array.from(document.querySelectorAll({QuoteJs(parts.Left)})).find(e => (e.innerText || e.textContent || '').includes({QuoteJs(parts.Right)}))"
             : "(() => { throw new Error('Locator hasText= requires <selector>|<text>.'); })()";
+    }
+
+    private static string BuildHasNotTextExpression(string value)
+    {
+        return SplitLocatorValue(value) is { } parts
+            ? $"Array.from(document.querySelectorAll({QuoteJs(parts.Left)})).find(e => !(e.innerText || e.textContent || '').includes({QuoteJs(parts.Right)}))"
+            : "(() => { throw new Error('Locator hasNotText= requires <selector>|<text>.'); })()";
+    }
+
+    private static string BuildHasExpression(string value, bool expected)
+    {
+        var name = expected ? "has" : "hasNot";
+        var comparison = expected ? string.Empty : "!";
+        return SplitLocatorValue(value) is { } parts
+            ? $"Array.from(document.querySelectorAll({QuoteJs(parts.Left)})).find(e => {comparison}e.querySelector({QuoteJs(parts.Right)}))"
+            : $"(() => {{ throw new Error('Locator {name}= requires <selector>|<child-selector>.'); }})()";
     }
 
     private static (string Left, string Right)? SplitLocatorValue(string value)

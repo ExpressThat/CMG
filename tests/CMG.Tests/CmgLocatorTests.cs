@@ -17,7 +17,10 @@ public sealed class CmgLocatorTests
     [InlineData("first=.item", "document.querySelector")]
     [InlineData("last=.item", ".at(-1)")]
     [InlineData("nth=.item|2", "Number('2')")]
+    [InlineData("has=.item|.badge", "e.querySelector('.badge')")]
+    [InlineData("hasNot=.item|.badge", "!e.querySelector('.badge')")]
     [InlineData("hasText=.item|Save", "includes('Save')")]
+    [InlineData("hasNotText=.item|Draft", "!")]
     [InlineData("visible=.item", "IsVisible")]
     public void PrefixExpressions_FilterLocatorsMarkElement(string locator, string expected)
     {

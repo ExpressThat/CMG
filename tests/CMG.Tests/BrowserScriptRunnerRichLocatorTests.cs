@@ -48,6 +48,20 @@ public sealed class BrowserScriptRunnerRichLocatorTests
         Assert.Equal("[data-cmg-locator-id=\"__cmg_locator_1\"]", client.LastClickedSelector);
     }
 
+    [Theory]
+    [InlineData("has=.item|.badge", "e.querySelector('.badge')")]
+    [InlineData("hasNot=.item|.badge", "!e.querySelector('.badge')")]
+    [InlineData("hasNotText=.item|Draft", "includes('Draft')")]
+    public void RunText_ClickResolvesAdvancedFilterLocatorOptions(string locator, string expectedExpression)
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText($"click {locator}", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(expectedExpression, client.EvaluatedExpressions[0]);
+        Assert.Equal("[data-cmg-locator-id=\"__cmg_locator_1\"]", client.LastClickedSelector);
+    }
+
     [Fact]
     public void RunText_MouseMoveSelectorUsesResolvedLocator()
     {

@@ -106,6 +106,9 @@ Invalid locator matches fail before the pointer action runs:
 STEP FAIL line=7 action=click reason=Line 7: evaluate failed. No element matched locator role=button.
 STEP FAIL line=8 action=click reason=Line 8: evaluate failed. Locator nth= requires <selector>|<index>.
 STEP FAIL line=9 action=click reason=Line 9: evaluate failed. Locator hasText= requires <selector>|<text>.
+STEP FAIL line=10 action=click reason=Line 10: evaluate failed. Locator has= requires <selector>|<child-selector>.
+STEP FAIL line=11 action=click reason=Line 11: evaluate failed. Locator hasNot= requires <selector>|<child-selector>.
+STEP FAIL line=12 action=click reason=Line 12: evaluate failed. Locator hasNotText= requires <selector>|<text>.
 ```
 
 ## V1 Script Passed To `cmg run`
