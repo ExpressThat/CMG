@@ -1,10 +1,10 @@
 # CMG Demo Scripts
 
-These `.cmgscript` files demonstrate the browser scripting language against the repository's `index.html` test page.
+These `.cmgscript` files demonstrate CMG against the repository's `index.html` test page. Start with a short path, then use the full catalogue when you need a specific capability.
 
 ## Start Here
 
-The full list below is a catalogue. If you are learning CMG, run these first:
+If you are learning CMG, run these five demos first:
 
 | Goal | Demo |
 | --- | --- |
@@ -13,16 +13,21 @@ The full list below is a catalogue. If you are learning CMG, run these first:
 | Watch drag ghosts and pointer movement | `07-complex-drag-flow.cmgscript` |
 | Run a structured test | `20-runner-flow.cmgscript` |
 | Learn variables, loops, and macros | `30-control-flow-macros.cmgscript` |
-| See script formatting tolerance | `48-weird-formatting.cmgscript` |
-| Assert values and action output | `126-generic-expect.cmgscript` |
-| Collect non-fatal assertion diagnostics | `128-soft-expect.cmgscript` |
-| Iterate JSON and delimited collections | `130-collection-loops.cmgscript` |
-| Stop as skipped from runtime state | `132-runtime-skip.cmgscript` |
-| Scope timeout policy for one section | `134-scoped-timeouts.cmgscript` |
-| Expand a runner test for data rows | `136-parameterized-tests.cmgscript` |
-| Add report metadata annotations | `138-report-annotations.cmgscript` |
 
-For a guided introduction, use the [Quick Start](../docs/quick-start.md) before treating this folder as a reference.
+After that, use the learning groups below before treating the full script list as a reference.
+
+## Learning Groups
+
+| Need | Demos |
+| --- | --- |
+| Browser-control basics | `01-dialog-flow.cmgscript`, `02-validation-flow.cmgscript`, `05-variables-and-evaluate.cmgscript` |
+| Visual evidence | `07-complex-drag-flow.cmgscript`, `08-gif-move-mouse.cmgscript`, `09-drag-autoscroll.cmgscript`, `10-css-hover-states.cmgscript` |
+| Structured tests | `20-runner-flow.cmgscript`, `36-runner-selection.cmgscript`, `38-before-after-all.cmgscript` |
+| Control flow and reuse | `30-control-flow-macros.cmgscript`, `32-loop-control.cmgscript`, `33-try-catch-finally.cmgscript`, `34-macro-scoping.cmgscript` |
+| Assertions and failure feedback | `52-explicit-fail.cmgscript`, `126-generic-expect.cmgscript`, `128-soft-expect.cmgscript`, `132-runtime-skip.cmgscript` |
+| Runner reporting | `134-scoped-timeouts.cmgscript`, `136-parameterized-tests.cmgscript`, `137-parameterized-json-tests.cmgscript`, `138-report-annotations.cmgscript` |
+
+For a guided introduction, use the [Quick Start](../docs/quick-start.md), [examples guide](../docs/scripting/examples.md), and [style guide](../docs/scripting/style-guide.md).
 
 ## Run A Demo
 
@@ -109,7 +114,7 @@ dotnet run -- --edge browser close
 dotnet run -- --firefox browser close
 ```
 
-## Scripts
+## Full Catalogue
 
 - `01-dialog-flow.cmgscript`: Opens the profile dialog, types into fields, captures the dialog, and closes it.
 - `02-validation-flow.cmgscript`: Exercises custom validation messages on the test page.
