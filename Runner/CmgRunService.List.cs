@@ -1,0 +1,41 @@
+namespace CMG.Runner;
+
+public sealed partial class CmgRunService
+{
+    private CmgRunResult ListTests(IReadOnlyList<string> files, CmgRunOptions options)
+    {
+        var output = new List<string>();
+        var listed = new List<CmgTestResult>();
+        foreach (var file in files)
+        {
+            var parse = parser.Parse(file, File.ReadAllText(file));
+            if (!parse.Success || parse.Document is null)
+            {
+                output.Add($"TEST FAIL {Path.GetFileName(file)}");
+                listed.Add(new CmgTestResult(Path.GetFileName(file), file, false, [], parse.Error, null, []));
+                continue;
+            }
+
+            foreach (var test in SelectedTestsForList(planner.Plan(parse.Document), options))
+            {
+                var status = IsSkipped(test) ? "skip" : "run";
+                output.Add($"TEST LIST {status} {test.Name}");
+                listed.Add(new CmgTestResult(test.Name, test.SourcePath, true, [], null, null, [])
+                {
+                    Status = status == "skip" ? "skipped" : "listed",
+                    Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty
+                });
+            }
+        }
+
+        return new CmgRunResult(listed.All(test => test.Success), output, listed, null);
+    }
+
+    internal static IReadOnlyList<CmgTestCase> SelectedTestsForList(IReadOnlyList<CmgTestCase> planned, CmgRunOptions options)
+    {
+        var filtered = planned.Where(test => ShouldRun(test, options)).ToArray();
+        var focused = SelectFocusedTests(filtered);
+        var repeated = RepeatTests(focused, options.RepeatEach);
+        return ApplyShard(repeated, options).ToArray();
+    }
+}

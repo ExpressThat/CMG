@@ -57,9 +57,44 @@ public sealed class CmgRunSelectionTests
         Assert.Same(tests, CmgRunService.RepeatTests(tests, 1));
     }
 
+    [Fact]
+    public void SelectedTestsForList_AppliesFilterFocusRepeatAndShard()
+    {
+        var options = Options(grep: "checkout", repeatEach: 2, shardIndex: 2, shardCount: 2);
+        var selected = CmgRunService.SelectedTestsForList([
+            Test("checkout normal"),
+            Test("checkout focused", new Dictionary<string, string> { ["only"] = "true" }),
+            Test("profile focused", new Dictionary<string, string> { ["only"] = "true" })
+        ], options);
+
+        Assert.Equal(["checkout focused [repeat 2/2]"], selected.Select(test => test.Name).ToArray());
+    }
+
     private static CmgTestCase Test(string name, IReadOnlyDictionary<string, string>? options = null) =>
         new("flow.cmgscript", name, [], options ?? new Dictionary<string, string>());
 
     private static CmgTestResult Result(string name, bool success) =>
         new(name, "flow.cmgscript", success, [], success ? null : "failed", null, []);
+
+    private static CmgRunOptions Options(
+        string? grep = null,
+        string? tag = null,
+        int repeatEach = 1,
+        int shardIndex = 1,
+        int shardCount = 1) =>
+        new(
+            Browser.BrowserKind.Chrome,
+            null,
+            null,
+            null,
+            null,
+            null,
+            grep,
+            tag,
+            0,
+            0,
+            repeatEach,
+            true,
+            shardIndex,
+            shardCount);
 }

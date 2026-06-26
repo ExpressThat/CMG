@@ -63,6 +63,10 @@ public sealed class RunCommandBuilder
             Description = "Run each selected test this many times.",
             DefaultValueFactory = _ => 1
         };
+        var listOption = new Option<bool>("--list")
+        {
+            Description = "List selected tests without connecting to a browser."
+        };
         var shardOption = new Option<string?>("--shard")
         {
             Description = "Run one shard as index/count, for example 1/3."
@@ -80,6 +84,7 @@ public sealed class RunCommandBuilder
             retriesOption,
             maxFailuresOption,
             repeatEachOption,
+            listOption,
             shardOption
         };
 
@@ -97,6 +102,7 @@ public sealed class RunCommandBuilder
                 parseResult.GetValue(retriesOption),
                 parseResult.GetValue(maxFailuresOption),
                 parseResult.GetValue(repeatEachOption),
+                parseResult.GetValue(listOption),
                 parseResult.GetValue(shardOption)));
 
         return command;

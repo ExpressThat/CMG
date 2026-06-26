@@ -116,6 +116,8 @@ Line 1: cmg run requires the new DSL with test/it/specify or suite/describe/cont
 
 Use `browser control script --file <path>` for direct browser-control scripts, or migrate the file to the new test DSL for `cmg run`.
 
+Use `cmg run <path> --list` to validate structured script syntax and inspect selected tests without connecting to a browser or running actions. Parse/import errors still fail the command.
+
 ## Runner Step Failure
 
 `cmg run` prints step diagnostics on stderr:

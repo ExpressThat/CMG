@@ -17,6 +17,7 @@ public interface ICmgRunCommandHandler
         int retries,
         int maxFailures,
         int repeatEach,
+        bool listOnly,
         string? shard);
 }
 
@@ -42,6 +43,7 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         int retries,
         int maxFailures,
         int repeatEach,
+        bool listOnly,
         string? shard)
     {
         if (browserKind is BrowserKind.InvalidSelection)
@@ -68,6 +70,7 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             Math.Max(0, retries),
             Math.Max(0, maxFailures),
             Math.Max(1, repeatEach),
+            listOnly,
             shardIndex,
             shardCount));
         foreach (var line in result.StdoutLines)

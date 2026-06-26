@@ -26,6 +26,7 @@ Runner hooks include `beforeAll`, `afterAll`, `beforeEach`, and `afterEach`. Onc
 - `--retries <count>`: Retry failed tests this many times.
 - `--max-failures <count>`: Stop scheduling tests after this many failed tests. `0` disables fail-fast behavior.
 - `--repeat-each <count>`: Run each selected test this many times. Values below `1` are treated as `1`.
+- `--list`: List selected tests without connecting to a browser or running actions.
 - `--shard <index/count>`: Run a deterministic shard, for example `1/3`.
 - `--chrome`: Use Chrome. This is the default.
 - `--edge`: Use Microsoft Edge.
@@ -40,9 +41,10 @@ TEST PASS <name>
 TEST FAIL <name>
 TEST SKIP <name>
 RUN STOP maxFailures=<count>
+TEST LIST <run|skip> <name>
 ```
 
-Failures may include action output before the failing test line. Skipped tests do not run actions or produce GIFs. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. Stderr contains the final error when one is available.
+Failures may include action output before the failing test line. Skipped tests do not run actions or produce GIFs. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
 
 When a step fails, stderr also includes:
 
@@ -86,6 +88,7 @@ cmg run checkout.cmgscript --trace artifacts\traces
 cmg run tests\flows --grep checkout --tag smoke --retries 2 --shard 1/3
 cmg run tests\flows --max-failures 1
 cmg run tests\flows --repeat-each 3
+cmg run tests\flows --list --grep checkout
 ```
 
 Use runner options on test declarations for provider-style focus and skip behavior:

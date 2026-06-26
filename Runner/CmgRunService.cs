@@ -56,6 +56,11 @@ public sealed partial class CmgRunService : ICmgRunService
             return CmgRunResult.Fail($"No CMG script files matched '{path}'.");
         }
 
+        if (options.ListOnly)
+        {
+            return ListTests(files, options);
+        }
+
         var state = stateStore.Load(options.BrowserKind);
         if (state is null)
         {
