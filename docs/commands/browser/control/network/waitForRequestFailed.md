@@ -6,7 +6,7 @@ Runs the scripting `waitForRequestFailed` action once from the command line.
 cmg browser control network waitForRequestFailed "<pattern>" [options]
 ```
 
-Options and failure behavior match [`waitForRequest`](waitForRequest.md). Header filters match request headers for failed requests.
+Options and failure behavior match [`waitForRequest`](waitForRequest.md), including `--match contains|exact|regex` and `--ignore-case` for URL matching. Header filters match request headers for failed requests.
 
 ## Stdout
 

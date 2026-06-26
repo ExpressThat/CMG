@@ -640,10 +640,11 @@ test "mocked profile" {
   waitForRequest "/api/profile" method=POST header="Authorization: Bearer"
   waitForResponse "/api/profile" method=POST status=201 contains=created mocked=true
   waitForResponse "/api/profile" header="Content-Type: text/plain"
+  waitForResponse "/api/profile/\\d+" match=regex ignoreCase=true
 }
 ```
 
-This patches page `fetch` and `XMLHttpRequest` calls and records matching responses for `waitForResponse`. Use `delay=` to simulate a slow mocked response without moving the virtual pointer. Network waits can filter by method, status, response body text, request or response headers, and whether the match came from a CMG mock.
+This patches page `fetch` and `XMLHttpRequest` calls and records matching responses for `waitForResponse`. Use `delay=` to simulate a slow mocked response without moving the virtual pointer. Network waits can match URLs by substring, exact text, or regex, and can filter by method, status, response body text, request or response headers, and whether the match came from a CMG mock.
 
 ## HAR Replay
 
@@ -1155,7 +1156,7 @@ test "loads profile" {
   click "#loadProfile"
   waitForRequest "/api/profile"
   waitForRequestFinished "/api/profile"
-  waitForResponse "/api/profile"
+  waitForResponse "/api/profile" match=exact
 }
 
 test "reports offline profile failure" {

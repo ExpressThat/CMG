@@ -22,6 +22,8 @@ public static partial class CmgNetworkScripts
         new Promise((resolve, reject) => {
           const expected = {
             pattern: {{Quote(pattern)}},
+            match: {{Quote(NetworkMatchMode(action))}},
+            ignoreCase: {{BoolLiteral(action.Options.GetValueOrDefault("ignoreCase"))}},
             method: {{Quote(action.Options.GetValueOrDefault("method")?.ToUpperInvariant() ?? string.Empty)}},
             status: {{NumberOrNull(action.Options.GetValueOrDefault("status"))}},
             contains: {{Quote(action.Options.GetValueOrDefault("contains") ?? string.Empty)}},
@@ -29,8 +31,16 @@ public static partial class CmgNetworkScripts
             headerName: {{Quote(HeaderName(action))}},
             headerValue: {{Quote(HeaderValue(action))}}
           };
+          const normalizeUrl = value => expected.ignoreCase ? String(value || '').toLowerCase() : String(value || '');
+          const expectedPattern = normalizeUrl(expected.pattern);
+          const expectedRegex = expected.match === 'regex' ? new RegExp(expected.pattern, expected.ignoreCase ? 'i' : '') : null;
+          const urlMatches = url => {
+            if (expected.match === 'exact') return normalizeUrl(url) === expectedPattern;
+            if (expected.match === 'regex') return expectedRegex.test(String(url || ''));
+            return normalizeUrl(url).includes(expectedPattern);
+          };
           const matches = r =>
-            r.url.includes(expected.pattern) &&
+            urlMatches(r.url) &&
             (!expected.method || String(r.method || 'GET').toUpperCase() === expected.method) &&
             (expected.status === null || Number(r.status) === expected.status) &&
             (!expected.contains || String(r.body || r.error || '').includes(expected.contains)) &&
@@ -57,9 +67,30 @@ public static partial class CmgNetworkScripts
         AddFilter(filters, "contains", action.Options.GetValueOrDefault("contains"));
         AddFilter(filters, "mocked", action.Options.GetValueOrDefault("mocked"));
         AddFilter(filters, "header", HeaderFilter(action));
+        AddFilter(filters, "match", NetworkMatchDescription(action));
         var suffix = filters.Count is 0 ? string.Empty : $" with {string.Join(", ", filters)}";
         return EscapeMessage($"Timed out waiting for {label} {pattern}{suffix}");
     }
+
+    private static string NetworkMatchMode(CmgNode action)
+    {
+        var mode = action.Options.GetValueOrDefault("match") ?? action.Options.GetValueOrDefault("mode");
+        return mode?.ToLowerInvariant() is "exact" or "regex" ? mode.ToLowerInvariant() : "contains";
+    }
+
+    private static string NetworkMatchDescription(CmgNode action)
+    {
+        var mode = NetworkMatchMode(action);
+        var ignoreCase = BoolLiteral(action.Options.GetValueOrDefault("ignoreCase")) is "true";
+        if (mode is "contains" && !ignoreCase)
+        {
+            return string.Empty;
+        }
+
+        return ignoreCase ? $"{mode}, ignoreCase=true" : mode;
+    }
+
+    private static string BoolLiteral(string? value) => IsTrue(value) ? "true" : "false";
 
     private static void AddFilter(List<string> filters, string key, string? value)
     {

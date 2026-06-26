@@ -122,7 +122,9 @@ public sealed partial class BrowserControlCommandBuilder
         Option<string?> mocked,
         Option<string?> header,
         Option<string?> headerName,
-        Option<string?> headerValue) =>
+        Option<string?> headerValue,
+        Option<string?> match,
+        Option<bool> ignoreCase) =>
         CompactOptions([
             IntOption("timeout", parseResult.GetValue(timeout)),
             StringOption("method", parseResult.GetValue(method)),
@@ -131,7 +133,9 @@ public sealed partial class BrowserControlCommandBuilder
             StringOption("mocked", parseResult.GetValue(mocked)),
             StringOption("header", parseResult.GetValue(header)),
             StringOption("headerName", parseResult.GetValue(headerName)),
-            StringOption("headerValue", parseResult.GetValue(headerValue))
+            StringOption("headerValue", parseResult.GetValue(headerValue)),
+            StringOption("match", parseResult.GetValue(match)),
+            parseResult.GetValue(ignoreCase) ? ("ignoreCase", "true") : null
         ]);
 
     private static (string Key, string Value)? StringOption(string key, string? value) =>

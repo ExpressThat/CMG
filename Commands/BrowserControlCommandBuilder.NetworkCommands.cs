@@ -57,7 +57,7 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildNetworkWaitCommand(BrowserSelectionOptions browserOptions, string name, string description)
     {
-        var pattern = new Argument<string>("pattern") { Description = "URL substring to match." };
+        var pattern = new Argument<string>("pattern") { Description = "URL text to match." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
         var method = new Option<string?>("--method") { Description = "HTTP method filter." };
         var status = new Option<int?>("--status") { Description = "HTTP status filter." };
@@ -66,10 +66,25 @@ public sealed partial class BrowserControlCommandBuilder
         var header = new Option<string?>("--header") { Description = "Header filter as Name or Name: value." };
         var headerName = new Option<string?>("--header-name") { Description = "Header name filter." };
         var headerValue = new Option<string?>("--header-value") { Description = "Header value substring filter." };
-        var command = new Command(name, description) { pattern, timeout, method, status, contains, mocked, header, headerName, headerValue };
+        var match = NavigationMatchOption();
+        var ignoreCase = NavigationIgnoreCaseOption();
+        var command = new Command(name, description)
+        {
+            pattern,
+            timeout,
+            method,
+            status,
+            contains,
+            mocked,
+            header,
+            headerName,
+            headerValue,
+            match,
+            ignoreCase
+        };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], WaitOptions(parseResult, timeout, method, status, contains, mocked, header, headerName, headerValue))));
+            ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], WaitOptions(parseResult, timeout, method, status, contains, mocked, header, headerName, headerValue, match, ignoreCase))));
         return command;
     }
 

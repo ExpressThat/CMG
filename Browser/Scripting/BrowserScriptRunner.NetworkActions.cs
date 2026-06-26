@@ -1,4 +1,5 @@
 using CMG.Runner;
+using System.Text.RegularExpressions;
 using System.Text.Json;
 
 namespace CMG.Browser.Scripting;
@@ -111,6 +112,39 @@ public sealed partial class BrowserScriptRunner
             !action.Options.ContainsKey("headerName"))
         {
             throw new ScriptExecutionException($"{action.Name} option headerValue= requires header= or headerName=.");
+        }
+
+        var match = action.Options.GetValueOrDefault("match") ?? action.Options.GetValueOrDefault("mode");
+        if (string.IsNullOrWhiteSpace(match))
+        {
+            return;
+        }
+
+        if (!IsNetworkMatchMode(match))
+        {
+            throw new ScriptExecutionException($"{action.Name} option match= must be contains, exact, or regex.");
+        }
+
+        if (match.Equals("regex", StringComparison.OrdinalIgnoreCase))
+        {
+            ValidateNetworkRegex(action);
+        }
+    }
+
+    private static bool IsNetworkMatchMode(string match) =>
+        match.Equals("contains", StringComparison.OrdinalIgnoreCase) ||
+        match.Equals("exact", StringComparison.OrdinalIgnoreCase) ||
+        match.Equals("regex", StringComparison.OrdinalIgnoreCase);
+
+    private static void ValidateNetworkRegex(BrowserScriptAction action)
+    {
+        try
+        {
+            _ = new Regex(action.Arguments[0]);
+        }
+        catch (ArgumentException ex)
+        {
+            throw new ScriptExecutionException($"Invalid network regex '{action.Arguments[0]}': {ex.Message}");
         }
     }
 

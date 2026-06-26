@@ -1573,6 +1573,7 @@ intercept "/api/down" abort=true error="offline"
 waitForResponse "/api/profile" timeout=5000
 waitForResponse "/api/profile" method=POST status=201 contains=created mocked=true timeout=5000
 waitForResponse "/api/profile" header="Content-Type: json"
+waitForResponse "/api/profile/\\d+" match=regex ignoreCase=true
 waitForRequest "/api/profile" headerName=Authorization headerValue=Bearer
 waitForRequest "/api/profile" timeout=5000
 waitForRequestFinished "/api/profile" timeout=5000
@@ -1582,7 +1583,7 @@ replayHar path="artifacts\network.har"
 clearRoutes
 ```
 
-Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Use `method=` to restrict a route to one HTTP method, `times=` to remove it after a fixed number of matches, and `delay=` to simulate response latency. Use `abort=true` or `action=abort` to reject matching requests instead; aborted matches are recorded in the request failure log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest` waits for dispatch, `waitForRequestFinished` and `waitForResponse` wait for completed responses, and `waitForRequestFailed` waits for failures. All network waits match logged entries whose URL contains the pattern. Waits can also filter by `method=`, `status=`, response or error text with `contains=`, mocked-state with `mocked=true|false`, and headers with `header=`, `headerName=`, and `headerValue=`; timeout failures include the requested filters.
+Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Use `method=` to restrict a route to one HTTP method, `times=` to remove it after a fixed number of matches, and `delay=` to simulate response latency. Use `abort=true` or `action=abort` to reject matching requests instead; aborted matches are recorded in the request failure log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest` waits for dispatch, `waitForRequestFinished` and `waitForResponse` wait for completed responses, and `waitForRequestFailed` waits for failures. Network waits match logged entry URLs with `match=contains|exact|regex`; default is `contains`. Use `ignoreCase=true` for case-insensitive URL matching. Waits can also filter by `method=`, `status=`, response or error text with `contains=`, mocked-state with `mocked=true|false`, and headers with `header=`, `headerName=`, and `headerValue=`; timeout failures include the requested filters.
 
 Options:
 
@@ -1596,6 +1597,8 @@ Options:
 - `action`: Optional route action. Use `abort` to fail matching requests.
 - `error`: Optional failure message for aborted routes. Default is `Request aborted by CMG route`.
 - `timeout`: Optional for network waits. Default is `5000`.
+- `match`: Optional URL match mode for network waits. Supports `contains`, `exact`, and `regex`. Default is `contains`.
+- `ignoreCase`: Optional boolean for URL matching on network waits.
 - `contains`: Optional text filter for response bodies or failure messages on network waits.
 - `mocked`: Optional boolean filter for network waits. Use `true` for mocked route traffic or `false` for real page traffic.
 - `header`: Optional header filter for network waits, formatted as `Name` or `Name: value`.
@@ -1606,7 +1609,7 @@ Options:
 
 Notes:
 
-- Route matching uses substring matching.
+- Route matching uses substring matching. Network waits support substring, exact, and regex URL matching.
 - Route aborts are observable with `waitForRequestFailed`, not `waitForResponse`.
 - Header filters on `waitForRequest` and `waitForRequestFailed` match request headers. Header filters on `waitForResponse` and `waitForRequestFinished` match response headers.
 - Network actions do not move the virtual pointer. They are captured in reports and can be wrapped with `step` or captions for GIF narration.

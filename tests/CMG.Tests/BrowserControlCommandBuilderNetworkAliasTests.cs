@@ -40,6 +40,19 @@ public sealed class BrowserControlCommandBuilderNetworkAliasTests
         Assert.Equal(expectedScript, handler.ScriptLine);
     }
 
+    [Theory]
+    [InlineData("waitForRequest /api/profile --match exact --method POST", "waitForRequest \"/api/profile\" method=\"POST\" match=\"exact\"")]
+    [InlineData("waitForResponse /api/.+ --match regex --ignore-case", "waitForResponse \"/api/.+\" match=\"regex\" ignoreCase=\"true\"")]
+    public void NetworkWaitCommands_MapUrlMatchOptionsToScriptActions(string commandTail, string expectedScript)
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse($"control network {commandTail}").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(BrowserKind.Chrome, handler.BrowserKind);
+        Assert.Equal(expectedScript, handler.ScriptLine);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");

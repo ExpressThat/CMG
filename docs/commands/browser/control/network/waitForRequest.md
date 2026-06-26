@@ -8,11 +8,13 @@ cmg browser control network waitForRequest "<pattern>" [options]
 
 ## Arguments
 
-- `<pattern>`: URL substring to match.
+- `<pattern>`: URL text to match. Default matching is substring matching unless `--match` changes it.
 
 ## Options
 
 - `--timeout <milliseconds>`: Timeout.
+- `--match <contains|exact|regex>`: URL match mode. Default is `contains`.
+- `--ignore-case`: Match the URL without case sensitivity.
 - `--method <method>`: HTTP method filter.
 - `--status <status>`: HTTP status filter.
 - `--contains <text>`: Body, response, or error text filter.
@@ -30,7 +32,7 @@ REQUEST 001 {"method":"GET","url":"/api/profile"}
 
 ## Stderr
 
-Writes browser, timeout, option, or action errors.
+Writes browser, timeout, option, or action errors. Invalid match modes report `match= must be contains, exact, or regex`; invalid regex patterns report `Invalid network regex '<pattern>': <reason>`.
 
 ## Exit Codes
 
@@ -42,4 +44,5 @@ Writes browser, timeout, option, or action errors.
 ```powershell
 cmg browser control network waitForRequest "/api/profile" --method POST --header "Authorization: Bearer"
 cmg browser control network waitForRequest "/api/profile" --header-name X-CMG-Agent --header-value true
+cmg browser control network waitForRequest "/api/profile/\d+" --match regex --ignore-case
 ```
