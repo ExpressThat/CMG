@@ -24,6 +24,12 @@ Run a script:
 dotnet run -- browser control script --file demo-scripts\01-dialog-flow.cmgscript
 ```
 
+Validate a script without connecting to a browser:
+
+```powershell
+dotnet run -- browser control validateScript --file demo-scripts\48-weird-formatting.cmgscript
+```
+
 Run a demo script in Edge or Firefox:
 
 ```powershell

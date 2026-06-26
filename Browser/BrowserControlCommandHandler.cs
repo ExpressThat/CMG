@@ -9,15 +9,21 @@ public interface IBrowserControlCommandHandler
     int RunScript(BrowserKind browserKind, string file, FileInfo? gif);
 
     int RunScriptAction(BrowserKind browserKind, string scriptLine);
+
+    int ValidateScript(string file);
 }
 
 public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
 {
     private readonly IBrowserControlService browserControlService;
+    private readonly BrowserScriptValidator scriptValidator;
 
-    public BrowserControlCommandHandler(IBrowserControlService browserControlService)
+    public BrowserControlCommandHandler(
+        IBrowserControlService browserControlService,
+        BrowserScriptValidator scriptValidator)
     {
         this.browserControlService = browserControlService;
+        this.scriptValidator = scriptValidator;
     }
 
     public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output)
@@ -80,6 +86,19 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         var result = browserControlService.RunScript(browserKind, file, gif);
 
         return WriteScriptResult(result);
+    }
+
+    public int ValidateScript(string file)
+    {
+        var result = scriptValidator.ValidateFile(file);
+        if (result.Success)
+        {
+            Console.WriteLine($"SCRIPT VALID actions={result.ActionCount}");
+            return 0;
+        }
+
+        Console.Error.WriteLine(result.Error);
+        return 1;
     }
 
     public int RunScriptAction(BrowserKind browserKind, string scriptLine)

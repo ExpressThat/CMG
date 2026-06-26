@@ -26,6 +26,7 @@ public sealed partial class BrowserControlCommandBuilder
 
         command.Subcommands.Add(BuildGetElementCommand(browserOptions));
         command.Subcommands.Add(BuildScriptCommand(browserOptions));
+        command.Subcommands.Add(BuildValidateScriptCommand());
         command.Subcommands.Add(BuildNavigateCommand(browserOptions));
         command.Subcommands.Add(BuildWaitForElementCommand(browserOptions));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "click", "Click an element."));

@@ -6,6 +6,7 @@ Browser-control scripts are for agents and people who need to drive the browser 
 cmg browser control script --file flow.cmgscript
 cmg --edge browser control script --file flow.cmgscript
 cmg --firefox browser control script --file flow.cmgscript
+cmg browser control validateScript --file flow.cmgscript
 ```
 
 Use browser-control scripts when a single selector command is not enough and an agent needs to describe a repeatable browser flow. This is separate from `cmg run`, which executes the new test DSL and intentionally rejects V1 flat scripts.
@@ -41,5 +42,6 @@ click "#openProfileDialog"
 - Scripts run one line at a time.
 - Blank lines and comment lines are ignored.
 - Variables are expanded before each action runs.
+- `browser control validateScript --file <path>` checks imports and syntax without connecting to a browser.
 - Execution stops on the first failure.
 - Successful execution exits `0`; failure exits `1`.

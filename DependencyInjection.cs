@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddSingleton<ChromeDevToolsClient>();
         services.AddSingleton<FirefoxBiDiClient>();
         services.AddSingleton<BrowserScriptParser>();
+        services.AddSingleton<BrowserScriptValidator>();
         services.AddSingleton<BrowserScriptRunner>();
         services.AddSingleton<BrowserStateStore>();
 

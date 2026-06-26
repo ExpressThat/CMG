@@ -20,6 +20,7 @@ cmg --firefox browser control script --file <path>
 ## Behavior
 
 - Requires a browser started with [`browser launch`](../launch.md). For Edge, use `cmg --edge browser launch`. For Firefox, use `cmg --firefox browser launch`.
+- Use [`validateScript`](validateScript.md) to check imports and syntax before connecting to a browser.
 - Executes actions in file order.
 - Stops on the first failed action.
 - Writes step logs and action outputs to stdout.

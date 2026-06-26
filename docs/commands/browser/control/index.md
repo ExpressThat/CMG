@@ -16,6 +16,7 @@ cmg browser control [command] [options]
 
 - [`getElement`](getElement.md): Return HTML or a screenshot for a selected element.
 - [`script`](script.md): Run a `.cmgscript` browser automation script.
+- [`validateScript`](validateScript.md): Validate a `.cmgscript` browser automation script without running it.
 - [`navigate`](navigate.md): Navigate the primary page target.
 - [`waitForElement`](waitForElement.md): Wait until an element exists.
 - [`click`](click.md): Click an element.
@@ -46,6 +47,7 @@ cmg browser control --help
 cmg --edge browser control --help
 cmg --firefox browser control --help
 cmg browser control getElement "h1" --html
+cmg browser control validateScript --file flow.cmgscript
 cmg browser control script --file flow.cmgscript
 cmg browser control click "#openProfileDialog"
 cmg browser control screenshot "#profileDialog" --output profile-dialog.png

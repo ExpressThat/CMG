@@ -78,4 +78,23 @@ public sealed partial class BrowserControlCommandBuilder
 
         return command;
     }
+
+    private Command BuildValidateScriptCommand()
+    {
+        var fileOption = new Option<string>("--file")
+        {
+            Description = "Path to a .cmgscript file, or '-' to read from stdin.",
+            Required = true
+        };
+
+        var command = new Command("validateScript", "Validate a .cmgscript browser automation script without running it.")
+        {
+            fileOption
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.ValidateScript(parseResult.GetValue(fileOption) ?? string.Empty));
+
+        return command;
+    }
 }
