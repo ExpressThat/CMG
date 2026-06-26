@@ -129,6 +129,12 @@ Imports are expanded before parsing. Relative paths resolve from the importing f
 import	"shared.cmgscript"
 ```
 
+Imports also participate in normal line splitting, so dense AI-authored files can put an import before another action on the same physical line:
+
+```text
+import "shared.cmgscript"; test "uses import" { call helper }
+```
+
 ## Variables And Capture
 
 Use `set` with a literal value or a block:

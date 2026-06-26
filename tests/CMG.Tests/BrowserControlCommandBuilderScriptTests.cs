@@ -7,6 +7,16 @@ namespace CMG.Tests;
 public sealed class BrowserControlCommandBuilderScriptTests
 {
     [Fact]
+    public void Set_IsNotExposedAsAControlCommand()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var result = BuildRoot(handler).Parse("control set title value");
+
+        Assert.True(result.Errors.Count > 0);
+        Assert.Null(handler.ScriptLine);
+    }
+
+    [Fact]
     public void ScriptCommand_MapsGifAndTraceOptions()
     {
         var handler = new CapturingBrowserControlCommandHandler();
@@ -36,6 +46,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
     {
         public string? File { get; private set; }
 
+        public string? ScriptLine { get; private set; }
+
         public FileInfo? Gif { get; private set; }
 
         public FileInfo? Trace { get; private set; }
@@ -57,7 +69,11 @@ public sealed class BrowserControlCommandBuilderScriptTests
             return 0;
         }
 
-        public int RunScriptAction(BrowserKind browserKind, string scriptLine) => 0;
+        public int RunScriptAction(BrowserKind browserKind, string scriptLine)
+        {
+            ScriptLine = scriptLine;
+            return 0;
+        }
 
         public int ValidateScript(string file) => 0;
     }

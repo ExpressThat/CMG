@@ -44,6 +44,23 @@ public sealed class BrowserScriptValidatorTests
     }
 
     [Fact]
+    public void ValidateFile_ExpandsSemicolonSeparatedImports()
+    {
+        using var directory = new TempScriptDirectory();
+        directory.Write("shared.cmgscript", """
+        macro announce value {
+          caption "${value}"
+        }
+        """);
+        var main = directory.Write("flows/main.cmgscript", "import \"../shared.cmgscript\"; call announce \"Imported\"; caption \"done; still quoted\"");
+
+        var result = Validator().ValidateFile(main);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(3, result.ActionCount);
+    }
+
+    [Fact]
     public void ValidateFile_ReportsMissingImports()
     {
         using var directory = new TempScriptDirectory();

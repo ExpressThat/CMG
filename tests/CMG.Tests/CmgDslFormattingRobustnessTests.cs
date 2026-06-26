@@ -40,6 +40,29 @@ public sealed class CmgDslFormattingRobustnessTests
     }
 
     [Fact]
+    public void Parse_ImportsFromSemicolonSeparatedRunnerLine()
+    {
+        using var directory = new TempScriptDirectory();
+        directory.Write("shared.cmgscript", """
+        macro announce {
+          caption "Imported"
+        }
+        """);
+        var main = directory.Write("flows/main.cmgscript", """
+        import "../shared.cmgscript"; test "imports" { call announce; caption "done; still one" }
+        """);
+
+        var result = new CmgDslParser().Parse(main, File.ReadAllText(main));
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("macro", result.Document!.Nodes[0].Kind);
+        var test = result.Document.Nodes[1];
+        Assert.Equal("test", test.Kind);
+        Assert.Equal(["call", "caption"], test.Children.Select(node => node.Kind.ToLowerInvariant()));
+        Assert.Equal("done; still one", test.Children[1].Arguments[0]);
+    }
+
+    [Fact]
     public void Parse_PostConditionLoopsAllowOddSpacingAndCasing()
     {
         var result = new CmgDslParser().Parse("flow.cmgscript", """
@@ -71,6 +94,20 @@ public sealed class CmgDslFormattingRobustnessTests
         Assert.Equal("3", block.Options["max"]);
         Assert.Equal("10", block.Options["delay"]);
         Assert.Equal("expectText", Assert.Single(block.Children).Kind);
+    }
+
+    [Fact]
+    public void Parse_AllowsDenseBranchTryAndLoopFormatting()
+    {
+        var result = new CmgDslParser().Parse("flow.cmgscript", """
+        test "dense" { if true { macro inner value { if ( "${value}" != "" ) { caption "${value}" } } ; call inner "ok" } elseif false { fail "bad" } else { caption "else" }; try { repeat 2 { caption "tick" } } catch error { caption "${error}" } finally { caption "done" } }
+        """);
+
+        Assert.True(result.Success, result.Error);
+        var test = Assert.Single(result.Document!.Nodes);
+        Assert.Equal(["if", "elseif", "else", "try", "catch", "finally"], test.Children.Select(node => node.Kind.ToLowerInvariant()));
+        Assert.Equal("macro", test.Children[0].Children[0].Kind);
+        Assert.Equal("repeat", Assert.Single(test.Children[3].Children).Kind);
     }
 
     private sealed class TempScriptDirectory : IDisposable

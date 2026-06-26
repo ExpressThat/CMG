@@ -1936,6 +1936,8 @@ import "shared.cmgscript"
 
 Expands another script file before parsing. Relative paths resolve from the directory of the importing script. Imported files can contain macros, setup actions, tests for `cmg run`, and more imports. Missing files and import cycles fail before any action runs.
 
+Imports use the same formatting normalizer as the rest of the DSL. Semicolon-separated lines such as `import "shared.cmgscript"; call helper` are valid outside quoted strings.
+
 ### `if`, `elseif`, And `else`
 
 ```text

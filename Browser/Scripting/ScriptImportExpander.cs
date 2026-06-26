@@ -8,7 +8,7 @@ public static class ScriptImportExpander
     private static ScriptImportResult Expand(string script, string baseDirectory, HashSet<string> stack)
     {
         var output = new List<string>();
-        foreach (var line in script.ReplaceLineEndings("\n").Split('\n'))
+        foreach (var line in ScriptLineNormalizer.Normalize(script))
         {
             var trimmed = line.Trim();
             if (!StartsWithImport(trimmed))
