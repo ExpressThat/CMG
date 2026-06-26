@@ -20,8 +20,17 @@ public static class BrowserPaths
             ? UserDataDirectory
             : Path.Combine(AppDataDirectory, $"{browserKind.StateName()}-profile");
 
+    public static string GetActiveTargetFile(string key) =>
+        Path.Combine(AppDataDirectory, $"active-target-{Sanitize(key)}.state");
+
     public static void EnsureAppDataDirectory()
     {
         Directory.CreateDirectory(AppDataDirectory);
+    }
+
+    private static string Sanitize(string value)
+    {
+        var invalid = Path.GetInvalidFileNameChars();
+        return string.Concat(value.Select(character => invalid.Contains(character) ? '_' : character));
     }
 }

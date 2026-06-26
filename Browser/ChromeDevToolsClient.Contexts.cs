@@ -12,7 +12,7 @@ public sealed partial class ChromeDevToolsClient
     public IReadOnlyList<BrowserContextInfo> ListBrowserContexts(string remoteDebuggingUrl)
     {
         var contexts = SnapshotContexts(remoteDebuggingUrl);
-        var activeTarget = ActiveTargets.GetValueOrDefault(Key(remoteDebuggingUrl));
+        var activeTarget = GetActiveTarget(remoteDebuggingUrl);
         return contexts
             .Select(context => context with { Active = context.TargetId == activeTarget })
             .ToArray();
@@ -38,14 +38,14 @@ public sealed partial class ChromeDevToolsClient
     public void UseBrowserContext(string remoteDebuggingUrl, string id)
     {
         var context = FindContext(remoteDebuggingUrl, id) ??
-            throw new ChromeDevToolsException($"Browser context '{id}' was not found in this script run.");
+            throw new ChromeDevToolsException($"Browser context '{id}' was not found.");
         SetActiveTarget(remoteDebuggingUrl, context.TargetId);
     }
 
     public void CloseBrowserContext(string remoteDebuggingUrl, string id)
     {
         var context = FindContext(remoteDebuggingUrl, id) ??
-            throw new ChromeDevToolsException($"Browser context '{id}' was not found in this script run.");
+            throw new ChromeDevToolsException($"Browser context '{id}' was not found.");
         Run(async () =>
         {
             await using var session = await DevToolsSession.Connect(await GetBrowserWebSocketDebuggerUrl(remoteDebuggingUrl), enablePage: false);
@@ -81,9 +81,13 @@ public sealed partial class ChromeDevToolsClient
 
     private static IReadOnlyList<BrowserContextInfo> SnapshotContexts(string remoteDebuggingUrl)
     {
+        var discovered = DiscoverContexts(remoteDebuggingUrl);
         lock (ContextLock)
         {
-            return CreatedContexts.GetValueOrDefault(Key(remoteDebuggingUrl))?.Values.ToArray() ?? [];
+            var stored = CreatedContexts.GetValueOrDefault(Key(remoteDebuggingUrl))?.Values.ToArray() ?? [];
+            return discovered
+                .Concat(stored.Where(context => discovered.All(item => item.Id != context.Id)))
+                .ToArray();
         }
     }
 
@@ -99,5 +103,42 @@ public sealed partial class ChromeDevToolsClient
                 contexts.Remove(id);
             }
         }
+    }
+
+    private static IReadOnlyList<BrowserContextInfo> DiscoverContexts(string remoteDebuggingUrl) =>
+        Run(async () =>
+        {
+            await using var session = await DevToolsSession.Connect(await GetBrowserWebSocketDebuggerUrl(remoteDebuggingUrl), enablePage: false);
+            var response = await session.SendCommand("Target.getTargets");
+            if (!response.TryGetProperty("result", out var result) ||
+                !result.TryGetProperty("targetInfos", out var targetInfos))
+            {
+                return [];
+            }
+
+            return targetInfos
+                .EnumerateArray()
+                .Select(ReadContextInfo)
+                .Where(context => context is not null)
+                .Select(context => context!)
+                .GroupBy(context => context.Id, StringComparer.Ordinal)
+                .Select(group => group.First())
+                .ToArray();
+        });
+
+    private static BrowserContextInfo? ReadContextInfo(JsonElement target)
+    {
+        if (!TryReadString(target, "type", out var type) ||
+            !string.Equals(type, "page", StringComparison.OrdinalIgnoreCase) ||
+            !TryReadString(target, "browserContextId", out var contextId) ||
+            string.IsNullOrWhiteSpace(contextId) ||
+            !TryReadString(target, "targetId", out var targetId) ||
+            string.IsNullOrWhiteSpace(targetId))
+        {
+            return null;
+        }
+
+        _ = TryReadString(target, "url", out var url);
+        return new BrowserContextInfo(contextId, targetId, url ?? string.Empty, Active: false);
     }
 }

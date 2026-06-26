@@ -137,7 +137,8 @@ public sealed partial class ChromeDevToolsClient
 
     private static IReadOnlyList<PageTarget> PrioritizeActiveTarget(string remoteDebuggingUrl, IReadOnlyList<PageTarget> targets)
     {
-        if (!ActiveTargets.TryGetValue(Key(remoteDebuggingUrl), out var activeId))
+        var activeId = GetActiveTarget(remoteDebuggingUrl);
+        if (string.IsNullOrWhiteSpace(activeId))
         {
             return targets;
         }
@@ -148,15 +149,46 @@ public sealed partial class ChromeDevToolsClient
             : [active, .. targets.Where(target => target.Id != activeId)];
     }
 
-    private static void SetActiveTarget(string remoteDebuggingUrl, string targetId) =>
+    private static void SetActiveTarget(string remoteDebuggingUrl, string targetId)
+    {
         ActiveTargets[Key(remoteDebuggingUrl)] = targetId;
+        BrowserPaths.EnsureAppDataDirectory();
+        File.WriteAllText(BrowserPaths.GetActiveTargetFile(Key(remoteDebuggingUrl)), targetId);
+    }
 
     private static void ClearActiveTarget(string remoteDebuggingUrl, string targetId)
     {
-        if (ActiveTargets.TryGetValue(Key(remoteDebuggingUrl), out var activeId) && activeId == targetId)
+        if (GetActiveTarget(remoteDebuggingUrl) == targetId)
         {
             ActiveTargets.TryRemove(Key(remoteDebuggingUrl), out _);
+            var file = BrowserPaths.GetActiveTargetFile(Key(remoteDebuggingUrl));
+            if (File.Exists(file))
+            {
+                File.Delete(file);
+            }
         }
+    }
+
+    private static string? GetActiveTarget(string remoteDebuggingUrl)
+    {
+        if (ActiveTargets.TryGetValue(Key(remoteDebuggingUrl), out var activeId))
+        {
+            return activeId;
+        }
+
+        var file = BrowserPaths.GetActiveTargetFile(Key(remoteDebuggingUrl));
+        if (!File.Exists(file))
+        {
+            return null;
+        }
+
+        activeId = File.ReadAllText(file).Trim();
+        if (!string.IsNullOrWhiteSpace(activeId))
+        {
+            ActiveTargets[Key(remoteDebuggingUrl)] = activeId;
+        }
+
+        return activeId;
     }
 
     private static string Key(string remoteDebuggingUrl) => remoteDebuggingUrl.TrimEnd('/');
