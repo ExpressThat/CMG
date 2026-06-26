@@ -1,0 +1,15 @@
+test "collection loops iterate action output" {
+  setContent "<main><ul><li>Ada</li><li>Grace</li></ul></main>"
+
+  set names {
+    allTextContents "li"
+  }
+
+  foreachJson name "${names}" {
+    expect (${name} != "")
+  }
+
+  foreachList mode "smoke, visual, report" {
+    expect (${mode} != "")
+  }
+}

@@ -155,6 +155,14 @@ if (${heading} != "") {
 foreachSelector action ".command" {
   call chooseCommand "${action}"
 }
+
+set commandLabels {
+  allTextContents ".command"
+}
+
+foreachJson label "${commandLabels}" {
+  caption "Command ${index}: ${label}"
+}
 ```
 
 Macros can receive plain values, variables, selectors, or temporary selectors from `foreachSelector`. Control blocks and macros can be nested in any combination. Macro parameters and variables set inside a macro are scoped to the current call, loop variables are scoped to the current iteration, and helper macros declared inside a macro or branch do not leak outward.
@@ -261,7 +269,7 @@ doUntil (${ready} == true) max=2 {
 }
 ```
 
-`repeat`, `for`, `foreach`, `foreachSelector`, `while`, `until`, `doWhile`, and `doUntil` can contain nested macros, conditionals, and GIF blocks. Condition loops are bounded with `max=` to prevent scripts from hanging indefinitely. `doWhile` and `doUntil` always run their body once before checking the condition.
+`repeat`, `for`, `foreach`, `foreachJson`, `foreachList`, `foreachSelector`, `while`, `until`, `doWhile`, and `doUntil` can contain nested macros, conditionals, and GIF blocks. `foreachJson` is useful with JSON array output from actions such as `allTextContents`; `foreachList` is useful for comma-separated values. Condition loops are bounded with `max=` to prevent scripts from hanging indefinitely. `doWhile` and `doUntil` always run their body once before checking the condition.
 
 This example is available as `demo-scripts/32-loop-control.cmgscript`.
 

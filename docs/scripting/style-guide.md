@@ -133,6 +133,7 @@ Write the simplest readable journey before adding abstraction:
 
 - Start with a linear script or test.
 - Add a macro when the same journey repeats.
+- Use `foreachJson` for JSON array output from actions such as `allTextContents`; use `foreachList` for small delimited value sets.
 - Add `retry` or `toPass` around genuinely flaky waits or eventually-consistent checks.
 - Use `fail "reason"` for guard clauses when the script can explain the problem better than a generic assertion.
 - Avoid deeply nested control flow unless the nesting mirrors the user journey. Split a large branch into a macro when it becomes hard to scan.

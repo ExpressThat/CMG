@@ -42,6 +42,12 @@ public sealed partial class BrowserScriptRunner
             case "foreach":
                 ExecuteForEach(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
+            case "foreachjson":
+                ExecuteForEachJson(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
+            case "foreachlist":
+                ExecuteForEachList(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
             case "foreachselector":
                 ExecuteForEachSelector(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
@@ -100,6 +106,8 @@ public sealed partial class BrowserScriptRunner
         name.Equals("else", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("for", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("foreach", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("foreachJson", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("foreachList", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("foreachSelector", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("while", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("until", StringComparison.OrdinalIgnoreCase) ||

@@ -2233,7 +2233,7 @@ set label {
 
 `return` requires at least one argument and emits `RETURN <line> <value>` when run directly.
 
-### `for`, `repeat`, `while`, `until`, `doWhile`, `doUntil`, `foreach`, `foreachSelector`, `break`, And `continue`
+### `for`, `repeat`, `while`, `until`, `doWhile`, `doUntil`, `foreach`, `foreachJson`, `foreachList`, `foreachSelector`, `break`, And `continue`
 
 ```text
 for 3 {
@@ -2273,6 +2273,18 @@ foreach name Alice Bob {
   fill "#name" "${name}"
 }
 
+set names {
+  allTextContents ".person"
+}
+
+foreachJson name "${names}" {
+  caption "Person ${index}: ${name}"
+}
+
+foreachList mode "smoke, visual, report" delimiter="," {
+  caption "Mode ${index}: ${mode}"
+}
+
 foreachSelector row ".result" {
   if (${index} == 10) {
     break
@@ -2285,7 +2297,7 @@ foreachSelector row ".result" {
 
 `repeat <count>` repeats a fixed number of times and exposes `${index}`. `repeat <variable> <count>` exposes the named variable instead. `while <condition>` repeats while the same condition syntax used by `if` remains true. `until <condition>` repeats while that condition remains false. `doWhile <condition>` and `doUntil <condition>` run the body once before evaluating the condition, then repeat while the condition is true or false respectively. Condition loops have a safety guard: `max=<count>` defaults to `100` and the action fails if that many iterations are exceeded.
 
-`foreach` iterates over explicit values. `foreachSelector` finds all CSS matches, binds the variable to a temporary selector for each element, and exposes `${index}`. `break` exits the nearest loop. `continue` skips the rest of the current iteration. Using either action outside a loop fails clearly.
+`foreach` iterates over explicit values. `foreachJson` parses a JSON array, which is useful with `set names { allTextContents ".person" }`; strings become their text value, numbers and booleans become text, objects and arrays stay compact JSON, and `null` becomes an empty string. `foreachList` splits a delimited string; `delimiter=` defaults to `,`, `trim=false` preserves whitespace, and `empty=true` keeps empty items. `foreachSelector` finds all CSS matches, binds the variable to a temporary selector for each element, and exposes `${index}`. `break` exits the nearest loop. `continue` skips the rest of the current iteration. Using either action outside a loop fails clearly.
 
 Pointer-aware child actions still use CMG's normal virtual pointer movement, browser events, hover behavior, drag ghosts, and captions when GIF recording is active.
 

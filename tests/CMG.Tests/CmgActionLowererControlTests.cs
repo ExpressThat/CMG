@@ -10,6 +10,8 @@ public sealed class CmgActionLowererControlTests
     [InlineData("else")]
     [InlineData("for")]
     [InlineData("foreach")]
+    [InlineData("foreachJson")]
+    [InlineData("foreachList")]
     [InlineData("foreachSelector")]
     [InlineData("macro")]
     [InlineData("within")]

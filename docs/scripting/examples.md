@@ -128,6 +128,14 @@ macro openProfile name {
 set savedName {
   call openProfile "Ada"
 }
+
+set labels {
+  allTextContents ".command"
+}
+
+foreachJson label "${labels}" {
+  caption "Command ${index}: ${label}"
+}
 ```
 
 Variables set inside a macro are local to that macro call. A macro can read variables from the parent tree where it was defined, and local values shadow parent values without mutating them.
