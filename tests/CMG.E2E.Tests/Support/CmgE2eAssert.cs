@@ -4,12 +4,12 @@ public static class CmgE2eAssert
 {
     public static void StdoutContains(this CmgResult result, string expected)
     {
-        Assert.Contains(expected, result.Stdout);
+        Assert.True(result.Stdout.Contains(expected, StringComparison.Ordinal), Message("stdout", expected, result));
     }
 
     public static void StderrContains(this CmgResult result, string expected)
     {
-        Assert.Contains(expected, result.Stderr);
+        Assert.True(result.Stderr.Contains(expected, StringComparison.Ordinal), Message("stderr", expected, result));
     }
 
     public static void FileExists(string path)
@@ -23,4 +23,10 @@ public static class CmgE2eAssert
         Assert.True(Directory.Exists(path), $"Expected directory to exist: {path}");
         Assert.NotEmpty(Directory.GetFiles(path, pattern));
     }
+
+    private static string Message(string stream, string expected, CmgResult result) =>
+        $"Expected {stream} to contain '{expected}'.{Environment.NewLine}" +
+        $"Command: {string.Join(' ', result.Arguments)}{Environment.NewLine}" +
+        $"STDOUT:{Environment.NewLine}{result.Stdout}{Environment.NewLine}" +
+        $"STDERR:{Environment.NewLine}{result.Stderr}";
 }

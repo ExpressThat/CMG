@@ -97,7 +97,17 @@ public sealed partial class ChromeDevToolsClient
             throw new ChromeDevToolsException(exception);
         }
 
-        return TryReadString(response, ["result", "result", "value"], out var value) ? value ?? string.Empty : string.Empty;
+        if (!TryReadElement(response, ["result", "result"], out var result))
+        {
+            return string.Empty;
+        }
+
+        if (result.TryGetProperty("value", out var value))
+        {
+            return value.ValueKind is JsonValueKind.String ? value.GetString() ?? string.Empty : value.ToString();
+        }
+
+        return TryReadString(result, "description", out var description) ? description ?? string.Empty : string.Empty;
     }
 
     private static string BuildWorkerInterceptScript(WorkerRouteOptions options) => $$"""

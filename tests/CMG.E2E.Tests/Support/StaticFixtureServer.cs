@@ -92,7 +92,11 @@ public sealed class StaticFixtureServer : IDisposable
     }
 
     private static string ContentType(string path) =>
-        Path.GetExtension(path).Equals(".html", StringComparison.OrdinalIgnoreCase)
-            ? "text/html; charset=utf-8"
-            : "application/octet-stream";
+        Path.GetExtension(path).ToLowerInvariant() switch
+        {
+            ".html" => "text/html; charset=utf-8",
+            ".js" => "text/javascript; charset=utf-8",
+            ".json" => "application/json; charset=utf-8",
+            _ => "application/octet-stream"
+        };
 }
