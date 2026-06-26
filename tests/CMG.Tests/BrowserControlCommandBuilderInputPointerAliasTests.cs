@@ -27,6 +27,16 @@ public sealed class BrowserControlCommandBuilderInputPointerAliasTests
         Assert.Equal(expectedScript, handler.ScriptLine);
     }
 
+    [Fact]
+    public void InputClipboardGroup_DoesNotExposeBareSetCommand()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control input clipboard set hello").Invoke();
+
+        Assert.NotEqual(0, exitCode);
+        Assert.Null(handler.ScriptLine);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");

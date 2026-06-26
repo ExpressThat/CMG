@@ -94,7 +94,6 @@ public sealed partial class BrowserControlCommandBuilder
     private Command BuildClipboardGroup(BrowserSelectionOptions browserOptions)
     {
         var command = new Command("clipboard", "Page-side clipboard shim commands.");
-        command.Subcommands.Add(BuildClipboardSetCommand(browserOptions));
         command.Subcommands.Add(BuildClipboardSetCommand(browserOptions, "setClipboard"));
         command.Subcommands.Add(BuildClipboardSetCommand(browserOptions, "writeClipboard"));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "read", "Read clipboard shim text.", "readClipboard"));
@@ -104,7 +103,7 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildClipboardSetCommand(BrowserSelectionOptions browserOptions, string name = "set")
+    private Command BuildClipboardSetCommand(BrowserSelectionOptions browserOptions, string name)
     {
         var text = new Argument<string>("text") { Description = "Clipboard text." };
         var command = new Command(name, "Set clipboard shim text.") { text };
