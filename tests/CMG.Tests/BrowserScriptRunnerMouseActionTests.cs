@@ -57,6 +57,35 @@ public sealed class BrowserScriptRunnerMouseActionTests
     }
 
     [Fact]
+    public void RunText_MouseClickVariantsUseOffsetsAndModifiers()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("rightClick #save modifiers=Control+Shift x=4 y=8", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("#save", client.LastHoveredSelector);
+        Assert.Contains("MouseEvent('contextmenu'", client.LastExpression);
+        Assert.Contains("button: 2", client.LastExpression);
+        Assert.Contains("buttons: 2", client.LastExpression);
+        Assert.Contains("ctrlKey: true", client.LastExpression);
+        Assert.Contains("shiftKey: true", client.LastExpression);
+        Assert.Contains("rect.left + 4", client.LastExpression);
+        Assert.Contains("rect.top + 8", client.LastExpression);
+    }
+
+    [Theory]
+    [InlineData("modifiers=Hyper", "modifiers= supports")]
+    [InlineData("x=-1", "x= must be zero")]
+    [InlineData("y=-1", "y= must be zero")]
+    public void RunText_MouseClickVariantOptionsValidateInput(string option, string expected)
+    {
+        var result = Runner().RunText($"dblclick #save {option}", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains(expected, result.Error);
+    }
+
+    [Fact]
     public void RunText_ClickWithoutOptionsUsesNativeClick()
     {
         var client = new FakeAutomationClient();

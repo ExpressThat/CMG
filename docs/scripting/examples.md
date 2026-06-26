@@ -1023,13 +1023,13 @@ This direct-script example is available as `demo-scripts/110-drag-offsets.cmgscr
 ```text
 setContent "<button id='target'>Click target</button><output id='result'>none</output><script>const target = document.querySelector('#target'); const result = document.querySelector('#result'); target.addEventListener('dblclick', () => result.textContent = 'double'); target.addEventListener('contextmenu', event => { event.preventDefault(); result.textContent = 'right'; });</script>"
 waitForElement "#target"
-doubleClick "#target"
+doubleClick "#target" modifiers=Shift x=8 y=8
 assertText "#result" "double"
-contextClick "#target"
+contextClick "#target" modifiers=Control x=12 y=8
 assertText "#result" "right"
 ```
 
-This example is available as `demo-scripts/14-pointer-click-variants.cmgscript`.
+This example is available as `demo-scripts/14-pointer-click-variants.cmgscript`. The structured runner form is available as `demo-scripts/114-pointer-click-variants-runner.cmgscript`.
 
 ## Environment Emulation
 

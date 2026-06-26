@@ -1506,9 +1506,16 @@ dblclick "#item"
 doubleClick "#item"
 rightClick "#item"
 contextClick "#item"
+dblclick "#canvas" modifiers=Control+Shift x=8 y=12
 ```
 
-Moves to the element with the visual hover path, then dispatches the page-facing mouse event. `doubleClick` is an alias for `dblclick`; `contextClick` is an alias for `rightClick`.
+Moves to the element with the visual hover path, then dispatches the page-facing mouse event. `doubleClick` is an alias for `dblclick`; `contextClick` is an alias for `rightClick`. With `x=`, `y=`, or `modifiers=`, CMG dispatches the event at the configured element-relative point with the requested modifier flags. In GIF recordings, the virtual pointer moves to the same element-relative point before the event is dispatched.
+
+Options:
+
+- `modifiers`: Optional comma- or plus-separated modifiers: `Alt`, `Control`, `Meta`, and `Shift`.
+- `x`: Optional X offset inside the element.
+- `y`: Optional Y offset inside the element.
 
 Output:
 

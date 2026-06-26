@@ -11,10 +11,10 @@ public sealed partial class BrowserControlCommandBuilder
 
         command.Subcommands.Add(BuildWaitForElementCommand(browserOptions));
         command.Subcommands.Add(BuildClickCommand(browserOptions));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "dblclick", "Double-click an element."));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "doubleClick", "Double-click an element."));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "rightClick", "Right-click an element."));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "contextClick", "Right-click an element."));
+        command.Subcommands.Add(BuildMouseClickVariantCommand(browserOptions, "dblclick", "Double-click an element."));
+        command.Subcommands.Add(BuildMouseClickVariantCommand(browserOptions, "doubleClick", "Double-click an element."));
+        command.Subcommands.Add(BuildMouseClickVariantCommand(browserOptions, "rightClick", "Right-click an element."));
+        command.Subcommands.Add(BuildMouseClickVariantCommand(browserOptions, "contextClick", "Right-click an element."));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "tap", "Tap an element with touch-style events."));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "touchTap", "Tap an element with touch-style events."));
         command.Subcommands.Add(BuildTypeCommand(browserOptions));
@@ -151,6 +151,23 @@ public sealed partial class BrowserControlCommandBuilder
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine("hover", [parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
+                StringOption("modifiers", parseResult.GetValue(modifiers)),
+                IntOption("x", parseResult.GetValue(x)),
+                IntOption("y", parseResult.GetValue(y))
+            ]))));
+        return command;
+    }
+
+    private Command BuildMouseClickVariantCommand(BrowserSelectionOptions browserOptions, string name, string description)
+    {
+        var selector = CreateSelectorArgument();
+        var modifiers = CliStringOption("--modifiers", "Comma- or plus-separated modifiers: Alt, Control, Meta, Shift.");
+        var x = CliIntOption("--x", "X offset inside the element.");
+        var y = CliIntOption("--y", "Y offset inside the element.");
+        var command = new Command(name, description) { selector, modifiers, x, y };
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine(name, [parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
                 StringOption("modifiers", parseResult.GetValue(modifiers)),
                 IntOption("x", parseResult.GetValue(x)),
                 IntOption("y", parseResult.GetValue(y))

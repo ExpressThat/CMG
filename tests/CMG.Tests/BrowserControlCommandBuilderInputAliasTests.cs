@@ -8,7 +8,9 @@ public sealed class BrowserControlCommandBuilderInputAliasTests
 {
     [Theory]
     [InlineData("dblclick #save", "dblclick \"#save\"")]
+    [InlineData("dblclick #save --modifiers Control+Shift --x 4 --y 8", "dblclick \"#save\" modifiers=\"Control+Shift\" x=\"4\" y=\"8\"")]
     [InlineData("contextClick #save", "contextClick \"#save\"")]
+    [InlineData("contextClick #save --modifiers Alt --x 6 --y 10", "contextClick \"#save\" modifiers=\"Alt\" x=\"6\" y=\"10\"")]
     [InlineData("touchTap #save", "touchTap \"#save\"")]
     [InlineData("pressSequentially #name CMG", "pressSequentially \"#name\" \"CMG\"")]
     [InlineData("type #name CMG --delay 25", "type \"#name\" \"CMG\" delay=\"25\"")]

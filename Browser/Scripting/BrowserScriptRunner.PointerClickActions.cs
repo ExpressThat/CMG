@@ -34,9 +34,10 @@ public sealed partial class BrowserScriptRunner
         var name = action.Name.ToLowerInvariant();
         var eventName = name is "rightclick" or "contextclick" ? "contextmenu" : "dblclick";
         var button = eventName == "contextmenu" ? 2 : 0;
+        var spec = MouseClickVariantSpec.From(action, button);
 
         automationClient.Hover(remoteDebuggingUrl, selector);
-        automationClient.Evaluate(remoteDebuggingUrl, BuildMouseEventExpression(selector, eventName, button));
+        automationClient.Evaluate(remoteDebuggingUrl, BuildMouseEventExpression(selector, eventName, spec));
 
         return [$"MOUSE_EVENT {action.LineNumber:000} {eventName} {selector}"];
     }
@@ -44,16 +45,16 @@ public sealed partial class BrowserScriptRunner
     private static bool HasClickOptions(BrowserScriptAction action) =>
         action.Options.Keys.Any(key => key is "button" or "clickCount" or "count" or "delay" or "modifiers" or "x" or "y");
 
-    private static string BuildMouseEventExpression(string selector, string eventName, int button)
+    private static string BuildMouseEventExpression(string selector, string eventName, MouseClickVariantSpec spec)
     {
-        var buttons = button == 2 ? 2 : 1;
         return "(() => { "
             + $"const element = {CMG.Browser.BrowserDomScripts.Query(selector)}; "
             + $"if (!element) throw new Error('No element matched selector {selector}'); "
             + "const rect = element.getBoundingClientRect(); "
+            + $"const clientX = rect.left + {spec.XExpression}; const clientY = rect.top + {spec.YExpression}; "
             + "const options = { bubbles: true, cancelable: true, "
-            + $"button: {button}, buttons: {buttons}, "
-            + "clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }; "
+            + $"button: {spec.Button}, buttons: {spec.Buttons}, "
+            + $"clientX, clientY, {spec.ModifiersInit} }}; "
             + $"element.dispatchEvent(new MouseEvent('{eventName}', options)); "
             + "return true; })()";
     }
@@ -148,6 +149,43 @@ public sealed partial class BrowserScriptRunner
             {
                 throw new ScriptExecutionException("click option modifiers= supports Alt, Control, Meta, and Shift.");
             }
+            return $"altKey: {modifiers.Contains("alt").ToString().ToLowerInvariant()}, "
+                + $"ctrlKey: {(modifiers.Contains("control") || modifiers.Contains("ctrl")).ToString().ToLowerInvariant()}, "
+                + $"shiftKey: {modifiers.Contains("shift").ToString().ToLowerInvariant()}, "
+                + $"metaKey: {(modifiers.Contains("meta") || modifiers.Contains("cmd") || modifiers.Contains("command")).ToString().ToLowerInvariant()}";
+        }
+    }
+
+    private sealed record MouseClickVariantSpec(int Button, int Buttons, string XExpression, string YExpression, string ModifiersInit)
+    {
+        public static MouseClickVariantSpec From(BrowserScriptAction action, int button) =>
+            new(
+                button,
+                button == 2 ? 2 : 1,
+                CoordinateExpression(action, "x", "rect.width / 2"),
+                CoordinateExpression(action, "y", "rect.height / 2"),
+                BuildModifiersInit(action));
+
+        private static string CoordinateExpression(BrowserScriptAction action, string name, string fallback) =>
+            action.Options.TryGetValue(name, out var value) ? NumberOption(value, $"{action.Name} option {name}=") : fallback;
+
+        private static string NumberOption(string value, string name) =>
+            double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var number) && number >= 0
+                ? number.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                : throw new ScriptExecutionException($"{name} must be zero or greater.");
+
+        private static string BuildModifiersInit(BrowserScriptAction action)
+        {
+            var modifiers = (action.Options.GetValueOrDefault("modifiers") ?? string.Empty)
+                .Split([',', '+'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(value => value.ToLowerInvariant())
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var allowed = new HashSet<string>(["alt", "control", "ctrl", "shift", "meta", "cmd", "command"], StringComparer.OrdinalIgnoreCase);
+            if (modifiers.Any(modifier => !allowed.Contains(modifier)))
+            {
+                throw new ScriptExecutionException($"{action.Name} option modifiers= supports Alt, Control, Meta, and Shift.");
+            }
+
             return $"altKey: {modifiers.Contains("alt").ToString().ToLowerInvariant()}, "
                 + $"ctrlKey: {(modifiers.Contains("control") || modifiers.Contains("ctrl")).ToString().ToLowerInvariant()}, "
                 + $"shiftKey: {modifiers.Contains("shift").ToString().ToLowerInvariant()}, "

@@ -10,10 +10,10 @@ cmg browser control input [command] [options]
 
 - [`waitForElement`](waitForElement.md): Wait until an element exists.
 - [`click`](click.md): Click an element, with optional button, click count, modifier, delay, and element-offset controls.
-- [`dblclick`](dblclick.md): Double-click an element.
-- [`doubleClick`](doubleClick.md): Double-click an element.
-- [`rightClick`](rightClick.md): Right-click an element.
-- [`contextClick`](contextClick.md): Right-click an element.
+- [`dblclick`](dblclick.md): Double-click an element, with optional modifier and element-offset controls.
+- [`doubleClick`](doubleClick.md): Double-click an element, with optional modifier and element-offset controls.
+- [`rightClick`](rightClick.md): Right-click an element, with optional modifier and element-offset controls.
+- [`contextClick`](contextClick.md): Right-click an element, with optional modifier and element-offset controls.
 - [`tap`](tap.md): Tap an element with touch-style events.
 - [`touchTap`](touchTap.md): Tap an element with touch-style events.
 - [`type`](type.md): Type text into an element, optionally with per-character delay.
@@ -59,7 +59,7 @@ cmg browser control input [command] [options]
 
 ```powershell
 cmg browser control input click "#save"
-cmg browser control input dblclick "#save"
+cmg browser control input dblclick "#canvas" --x 12 --y 8
 cmg browser control input fill "#name" "CMG Test"
 cmg browser control input pressSequentially "#name" "CMG"
 cmg browser control input shortcut Control+S
