@@ -15,6 +15,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildDialogsGroup(browserOptions));
         command.Subcommands.Add(BuildPageErrorsGroup(browserOptions));
         command.Subcommands.Add(BuildWaitForEventCommand(browserOptions));
+        command.Subcommands.Add(BuildWaitForEventCommand(browserOptions, "waitForEvent"));
 
         return command;
     }
@@ -48,16 +49,24 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command("console", "Console capture and wait commands.");
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "capture", "Capture future console messages.", "captureConsole"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "captureConsole", "Capture future console messages.", "captureConsole"));
         command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "wait", "waitForConsole", "Wait for a matching console message.", includeLevel: true));
+        command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "waitForConsole", "waitForConsole", "Wait for a matching console message.", includeLevel: true));
         return command;
     }
 
     private Command BuildDialogsGroup(BrowserSelectionOptions browserOptions)
     {
         var command = new Command("dialogs", "Browser dialog capture, behavior, and wait commands.");
-        command.Subcommands.Add(BuildDialogCaptureCommand(browserOptions));
-        command.Subcommands.Add(BuildDialogBehaviorCommand(browserOptions));
+        command.Subcommands.Add(BuildDialogCaptureCommand(browserOptions, "capture", "captureDialogs"));
+        command.Subcommands.Add(BuildDialogCaptureCommand(browserOptions, "captureDialogs", "captureDialogs"));
+        command.Subcommands.Add(BuildDialogBehaviorCommand(browserOptions, "behavior", "setDialogBehavior"));
+        command.Subcommands.Add(BuildDialogBehaviorCommand(browserOptions, "setDialogBehavior", "setDialogBehavior"));
+        command.Subcommands.Add(BuildDialogBehaviorCommand(browserOptions, "onDialog", "onDialog"));
+        command.Subcommands.Add(BuildDialogBehaviorCommand(browserOptions, "handleDialog", "handleDialog"));
+        command.Subcommands.Add(BuildDialogBehaviorCommand(browserOptions, "dialogBehavior", "dialogBehavior"));
         command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "wait", "waitForDialog", "Wait for a matching browser dialog.", includeLevel: false));
+        command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "waitForDialog", "waitForDialog", "Wait for a matching browser dialog.", includeLevel: false));
         return command;
     }
 
@@ -65,31 +74,33 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command("pageErrors", "Page error capture and wait commands.");
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "capture", "Capture future page errors.", "capturePageErrors"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "capturePageErrors", "Capture future page errors.", "capturePageErrors"));
         command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "wait", "waitForPageError", "Wait for a matching page error.", includeLevel: false));
+        command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "waitForPageError", "waitForPageError", "Wait for a matching page error.", includeLevel: false));
         return command;
     }
 
-    private Command BuildDialogCaptureCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildDialogCaptureCommand(BrowserSelectionOptions browserOptions, string name, string action)
     {
         var promptText = CliStringOption("--prompt-text", "Prompt text to return when accepting prompts.");
-        var command = new Command("capture", "Install dialog capture with default accept behavior.") { promptText };
+        var command = new Command(name, "Install dialog capture with default accept behavior.") { promptText };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("captureDialogs", [], DialogOptions(parseResult, promptText))));
+            ToScriptLine(action, [], DialogOptions(parseResult, promptText))));
 
         return command;
     }
 
-    private Command BuildDialogBehaviorCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildDialogBehaviorCommand(BrowserSelectionOptions browserOptions, string name, string action)
     {
         var behavior = new Argument<string>("behavior") { Description = "Dialog behavior: accept or dismiss." };
         var promptText = CliStringOption("--prompt-text", "Prompt text to return when accepting prompts.");
-        var command = new Command("behavior", "Set automated browser dialog behavior.") { behavior, promptText };
+        var command = new Command(name, "Set automated browser dialog behavior.") { behavior, promptText };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("setDialogBehavior", [parseResult.GetValue(behavior) ?? string.Empty], DialogOptions(parseResult, promptText))));
+            ToScriptLine(action, [parseResult.GetValue(behavior) ?? string.Empty], DialogOptions(parseResult, promptText))));
 
         return command;
     }
@@ -110,11 +121,11 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildWaitForEventCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildWaitForEventCommand(BrowserSelectionOptions browserOptions, string name = "wait")
     {
         var eventName = new Argument<string>("event") { Description = "Event name, such as dialog, console, request, response, or download." };
         var matcher = new Argument<string?>("matcher") { Description = "Optional event matcher text.", Arity = ArgumentArity.ZeroOrOne };
-        var command = new Command("wait", "Wait for a supported browser event.") { eventName, matcher };
+        var command = new Command(name, "Wait for a supported browser event.") { eventName, matcher };
         var timeout = CliIntOption("--timeout", "Timeout in milliseconds.");
         var level = CliStringOption("--level", "Console level filter.");
         var count = CliIntOption("--count", "Expected tab or popup count.");
@@ -178,7 +189,7 @@ public sealed partial class BrowserControlCommandBuilder
         CompactOptions(options.Select<Option, (string Key, string Value)?>(option =>
         {
             var value = EventOptionValue(parseResult, option);
-            return string.IsNullOrWhiteSpace(value) ? null : (option.Name, value);
+            return string.IsNullOrWhiteSpace(value) ? null : (option.Name.TrimStart('-'), value);
         }).ToArray());
 
     private static string? EventOptionValue(ParseResult parseResult, Option option) =>
