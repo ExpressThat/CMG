@@ -99,6 +99,26 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     }
 
     [Fact]
+    public void RunText_ExpectHiddenPassesWhenElementIsMissing()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("expectHidden \"#toast\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("if (!element || !element.isConnected) return true", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_ExpectVisibleChecksOpacity()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("expectVisible \"#toast\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("Number(style.opacity || '1') !== 0", client.LastExpression);
+    }
+
+    [Fact]
     public void RunText_ElementExpectationRequiresSelector()
     {
         var result = Runner().RunText("expectVisible", "debug", new FakeAutomationClient());

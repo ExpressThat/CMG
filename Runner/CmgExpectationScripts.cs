@@ -55,8 +55,8 @@ public static class CmgExpectationScripts
     {
         var check = mode switch
         {
-            "visible" => "const style = getComputedStyle(element); const rect = element.getBoundingClientRect(); const ok = rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none'; const message = 'Expected element to be visible.';",
-            "hidden" => "const style = getComputedStyle(element); const rect = element.getBoundingClientRect(); const ok = rect.width === 0 || rect.height === 0 || style.visibility === 'hidden' || style.display === 'none'; const message = 'Expected element to be hidden.';",
+            "visible" => "const style = getComputedStyle(element); const rect = element.getBoundingClientRect(); const ok = rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none' && Number(style.opacity || '1') !== 0; const message = 'Expected element to be visible.';",
+            "hidden" => "const style = getComputedStyle(element); const rect = element.getBoundingClientRect(); const ok = rect.width === 0 || rect.height === 0 || style.visibility === 'hidden' || style.display === 'none' || Number(style.opacity || '1') === 0; const message = 'Expected element to be hidden.';",
             "enabled" => "const ok = !element.matches(':disabled,[aria-disabled=\"true\"]'); const message = 'Expected element to be enabled.';",
             "disabled" => "const ok = element.matches(':disabled,[aria-disabled=\"true\"]'); const message = 'Expected element to be disabled.';",
             "attached" => "const ok = element.isConnected; const message = 'Expected element to be attached.';",
@@ -69,6 +69,10 @@ public static class CmgExpectationScripts
         if (mode.Equals("detached", StringComparison.Ordinal))
         {
             return $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element || !element.isConnected) return true; throw new Error('Expected element to be detached.'); }})()";
+        }
+        if (mode.Equals("hidden", StringComparison.Ordinal))
+        {
+            return $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element || !element.isConnected) return true; {check} if (!ok) throw new Error(message); return true; }})()";
         }
 
         return $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}.'); {check} if (!ok) throw new Error(message); return true; }})()";

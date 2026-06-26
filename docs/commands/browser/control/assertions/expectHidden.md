@@ -27,8 +27,8 @@ Writes browser, selector, timeout, hidden-state, or action errors.
 
 ## Exit Codes
 
-- `0`: Element became hidden before the timeout.
-- `1`: Browser is not running, element stayed visible, or the action failed.
+- `0`: Element became hidden, detached, or missing before the timeout.
+- `1`: Browser is not running, the element stayed visible, or the action failed.
 
 ## Example
 

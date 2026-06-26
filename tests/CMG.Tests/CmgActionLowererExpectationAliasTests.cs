@@ -47,6 +47,22 @@ public sealed class CmgActionLowererExpectationAliasTests
         Assert.Contains(expected, line);
     }
 
+    [Fact]
+    public void Lower_HiddenExpectationPassesWhenElementIsMissing()
+    {
+        var line = CmgExpectationScripts.Element(Node("expectHidden", ["#toast"]), "hidden").Last();
+
+        Assert.Contains("if (!element || !element.isConnected) return true", line);
+    }
+
+    [Fact]
+    public void Lower_VisibleExpectationTreatsTransparentElementAsHidden()
+    {
+        var line = CmgExpectationScripts.Element(Node("expectVisible", ["#toast"]), "visible").Last();
+
+        Assert.Contains("Number(style.opacity || '1') !== 0", line);
+    }
+
     private static CmgNode Node(string kind, IReadOnlyList<string> args) =>
         new(1, kind, args.FirstOrDefault() ?? kind, args, new Dictionary<string, string>(), []);
 }
