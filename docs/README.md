@@ -17,7 +17,7 @@ Start here:
 - `commands/<group>/index.md`: command group documentation.
 - `commands/<group>/<command>.md`: leaf command documentation.
 - `scripting/action-index.md`: compact table of script action groups.
-- `scripting/script-vs-runner.md`: comparison of direct scripts, structured tests, and old top-level test files.
+- `scripting/script-vs-runner.md`: comparison of direct browser-control scripts and structured runner tests.
 - `scripting/actions.md`: detailed action reference.
 - `scripting/style-guide.md`: conventions for maintainable CMG scripts and tests.
 

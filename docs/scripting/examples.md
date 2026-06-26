@@ -1116,6 +1116,13 @@ test "saves checkout frame" {
 
 Recorded frame pointer actions move the virtual pointer to the element's top-page coordinate inside the iframe. Frame text assertions support `match=contains|exact|regex` and `ignoreCase=true`. `frame` and `frameLocator` blocks are script-only scoped forms over the same frame actions. Frame actions require a same-origin iframe.
 
+The direct frame aliases are available outside frame blocks too:
+
+```text
+frameWaitForSelector "#checkoutFrame" "#status" timeout=5000
+frameToContainText "#checkoutFrame" "#status" "Saved"
+```
+
 ## Download Flow
 
 ```text

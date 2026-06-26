@@ -1,8 +1,13 @@
 # Migration Guide
 
-`cmg run` executes structured `.cmgscript` tests and does not run old top-level action scripts. Existing direct scripts can be migrated by wrapping actions into tests and, when needed, visual `gif` blocks.
+CMG has one current DSL with two execution shapes:
 
-If a file starts with an action such as `navigate`, `click`, or `assertText` at the top level, `cmg run` fails with a migration error. Top-level entries must be `test`/`it`/`specify`, `suite`/`describe`/`context`, `beforeAll`/`before`, `afterAll`/`after`, `beforeEach`, `afterEach`, or `macro`.
+- Direct scripts run browser actions in order with `cmg browser control script`.
+- Runner files organize actions into tests with `cmg run`.
+
+Use this guide when a direct script should become a structured runner test, or when `cmg run` reports that a file starts with an action at the top level.
+
+If a runner file starts with an action such as `navigate`, `click`, or `assertText`, `cmg run` fails with a migration error. Top-level runner entries must be `test`/`it`/`specify`, `suite`/`describe`/`context`, `beforeAll`/`before`, `afterAll`/`after`, `beforeEach`, `afterEach`, or `macro`.
 
 ## Basic Script
 
@@ -98,11 +103,11 @@ suite "profile" {
 }
 ```
 
-## Existing Commands
+## Direct Script Actions In Tests
 
-Most original action names remain available inside tests: `navigate`, `waitForElement`, `click`, `type`, `clear`, `press`, `hover`, `scrollIntoView`, `select`, `delay`, `html`, `screenshot`, `screenshotPage`, `assertText`, `evaluate`, `setViewport`, `dragAndDrop`, `listTabs`, `activateTab`, `closeTab`, `set`, and `moveMouse`.
+Direct browser-control actions remain available inside tests, including navigation, waits, pointer actions, assertions, runtime evaluation, capture, tabs, frames, network, storage, contexts, workers, files, variables, macros, and visual `gif` blocks. Use the [action index](action-index.md) for the compact map and [actions](actions.md) for detailed syntax.
 
-Features planned for full Cypress, Puppeteer, and Playwright parity fail explicitly until implemented rather than silently doing nothing.
+Unsupported actions fail explicitly rather than silently doing nothing.
 
 ## Reports And Failure Feedback
 

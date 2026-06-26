@@ -28,11 +28,37 @@ public sealed class BrowserScriptRunnerFrameTests
     public void RunText_FrameAssertTextSupportsRegexAndIgnoreCase()
     {
         var client = new FakeAutomationClient();
-        var result = Runner().RunText("frameAssertText \"#frame\" \"#status\" \"save[d]\" match=regex ignoreCase=true", "debug", client);
+        var result = Runner().RunText("frameExpectText \"#frame\" \"#status\" \"save[d]\" match=regex ignoreCase=true", "debug", client);
 
         Assert.True(result.Success);
         Assert.Contains("const matchMode = \"regex\";", client.LastExpression);
         Assert.Contains("const ignoreCase = true;", client.LastExpression);
+        Assert.Contains("FRAME 001 frameExpectText", result.StdoutLines);
+    }
+
+    [Theory]
+    [InlineData("frameToHaveText")]
+    [InlineData("frameToContainText")]
+    [InlineData("frameContains")]
+    public void RunText_FrameTextAliasesUseFrameAssertion(string action)
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText($"{action} \"#frame\" \"#status\" \"Saved\"", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("Expected frame text", client.LastExpression);
+        Assert.Contains($"FRAME 001 {action}", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_FrameWaitForSelectorAliasUsesFrameWait()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("frameWaitForSelector \"#frame\" \"#ready\" timeout=250", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("Timed out waiting for frame selector", client.LastExpression);
+        Assert.Contains("FRAME 001 frameWaitForSelector", result.StdoutLines);
     }
 
     [Fact]

@@ -1,0 +1,40 @@
+# `browser control frames frameToContainText`
+
+Asserts contained text inside an iframe element using the `frameToContainText` script action.
+
+```powershell
+cmg browser control frames frameToContainText "<frameSelector>" "<selector>" "<text>" [options]
+```
+
+## Arguments
+
+- `<frameSelector>`: CSS selector for the same-origin iframe.
+- `<selector>`: CSS selector inside the iframe.
+- `<text>`: Expected text.
+
+## Options
+
+- `--match <contains|exact|regex>`: Text match mode. Default is `contains`.
+- `--ignore-case`: Match frame text without case sensitivity.
+
+## Stdout
+
+```text
+PASS 001 frameToContainText #frame #status Saved
+FRAME 001 frameToContainText
+```
+
+## Stderr
+
+Frame, selector, regex, timeout, and assertion failures are written to stderr with the action name and reason.
+
+## Exit Codes
+
+- `0`: Expected text was found.
+- `1`: Browser is not running, the frame is missing, the regex is invalid, or the assertion failed.
+
+## Examples
+
+```powershell
+cmg browser control frames frameToContainText "#checkoutFrame" "#status" "Saved"
+```

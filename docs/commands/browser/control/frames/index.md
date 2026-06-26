@@ -18,8 +18,18 @@ cmg browser control frames [command] [options]
 - [`frameFill`](frameFill.md): Fill an element inside an iframe.
 - [`assertText`](assertText.md): Assert text inside an iframe element.
 - [`frameAssertText`](frameAssertText.md): Assert text inside an iframe element.
+- [`expectText`](expectText.md): Provider-style frame text assertion alias.
+- [`frameExpectText`](frameExpectText.md): Explicit provider-style frame text assertion alias.
+- [`toHaveText`](toHaveText.md): Provider-style frame text assertion alias.
+- [`frameToHaveText`](frameToHaveText.md): Explicit provider-style frame text assertion alias.
+- [`toContainText`](toContainText.md): Provider-style frame text containment alias.
+- [`frameToContainText`](frameToContainText.md): Explicit provider-style frame text containment alias.
+- [`contains`](contains.md): Cypress-style frame text containment alias.
+- [`frameContains`](frameContains.md): Explicit Cypress-style frame text containment alias.
 - [`waitForElement`](waitForElement.md): Wait for an element inside an iframe.
 - [`frameWaitForElement`](frameWaitForElement.md): Wait for an element inside an iframe.
+- [`waitForSelector`](waitForSelector.md): Provider-style frame selector wait alias.
+- [`frameWaitForSelector`](frameWaitForSelector.md): Explicit provider-style frame selector wait alias.
 - [`evaluate`](evaluate.md): Evaluate JavaScript inside an iframe.
 - [`frameEvaluate`](frameEvaluate.md): Evaluate JavaScript inside an iframe.
 
@@ -37,7 +47,9 @@ cmg browser control frames [command] [options]
 
 ```powershell
 cmg browser control frames waitForElement "#checkoutFrame" "#email" --timeout 5000
+cmg browser control frames waitForSelector "#checkoutFrame" "#status" --timeout 5000
 cmg browser control frames fill "#checkoutFrame" "#email" "agent@example.com"
 cmg browser control frames click "#checkoutFrame" "#save"
 cmg browser control frames assertText "#checkoutFrame" "#status" "^Saved$" --match regex --ignore-case
+cmg browser control frames toContainText "#checkoutFrame" "#status" "Saved"
 ```

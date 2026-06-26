@@ -59,7 +59,7 @@ cmg run profile-dialog.cmgscript --report-html report.html --gif gifs
 
 Use the runner for repeatable test suites, PR evidence, smoke checks, retries, sharding, reports, and traces.
 
-## Old Top-Level Test Files
+## Moving A Direct Script Into The Runner
 
 If a file intended for `cmg run` starts with a top-level browser action, wrap it in a `test` block. If it is meant to stay a direct browser-control script, keep running it with `browser control script --file`.
 

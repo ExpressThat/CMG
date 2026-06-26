@@ -5,3 +5,5 @@ frameWaitForElement "#checkoutFrame" "#email" timeout=5000
 frameFill "#checkoutFrame" "#email" "agent@example.com"
 frameClick "#checkoutFrame" "#save"
 frameAssertText "#checkoutFrame" "#status" "^Saved$" match=regex ignoreCase=true
+frameWaitForSelector "#checkoutFrame" "#status" timeout=5000
+frameToContainText "#checkoutFrame" "#status" "Saved"

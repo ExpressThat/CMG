@@ -12,7 +12,12 @@ public sealed class BrowserControlCommandBuilderFrameWorkerAliasTests
     [InlineData("frameType iframe #name CMG", "frameType \"iframe\" \"#name\" \"CMG\"")]
     [InlineData("frameFill iframe #name CMG", "frameFill \"iframe\" \"#name\" \"CMG\"")]
     [InlineData("frameAssertText iframe #status Ready --match exact --ignore-case", "frameAssertText \"iframe\" \"#status\" \"Ready\" match=\"exact\" ignoreCase=\"true\"")]
+    [InlineData("expectText iframe #status Ready", "frameExpectText \"iframe\" \"#status\" \"Ready\"")]
+    [InlineData("frameToHaveText iframe #status Ready --match exact", "frameToHaveText \"iframe\" \"#status\" \"Ready\" match=\"exact\"")]
+    [InlineData("toContainText iframe #status Saved", "frameToContainText \"iframe\" \"#status\" \"Saved\"")]
+    [InlineData("contains iframe #status Saved", "frameContains \"iframe\" \"#status\" \"Saved\"")]
     [InlineData("frameWaitForElement iframe #ready --timeout 1000", "frameWaitForElement \"iframe\" \"#ready\" timeout=\"1000\"")]
+    [InlineData("waitForSelector iframe #ready --timeout 1000", "frameWaitForSelector \"iframe\" \"#ready\" timeout=\"1000\"")]
     [InlineData("frameEvaluate iframe document.title", "frameEvaluate \"iframe\" \"document.title\"")]
     public void FrameAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {

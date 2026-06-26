@@ -19,8 +19,18 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "frameFill", "frameFill", "Fill an element inside an iframe."));
         command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "assertText"));
         command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "frameAssertText"));
+        command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "expectText", "frameExpectText"));
+        command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "frameExpectText", "frameExpectText"));
+        command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "toHaveText", "frameToHaveText"));
+        command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "frameToHaveText", "frameToHaveText"));
+        command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "toContainText", "frameToContainText"));
+        command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "frameToContainText", "frameToContainText"));
+        command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "contains", "frameContains"));
+        command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "frameContains", "frameContains"));
         command.Subcommands.Add(BuildFrameWaitCommand(browserOptions, "waitForElement"));
         command.Subcommands.Add(BuildFrameWaitCommand(browserOptions, "frameWaitForElement"));
+        command.Subcommands.Add(BuildFrameWaitCommand(browserOptions, "waitForSelector", "frameWaitForSelector"));
+        command.Subcommands.Add(BuildFrameWaitCommand(browserOptions, "frameWaitForSelector", "frameWaitForSelector"));
         command.Subcommands.Add(BuildFrameEvaluateCommand(browserOptions, "evaluate"));
         command.Subcommands.Add(BuildFrameEvaluateCommand(browserOptions, "frameEvaluate"));
 
@@ -56,6 +66,11 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildFrameAssertTextCommand(BrowserSelectionOptions browserOptions, string name)
     {
+        return BuildFrameAssertTextCommand(browserOptions, name, "frameAssertText");
+    }
+
+    private Command BuildFrameAssertTextCommand(BrowserSelectionOptions browserOptions, string name, string action)
+    {
         var frame = FrameArgument();
         var selector = CreateSelectorArgument();
         var text = new Argument<string>("text") { Description = "Text value." };
@@ -64,7 +79,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command(name, "Assert text inside an iframe element.") { frame, selector, text, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("frameAssertText", [
+            ToScriptLine(action, [
                 parseResult.GetValue(frame) ?? string.Empty,
                 parseResult.GetValue(selector) ?? string.Empty,
                 parseResult.GetValue(text) ?? string.Empty
@@ -77,13 +92,18 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildFrameWaitCommand(BrowserSelectionOptions browserOptions, string name)
     {
+        return BuildFrameWaitCommand(browserOptions, name, "frameWaitForElement");
+    }
+
+    private Command BuildFrameWaitCommand(BrowserSelectionOptions browserOptions, string name, string action)
+    {
         var frame = FrameArgument();
         var selector = CreateSelectorArgument();
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds. Default is 5000." };
         var command = new Command(name, "Wait for an element inside an iframe.") { frame, selector, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("frameWaitForElement", [parseResult.GetValue(frame) ?? string.Empty, parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
+            ToScriptLine(action, [parseResult.GetValue(frame) ?? string.Empty, parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
                 IntOption("timeout", parseResult.GetValue(timeout))
             ]))));
         return command;

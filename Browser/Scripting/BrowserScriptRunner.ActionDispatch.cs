@@ -119,7 +119,9 @@ public sealed partial class BrowserScriptRunner
             "sethttpcredentials" or "httpcredentials" or "authenticate" or "clearhttpcredentials" or
             "setproxy" or "proxy" or "clearproxy" or "setoffline" => ExecuteNetworkEnvironmentAction(remoteDebuggingUrl, automationClient, action),
             "frameclick" or "frametype" or "framefill" or "framehover" or
-            "framewaitforelement" or "frameasserttext" or "frameevaluate" => ExecuteFrameAction(remoteDebuggingUrl, automationClient, action),
+            "framewaitforelement" or "framewaitforselector" or "frameasserttext" or "frameexpecttext" or
+            "frametohavetext" or "frametocontaintext" or "framecontains" or "frameevaluate" =>
+                ExecuteFrameAction(remoteDebuggingUrl, automationClient, action),
             "clock" or "tick" or "restoreclock" => ExecuteClockAction(remoteDebuggingUrl, automationClient, action),
             "clearcontext" or "resetcontext" => ExecuteContextAction(remoteDebuggingUrl, automationClient, action),
             "newcontext" or "usecontext" or "listcontexts" or "closecontext" => ExecuteBrowserContextAction(remoteDebuggingUrl, automationClient, action, context),

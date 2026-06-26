@@ -1101,7 +1101,12 @@ frameType "#checkoutFrame" "#email" "agent@example.com"
 frameFill "#checkoutFrame" "#name" "CMG"
 frameHover "#checkoutFrame" "#help"
 frameWaitForElement "#checkoutFrame" "#ready" timeout=5000
+frameWaitForSelector "#checkoutFrame" "#ready" timeout=5000
 frameAssertText "#checkoutFrame" "#status" "^Saved$" match=regex ignoreCase=true
+frameExpectText "#checkoutFrame" "#status" "Saved"
+frameToHaveText "#checkoutFrame" "#status" "Saved"
+frameToContainText "#checkoutFrame" "#status" "Saved"
+frameContains "#checkoutFrame" "#status" "Saved"
 frameEvaluate "#checkoutFrame" "document.title"
 
 frame "#checkoutFrame" {
@@ -1121,7 +1126,8 @@ GIF behavior:
 
 - `frameClick`, `frameType`, `frameFill`, and `frameHover` move the virtual pointer to the element's actual top-page coordinate inside the iframe before running.
 - Non-visual frame actions do not move the pointer, but their outputs and failures are captured in reports and traces.
-- `frameAssertText` supports `match=contains|exact|regex` plus `ignoreCase=true` for frame-local text assertions.
+- `frameWaitForSelector` is an alias for `frameWaitForElement`.
+- `frameAssertText`, `frameExpectText`, `frameToHaveText`, `frameToContainText`, and `frameContains` support `match=contains|exact|regex` plus `ignoreCase=true` for frame-local text assertions.
 
 Output:
 
