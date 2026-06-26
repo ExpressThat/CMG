@@ -6,7 +6,7 @@ Runs the scripting `waitForRequestFinished` action once from the command line.
 cmg browser control network waitForRequestFinished "<pattern>" [options]
 ```
 
-Options and failure behavior match [`waitForRequest`](waitForRequest.md).
+Options and failure behavior match [`waitForRequest`](waitForRequest.md). Header filters match response headers.
 
 ## Stdout
 

@@ -80,6 +80,32 @@ public sealed class CmgNetworkScriptsTests
     }
 
     [Fact]
+    public void WaitForResponse_CanFilterByHeaderPair()
+    {
+        var action = Node("waitForResponse", ["/api"], new Dictionary<string, string> { ["header"] = "Content-Type: json" });
+        var script = CmgNetworkScripts.WaitForResponse(action);
+
+        Assert.Contains("headerName: 'content-type'", script);
+        Assert.Contains("headerValue: 'json'", script);
+        Assert.Contains("r.headers[expected.headerName]", script);
+        Assert.Contains("header=content-type:json", script);
+    }
+
+    [Fact]
+    public void WaitForRequest_CanFilterByHeaderNameAndValue()
+    {
+        var action = Node("waitForRequest", ["/api"], new Dictionary<string, string>
+        {
+            ["headerName"] = "Authorization",
+            ["headerValue"] = "Bearer"
+        });
+        var script = CmgNetworkScripts.WaitForRequest(action);
+
+        Assert.Contains("headerName: 'authorization'", script);
+        Assert.Contains("headerValue: 'Bearer'", script);
+    }
+
+    [Fact]
     public void WaitForRequest_ReportsTimeoutPattern()
     {
         var action = Node("waitForRequest", ["/api"], new Dictionary<string, string> { ["timeout"] = "1000" });

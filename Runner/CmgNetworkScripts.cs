@@ -45,6 +45,22 @@ public static partial class CmgNetworkScripts
           window.__cmgResponses = window.__cmgResponses || [];
           window.__cmgRequestFailures = window.__cmgRequestFailures || [];
           window.__cmgDelay = ms => new Promise(resolve => setTimeout(resolve, Math.max(0, Number(ms) || 0)));
+          window.__cmgHeadersObject = headers => {
+            const result = {};
+            if (!headers) return result;
+            if (headers instanceof Headers) headers.forEach((value, key) => result[String(key).toLowerCase()] = String(value));
+            else if (Array.isArray(headers)) headers.forEach(([key, value]) => result[String(key).toLowerCase()] = String(value));
+            else Object.entries(headers).forEach(([key, value]) => result[String(key).toLowerCase()] = String(value));
+            return result;
+          };
+          window.__cmgParseRawHeaders = raw => {
+            const result = {};
+            String(raw || '').trim().split(/\r?\n/).filter(Boolean).forEach(line => {
+              const index = line.indexOf(':');
+              if (index > 0) result[line.slice(0, index).trim().toLowerCase()] = line.slice(index + 1).trim();
+            });
+            return result;
+          };
           window.__cmgTakeRoute = (url, method) => {
             const index = window.__cmgRoutes.findIndex(route =>
               url.includes(route.pattern) &&
@@ -63,25 +79,26 @@ public static partial class CmgNetworkScripts
             window.fetch = async (input, init) => {
               const url = typeof input === 'string' ? input : input.url;
               const method = init?.method || input?.method || 'GET';
-              window.__cmgRequests.push({ method, url, type: 'fetch', body: init?.body ? String(init.body) : '' });
+              const headers = window.__cmgHeadersObject(init?.headers || input?.headers);
+              window.__cmgRequests.push({ method, url, type: 'fetch', body: init?.body ? String(init.body) : '', headers });
               const route = window.__cmgTakeRoute(url, method);
               if (route) {
                 await window.__cmgDelay(route.delay);
                 if (route.abort) {
-                  window.__cmgRequestFailures.push({ method, url, type: 'fetch', mocked: true, error: route.error || 'Request aborted by CMG route' });
+                  window.__cmgRequestFailures.push({ method, url, type: 'fetch', mocked: true, error: route.error || 'Request aborted by CMG route', headers });
                   throw new TypeError(route.error || 'Request aborted by CMG route');
                 }
                 const response = new Response(route.body, { status: route.status, headers: { 'content-type': route.contentType } });
-                window.__cmgResponses.push({ method, url, status: route.status, mocked: true, body: route.body, contentType: route.contentType });
+                window.__cmgResponses.push({ method, url, status: route.status, mocked: true, body: route.body, contentType: route.contentType, headers: { 'content-type': route.contentType } });
                 return response;
               }
               try {
                 const response = await originalFetch(input, init);
                 const body = await response.clone().text().catch(() => '');
-                window.__cmgResponses.push({ method, url, status: response.status, mocked: false, body, contentType: response.headers.get('content-type') || 'text/plain' });
+                window.__cmgResponses.push({ method, url, status: response.status, mocked: false, body, contentType: response.headers.get('content-type') || 'text/plain', headers: window.__cmgHeadersObject(response.headers) });
                 return response;
               } catch (error) {
-                window.__cmgRequestFailures.push({ method, url, type: 'fetch', error: String(error?.message || error || 'Request failed') });
+                window.__cmgRequestFailures.push({ method, url, type: 'fetch', error: String(error?.message || error || 'Request failed'), headers });
                 throw error;
               }
             };
@@ -93,28 +110,33 @@ public static partial class CmgNetworkScripts
               const xhr = new OriginalXHR();
               let method = 'GET';
               let url = '';
+              const requestHeaders = {};
               const open = xhr.open.bind(xhr);
               xhr.open = (...args) => {
                 method = String(args[0] || 'GET');
                 url = String(args[1] || '');
                 return open(...args);
               };
+              xhr.setRequestHeader = (name, value) => {
+                requestHeaders[String(name).toLowerCase()] = String(value);
+                return OriginalXHR.prototype.setRequestHeader.call(xhr, name, value);
+              };
               const send = xhr.send.bind(xhr);
               xhr.send = body => {
-                window.__cmgRequests.push({ method, url, type: 'xhr', body: body ? String(body) : '' });
+                window.__cmgRequests.push({ method, url, type: 'xhr', body: body ? String(body) : '', headers: requestHeaders });
                 const route = window.__cmgTakeRoute(url, method);
                 if (!route) {
-                  xhr.addEventListener('loadend', () => window.__cmgResponses.push({ method, url, status: xhr.status, mocked: false, type: 'xhr', body: xhr.responseText || '', contentType: xhr.getResponseHeader('content-type') || 'text/plain' }), { once: true });
-                  xhr.addEventListener('error', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Network error' }), { once: true });
-                  xhr.addEventListener('abort', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Request aborted' }), { once: true });
-                  xhr.addEventListener('timeout', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Request timed out' }), { once: true });
+                  xhr.addEventListener('loadend', () => window.__cmgResponses.push({ method, url, status: xhr.status, mocked: false, type: 'xhr', body: xhr.responseText || '', contentType: xhr.getResponseHeader('content-type') || 'text/plain', headers: window.__cmgParseRawHeaders(xhr.getAllResponseHeaders()) }), { once: true });
+                  xhr.addEventListener('error', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Network error', headers: requestHeaders }), { once: true });
+                  xhr.addEventListener('abort', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Request aborted', headers: requestHeaders }), { once: true });
+                  xhr.addEventListener('timeout', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Request timed out', headers: requestHeaders }), { once: true });
                   return send(body);
                 }
                 if (route.abort) {
                   Object.defineProperty(xhr, 'readyState', { configurable: true, get: () => 4 });
                   Object.defineProperty(xhr, 'status', { configurable: true, get: () => 0 });
                   setTimeout(() => {
-                    window.__cmgRequestFailures.push({ method, url, type: 'xhr', mocked: true, error: route.error || 'Request aborted by CMG route' });
+                    window.__cmgRequestFailures.push({ method, url, type: 'xhr', mocked: true, error: route.error || 'Request aborted by CMG route', headers: requestHeaders });
                     xhr.onreadystatechange?.();
                     xhr.onerror?.(new Event('error'));
                     xhr.dispatchEvent(new Event('readystatechange'));
@@ -128,7 +150,7 @@ public static partial class CmgNetworkScripts
                 Object.defineProperty(xhr, 'responseText', { configurable: true, get: () => route.body });
                 Object.defineProperty(xhr, 'response', { configurable: true, get: () => route.body });
                 setTimeout(() => {
-                  window.__cmgResponses.push({ method, url, status: route.status, mocked: true, type: 'xhr', body: route.body, contentType: route.contentType });
+                  window.__cmgResponses.push({ method, url, status: route.status, mocked: true, type: 'xhr', body: route.body, contentType: route.contentType, headers: { 'content-type': route.contentType } });
                   xhr.onreadystatechange?.();
                   xhr.onload?.();
                   xhr.dispatchEvent(new Event('readystatechange'));

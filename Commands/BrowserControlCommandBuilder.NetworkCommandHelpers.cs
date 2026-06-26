@@ -119,13 +119,19 @@ public sealed partial class BrowserControlCommandBuilder
         Option<string?> method,
         Option<int?> status,
         Option<string?> contains,
-        Option<string?> mocked) =>
+        Option<string?> mocked,
+        Option<string?> header,
+        Option<string?> headerName,
+        Option<string?> headerValue) =>
         CompactOptions([
             IntOption("timeout", parseResult.GetValue(timeout)),
             StringOption("method", parseResult.GetValue(method)),
             IntOption("status", parseResult.GetValue(status)),
             StringOption("contains", parseResult.GetValue(contains)),
-            StringOption("mocked", parseResult.GetValue(mocked))
+            StringOption("mocked", parseResult.GetValue(mocked)),
+            StringOption("header", parseResult.GetValue(header)),
+            StringOption("headerName", parseResult.GetValue(headerName)),
+            StringOption("headerValue", parseResult.GetValue(headerValue))
         ]);
 
     private static (string Key, string Value)? StringOption(string key, string? value) =>

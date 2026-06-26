@@ -63,10 +63,13 @@ public sealed partial class BrowserControlCommandBuilder
         var status = new Option<int?>("--status") { Description = "HTTP status filter." };
         var contains = new Option<string?>("--contains") { Description = "Body, response, or error text filter." };
         var mocked = new Option<string?>("--mocked") { Description = "Whether to match mocked or real traffic: true or false." };
-        var command = new Command(name, description) { pattern, timeout, method, status, contains, mocked };
+        var header = new Option<string?>("--header") { Description = "Header filter as Name or Name: value." };
+        var headerName = new Option<string?>("--header-name") { Description = "Header name filter." };
+        var headerValue = new Option<string?>("--header-value") { Description = "Header value substring filter." };
+        var command = new Command(name, description) { pattern, timeout, method, status, contains, mocked, header, headerName, headerValue };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], WaitOptions(parseResult, timeout, method, status, contains, mocked))));
+            ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], WaitOptions(parseResult, timeout, method, status, contains, mocked, header, headerName, headerValue))));
         return command;
     }
 

@@ -622,13 +622,15 @@ test "mocked profile" {
   intercept "/api/profile" delay=250 status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
   intercept "/api/profile" method=POST status=201 body="created"
   evaluate "fetch('/api/profile').then(r => r.text())"
-  evaluate "fetch('/api/profile', { method: 'POST' }).then(r => r.text())"
+  evaluate "fetch('/api/profile', { method: 'POST', headers: { Authorization: 'Bearer demo' } }).then(r => r.text())"
   waitForRequestFinished "/api/profile"
+  waitForRequest "/api/profile" method=POST header="Authorization: Bearer"
   waitForResponse "/api/profile" method=POST status=201 contains=created mocked=true
+  waitForResponse "/api/profile" header="Content-Type: text/plain"
 }
 ```
 
-This patches page `fetch` and `XMLHttpRequest` calls and records matching responses for `waitForResponse`. Use `delay=` to simulate a slow mocked response without moving the virtual pointer. Network waits can filter by method, status, response body text, and whether the match came from a CMG mock.
+This patches page `fetch` and `XMLHttpRequest` calls and records matching responses for `waitForResponse`. Use `delay=` to simulate a slow mocked response without moving the virtual pointer. Network waits can filter by method, status, response body text, request or response headers, and whether the match came from a CMG mock.
 
 ## HAR Replay
 

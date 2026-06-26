@@ -25,14 +25,18 @@ public static partial class CmgNetworkScripts
             method: {{Quote(action.Options.GetValueOrDefault("method")?.ToUpperInvariant() ?? string.Empty)}},
             status: {{NumberOrNull(action.Options.GetValueOrDefault("status"))}},
             contains: {{Quote(action.Options.GetValueOrDefault("contains") ?? string.Empty)}},
-            mocked: {{BoolOrNull(action.Options.GetValueOrDefault("mocked"))}}
+            mocked: {{BoolOrNull(action.Options.GetValueOrDefault("mocked"))}},
+            headerName: {{Quote(HeaderName(action))}},
+            headerValue: {{Quote(HeaderValue(action))}}
           };
           const matches = r =>
             r.url.includes(expected.pattern) &&
             (!expected.method || String(r.method || 'GET').toUpperCase() === expected.method) &&
             (expected.status === null || Number(r.status) === expected.status) &&
             (!expected.contains || String(r.body || r.error || '').includes(expected.contains)) &&
-            (expected.mocked === null || Boolean(r.mocked) === expected.mocked);
+            (expected.mocked === null || Boolean(r.mocked) === expected.mocked) &&
+            (!expected.headerName || (r.headers && Object.prototype.hasOwnProperty.call(r.headers, expected.headerName) &&
+              (!expected.headerValue || String(r.headers[expected.headerName]).includes(expected.headerValue))));
           const deadline = Date.now() + {{timeout}};
           const check = () => {
             const hit = window.{{storeName}}.find(matches);
@@ -52,6 +56,7 @@ public static partial class CmgNetworkScripts
         AddFilter(filters, "status", action.Options.GetValueOrDefault("status"));
         AddFilter(filters, "contains", action.Options.GetValueOrDefault("contains"));
         AddFilter(filters, "mocked", action.Options.GetValueOrDefault("mocked"));
+        AddFilter(filters, "header", HeaderFilter(action));
         var suffix = filters.Count is 0 ? string.Empty : $" with {string.Join(", ", filters)}";
         return EscapeMessage($"Timed out waiting for {label} {pattern}{suffix}");
     }
@@ -69,4 +74,29 @@ public static partial class CmgNetworkScripts
 
     private static string BoolOrNull(string? value) =>
         value?.ToLowerInvariant() is "true" or "false" ? value.ToLowerInvariant() : "null";
+
+    private static string HeaderName(CmgNode action)
+    {
+        var name = action.Options.GetValueOrDefault("headerName");
+        if (!string.IsNullOrWhiteSpace(name)) return name.ToLowerInvariant();
+        var header = action.Options.GetValueOrDefault("header") ?? string.Empty;
+        var index = header.IndexOf(':');
+        return (index > 0 ? header[..index] : header).Trim().ToLowerInvariant();
+    }
+
+    private static string HeaderValue(CmgNode action)
+    {
+        var value = action.Options.GetValueOrDefault("headerValue");
+        if (!string.IsNullOrWhiteSpace(value)) return value;
+        var header = action.Options.GetValueOrDefault("header") ?? string.Empty;
+        var index = header.IndexOf(':');
+        return index > 0 ? header[(index + 1)..].Trim() : string.Empty;
+    }
+
+    private static string HeaderFilter(CmgNode action)
+    {
+        var name = HeaderName(action);
+        var value = HeaderValue(action);
+        return string.IsNullOrWhiteSpace(name) ? string.Empty : string.IsNullOrWhiteSpace(value) ? name : $"{name}:{value}";
+    }
 }

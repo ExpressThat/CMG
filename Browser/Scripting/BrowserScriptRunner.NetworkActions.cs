@@ -104,6 +104,14 @@ public sealed partial class BrowserScriptRunner
         {
             throw new ScriptExecutionException($"{action.Name} option mocked= must be true or false.");
         }
+
+        if (action.Options.TryGetValue("headerValue", out var headerValue) &&
+            !string.IsNullOrWhiteSpace(headerValue) &&
+            !action.Options.ContainsKey("header") &&
+            !action.Options.ContainsKey("headerName"))
+        {
+            throw new ScriptExecutionException($"{action.Name} option headerValue= requires header= or headerName=.");
+        }
     }
 
     private static string ParseNetworkWaitResult(string result)

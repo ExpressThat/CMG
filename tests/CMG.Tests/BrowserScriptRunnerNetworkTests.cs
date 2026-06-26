@@ -103,6 +103,27 @@ public sealed class BrowserScriptRunnerNetworkTests
     }
 
     [Fact]
+    public void RunText_WaitForResponseSupportsHeaderFilter()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"success":true,"value":{"url":"/api","headers":{"content-type":"application/json"}}}""");
+        var result = Runner().RunText("waitForResponse \"/api\" header=\"Content-Type: json\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("headerName: 'content-type'", client.LastExpression);
+        Assert.Contains("headerValue: 'json'", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_WaitForRequestRejectsHeaderValueWithoutHeaderName()
+    {
+        var result = Runner().RunText("waitForRequest \"/api\" headerValue=Bearer", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("headerValue= requires header= or headerName=", result.Error);
+    }
+
+    [Fact]
     public void RunText_WaitForResponseRejectsInvalidStatusFilter()
     {
         var result = Runner().RunText("waitForResponse \"/api\" status=ok", "debug", new FakeAutomationClient());
