@@ -19,6 +19,8 @@ public sealed class BrowserControlCommandBuilderEventAliasTests
     [InlineData("dialogs waitForDialog Confirm", "waitForDialog \"Confirm\"")]
     [InlineData("pageErrors capturePageErrors", "capturePageErrors")]
     [InlineData("pageErrors waitForPageError Boom", "waitForPageError \"Boom\"")]
+    [InlineData("pageErrors expectNoPageError --timeout 100", "expectNoPageError timeout=\"100\"")]
+    [InlineData("pageErrors toHaveNoPageError Boom", "toHaveNoPageError \"Boom\"")]
     [InlineData("waitForEvent response /api --status 200", "waitForEvent \"response\" \"/api\" status=\"200\"")]
     public void EventAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {

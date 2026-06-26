@@ -115,6 +115,31 @@ public static class BrowserConsoleScripts
         })
         """;
 
+    public static string ExpectNoPageError(string text, int timeout) =>
+        $$"""
+        new Promise((resolve, reject) => {
+          const expected = {{Quote(text)}};
+          const matches = entry => !expected || entry.text.includes(expected);
+          const failure = () => (window.__cmgPageErrors || []).find(matches);
+          const deadline = Date.now() + {{timeout}};
+          const poll = () => {
+            const hit = failure();
+            if (hit) {
+              reject(new Error(`Unexpected page ${hit.type}: ${hit.text}`));
+              return;
+            }
+
+            if (Date.now() >= deadline) {
+              resolve('none');
+              return;
+            }
+
+            setTimeout(poll, 50);
+          };
+          poll();
+        })
+        """;
+
     private static string Quote(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
 }

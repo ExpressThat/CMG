@@ -10,7 +10,7 @@ cmg browser control events pageErrors capturePageErrors
 
 ```text
 PASS 001 capturePageErrors
-PAGE_ERRORS_CAPTURE 001
+PAGE_ERROR_CAPTURE 001
 ```
 
 ## Stderr

@@ -1,6 +1,6 @@
 # `browser control events pageErrors`
 
-Page error capture and wait commands.
+Page error capture, wait, and absence assertion commands.
 
 ```powershell
 cmg browser control events pageErrors [command] [options]
@@ -12,3 +12,5 @@ cmg browser control events pageErrors [command] [options]
 - [`capturePageErrors`](capturePageErrors.md): Capture future page errors.
 - [`wait`](wait.md): Wait for a matching page error.
 - [`waitForPageError`](waitForPageError.md): Wait for a matching page error.
+- [`expectNoPageError`](expectNoPageError.md): Assert that no matching page error was captured.
+- [`toHaveNoPageError`](toHaveNoPageError.md): Provider-style alias for `expectNoPageError`.

@@ -93,6 +93,7 @@ public sealed partial class BrowserScriptRunner
             "waitforevent" => ExecuteWaitForEvent(remoteDebuggingUrl, automationClient, action),
             "capturepageerrors" => ExecuteCapturePageErrors(remoteDebuggingUrl, automationClient, action),
             "waitforpageerror" => ExecuteWaitForPageError(remoteDebuggingUrl, automationClient, action),
+            "expectnopageerror" or "tohavenopageerror" => ExecuteExpectNoPageError(remoteDebuggingUrl, automationClient, action),
             "route" or "mockresponse" or "intercept" => ExecuteRoute(remoteDebuggingUrl, automationClient, action),
             "clearroutes" => ExecuteClearRoutes(remoteDebuggingUrl, automationClient, action),
             "waitforrequest" => ExecuteWaitForRequest(remoteDebuggingUrl, automationClient, action),

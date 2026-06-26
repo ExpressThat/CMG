@@ -10,6 +10,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("toHaveNoConsole", "deprecated", "toHaveNoConsole \"deprecated\"")]
     [InlineData("capturePageErrors", null, "capturePageErrors")]
     [InlineData("waitForPageError", "boom", "waitForPageError \"boom\"")]
+    [InlineData("expectNoPageError", null, "expectNoPageError")]
+    [InlineData("toHaveNoPageError", "boom", "toHaveNoPageError \"boom\"")]
     [InlineData("captureDialogs", null, "captureDialogs")]
     [InlineData("setDialogBehavior", "dismiss", "setDialogBehavior \"dismiss\"")]
     [InlineData("onDialog", "accept", "onDialog \"accept\"")]

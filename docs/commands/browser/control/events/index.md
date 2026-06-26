@@ -12,7 +12,7 @@ cmg browser control events [command] [options]
 - [`waitForDownload`](waitForDownload.md): Wait for a matching downloaded file.
 - [`console`](console/index.md): Console capture, wait, and absence assertion commands.
 - [`dialogs`](dialogs/index.md): Browser dialog capture, behavior, and wait commands.
-- [`pageErrors`](pageErrors/index.md): Page error capture and wait commands.
+- [`pageErrors`](pageErrors/index.md): Page error capture, wait, and absence assertion commands.
 - [`wait`](wait.md): Wait for any supported browser event.
 - [`waitForEvent`](waitForEvent.md): Wait for any supported browser event.
 

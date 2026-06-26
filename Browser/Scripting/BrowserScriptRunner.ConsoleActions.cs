@@ -70,4 +70,15 @@ public sealed partial class BrowserScriptRunner
         var result = automationClient.Evaluate(remoteDebuggingUrl, BrowserConsoleScripts.WaitForPageError(action.Arguments[0], timeout));
         return [$"PAGE_ERROR {action.LineNumber:000} {result}"];
     }
+
+    private static IReadOnlyList<string> ExecuteExpectNoPageError(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 0, 1);
+        var timeout = GetIntOption(action, "timeout", 0);
+        automationClient.Evaluate(remoteDebuggingUrl, BrowserConsoleScripts.ExpectNoPageError(action.Arguments.FirstOrDefault() ?? string.Empty, timeout));
+        return [$"PAGE_ERROR_OK {action.LineNumber:000}"];
+    }
 }

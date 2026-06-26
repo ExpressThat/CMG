@@ -69,5 +69,28 @@ public sealed class BrowserScriptRunnerConsoleTests
         Assert.Contains("level= must be log, info, warn, or error", result.Error);
     }
 
+    [Fact]
+    public void RunText_ExpectNoPageErrorUsesCapturedPageErrors()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("expectNoPageError timeout=100", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("__cmgPageErrors", client.LastExpression);
+        Assert.Contains("Unexpected page", client.LastExpression);
+        Assert.Contains(result.StdoutLines, line => line.Contains("PAGE_ERROR_OK", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_ToHaveNoPageErrorUsesTextFilter()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("toHaveNoPageError \"Cannot read\" timeout=50", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("Cannot read", client.LastExpression);
+        Assert.Contains(result.StdoutLines, line => line.Contains("PAGE_ERROR_OK", StringComparison.Ordinal));
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }

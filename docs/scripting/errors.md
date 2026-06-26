@@ -303,6 +303,14 @@ Line 8: waitForPageError failed. Page error 'Cannot read' was not seen within 50
 
 Call `capturePageErrors` before the action that should throw or reject, and match text from the page error or rejected value.
 
+## Unexpected Page Error
+
+```text
+Line 9: expectNoPageError failed. Unexpected page error: Cannot read properties of null
+```
+
+Call `capturePageErrors` before the action under observation. Use optional text and `timeout=` to narrow the rejected page errors.
+
 ## Init Script Failure
 
 ```text

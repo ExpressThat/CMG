@@ -1,0 +1,8 @@
+test "page error absence checks" {
+  set page "C:\Projects\CMG\index.html"
+  navigate "${page}"
+  capturePageErrors
+  evaluate "window.__cmgPageErrorDemo = 'clean'; 'done'"
+  expectNoPageError timeout=50
+  toHaveNoPageError "Cannot read" timeout=50
+}

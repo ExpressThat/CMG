@@ -61,7 +61,7 @@ public sealed partial class CmgActionLowerer
             "captureconsole" or "waitforconsole" or "expectnoconsole" or "tohavenoconsole" or "capturedialogs" or
             "setdialogbehavior" or "ondialog" or "handledialog" or "dialogbehavior" or "waitfordialog" or
             "waitforevent" or
-            "capturepageerrors" or "waitforpageerror" or
+            "capturepageerrors" or "waitforpageerror" or "expectnopageerror" or "tohavenopageerror" or
             "route" or "mockresponse" or "intercept" or "clearroutes" or "waitforrequest" or "waitforrequestfinished" or "waitforrequestfailed" or "waitforresponse" or "exporthar" or "replayhar" or
             "routewebsocket" or "clearwebsocketroutes" or "waitforwebsocket" or "waitforwebsocketmessage" or
             "setextrahttpheaders" or "setheaders" or "clearextrahttpheaders" or "clearheaders" or

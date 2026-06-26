@@ -74,11 +74,13 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildPageErrorsGroup(BrowserSelectionOptions browserOptions)
     {
-        var command = new Command("pageErrors", "Page error capture and wait commands.");
+        var command = new Command("pageErrors", "Page error capture, wait, and absence assertion commands.");
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "capture", "Capture future page errors.", "capturePageErrors"));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "capturePageErrors", "Capture future page errors.", "capturePageErrors"));
         command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "wait", "waitForPageError", "Wait for a matching page error.", includeLevel: false));
         command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "waitForPageError", "waitForPageError", "Wait for a matching page error.", includeLevel: false));
+        command.Subcommands.Add(BuildNoPageErrorCommand(browserOptions, "expectNoPageError", "expectNoPageError"));
+        command.Subcommands.Add(BuildNoPageErrorCommand(browserOptions, "toHaveNoPageError", "toHaveNoPageError"));
         return command;
     }
 
@@ -133,6 +135,19 @@ public sealed partial class BrowserControlCommandBuilder
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine(action, OptionalArgument(parseResult, text), EventWaitOptions(parseResult, timeout, level))));
+
+        return command;
+    }
+
+    private Command BuildNoPageErrorCommand(BrowserSelectionOptions browserOptions, string name, string action)
+    {
+        var text = OptionalTextArgument("text", "Optional page error text substring to reject.");
+        var timeout = CliIntOption("--timeout", "Observation window in milliseconds.");
+        var command = new Command(name, "Assert that no matching page error is captured.") { text, timeout };
+
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine(action, OptionalArgument(parseResult, text), EventWaitOptions(parseResult, timeout, null))));
 
         return command;
     }

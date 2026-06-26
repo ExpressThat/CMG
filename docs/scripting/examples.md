@@ -932,6 +932,17 @@ test "captures page failure" {
 
 Page-error capture records `error` and `unhandledrejection` events from the page. The output and failure reasons are included in reports and traces.
 
+```text
+test "page stays error-free" {
+  navigate "https://example.com/settings"
+  capturePageErrors
+  click "#save"
+  expectNoPageError timeout=250
+}
+```
+
+No-page-error assertions are useful cleanup checks after an interaction. They are non-visual and do not move the virtual pointer.
+
 ## Init Script
 
 ```text
