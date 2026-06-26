@@ -3,7 +3,7 @@
 Provider-style alias for [`notContainsText`](notContainsText.md). With one argument in scripts, `toNotContainText "Error"` checks the page body; this CLI leaf uses the selector form.
 
 ```powershell
-cmg browser control assertions toNotContainText "<selector>" "<expected>" [--timeout <ms>]
+cmg browser control assertions toNotContainText "<selector>" "<expected>" [--timeout <ms>] [--match <mode>] [--ignore-case]
 ```
 
 ## Arguments
@@ -14,6 +14,8 @@ cmg browser control assertions toNotContainText "<selector>" "<expected>" [--tim
 ## Options
 
 - `--timeout <ms>`: Poll until the text is absent or the timeout expires.
+- `--match <mode>`: `contains`, `exact`, or `regex`. Default is `contains`.
+- `--ignore-case`: Match text case-insensitively.
 
 ## Stdout
 

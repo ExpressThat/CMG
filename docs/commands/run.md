@@ -70,7 +70,7 @@ Shared pointer, keyboard, assertion, and non-visual actions such as `goto`, `vis
 
 Control-flow and reuse actions `if`, `elseif`, `else`, `switch`, `case`, `default`, `for`, `repeat`, `while`, `until`, `doWhile`, `doUntil`, `retry`, `foreach`, `foreachSelector`, `break`, `continue`, `try`, `catch`, `finally`, `macro`, `call`, and `return` are available inside tests, hooks, steps, and GIF blocks. They can be nested, and pointer-aware actions inside them use the same virtual pointer behavior as top-level actions.
 
-`contains "text"` and `notContains "text"` check the page body. `contains "<selector>" "text"`, `containsText`, `waitForText`, `notContainsText`, and the negative text aliases check a selector or rich locator and accept `timeout=<milliseconds>`. Successful text checks emit the normal test/step pass output; failed checks include the expected and actual text in the step failure reason.
+`contains "text"` and `notContains "text"` check the page body. `contains "<selector>" "text"`, `containsText`, `waitForText`, `notContainsText`, and the negative text aliases check a selector or rich locator and accept `timeout=<milliseconds>`, `match=contains|exact|regex`, and `ignoreCase=true`. Successful text checks emit the normal test/step pass output; failed checks include the expected and actual text in the step failure reason.
 
 ## Exit Codes
 

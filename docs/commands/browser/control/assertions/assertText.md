@@ -3,7 +3,7 @@
 Runs the scripting `assertText` action once from the command line.
 
 ```powershell
-cmg browser control assertions assertText "<selector>" "<expected>" [--timeout <ms>]
+cmg browser control assertions assertText "<selector>" "<expected>" [--timeout <ms>] [--match <mode>] [--ignore-case]
 ```
 
 ## Arguments
@@ -14,6 +14,8 @@ cmg browser control assertions assertText "<selector>" "<expected>" [--timeout <
 ## Options
 
 - `--timeout <ms>`: Poll until the element text contains the expected text or the timeout expires.
+- `--match <mode>`: `contains`, `exact`, or `regex`. Default is `contains`.
+- `--ignore-case`: Match text case-insensitively.
 
 ## Stdout
 

@@ -466,6 +466,7 @@ PDF generation does not move the virtual pointer. It is supported through Chrome
 ```text
 assertText "<selector>" "expected text"
 assertText "<selector>" "expected text" timeout=5000
+assertText "<selector>" "^Ready \\d+$" match=regex ignoreCase=true
 contains "expected text"
 contains "<selector>" "expected text"
 containsText "<selector>" "expected text"
@@ -477,13 +478,15 @@ toNotContainText "<selector>" "unexpected text"
 expectNoText "<selector>" "unexpected text"
 ```
 
-Reads an element's visible text and fails unless it contains the expected text. Negative aliases fail when the text is still present. When `timeout` is provided, CMG polls the element text until it matches, becomes absent, or the timeout expires. The DSL `expectText`, `toHaveText`, `toContainText`, `containsText`, `waitForText`, `contains`, `expectNoText`, `expectNotText`, `notContains`, `notContainsText`, `toNotContainText`, and `toHaveNoText` actions use this assertion path and support the same option.
+Reads an element's visible text and fails unless it matches the expected text. Negative aliases fail when matching text is still present. When `timeout` is provided, CMG polls the element text until it matches, becomes absent, or the timeout expires. The DSL `expectText`, `toHaveText`, `toContainText`, `containsText`, `waitForText`, `contains`, `expectNoText`, `expectNotText`, `notContains`, `notContainsText`, `toNotContainText`, and `toHaveNoText` actions use this assertion path and support the same options.
 
 `contains "text"`, `toContainText "text"`, `notContains "text"`, and `toNotContainText "text"` check the page `body`, which matches the common provider pattern for finding text anywhere on the page. Selector forms and the other aliases check the target selector or rich locator.
 
 Options:
 
 - `timeout`: Optional timeout in milliseconds. Default is `0`, which checks once.
+- `match`: `contains`, `exact`, or `regex`. Default is `contains`.
+- `ignoreCase`: Optional boolean. Use `true` for case-insensitive text matching.
 
 Example:
 
@@ -491,6 +494,7 @@ Example:
 assertText "#lastDialogAction" "None"
 contains "CMG Browser Control Test Page"
 notContains "Unhandled error"
+expectText "h1" "^CMG Browser" match=regex
 waitForText "h1" "CMG Browser Control Test Page" timeout=5000
 ```
 

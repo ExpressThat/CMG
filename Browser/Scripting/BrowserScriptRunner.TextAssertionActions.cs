@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace CMG.Browser.Scripting;
 
 public sealed partial class BrowserScriptRunner
@@ -10,12 +12,13 @@ public sealed partial class BrowserScriptRunner
         var timeout = GetIntOption(action, "timeout", 0);
         var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeout);
         var shouldContain = !IsNegativeTextAssertion(action.Name);
+        var matcher = TextMatcher(action);
         var text = string.Empty;
 
         do
         {
             text = automationClient.GetElementText(remoteDebuggingUrl, selector);
-            if (text.Contains(action.Arguments[1], StringComparison.Ordinal) == shouldContain)
+            if (matcher(text, action.Arguments[1]) == shouldContain)
             {
                 return [];
             }
@@ -48,7 +51,41 @@ public sealed partial class BrowserScriptRunner
     {
         var mode = shouldContain ? "was not found" : "was still found";
         var suffix = timeout > 0 ? $" within {timeout}ms" : string.Empty;
-        return $"Expected text '{action.Arguments[1]}' {mode}{suffix}. Actual text: '{text}'.";
+        return $"Expected text '{action.Arguments[1]}' {mode}{suffix} using {TextMatchMode(action)} match. Actual text: '{text}'.";
+    }
+
+    private static Func<string, string, bool> TextMatcher(BrowserScriptAction action)
+    {
+        var comparison = GetBoolOption(action, "ignoreCase") ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        return TextMatchMode(action) switch
+        {
+            "exact" => (actual, expected) => string.Equals(actual, expected, comparison),
+            "regex" or "matches" => (actual, expected) => RegexMatches(actual, expected, GetBoolOption(action, "ignoreCase")),
+            _ => (actual, expected) => actual.Contains(expected, comparison)
+        };
+    }
+
+    private static string TextMatchMode(BrowserScriptAction action)
+    {
+        var mode = (action.Options.GetValueOrDefault("match") ?? action.Options.GetValueOrDefault("mode") ?? "contains").ToLowerInvariant();
+        if (mode is "contains" or "exact" or "regex" or "matches")
+        {
+            return mode;
+        }
+
+        throw new ScriptExecutionException($"{action.Name} option match= must be contains, exact, or regex.");
+    }
+
+    private static bool RegexMatches(string actual, string pattern, bool ignoreCase)
+    {
+        try
+        {
+            return Regex.IsMatch(actual, pattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
+        }
+        catch (ArgumentException exception)
+        {
+            throw new ScriptExecutionException($"Invalid text regex '{pattern}': {exception.Message}");
+        }
     }
 
     private static bool IsNegativeTextAssertion(string name) =>

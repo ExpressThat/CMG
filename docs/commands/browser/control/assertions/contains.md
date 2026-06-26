@@ -3,7 +3,7 @@
 Runs the scripting `contains` action once from the command line.
 
 ```powershell
-cmg browser control assertions contains "<expected>" [--timeout <ms>]
+cmg browser control assertions contains "<expected>" [--timeout <ms>] [--match <mode>] [--ignore-case]
 ```
 
 ## Arguments
@@ -13,6 +13,8 @@ cmg browser control assertions contains "<expected>" [--timeout <ms>]
 ## Options
 
 - `--timeout <ms>`: Poll until the body text contains the expected text or the timeout expires.
+- `--match <mode>`: `contains`, `exact`, or `regex`. Default is `contains`.
+- `--ignore-case`: Match text case-insensitively.
 
 ## Stdout
 

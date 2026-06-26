@@ -124,12 +124,19 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Timeout in milliseconds."
         };
+        var matchOption = CliStringOption("--match", "Text match mode: contains, exact, or regex.");
+        var ignoreCaseOption = new Option<bool?>("--ignore-case")
+        {
+            Description = "Match text case-insensitively."
+        };
 
         var command = new Command("assertText", "Assert that an element contains text.")
         {
             selectorArgument,
             expectedArgument,
-            timeoutOption
+            timeoutOption,
+            matchOption,
+            ignoreCaseOption
         };
 
         command.SetAction(parseResult =>
@@ -139,7 +146,7 @@ public sealed partial class BrowserControlCommandBuilder
                     parseResult.GetValue(selectorArgument) ?? string.Empty,
                     parseResult.GetValue(expectedArgument) ?? string.Empty
                 ],
-                TimeoutOptions(parseResult, timeoutOption))));
+                TextAssertionOptions(parseResult, timeoutOption, matchOption, ignoreCaseOption))));
 
         return command;
     }

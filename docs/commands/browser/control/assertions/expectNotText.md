@@ -3,7 +3,7 @@
 Provider-style alias for [`expectNoText`](expectNoText.md).
 
 ```powershell
-cmg browser control assertions expectNotText "<selector>" "<expected>" [--timeout <ms>]
+cmg browser control assertions expectNotText "<selector>" "<expected>" [--timeout <ms>] [--match <mode>] [--ignore-case]
 ```
 
 ## Arguments
@@ -14,6 +14,8 @@ cmg browser control assertions expectNotText "<selector>" "<expected>" [--timeou
 ## Options
 
 - `--timeout <ms>`: Poll until the text is absent or the timeout expires.
+- `--match <mode>`: `contains`, `exact`, or `regex`. Default is `contains`.
+- `--ignore-case`: Match text case-insensitively.
 
 ## Stdout
 

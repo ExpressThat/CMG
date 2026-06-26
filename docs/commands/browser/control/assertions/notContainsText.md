@@ -3,7 +3,7 @@
 Runs the scripting `notContainsText` action once from the command line.
 
 ```powershell
-cmg browser control assertions notContainsText "<selector>" "<expected>" [--timeout <ms>]
+cmg browser control assertions notContainsText "<selector>" "<expected>" [--timeout <ms>] [--match <mode>] [--ignore-case]
 ```
 
 ## Arguments
@@ -14,6 +14,8 @@ cmg browser control assertions notContainsText "<selector>" "<expected>" [--time
 ## Options
 
 - `--timeout <ms>`: Poll until the text is absent or the timeout expires.
+- `--match <mode>`: `contains`, `exact`, or `regex`. Default is `contains`.
+- `--ignore-case`: Match text case-insensitively.
 
 ## Stdout
 

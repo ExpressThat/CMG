@@ -10,13 +10,15 @@ public sealed partial class BrowserControlCommandBuilder
         var selector = CreateSelectorArgument();
         var expected = new Argument<string>("expected") { Description = "Expected text fragment." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
-        var command = new Command(action, description) { selector, expected, timeout };
+        var match = CliStringOption("--match", "Text match mode: contains, exact, or regex.");
+        var ignoreCase = new Option<bool?>("--ignore-case") { Description = "Match text case-insensitively." };
+        var command = new Command(action, description) { selector, expected, timeout, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine(action, [
                 parseResult.GetValue(selector) ?? string.Empty,
                 parseResult.GetValue(expected) ?? string.Empty
-            ], TimeoutOptions(parseResult, timeout))));
+            ], TextAssertionOptions(parseResult, timeout, match, ignoreCase))));
         return command;
     }
 
@@ -24,10 +26,12 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var expected = new Argument<string>("expected") { Description = "Expected body text fragment." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
-        var command = new Command(action, description) { expected, timeout };
+        var match = CliStringOption("--match", "Text match mode: contains, exact, or regex.");
+        var ignoreCase = new Option<bool?>("--ignore-case") { Description = "Match text case-insensitively." };
+        var command = new Command(action, description) { expected, timeout, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine(action, [parseResult.GetValue(expected) ?? string.Empty], TimeoutOptions(parseResult, timeout))));
+            ToScriptLine(action, [parseResult.GetValue(expected) ?? string.Empty], TextAssertionOptions(parseResult, timeout, match, ignoreCase))));
         return command;
     }
 
@@ -174,4 +178,15 @@ public sealed partial class BrowserControlCommandBuilder
 
     private static IReadOnlyList<(string Key, string Value)> TimeoutOptions(ParseResult parseResult, Option<int?> timeout) =>
         CompactOptions([IntOption("timeout", parseResult.GetValue(timeout))]);
+
+    private static IReadOnlyList<(string Key, string Value)> TextAssertionOptions(
+        ParseResult parseResult,
+        Option<int?> timeout,
+        Option<string?> match,
+        Option<bool?> ignoreCase) =>
+        CompactOptions([
+            IntOption("timeout", parseResult.GetValue(timeout)),
+            StringOption("match", parseResult.GetValue(match)),
+            BoolOption("ignoreCase", parseResult.GetValue(ignoreCase))
+        ]);
 }

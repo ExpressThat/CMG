@@ -355,7 +355,7 @@ Line 5: assertText failed. Expected text 'Ready' was not found. Actual text: 'Lo
 Line 6: expectNoText failed. Expected text 'Error' was still found. Actual text: 'Ready Error'.
 ```
 
-Positive text assertions check whether the element text contains the expected text. Negative text assertions check that the text is absent. Timeout failures include the timeout and the last text observed.
+Positive text assertions check whether the element text matches the expected text. Negative text assertions check that matching text is absent. `match=contains|exact|regex` and `ignoreCase=true` are supported. Timeout failures include the timeout and the last text observed.
 
 ## API Request Failure
 
