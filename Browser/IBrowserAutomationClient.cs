@@ -138,7 +138,10 @@ public sealed record ScreenshotOptions(
     string Type = "png",
     int? Quality = null,
     bool FullPage = false,
-    bool OmitBackground = false);
+    bool OmitBackground = false,
+    ScreenshotClip? Clip = null);
+
+public sealed record ScreenshotClip(double X, double Y, double Width, double Height);
 
 public sealed record PdfPrintOptions(
     bool Landscape,

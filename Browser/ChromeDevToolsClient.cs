@@ -90,6 +90,16 @@ public sealed partial class ChromeDevToolsClient : IBrowserAutomationClient
         {
             writer.WriteBoolean("omitBackground", true);
         }
+        if (options.Clip is { } clip)
+        {
+            writer.WriteStartObject("clip");
+            writer.WriteNumber("x", clip.X);
+            writer.WriteNumber("y", clip.Y);
+            writer.WriteNumber("width", clip.Width);
+            writer.WriteNumber("height", clip.Height);
+            writer.WriteNumber("scale", 1);
+            writer.WriteEndObject();
+        }
     }
 
     private static async Task<ElementClip> GetElementPageClip(DevToolsSession session, string selector)

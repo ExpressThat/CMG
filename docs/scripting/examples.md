@@ -59,7 +59,10 @@ navigate "C:\Projects\CMG\index.html"
 waitForElement "#openProfileDialog"
 html "#openProfileDialog"
 screenshot "#openProfileDialog"
+screenshotPage output="demo-output\viewport-crop.png" clipX=40 clipY=80 clipWidth=640 clipHeight=360
 ```
+
+Use `clipX`, `clipY`, `clipWidth`, and `clipHeight` when a page-level artifact should capture only the meaningful viewport or full-page region. The direct clipped screenshot example is available as `demo-scripts/118-screenshot-clip.cmgscript`; the structured `cmg run` form is available as `demo-scripts/119-screenshot-clip-runner.cmgscript`.
 
 ## Validate Text
 

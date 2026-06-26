@@ -9,6 +9,10 @@ public sealed partial class BrowserScriptRunner
         action = NormalizeSelectorArgument(action);
         RequireArgumentCount(action, 1, 1);
         var options = ScreenshotOptionsFor(action, fullPage: false);
+        if (options.Clip is not null)
+        {
+            throw new ScriptExecutionException("screenshot clip options are only valid with screenshotPage.");
+        }
         var bytes = automationClient.GetElementScreenshot(remoteDebuggingUrl, ResolveSelector(remoteDebuggingUrl, automationClient, action), options);
         return WriteScreenshotOutput(action, bytes, options.Type);
     }
@@ -39,7 +43,43 @@ public sealed partial class BrowserScriptRunner
             throw new ScriptExecutionException($"{action.Name} option quality= is only valid when type=jpeg.");
         }
 
-        return new(type, quality, fullPage, GetBoolOption(action, "omitBackground"));
+        return new(type, quality, fullPage, GetBoolOption(action, "omitBackground"), ScreenshotClipFor(action));
+    }
+
+    private static ScreenshotClip? ScreenshotClipFor(BrowserScriptAction action)
+    {
+        var hasClip = action.Options.ContainsKey("clipX") ||
+            action.Options.ContainsKey("clipY") ||
+            action.Options.ContainsKey("clipWidth") ||
+            action.Options.ContainsKey("clipHeight");
+        if (!hasClip)
+        {
+            return null;
+        }
+
+        var clip = new ScreenshotClip(
+            GetClipOption(action, "clipX"),
+            GetClipOption(action, "clipY"),
+            GetClipOption(action, "clipWidth"),
+            GetClipOption(action, "clipHeight"));
+        if (clip.Width <= 0 || clip.Height <= 0)
+        {
+            throw new ScriptExecutionException($"{action.Name} clipWidth= and clipHeight= must be greater than 0.");
+        }
+
+        return clip;
+    }
+
+    private static double GetClipOption(BrowserScriptAction action, string name)
+    {
+        if (!action.Options.TryGetValue(name, out var value))
+        {
+            throw new ScriptExecutionException($"{action.Name} clip options require clipX=, clipY=, clipWidth=, and clipHeight=.");
+        }
+
+        return double.TryParse(value, out var parsed) && parsed >= 0
+            ? parsed
+            : throw new ScriptExecutionException($"{action.Name} option {name}= must be zero or a positive number.");
     }
 
     private static IReadOnlyList<string> ExecutePageContentAction(

@@ -66,6 +66,17 @@ public sealed class BrowserControlCommandBuilderCaptureTests
         Assert.Equal("screenshotPage type=\"jpg\" quality=\"80\" fullPage=\"true\"", handler.ScriptLine);
     }
 
+    [Fact]
+    public void ScreenshotPageCommand_MapsClipOptionsToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control capture screenshotPage --clip-x 10 --clip-y 20 --clip-width 300 --clip-height 180").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("screenshotPage clipX=\"10\" clipY=\"20\" clipWidth=\"300\" clipHeight=\"180\"", handler.ScriptLine);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");

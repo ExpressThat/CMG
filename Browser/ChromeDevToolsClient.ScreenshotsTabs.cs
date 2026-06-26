@@ -49,13 +49,16 @@ public sealed partial class ChromeDevToolsClient
         {
             WriteScreenshotOptions(writer, options);
             writer.WriteBoolean("captureBeyondViewport", true);
-            writer.WriteStartObject("clip");
-            writer.WriteNumber("x", 0);
-            writer.WriteNumber("y", 0);
-            writer.WriteNumber("width", Math.Max(1, width));
-            writer.WriteNumber("height", Math.Max(1, height));
-            writer.WriteNumber("scale", 1);
-            writer.WriteEndObject();
+            if (options.Clip is null)
+            {
+                writer.WriteStartObject("clip");
+                writer.WriteNumber("x", 0);
+                writer.WriteNumber("y", 0);
+                writer.WriteNumber("width", Math.Max(1, width));
+                writer.WriteNumber("height", Math.Max(1, height));
+                writer.WriteNumber("scale", 1);
+                writer.WriteEndObject();
+            }
         });
     }
 

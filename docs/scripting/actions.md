@@ -517,6 +517,7 @@ Options:
 screenshotPage output="page.png"
 screenshotPage output="page-full.png" fullPage=true
 screenshotPage output="page.jpg" type=jpeg quality=85
+screenshotPage output="viewport-card.png" clipX=40 clipY=120 clipWidth=640 clipHeight=360
 screenshotPage
 ```
 
@@ -529,6 +530,9 @@ Options:
 - `type`: Optional `png`, `jpeg`, or `jpg`. Default is `png`.
 - `quality`: Optional JPEG quality from `0` to `100`. Valid only when `type=jpeg` or `type=jpg`.
 - `omitBackground`: Optional boolean. Allows a transparent background when the browser supports it.
+- `clipX` / `clipY` / `clipWidth` / `clipHeight`: Optional page or viewport clip rectangle in CSS pixels. `clipWidth` and `clipHeight` must be greater than `0`. With `fullPage=true`, the clip is relative to the page document; otherwise it is relative to the current viewport.
+
+Clipped page screenshots do not move the virtual pointer. Wrap the action in `step` or pair it with a `caption` when the GIF should explain the cropped artifact.
 
 ## `printPdf`
 
