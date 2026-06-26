@@ -206,5 +206,6 @@ dotnet run -- --firefox browser close
 - `114-pointer-click-variants-runner.cmgscript`: Demonstrates optioned double-click and context-click dispatch in the structured runner DSL.
 - `115-default-timeouts.cmgscript`: Demonstrates script-level default timeout policy in a direct script.
 - `116-default-timeouts-runner.cmgscript`: Demonstrates script-level default timeout policy in the structured runner DSL.
+- `117-slow-runner.cmgscript`: Demonstrates provider-style `test.slow`, `describe.slow`, and inherited slow timeout policy.
 
 Generated screenshots are written to `demo-output/`.

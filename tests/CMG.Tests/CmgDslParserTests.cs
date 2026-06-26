@@ -49,6 +49,10 @@ public sealed class CmgDslParserTests
         Assert.Contains("todo", suite.Children[1].Options["reason"]);
         Assert.Equal("test", result.Document.Nodes[1].Kind);
         Assert.Equal("true", result.Document.Nodes[1].Options["only"]);
+
+        var slow = new CmgDslParser().Parse("flow.cmgscript", """test.slow "long" { caption "run" }""");
+        Assert.True(slow.Success, slow.Error);
+        Assert.Equal("true", slow.Document!.Nodes[0].Options["slow"]);
     }
 
     [Fact]

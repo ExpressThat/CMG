@@ -104,6 +104,11 @@ public sealed class CmgTestPlanner
             }
         }
 
+        if (suiteOptions.TryGetValue("slow", out var slow) && IsEnabledOption(slow) && !testOptions.ContainsKey("slow"))
+        {
+            merged["slow"] = slow;
+        }
+
         return merged;
     }
 
@@ -132,4 +137,8 @@ public sealed class CmgTestPlanner
         value.Equals("true", StringComparison.OrdinalIgnoreCase) ||
         value.Equals("1", StringComparison.OrdinalIgnoreCase) ||
         value.Equals("yes", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsEnabledOption(string value) =>
+        IsTruthy(value) ||
+        (double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var number) && number > 0);
 }

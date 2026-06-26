@@ -637,6 +637,23 @@ When `--max-failures` reaches its threshold, stdout includes `RUN STOP maxFailur
 
 `--list` prints `TEST LIST run <name>` or `TEST LIST skip <name>` for the selected schedule without connecting to a browser or running actions. It respects grep, tag, focus, repeat, and shard options.
 
+Mark a long-running test or suite as slow when it needs a larger inherited timeout policy:
+
+```text
+test.slow "slow visual flow" {
+  waitForSelector "#eventual"
+  expectText "#status" "Saved"
+}
+
+describe.slow "slow suite" {
+  it "inherits slow timeout policy" {
+    waitForSelector "#eventual"
+  }
+}
+```
+
+`slow=true` and `.slow` use a `3x` multiplier. `slow=4` uses a custom multiplier, and `slow=false` opts a child test out of suite-level slow behavior. Explicit action-level `timeout=` still wins. This example is available as `demo-scripts/117-slow-runner.cmgscript`.
+
 Use `tag=` on tests:
 
 ```text

@@ -28,6 +28,9 @@ public static class CmgDeclarationAliases
                 normalized["skip"] = "true";
                 normalized.TryAdd("reason", $"Marked todo by {kind}.");
                 break;
+            case "slow":
+                normalized["slow"] = "true";
+                break;
             default:
                 return new(kind, options);
         }

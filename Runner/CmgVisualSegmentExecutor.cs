@@ -39,7 +39,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var steps = new List<CmgStepResult>();
         var commandGif = BuildGifPath(test, options, attempt);
         var suppressGifBlocks = commandGif is not null;
-        var timeouts = BuildTimeoutOptions(options);
+        var timeouts = BuildTimeoutOptions(test, options);
 
         foreach (var action in test.Actions)
         {

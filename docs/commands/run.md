@@ -117,11 +117,22 @@ test.only "debug checkout" {
 test.fixme "broken checkout"
 test.todo "add refund coverage"
 
+test.slow "slow checkout" {
+  expectText "#status" "Saved"
+}
+
 describe.skip "legacy area" {
   it "old case" {
     click "#old"
   }
 }
+
+describe.slow "slow area" {
+  it "inherits slow timeout policy" {
+    waitForSelector "#eventual"
+  }
+}
 ```
 
 When any selected test has `only=true` or a `.only` declaration, `cmg run` runs only focused tests. `skip=true`, `.skip`, `.fixme`, and `.todo` record `TEST SKIP <name>` and a skipped report entry without running actions. Suite-level focus and skip declarations cascade to child tests. For script structure and style guidance, see [syntax](../scripting/syntax.md) and the [style guide](../scripting/style-guide.md).
+`slow=true` or `.slow` scales inherited default wait, navigation, and assertion timeouts for that test by `3x`; `slow=<number>` uses a custom multiplier. Explicit action-level `timeout=` still wins.

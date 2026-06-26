@@ -82,8 +82,11 @@ public sealed class CmgTestPlannerTests
     public void Plan_CascadesSuiteFocusAndSkipOptions()
     {
         var document = new CmgDslParser().Parse("flow.cmgscript", """
-        describe.only "Focused suite" tag=smoke {
+        describe.only "Focused suite" tag=smoke slow=4 {
           it "case" only=false {
+            caption "run"
+          }
+          it "fast case" slow=false {
             caption "run"
           }
         }
@@ -99,8 +102,10 @@ public sealed class CmgTestPlannerTests
 
         Assert.Equal("true", tests[0].Options["only"]);
         Assert.Equal("smoke", tests[0].Options["tag"]);
-        Assert.Equal("true", tests[1].Options["skip"]);
-        Assert.Equal("Disabled", tests[1].Options["reason"]);
+        Assert.Equal("4", tests[0].Options["slow"]);
+        Assert.Equal("false", tests[1].Options["slow"]);
+        Assert.Equal("true", tests[2].Options["skip"]);
+        Assert.Equal("Disabled", tests[2].Options["reason"]);
     }
 
     private static string FirstArgument(CmgNode node) => node.Arguments.FirstOrDefault() ?? node.Name;
