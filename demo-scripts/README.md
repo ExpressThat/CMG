@@ -263,5 +263,7 @@ dotnet run -- --firefox browser close
 - `142-base-url-runner.cmgscript`: Demonstrates runner `baseUrl=` declarations for relative navigation.
 - `143-screenshot-mask.cmgscript`: Demonstrates screenshot artifact masks in a direct script.
 - `144-screenshot-mask-runner.cmgscript`: Demonstrates screenshot artifact masks in the structured runner DSL.
+- `145-screenshot-deterministic.cmgscript`: Demonstrates artifact-only animation and caret stabilization in a direct script.
+- `146-screenshot-deterministic-runner.cmgscript`: Demonstrates artifact-only animation and caret stabilization in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.

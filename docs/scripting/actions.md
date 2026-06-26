@@ -549,6 +549,7 @@ screenshot "<selector>" output="element.png"
 screenshot "<selector>" output="element.jpg" type=jpeg quality=80
 screenshot "<selector>" output="stable.png" style=".clock{visibility:hidden}"
 screenshot "<selector>" output="masked.png" mask="#clock;#ad" maskColor="#000000"
+screenshot "<selector>" output="deterministic.png" animations=disabled caret=hide
 screenshot "<selector>"
 ```
 
@@ -564,6 +565,8 @@ Options:
 - `stylePath`: Optional CSS file applied only while the screenshot artifact is captured, then removed. Cannot be combined with `style`.
 - `mask`: Optional semicolon-separated selectors or rich locators to cover while the screenshot artifact is captured, then removed.
 - `maskColor`: Optional CSS color used for masks. Default is `#ff00ff`.
+- `animations`: Optional animation handling for the artifact. Use `disabled` to stop CSS animations/transitions during capture, or `allow` to leave them alone.
+- `caret`: Optional caret handling for the artifact. Use `hide` to make text carets transparent during capture, or `initial` to leave them alone.
 
 ## `screenshotPage`
 
@@ -574,6 +577,7 @@ screenshotPage output="page.jpg" type=jpeg quality=85
 screenshotPage output="viewport-card.png" clipX=40 clipY=120 clipWidth=640 clipHeight=360
 screenshotPage output="stable-page.png" stylePath="fixtures\screenshot.css"
 screenshotPage output="masked-page.png" mask="#clock;hasText=.ad|Sponsored" maskColor="#000000"
+screenshotPage output="deterministic-page.png" animations=disabled caret=hide
 screenshotPage
 ```
 
@@ -590,9 +594,11 @@ Options:
 - `stylePath`: Optional CSS file applied only while the screenshot artifact is captured, then removed. Cannot be combined with `style`.
 - `mask`: Optional semicolon-separated selectors or rich locators to cover while the screenshot artifact is captured, then removed.
 - `maskColor`: Optional CSS color used for masks. Default is `#ff00ff`.
+- `animations`: Optional animation handling for the artifact. Use `disabled` to stop CSS animations/transitions during capture, or `allow` to leave them alone.
+- `caret`: Optional caret handling for the artifact. Use `hide` to make text carets transparent during capture, or `initial` to leave them alone.
 - `clipX` / `clipY` / `clipWidth` / `clipHeight`: Optional page or viewport clip rectangle in CSS pixels. `clipWidth` and `clipHeight` must be greater than `0`. With `fullPage=true`, the clip is relative to the page document; otherwise it is relative to the current viewport.
 
-Clipped, styled, and masked page screenshots do not move the virtual pointer. Element screenshots still move the pointer before capture in GIF mode. Temporary screenshot styles and masks affect only the artifact capture and are removed before later actions continue, so GIF frames keep showing the real page state unless the script changes it directly.
+Clipped, styled, masked, animation-stabilized, and caret-stabilized page screenshots do not move the virtual pointer. Element screenshots still move the pointer before capture in GIF mode. Temporary screenshot artifact changes are removed before later actions continue, so GIF frames keep showing the real page state unless the script changes it directly.
 
 ## `printPdf`
 

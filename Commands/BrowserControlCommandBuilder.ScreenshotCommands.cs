@@ -15,12 +15,25 @@ public sealed partial class BrowserControlCommandBuilder
         var stylePath = new Option<FileInfo?>("--style-path") { Description = "CSS file applied only during screenshot capture." };
         var mask = CliStringOption("--mask", "Semicolon-separated selectors to cover during screenshot capture.");
         var maskColor = CliStringOption("--mask-color", "CSS color used for screenshot masks. Default is #ff00ff.");
+        var animations = CliStringOption("--animations", "Animation handling for screenshot artifacts: disabled or allow.");
+        var caret = CliStringOption("--caret", "Caret handling for screenshot artifacts: hide or initial.");
         var command = new Command("screenshot", "Capture an element screenshot.")
-            { selector, output, type, quality, omitBackground, style, stylePath, mask, maskColor };
+            { selector, output, type, quality, omitBackground, style, stylePath, mask, maskColor, animations, caret };
 
         command.SetAction(parseResult =>
         {
-            var options = ScreenshotCliOptions(parseResult, output, type, quality, omitBackground, style, stylePath, mask, maskColor);
+            var options = ScreenshotCliOptions(
+                parseResult,
+                output,
+                type,
+                quality,
+                omitBackground,
+                style,
+                stylePath,
+                mask,
+                maskColor,
+                animations,
+                caret);
             return browserControlCommandHandler.RunScriptAction(
                 CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 ToScriptLine("screenshot", [parseResult.GetValue(selector) ?? string.Empty], options));
@@ -40,12 +53,14 @@ public sealed partial class BrowserControlCommandBuilder
         var stylePath = new Option<FileInfo?>("--style-path") { Description = "CSS file applied only during screenshot capture." };
         var mask = CliStringOption("--mask", "Semicolon-separated selectors to cover during screenshot capture.");
         var maskColor = CliStringOption("--mask-color", "CSS color used for screenshot masks. Default is #ff00ff.");
+        var animations = CliStringOption("--animations", "Animation handling for screenshot artifacts: disabled or allow.");
+        var caret = CliStringOption("--caret", "Caret handling for screenshot artifacts: hide or initial.");
         var clipX = new Option<double?>("--clip-x") { Description = "Viewport/document clip X coordinate in CSS pixels." };
         var clipY = new Option<double?>("--clip-y") { Description = "Viewport/document clip Y coordinate in CSS pixels." };
         var clipWidth = new Option<double?>("--clip-width") { Description = "Clip width in CSS pixels." };
         var clipHeight = new Option<double?>("--clip-height") { Description = "Clip height in CSS pixels." };
         var command = new Command("screenshotPage", "Capture a page screenshot.")
-            { output, fullPage, type, quality, omitBackground, style, stylePath, mask, maskColor, clipX, clipY, clipWidth, clipHeight };
+            { output, fullPage, type, quality, omitBackground, style, stylePath, mask, maskColor, animations, caret, clipX, clipY, clipWidth, clipHeight };
 
         command.SetAction(parseResult =>
         {
@@ -59,6 +74,8 @@ public sealed partial class BrowserControlCommandBuilder
                 stylePath,
                 mask,
                 maskColor,
+                animations,
+                caret,
                 clipX,
                 clipY,
                 clipWidth,

@@ -77,6 +77,16 @@ public sealed class BrowserControlCommandBuilderCaptureTests
     }
 
     [Fact]
+    public void ScreenshotCommand_MapsDeterministicArtifactOptionsToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control capture screenshot #card --animations disabled --caret hide").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("screenshot \"#card\" animations=\"disabled\" caret=\"hide\"", handler.ScriptLine);
+    }
+
+    [Fact]
     public void ScreenshotPageCommand_MapsImageOptionsToScriptAction()
     {
         var handler = new CapturingBrowserControlCommandHandler();
@@ -115,6 +125,16 @@ public sealed class BrowserControlCommandBuilderCaptureTests
 
         Assert.Equal(0, exitCode);
         Assert.Equal("screenshotPage mask=\"#clock\" maskColor=\"#000000\"", handler.ScriptLine);
+    }
+
+    [Fact]
+    public void ScreenshotPageCommand_MapsDeterministicArtifactOptionsToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control capture screenshotPage --animations disabled --caret hide").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("screenshotPage animations=\"disabled\" caret=\"hide\"", handler.ScriptLine);
     }
 
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)

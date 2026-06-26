@@ -75,6 +75,38 @@ public sealed class BrowserScriptRunnerScreenshotTests
     }
 
     [Fact]
+    public void RunText_ScreenshotPageCanDisableAnimationsAndHideCaret()
+    {
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText("screenshotPage animations=disabled caret=hide", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("animation-duration:0s!important", StringComparison.Ordinal) &&
+            expression.Contains("caret-color:transparent!important", StringComparison.Ordinal));
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("data-cmg-screenshot-style", StringComparison.Ordinal));
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("?.remove(); true", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_ScreenshotRejectsInvalidAnimationOption()
+    {
+        var result = Runner().RunText("screenshotPage animations=freeze", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("animations= must be disabled or allow", result.Error);
+    }
+
+    [Fact]
+    public void RunText_ScreenshotRejectsInvalidCaretOption()
+    {
+        var result = Runner().RunText("screenshotPage caret=remove", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("caret= must be hide or initial", result.Error);
+    }
+
+    [Fact]
     public void RunText_ScreenshotMaskSupportsRichLocators()
     {
         var client = new FakeAutomationClient();

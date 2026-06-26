@@ -107,7 +107,7 @@ For stable screenshot evidence, mask volatile regions only in the artifact. The 
 
 ```text
 setContent "<main><h1>Evidence</h1><p id='clock'>12:34:56</p><button id='save'>Save</button></main>"
-screenshotPage output="demo-output\masked-evidence.png" mask="#clock" maskColor="#000000"
+screenshotPage output="demo-output\masked-evidence.png" mask="#clock" maskColor="#000000" animations=disabled caret=hide
 ```
 
 Run the complete screenshot mask demos:
@@ -115,6 +115,8 @@ Run the complete screenshot mask demos:
 ```powershell
 cmg browser control script --file demo-scripts\143-screenshot-mask.cmgscript
 cmg run demo-scripts\144-screenshot-mask-runner.cmgscript
+cmg browser control script --file demo-scripts\145-screenshot-deterministic.cmgscript
+cmg run demo-scripts\146-screenshot-deterministic-runner.cmgscript
 ```
 
 ## Variables And Macros

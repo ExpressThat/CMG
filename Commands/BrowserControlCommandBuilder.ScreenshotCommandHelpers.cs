@@ -14,6 +14,8 @@ public sealed partial class BrowserControlCommandBuilder
         Option<FileInfo?>? stylePathOption = null,
         Option<string?>? maskOption = null,
         Option<string?>? maskColorOption = null,
+        Option<string?>? animationsOption = null,
+        Option<string?>? caretOption = null,
         Option<double?>? clipXOption = null,
         Option<double?>? clipYOption = null,
         Option<double?>? clipWidthOption = null,
@@ -47,6 +49,14 @@ public sealed partial class BrowserControlCommandBuilder
         if (maskColorOption is not null && !string.IsNullOrWhiteSpace(parseResult.GetValue(maskColorOption)))
         {
             options.Add(("maskColor", parseResult.GetValue(maskColorOption)!));
+        }
+        if (animationsOption is not null && !string.IsNullOrWhiteSpace(parseResult.GetValue(animationsOption)))
+        {
+            options.Add(("animations", parseResult.GetValue(animationsOption)!));
+        }
+        if (caretOption is not null && !string.IsNullOrWhiteSpace(parseResult.GetValue(caretOption)))
+        {
+            options.Add(("caret", parseResult.GetValue(caretOption)!));
         }
         AddClipOption(parseResult, options, clipXOption, "clipX");
         AddClipOption(parseResult, options, clipYOption, "clipY");
