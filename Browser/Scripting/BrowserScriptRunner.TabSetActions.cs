@@ -21,7 +21,7 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 1, 1);
         var target = NormalizeNavigationTarget(action.Arguments[0], context.BaseUrl);
-        automationClient.Evaluate(remoteDebuggingUrl, $"window.open({QuoteJs(target)}, '_blank'); true");
+        automationClient.OpenTab(remoteDebuggingUrl, target);
         return [$"TAB_OPENED {action.LineNumber:000} {target}"];
     }
 
@@ -79,7 +79,4 @@ public sealed partial class BrowserScriptRunner
 
         return [$"SCREENSHOT {action.LineNumber:000} data:{ScreenshotImage.MimeType(type)};base64,{Convert.ToBase64String(bytes)}"];
     }
-
-    private static string QuoteJs(string value) =>
-        $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
 }

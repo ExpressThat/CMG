@@ -3,6 +3,7 @@ namespace CMG.E2E.Tests.Support;
 public sealed class CmgBrowserFixture : IDisposable
 {
     private readonly string workspace;
+    private readonly StaticFixtureServer server;
 
     public CmgBrowserFixture()
     {
@@ -10,6 +11,7 @@ public sealed class CmgBrowserFixture : IDisposable
         Directory.CreateDirectory(workspace);
         Directory.CreateDirectory(LocalAppData);
         Directory.CreateDirectory(OutputDirectory);
+        server = new StaticFixtureServer(Path.Combine(E2ePaths.RepositoryRoot(), "tests", "CMG.E2E.Tests", "Fixtures"));
         Cli = new CmgCli(E2ePaths.RepositoryRoot(), LocalAppData);
 
         var launch = Cli.Run("browser", "launch", "--headless", "--url", E2ePaths.FixtureUri("index.html"));
@@ -31,6 +33,8 @@ public sealed class CmgBrowserFixture : IDisposable
 
     public string OutputPath(string name) => Path.Combine(OutputDirectory, name);
 
+    public string FixtureHttpUri(string name) => server.Url(name);
+
     public void Dispose()
     {
         try
@@ -46,6 +50,8 @@ public sealed class CmgBrowserFixture : IDisposable
             catch (IOException)
             {
             }
+
+            server.Dispose();
         }
     }
 }

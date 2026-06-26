@@ -112,6 +112,26 @@ public sealed partial class ChromeDevToolsClient
         });
     }
 
+    public void OpenTab(string remoteDebuggingUrl, string target)
+    {
+        Run(async () =>
+        {
+            using var httpClient = new HttpClient { Timeout = CommandTimeout };
+            var response = await httpClient.PutAsync(
+                $"{remoteDebuggingUrl.TrimEnd('/')}/json/new?{Uri.EscapeDataString(target)}",
+                content: null);
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            using var document = JsonDocument.Parse(json);
+            if (TryReadString(document.RootElement, "id", out var id) && !string.IsNullOrWhiteSpace(id))
+            {
+                SetActiveTarget(remoteDebuggingUrl, id);
+            }
+
+            return true;
+        });
+    }
+
     public void ActivateTab(string remoteDebuggingUrl, int index)
     {
         Run(async () =>

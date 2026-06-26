@@ -83,6 +83,8 @@ public interface IBrowserAutomationClient
 
     IReadOnlyList<ChromePageTab> ListTabs(string remoteDebuggingUrl);
 
+    void OpenTab(string remoteDebuggingUrl, string target);
+
     void ActivateTab(string remoteDebuggingUrl, int index);
 
     void CloseTab(string remoteDebuggingUrl, int index);

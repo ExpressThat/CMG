@@ -28,6 +28,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public Queue<string> EvaluateResponses { get; } = new();
     public Queue<ElementBox> ElementBoxes { get; } = new();
     public Queue<IReadOnlyList<ChromePageTab>> TabResponses { get; } = new();
+    public string LastOpenedTab { get; private set; } = string.Empty;
     public List<BrowserContextInfo> BrowserContexts { get; } = [];
     public List<BrowserWorkerInfo> Workers { get; } = [];
     public string ActiveBrowserContext { get; private set; } = string.Empty;
@@ -155,6 +156,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public void RemoveDomCursor(string remoteDebuggingUrl) { }
     public IReadOnlyList<ChromePageTab> ListTabs(string remoteDebuggingUrl) =>
         TabResponses.Count > 0 ? TabResponses.Dequeue() : [];
+    public void OpenTab(string remoteDebuggingUrl, string target) => LastOpenedTab = target;
     public void ActivateTab(string remoteDebuggingUrl, int index) { }
     public void CloseTab(string remoteDebuggingUrl, int index) { }
     public IReadOnlyList<BrowserContextInfo> ListBrowserContexts(string remoteDebuggingUrl) => BrowserContexts;

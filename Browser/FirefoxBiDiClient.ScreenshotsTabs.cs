@@ -70,6 +70,21 @@ public sealed partial class FirefoxBiDiClient
             return tabs;
         });
 
+    public void OpenTab(string remoteDebuggingUrl, string target) =>
+        Run(async () =>
+        {
+            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            var created = await session.SendCommand("browsingContext.create", writer => writer.WriteString("type", "tab"));
+            var contextId = ReadRequired(created, ["result", "context"]);
+            await session.SendCommand("browsingContext.navigate", writer =>
+            {
+                writer.WriteString("context", contextId);
+                writer.WriteString("url", target);
+                writer.WriteString("wait", "complete");
+            });
+            return true;
+        });
+
     public void ActivateTab(string remoteDebuggingUrl, int index) =>
         Run(async () =>
         {

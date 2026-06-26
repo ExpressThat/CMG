@@ -13,6 +13,7 @@ dotnet test tests\CMG.E2E.Tests\CMG.E2E.Tests.csproj /p:UseSharedCompilation=fal
 - Launches the built CMG app as an external process.
 - Starts Chrome headless with `cmg browser launch --headless`.
 - Uses an isolated temporary `LOCALAPPDATA` directory so tests do not touch a developer's normal CMG browser state.
+- Starts a tiny local static HTTP fixture server for origin-sensitive behavior such as cookies, network, workers, and future request tests.
 - Drives the browser through real CLI commands, direct `.cmgscript` files, and `cmg run` test files.
 - Writes and verifies real screenshots, GIFs, traces, JSON reports, HTML reports, and JUnit reports.
 - Uses `tests/CMG.E2E.Tests/Fixtures/index.html` as the main page fixture.
@@ -49,6 +50,7 @@ The first E2E slice covers:
 - All documented leaf commands expose working `--help` output.
 - A broad browser action-surface script covering navigation, input, assertions, dialogs, frames, storage, emulation, clocks, looping, branching, try/catch, and trace output.
 - Artifact and state actions for visual assertions, screenshots, PDFs, coverage, storage state, local file actions, and tab control.
+- Browser-control CLI behavior for waits, runtime getters, input, assertions, storage, cookies, context/emulation, clock, accessibility, frames, tabs, and capture artifacts.
 - Local `files` command success and failure behavior.
 - Navigation, runtime text reads, input, assertions, screenshots, element HTML, and failure reasons.
 - Direct script execution with GIF and trace output.

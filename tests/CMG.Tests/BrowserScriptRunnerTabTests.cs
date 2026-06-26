@@ -6,14 +6,13 @@ namespace CMG.Tests;
 public sealed class BrowserScriptRunnerTabTests
 {
     [Fact]
-    public void RunText_OpenTabEvaluatesWindowOpen()
+    public void RunText_OpenTabUsesAutomationClientTabCreation()
     {
         var client = new FakeAutomationClient();
         var result = Runner().RunText("openTab \"https://example.com\"", "debug", client);
 
         Assert.True(result.Success);
-        Assert.Contains("window.open", client.LastExpression);
-        Assert.Contains("; true", client.LastExpression);
+        Assert.Equal("https://example.com", client.LastOpenedTab);
         Assert.Contains(result.StdoutLines, line => line.Contains("TAB_OPENED", StringComparison.Ordinal));
     }
 
