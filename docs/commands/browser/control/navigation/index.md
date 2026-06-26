@@ -15,6 +15,8 @@ cmg browser control navigation [command] [options]
 - [`waitForUrl`](waitForUrl.md): Wait until the current URL contains text.
 - [`expectUrl`](expectUrl.md): Assert that the current URL contains text.
 - [`expectTitle`](expectTitle.md): Assert that the current page title contains text.
+- [`toHaveURL`](toHaveURL.md): Assert that the current URL contains text.
+- [`toHaveTitle`](toHaveTitle.md): Assert that the current page title contains text.
 - [`waitForLoadState`](waitForLoadState.md): Wait until the page reaches a load state.
 - [`waitForNavigation`](waitForNavigation.md): Wait until navigation reaches a state.
 - [`url`](url.md): Print the current page URL.
@@ -37,6 +39,7 @@ cmg browser control navigation navigate "https://example.com"
 cmg browser control navigation reload
 cmg browser control navigation title
 cmg browser control navigation expectTitle "Checkout"
+cmg browser control navigation toHaveURL "checkout"
 cmg browser control navigation waitForLoadState complete
 cmg browser control navigation waitForNavigation "checkout" --wait-until domcontentloaded
 ```

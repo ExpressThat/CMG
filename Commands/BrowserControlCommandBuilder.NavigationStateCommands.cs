@@ -16,6 +16,8 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildWaitForUrlCommand(browserOptions));
         command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "expectUrl", "Assert that the current URL contains text."));
         command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "expectTitle", "Assert that the current page title contains text."));
+        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "toHaveURL", "Assert that the current URL contains text."));
+        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "toHaveTitle", "Assert that the current page title contains text."));
         command.Subcommands.Add(BuildWaitForLoadStateCommand(browserOptions));
         command.Subcommands.Add(BuildWaitForNavigationCommand(browserOptions));
         command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "url", "Print the current page URL."));
@@ -89,7 +91,7 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var expectedArgument = new Argument<string>("expected")
         {
-            Description = name.Equals("expectTitle", StringComparison.Ordinal) ? "Expected title substring." : "Expected URL substring."
+            Description = name.Contains("Title", StringComparison.Ordinal) ? "Expected title substring." : "Expected URL substring."
         };
 
         var command = new Command(name, description)
