@@ -70,13 +70,13 @@ dotnet run -- browser control script --file demo-scripts\10-css-hover-states.cmg
 Run the structured runner demo with reports:
 
 ```powershell
-dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript --report-json demo-output\runner.json --report-html demo-output\runner.html
+dotnet run -- run demo-scripts\20-runner-flow.cmgscript --report-json demo-output\runner.json --report-html demo-output\runner.html
 ```
 
 Record the whole runner demo test as a GIF:
 
 ```powershell
-dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript --gif demo-output\runner-gifs
+dotnet run -- run demo-scripts\20-runner-flow.cmgscript --gif demo-output\runner-gifs
 ```
 
 Close the browser:
@@ -106,7 +106,7 @@ dotnet run -- --firefox browser close
 - `17-http-credentials.cmgscript`: Demonstrates page-side HTTP credential automation for fetch/XHR.
 - `18-expose-function.cmgscript`: Demonstrates page-side exposed functions.
 - `19-direct-gif-block.cmgscript`: Demonstrates direct browser-control `gif` blocks.
-- `20-v2-runner-flow.cmgscript`: Demonstrates the structured runner DSL, `step`, and `gif` blocks.
+- `20-runner-flow.cmgscript`: Demonstrates the structured runner DSL, `step`, and `gif` blocks.
 - `21-websocket-routing.cmgscript`: Demonstrates page-side WebSocket routing, waits, and match modes.
 - `22-browser-environment.cmgscript`: Demonstrates page-side browser environment controls.
 - `23-record-video-alias.cmgscript`: Demonstrates `recordVideo` as a CMG GIF recording alias.

@@ -102,14 +102,14 @@ On failure, CMG still writes a partial GIF when at least one frame was captured,
 
 ## Timing
 
-V1 uses balanced default timing:
+CMG uses balanced default timing:
 
 - about 10 frames per second
 - smooth pointer movement between targets
 - short holds after actions
 - a visible click pulse for click and drag/drop actions
 
-Timing is not configurable in v1.
+Timing is intentionally automatic for now.
 
 ## Notes
 

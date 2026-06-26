@@ -8,7 +8,7 @@ cmg run <path> [options]
 
 `<path>` can be one `.cmgscript` file or a directory. Directories are searched recursively for `.cmgscript` files.
 
-`cmg run` accepts only the new CMG DSL. V1 flat scripts are intentionally unsupported and fail with a migration error. Wrap actions in `test`/`it`/`specify` or `suite`/`describe`/`context` blocks and follow `docs/scripting/migration.md` when migrating old scripts.
+`cmg run` executes structured `.cmgscript` tests. Top-level browser actions must be wrapped in `test`/`it`/`specify` or `suite`/`describe`/`context` blocks. Direct browser-control scripts run with [`browser control script`](browser/control/script.md). See the [migration guide](../scripting/migration.md) when updating old top-level action scripts.
 
 The runner supports line-level `import "path"` statements. Relative imports resolve from the importing file's directory before parsing. Top-level macros from the file or imported files are registered before each test, and suite-level macros are registered before tests in that suite.
 
@@ -64,13 +64,9 @@ GIF recording is optional.
 - If `--max-failures` stops the run, GIFs and reports include only tests that actually ran before the stop.
 - With `--repeat-each`, each repeat is a separate scheduled test with a distinct name such as `checkout [repeat 2/3]`, so per-test GIFs, traces, reports, retries, and sharding remain deterministic.
 
-All recorded actions use CMG's virtual pointer, pointer/mouse event dispatch, captions, and drag ghost behavior.
+All recorded actions use CMG's virtual pointer, pointer/mouse event dispatch, captions, and drag ghost behavior. Selector actions accept CMG rich locators and provider-style aliases. Every non-CSS locator resolves to the same temporary element marker used by the GIF recorder, so virtual pointer movement, pointer events, drag ghosts, and captions remain aligned with the chosen element.
 
-Selector actions accept CMG rich locators and provider-style aliases such as `getByText=Save`, `getByRole=button|Save`, `getByLabel=Email`, `getByTestId=save`, `getByPlaceholder=Search`, `getByAltText=Logo`, and `getByTitle=Close`. They can be positional arguments or option-style tokens. Every non-CSS locator resolves to the same temporary element marker used by the GIF recorder, so virtual pointer movement, pointer events, drag ghosts, and captions remain aligned with the chosen element.
-
-Shared pointer, keyboard, assertion, and non-visual actions such as `goto`, `visit`, `viewport`, `setViewportSize`, `tap`, `touchTap`, `keyboardShortcut`, `shortcut`, `hotkey`, `keyDown`, `keyUp`, `insertText`, `pressSequentially`, `contains`, `containsText`, `toContainText`, `waitForText`, `toHaveText`, `notContains`, `expectNoText`, `expectNotText`, `notContainsText`, `toNotContainText`, `toHaveNoText`, `expectEval`, `assertEval`, `expectExpression`, `assertExpression`, `fail`, `waitForVisible`, `waitForHidden`, `toBeVisible`, `toBeHidden`, `toBeEnabled`, `toBeDisabled`, `toBeAttached`, `toBeDetached`, `toBeEditable`, `toBeEmpty`, `toBeFocused`, `toBeInViewport`, `toHaveValue`, `toHaveValues`, `toHaveAttribute`, `toHaveClass`, `toHaveId`, `toHaveCSS`, `toHaveJSProperty`, `toHaveAccessibleName`, `toHaveRole`, `toBeChecked`, `toHaveCount`, `setClipboard`, `writeClipboard`, `readClipboard`, `clearClipboard`, `mouseMove`, `mouseDown`, `mouseUp`, `scrollTo`, `scrollBy`, `wheel`, `waitForSelector`, `waitForFunction`, `waitForTimeout`, `waitForEvent`, `reload`, `goBack`, `goForward`, `waitForUrl`, `waitForTitle`, `toHaveURL`, `toHaveTitle`, `waitForLoadState`, `waitForNetworkIdle`, `waitForNavigation`, `url`, `title`, `content`, `setContent`, `textContent`, `innerText`, `inputValue`, `getAttribute`, `count`, `locatorCount`, `boundingBox`, `allTextContents`, `allInnerTexts`, `evaluateOnSelector`, `evalOnSelector`, `evaluateAll`, `evalAll`, `apiRequest`, `waitForRequest`, `waitForRequestFinished`, `waitForRequestFailed`, `routeWebSocket`, `waitForWebSocket`, `waitForWebSocketMessage`, `captureConsole`, `waitForConsole`, `expectNoConsole`, `toHaveNoConsole`, `captureDialogs`, `setDialogBehavior`, `onDialog`, `handleDialog`, `dialogBehavior`, `waitForDialog`, `localStorage`, `sessionStorage`, `cookie`, `newContext`, `useContext`, `closeContext`, `listWorkers`, `workerEvaluate`, `workerIntercept`, `addInitScript`, `evaluateOnNewDocument`, `exposeFunction`, `exposeBinding`, `startCoverage`, `stopCoverage`, `startTracing`, `stopTracing`, `capturePageErrors`, `waitForPageError`, `expectNoPageError`, `toHaveNoPageError`, `emulate`, `emulateMedia`, `setGeolocation`, `grantPermissions`, `clearPermissions`, `setJavaScriptEnabled`, `bypassCSP`, `serviceWorkers`, `setExtraHTTPHeaders`, `clearExtraHTTPHeaders`, `setHttpCredentials`, `clearHttpCredentials`, `setProxy`, `clearProxy`, `setOffline`, `readFile`, `fixture`, `writeFile`, `appendFile`, `expectFile`, `expectVisible`, `expectHidden`, `expectEnabled`, `expectDisabled`, `expectAttached`, `expectDetached`, `expectEditable`, `expectEmpty`, `expectFocused`, `expectInViewport`, `expectValues`, `expectClass`, `expectId`, `expectCSS`, `expectProperty`, `expectAccessibleName`, `expectRole`, `uploadFiles`, `setInputFiles`, `selectFile`, `expectScreenshot`, `toHaveScreenshot`, `dragTo`, and `printPdf` are also available in `cmg run`. Non-visual actions do not move the virtual pointer, but their output and failure reasons are included in stdout, reports, and traces.
-
-Control-flow and reuse actions `within`, `frame`, `frameLocator`, `if`, `elseif`, `else`, `switch`, `case`, `default`, `for`, `repeat`, `while`, `until`, `doWhile`, `doUntil`, `retry`, `toPass`, `foreach`, `foreachSelector`, `break`, `continue`, `try`, `catch`, `finally`, `macro`, `call`, and `return` are available inside tests, hooks, steps, and GIF blocks. They can be nested, and pointer-aware actions inside them use the same virtual pointer behavior as top-level actions.
+Actions, locators, control flow, loops, macros, scoped variables, and `gif` blocks are shared with direct browser-control scripts unless a reference page says otherwise. Start with the [action index](../scripting/action-index.md), then use the [detailed action reference](../scripting/actions.md) for options and examples.
 
 `contains "text"` and `notContains "text"` check the page body. `contains "<selector>" "text"`, `containsText`, `waitForText`, `notContainsText`, and the negative text aliases check a selector or rich locator and accept `timeout=<milliseconds>`, `match=contains|exact|regex`, and `ignoreCase=true`. Successful text checks emit the normal test/step pass output; failed checks include the expected and actual text in the step failure reason.
 
@@ -83,7 +79,7 @@ Control-flow and reuse actions `within`, `frame`, `frameLocator`, `if`, `elseif`
 
 ```powershell
 cmg browser launch
-cmg run demo-scripts
+cmg run demo-scripts\20-runner-flow.cmgscript
 cmg run tests\flows --gif artifacts\gifs
 cmg run checkout.cmgscript --report-json artifacts\checkout.json --report-html artifacts\checkout.html
 cmg run checkout.cmgscript --trace artifacts\traces
@@ -118,4 +114,4 @@ describe.skip "legacy area" {
 }
 ```
 
-When any selected test has `only=true` or a `.only` declaration, `cmg run` runs only focused tests. `skip=true`, `.skip`, `.fixme`, and `.todo` record `TEST SKIP <name>` and a skipped report entry without running actions. Suite-level focus and skip declarations cascade to child tests.
+When any selected test has `only=true` or a `.only` declaration, `cmg run` runs only focused tests. `skip=true`, `.skip`, `.fixme`, and `.todo` record `TEST SKIP <name>` and a skipped report entry without running actions. Suite-level focus and skip declarations cascade to child tests. For script structure and style guidance, see [syntax](../scripting/syntax.md) and the [style guide](../scripting/style-guide.md).

@@ -1,6 +1,15 @@
-# `.cmgscript` Examples
+# `.cmgscript` Cookbook
 
 Runnable demo scripts live in [`../../demo-scripts/`](../../demo-scripts/).
+
+This page is a cookbook reference. If you are learning CMG for the first time, start with the [top-level README](../../README.md), [scripting guide](index.md), and [style guide](style-guide.md), then come back here for specific patterns.
+
+## Learning Path
+
+1. Make a first GIF with the walkthrough in the [README](../../README.md).
+2. Write a first structured test with `cmg run`.
+3. Use the [action index](action-index.md) to find a capability area.
+4. Use this cookbook when you want a ready pattern to adapt.
 
 Record a demo as a GIF:
 
@@ -421,13 +430,13 @@ Run structured tests with:
 
 ```powershell
 dotnet run -- browser launch
-dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript --report-json demo-output\runner.json
+dotnet run -- run demo-scripts\20-runner-flow.cmgscript --report-json demo-output\runner.json
 ```
 
 Record every test as a GIF:
 
 ```powershell
-dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript --gif demo-output\runner-gifs
+dotnet run -- run demo-scripts\20-runner-flow.cmgscript --gif demo-output\runner-gifs
 ```
 
 Use once-per-scope hooks for page setup and teardown:
@@ -562,7 +571,7 @@ When command-level `--gif` is used, the whole script or test is recorded and `gi
 ## Runner Reports
 
 ```powershell
-dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript `
+dotnet run -- run demo-scripts\20-runner-flow.cmgscript `
   --report-json demo-output\runner.json `
   --report-html demo-output\runner.html `
   --report-junit demo-output\runner.xml
@@ -573,7 +582,7 @@ Reports include per-test status, output, GIF paths, and step-level failure reaso
 Write trace files for deeper debugging:
 
 ```powershell
-dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript --trace demo-output\traces
+dotnet run -- run demo-scripts\20-runner-flow.cmgscript --trace demo-output\traces
 dotnet run -- browser control script --file demo-scripts\72-script-tracing.cmgscript --trace demo-output\script.trace.json
 ```
 

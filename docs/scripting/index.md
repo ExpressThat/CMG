@@ -9,9 +9,9 @@ cmg --firefox browser control script --file flow.cmgscript
 cmg browser control validateScript --file flow.cmgscript
 ```
 
-Use browser-control scripts when a single selector command is not enough and an agent needs to describe a repeatable browser flow. This is separate from `cmg run`, which executes the new test DSL and intentionally rejects V1 flat scripts.
+Use browser-control scripts when a single selector command is not enough and an agent needs to describe a repeatable browser flow. Use `cmg run` when the same actions should be planned and reported as tests.
 
-Feature parity actions are available in both script types unless a command page says otherwise:
+The same action surface is available in both script types unless a command page says otherwise:
 
 - `browser control script` is the direct browser-control surface for agents.
 - `cmg run` is the structured test DSL with suites, hooks, reports, retries, sharding, traces, and optional per-test GIFs.
@@ -21,11 +21,13 @@ Feature parity actions are available in both script types unless a command page 
 ## Guides
 
 - [Syntax](syntax.md)
-- [Actions](actions.md)
+- [Action Index](action-index.md)
+- [Detailed Action Reference](actions.md)
+- [GIF Recording](gif-recording.md)
+- [Style Guide](style-guide.md)
 - [Examples](examples.md)
 - [Errors](errors.md)
-- [GIF Recording](gif-recording.md)
-- [Migration To The New DSL](migration.md)
+- [Migration Guide](migration.md)
 
 Runnable examples live in [`../../demo-scripts/`](../../demo-scripts/).
 
@@ -34,7 +36,31 @@ Runnable examples live in [`../../demo-scripts/`](../../demo-scripts/).
 ```text
 navigate "C:\Projects\CMG\index.html"
 waitForElement "#openProfileDialog" timeout=5000
-click "#openProfileDialog"
+step "Open dialog" {
+  click "#openProfileDialog"
+}
+```
+
+Record it:
+
+```powershell
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
+```
+
+## Minimal Test
+
+```text
+test "opens profile dialog" {
+  navigate "C:\Projects\CMG\index.html"
+  click "#openProfileDialog"
+  expectVisible "#profileDialog"
+}
+```
+
+Run it:
+
+```powershell
+cmg run profile-dialog.cmgscript --gif demo-output\gifs
 ```
 
 ## Execution Model

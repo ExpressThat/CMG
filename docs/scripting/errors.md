@@ -125,13 +125,13 @@ Line 2: within failed. Expected 1 positional argument(s), got 0.
 Line 2: within failed. No element matched locator text=Dialog
 ```
 
-## V1 Script Passed To `cmg run`
+## Top-Level Action Script Passed To `cmg run`
 
 ```text
-Line 1: cmg run requires the new DSL with test/it/specify or suite/describe/context blocks. V1 flat scripts are not supported; see docs/scripting/migration.md.
+Line 1: cmg run requires test/it/specify or suite/describe/context blocks. Top-level action scripts are not supported; see docs/scripting/migration.md.
 ```
 
-Use `browser control script --file <path>` for direct browser-control scripts, or migrate the file to the new test DSL for `cmg run`.
+Use `browser control script --file <path>` for direct browser-control scripts, or migrate the file to the structured test format for `cmg run`.
 
 Use `cmg run <path> --list` to validate structured script syntax and inspect selected tests without connecting to a browser or running actions. Parse/import errors still fail the command.
 
