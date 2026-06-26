@@ -78,10 +78,13 @@ public sealed partial class CmgActionLowerer
             "setextrahttpheaders" or "setheaders" or "clearextrahttpheaders" or "clearheaders" or
             "sethttpcredentials" or "httpcredentials" or "authenticate" or "clearhttpcredentials" or
             "setproxy" or "proxy" or "clearproxy" or "setoffline" or
-            "frameclick" or "frametype" or "framefill" or "framehover" or "framewaitforelement" or "frameasserttext" or "frameevaluate" or
+            "frameclick" or "frametype" or "framefill" or "framehover" or "framewaitforelement" or "framewaitforselector" or
+            "frameasserttext" or "frameexpecttext" or "frametohavetext" or "frametocontaintext" or "framecontains" or
             "frametextcontent" or "frameinnertext" or "frameinputvalue" or "framegetattribute" or
             "framecomputedstyle" or "frameproperty" or "framecount" or "framelocatorcount" or
-            "frameboundingbox" or "framealltextcontents" or "frameallinnertexts" or
+            "frameboundingbox" or "framealltextcontents" or "frameallinnertexts" =>
+                [LowerFrameAction(action)],
+            "frameevaluate" or
             "clock" or "tick" or "restoreclock" or
             "clearcontext" or "resetcontext" or
             "newcontext" or "usecontext" or "listcontexts" or "closecontext" or
@@ -153,28 +156,6 @@ public sealed partial class CmgActionLowerer
         }
 
         return action.Arguments.Count > 0 ? [ToLine("waitForElement", action.Arguments, action.Options)] : [];
-    }
-
-    private static string LowerViewportAlias(CmgNode action)
-    {
-        if (action.Arguments.Count is 0)
-        {
-            return ToLine("setViewport", [], action.Options);
-        }
-
-        if (action.Arguments.Count is 2 &&
-            !action.Options.ContainsKey("width") &&
-            !action.Options.ContainsKey("height"))
-        {
-            var options = new Dictionary<string, string>(action.Options)
-            {
-                ["width"] = action.Arguments[0],
-                ["height"] = action.Arguments[1]
-            };
-            return ToLine("setViewport", [], options);
-        }
-
-        return ToLine("setViewport", action.Arguments, action.Options);
     }
 
     private static IReadOnlyList<string> LowerSelectorCommand(string command, CmgNode action)

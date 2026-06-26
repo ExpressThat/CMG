@@ -131,6 +131,39 @@ public sealed class CmgActionLowererSharedActionTests
         Assert.Contains("message=\"Save\"", lines.Last(), StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("frameClick", "frameClick \"#frame\" \"role=button|Save\"")]
+    [InlineData("frameComputedStyle", "frameComputedStyle \"#frame\" \"role=button|Save\" \"display\"")]
+    [InlineData("frameProperty", "frameProperty \"#frame\" \"role=button|Save\" \"dataset.state\"")]
+    [InlineData("frameToContainText", "frameToContainText \"#frame\" \"role=button|Save\" \"Saved\"")]
+    public void Lower_FrameActionsNormalizeLocatorOptions(string kind, string expected)
+    {
+        string[] args = kind.Equals("frameClick", StringComparison.OrdinalIgnoreCase)
+            ? ["#frame"]
+            : kind.Equals("frameComputedStyle", StringComparison.OrdinalIgnoreCase)
+                ? ["#frame", "display"]
+                : kind.Equals("frameProperty", StringComparison.OrdinalIgnoreCase)
+                    ? ["#frame", "dataset.state"]
+                    : ["#frame", "Saved"];
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node(
+            kind,
+            args,
+            new Dictionary<string, string> { ["getByRole"] = "button|Save" })));
+
+        Assert.Equal(expected, line);
+    }
+
+    [Fact]
+    public void Lower_FrameEvaluateDoesNotNormalizeLocatorOptions()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node(
+            "frameEvaluate",
+            ["#frame", "document.querySelector('[name=email]').value"],
+            new Dictionary<string, string> { ["text"] = "Save" })));
+
+        Assert.Equal("frameEvaluate \"#frame\" \"document.querySelector('[name=email]').value\" text=\"Save\"", line);
+    }
+
     [Fact]
     public void Lower_ElementExpectationEscapesGeneratedNewlines()
     {

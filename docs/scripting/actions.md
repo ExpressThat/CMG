@@ -1186,6 +1186,8 @@ Runs actions against a same-origin iframe selected from the top page. The first 
 
 The iframe selector itself is a top-page CSS selector. Element targets inside the frame accept CSS and CMG rich/provider locators such as `getByRole=button|Save`, `text=Saved`, `getByTestId=status`, `xpath=//button`, and `hasText=.row|Ready`.
 
+Explicit frame actions also accept locator option form when the parser would otherwise treat a rich locator as an option, for example `frameClick "#checkoutFrame" getByRole=button|Save`.
+
 `frame "<iframe>" { ... }` and `frameLocator "<iframe>" { ... }` are script-only structural blocks that scope supported child actions to the iframe. Supported child actions include `click`, `hover`, `type`, `pressSequentially`, `fill`, `waitForElement`, `waitForSelector`, `assertVisible`, text assertions, `evaluate`, and element getters such as `textContent`, `computedStyle`, and `property`. Child actions are rewritten before GIF recording, so pointer-aware frame actions still move the virtual pointer to the element's top-page coordinate inside the iframe.
 
 `within` can be nested inside a frame block. In that case, child selectors are first composed under the `within` container, then rewritten to frame actions.
