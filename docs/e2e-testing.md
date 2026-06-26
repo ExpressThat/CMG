@@ -48,6 +48,8 @@ The first E2E slice covers:
 - App attach validation failure.
 - All documented leaf commands expose working `--help` output.
 - A broad browser action-surface script covering navigation, input, assertions, dialogs, frames, storage, emulation, clocks, looping, branching, try/catch, and trace output.
+- Artifact and state actions for visual assertions, screenshots, PDFs, coverage, storage state, local file actions, and tab control.
+- Local `files` command success and failure behavior.
 - Navigation, runtime text reads, input, assertions, screenshots, element HTML, and failure reasons.
 - Direct script execution with GIF and trace output.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.

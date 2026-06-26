@@ -13,6 +13,7 @@ public sealed class BrowserScriptRunnerTabTests
 
         Assert.True(result.Success);
         Assert.Contains("window.open", client.LastExpression);
+        Assert.Contains("; true", client.LastExpression);
         Assert.Contains(result.StdoutLines, line => line.Contains("TAB_OPENED", StringComparison.Ordinal));
     }
 

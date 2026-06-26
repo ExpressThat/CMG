@@ -21,7 +21,7 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 1, 1);
         var target = NormalizeNavigationTarget(action.Arguments[0], context.BaseUrl);
-        automationClient.Evaluate(remoteDebuggingUrl, $"window.open({QuoteJs(target)}, '_blank')");
+        automationClient.Evaluate(remoteDebuggingUrl, $"window.open({QuoteJs(target)}, '_blank'); true");
         return [$"TAB_OPENED {action.LineNumber:000} {target}"];
     }
 
