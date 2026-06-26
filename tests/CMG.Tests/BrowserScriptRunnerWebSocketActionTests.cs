@@ -17,6 +17,18 @@ public sealed class BrowserScriptRunnerWebSocketActionTests
     }
 
     [Fact]
+    public void RunText_RouteWebSocketSupportsRegexAndIgnoreCase()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("routeWebSocket \"/socket/\\\\d+\" match=regex ignoreCase=true", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("match: \"regex\"", client.LastExpression);
+        Assert.Contains("ignoreCase: true", client.LastExpression);
+        Assert.Contains("__cmgWebSocketMatches", client.LastExpression);
+    }
+
+    [Fact]
     public void RunText_RouteWebSocketValidatesCloseOption()
     {
         var result = Runner().RunText("routeWebSocket \"/socket\" close=maybe", "debug", new FakeAutomationClient());
@@ -36,6 +48,27 @@ public sealed class BrowserScriptRunnerWebSocketActionTests
         Assert.True(result.Success);
         Assert.Contains("__cmgWebSockets", client.LastExpression);
         Assert.Contains(result.StdoutLines, line => line.Contains("WEBSOCKET 001", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_WaitForWebSocketSupportsExactMatch()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"success":true,"value":{"url":"/socket","routed":true}}""");
+
+        var result = Runner().RunText("waitForWebSocket \"/socket\" match=exact", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("const match = \"exact\"", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_WaitForWebSocketRejectsInvalidRegex()
+    {
+        var result = Runner().RunText("waitForWebSocket \"[\" match=regex", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("Invalid network regex '['", result.Error);
     }
 
     [Fact]

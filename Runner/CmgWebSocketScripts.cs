@@ -5,6 +5,8 @@ public static class CmgWebSocketScripts
     public static string Route(CmgNode action) => Prelude() + $$"""
       window.__cmgWebSocketRoutes.push({
         pattern: {{Quote(action.Arguments[0])}},
+        match: {{Quote(MatchMode(action))}},
+        ignoreCase: {{BoolOption(action, "ignoreCase")}},
         message: {{Quote(Option(action, "message"))}},
         close: {{BoolOption(action, "close")}},
         code: {{IntOption(action, "code", 1000)}},
@@ -29,10 +31,18 @@ public static class CmgWebSocketScripts
           window.__cmgWebSocketRoutes ??= [];
           window.__cmgWebSockets ??= [];
           window.__cmgWebSocketMessages ??= [];
+          window.__cmgWebSocketMatches = (value, pattern, mode, ignoreCase) => {
+            const actual = ignoreCase ? String(value || '').toLowerCase() : String(value || '');
+            const expected = ignoreCase ? String(pattern || '').toLowerCase() : String(pattern || '');
+            if (mode === 'exact') return actual === expected;
+            if (mode === 'regex') return new RegExp(String(pattern || ''), ignoreCase ? 'i' : '').test(String(value || ''));
+            return actual.includes(expected);
+          };
           if (!window.__cmgOriginalWebSocket) {
             window.__cmgOriginalWebSocket = window.WebSocket;
             window.WebSocket = function(url, protocols) {
-              const route = window.__cmgWebSocketRoutes.find(r => String(url).includes(r.pattern));
+              const route = window.__cmgWebSocketRoutes.find(r =>
+                window.__cmgWebSocketMatches(String(url), r.pattern, r.match, r.ignoreCase));
               const socket = protocols === undefined
                 ? new window.__cmgOriginalWebSocket(url)
                 : new window.__cmgOriginalWebSocket(url, protocols);
@@ -65,12 +75,18 @@ public static class CmgWebSocketScripts
     {
         var timeout = IntOption(action, "timeout", 5_000);
         var pattern = action.Arguments[0];
+        var match = MatchMode(action);
+        var ignoreCase = BoolOption(action, "ignoreCase");
         return Prelude() + $$"""
           const deadline = Date.now() + {{timeout}};
           const pattern = {{Quote(pattern)}};
+          const match = {{Quote(match)}};
+          const ignoreCase = {{ignoreCase}};
           return new Promise(resolve => {
             const poll = () => {
-              const hit = {{collection}}.find(item => item.url.includes(pattern) || (item.data || '').includes(pattern));
+              const hit = {{collection}}.find(item =>
+                window.__cmgWebSocketMatches(item.url, pattern, match, ignoreCase) ||
+                window.__cmgWebSocketMatches(item.data || '', pattern, match, ignoreCase));
               if (hit) { resolve(JSON.stringify({ success: true, value: hit })); return; }
               if (Date.now() > deadline) {
                 resolve(JSON.stringify({ success: false, error: 'Timed out waiting for {{label}} {{Escape(pattern)}}' }));
@@ -96,6 +112,12 @@ public static class CmgWebSocketScripts
         action.Options.TryGetValue(name, out var value) && bool.TryParse(value, out var parsed)
             ? parsed.ToString().ToLowerInvariant()
             : "false";
+
+    private static string MatchMode(CmgNode action)
+    {
+        var mode = Option(action, "match").ToLowerInvariant();
+        return mode is "exact" or "regex" ? mode : "contains";
+    }
 
     private static string Quote(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";

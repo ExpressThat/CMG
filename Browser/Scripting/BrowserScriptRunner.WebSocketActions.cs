@@ -37,6 +37,7 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> WaitForWebSocket(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
+        ValidateNetworkUrlMatchOptions(action);
         var result = automationClient.Evaluate(remoteDebuggingUrl, CmgWebSocketScripts.WaitForSocket(ToNode(action)));
         return [$"WEBSOCKET {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
     }
@@ -44,6 +45,7 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> WaitForWebSocketMessage(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
+        ValidateNetworkUrlMatchOptions(action);
         var result = automationClient.Evaluate(remoteDebuggingUrl, CmgWebSocketScripts.WaitForMessage(ToNode(action)));
         return [$"WEBSOCKET_MESSAGE {action.LineNumber:000} {ParseNetworkWaitResult(result)}"];
     }
@@ -59,5 +61,7 @@ public sealed partial class BrowserScriptRunner
         {
             throw new ScriptExecutionException("routeWebSocket option code= must be a WebSocket close code.");
         }
+
+        ValidateNetworkUrlMatchOptions(action);
     }
 }

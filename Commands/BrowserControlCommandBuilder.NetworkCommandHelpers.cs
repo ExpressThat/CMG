@@ -85,31 +85,41 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildWebSocketRouteCommand(BrowserSelectionOptions browserOptions)
     {
-        var pattern = new Argument<string>("pattern") { Description = "URL substring to match." };
+        var pattern = new Argument<string>("pattern") { Description = "URL pattern to match." };
         var message = new Option<string?>("--message") { Description = "Message to send after open." };
         var close = new Option<bool?>("--close") { Description = "Whether to close the socket." };
         var code = new Option<int?>("--code") { Description = "WebSocket close code." };
         var reason = new Option<string?>("--reason") { Description = "WebSocket close reason." };
-        var command = new Command("route", "Install a WebSocket route.") { pattern, message, close, code, reason };
+        var match = NavigationMatchOption();
+        var ignoreCase = NavigationIgnoreCaseOption();
+        var command = new Command("route", "Install a WebSocket route.") { pattern, message, close, code, reason, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine("routeWebSocket", [parseResult.GetValue(pattern) ?? string.Empty], CompactOptions([
                 StringOption("message", parseResult.GetValue(message)),
                 BoolOption("close", parseResult.GetValue(close)),
                 IntOption("code", parseResult.GetValue(code)),
-                StringOption("reason", parseResult.GetValue(reason))
+                StringOption("reason", parseResult.GetValue(reason)),
+                StringOption("match", parseResult.GetValue(match)),
+                parseResult.GetValue(ignoreCase) ? ("ignoreCase", "true") : null
             ]))));
         return command;
     }
 
     private Command BuildWebSocketWaitCommand(BrowserSelectionOptions browserOptions, string name, string action, string description)
     {
-        var pattern = new Argument<string>("pattern") { Description = "URL or message substring to match." };
+        var pattern = new Argument<string>("pattern") { Description = "URL or message pattern to match." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
-        var command = new Command(name, description) { pattern, timeout };
+        var match = NavigationMatchOption();
+        var ignoreCase = NavigationIgnoreCaseOption();
+        var command = new Command(name, description) { pattern, timeout, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine(action, [parseResult.GetValue(pattern) ?? string.Empty], CompactOptions([IntOption("timeout", parseResult.GetValue(timeout))]))));
+            ToScriptLine(action, [parseResult.GetValue(pattern) ?? string.Empty], CompactOptions([
+                IntOption("timeout", parseResult.GetValue(timeout)),
+                StringOption("match", parseResult.GetValue(match)),
+                parseResult.GetValue(ignoreCase) ? ("ignoreCase", "true") : null
+            ]))));
         return command;
     }
 

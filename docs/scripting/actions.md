@@ -1636,8 +1636,9 @@ Output:
 ```text
 routeWebSocket "/socket" message="ready"
 routeWebSocket "/socket" close=true code=1000 reason="done"
+routeWebSocket "/socket/\\d+" match=regex ignoreCase=true message="ready"
 waitForWebSocket "/socket" timeout=5000
-waitForWebSocketMessage "ready" timeout=5000
+waitForWebSocketMessage "^ready:" match=regex ignoreCase=true timeout=5000
 clearWebSocketRoutes
 ```
 
@@ -1645,7 +1646,7 @@ Wraps the page `WebSocket` constructor in the current page and future navigation
 
 Arguments:
 
-- `pattern`: Required substring matched against the WebSocket URL.
+- `pattern`: Required matcher. Routes and socket waits match the WebSocket URL. Message waits match message data or the WebSocket URL.
 
 Options:
 
@@ -1654,6 +1655,8 @@ Options:
 - `code`: Optional close code. Default is `1000`.
 - `reason`: Optional close reason. Default is `Closed by CMG routeWebSocket`.
 - `timeout`: Optional for waits. Default is `5000`.
+- `match`: Optional match mode: `contains`, `exact`, or `regex`. Default is `contains`.
+- `ignoreCase`: Optional boolean for URL and message matching. Default is `false`.
 
 Output:
 

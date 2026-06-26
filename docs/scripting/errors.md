@@ -504,9 +504,10 @@ Routes and network waits match page `fetch()` and `XMLHttpRequest` URLs recorded
 ```text
 Line 4: routeWebSocket failed. routeWebSocket option close= must be true or false.
 Line 5: waitForWebSocketMessage failed. Timed out waiting for websocket message ready
+Line 6: waitForWebSocket failed. Invalid network regex '[': ...
 ```
 
-WebSocket waits use substring matching against recorded socket URLs and message data. Install `routeWebSocket` before creating sockets that should receive synthetic route behavior.
+WebSocket waits use `match=contains|exact|regex` against recorded socket URLs and message data. Install `routeWebSocket` before creating sockets that should receive synthetic route behavior.
 
 ## Network Environment Failure
 

@@ -19,6 +19,20 @@ public sealed class BrowserControlCommandBuilderNetworkTests
         Assert.Equal(expectedScript, handler.ScriptLine);
     }
 
+    [Theory]
+    [InlineData("route /socket/.+ --match regex --ignore-case", "routeWebSocket \"/socket/.+\" match=\"regex\" ignoreCase=\"true\"")]
+    [InlineData("wait /socket --match exact", "waitForWebSocket \"/socket\" match=\"exact\"")]
+    [InlineData("waitMessage ready --match regex --ignore-case", "waitForWebSocketMessage \"ready\" match=\"regex\" ignoreCase=\"true\"")]
+    public void WebSocketCommands_MapMatchOptions(string commandTail, string expectedScript)
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse($"control network webSocket {commandTail}").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(BrowserKind.Chrome, handler.BrowserKind);
+        Assert.Equal(expectedScript, handler.ScriptLine);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");

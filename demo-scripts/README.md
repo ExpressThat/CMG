@@ -107,7 +107,7 @@ dotnet run -- --firefox browser close
 - `18-expose-function.cmgscript`: Demonstrates page-side exposed functions.
 - `19-direct-gif-block.cmgscript`: Demonstrates direct browser-control `gif` blocks.
 - `20-v2-runner-flow.cmgscript`: Demonstrates the structured runner DSL, `step`, and `gif` blocks.
-- `21-websocket-routing.cmgscript`: Demonstrates page-side WebSocket routing and waits.
+- `21-websocket-routing.cmgscript`: Demonstrates page-side WebSocket routing, waits, and match modes.
 - `22-browser-environment.cmgscript`: Demonstrates page-side browser environment controls.
 - `23-record-video-alias.cmgscript`: Demonstrates `recordVideo` as a CMG GIF recording alias.
 - `24-touch-clipboard.cmgscript`: Demonstrates touch-style `tap` and deterministic page-side clipboard actions.

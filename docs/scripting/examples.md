@@ -1186,15 +1186,15 @@ test "uses one-shot post intercept" {
 
 ```text
 test "captures socket traffic" {
-  routeWebSocket "/socket" message="ready"
+  routeWebSocket "/SOCKET" match=regex ignoreCase=true message="ready"
   evaluate "window.__socket = new WebSocket('wss://example.com/socket')"
-  waitForWebSocket "/socket"
-  waitForWebSocketMessage "ready"
+  waitForWebSocket "wss://example.com/socket" match=exact
+  waitForWebSocketMessage "^ready$" match=regex
   clearWebSocketRoutes
 }
 ```
 
-WebSocket routing is page-side and works in direct browser-control scripts and `cmg run`. It does not move the virtual pointer, but reports and traces include `WEBSOCKET_ROUTE`, `WEBSOCKET`, and `WEBSOCKET_MESSAGE` lines.
+WebSocket routing is page-side and works in direct browser-control scripts and `cmg run`. Routes and waits support `match=contains|exact|regex` plus `ignoreCase=true`. It does not move the virtual pointer, but reports and traces include `WEBSOCKET_ROUTE`, `WEBSOCKET`, and `WEBSOCKET_MESSAGE` lines.
 
 ## API Request
 
