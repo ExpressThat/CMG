@@ -25,7 +25,7 @@ cmg browser control input [command] [options]
 - [`focus`](focus.md): Focus an element.
 - [`blur`](blur.md): Blur an element.
 - [`selectText`](selectText.md): Select text inside an element.
-- [`press`](press.md): Press a keyboard key or shortcut chord.
+- [`press`](press.md): Press a keyboard key or shortcut chord, optionally with key hold delay.
 - [`shortcut`](shortcut.md): Press a keyboard shortcut chord.
 - [`hotkey`](hotkey.md): Press a keyboard shortcut chord.
 - [`keyboardShortcut`](keyboardShortcut.md): Press a keyboard shortcut chord.

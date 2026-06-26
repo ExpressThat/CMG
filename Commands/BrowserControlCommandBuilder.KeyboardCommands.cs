@@ -11,16 +11,21 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Key name or chord to press, such as Enter or Control+A."
         };
+        var delay = CliIntOption("--delay", "Delay in milliseconds between keydown and keyup.");
 
         var command = new Command("press", "Press a keyboard key or shortcut chord.")
         {
-            keyArgument
+            keyArgument,
+            delay
         };
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(
                 CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-                ToScriptLine("press", parseResult.GetValue(keyArgument) ?? string.Empty)));
+                ToScriptLine(
+                    "press",
+                    [parseResult.GetValue(keyArgument) ?? string.Empty],
+                    CompactOptions([IntOption("delay", parseResult.GetValue(delay))]))));
 
         return command;
     }

@@ -962,6 +962,19 @@ assertText "#result" "true:true"
 
 This direct-script example is available as `demo-scripts/106-hover-options.cmgscript`. The structured `cmg run` form is available as `demo-scripts/107-hover-options-runner.cmgscript`.
 
+## Press Delay
+
+```text
+setContent "<main><input id='name' value='CMG'><p id='status'>Ready</p></main>"
+focus "#name"
+caption "Hold Control+A"
+press "Control+A" delay=25
+```
+
+`press` accepts `delay=` to hold the final key between keydown and keyup. Keyboard actions do not move the GIF virtual pointer; use `caption` or `step` when the recording should narrate the keyboard state.
+
+This direct-script example is available as `demo-scripts/108-press-delay.cmgscript`. The structured `cmg run` form is available as `demo-scripts/109-press-delay-runner.cmgscript`.
+
 ## Pointer Click Variants
 
 ```text

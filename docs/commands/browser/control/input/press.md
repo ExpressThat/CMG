@@ -3,12 +3,16 @@
 Runs the scripting `press` action once from the command line.
 
 ```powershell
-cmg browser control input press "<key-or-chord>"
+cmg browser control input press "<key-or-chord>" [--delay <milliseconds>]
 ```
 
 ## Arguments
 
 - `<key-or-chord>`: Key name such as `Enter`, or a chord such as `Control+A`.
+
+## Options
+
+- `--delay <milliseconds>`: Optional hold duration between keydown and keyup. Must be zero or greater. For chords, modifier keys are held while the final key uses this delay.
 
 ## Stdout
 
@@ -36,4 +40,5 @@ Writes browser or keyboard errors.
 ```powershell
 cmg browser control input press Enter
 cmg browser control input press Control+A
+cmg browser control input press Control+A --delay 25
 ```

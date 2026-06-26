@@ -7,8 +7,14 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 1, 1);
         if (IsKeyboardChord(action.Arguments[0]))
         {
-            PressShortcut(remoteDebuggingUrl, automationClient, ParseKeyboardChord(action, action.Arguments[0]));
+            PressShortcut(remoteDebuggingUrl, automationClient, ParseKeyboardChord(action, action.Arguments[0]), PressDelay(action));
             return [$"KEYBOARD_SHORTCUT {action.LineNumber:000} {action.Arguments[0]}"];
+        }
+
+        if (action.Options.ContainsKey("delay"))
+        {
+            PressWithDelay(remoteDebuggingUrl, automationClient, action.Arguments[0], PressDelay(action) ?? 0);
+            return [];
         }
 
         automationClient.Press(remoteDebuggingUrl, action.Arguments[0]);
@@ -40,11 +46,15 @@ public sealed partial class BrowserScriptRunner
         BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
-        PressShortcut(remoteDebuggingUrl, automationClient, ParseKeyboardChord(action, action.Arguments[0]));
+        PressShortcut(remoteDebuggingUrl, automationClient, ParseKeyboardChord(action, action.Arguments[0]), PressDelay(action));
         return [$"KEYBOARD_SHORTCUT {action.LineNumber:000} {action.Arguments[0]}"];
     }
 
-    private static void PressShortcut(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, IReadOnlyList<string> keys)
+    private static void PressShortcut(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        IReadOnlyList<string> keys,
+        int? delayMilliseconds)
     {
         var modifiers = keys.Take(keys.Count - 1).ToArray();
         foreach (var modifier in modifiers)
@@ -52,12 +62,46 @@ public sealed partial class BrowserScriptRunner
             automationClient.KeyDown(remoteDebuggingUrl, modifier);
         }
 
-        automationClient.Press(remoteDebuggingUrl, keys[^1]);
+        if (delayMilliseconds is null)
+        {
+            automationClient.Press(remoteDebuggingUrl, keys[^1]);
+        }
+        else
+        {
+            PressWithDelay(remoteDebuggingUrl, automationClient, keys[^1], delayMilliseconds.Value);
+        }
 
         foreach (var modifier in modifiers.Reverse())
         {
             automationClient.KeyUp(remoteDebuggingUrl, modifier);
         }
+    }
+
+    private static void PressWithDelay(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        string key,
+        int delayMilliseconds)
+    {
+        automationClient.KeyDown(remoteDebuggingUrl, key);
+        if (delayMilliseconds > 0)
+        {
+            Thread.Sleep(delayMilliseconds);
+        }
+        automationClient.KeyUp(remoteDebuggingUrl, key);
+    }
+
+    private static int? PressDelay(BrowserScriptAction action)
+    {
+        if (!action.Options.ContainsKey("delay"))
+        {
+            return null;
+        }
+
+        var delay = GetIntOption(action, "delay", required: true);
+        return delay >= 0
+            ? delay
+            : throw new ScriptExecutionException($"{action.Name} option delay= must be zero or greater.");
     }
 
     private static IReadOnlyList<string> ParseKeyboardChord(BrowserScriptAction action, string chord)

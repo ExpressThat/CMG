@@ -59,6 +59,36 @@ public sealed class BrowserScriptRunnerKeyboardActionTests
         Assert.Contains("KEYBOARD_SHORTCUT 001 Ctrl+A", result.StdoutLines);
     }
 
+    [Fact]
+    public void RunText_PressDelayHoldsSingleKey()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("press Enter delay=1", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(["down:Enter", "up:Enter"], client.KeyEvents);
+    }
+
+    [Fact]
+    public void RunText_PressDelayHoldsFinalChordKey()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("press \"Ctrl+A\" delay=1", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(["down:Control", "down:A", "up:A", "up:Control"], client.KeyEvents);
+        Assert.Contains("KEYBOARD_SHORTCUT 001 Ctrl+A", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_PressDelayValidatesInput()
+    {
+        var result = Runner().RunText("press Enter delay=-1", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("delay= must be zero or greater", result.Error);
+    }
+
     [Theory]
     [InlineData("shortcut")]
     [InlineData("hotkey")]

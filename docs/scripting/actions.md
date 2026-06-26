@@ -219,14 +219,20 @@ clear "#profileName"
 ```text
 press "Enter"
 press "Control+A"
+press "Control+A" delay=25
 ```
 
 Dispatches key down and key up behavior in the selected browser. When the key contains `+`, CMG treats it as a shortcut chord: modifier keys are pressed first, the final key is pressed, and modifiers are released in reverse order.
+
+Options:
+
+- `delay`: Optional hold duration in milliseconds between keydown and keyup. Must be zero or greater. For chords, modifier keys remain held while the final key uses this delay.
 
 Example:
 
 ```text
 press "Escape"
+press "Control+A" delay=25
 ```
 
 ## `keyboardShortcut`, `shortcut`, `hotkey`, `keyDown`, `keyUp`, And `insertText`

@@ -197,5 +197,7 @@ dotnet run -- --firefox browser close
 - `105-select-option-targets-runner.cmgscript`: Demonstrates provider-style select option targets in the structured runner DSL.
 - `106-hover-options.cmgscript`: Demonstrates optioned hover dispatch in a direct script.
 - `107-hover-options-runner.cmgscript`: Demonstrates optioned hover dispatch in the structured runner DSL.
+- `108-press-delay.cmgscript`: Demonstrates delayed keyboard press behavior in a direct script.
+- `109-press-delay-runner.cmgscript`: Demonstrates delayed keyboard press behavior in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.
