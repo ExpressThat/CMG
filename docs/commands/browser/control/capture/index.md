@@ -14,6 +14,7 @@ cmg browser control capture [command] [options]
 - [`screenshotPage`](screenshotPage.md): Capture a viewport or full-page screenshot.
 - [`printPdf`](printPdf.md): Print the current page to PDF.
 - [`expectScreenshot`](expectScreenshot.md): Compare an element or page screenshot to a baseline.
+- [`toHaveScreenshot`](toHaveScreenshot.md): Compare an element or page screenshot to a baseline.
 
 ## Behavior
 
@@ -33,4 +34,5 @@ cmg browser control capture screenshot "#profileDialog" --output profile-dialog.
 cmg browser control capture screenshotPage --full-page --output page.png
 cmg browser control capture printPdf --path page.pdf
 cmg browser control capture expectScreenshot "#profileDialog" --baseline baselines/profile-dialog.png --output actual.png
+cmg browser control capture toHaveScreenshot "#profileDialog" --baseline baselines/profile-dialog.png --output actual.png
 ```

@@ -31,6 +31,11 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildExpectScreenshotCommand(BrowserSelectionOptions browserOptions)
     {
+        return BuildExpectScreenshotCommand(browserOptions, "expectScreenshot");
+    }
+
+    private Command BuildExpectScreenshotCommand(BrowserSelectionOptions browserOptions, string name)
+    {
         var selector = OptionalTextArgument("selector", "Optional selector. Omit to compare the page viewport.");
         var baseline = new Option<FileInfo>("--baseline")
         {
@@ -39,11 +44,11 @@ public sealed partial class BrowserControlCommandBuilder
         };
         var output = new Option<FileInfo?>("--output") { Description = "Actual PNG output path. Default is actual.png." };
         var tolerance = new Option<double?>("--tolerance") { Description = "Allowed normalized diff. Default is 0." };
-        var command = new Command("expectScreenshot", "Compare an element or page screenshot to a baseline.") { selector, baseline, output, tolerance };
+        var command = new Command(name, "Compare an element or page screenshot to a baseline.") { selector, baseline, output, tolerance };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("expectScreenshot", OptionalArgument(parseResult, selector), CompactOptions([
+            ToScriptLine(name, OptionalArgument(parseResult, selector), CompactOptions([
                 StringOption("baseline", parseResult.GetValue(baseline)?.FullName),
                 StringOption("output", parseResult.GetValue(output)?.FullName),
                 StringOption("tolerance", parseResult.GetValue(tolerance)?.ToString())

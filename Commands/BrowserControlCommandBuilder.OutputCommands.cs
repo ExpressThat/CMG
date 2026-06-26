@@ -15,7 +15,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildScreenshotPageCommand(browserOptions));
         command.Subcommands.Add(BuildPrintPdfCommand(browserOptions));
         command.Subcommands.Add(BuildExpectScreenshotCommand(browserOptions));
-
+        command.Subcommands.Add(BuildExpectScreenshotCommand(browserOptions, "toHaveScreenshot"));
         return command;
     }
 
