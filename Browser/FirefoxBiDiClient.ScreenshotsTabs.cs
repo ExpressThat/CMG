@@ -219,20 +219,4 @@ public sealed partial class FirefoxBiDiClient
         return new BrowserWorkerInfo(id, type, type, origin ?? string.Empty);
     }
 
-    private static string BuildFirefoxWorkerInterceptScript(WorkerRouteOptions options) => $$"""
-    (() => {
-      const routes = globalThis.__cmgWorkerRoutes ||= [];
-      routes.push({ pattern: {{BrowserDomScripts.JsonString(options.Pattern)}}, status: {{options.Status}}, body: {{BrowserDomScripts.JsonString(options.Body)}}, contentType: {{BrowserDomScripts.JsonString(options.ContentType)}} });
-      if (!globalThis.__cmgOriginalFetch) {
-        globalThis.__cmgOriginalFetch = globalThis.fetch?.bind(globalThis);
-        globalThis.fetch = async (input, init) => {
-          const url = typeof input === 'string' ? input : input?.url ?? '';
-          const route = routes.find(item => url.includes(item.pattern));
-          return route ? new Response(route.body, { status: route.status, headers: { 'content-type': route.contentType } }) : globalThis.__cmgOriginalFetch(input, init);
-        };
-      }
-      return routes.length.toString();
-    })()
-    """;
-
 }

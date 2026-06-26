@@ -57,10 +57,57 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 1, 1);
         var status = GetIntOption(action, "status", 200);
-        var body = action.Options.GetValueOrDefault("body") ?? string.Empty;
+        ValidateWorkerInterceptOptions(action);
+        var body = WorkerRouteBody(action);
         var contentType = action.Options.GetValueOrDefault("contentType") ?? "text/plain";
         var target = action.Options.GetValueOrDefault("target");
-        var count = automationClient.InterceptWorkerRequests(remoteDebuggingUrl, target, new WorkerRouteOptions(action.Arguments[0], status, body, contentType));
+        var match = (action.Options.GetValueOrDefault("match") ?? "contains").ToLowerInvariant();
+        var ignoreCase = bool.TryParse(action.Options.GetValueOrDefault("ignoreCase"), out var parsedIgnoreCase) && parsedIgnoreCase;
+        var route = new WorkerRouteOptions(action.Arguments[0], status, body, contentType, match, ignoreCase, WorkerRouteHeaders(action));
+        var count = automationClient.InterceptWorkerRequests(remoteDebuggingUrl, target, route);
         return [$"WORKER_INTERCEPT {action.LineNumber:000} routes={count} {action.Arguments[0]}"];
+    }
+
+    private static void ValidateWorkerInterceptOptions(BrowserScriptAction action)
+    {
+        ValidateNetworkUrlMatchOptions(action);
+        ValidateRouteHeaderOptions(action);
+        ValidateRouteBodyFile(action);
+    }
+
+    private static string WorkerRouteBody(BrowserScriptAction action)
+    {
+        var bodyFile = action.Options.GetValueOrDefault("bodyFile") ?? action.Options.GetValueOrDefault("file");
+        if (!string.IsNullOrWhiteSpace(bodyFile))
+        {
+            return File.ReadAllText(Path.GetFullPath(bodyFile));
+        }
+
+        return action.Options.GetValueOrDefault("body") ?? string.Empty;
+    }
+
+    private static IReadOnlyDictionary<string, string>? WorkerRouteHeaders(BrowserScriptAction action)
+    {
+        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        AddWorkerHeader(headers, action.Options.GetValueOrDefault("header"));
+        foreach (var header in (action.Options.GetValueOrDefault("headers") ?? string.Empty).Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            AddWorkerHeader(headers, header);
+        }
+
+        var name = action.Options.GetValueOrDefault("headerName");
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            headers[name.Trim()] = action.Options.GetValueOrDefault("headerValue") ?? string.Empty;
+        }
+
+        return headers.Count is 0 ? null : headers;
+    }
+
+    private static void AddWorkerHeader(Dictionary<string, string> headers, string? header)
+    {
+        if (string.IsNullOrWhiteSpace(header)) return;
+        var index = header.IndexOf(':');
+        if (index > 0) headers[header[..index].Trim()] = header[(index + 1)..].Trim();
     }
 }

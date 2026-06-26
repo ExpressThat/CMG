@@ -1705,9 +1705,10 @@ listWorkers
 waitForWorker "worker.js" timeout=5000
 workerEvaluate "self.location.href" target="worker.js"
 workerIntercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json" target="worker.js"
+workerIntercept "/api/profile/\\d+" match=regex ignoreCase=true bodyFile="fixtures/profile.json" header="X-Trace: demo" target="worker.js"
 ```
 
-Inspects and controls worker targets exposed by the browser automation provider. `workerIntercept` patches a matched worker's `fetch()` function so worker-originated requests can receive deterministic responses. The optional `target` option can be a worker id or URL substring; when omitted, CMG uses the first available worker.
+Inspects and controls worker targets exposed by the browser automation provider. `workerIntercept` patches a matched worker's `fetch()` function so worker-originated requests can receive deterministic responses. Worker intercepts support the same URL match modes, file-backed bodies, and response header options as page `route`. The optional `target` option can be a worker id or URL substring; when omitted, CMG uses the first available worker.
 
 Options:
 
@@ -1715,7 +1716,15 @@ Options:
 - `target`: Optional worker id or URL substring for `workerEvaluate` and `workerIntercept`.
 - `status`: Optional response status for `workerIntercept`. Default is `200`.
 - `body`: Optional response body for `workerIntercept`. Default is empty text.
+- `bodyFile`: Optional response body file for `workerIntercept`.
+- `file`: Alias for `bodyFile`.
 - `contentType`: Optional response content type for `workerIntercept`. Default is `text/plain`.
+- `match`: Optional URL match mode for `workerIntercept`. Supports `contains`, `exact`, and `regex`. Default is `contains`.
+- `ignoreCase`: Optional boolean for worker URL matching.
+- `header`: Optional worker response header formatted as `Name: value`.
+- `headers`: Optional semicolon-separated worker response headers.
+- `headerName`: Optional worker response header name.
+- `headerValue`: Optional worker response header value for `headerName`.
 
 Output:
 

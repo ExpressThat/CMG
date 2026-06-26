@@ -140,6 +140,13 @@ public sealed record BrowserContextInfo(string Id, string TargetId, string Url, 
 
 public sealed record BrowserWorkerInfo(string Id, string Type, string Title, string Url);
 
-public sealed record WorkerRouteOptions(string Pattern, int Status, string Body, string ContentType);
+public sealed record WorkerRouteOptions(
+    string Pattern,
+    int Status,
+    string Body,
+    string ContentType,
+    string Match = "contains",
+    bool IgnoreCase = false,
+    IReadOnlyDictionary<string, string>? Headers = null);
 
 public sealed record CoverageOptions(bool JavaScript, bool Css);

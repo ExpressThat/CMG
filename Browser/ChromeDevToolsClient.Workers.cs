@@ -103,18 +103,49 @@ public sealed partial class ChromeDevToolsClient
     private static string BuildWorkerInterceptScript(WorkerRouteOptions options) => $$"""
     (() => {
       const routes = globalThis.__cmgWorkerRoutes ||= [];
-      routes.push({ pattern: {{ToJsonStringLiteral(options.Pattern)}}, status: {{options.Status}}, body: {{ToJsonStringLiteral(options.Body)}}, contentType: {{ToJsonStringLiteral(options.ContentType)}} });
+      routes.push({
+        pattern: {{ToJsonStringLiteral(options.Pattern)}},
+        match: {{ToJsonStringLiteral(options.Match)}},
+        ignoreCase: {{options.IgnoreCase.ToString().ToLowerInvariant()}},
+        status: {{options.Status}},
+        body: {{ToJsonStringLiteral(options.Body)}},
+        contentType: {{ToJsonStringLiteral(options.ContentType)}},
+        headers: {{WorkerHeaders(options)}}
+      });
       if (!globalThis.__cmgOriginalFetch) {
         globalThis.__cmgOriginalFetch = globalThis.fetch?.bind(globalThis);
         globalThis.fetch = async (input, init) => {
           const url = typeof input === 'string' ? input : input?.url ?? '';
-          const route = routes.find(item => url.includes(item.pattern));
-          return route ? new Response(route.body, { status: route.status, headers: { 'content-type': route.contentType } }) : globalThis.__cmgOriginalFetch(input, init);
+          const route = routes.find(item => {
+            const actual = item.ignoreCase ? String(url).toLowerCase() : String(url);
+            const pattern = item.ignoreCase ? String(item.pattern).toLowerCase() : String(item.pattern);
+            if (item.match === 'exact') return actual === pattern;
+            if (item.match === 'regex') return new RegExp(String(item.pattern), item.ignoreCase ? 'i' : '').test(String(url));
+            return actual.includes(pattern);
+          });
+          return route ? new Response(route.body, { status: route.status, headers: route.headers }) : globalThis.__cmgOriginalFetch(input, init);
         };
       }
       return routes.length.toString();
     })()
     """;
+
+    private static string WorkerHeaders(WorkerRouteOptions options)
+    {
+        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["content-type"] = options.ContentType
+        };
+        if (options.Headers is not null)
+        {
+            foreach (var header in options.Headers)
+            {
+                headers[header.Key.ToLowerInvariant()] = header.Value;
+            }
+        }
+
+        return "{" + string.Join(",", headers.Select(header => $"{ToJsonStringLiteral(header.Key)}:{ToJsonStringLiteral(header.Value)}")) + "}";
+    }
 
     private sealed record WorkerTarget(string Id, string Type, string Title, string Url);
 }

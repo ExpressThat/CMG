@@ -61,18 +61,46 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildWorkerInterceptCommand(BrowserSelectionOptions browserOptions, string name)
     {
-        var pattern = new Argument<string>("pattern") { Description = "Worker fetch URL substring to intercept." };
+        var pattern = new Argument<string>("pattern") { Description = "Worker fetch URL text to intercept." };
         var status = new Option<int?>("--status") { Description = "Mocked response status. Default is 200." };
         var body = CliStringOption("--body", "Mocked response body.");
+        var bodyFile = new Option<FileInfo?>("--body-file") { Description = "Mocked response body file." };
         var contentType = CliStringOption("--content-type", "Mocked response content type. Default is text/plain.");
+        var header = CliStringOption("--header", "Response header as Name: value.");
+        var headers = CliStringOption("--headers", "Response headers separated by semicolons.");
+        var headerName = CliStringOption("--header-name", "Response header name.");
+        var headerValue = CliStringOption("--header-value", "Response header value.");
+        var match = NavigationMatchOption();
+        var ignoreCase = NavigationIgnoreCaseOption();
         var target = CliStringOption("--target", "Worker id or URL substring. Defaults to the first worker.");
-        var command = new Command(name, "Patch worker fetch responses.") { pattern, status, body, contentType, target };
+        var command = new Command(name, "Patch worker fetch responses.")
+        {
+            pattern,
+            status,
+            body,
+            bodyFile,
+            contentType,
+            header,
+            headers,
+            headerName,
+            headerValue,
+            match,
+            ignoreCase,
+            target
+        };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine("workerIntercept", [parseResult.GetValue(pattern) ?? string.Empty], CompactOptions([
                 IntOption("status", parseResult.GetValue(status)),
                 StringOption("body", parseResult.GetValue(body)),
+                StringOption("bodyFile", parseResult.GetValue(bodyFile)?.FullName),
                 StringOption("contentType", parseResult.GetValue(contentType)),
+                StringOption("header", parseResult.GetValue(header)),
+                StringOption("headers", parseResult.GetValue(headers)),
+                StringOption("headerName", parseResult.GetValue(headerName)),
+                StringOption("headerValue", parseResult.GetValue(headerValue)),
+                StringOption("match", parseResult.GetValue(match)),
+                parseResult.GetValue(ignoreCase) ? ("ignoreCase", "true") : null,
                 StringOption("target", parseResult.GetValue(target))
             ]))));
         return command;

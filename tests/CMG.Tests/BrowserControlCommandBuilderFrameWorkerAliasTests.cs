@@ -29,6 +29,9 @@ public sealed class BrowserControlCommandBuilderFrameWorkerAliasTests
     [InlineData("waitForWorker worker.js --timeout 1000", "waitForWorker \"worker.js\" timeout=\"1000\"")]
     [InlineData("workerEvaluate self.location.href --target worker.js", "workerEvaluate \"self.location.href\" target=\"worker.js\"")]
     [InlineData("workerIntercept /api --status 201 --body ok", "workerIntercept \"/api\" status=\"201\" body=\"ok\"")]
+    [InlineData("workerIntercept /api --body-file C:\\temp\\worker.json", "workerIntercept \"/api\" bodyFile=\"C:\\\\temp\\\\worker.json\"")]
+    [InlineData("workerIntercept /api/.+ --match regex --ignore-case --header \"X-Test: yes\"", "workerIntercept \"/api/.+\" header=\"X-Test: yes\" match=\"regex\" ignoreCase=\"true\"")]
+    [InlineData("workerIntercept /api --header-name X-Test --header-value yes", "workerIntercept \"/api\" headerName=\"X-Test\" headerValue=\"yes\"")]
     public void WorkerAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();

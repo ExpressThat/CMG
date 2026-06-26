@@ -151,6 +151,8 @@ dotnet run -- --firefox browser close
 - `61-navigation-match-modes-runner.cmgscript`: Demonstrates the same navigation match modes in the structured runner DSL.
 - `62-network-match-modes.cmgscript`: Demonstrates exact, regex, case-insensitive network URL matching, file-backed mocked bodies, and response headers in a direct script.
 - `63-network-match-modes-runner.cmgscript`: Demonstrates the same network matching, file-backed body, and header features in the structured runner DSL.
+- `64-worker-intercept.cmgscript`: Demonstrates worker fetch interception with regex matching, file-backed bodies, and headers in a direct script.
+- `65-worker-intercept-runner.cmgscript`: Demonstrates the same worker interception features in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

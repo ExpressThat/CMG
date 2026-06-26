@@ -24,3 +24,9 @@ cmg browser control workers [command] [options]
 - Writes `PASS`, `WORKER`, `WORKER_READY`, `WORKER_EVALUATE`, or `WORKER_INTERCEPT` lines to stdout.
 - Writes browser, worker, timeout, parse, or action errors to stderr.
 - Exits `0` on success and `1` on failure.
+
+## Examples
+
+```powershell
+cmg browser control workers workerIntercept "/api/profile/\d+" --match regex --ignore-case --body-file fixtures/profile.json --header "X-Trace: worker"
+```

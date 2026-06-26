@@ -534,9 +534,10 @@ Browser environment actions are page-side hooks. They do not alter the already-r
 Line 4: waitForWorker failed. Worker 'worker.js' was not available within 5000ms.
 Line 5: workerEvaluate failed. No worker matched 'analytics-worker'.
 Line 6: workerIntercept failed. Worker '<first>' was not available.
+Line 7: workerIntercept failed. workerIntercept body file 'fixtures/profile.json' was not found.
 ```
 
-Use `listWorkers` to inspect available worker ids and URLs before targeting a specific worker. Worker interception patches `fetch()` inside existing worker targets.
+Use `listWorkers` to inspect available worker ids and URLs before targeting a specific worker. Worker interception patches `fetch()` inside existing worker targets and uses the same URL match, body-file, and response-header validation as page routes.
 
 ## Coverage Failure
 

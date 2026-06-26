@@ -704,8 +704,9 @@ These actions are CMG page-side equivalents of provider context settings. They d
 test "worker profile request" {
   navigate "https://example.com"
   waitForWorker "worker.js" timeout=5000
-  workerIntercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json" target="worker.js"
-  workerEvaluate "fetch('/api/profile').then(r => r.text())" target="worker.js"
+  writeFile path="demo-output/worker-profile.json" text="{\"name\":\"CMG\"}"
+  workerIntercept "/api/profile/\\d+" match=regex ignoreCase=true status=200 bodyFile="demo-output/worker-profile.json" contentType="application/json" header="X-Trace: worker" target="worker.js"
+  workerEvaluate "fetch('/api/Profile/42').then(r => r.text())" target="worker.js"
 }
 ```
 

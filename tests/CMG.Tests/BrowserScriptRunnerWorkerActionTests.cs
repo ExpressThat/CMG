@@ -39,6 +39,35 @@ public sealed class BrowserScriptRunnerWorkerActionTests
     }
 
     [Fact]
+    public void RunText_WorkerInterceptSupportsMatchHeadersAndBodyFile()
+    {
+        var file = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.txt");
+        File.WriteAllText(file, "created");
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText(
+            $"workerIntercept \"/api/\\\\d+\" match=regex ignoreCase=true bodyFile=\"{Slash(file)}\" header=\"X-Test: yes\"",
+            "debug",
+            client);
+
+        Assert.True(result.Success);
+        Assert.NotNull(client.LastWorkerRoute);
+        Assert.Equal("regex", client.LastWorkerRoute.Match);
+        Assert.True(client.LastWorkerRoute.IgnoreCase);
+        Assert.Equal("created", client.LastWorkerRoute.Body);
+        Assert.Equal("yes", client.LastWorkerRoute.Headers?["X-Test"]);
+    }
+
+    [Fact]
+    public void RunText_WorkerInterceptRejectsMissingBodyFile()
+    {
+        var result = Runner().RunText("workerIntercept \"/api\" bodyFile=\"missing.json\"", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("body file 'missing.json' was not found", result.Error);
+    }
+
+    [Fact]
     public void RunText_WaitForWorkerReportsTimeout()
     {
         var result = Runner().RunText("waitForWorker \"missing\" timeout=1", "debug", new FakeAutomationClient());
@@ -46,6 +75,8 @@ public sealed class BrowserScriptRunnerWorkerActionTests
         Assert.False(result.Success);
         Assert.Contains("was not available", result.Error);
     }
+
+    private static string Slash(string path) => path.Replace('\\', '/');
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }
