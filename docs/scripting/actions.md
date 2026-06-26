@@ -2205,6 +2205,7 @@ Direct browser-control scripts and `cmg run` both support:
 - Composition locators:
   - `"or=.primary|.secondary"` resolves the first `.primary` element, or the first `.secondary` element if no `.primary` exists.
   - `"and=.item|.selected"` resolves the first `.item` element that also matches `.selected`.
+  - `"strict=.item"` resolves `.item` only when exactly one element matches; zero or multiple matches fail before pointer movement.
 - Open shadow DOM locators:
   - `"shadow=#host|button.save"` resolves `button.save` inside `#host`'s open shadow root.
   - `"shadowText=#host|Shadow Save"` resolves the first descendant inside `#host`'s open shadow root whose text contains `Shadow Save`.
@@ -2226,6 +2227,7 @@ click "nth=.result|2"
 click "has=.card|button.primary"
 click "or=.primary|.secondary"
 click "and=.item|.selected"
+click "strict=.only-choice"
 click "shadow=#host|button.save"
 assertText "hasText=.toast|Saved" "Saved"
 mouseMove selector="text=Drop here" edge=center

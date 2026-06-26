@@ -76,6 +76,7 @@ public static partial class CmgLocator
         locator.StartsWith("visible=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("or=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("and=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("strict=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("shadow=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("shadowText=", StringComparison.OrdinalIgnoreCase);
 
@@ -139,6 +140,7 @@ public static partial class CmgLocator
             "visible" => $"Array.from(document.querySelectorAll({QuoteJs(value)})).find(IsVisible)",
             "or" => BuildOrExpression(value),
             "and" => BuildAndExpression(value),
+            "strict" => BuildStrictExpression(value),
             "shadow" => BuildShadowExpression(value),
             "shadowtext" => BuildShadowTextExpression(value),
             _ => "null"

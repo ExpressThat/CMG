@@ -29,6 +29,7 @@ public sealed class CmgLocatorTests
     [InlineData("visible=.item", "IsVisible")]
     [InlineData("or=.primary|.secondary", "document.querySelector('.primary') ?? document.querySelector('.secondary')")]
     [InlineData("and=.item|.selected", "e.matches('.selected')")]
+    [InlineData("strict=.only", "expected exactly one match for .only")]
     [InlineData("shadow=#host|button.save", "shadowRoot?.querySelector('button.save')")]
     [InlineData("shadowText=#host|Shadow Save", "shadowRoot?.querySelectorAll('*')")]
     public void PrefixExpressions_FilterLocatorsMarkElement(string locator, string expected)
@@ -60,6 +61,7 @@ public sealed class CmgLocatorTests
     [Theory]
     [InlineData("or=.primary", "Locator or= requires <selector>|<selector>")]
     [InlineData("and=.item", "Locator and= requires <selector>|<selector>")]
+    [InlineData("strict=", "Locator strict= requires <selector>")]
     [InlineData("shadow=#host", "Locator shadow= requires <host-selector>|<inner-selector>")]
     [InlineData("shadowText=#host", "Locator shadowText= requires <host-selector>|<text>")]
     public void PrefixExpressions_CompositeLocatorsRequireTwoParts(string locator, string expected)

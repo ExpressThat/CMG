@@ -38,4 +38,7 @@ test "locator filters" {
 
   click "and=.cmd|.primary"
   expectText "#result" "first"
+
+  click "strict=.secondary"
+  expectText "#result" "second"
 }

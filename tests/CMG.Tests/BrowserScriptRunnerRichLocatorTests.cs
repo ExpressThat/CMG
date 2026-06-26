@@ -60,6 +60,7 @@ public sealed class BrowserScriptRunnerRichLocatorTests
     [InlineData("labelRegex=^Email", "new RegExp('^Email')")]
     [InlineData("or=.primary|.secondary", "document.querySelector('.primary') ?? document.querySelector('.secondary')")]
     [InlineData("and=.item|.selected", "e.matches('.selected')")]
+    [InlineData("strict=.only", "expected exactly one match for .only")]
     [InlineData("shadow=#host|button.save", "shadowRoot?.querySelector('button.save')")]
     [InlineData("shadowText=#host|Shadow Save", "shadowRoot?.querySelectorAll('*')")]
     public void RunText_ClickResolvesAdvancedFilterLocatorOptions(string locator, string expectedExpression)
@@ -86,10 +87,10 @@ public sealed class BrowserScriptRunnerRichLocatorTests
     public void RunText_ExpectationAcceptsGenericExactLocatorOptions()
     {
         var client = new FakeAutomationClient();
-        var result = Runner().RunText("expectVisible shadow=#host|button.save", "debug", client);
+        var result = Runner().RunText("expectVisible strict=.only", "debug", client);
 
         Assert.True(result.Success, result.Error);
-        Assert.Contains("shadowRoot?.querySelector('button.save')", client.EvaluatedExpressions[0]);
+        Assert.Contains("expected exactly one match for .only", client.EvaluatedExpressions[0]);
         Assert.Contains("__cmgQuery", client.EvaluatedExpressions[1]);
     }
 
