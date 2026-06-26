@@ -717,6 +717,7 @@ emulate device="Pixel 7"
 emulate "iPhone 13" locale=en-GB timezone=Europe/London
 emulate width=390 height=844 deviceScaleFactor=2 isMobile=true hasTouch=true userAgent="CMG Mobile" locale=en-GB colorScheme=dark reducedMotion=reduce
 emulate timezone=Europe/London geolocation="51.5,-0.1" permissions=geolocation
+emulateMedia media=print colorScheme=dark reducedMotion=reduce forcedColors=active contrast=more
 ```
 
 Applies browser-environment overrides for both direct browser-control scripts and `cmg run` tests. `width` and `height` use the browser protocol viewport override. Other options install page-side overrides in the current page context.
@@ -742,6 +743,14 @@ Options:
 Output:
 
 - `EMULATE <line> <option-names>` on success.
+
+`emulateMedia` is the provider-style media-only action. It installs the same page-side `matchMedia` override immediately and for future navigations. It accepts `media=screen|print`, `colorScheme=light|dark|no-preference`, `reducedMotion=reduce|no-preference`, `forcedColors=active|none`, and `contrast=more|less|custom|no-preference`.
+
+Output:
+
+- `MEDIA <line> <key=value...>` on success.
+
+Media emulation is non-visual by itself. GIF recording logs the step and captures later visible changes, but it does not move the virtual pointer.
 
 ## `setGeolocation`, `grantPermissions`, And `clearPermissions`
 

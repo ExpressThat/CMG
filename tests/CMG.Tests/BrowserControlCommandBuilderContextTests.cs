@@ -47,6 +47,19 @@ public sealed class BrowserControlCommandBuilderContextTests
         Assert.Equal("emulate device=\"Pixel 7\" locale=\"en-GB\"", handler.ScriptLine);
     }
 
+    [Fact]
+    public void EmulateMediaCommand_MapsOptionsToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control context emulateMedia --media print --color-scheme dark --reduced-motion reduce --forced-colors active --contrast more").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(
+            "emulateMedia media=\"print\" colorScheme=\"dark\" reducedMotion=\"reduce\" forcedColors=\"active\" contrast=\"more\"",
+            handler.ScriptLine);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");

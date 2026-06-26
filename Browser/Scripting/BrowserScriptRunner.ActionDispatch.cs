@@ -84,6 +84,7 @@ public sealed partial class BrowserScriptRunner
             "expectscreenshot" or "tohavescreenshot" => ExecuteVisualAssertion(remoteDebuggingUrl, automationClient, action),
             "uploadfiles" or "setinputfiles" or "selectfile" => ExecuteUploadFiles(remoteDebuggingUrl, automationClient, action with { Name = "uploadFiles" }),
             "emulate" => ExecuteEmulate(remoteDebuggingUrl, automationClient, action),
+            "emulatemedia" => ExecuteEmulateMedia(remoteDebuggingUrl, automationClient, action),
             "setgeolocation" or "grantpermissions" or "clearpermissions" or
             "setjavascriptenabled" or "javascriptenabled" or "bypasscsp" or "serviceworkers" or "setserviceworkers" =>
                 ExecuteGeolocationOrPermission(remoteDebuggingUrl, automationClient, action),

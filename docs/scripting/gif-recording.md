@@ -12,6 +12,7 @@ cmg run flow.cmgscript --gif demo-output\runner-gifs
 - CMG captures the visible page viewport.
 - A frame is captured after visual actions. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
 - Navigation waits such as `waitForNetworkIdle` are logged and traced but do not move the virtual pointer or add pointer motion frames.
+- Environment actions such as `emulateMedia` are also non-visual by themselves; later page changes and visual actions are recorded normally with the same virtual pointer.
 - Explicit `screenshot` and `screenshotPage` actions can write PNG or JPEG artifacts with `type=` and `quality=`. GIF recorder frames always use CMG's internal PNG capture path so virtual pointer compositing and frame encoding stay consistent.
 - Visual assertions can use `fullPage=true` and `mask=` for comparison artifacts. Masking changes only the captured assertion image; selector assertions still move the virtual pointer before the comparison frame, and page-level assertions still do not move it.
 - Click, type, clear, hover, select, wheel, and drag actions move the virtual pointer to the target selector when possible. User-like movement actions do not scroll automatically; add `scrollIntoView`, `scrollTo`, `scrollBy`, or `wheel` steps when the pointer should move to content outside the current viewport.

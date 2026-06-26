@@ -1,0 +1,5 @@
+test "media emulation" {
+  emulateMedia media=print colorScheme=dark reducedMotion=reduce forcedColors=active contrast=more
+  navigate "C:\Projects\CMG\index.html"
+  caption "Media emulation applied"
+}

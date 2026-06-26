@@ -224,6 +224,7 @@ public sealed class CmgActionLowererTests
         var lowerer = new CmgActionLowerer();
 
         Assert.Equal("setJavaScriptEnabled \"false\"", Assert.Single(lowerer.Lower(Node("setJavaScriptEnabled", ["false"], []))));
+        Assert.Equal("emulateMedia media=\"print\"", Assert.Single(lowerer.Lower(Node("emulateMedia", [], new Dictionary<string, string> { ["media"] = "print" }))));
         Assert.Equal("bypassCSP \"true\"", Assert.Single(lowerer.Lower(Node("bypassCSP", ["true"], []))));
         Assert.Equal("serviceWorkers \"block\"", Assert.Single(lowerer.Lower(Node("serviceWorkers", ["block"], []))));
         Assert.Equal("setProxy \"https://proxy.local/?url=\"", Assert.Single(lowerer.Lower(Node("setProxy", ["https://proxy.local/?url="], []))));
@@ -242,4 +243,7 @@ public sealed class CmgActionLowererTests
 
     private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyList<CmgNode> children) =>
         new(1, kind, args.FirstOrDefault() ?? kind, args, new Dictionary<string, string>(), children);
+
+    private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyDictionary<string, string> options) =>
+        new(1, kind, kind, args, options, []);
 }

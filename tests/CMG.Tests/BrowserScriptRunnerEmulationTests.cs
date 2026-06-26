@@ -119,6 +119,40 @@ public sealed class BrowserScriptRunnerEmulationTests
     }
 
     [Fact]
+    public void RunText_EmulateMediaInstallsMatchMediaOverride()
+    {
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText(
+            "emulateMedia media=print colorScheme=dark reducedMotion=reduce forcedColors=active contrast=more",
+            "debug",
+            client);
+
+        Assert.True(result.Success);
+        Assert.Contains("__cmgMedia", client.LastExpression);
+        Assert.Contains("forcedColors", client.LastInitScript);
+        Assert.Contains("MEDIA 001 media=print colorScheme=dark reducedMotion=reduce forcedColors=active contrast=more", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_EmulateMediaRequiresOption()
+    {
+        var result = Runner().RunText("emulateMedia", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("requires at least one media option", result.Error);
+    }
+
+    [Fact]
+    public void RunText_EmulateMediaValidatesValues()
+    {
+        var result = Runner().RunText("emulateMedia media=paper", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("media= must be screen, print", result.Error);
+    }
+
+    [Fact]
     public void Build_RejectsInvalidGeolocation()
     {
         var options = new Dictionary<string, string> { ["geolocation"] = "north" };

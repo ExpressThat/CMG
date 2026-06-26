@@ -10,6 +10,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command("context", "Browser context, emulation, permission, and environment commands.");
 
         command.Subcommands.Add(BuildEmulateCommand(browserOptions));
+        command.Subcommands.Add(BuildEmulateMediaCommand(browserOptions));
         command.Subcommands.Add(BuildGeolocationCommand(browserOptions));
         command.Subcommands.Add(BuildGrantPermissionsCommand(browserOptions));
         command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "clearPermissions", "Clear page-side permission grants.", "clearPermissions"));

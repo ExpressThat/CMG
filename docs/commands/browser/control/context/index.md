@@ -9,6 +9,7 @@ cmg browser control context [command] [options]
 ## Subcommands
 
 - [`emulate`](emulate.md): Apply page environment and viewport emulation.
+- [`emulateMedia`](emulateMedia.md): Apply page media emulation.
 - [`setGeolocation`](setGeolocation.md): Set page-visible geolocation.
 - [`grantPermissions`](grantPermissions.md): Grant page-side permissions.
 - [`clearPermissions`](clearPermissions.md): Clear page-side permission grants.
@@ -36,6 +37,7 @@ cmg browser control context [command] [options]
 ```powershell
 cmg browser control context emulate --width 390 --height 844 --mobile --touch --locale en-GB
 cmg browser control context emulate --device "Pixel 7" --timezone Europe/London
+cmg browser control context emulateMedia --media print --color-scheme dark
 cmg browser control context setGeolocation 51.5 -0.1 --accuracy 10
 cmg browser control context grantPermissions geolocation notifications
 cmg browser control context javaScriptEnabled true

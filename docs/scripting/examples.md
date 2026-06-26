@@ -850,6 +850,7 @@ This example is available as `demo-scripts/14-pointer-click-variants.cmgscript`.
 ```text
 test "mobile dark mode profile" {
   emulate device="Pixel 7" locale=en-GB colorScheme=dark reducedMotion=reduce
+  emulateMedia media=print forcedColors=active contrast=more
   navigate "https://example.com/profile"
   expectScreenshot baseline="baselines\profile-mobile-dark.png" output="demo-output\profile-mobile-dark.actual.png"
 }
@@ -863,7 +864,7 @@ test "location-aware profile" {
 }
 ```
 
-Use `emulate` before navigation when the page reads environment values during startup. The same action is available in direct browser-control scripts for AI-driven exploration.
+Use `emulate` and `emulateMedia` before navigation when the page reads environment values during startup. The same actions are available in direct browser-control scripts for AI-driven exploration. Media emulation demos are available as `demo-scripts/78-media-emulation.cmgscript` and `demo-scripts/79-media-emulation-runner.cmgscript`.
 
 ## Page Metadata And Content
 

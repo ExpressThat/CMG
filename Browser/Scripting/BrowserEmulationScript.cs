@@ -13,6 +13,9 @@ public static class BrowserEmulationScript
         return lines.Count is 0 ? string.Empty : $"(() => {{ {string.Join(' ', lines)} return true; }})()";
     }
 
+    public static string BuildMedia(IReadOnlyDictionary<string, string> options) =>
+        $"(() => {{ {MediaLine(options)} return true; }})()";
+
     public static string BuildGeolocation(double latitude, double longitude, double accuracy) =>
         $"(() => {{ {GeolocationLine(latitude, longitude, accuracy)} return true; }})()";
 
@@ -82,14 +85,29 @@ public static class BrowserEmulationScript
 
     private static void AddMedia(List<string> lines, IReadOnlyDictionary<string, string> options)
     {
-        var hasColor = options.TryGetValue("colorScheme", out var color);
-        var hasMotion = options.TryGetValue("reducedMotion", out var motion);
-        if (!hasColor && !hasMotion)
+        if (!HasAnyMediaOption(options))
         {
             return;
         }
 
-        lines.Add($"const cmgMatchMedia = window.matchMedia.bind(window); window.matchMedia = query => {{ const result = cmgMatchMedia(query); let matches = result.matches; if (query.includes('prefers-color-scheme')) matches = query.includes({Quote(color ?? string.Empty)}); if (query.includes('prefers-reduced-motion')) matches = query.includes({Quote(motion ?? string.Empty)}); return Object.assign(result, {{ matches, media: query }}); }};");
+        lines.Add(MediaLine(options));
+    }
+
+    private static bool HasAnyMediaOption(IReadOnlyDictionary<string, string> options) =>
+        options.ContainsKey("media") ||
+        options.ContainsKey("colorScheme") ||
+        options.ContainsKey("reducedMotion") ||
+        options.ContainsKey("forcedColors") ||
+        options.ContainsKey("contrast");
+
+    private static string MediaLine(IReadOnlyDictionary<string, string> options)
+    {
+        var media = options.GetValueOrDefault("media", string.Empty);
+        var color = options.GetValueOrDefault("colorScheme", string.Empty);
+        var motion = options.GetValueOrDefault("reducedMotion", string.Empty);
+        var forced = options.GetValueOrDefault("forcedColors", string.Empty);
+        var contrast = options.GetValueOrDefault("contrast", string.Empty);
+        return $"const cmgMatchMedia = window.__cmgOriginalMatchMedia || window.matchMedia.bind(window); window.__cmgOriginalMatchMedia = cmgMatchMedia; window.__cmgMedia = {{ media: {Quote(media)}, colorScheme: {Quote(color)}, reducedMotion: {Quote(motion)}, forcedColors: {Quote(forced)}, contrast: {Quote(contrast)} }}; window.matchMedia = query => {{ const result = cmgMatchMedia(query); let matches = result.matches; const q = String(query); const state = window.__cmgMedia; if (state.media && (q.includes('screen') || q.includes('print'))) matches = q.includes(state.media); if (state.colorScheme && q.includes('prefers-color-scheme')) matches = q.includes(state.colorScheme); if (state.reducedMotion && q.includes('prefers-reduced-motion')) matches = q.includes(state.reducedMotion); if (state.forcedColors && q.includes('forced-colors')) matches = q.includes(state.forcedColors); if (state.contrast && q.includes('prefers-contrast')) matches = q.includes(state.contrast); return Object.assign(result, {{ matches, media: q }}); }};";
     }
 
     private static void AddTimezone(List<string> lines, IReadOnlyDictionary<string, string> options)

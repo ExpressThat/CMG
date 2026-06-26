@@ -257,13 +257,14 @@ Line 3: moveMouse failed. moveMouse element-edge targeting requires edge=<top|bo
 ```text
 Line 3: emulate failed. emulate requires both width and height when overriding viewport.
 Line 4: emulate failed. geolocation must be '<latitude>,<longitude>'.
-Line 5: setGeolocation failed. setGeolocation requires '<latitude>,<longitude>' or latitude=<value> longitude=<value>.
-Line 6: grantPermissions failed. grantPermissions requires at least one permission name.
-Line 7: setViewport failed. setViewport option hasTouch= must be true or false.
-Line 8: viewport failed. viewport expects width=<pixels> height=<pixels> or '<width>' '<height>'.
+Line 5: emulateMedia failed. emulateMedia option media= must be screen, print.
+Line 6: setGeolocation failed. setGeolocation requires '<latitude>,<longitude>' or latitude=<value> longitude=<value>.
+Line 7: grantPermissions failed. grantPermissions requires at least one permission name.
+Line 8: setViewport failed. setViewport option hasTouch= must be true or false.
+Line 9: viewport failed. viewport expects width=<pixels> height=<pixels> or '<width>' '<height>'.
 ```
 
-Provide both viewport dimensions together, pass boolean viewport options as `true` or `false`, pass geolocation as a comma-separated latitude/longitude pair or latitude/longitude options, and grant at least one permission name.
+Provide both viewport dimensions together, pass media options from the documented value sets, pass boolean viewport options as `true` or `false`, pass geolocation as a comma-separated latitude/longitude pair or latitude/longitude options, and grant at least one permission name.
 
 ## Download Timeout
 
