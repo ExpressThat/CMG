@@ -1330,9 +1330,16 @@ test "focused" only=true {
 test "skipped" skip=true reason="Covered by API test" {
   click "#legacy"
 }
+
+test.only "focused with provider syntax" {
+  click "#run"
+}
+
+test.fixme "known issue"
+test.todo "queued coverage"
 ```
 
-Defines a runnable test. `it` and `specify` are Cypress/Mocha-style aliases for `test`. `cmg run` exits `1` if any non-skipped test fails.
+Defines a runnable test. `it` and `specify` are Cypress/Mocha-style aliases for `test`. `test.only`, `it.only`, `specify.only`, `test.skip`, `test.fixme`, and `test.todo` are provider-style declaration aliases for the matching `only=true` or `skip=true` options. `cmg run` exits `1` if any non-skipped test fails.
 
 Options:
 
@@ -1342,6 +1349,8 @@ Options:
 - `reason`: Optional skip reason included in reports.
 
 Skipped tests are successful for process exit purposes unless another selected test fails.
+
+The same suffixes work on `suite`, `describe`, and `context`. Suite-level focus and skip options cascade to child tests; skipped suites keep all child tests skipped even when a child sets `skip=false`.
 
 ### `beforeAll`, `before`, `afterAll`, `after`, `beforeEach`, And `afterEach`
 

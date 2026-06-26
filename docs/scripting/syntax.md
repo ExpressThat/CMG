@@ -52,6 +52,7 @@ Supported structural blocks:
 
 - `suite "name" { ... }`, `describe "name" { ... }`, or `context "name" { ... }`
 - `test "name" { ... }`, `it "name" { ... }`, or `specify "name" { ... }`
+- Provider-style declaration aliases: `test.only`, `test.skip`, `test.fixme`, `test.todo`, `it.only`, `describe.skip`, `context.only`, and the same suffixes on `suite`, `describe`, `context`, `test`, `it`, and `specify`
 - `beforeAll { ... }` or `before { ... }`
 - `afterAll { ... }` or `after { ... }`
 - `beforeEach { ... }`
@@ -92,6 +93,17 @@ test "checkout" tag=smoke,critical {
 ```
 
 Use `cmg run --tag smoke` to run tests with a matching tag. Use comma-separated tags when a test belongs to multiple groups.
+
+`only`, `skip`, `fixme`, and `todo` can be written either as options or provider-style dotted declarations. Dotted declarations normalize before planning:
+
+```text
+test.only "focused" { click "#run" }
+test.skip "legacy" reason="Disabled" { click "#legacy" }
+test.fixme "broken checkout"
+describe.skip "legacy area" { it "old case" { click "#old" } }
+```
+
+Suite-level `only`, `skip`, `fixme`, and `todo` options cascade to child tests. A skipped suite keeps child tests skipped even if a child sets `skip=false`.
 
 ## Actions
 

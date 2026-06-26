@@ -2,7 +2,7 @@ using CMG.Browser.Scripting;
 
 namespace CMG.Runner;
 
-public sealed class CmgDslParser
+public sealed partial class CmgDslParser
 {
     public CmgParseResult Parse(string sourcePath, string script)
     {
@@ -87,7 +87,8 @@ public sealed class CmgDslParser
                 index = childResult.NextIndex;
             }
 
-            nodes.Add(new CmgNode(lineNumber, tokens.Tokens[0], args.FirstOrDefault() ?? tokens.Tokens[0], args, options, children));
+            var declaration = CmgDeclarationAliases.Normalize(tokens.Tokens[0], options);
+            nodes.Add(new CmgNode(lineNumber, declaration.Kind, args.FirstOrDefault() ?? declaration.Kind, args, declaration.Options, children));
         }
 
         return stopAtBlockEnd

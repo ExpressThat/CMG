@@ -78,5 +78,30 @@ public sealed class CmgTestPlannerTests
         Assert.Equal(["other", "suite after"], tests[1].Actions.Select(FirstArgument));
     }
 
+    [Fact]
+    public void Plan_CascadesSuiteFocusAndSkipOptions()
+    {
+        var document = new CmgDslParser().Parse("flow.cmgscript", """
+        describe.only "Focused suite" tag=smoke {
+          it "case" only=false {
+            caption "run"
+          }
+        }
+
+        context.skip "Legacy" reason="Disabled" {
+          test "old" skip=false {
+            caption "skip"
+          }
+        }
+        """).Document!;
+
+        var tests = new CmgTestPlanner().Plan(document);
+
+        Assert.Equal("true", tests[0].Options["only"]);
+        Assert.Equal("smoke", tests[0].Options["tag"]);
+        Assert.Equal("true", tests[1].Options["skip"]);
+        Assert.Equal("Disabled", tests[1].Options["reason"]);
+    }
+
     private static string FirstArgument(CmgNode node) => node.Arguments.FirstOrDefault() ?? node.Name;
 }

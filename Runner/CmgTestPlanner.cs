@@ -51,7 +51,7 @@ public sealed class CmgTestPlanner
 
         foreach (var child in suite.Children.Where(IsTest))
         {
-            tests.Add(BuildTest(document.SourcePath, child, macros, beforeEach, afterEach, suite.Name) with
+            tests.Add(BuildTest(document.SourcePath, child, macros, beforeEach, afterEach, suite.Name, suite.Options) with
             {
                 RootBeforeAll = rootBeforeAll,
                 RootAfterAll = rootAfterAll,
@@ -67,11 +67,44 @@ public sealed class CmgTestPlanner
         IReadOnlyList<CmgNode> macros,
         IReadOnlyList<CmgNode> beforeEach,
         IReadOnlyList<CmgNode> afterEach,
-        string? suiteName)
+        string? suiteName,
+        IReadOnlyDictionary<string, string>? suiteOptions = null)
     {
         var name = suiteName is null ? test.Name : $"{suiteName} / {test.Name}";
         var actions = macros.Concat(beforeEach).Concat(test.Children).Concat(afterEach).ToArray();
-        return new CmgTestCase(sourcePath, name, actions, test.Options) { SuiteName = suiteName };
+        return new CmgTestCase(sourcePath, name, actions, MergeOptions(suiteOptions, test.Options)) { SuiteName = suiteName };
+    }
+
+    private static IReadOnlyDictionary<string, string> MergeOptions(
+        IReadOnlyDictionary<string, string>? suiteOptions,
+        IReadOnlyDictionary<string, string> testOptions)
+    {
+        if (suiteOptions is null || suiteOptions.Count is 0)
+        {
+            return testOptions;
+        }
+
+        var merged = new Dictionary<string, string>(suiteOptions, StringComparer.OrdinalIgnoreCase);
+        foreach (var option in testOptions)
+        {
+            merged[option.Key] = option.Value;
+        }
+
+        if (suiteOptions.TryGetValue("only", out var only) && IsTruthy(only))
+        {
+            merged["only"] = "true";
+        }
+
+        if (suiteOptions.TryGetValue("skip", out var skip) && IsTruthy(skip))
+        {
+            merged["skip"] = "true";
+            if (suiteOptions.TryGetValue("reason", out var reason))
+            {
+                merged.TryAdd("reason", reason);
+            }
+        }
+
+        return merged;
     }
 
     private static bool IsSuite(CmgNode node) =>
@@ -94,4 +127,9 @@ public sealed class CmgTestPlanner
 
     private static bool IsAny(CmgNode node, params string[] names) =>
         names.Any(name => node.Kind.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+    private static bool IsTruthy(string value) =>
+        value.Equals("true", StringComparison.OrdinalIgnoreCase) ||
+        value.Equals("1", StringComparison.OrdinalIgnoreCase) ||
+        value.Equals("yes", StringComparison.OrdinalIgnoreCase);
 }

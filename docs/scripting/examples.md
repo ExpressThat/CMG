@@ -624,9 +624,22 @@ test "debug checkout" only=true {
 test "legacy checkout" skip=true reason="Legacy page is disabled" {
   click "#legacyCheckout"
 }
+
+test.only "debug checkout with provider syntax" {
+  click "#checkout"
+}
+
+test.fixme "known checkout issue"
+test.todo "add billing edge case"
+
+describe.skip "legacy settings" {
+  it "old setting" {
+    click "#legacySetting"
+  }
+}
 ```
 
-If any selected test has `only=true`, CMG runs only focused tests. `skip=true` writes `TEST SKIP <name>` and reports `status=skipped` without running the test actions.
+If any selected test has `only=true` or uses `.only`, CMG runs only focused tests. `skip=true`, `.skip`, `.fixme`, and `.todo` write `TEST SKIP <name>` and report `status=skipped` without running the test actions. Suite-level focus and skip declarations cascade to child tests.
 
 ## API Request
 

@@ -26,6 +26,32 @@ public sealed class CmgDslParserTests
     }
 
     [Fact]
+    public void Parse_NormalizesProviderDeclarationAliases()
+    {
+        var result = new CmgDslParser().Parse("flow.cmgscript", """
+        describe.skip "legacy" {
+          test.fixme "broken"
+          it.todo "queued"
+        }
+        test.only "focused" {
+          caption "run"
+        }
+        """);
+
+        Assert.True(result.Success, result.Error);
+        var suite = result.Document!.Nodes[0];
+        Assert.Equal("describe", suite.Kind);
+        Assert.Equal("true", suite.Options["skip"]);
+        Assert.Equal("test", suite.Children[0].Kind);
+        Assert.Equal("true", suite.Children[0].Options["skip"]);
+        Assert.Contains("fixme", suite.Children[0].Options["reason"]);
+        Assert.Equal("it", suite.Children[1].Kind);
+        Assert.Contains("todo", suite.Children[1].Options["reason"]);
+        Assert.Equal("test", result.Document.Nodes[1].Kind);
+        Assert.Equal("true", result.Document.Nodes[1].Options["only"]);
+    }
+
+    [Fact]
     public void Parse_ReportsMissingBlockClose()
     {
         var parser = new CmgDslParser();

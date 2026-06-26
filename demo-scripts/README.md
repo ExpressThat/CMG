@@ -183,6 +183,7 @@ dotnet run -- --firefox browser close
 - `91-shadow-locators-runner.cmgscript`: Demonstrates shadow DOM locators in the structured runner DSL.
 - `92-negative-assertions.cmgscript`: Demonstrates negative state and unchecked assertions in a direct script.
 - `93-negative-assertions-runner.cmgscript`: Demonstrates negative state and unchecked assertions in the structured runner DSL.
+- `94-provider-declarations-runner.cmgscript`: Demonstrates provider-style `.skip`, `.fixme`, and `.todo` runner declarations.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.
