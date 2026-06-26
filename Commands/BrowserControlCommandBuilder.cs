@@ -39,6 +39,8 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildFramesGroup(browserOptions));
         command.Subcommands.Add(BuildWorkersGroup(browserOptions));
         command.Subcommands.Add(BuildCoverageGroup(browserOptions));
+        command.Subcommands.Add(BuildClockGroup(browserOptions));
+        command.Subcommands.Add(BuildAccessibilityGroup(browserOptions));
 
         return command;
     }

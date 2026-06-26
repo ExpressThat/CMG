@@ -29,6 +29,8 @@ cmg browser control [command] [options]
 - [`frames`](frames/index.md): Same-origin iframe interaction commands.
 - [`workers`](workers/index.md): Worker inspection, evaluation, and interception commands.
 - [`coverage`](coverage/index.md): JavaScript and CSS coverage commands.
+- [`clock`](clock/index.md): Deterministic page-side time commands.
+- [`accessibility`](accessibility/index.md): Accessibility snapshot and assertion commands.
 
 ## Examples
 
@@ -53,4 +55,6 @@ cmg browser control context emulate --width 390 --height 844 --mobile --touch
 cmg browser control frames fill "#checkoutFrame" "#email" "agent@example.com"
 cmg browser control workers list
 cmg browser control coverage start --js true --css true
+cmg browser control clock install --now 1700000000000
+cmg browser control accessibility expect --role button --name Save
 ```
