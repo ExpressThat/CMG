@@ -8,6 +8,11 @@ public sealed record ScriptRunResult(bool Success, IReadOnlyList<string> StdoutL
     public static ScriptRunResult Fail(string error, IReadOnlyList<string>? stdoutLines = null) => new(false, stdoutLines ?? [], error);
 }
 
+public sealed record ScriptTimeoutOptions(
+    int? DefaultTimeout = null,
+    int? NavigationTimeout = null,
+    int? AssertionTimeout = null);
+
 internal sealed class ScriptExecutionContext
 {
     private List<Dictionary<string, string>> variableScopes = [new(StringComparer.Ordinal)];
@@ -17,6 +22,12 @@ internal sealed class ScriptExecutionContext
     public Dictionary<string, ScriptMacro> Macros { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     public BrowserScriptTraceSession? Trace { get; set; }
+
+    public int? DefaultTimeout { get; set; }
+
+    public int? NavigationTimeout { get; set; }
+
+    public int? AssertionTimeout { get; set; }
 
     public int CurrentVariableScopeIndex => variableScopes.Count - 1;
 

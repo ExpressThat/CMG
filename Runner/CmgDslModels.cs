@@ -46,7 +46,10 @@ public sealed record CmgRunOptions(
     int RepeatEach,
     bool ListOnly,
     int ShardIndex,
-    int ShardCount);
+    int ShardCount,
+    int? DefaultTimeout,
+    int? NavigationTimeout,
+    int? AssertionTimeout);
 
 public sealed partial record CmgRunResult(
     bool Success,

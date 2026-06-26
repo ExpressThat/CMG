@@ -1,5 +1,6 @@
 using System.CommandLine;
 using CMG.Browser;
+using CMG.Browser.Scripting;
 using CMG.Commands;
 
 namespace CMG.Tests;
@@ -21,12 +22,13 @@ public sealed class BrowserControlCommandBuilderScriptTests
     {
         var handler = new CapturingBrowserControlCommandHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --trace C:\\temp\\flow.trace.json").Invoke();
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --trace C:\\temp\\flow.trace.json --timeout 700 --navigation-timeout 800 --assertion-timeout 900").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal("flow.cmgscript", handler.File);
         Assert.Equal("C:\\temp\\flow.gif", handler.Gif?.FullName);
         Assert.Equal("C:\\temp\\flow.trace.json", handler.Trace?.FullName);
+        Assert.Equal(new ScriptTimeoutOptions(700, 800, 900), handler.Timeouts);
     }
 
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
@@ -52,6 +54,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
 
         public FileInfo? Trace { get; private set; }
 
+        public ScriptTimeoutOptions? Timeouts { get; private set; }
+
         public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output) => 0;
 
         public int RunScript(BrowserKind browserKind, string file, FileInfo? gif)
@@ -66,6 +70,13 @@ public sealed class BrowserControlCommandBuilderScriptTests
             File = file;
             Gif = gif;
             Trace = trace;
+            return 0;
+        }
+
+        public int RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts)
+        {
+            RunScript(browserKind, file, gif, trace);
+            Timeouts = timeouts;
             return 0;
         }
 

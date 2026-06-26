@@ -71,6 +71,18 @@ public sealed class RunCommandBuilder
         {
             Description = "Run one shard as index/count, for example 1/3."
         };
+        var timeoutOption = new Option<int?>("--timeout")
+        {
+            Description = "Default timeout in milliseconds for timeout-capable actions."
+        };
+        var navigationTimeoutOption = new Option<int?>("--navigation-timeout")
+        {
+            Description = "Default timeout in milliseconds for navigation actions."
+        };
+        var assertionTimeoutOption = new Option<int?>("--assertion-timeout")
+        {
+            Description = "Default timeout in milliseconds for assertion actions."
+        };
         var command = new Command("run", "Run CMG DSL tests with visual artifacts.")
         {
             pathArgument,
@@ -85,7 +97,10 @@ public sealed class RunCommandBuilder
             maxFailuresOption,
             repeatEachOption,
             listOption,
-            shardOption
+            shardOption,
+            timeoutOption,
+            navigationTimeoutOption,
+            assertionTimeoutOption
         };
 
         command.SetAction(parseResult =>
@@ -103,7 +118,10 @@ public sealed class RunCommandBuilder
                 parseResult.GetValue(maxFailuresOption),
                 parseResult.GetValue(repeatEachOption),
                 parseResult.GetValue(listOption),
-                parseResult.GetValue(shardOption)));
+                parseResult.GetValue(shardOption),
+                parseResult.GetValue(timeoutOption),
+                parseResult.GetValue(navigationTimeoutOption),
+                parseResult.GetValue(assertionTimeoutOption)));
 
         return command;
     }

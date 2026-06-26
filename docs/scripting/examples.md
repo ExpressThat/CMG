@@ -1305,6 +1305,23 @@ test "waits for app readiness" {
 }
 ```
 
+## Default Timeout Policy
+
+```text
+setDefaultTimeout 5000
+setDefaultNavigationTimeout 10000
+setDefaultAssertionTimeout 2000
+
+setContent "<main><button id='save'>Save</button><output id='status'>Ready</output></main>"
+waitForSelector "#save"
+expectText "#status" "Ready"
+click "#save"
+```
+
+Use default timeout actions when a whole flow needs longer waits but individual action-level `timeout=` would make the script noisy. `setDefaultTimeout` covers waits, events, network waits, downloads, worker waits, tab waits, API requests, and assertions. Navigation and assertion defaults override it for their own action families. The same defaults can be supplied from the command line with `browser control script --timeout`, `cmg run --timeout`, `--navigation-timeout`, and `--assertion-timeout`.
+
+This direct-script example is available as `demo-scripts/115-default-timeouts.cmgscript`. The structured runner form is available as `demo-scripts/116-default-timeouts-runner.cmgscript`.
+
 ## Low-Level Mouse
 
 ```text

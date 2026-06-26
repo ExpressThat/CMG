@@ -9,6 +9,7 @@ public sealed partial class CmgVisualSegmentExecutor
         IReadOnlyList<CmgNode> actions,
         string remoteDebuggingUrl,
         FileInfo? gif,
+        ScriptTimeoutOptions? timeouts,
         List<string> output,
         List<CmgStepResult> steps,
         out string? error)
@@ -16,7 +17,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var pending = new List<string>();
         foreach (var action in actions)
         {
-            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, pending, output, steps, out error))
+            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, pending, output, steps, out error))
             {
                 if (error is not null)
                 {
@@ -29,13 +30,14 @@ public sealed partial class CmgVisualSegmentExecutor
             pending.AddRange(lowerer.Lower(action));
         }
 
-        return AppendResult(RunLines(pending, remoteDebuggingUrl, gif), output, steps, actions.LastOrDefault(), gif, out error);
+        return AppendResult(RunLines(pending, remoteDebuggingUrl, gif, timeouts), output, steps, actions.LastOrDefault(), gif, out error);
     }
 
     private bool TryRunDirectAction(
         CmgNode action,
         string remoteDebuggingUrl,
         FileInfo? gif,
+        ScriptTimeoutOptions? timeouts,
         List<string> pending,
         List<string> output,
         List<CmgStepResult> steps,
@@ -47,24 +49,24 @@ public sealed partial class CmgVisualSegmentExecutor
             return false;
         }
 
-        var flush = RunLines(pending, remoteDebuggingUrl, gif);
+        var flush = RunLines(pending, remoteDebuggingUrl, gif, timeouts);
         if (!AppendResult(flush, output, steps, action, gif, out error))
         {
             return true;
         }
 
-        var step = RunDirectAction(action, remoteDebuggingUrl);
+        var step = RunDirectAction(action, remoteDebuggingUrl, timeouts);
         output.AddRange(step.Output);
         steps.Add(step);
         error = step.Success ? null : step.Error;
         return true;
     }
 
-    private CmgStepResult RunDirectAction(CmgNode action, string remoteDebuggingUrl)
+    private CmgStepResult RunDirectAction(CmgNode action, string remoteDebuggingUrl, ScriptTimeoutOptions? timeouts)
     {
         if (action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase))
         {
-            return apiRequestRunner.Run(action);
+            return apiRequestRunner.Run(ApplyRunTimeoutDefault(action, timeouts));
         }
 
         if (action.Kind.Equals("storageState", StringComparison.OrdinalIgnoreCase))

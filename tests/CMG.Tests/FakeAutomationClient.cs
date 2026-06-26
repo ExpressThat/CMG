@@ -12,6 +12,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string LastClickedSelector { get; private set; } = string.Empty;
     public string LastHoveredSelector { get; private set; } = string.Empty;
     public string LastWaitSelector { get; private set; } = string.Empty;
+    public int LastWaitTimeout { get; private set; }
     public string LastTypedSelector { get; private set; } = string.Empty;
     public string LastTypedText { get; private set; } = string.Empty;
     public int LastTypeDelay { get; private set; }
@@ -55,7 +56,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         return [];
     }
     public string Navigate(string remoteDebuggingUrl, string target) => target;
-    public void WaitForElement(string remoteDebuggingUrl, string selector, int timeoutMilliseconds) => LastWaitSelector = selector;
+    public void WaitForElement(string remoteDebuggingUrl, string selector, int timeoutMilliseconds)
+    {
+        LastWaitSelector = selector;
+        LastWaitTimeout = timeoutMilliseconds;
+    }
     public void Click(string remoteDebuggingUrl, string selector) => LastClickedSelector = selector;
     public void Type(string remoteDebuggingUrl, string selector, string text)
     {

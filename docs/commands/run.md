@@ -28,6 +28,9 @@ Runner hooks include `beforeAll`, `afterAll`, `beforeEach`, and `afterEach`. Onc
 - `--repeat-each <count>`: Run each selected test this many times. Values below `1` are treated as `1`.
 - `--list`: List selected tests without connecting to a browser or running actions.
 - `--shard <index/count>`: Run a deterministic shard, for example `1/3`.
+- `--timeout <milliseconds>`: Default timeout for timeout-capable waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions that do not set `timeout=`.
+- `--navigation-timeout <milliseconds>`: Default timeout for navigation actions and navigation waits.
+- `--assertion-timeout <milliseconds>`: Default timeout for assertions. Overrides `--timeout` for assertion actions.
 - `--chrome`: Use Chrome. This is the default.
 - `--edge`: Use Microsoft Edge.
 - `--firefox`: Use Firefox.
@@ -93,6 +96,7 @@ cmg run tests\flows --grep checkout --tag smoke --retries 2 --shard 1/3
 cmg run tests\flows --max-failures 1
 cmg run tests\flows --repeat-each 3
 cmg run tests\flows --list --grep checkout
+cmg run tests\flows --timeout 10000 --navigation-timeout 15000 --assertion-timeout 5000
 ```
 
 Use runner options on test declarations for provider-style focus and skip behavior:

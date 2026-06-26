@@ -4,6 +4,32 @@ All actions fail fast. If an action fails, later actions are not executed.
 
 Browser JavaScript dialogs are not silently removed, accepted, or dismissed through the browser protocol. Use `captureDialogs` and `setDialogBehavior` before the page action that is expected to call `alert`, `confirm`, or `prompt`.
 
+## Default Timeouts
+
+```text
+setDefaultTimeout 10000
+setDefaultNavigationTimeout 15000
+setDefaultAssertionTimeout 5000
+setDefaultExpectTimeout 5000
+```
+
+Default timeout actions change later timeout-capable actions in the current direct script or `cmg run` test. They are useful when a flow runs against a slow app and repeating `timeout=` on every wait would make the script harder to read.
+
+- `setDefaultTimeout`: Applies to waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions unless a more specific default exists.
+- `setDefaultNavigationTimeout`: Applies to navigation actions and navigation waits.
+- `setDefaultAssertionTimeout`: Applies to text, evaluated, element-state, accessibility, and related assertion actions.
+- `setDefaultExpectTimeout`: Alias for `setDefaultAssertionTimeout`.
+
+Explicit action-level `timeout=<milliseconds>` always wins. The `browser control script` and `cmg run` commands also accept `--timeout`, `--navigation-timeout`, and `--assertion-timeout` to set whole-run defaults before the first action.
+
+Output:
+
+- `DEFAULT_TIMEOUT <line> <milliseconds>`
+- `DEFAULT_NAVIGATION_TIMEOUT <line> <milliseconds>`
+- `DEFAULT_ASSERTION_TIMEOUT <line> <milliseconds>`
+
+These actions do not move the virtual pointer. In GIF recordings, put them inside a `step` or pair them with a `caption` when the timeout policy should be visible to viewers.
+
 ## `navigate`, `goto`, And `visit`
 
 ```text

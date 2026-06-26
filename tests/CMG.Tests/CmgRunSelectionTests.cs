@@ -115,5 +115,8 @@ public sealed class CmgRunSelectionTests
             repeatEach,
             true,
             shardIndex,
-            shardCount);
+            shardCount,
+            null,
+            null,
+            null);
 }

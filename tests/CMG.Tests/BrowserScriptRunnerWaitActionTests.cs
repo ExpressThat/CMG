@@ -38,6 +38,80 @@ public sealed class BrowserScriptRunnerWaitActionTests
     }
 
     [Fact]
+    public void RunText_SetDefaultTimeoutAppliesToLaterWaits()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("setDefaultTimeout 750\nwaitForSelector \"#ready\"", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(750, client.LastWaitTimeout);
+        Assert.Contains("DEFAULT_TIMEOUT 001 750", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_SetDefaultTimeoutRejectsNegativeValues()
+    {
+        var result = Runner().RunText("setDefaultTimeout -1", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("setDefaultTimeout= must be zero or greater", result.Error);
+    }
+
+    [Fact]
+    public void RunText_ExplicitTimeoutOverridesDefaultTimeout()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("setDefaultTimeout 750\nwaitForSelector \"#ready\" timeout=125", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(125, client.LastWaitTimeout);
+    }
+
+    [Fact]
+    public void RunText_CommandTimeoutOptionsApplyBeforeFirstAction()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText(
+            "waitForSelector \"#ready\"",
+            "debug",
+            client,
+            timeouts: new ScriptTimeoutOptions(DefaultTimeout: 900));
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(900, client.LastWaitTimeout);
+    }
+
+    [Fact]
+    public void RunText_NavigationTimeoutAppliesToNavigationActions()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText(
+            "setDefaultNavigationTimeout 600\nnavigate \"https://example.test\" waitUntil=load",
+            "debug",
+            client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("Date.now() + 600", client.LastExpression);
+        Assert.Contains("DEFAULT_NAVIGATION_TIMEOUT 001 600", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_AssertionTimeoutOptionAppliesToAssertions()
+    {
+        var client = new FakeAutomationClient();
+        client.TextResponses.Enqueue("Loading");
+        client.TextResponses.Enqueue("Ready");
+        var result = Runner().RunText(
+            "assertText \"#status\" \"Ready\"",
+            "debug",
+            client,
+            timeouts: new ScriptTimeoutOptions(DefaultTimeout: 100, AssertionTimeout: 250));
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("PASS 001 assertText #status Ready", result.StdoutLines);
+    }
+
+    [Fact]
     public void RunText_WaitForSelectorNormalizesRichLocator()
     {
         var result = Runner().RunText("waitForSelector text=Ready", "debug", new FakeAutomationClient());

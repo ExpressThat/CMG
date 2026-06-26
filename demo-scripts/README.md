@@ -204,5 +204,7 @@ dotnet run -- --firefox browser close
 - `112-direct-step-block.cmgscript`: Demonstrates shared `step` caption blocks in a direct script.
 - `113-runner-step-block.cmgscript`: Demonstrates shared `step` caption blocks in the structured runner DSL.
 - `114-pointer-click-variants-runner.cmgscript`: Demonstrates optioned double-click and context-click dispatch in the structured runner DSL.
+- `115-default-timeouts.cmgscript`: Demonstrates script-level default timeout policy in a direct script.
+- `116-default-timeouts-runner.cmgscript`: Demonstrates script-level default timeout policy in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.

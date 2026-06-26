@@ -468,6 +468,7 @@ Storage actions validate the operation, required key/value arguments, and suppor
 ```text
 Line 6: waitForFunction failed. waitForFunction did not become truthy within 5000ms.
 Line 7: waitForTimeout failed. delay must be a positive integer.
+Line 8: setDefaultTimeout failed. setDefaultTimeout= must be zero or greater.
 ```
 
 Wait failures include whether the selector, expression, or timeout argument caused the failure.

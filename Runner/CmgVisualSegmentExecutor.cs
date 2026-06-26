@@ -39,12 +39,13 @@ public sealed partial class CmgVisualSegmentExecutor
         var steps = new List<CmgStepResult>();
         var commandGif = BuildGifPath(test, options, attempt);
         var suppressGifBlocks = commandGif is not null;
+        var timeouts = BuildTimeoutOptions(options);
 
         foreach (var action in test.Actions)
         {
             if (IsRecordingBlock(action.Kind) && !suppressGifBlocks)
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null);
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts);
                 if (!AppendResult(flush, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
@@ -56,7 +57,7 @@ public sealed partial class CmgVisualSegmentExecutor
                     gifs.Add(gif.FullName);
                 }
 
-                if (!RunActions(action.Children, remoteDebuggingUrl, gif, output, steps, out error))
+                if (!RunActions(action.Children, remoteDebuggingUrl, gif, timeouts, output, steps, out error))
                 {
                     return Fail(test, output, error, gifs, steps);
                 }
@@ -66,13 +67,13 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null);
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts);
                 if (!AppendResult(flush, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
                 }
 
-                var apiStep = apiRequestRunner.Run(action);
+                var apiStep = apiRequestRunner.Run(ApplyRunTimeoutDefault(action, options));
                 output.AddRange(apiStep.Output);
                 steps.Add(apiStep);
                 if (!apiStep.Success)
@@ -85,7 +86,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("storageState", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null);
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts);
                 if (!AppendResult(flush, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
@@ -104,7 +105,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("expectScreenshot", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null);
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts);
                 if (!AppendResult(flush, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
@@ -123,7 +124,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("uploadFiles", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null);
+                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts);
                 if (!AppendResult(flush, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
@@ -148,7 +149,7 @@ public sealed partial class CmgVisualSegmentExecutor
             }
         }
 
-        var final = RunLines(pending, remoteDebuggingUrl, commandGif);
+        var final = RunLines(pending, remoteDebuggingUrl, commandGif, timeouts);
         if (!AppendResult(final, output, steps, test.Actions.LastOrDefault(), commandGif, out var finalError))
         {
             return Fail(test, output, finalError, gifs, steps);
@@ -162,7 +163,7 @@ public sealed partial class CmgVisualSegmentExecutor
         return new CmgTestResult(test.Name, test.SourcePath, true, output, null, string.Join(';', gifs), steps);
     }
 
-    private ScriptRunResult RunLines(List<string> lines, string remoteDebuggingUrl, FileInfo? gif)
+    private ScriptRunResult RunLines(List<string> lines, string remoteDebuggingUrl, FileInfo? gif, ScriptTimeoutOptions? timeouts)
     {
         if (lines.Count is 0)
         {
@@ -171,7 +172,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
         var script = string.Join(Environment.NewLine, lines);
         lines.Clear();
-        return scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif);
+        return scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, timeouts);
     }
 
     private static bool AppendResult(

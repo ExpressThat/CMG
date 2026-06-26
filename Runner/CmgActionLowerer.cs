@@ -65,6 +65,7 @@ public sealed partial class CmgActionLowerer
             "goto" or "visit" => [ToLine("navigate", action.Arguments, action.Options)],
             "navigate" or "waitforelement" or
             "press" or "keyboardshortcut" or "shortcut" or "hotkey" or "keydown" or "keyup" or "inserttext" or "showmessagebar" or "delay" or "screenshotpage" or
+            "setdefaulttimeout" or "setdefaultnavigationtimeout" or "setdefaultassertiontimeout" or "setdefaultexpecttimeout" or
             "setclipboard" or "writeclipboard" or "readclipboard" or "clearclipboard" or
             "emulate" or "emulatemedia" or "setgeolocation" or "grantpermissions" or "clearpermissions" or
             "setjavascriptenabled" or "javascriptenabled" or "bypasscsp" or "serviceworkers" or "setserviceworkers" or "waitfordownload" or

@@ -9,6 +9,7 @@ cmg browser control script --file <path>
 cmg browser control script --file -
 cmg browser control script --file <path> --gif <path>
 cmg browser control script --file <path> --trace <path>
+cmg browser control script --file <path> --timeout 10000 --assertion-timeout 5000
 cmg --chrome browser control script --file <path>
 cmg --edge browser control script --file <path>
 cmg --firefox browser control script --file <path>
@@ -20,6 +21,9 @@ cmg --firefox browser control script --file <path>
 - `--file -`: Read script text from stdin.
 - `--gif <path>`: Optional output path for an animated GIF recording of the script run.
 - `--trace <path>`: Optional output path for a CMG script trace JSON file. The trace includes step names, line numbers, stdout lines, and failure reasons.
+- `--timeout <milliseconds>`: Default timeout for timeout-capable waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions that do not set `timeout=`.
+- `--navigation-timeout <milliseconds>`: Default timeout for navigation actions and navigation waits.
+- `--assertion-timeout <milliseconds>`: Default timeout for assertions. Overrides `--timeout` for assertion actions.
 
 ## Behavior
 
@@ -58,8 +62,12 @@ PASS 001 navigate C:\Projects\CMG\index.html
 NAVIGATED 001 file:///C:/Projects/CMG/index.html
 PASS 002 waitForElement #openProfileDialog
 PASS 003 step Open dialog
-SCREENSHOT 004 C:\Projects\CMG\profile-dialog.png
-EVALUATE 005 CMG Browser Control Test Page
+PASS 004 setDefaultTimeout 10000
+DEFAULT_TIMEOUT 004 10000
+PASS 005 screenshot #profileDialog
+SCREENSHOT 005 C:\Projects\CMG\profile-dialog.png
+PASS 006 evaluate document.title
+EVALUATE 006 CMG Browser Control Test Page
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 TRACE C:\Projects\CMG\demo-output\dialog-flow.trace.json
 ```
@@ -84,6 +92,7 @@ Line 4: waitForElement failed. No element matched selector '#missing'.
 ```text
 navigate "C:\Projects\CMG\index.html"
 waitForElement "#openProfileDialog" timeout=5000
+setDefaultAssertionTimeout 5000
 
 step "Open the profile dialog" {
   click "#openProfileDialog"

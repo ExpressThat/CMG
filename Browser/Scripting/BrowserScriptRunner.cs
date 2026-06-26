@@ -12,7 +12,13 @@ public sealed partial class BrowserScriptRunner
         this.parser = parser;
     }
 
-    public ScriptRunResult Run(string file, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif, FileInfo? trace = null)
+    public ScriptRunResult Run(
+        string file,
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        FileInfo? gif,
+        FileInfo? trace = null,
+        ScriptTimeoutOptions? timeouts = null)
     {
         var readResult = ReadScript(file);
         if (!readResult.Success)
@@ -20,15 +26,26 @@ public sealed partial class BrowserScriptRunner
             return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
         }
 
-        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace);
+        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts);
     }
 
-    public ScriptRunResult RunText(string script, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif = null)
+    public ScriptRunResult RunText(
+        string script,
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        FileInfo? gif = null,
+        ScriptTimeoutOptions? timeouts = null)
     {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace: null);
+        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts);
     }
 
-    private ScriptRunResult RunParsedScript(string script, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif, FileInfo? trace)
+    private ScriptRunResult RunParsedScript(
+        string script,
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts)
     {
         var importResult = ScriptImportExpander.Expand(script, Directory.GetCurrentDirectory());
         if (!importResult.Success)
@@ -45,7 +62,10 @@ public sealed partial class BrowserScriptRunner
 
         var context = new ScriptExecutionContext
         {
-            Trace = trace is null ? null : new BrowserScriptTraceSession(trace.FullName, suppressNested: true)
+            Trace = trace is null ? null : new BrowserScriptTraceSession(trace.FullName, suppressNested: true),
+            DefaultTimeout = timeouts?.DefaultTimeout,
+            NavigationTimeout = timeouts?.NavigationTimeout,
+            AssertionTimeout = timeouts?.AssertionTimeout
         };
         var output = new List<string>();
         using var recorder = gif is null
@@ -160,6 +180,7 @@ public sealed partial class BrowserScriptRunner
             action = ShouldExpandBeforeDispatch(sourceAction.Name) ? ExpandVariables(sourceAction, context) : sourceAction;
             action = ApplySelectorScope(action, context);
             action = ApplyFrameScope(action, context);
+            action = ApplyTimeoutDefaults(action, context);
             recorder?.BeforeAction(action);
             var stepOutput = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
             recorder?.AfterAction(action);

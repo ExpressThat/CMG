@@ -18,7 +18,10 @@ public interface ICmgRunCommandHandler
         int maxFailures,
         int repeatEach,
         bool listOnly,
-        string? shard);
+        string? shard,
+        int? timeout,
+        int? navigationTimeout,
+        int? assertionTimeout);
 }
 
 public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
@@ -44,7 +47,10 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         int maxFailures,
         int repeatEach,
         bool listOnly,
-        string? shard)
+        string? shard,
+        int? timeout,
+        int? navigationTimeout,
+        int? assertionTimeout)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
@@ -72,7 +78,10 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             Math.Max(1, repeatEach),
             listOnly,
             shardIndex,
-            shardCount));
+            shardCount,
+            NonNegative(timeout),
+            NonNegative(navigationTimeout),
+            NonNegative(assertionTimeout)));
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);
@@ -104,4 +113,6 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             .Select(test => $"TEST ERROR {test.Name} reason={test.Error}")
             .ToArray();
     }
+
+    private static int? NonNegative(int? value) => value is null ? null : Math.Max(0, value.Value);
 }

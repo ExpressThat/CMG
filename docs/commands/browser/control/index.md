@@ -43,7 +43,7 @@ cmg --firefox browser control --help
 cmg browser control capture getElement "h1" --html
 cmg browser control validateScript --file flow.cmgscript
 cmg browser control script --file flow.cmgscript
-cmg browser control script --file flow.cmgscript --trace artifacts\flow.trace.json
+cmg browser control script --file flow.cmgscript --trace artifacts\flow.trace.json --timeout 10000
 cmg browser control navigation title
 cmg browser control navigation waitForLoadState complete
 cmg browser control wait function "window.appReady" --timeout 5000

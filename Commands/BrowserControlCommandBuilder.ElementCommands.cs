@@ -1,5 +1,6 @@
 using System.CommandLine;
 using CMG.Browser;
+using CMG.Browser.Scripting;
 
 namespace CMG.Commands;
 
@@ -65,12 +66,27 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Write a CMG script trace JSON file for the run."
         };
+        var timeoutOption = new Option<int?>("--timeout")
+        {
+            Description = "Default timeout in milliseconds for timeout-capable actions."
+        };
+        var navigationTimeoutOption = new Option<int?>("--navigation-timeout")
+        {
+            Description = "Default timeout in milliseconds for navigation actions."
+        };
+        var assertionTimeoutOption = new Option<int?>("--assertion-timeout")
+        {
+            Description = "Default timeout in milliseconds for assertion actions."
+        };
 
         var command = new Command("script", "Run a .cmgscript browser automation script.")
         {
             fileOption,
             gifOption,
-            traceOption
+            traceOption,
+            timeoutOption,
+            navigationTimeoutOption,
+            assertionTimeoutOption
         };
 
         command.SetAction(parseResult =>
@@ -78,8 +94,12 @@ public sealed partial class BrowserControlCommandBuilder
             var file = parseResult.GetValue(fileOption) ?? string.Empty;
             var gif = parseResult.GetValue(gifOption);
             var trace = parseResult.GetValue(traceOption);
+            var timeouts = new ScriptTimeoutOptions(
+                parseResult.GetValue(timeoutOption),
+                parseResult.GetValue(navigationTimeoutOption),
+                parseResult.GetValue(assertionTimeoutOption));
 
-            return browserControlCommandHandler.RunScript(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), file, gif, trace);
+            return browserControlCommandHandler.RunScript(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), file, gif, trace, timeouts);
         });
 
         return command;

@@ -1,0 +1,8 @@
+setDefaultTimeout 5000
+setDefaultNavigationTimeout 10000
+setDefaultAssertionTimeout 2000
+
+setContent "<main><button id='save'>Save</button><output id='status'>Ready</output></main>"
+waitForSelector "#save"
+expectText "#status" "Ready"
+click "#save"
