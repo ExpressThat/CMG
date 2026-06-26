@@ -72,7 +72,7 @@ public sealed partial class CmgActionLowerer
             "clearcontext" or "resetcontext" or
             "newcontext" or "usecontext" or "listcontexts" or "closecontext" or
             "listworkers" or "waitforworker" or "workerevaluate" or "workerintercept" or
-            "startcoverage" or "stopcoverage" or
+            "startcoverage" or "stopcoverage" or "starttracing" or "stoptracing" or "tracingstart" or "tracingstop" or
             "accessibilitysnapshot" or "expectaccessible" or
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" or
             "printpdf" or "pdf" or

@@ -141,6 +141,17 @@ public sealed partial class BrowserScriptRunner
         output.Add($"GIF {recorder.OutputPath}");
     }
 
+    private static void FinishTrace(ScriptExecutionContext context, bool success, string? error, List<string> output)
+    {
+        if (context.Trace?.IsActive is not true || context.Trace.OutputPath is null)
+        {
+            return;
+        }
+
+        var path = context.Trace.Finish(null, success, error);
+        output.Add($"TRACE {path}");
+    }
+
     [GeneratedRegex(@"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")]
     private static partial Regex VariableRegex();
 }

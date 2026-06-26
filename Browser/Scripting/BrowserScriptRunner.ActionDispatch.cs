@@ -114,6 +114,7 @@ public sealed partial class BrowserScriptRunner
             "newcontext" or "usecontext" or "listcontexts" or "closecontext" => ExecuteBrowserContextAction(remoteDebuggingUrl, automationClient, action, context),
             "listworkers" or "waitforworker" or "workerevaluate" or "workerintercept" => ExecuteWorkerAction(remoteDebuggingUrl, automationClient, action),
             "startcoverage" or "stopcoverage" => ExecuteCoverageAction(remoteDebuggingUrl, automationClient, action),
+            "starttracing" or "stoptracing" or "tracingstart" or "tracingstop" => ExecuteTraceAction(action, context),
             "accessibilitysnapshot" => ExecuteAccessibilitySnapshot(remoteDebuggingUrl, automationClient, action),
             "expectaccessible" => ExecuteExpectAccessible(remoteDebuggingUrl, automationClient, action),
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),

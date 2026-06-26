@@ -454,6 +454,15 @@ Line 2: emulate failed. Unknown device 'Pocket Fridge'. Known devices: iPhone 13
 
 Emulation failures include invalid viewport shapes, invalid page-environment values, and unknown device preset names.
 
+## Trace Failure
+
+```text
+Line 8: stopTracing failed. Tracing is not active.
+Line 9: stopTracing failed. stopTracing requires path= or output= when startTracing did not set one.
+```
+
+Trace failures explain whether tracing was missing, already active, or missing an output path. If `startTracing` included `path` or `output`, CMG writes a partial trace when a later action fails.
+
 ## Mouse Failure
 
 ```text

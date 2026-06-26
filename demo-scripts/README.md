@@ -159,6 +159,8 @@ dotnet run -- --firefox browser close
 - `69-cookie-attributes-runner.cmgscript`: Demonstrates the same cookie attributes in the structured runner DSL.
 - `70-device-emulation.cmgscript`: Demonstrates named-device emulation in a direct script.
 - `71-device-emulation-runner.cmgscript`: Demonstrates named-device emulation in the structured runner DSL.
+- `72-script-tracing.cmgscript`: Demonstrates direct-script partial trace capture.
+- `73-script-tracing-runner.cmgscript`: Demonstrates partial trace capture in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

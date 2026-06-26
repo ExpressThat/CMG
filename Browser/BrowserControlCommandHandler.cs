@@ -8,6 +8,9 @@ public interface IBrowserControlCommandHandler
 
     int RunScript(BrowserKind browserKind, string file, FileInfo? gif);
 
+    int RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace) =>
+        RunScript(browserKind, file, gif);
+
     int RunScriptAction(BrowserKind browserKind, string scriptLine);
 
     int ValidateScript(string file);
@@ -78,12 +81,17 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
 
     public int RunScript(BrowserKind browserKind, string file, FileInfo? gif)
     {
+        return RunScript(browserKind, file, gif, trace: null);
+    }
+
+    public int RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace)
+    {
         if (!ValidateBrowserSelection(browserKind))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScript(browserKind, file, gif);
+        var result = browserControlService.RunScript(browserKind, file, gif, trace);
 
         return WriteScriptResult(result);
     }

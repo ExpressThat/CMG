@@ -562,9 +562,19 @@ Write trace files for deeper debugging:
 
 ```powershell
 dotnet run -- run demo-scripts\20-v2-runner-flow.cmgscript --trace demo-output\traces
+dotnet run -- browser control script --file demo-scripts\72-script-tracing.cmgscript --trace demo-output\script.trace.json
 ```
 
 Each trace is a JSON file with test metadata, steps, output, errors, and GIF references.
+
+Scripts can also trace only part of a flow:
+
+```text
+startTracing path="demo-output\partial.trace.json"
+navigate "https://example.com/profile"
+expectText "body" "Profile"
+stopTracing
+```
 
 ## Exposed Page Functions
 

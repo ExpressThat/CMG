@@ -14,6 +14,8 @@ internal sealed class ScriptExecutionContext
 
     public Dictionary<string, ScriptMacro> Macros { get; } = new(StringComparer.OrdinalIgnoreCase);
 
+    public BrowserScriptTraceSession? Trace { get; set; }
+
     public int CurrentVariableScopeIndex => variableScopes.Count - 1;
 
     public bool TryGetVariable(string name, out string value)
@@ -68,6 +70,13 @@ internal sealed class ScriptExecutionContext
 }
 
 internal sealed record ScriptMacro(BrowserScriptAction Action, int DefinitionScopeIndex);
+
+internal sealed record BrowserScriptTraceStep(
+    int LineNumber,
+    string Name,
+    bool Success,
+    string? Error,
+    IReadOnlyList<string> Output);
 
 internal sealed record ScriptReadResult(bool Success, string? Script, string? Error)
 {

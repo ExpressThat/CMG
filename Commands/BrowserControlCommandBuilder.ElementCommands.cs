@@ -61,19 +61,25 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Write an animated GIF recording of the script to this path."
         };
+        var traceOption = new Option<FileInfo?>("--trace")
+        {
+            Description = "Write a CMG script trace JSON file for the run."
+        };
 
         var command = new Command("script", "Run a .cmgscript browser automation script.")
         {
             fileOption,
-            gifOption
+            gifOption,
+            traceOption
         };
 
         command.SetAction(parseResult =>
         {
             var file = parseResult.GetValue(fileOption) ?? string.Empty;
             var gif = parseResult.GetValue(gifOption);
+            var trace = parseResult.GetValue(traceOption);
 
-            return browserControlCommandHandler.RunScript(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), file, gif);
+            return browserControlCommandHandler.RunScript(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), file, gif, trace);
         });
 
         return command;

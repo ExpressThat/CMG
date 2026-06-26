@@ -1816,6 +1816,35 @@ Output:
 
 Coverage actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions for GIF narration.
 
+### `startTracing` And `stopTracing`
+
+```text
+startTracing path="artifacts\script.trace.json"
+navigate "https://example.com"
+stopTracing
+```
+
+Collects a CMG script trace with step line numbers, action names, stdout lines, and failure reasons. Direct `browser control script` can also trace the whole run with `--trace <path>`. Inside a script, `startTracing` begins a partial trace and `stopTracing` writes it. If `startTracing` has a `path` or `output` option and the script fails before `stopTracing`, CMG writes the partial trace with `success=false` and the failure message. During command-level `browser control script --trace`, nested trace actions are suppressed so the command-level trace remains the single source of truth.
+
+Aliases:
+
+- `tracingStart`: Alias for `startTracing`.
+- `tracingStop`: Alias for `stopTracing`.
+
+Options:
+
+- `path`: Optional trace JSON path. May be supplied to `startTracing` or `stopTracing`.
+- `output`: Alias for `path`.
+
+Output:
+
+- `TRACE_STARTED <line> <path>` when tracing starts.
+- `TRACE <line> <path>` when `stopTracing` writes the trace.
+- `TRACE <path>` when command-level tracing or active failure tracing writes at script end.
+- `TRACE_BLOCK_SUPPRESSED <line>` when command-level tracing suppresses nested trace actions.
+
+Tracing does not move the virtual pointer. It records the same output and failure reasons that appear in stdout, reports, and GIF-aware runs.
+
 ### `expectScreenshot`
 
 ```text

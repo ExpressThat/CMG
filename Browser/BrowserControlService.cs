@@ -9,6 +9,9 @@ public interface IBrowserControlService
 
     ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif);
 
+    ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace) =>
+        RunScript(browserKind, file, gif);
+
     ScriptRunResult RunScriptAction(BrowserKind browserKind, string scriptLine);
 }
 
@@ -59,6 +62,11 @@ public sealed class BrowserControlService : IBrowserControlService
 
     public ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif)
     {
+        return RunScript(browserKind, file, gif, trace: null);
+    }
+
+    public ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace)
+    {
         if (file is not "-" && !File.Exists(file))
         {
             return ScriptRunResult.Fail($"Script file '{file}' was not found.");
@@ -70,7 +78,7 @@ public sealed class BrowserControlService : IBrowserControlService
             return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind));
         }
 
-        return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif);
+        return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace);
     }
 
     public ScriptRunResult RunScriptAction(BrowserKind browserKind, string scriptLine)

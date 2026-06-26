@@ -77,6 +77,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("workerIntercept", "/api", "workerIntercept \"/api\"")]
     [InlineData("startCoverage", null, "startCoverage")]
     [InlineData("stopCoverage", null, "stopCoverage")]
+    [InlineData("startTracing", null, "startTracing")]
+    [InlineData("stopTracing", null, "stopTracing")]
     [InlineData("addInitScript", "window.__ready = true;", "addInitScript \"window.__ready = true;\"")]
     [InlineData("evaluateOnNewDocument", "window.__ready = true;", "evaluateOnNewDocument \"window.__ready = true;\"")]
     [InlineData("addScriptTag", "window.__tag = true;", "addScriptTag \"window.__tag = true;\"")]

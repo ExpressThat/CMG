@@ -12,7 +12,7 @@ public sealed partial class BrowserScriptRunner
         this.parser = parser;
     }
 
-    public ScriptRunResult Run(string file, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif)
+    public ScriptRunResult Run(string file, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif, FileInfo? trace = null)
     {
         var readResult = ReadScript(file);
         if (!readResult.Success)
@@ -20,15 +20,15 @@ public sealed partial class BrowserScriptRunner
             return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
         }
 
-        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif);
+        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace);
     }
 
     public ScriptRunResult RunText(string script, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif = null)
     {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif);
+        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace: null);
     }
 
-    private ScriptRunResult RunParsedScript(string script, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif)
+    private ScriptRunResult RunParsedScript(string script, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif, FileInfo? trace)
     {
         var importResult = ScriptImportExpander.Expand(script, Directory.GetCurrentDirectory());
         if (!importResult.Success)
@@ -43,7 +43,10 @@ public sealed partial class BrowserScriptRunner
             return ScriptRunResult.Fail(parseResult.Error ?? "Could not parse script.");
         }
 
-        var context = new ScriptExecutionContext();
+        var context = new ScriptExecutionContext
+        {
+            Trace = trace is null ? null : new BrowserScriptTraceSession(trace.FullName, suppressNested: true)
+        };
         var output = new List<string>();
         using var recorder = gif is null
             ? null
@@ -58,15 +61,18 @@ public sealed partial class BrowserScriptRunner
         catch (ScriptActionFailedException exception)
         {
             FinishRecording(recorder, output);
+            FinishTrace(context, success: false, exception.Message, output);
             return ScriptRunResult.Fail(exception.Message, output);
         }
         catch (LoopControlException exception)
         {
             FinishRecording(recorder, output);
+            FinishTrace(context, success: false, $"{exception.Kind} must be inside a loop.", output);
             return ScriptRunResult.Fail($"{exception.Kind} must be inside a loop.", output);
         }
 
         FinishRecording(recorder, output);
+        FinishTrace(context, success: true, error: null, output);
 
         return ScriptRunResult.Ok(output);
     }
@@ -155,12 +161,16 @@ public sealed partial class BrowserScriptRunner
             recorder?.BeforeAction(action);
             var stepOutput = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
             recorder?.AfterAction(action);
-            output.Add($"PASS {stepNumber:000} {action.Name} {FormatActionForLog(action)}".TrimEnd());
-            output.AddRange(stepOutput);
+            var stepLines = new List<string> { $"PASS {stepNumber:000} {action.Name} {FormatActionForLog(action)}".TrimEnd() };
+            stepLines.AddRange(stepOutput);
+            output.AddRange(stepLines);
+            context.Trace?.Record(action, success: true, error: null, stepLines);
         }
         catch (Exception exception) when (exception is ScriptExecutionException or ChromeDevToolsException or ElementNotFoundException)
         {
-            throw new ScriptActionFailedException($"Line {action.LineNumber}: {action.Name} failed. {exception.Message}");
+            var error = $"Line {action.LineNumber}: {action.Name} failed. {exception.Message}";
+            context.Trace?.Record(action, success: false, error, []);
+            throw new ScriptActionFailedException(error);
         }
     }
 
