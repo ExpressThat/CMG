@@ -1567,6 +1567,7 @@ Saves or loads page storage state for the current browser page. The state includ
 
 ```text
 route "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
+route "/api/profile" bodyFile="fixtures/profile.json" contentType="application/json"
 intercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
 intercept "/api/profile" method=POST times=1 delay=250 status=201 body="{\"saved\":true}"
 mockResponse "/api/profile" header="X-Trace: demo" headers="Cache-Control: no-store; X-Mode: mock"
@@ -1585,12 +1586,14 @@ replayHar path="artifacts\network.har"
 clearRoutes
 ```
 
-Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Routes and network waits match URLs with `match=contains|exact|regex`; default is `contains`. Use `ignoreCase=true` for case-insensitive URL matching. Use `method=` to restrict a route to one HTTP method, `times=` to remove it after a fixed number of matches, and `delay=` to simulate response latency. Routes can set mocked response headers with `header=`, `headers=`, `headerName=`, and `headerValue=`. Use `abort=true` or `action=abort` to reject matching requests instead; aborted matches are recorded in the request failure log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest` waits for dispatch, `waitForRequestFinished` and `waitForResponse` wait for completed responses, and `waitForRequestFailed` waits for failures. Waits can also filter by `method=`, `status=`, response or error text with `contains=`, mocked-state with `mocked=true|false`, and headers with `header=`, `headerName=`, and `headerValue=`; timeout failures include the requested filters.
+Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Routes and network waits match URLs with `match=contains|exact|regex`; default is `contains`. Use `ignoreCase=true` for case-insensitive URL matching. Use `method=` to restrict a route to one HTTP method, `times=` to remove it after a fixed number of matches, and `delay=` to simulate response latency. Routes can set mocked response bodies inline with `body=` or from disk with `bodyFile=`/`file=`, and response headers with `header=`, `headers=`, `headerName=`, and `headerValue=`. Use `abort=true` or `action=abort` to reject matching requests instead; aborted matches are recorded in the request failure log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest` waits for dispatch, `waitForRequestFinished` and `waitForResponse` wait for completed responses, and `waitForRequestFailed` waits for failures. Waits can also filter by `method=`, `status=`, response or error text with `contains=`, mocked-state with `mocked=true|false`, and headers with `header=`, `headerName=`, and `headerValue=`; timeout failures include the requested filters.
 
 Options:
 
 - `status`: Optional mocked response status. Default is `200`.
 - `body`: Optional mocked response body. Default is empty text.
+- `bodyFile`: Optional mocked response body file path.
+- `file`: Alias for `bodyFile`.
 - `contentType`: Optional mocked response content type. Default is `text/plain`.
 - `method`: Optional HTTP method filter, for example `GET` or `POST`.
 - `times`: Optional positive integer. The route is removed after that many matches.

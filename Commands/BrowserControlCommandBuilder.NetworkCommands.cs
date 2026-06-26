@@ -43,6 +43,7 @@ public sealed partial class BrowserControlCommandBuilder
         var pattern = new Argument<string>("pattern") { Description = "URL text to match." };
         var status = new Option<int?>("--status") { Description = "Mocked response status." };
         var body = new Option<string?>("--body") { Description = "Mocked response body." };
+        var bodyFile = new Option<FileInfo?>("--body-file") { Description = "Mocked response body file." };
         var contentType = new Option<string?>("--content-type") { Description = "Mocked response content type." };
         var method = new Option<string?>("--method") { Description = "HTTP method filter." };
         var times = new Option<int?>("--times") { Description = "Remove route after this many matches." };
@@ -59,6 +60,7 @@ public sealed partial class BrowserControlCommandBuilder
             pattern,
             status,
             body,
+            bodyFile,
             contentType,
             method,
             times,
@@ -73,7 +75,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], RouteOptions(parseResult, status, body, contentType, method, times, delay, abort, header, headers, headerName, headerValue, match, ignoreCase))));
+            ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], RouteOptions(parseResult, status, body, bodyFile, contentType, method, times, delay, abort, header, headers, headerName, headerValue, match, ignoreCase))));
         return command;
     }
 
@@ -114,6 +116,7 @@ public sealed partial class BrowserControlCommandBuilder
         ParseResult parseResult,
         Option<int?> status,
         Option<string?> body,
+        Option<FileInfo?> bodyFile,
         Option<string?> contentType,
         Option<string?> method,
         Option<int?> times,
@@ -128,6 +131,7 @@ public sealed partial class BrowserControlCommandBuilder
         CompactOptions([
             IntOption("status", parseResult.GetValue(status)),
             StringOption("body", parseResult.GetValue(body)),
+            StringOption("bodyFile", parseResult.GetValue(bodyFile)?.FullName),
             StringOption("contentType", parseResult.GetValue(contentType)),
             StringOption("method", parseResult.GetValue(method)),
             IntOption("times", parseResult.GetValue(times)),

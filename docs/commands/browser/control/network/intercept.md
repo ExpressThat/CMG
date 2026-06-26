@@ -14,6 +14,7 @@ cmg browser control network intercept "<pattern>" [options]
 
 - `--status <status>`: Mocked response status.
 - `--body <body>`: Mocked response body.
+- `--body-file <file>`: Read mocked response body from a local file.
 - `--content-type <type>`: Mocked response content type.
 - `--match <contains|exact|regex>`: URL match mode. Default is `contains`.
 - `--ignore-case`: Match the URL without case sensitivity.
@@ -46,6 +47,7 @@ Writes browser, option, or action errors. Invalid match modes report `match= mus
 
 ```powershell
 cmg browser control network intercept "/api/profile" --method GET --status 200 --body "{\"name\":\"CMG\"}"
+cmg browser control network intercept "/api/profile" --body-file fixtures/profile.json --content-type application/json
 cmg browser control network intercept "/api/profile/\d+" --match regex --ignore-case --status 200
 cmg browser control network intercept "/api/profile" --headers "Cache-Control: no-store; X-Mode: mock"
 cmg browser control network intercept "/api/private" --abort

@@ -36,6 +36,15 @@ public sealed class BrowserScriptRunnerNetworkMatchTests
     }
 
     [Fact]
+    public void RunText_RouteRejectsMissingBodyFile()
+    {
+        var result = Runner().RunText("route \"/api\" bodyFile=\"missing.json\"", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("body file 'missing.json' was not found", result.Error);
+    }
+
+    [Fact]
     public void RunText_WaitForResponseSupportsRegexAndIgnoreCase()
     {
         var client = new FakeAutomationClient();

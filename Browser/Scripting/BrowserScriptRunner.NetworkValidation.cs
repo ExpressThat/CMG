@@ -20,6 +20,7 @@ public sealed partial class BrowserScriptRunner
 
         ValidateNetworkUrlMatchOptions(action);
         ValidateRouteHeaderOptions(action);
+        ValidateRouteBodyFile(action);
     }
 
     private static void ValidateNetworkWaitOptions(BrowserScriptAction action)
@@ -50,6 +51,20 @@ public sealed partial class BrowserScriptRunner
         }
 
         ValidateNetworkUrlMatchOptions(action);
+    }
+
+    private static void ValidateRouteBodyFile(BrowserScriptAction action)
+    {
+        var bodyFile = action.Options.GetValueOrDefault("bodyFile") ?? action.Options.GetValueOrDefault("file");
+        if (string.IsNullOrWhiteSpace(bodyFile))
+        {
+            return;
+        }
+
+        if (!File.Exists(Path.GetFullPath(bodyFile)))
+        {
+            throw new ScriptExecutionException($"{action.Name} body file '{bodyFile}' was not found.");
+        }
     }
 
     private static void ValidateNetworkUrlMatchOptions(BrowserScriptAction action)

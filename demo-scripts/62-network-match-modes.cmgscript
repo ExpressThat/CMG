@@ -1,6 +1,7 @@
 set page "C:/Projects/CMG/index.html"
 navigate "${page}"
-route "/api/profile/\\d+" match=regex ignoreCase=true method=POST status=201 body="created" contentType="text/plain" header="X-Trace: demo"
+writeFile path="demo-output/route-body.txt" text="created"
+route "/api/profile/\\d+" match=regex ignoreCase=true method=POST status=201 bodyFile="demo-output/route-body.txt" contentType="text/plain" header="X-Trace: demo"
 evaluate "fetch('/api/Profile/42', { method: 'POST', headers: { Authorization: 'Bearer demo' } }).then(r => r.text())"
 waitForRequest "/api/profile/\\d+" match=regex ignoreCase=true method=POST header="Authorization: Bearer"
 waitForResponse "/api/Profile/42" match=exact status=201 contains=created mocked=true header="X-Trace: demo"

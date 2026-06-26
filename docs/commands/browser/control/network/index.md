@@ -48,7 +48,7 @@ cmg browser control network [command] [options]
 ```powershell
 cmg browser control network route "/api/profile" --status 200 --body "{\"name\":\"CMG\"}"
 cmg browser control network intercept "/api/profile/\d+" --match regex --ignore-case --method GET --status 200 --header "X-Trace: demo"
-cmg browser control network mockResponse "/api/profile" --status 200 --body "{\"name\":\"CMG\"}"
+cmg browser control network mockResponse "/api/profile" --body-file fixtures/profile.json --content-type application/json
 cmg browser control network waitForResponse "/api/profile" --status 200 --timeout 5000
 cmg browser control network waitForResponse "/api/profile/\d+" --match regex --ignore-case
 cmg browser control network setHeaders X-CMG-Agent true Accept application/json

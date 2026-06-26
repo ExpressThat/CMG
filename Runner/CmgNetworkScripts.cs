@@ -6,7 +6,7 @@ public static partial class CmgNetworkScripts
     {
         var pattern = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
         var status = action.Options.TryGetValue("status", out var statusValue) ? statusValue : "200";
-        var body = action.Options.TryGetValue("body", out var bodyValue) ? bodyValue : string.Empty;
+        var body = RouteBody(action);
         var contentType = action.Options.TryGetValue("contentType", out var typeValue) ? typeValue : "text/plain";
         var abort = IsAbortRoute(action) ? "true" : "false";
         var error = action.Options.TryGetValue("error", out var errorValue) ? errorValue : "Request aborted by CMG route";
@@ -223,5 +223,16 @@ public static partial class CmgNetworkScripts
         var index = header.IndexOf(':');
         if (index <= 0) return;
         headers[header[..index].Trim().ToLowerInvariant()] = header[(index + 1)..].Trim();
+    }
+
+    private static string RouteBody(CmgNode action)
+    {
+        var bodyFile = action.Options.GetValueOrDefault("bodyFile") ?? action.Options.GetValueOrDefault("file");
+        if (!string.IsNullOrWhiteSpace(bodyFile))
+        {
+            return File.ReadAllText(Path.GetFullPath(bodyFile));
+        }
+
+        return action.Options.TryGetValue("body", out var bodyValue) ? bodyValue : string.Empty;
     }
 }

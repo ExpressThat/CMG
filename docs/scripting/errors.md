@@ -494,6 +494,7 @@ Line 11: waitForResponse failed. waitForResponse option match= must be contains,
 Line 12: waitForRequest failed. Invalid network regex '[': Invalid pattern '[' at offset 1. Unterminated [] set.
 Line 13: route failed. route option ignoreCase= must be true or false.
 Line 14: route failed. route option header= headers must be formatted as Name: value.
+Line 15: route failed. route body file 'fixtures/profile.json' was not found.
 ```
 
 Routes and network waits match page `fetch()` and `XMLHttpRequest` URLs recorded by CMG's page-side network patch. Use `match=contains|exact|regex` and `ignoreCase=true` when substring matching is not specific enough. `waitForRequestFinished` waits for completed responses. `waitForRequestFailed` waits for rejected `fetch()` calls or XHR `error`, `abort`, or `timeout` events.

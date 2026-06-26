@@ -42,6 +42,17 @@ public sealed class BrowserControlCommandBuilderNetworkAliasTests
         Assert.Equal(expectedScript, handler.ScriptLine);
     }
 
+    [Fact]
+    public void RouteCommand_MapsBodyFileToScriptAction()
+    {
+        var file = new FileInfo(Path.Combine(Path.GetTempPath(), "profile.json"));
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse($"control network route /api --body-file \"{file.FullName}\"").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal($"route \"/api\" bodyFile=\"{file.FullName}\"", handler.ScriptLine);
+    }
+
     [Theory]
     [InlineData("waitForRequest /api/profile --match exact --method POST", "waitForRequest \"/api/profile\" method=\"POST\" match=\"exact\"")]
     [InlineData("waitForResponse /api/.+ --match regex --ignore-case", "waitForResponse \"/api/.+\" match=\"regex\" ignoreCase=\"true\"")]

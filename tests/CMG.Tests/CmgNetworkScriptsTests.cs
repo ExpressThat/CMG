@@ -72,6 +72,18 @@ public sealed class CmgNetworkScriptsTests
     }
 
     [Fact]
+    public void Route_CanReadBodyFromFile()
+    {
+        var file = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.json");
+        File.WriteAllText(file, """{"ok":true}""");
+        var action = Node("route", ["/api"], new Dictionary<string, string> { ["bodyFile"] = file });
+
+        var script = CmgNetworkScripts.Route(action);
+
+        Assert.Contains("""{"ok":true}""", script);
+    }
+
+    [Fact]
     public void Route_CanDelayMatchingRequests()
     {
         var action = Node("route", ["/api"], new Dictionary<string, string> { ["delay"] = "250" });

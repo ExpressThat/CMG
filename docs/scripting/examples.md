@@ -632,7 +632,8 @@ The request result appears in CLI output and reports. Failures include the expec
 ```text
 test "mocked profile" {
   navigate "https://example.com"
-  intercept "/api/profile/\\d+" match=regex ignoreCase=true delay=250 status=200 body="{\"name\":\"CMG\"}" contentType="application/json" header="X-Trace: demo"
+  writeFile path="demo-output/profile.json" text="{\"name\":\"CMG\"}"
+  intercept "/api/profile/\\d+" match=regex ignoreCase=true delay=250 status=200 bodyFile="demo-output/profile.json" contentType="application/json" header="X-Trace: demo"
   intercept "/api/profile" method=POST status=201 body="created"
   evaluate "fetch('/api/Profile/42').then(r => r.text())"
   evaluate "fetch('/api/profile', { method: 'POST', headers: { Authorization: 'Bearer demo' } }).then(r => r.text())"
