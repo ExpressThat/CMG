@@ -31,7 +31,11 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "containsText", "Assert that an element contains text."));
         command.Subcommands.Add(BuildTextAssertionCommand(browserOptions, "waitForText", "Wait until an element contains text."));
         command.Subcommands.Add(BuildBodyContainsCommand(browserOptions));
-        command.Subcommands.Add(BuildEvaluateAssertionCommand(browserOptions));
+        command.Subcommands.Add(BuildEvaluateAssertionCommand(browserOptions, "eval", "expectEval", "Assert a JavaScript expression result."));
+        command.Subcommands.Add(BuildEvaluateAssertionCommand(browserOptions, "expectEval", "expectEval", "Assert a JavaScript expression result."));
+        command.Subcommands.Add(BuildEvaluateAssertionCommand(browserOptions, "assertEval", "assertEval", "Assert a JavaScript expression result."));
+        command.Subcommands.Add(BuildEvaluateAssertionCommand(browserOptions, "expectExpression", "expectExpression", "Assert a JavaScript expression result."));
+        command.Subcommands.Add(BuildEvaluateAssertionCommand(browserOptions, "assertExpression", "assertExpression", "Assert a JavaScript expression result."));
         command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "visible", "expectVisible", "Assert that an element is visible."));
         command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "hidden", "expectHidden", "Assert that an element is hidden."));
         command.Subcommands.Add(BuildElementStateAssertionCommand(browserOptions, "enabled", "expectEnabled", "Assert that an element is enabled."));

@@ -31,16 +31,20 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildEvaluateAssertionCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildEvaluateAssertionCommand(
+        BrowserSelectionOptions browserOptions,
+        string name,
+        string action,
+        string description)
     {
         var expression = new Argument<string>("expression") { Description = "JavaScript expression to evaluate." };
         var equals = new Option<string?>("--equals") { Description = "Expected exact string value." };
         var contains = new Option<string?>("--contains") { Description = "Expected substring." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
-        var command = new Command("eval", "Assert a JavaScript expression result.") { expression, equals, contains, timeout };
+        var command = new Command(name, description) { expression, equals, contains, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("expectEval", [parseResult.GetValue(expression) ?? string.Empty], CompactOptions([
+            ToScriptLine(action, [parseResult.GetValue(expression) ?? string.Empty], CompactOptions([
                 StringOption("equals", parseResult.GetValue(equals)),
                 StringOption("contains", parseResult.GetValue(contains)),
                 IntOption("timeout", parseResult.GetValue(timeout))

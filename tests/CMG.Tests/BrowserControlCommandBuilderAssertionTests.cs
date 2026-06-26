@@ -35,6 +35,10 @@ public sealed class BrowserControlCommandBuilderAssertionTests
 
     [Theory]
     [InlineData("eval document.title --equals Checkout", "expectEval \"document.title\" equals=\"Checkout\"")]
+    [InlineData("expectEval document.title --equals Checkout", "expectEval \"document.title\" equals=\"Checkout\"")]
+    [InlineData("assertEval document.title --equals Checkout", "assertEval \"document.title\" equals=\"Checkout\"")]
+    [InlineData("expectExpression window.appReady --timeout 5000", "expectExpression \"window.appReady\" timeout=\"5000\"")]
+    [InlineData("assertExpression document.body.innerText --contains Ready", "assertExpression \"document.body.innerText\" contains=\"Ready\"")]
     [InlineData("eval window.appReady --timeout 5000", "expectEval \"window.appReady\" timeout=\"5000\"")]
     [InlineData("eval document.body.innerText --contains Ready", "expectEval \"document.body.innerText\" contains=\"Ready\"")]
     public void EvalAssertionCommand_MapsExpectationOptions(string commandTail, string expectedScript)

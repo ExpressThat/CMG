@@ -16,6 +16,10 @@ cmg browser control assertions [command] [options]
 - [`waitForText`](waitForText.md): Wait until an element contains text.
 - [`contains`](contains.md): Assert that the page body contains text.
 - [`eval`](eval.md): Assert a JavaScript expression result.
+- [`expectEval`](expectEval.md): Assert a JavaScript expression result.
+- [`assertEval`](assertEval.md): Assert a JavaScript expression result.
+- [`expectExpression`](expectExpression.md): Assert a JavaScript expression result.
+- [`assertExpression`](assertExpression.md): Assert a JavaScript expression result.
 - [`visible`](visible.md): Assert that an element is visible.
 - [`hidden`](hidden.md): Assert that an element is hidden.
 - [`enabled`](enabled.md): Assert that an element is enabled.
@@ -41,4 +45,5 @@ cmg browser control assertions waitForText "#status" "Saved" --timeout 5000
 cmg browser control assertions contains "Welcome"
 cmg browser control assertions visible "#save" --timeout 5000
 cmg browser control assertions eval "document.title" --equals "Checkout"
+cmg browser control assertions expectExpression "window.appReady" --timeout 5000
 ```
