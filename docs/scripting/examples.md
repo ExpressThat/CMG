@@ -110,6 +110,9 @@ set title {
 if (${title} contains "CMG") {
   caption "Loaded ${title}"
 }
+
+expect (${title} contains "CMG")
+expect evaluate "document.title" contains "CMG"
 ```
 
 Macros are reusable, scoped blocks:
@@ -130,9 +133,11 @@ Variables set inside a macro are local to that macro call. A macro can read vari
 
 ## Failure Feedback
 
-Assertions and explicit failures explain what broke. `fail` is catchable inside `try`:
+Assertions and explicit failures explain what broke. Use `expect` or `assert` for generic conditions, and `fail` when a script has its own reason to abort:
 
 ```text
+expect (${savedName} != "") message="Profile name was not saved"
+
 try {
   fail "Expected optional panel"
 } catch error {

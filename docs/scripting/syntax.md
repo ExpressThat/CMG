@@ -190,7 +190,12 @@ Conditions can also run actions. Actions that emit a payload, such as `evaluate`
 if (assertText "#status" "Saved") {
   click "#continue"
 }
+
+expect (${count} > 5)
+assert evaluate "document.title" contains "CMG"
 ```
+
+Use `expect` or `assert` when a condition should fail the current script or test instead of selecting a branch.
 
 Use `switch` when a value has several branches. `case` defaults to equality and also supports `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`, `matches`, and `in`:
 

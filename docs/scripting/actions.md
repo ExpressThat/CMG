@@ -1385,6 +1385,41 @@ Output:
 
 `fail` is non-visual and does not move the virtual pointer. In GIF mode, frames captured before the failure are still written as a partial GIF. Wrap a preceding `caption` or `step` around the guard when the recording should explain why the run stopped.
 
+## `expect` And `assert`
+
+```text
+expect (${count} > 5)
+assert (${mode} in "checkout" "billing") message="Unexpected mode"
+expect evaluate "document.title" contains "CMG"
+```
+
+Asserts a generic CMG condition without adding an `if` block. It uses the same condition engine as `if`, `elseif`, `while`, `until`, `doWhile`, and `doUntil`.
+
+Supported condition inputs:
+
+- Static values, quoted strings, and variables such as `${count}`.
+- Boolean operators `&&`, `||`, and `!`.
+- Comparison operators `==`, `!=`, `>`, `>=`, `<`, and `<=`.
+- Word operators `contains`, `matches`, and `in`.
+- Value-producing actions such as `evaluate`, `title`, `url`, element getters, file reads, and macro calls.
+- Assertion or wait actions such as `expectVisible`, `assertText`, and `waitForText`; the condition passes when the action succeeds.
+
+Options:
+
+- `message`: Custom failure reason.
+- `reason`: Alias for `message`.
+
+Output:
+
+- `EXPECT <line> true` when the condition passes.
+
+Failure output:
+
+- The action fails with the custom message when `message=` or `reason=` is provided.
+- Otherwise the failure reason is `Expected condition to pass: <condition>`.
+
+`expect` and `assert` are non-visual by themselves. If a condition runs a pointer-aware action, that child action still uses CMG's normal virtual pointer and GIF recorder hooks.
+
 ## `readFile`, `fixture`, `writeFile`, `appendFile`, And `expectFile`
 
 ```text

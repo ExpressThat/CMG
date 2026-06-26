@@ -14,6 +14,7 @@ The full list below is a catalogue. If you are learning CMG, run these first:
 | Run a structured test | `20-runner-flow.cmgscript` |
 | Learn variables, loops, and macros | `30-control-flow-macros.cmgscript` |
 | See script formatting tolerance | `48-weird-formatting.cmgscript` |
+| Assert values and action output | `126-generic-expect.cmgscript` |
 
 For a guided introduction, use the [Quick Start](../docs/quick-start.md) before treating this folder as a reference.
 
@@ -230,5 +231,7 @@ dotnet run -- --firefox browser close
 - `123-highlight-runner.cmgscript`: Demonstrates temporary visual element highlighting in the structured runner DSL.
 - `124-element-style-property.cmgscript`: Demonstrates computed CSS and JavaScript property getters in a direct script.
 - `125-element-style-property-runner.cmgscript`: Demonstrates computed CSS and JavaScript property getters in the structured runner DSL.
+- `126-generic-expect.cmgscript`: Demonstrates generic `expect` assertions over variables and action output in a direct script.
+- `127-generic-expect-runner.cmgscript`: Demonstrates generic `expect` assertions in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.

@@ -88,6 +88,13 @@ waitForResponse "/api/profile" status=200 timeout=5000
 
 Use `fail "message"` inside control flow when the script has enough context to explain the problem.
 
+Use generic `expect` / `assert` when the condition is about values or action output rather than one element state:
+
+```text
+expect (${mode} in "checkout" "billing") message="Unsupported checkout mode"
+expect evaluate "window.appReady" == "true"
+```
+
 ## Keep GIFs Watchable
 
 Use captions or steps for non-visual work:
