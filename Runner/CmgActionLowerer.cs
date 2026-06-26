@@ -30,6 +30,8 @@ public sealed partial class CmgActionLowerer
             "expectid" or "tohaveid" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "id"),
             "expectcss" or "tohavecss" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "css"),
             "expectproperty" or "tohavejsproperty" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "property"),
+            "expectaccessiblename" or "tohaveaccessiblename" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "accessiblename"),
+            "expectrole" or "tohaverole" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "role"),
             "expectchecked" or "tobechecked" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "checked"),
             "expectcount" or "tohavecount" => CmgExpectationScripts.Element(action with { Kind = ToExpectationName(name) }, "count"),
             "check" => ElementScript(action, "element.checked = true; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;"),

@@ -14,6 +14,8 @@ public sealed partial class CmgActionLowerer
             "expectvalue" => "expectValue",
             "expectvalues" => "expectValues",
             "expectattribute" => "expectAttribute",
+            "expectaccessiblename" => "expectAccessibleName",
+            "expectrole" => "expectRole",
             "expectchecked" => "expectChecked",
             "expectcount" => "expectCount",
             "tobevisible" => "expectVisible",
@@ -23,6 +25,8 @@ public sealed partial class CmgActionLowerer
             "tohavevalue" => "expectValue",
             "tohavevalues" => "expectValues",
             "tohaveattribute" => "expectAttribute",
+            "tohaveaccessiblename" => "expectAccessibleName",
+            "tohaverole" => "expectRole",
             "tobechecked" => "expectChecked",
             "tohavecount" => "expectCount",
             _ => name

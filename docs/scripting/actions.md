@@ -1428,6 +1428,8 @@ expectClass "#save" "ready"
 expectId "#save" "save"
 expectCSS "#save" "display" "block"
 expectProperty "#save" "dataset.ready" "true"
+expectAccessibleName "#save" "Save"
+expectRole "#save" "button"
 expectChecked "#terms" true
 expectCount ".result" 3 timeout=5000
 toHaveText "#status" "Saved"
@@ -1448,11 +1450,13 @@ toHaveClass "#save" "ready"
 toHaveId "#save" "save"
 toHaveCSS "#save" "display" "block"
 toHaveJSProperty "#save" "dataset.ready" "true"
+toHaveAccessibleName "#save" "Save"
+toHaveRole "#save" "button"
 toBeChecked "#terms" true
 toHaveCount ".result" 3
 ```
 
-Runs browser-side assertions for common UI state checks. The `toHave*` and `toBe*` forms are Playwright-style aliases over the matching CMG assertions. `waitForVisible` and `waitForHidden` are provider-style wait aliases for the visible and hidden assertions. Element assertions resolve CMG locators before checking the matched element. Direct browser-control scripts also accept locator-form options such as `expectVisible text=Save` when the parser would otherwise treat `text=Save` as an option. `expectHidden`, `toBeHidden`, and `waitForHidden` pass when no connected matching element exists. `expectDetached` and `toBeDetached` pass when no connected matching element exists. `expectValues` and `toHaveValues` compare selected option values in order. `expectClass` accepts a class token or class-name fragment. `expectCSS` checks computed style values. `expectProperty` and `toHaveJSProperty` accept dotted DOM property paths such as `dataset.ready`. `expectCount` and `toHaveCount` count matching CSS elements and support zero-count assertions.
+Runs browser-side assertions for common UI state checks. The `toHave*` and `toBe*` forms are Playwright-style aliases over the matching CMG assertions. `waitForVisible` and `waitForHidden` are provider-style wait aliases for the visible and hidden assertions. Element assertions resolve CMG locators before checking the matched element. Direct browser-control scripts also accept locator-form options such as `expectVisible text=Save` when the parser would otherwise treat `text=Save` as an option. `expectHidden`, `toBeHidden`, and `waitForHidden` pass when no connected matching element exists. `expectDetached` and `toBeDetached` pass when no connected matching element exists. `expectValues` and `toHaveValues` compare selected option values in order. `expectAccessibleName` and `toHaveAccessibleName` check aria-label, alt, title, or text-derived accessible names. `expectRole` and `toHaveRole` check explicit roles and common implicit roles. `expectClass` accepts a class token or class-name fragment. `expectCSS` checks computed style values. `expectProperty` and `toHaveJSProperty` accept dotted DOM property paths such as `dataset.ready`. `expectCount` and `toHaveCount` count matching CSS elements and support zero-count assertions.
 
 Options:
 
@@ -1460,7 +1464,7 @@ Options:
 
 Output:
 
-- `EXPECT <line> <visible|hidden|enabled|disabled|attached|detached|editable|empty|focused|inviewport|value|values|attribute|class|id|css|property|checked|count> <selector>` for direct element assertion actions and aliases.
+- `EXPECT <line> <visible|hidden|enabled|disabled|attached|detached|editable|empty|focused|inviewport|value|values|attribute|class|id|css|property|accessiblename|role|checked|count> <selector>` for direct element assertion actions and aliases.
 
 ### `waitForUrl`
 

@@ -29,6 +29,8 @@ public sealed partial class BrowserScriptRunner
             "expectid" or "tohaveid" => "id",
             "expectcss" or "tohavecss" => "css",
             "expectproperty" or "tohavejsproperty" => "property",
+            "expectaccessiblename" or "tohaveaccessiblename" => "accessiblename",
+            "expectrole" or "tohaverole" => "role",
             "expectchecked" or "tobechecked" => "checked",
             "expectcount" or "tohavecount" => "count",
             _ => throw new ScriptExecutionException($"Unknown element expectation '{action.Name}'.")

@@ -63,6 +63,10 @@ cmg browser control assertions [command] [options]
 - [`toHaveCSS`](toHaveCSS.md): Playwright-style alias for `expectCSS`.
 - [`expectProperty`](expectProperty.md): Assert that a DOM property contains a value.
 - [`toHaveJSProperty`](toHaveJSProperty.md): Playwright-style alias for `expectProperty`.
+- [`expectAccessibleName`](expectAccessibleName.md): Assert that an element accessible name contains text.
+- [`toHaveAccessibleName`](toHaveAccessibleName.md): Playwright-style alias for `expectAccessibleName`.
+- [`expectRole`](expectRole.md): Assert that an element role matches text.
+- [`toHaveRole`](toHaveRole.md): Playwright-style alias for `expectRole`.
 - [`checked`](checked.md): Assert that an element is checked or unchecked.
 - [`expectChecked`](expectChecked.md): Exact scripting alias for `checked`.
 - [`toBeChecked`](toBeChecked.md): Exact scripting alias for `checked`.
@@ -93,6 +97,8 @@ cmg browser control assertions toHaveValue "#name" "Ada"
 cmg browser control assertions toHaveValues "#plans" "basic" "pro"
 cmg browser control assertions toHaveClass "#save" "ready"
 cmg browser control assertions toHaveCSS "#save" "display" "block"
+cmg browser control assertions toHaveAccessibleName "#save" "Save"
+cmg browser control assertions toHaveRole "#save" "button"
 cmg browser control assertions eval "document.title" --equals "Checkout"
 cmg browser control assertions expectExpression "window.appReady" --timeout 5000
 ```

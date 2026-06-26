@@ -46,10 +46,12 @@ public static class CmgExpectationScripts
             "id" => $"const actual = element.id || ''; const ok = actual === {QuoteJs(action.Arguments[1])}; const message = 'Expected id to be {action.Arguments[1]}, got ' + actual + '.';",
             "css" => $"const actual = getComputedStyle(element).getPropertyValue({QuoteJs(action.Arguments[1])}).trim(); const ok = actual === {QuoteJs(action.Arguments[2])} || actual.includes({QuoteJs(action.Arguments[2])}); const message = 'Expected CSS {action.Arguments[1]} to contain {action.Arguments[2]}, got ' + actual + '.';",
             "property" => $"const actual = {QuoteJs(action.Arguments[1])}.split('.').reduce((value, key) => value?.[key], element); const ok = String(actual ?? '').includes({QuoteJs(action.Arguments[2])}); const message = 'Expected property {action.Arguments[1]} to contain {action.Arguments[2]}, got ' + String(actual ?? '') + '.';",
+            "accessiblename" => $"const actual = accessibleName(element); const ok = actual.includes({QuoteJs(action.Arguments[1])}); const message = 'Expected accessible name to contain {action.Arguments[1]}, got ' + actual + '.';",
+            "role" => $"const actual = element.getAttribute('role') || implicitRole(element); const ok = actual === {QuoteJs(action.Arguments[1])}; const message = 'Expected role to be {action.Arguments[1]}, got ' + actual + '.';",
             _ => $"const actual = Boolean(element.checked); const ok = actual === {ExpectedChecked(action).ToString().ToLowerInvariant()}; const message = 'Expected checked to be {ExpectedChecked(action).ToString().ToLowerInvariant()}, got ' + actual + '.';"
         };
 
-        return $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}.'); {body} if (!ok) throw new Error(message); return true; }})()";
+        return $"(() => {{ {AccessibilityHelpers()} const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}.'); {body} if (!ok) throw new Error(message); return true; }})()";
     }
 
     private static string BuildState(CmgNode action, string mode, string selector)
@@ -112,6 +114,9 @@ public static class CmgExpectationScripts
 
     private static string ExpectedValuesJs(CmgNode action) =>
         "[" + string.Join(", ", action.Arguments.Skip(1).Select(QuoteJs)) + "]";
+
+    private static string AccessibilityHelpers() =>
+        "const implicitRole = e => e.tagName === 'BUTTON' ? 'button' : e.tagName === 'A' && e.hasAttribute('href') ? 'link' : e.tagName === 'IMG' ? 'img' : e.tagName === 'INPUT' || e.tagName === 'TEXTAREA' ? 'textbox' : e.tagName === 'SELECT' ? 'combobox' : /^H[1-6]$/.test(e.tagName) ? 'heading' : ''; const accessibleName = e => e.getAttribute('aria-label') || e.getAttribute('alt') || e.getAttribute('title') || e.innerText || e.textContent || '';";
 
     private static int Timeout(CmgNode action) =>
         action.Options.TryGetValue("timeout", out var value) && int.TryParse(value, out var timeout) ? timeout : 0;

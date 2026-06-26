@@ -1,4 +1,4 @@
-setContent "<!doctype html><title>Alias Demo</title><main><h1>Alias Demo</h1><input id='name'><select id='plans' multiple><option value='basic' selected>Basic</option><option value='pro' selected>Pro</option></select><input id='file' type='file'><div id='source' draggable='true'>Drag me</div><div id='target'>Drop here</div><script>const target=document.querySelector('#target'); target.addEventListener('dragover', event => event.preventDefault()); target.addEventListener('drop', event => { event.preventDefault(); target.textContent='Dropped'; });</script></main>"
+setContent "<!doctype html><title>Alias Demo</title><main><h1>Alias Demo</h1><input id='name' aria-label='CMG Name'><select id='plans' multiple><option value='basic' selected>Basic</option><option value='pro' selected>Pro</option></select><input id='file' type='file'><div id='source' draggable='true'>Drag me</div><div id='target'>Drop here</div><script>const target=document.querySelector('#target'); target.addEventListener('dragover', event => event.preventDefault()); target.addEventListener('drop', event => { event.preventDefault(); target.textContent='Dropped'; });</script></main>"
 
 toHaveTitle "Alias Demo"
 waitForSelector "#name" state=visible
@@ -6,6 +6,8 @@ toContainText "Alias Demo"
 pressSequentially "#name" "CMG"
 expectValue "#name" "CMG"
 toHaveValues "#plans" "basic" "pro"
+toHaveAccessibleName "#name" "CMG Name"
+toHaveRole "#name" "textbox"
 setInputFiles "#file" "index.html"
 expectEval "document.querySelector('#file').files.length == 1"
 dragTo "#source" "#target"

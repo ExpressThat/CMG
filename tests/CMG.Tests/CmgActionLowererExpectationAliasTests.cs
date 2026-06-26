@@ -34,6 +34,8 @@ public sealed class CmgActionLowererExpectationAliasTests
     [InlineData("toHaveValue", "Expected value")]
     [InlineData("toHaveValues", "Expected values")]
     [InlineData("toHaveAttribute", "Expected attribute")]
+    [InlineData("toHaveAccessibleName", "Expected accessible name")]
+    [InlineData("toHaveRole", "Expected role")]
     [InlineData("toBeChecked", "Expected checked")]
     [InlineData("toHaveCount", "Expected ' + expected + ' elements")]
     public void Lower_PlaywrightElementExpectationAliasesEmitBrowserAssertions(string name, string expected)
@@ -42,6 +44,8 @@ public sealed class CmgActionLowererExpectationAliasTests
             ? new[] { "#target", "aria-label", "Save" }
             : name.Equals("toHaveValues", StringComparison.OrdinalIgnoreCase)
                 ? new[] { "#target", "one", "two" }
+                : name.Equals("toHaveRole", StringComparison.OrdinalIgnoreCase)
+                    ? new[] { "#target", "button" }
                 : new[] { "#target", "Save" };
 
         var line = new CmgActionLowerer().Lower(Node(name, args)).Last();

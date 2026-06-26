@@ -22,6 +22,8 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     [InlineData("expectId", "id")]
     [InlineData("expectCSS", "css")]
     [InlineData("expectProperty", "property")]
+    [InlineData("expectAccessibleName", "accessiblename")]
+    [InlineData("expectRole", "role")]
     [InlineData("expectChecked", "checked")]
     [InlineData("expectCount", "count")]
     [InlineData("expectValues", "values")]
@@ -35,6 +37,8 @@ public sealed class BrowserScriptRunnerElementExpectationTests
             "expectId" => $"{action} \"#target\" \"target\" timeout=250",
             "expectCSS" => $"{action} \"#target\" \"display\" \"block\" timeout=250",
             "expectProperty" => $"{action} \"#target\" \"dataset.ready\" \"true\" timeout=250",
+            "expectAccessibleName" => $"{action} \"#target\" \"Save\" timeout=250",
+            "expectRole" => $"{action} \"#target\" \"button\" timeout=250",
             "expectCount" => $"{action} \"#target\" 1 timeout=250",
             "expectValues" => $"{action} \"#target\" one two timeout=250",
             _ => $"{action} \"#target\" timeout=250"
@@ -90,6 +94,8 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     [InlineData("toHaveId \"#status\" \"status\"")]
     [InlineData("toHaveCSS \"#status\" \"display\" \"block\"")]
     [InlineData("toHaveJSProperty \"#status\" \"dataset.ready\" \"true\"")]
+    [InlineData("toHaveAccessibleName \"#status\" \"Save\"")]
+    [InlineData("toHaveRole \"#status\" \"button\"")]
     [InlineData("toBeChecked \"#status\"")]
     [InlineData("toHaveCount \"#status\" 1")]
     public void RunText_PlaywrightExpectationAliasesExecute(string script)
