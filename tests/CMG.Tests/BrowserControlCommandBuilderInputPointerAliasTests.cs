@@ -37,6 +37,16 @@ public sealed class BrowserControlCommandBuilderInputPointerAliasTests
         Assert.Null(handler.ScriptLine);
     }
 
+    [Fact]
+    public void BrowserControlGroup_DoesNotExposeDslSetCommand()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control set title hello").Invoke();
+
+        Assert.NotEqual(0, exitCode);
+        Assert.Null(handler.ScriptLine);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");

@@ -1149,6 +1149,8 @@ set currentUrl {
 
 Stores a variable for later `${name}` expansion.
 
+`set` is a scripting-only action. It is not exposed as a standalone `browser control` CLI command because CLI action invocations do not share DSL scope.
+
 The two-argument form stores a literal value. The block form runs the wrapped actions and stores only the payload from the last output-producing action. For example, `set title { evaluate "document.title" }` stores only the document title string, not the `PASS`, `EVALUATE`, or `SET` log text.
 
 Block form rules:
