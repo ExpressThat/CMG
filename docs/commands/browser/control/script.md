@@ -10,6 +10,7 @@ cmg browser control script --file -
 cmg browser control script --file <path> --gif <path>
 cmg browser control script --file <path> --trace <path>
 cmg browser control script --file <path> --timeout 10000 --assertion-timeout 5000
+cmg browser control script --file <path> --var user=Ada --env mode=demo
 cmg --chrome browser control script --file <path>
 cmg --edge browser control script --file <path>
 cmg --firefox browser control script --file <path>
@@ -24,6 +25,8 @@ cmg --firefox browser control script --file <path>
 - `--timeout <milliseconds>`: Default timeout for timeout-capable waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions that do not set `timeout=`.
 - `--navigation-timeout <milliseconds>`: Default timeout for navigation actions and navigation waits.
 - `--assertion-timeout <milliseconds>`: Default timeout for assertions. Overrides `--timeout` for assertion actions.
+- `--var <name=value>`: Initial script variable. Can be repeated. Later entries with the same name replace earlier entries.
+- `--env <name=value>`: Alias for `--var`, intended for CI and agent-provided environment values.
 
 ## Behavior
 
@@ -36,6 +39,7 @@ cmg --firefox browser control script --file <path>
 - Supports line-level `import "path"` statements. Relative imports resolve from the script file's directory.
 - Supports the shared CMG action surface documented in the [action index](../../../scripting/action-index.md) and [action reference](../../../scripting/actions.md).
 - Supports control flow, scoped variables, `set` block capture, macros, loops, `try`/`catch`/`finally`, `within`, frame blocks, `step`, and `gif` blocks.
+- Initial `--var` and `--env` values are available as `${name}` before the first action, macro call, condition, or `set` block runs.
 - `set` is a script action for scoped variables and command-result capture. It is intentionally not a CLI command because it only has meaning inside a script scope.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
 - Browser JavaScript dialogs are handled explicitly. CMG does not silently remove, accept, or dismiss dialogs through the browser protocol. Add `captureDialogs` or `setDialogBehavior` before the action that opens an `alert`, `confirm`, or `prompt`.
@@ -105,6 +109,12 @@ step "Open the profile dialog" {
 type "#profileName" "CMG Test Profile"
 screenshot "#profileDialog" output="profile-dialog.png"
 assertText "#lastDialogAction" "None"
+```
+
+Run a script with initial variables:
+
+```powershell
+cmg browser control script --file demo-scripts\139-cli-variables.cmgscript --var user=Ada
 ```
 
 More syntax and action details are documented in the [scripting guide](../../../scripting/index.md). Style guidance is in the [CMG script style guide](../../../scripting/style-guide.md).

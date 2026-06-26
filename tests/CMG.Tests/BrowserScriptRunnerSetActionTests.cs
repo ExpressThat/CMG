@@ -33,6 +33,20 @@ public sealed class BrowserScriptRunnerSetActionTests
     }
 
     [Fact]
+    public void RunText_InitialVariablesAreAvailableToActions()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText(
+            "type \"#name\" \"${user}\"",
+            "debug",
+            client,
+            variables: new Dictionary<string, string> { ["user"] = "Ada" });
+
+        Assert.True(result.Success);
+        Assert.Equal("Ada", client.LastTypedText);
+    }
+
+    [Fact]
     public void RunText_SetBlockStoresLastOutputPayloadFromAnyCommand()
     {
         var result = Runner().RunText("""

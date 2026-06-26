@@ -18,6 +18,8 @@ Parameterized runner tests use `test.each`, `it.each`, or `specify.each` with `v
 
 Runner declarations can include report annotations with `owner=`, `issue=`, `link=`, `requirement=`, `note=`, or `annotation.<type>=<description>`. Suite annotations cascade to child tests and are written to JSON, HTML, and JUnit reports.
 
+Runner declarations can also include initial variables as `var.<name>=<value>`. Suite variables cascade to child tests, and test-level variables override suite values. Command-line `--var` and `--env` values are injected before declaration variables, so a test declaration can intentionally override a command-provided default.
+
 ## Options
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
@@ -35,6 +37,8 @@ Runner declarations can include report annotations with `owner=`, `issue=`, `lin
 - `--timeout <milliseconds>`: Default timeout for timeout-capable waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions that do not set `timeout=`.
 - `--navigation-timeout <milliseconds>`: Default timeout for navigation actions and navigation waits.
 - `--assertion-timeout <milliseconds>`: Default timeout for assertions. Overrides `--timeout` for assertion actions.
+- `--var <name=value>`: Initial variable for every selected test. Can be repeated. Later entries with the same name replace earlier entries.
+- `--env <name=value>`: Alias for `--var`, intended for CI and agent-provided environment values.
 - `--chrome`: Use Chrome. This is the default.
 - `--edge`: Use Microsoft Edge.
 - `--firefox`: Use Firefox.
@@ -103,6 +107,7 @@ cmg run tests\flows --max-failures 1
 cmg run tests\flows --repeat-each 3
 cmg run tests\flows --list --grep checkout
 cmg run tests\flows --timeout 10000 --navigation-timeout 15000 --assertion-timeout 5000
+cmg run tests\flows --var user=Ada --env mode=demo
 ```
 
 Use runner options on test declarations for provider-style focus and skip behavior:
@@ -149,6 +154,16 @@ test.each "opens ${case.name}" as=case json="[{\"name\":\"Profile\",\"selector\"
 
 test "annotated checkout" owner=qa issue="BUG-7" annotation.requirement="REQ-1" {
   click "#checkout"
+}
+
+describe "tenant flow" var.tenant=demo {
+  test "uses suite variables" {
+    expect (${tenant} == "demo")
+  }
+
+  test "overrides suite variables" var.tenant=staging {
+    expect (${tenant} == "staging")
+  }
 }
 ```
 

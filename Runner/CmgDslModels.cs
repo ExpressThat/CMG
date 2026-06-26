@@ -52,7 +52,8 @@ public sealed record CmgRunOptions(
     int ShardCount,
     int? DefaultTimeout,
     int? NavigationTimeout,
-    int? AssertionTimeout);
+    int? AssertionTimeout,
+    IReadOnlyDictionary<string, string> Variables);
 
 public sealed partial record CmgRunResult(
     bool Success,

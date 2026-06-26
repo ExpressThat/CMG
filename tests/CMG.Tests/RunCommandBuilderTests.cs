@@ -12,13 +12,25 @@ public sealed class RunCommandBuilderTests
     {
         var handler = new CapturingRunCommandHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "run flows --timeout 700 --navigation-timeout 800 --assertion-timeout 900").Invoke();
+            "run flows --timeout 700 --navigation-timeout 800 --assertion-timeout 900 --var user=Ada --env mode=demo").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal("flows", handler.Path);
         Assert.Equal(700, handler.Timeout);
         Assert.Equal(800, handler.NavigationTimeout);
         Assert.Equal(900, handler.AssertionTimeout);
+        Assert.Equal("Ada", handler.Variables["user"]);
+        Assert.Equal("demo", handler.Variables["mode"]);
+    }
+
+    [Fact]
+    public void RunCommand_RejectsMalformedVariable()
+    {
+        var handler = new CapturingRunCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("run flows --env broken").Invoke();
+
+        Assert.Equal(1, exitCode);
+        Assert.Null(handler.Path);
     }
 
     private static RootCommand BuildRoot(CapturingRunCommandHandler handler)
@@ -44,6 +56,9 @@ public sealed class RunCommandBuilderTests
 
         public int? AssertionTimeout { get; private set; }
 
+        public IReadOnlyDictionary<string, string> Variables { get; private set; } =
+            new Dictionary<string, string>();
+
         public int Run(
             BrowserKind browserKind,
             string path,
@@ -61,12 +76,14 @@ public sealed class RunCommandBuilderTests
             string? shard,
             int? timeout,
             int? navigationTimeout,
-            int? assertionTimeout)
+            int? assertionTimeout,
+            IReadOnlyDictionary<string, string> variables)
         {
             Path = path;
             Timeout = timeout;
             NavigationTimeout = navigationTimeout;
             AssertionTimeout = assertionTimeout;
+            Variables = variables;
             return 0;
         }
     }

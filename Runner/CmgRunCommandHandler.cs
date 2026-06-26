@@ -21,7 +21,8 @@ public interface ICmgRunCommandHandler
         string? shard,
         int? timeout,
         int? navigationTimeout,
-        int? assertionTimeout);
+        int? assertionTimeout,
+        IReadOnlyDictionary<string, string> variables);
 }
 
 public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
@@ -50,7 +51,8 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         string? shard,
         int? timeout,
         int? navigationTimeout,
-        int? assertionTimeout)
+        int? assertionTimeout,
+        IReadOnlyDictionary<string, string> variables)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
@@ -81,7 +83,8 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             shardCount,
             NonNegative(timeout),
             NonNegative(navigationTimeout),
-            NonNegative(assertionTimeout)));
+            NonNegative(assertionTimeout),
+            variables));
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);

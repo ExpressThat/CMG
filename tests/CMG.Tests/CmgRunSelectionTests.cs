@@ -118,5 +118,6 @@ public sealed class CmgRunSelectionTests
             shardCount,
             null,
             null,
-            null);
+            null,
+            new Dictionary<string, string>());
 }

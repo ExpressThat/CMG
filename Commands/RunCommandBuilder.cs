@@ -83,6 +83,14 @@ public sealed class RunCommandBuilder
         {
             Description = "Default timeout in milliseconds for assertion actions."
         };
+        var variableOption = new Option<string[]>("--var")
+        {
+            Description = "Initial runner variable as name=value. Can be repeated."
+        };
+        var envOption = new Option<string[]>("--env")
+        {
+            Description = "Alias for --var, useful for CI or agent-provided values."
+        };
         var command = new Command("run", "Run CMG DSL tests with visual artifacts.")
         {
             pathArgument,
@@ -100,10 +108,22 @@ public sealed class RunCommandBuilder
             shardOption,
             timeoutOption,
             navigationTimeoutOption,
-            assertionTimeoutOption
+            assertionTimeoutOption,
+            variableOption,
+            envOption
         };
 
         command.SetAction(parseResult =>
+        {
+            var variableValues = (parseResult.GetValue(variableOption) ?? [])
+                .Concat(parseResult.GetValue(envOption) ?? []);
+            if (!VariableOptionParser.TryParse(variableValues, out var variables, out var error))
+            {
+                Console.Error.WriteLine(error);
+                return 1;
+            }
+
+            return
             handler.Run(
                 CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 parseResult.GetValue(pathArgument) ?? string.Empty,
@@ -121,7 +141,9 @@ public sealed class RunCommandBuilder
                 parseResult.GetValue(shardOption),
                 parseResult.GetValue(timeoutOption),
                 parseResult.GetValue(navigationTimeoutOption),
-                parseResult.GetValue(assertionTimeoutOption)));
+                parseResult.GetValue(assertionTimeoutOption),
+                variables);
+        });
 
         return command;
     }

@@ -16,6 +16,7 @@ For the full catalogue of advanced examples, see the [cookbook reference](cookbo
 | Tune one slow section | [Scoped Timeouts](#scoped-timeouts) | `demo-scripts\134-scoped-timeouts.cmgscript` |
 | Run the same test for data rows | [Parameterized Tests](#parameterized-tests) | `demo-scripts\136-parameterized-tests.cmgscript` |
 | Add report metadata | [Report Annotations](#report-annotations) | `demo-scripts\138-report-annotations.cmgscript` |
+| Parameterize scripts from outside | [Initial Variables](#initial-variables) | `demo-scripts\139-cli-variables.cmgscript` |
 
 Start the browser before running direct scripts:
 
@@ -142,6 +143,31 @@ foreachJson label "${labels}" {
 ```
 
 Variables set inside a macro are local to that macro call. A macro can read variables from the parent tree where it was defined, and local values shadow parent values without mutating them.
+
+## Initial Variables
+
+Use command-line variables when an agent, CI job, or wrapper needs to supply data without editing the script:
+
+```powershell
+cmg browser control script --file demo-scripts\139-cli-variables.cmgscript --var user=Ada
+cmg run demo-scripts\140-runner-variables.cmgscript --env tenant=demo
+```
+
+Use runner declaration variables when the value belongs with the suite or test:
+
+```text
+describe "tenant flow" var.tenant=demo {
+  test "uses default tenant" {
+    expect (${tenant} == "demo")
+  }
+
+  test "overrides tenant" var.tenant=staging {
+    expect (${tenant} == "staging")
+  }
+}
+```
+
+Declaration variables are inserted before macros and hooks, so helper macros can read them. Test-level values override suite-level values, and explicit `set` actions can still change values later in the current script scope.
 
 ## Failure Feedback
 

@@ -41,7 +41,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var suppressGifBlocks = commandGif is not null;
         var timeouts = BuildTimeoutOptions(test, options);
 
-        foreach (var action in test.Actions)
+        foreach (var action in CmgVariables.FromRunOptions(options).Concat(test.Actions))
         {
             if (IsRecordingBlock(action.Kind) && !suppressGifBlocks)
             {

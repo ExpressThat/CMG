@@ -55,6 +55,23 @@ public sealed class CmgVisualSegmentExecutorTests
         Assert.Contains("SKIP 001 Feature unavailable", result.Output);
     }
 
+    [Fact]
+    public void Run_AppliesCommandVariablesToScriptActions()
+    {
+        var client = new FakeAutomationClient();
+        var test = new CmgTestCase(
+            "flow.cmgscript",
+            "parameterized flow",
+            [Node("type", ["#name", "${user}"])],
+            new Dictionary<string, string>());
+        var options = Options(new Dictionary<string, string> { ["user"] = "Ada" });
+
+        var result = Executor(client).Run(test, "debug", options, attempt: 1);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("Ada", client.LastTypedText);
+    }
+
     private static CmgVisualSegmentExecutor Executor(IBrowserAutomationClient client) =>
         new(
             new BrowserScriptRunner(new BrowserScriptParser()),
@@ -68,7 +85,7 @@ public sealed class CmgVisualSegmentExecutorTests
     private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyDictionary<string, string>? options = null) =>
         new(1, kind, kind, args, options ?? new Dictionary<string, string>(), []);
 
-    private static CmgRunOptions Options() =>
+    private static CmgRunOptions Options(IReadOnlyDictionary<string, string>? variables = null) =>
         new(
             BrowserKind.Chrome,
             null,
@@ -86,5 +103,6 @@ public sealed class CmgVisualSegmentExecutorTests
             1,
             null,
             null,
-            null);
+            null,
+            variables ?? new Dictionary<string, string>());
 }

@@ -1,0 +1,5 @@
+expect (${user} != "") message="Pass --var user=<name> or --env user=<name>"
+navigate "C:\Projects\CMG\index.html"
+waitForElement "#profileName"
+caption "Using ${user} in a direct script"
+type "#profileName" "${user}"

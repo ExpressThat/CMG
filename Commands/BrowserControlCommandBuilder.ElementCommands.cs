@@ -78,6 +78,14 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Default timeout in milliseconds for assertion actions."
         };
+        var variableOption = new Option<string[]>("--var")
+        {
+            Description = "Initial script variable as name=value. Can be repeated."
+        };
+        var envOption = new Option<string[]>("--env")
+        {
+            Description = "Alias for --var, useful for agent-provided environment values."
+        };
 
         var command = new Command("script", "Run a .cmgscript browser automation script.")
         {
@@ -86,7 +94,9 @@ public sealed partial class BrowserControlCommandBuilder
             traceOption,
             timeoutOption,
             navigationTimeoutOption,
-            assertionTimeoutOption
+            assertionTimeoutOption,
+            variableOption,
+            envOption
         };
 
         command.SetAction(parseResult =>
@@ -98,8 +108,21 @@ public sealed partial class BrowserControlCommandBuilder
                 parseResult.GetValue(timeoutOption),
                 parseResult.GetValue(navigationTimeoutOption),
                 parseResult.GetValue(assertionTimeoutOption));
+            var variableValues = (parseResult.GetValue(variableOption) ?? [])
+                .Concat(parseResult.GetValue(envOption) ?? []);
+            if (!VariableOptionParser.TryParse(variableValues, out var variables, out var error))
+            {
+                Console.Error.WriteLine(error);
+                return 1;
+            }
 
-            return browserControlCommandHandler.RunScript(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), file, gif, trace, timeouts);
+            return browserControlCommandHandler.RunScript(
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                file,
+                gif,
+                trace,
+                timeouts,
+                variables);
         });
 
         return command;

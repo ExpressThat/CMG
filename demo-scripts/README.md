@@ -25,7 +25,7 @@ After that, use the learning groups below before treating the full script list a
 | Structured tests | `20-runner-flow.cmgscript`, `36-runner-selection.cmgscript`, `38-before-after-all.cmgscript` |
 | Control flow and reuse | `30-control-flow-macros.cmgscript`, `32-loop-control.cmgscript`, `33-try-catch-finally.cmgscript`, `34-macro-scoping.cmgscript` |
 | Assertions and failure feedback | `52-explicit-fail.cmgscript`, `126-generic-expect.cmgscript`, `128-soft-expect.cmgscript`, `132-runtime-skip.cmgscript` |
-| Runner reporting | `134-scoped-timeouts.cmgscript`, `136-parameterized-tests.cmgscript`, `137-parameterized-json-tests.cmgscript`, `138-report-annotations.cmgscript` |
+| Runner reporting and data | `134-scoped-timeouts.cmgscript`, `136-parameterized-tests.cmgscript`, `137-parameterized-json-tests.cmgscript`, `138-report-annotations.cmgscript`, `140-runner-variables.cmgscript` |
 
 For a guided introduction, use the [Quick Start](../docs/quick-start.md), [examples guide](../docs/scripting/examples.md), and [style guide](../docs/scripting/style-guide.md).
 
@@ -49,6 +49,7 @@ Run a script:
 
 ```powershell
 dotnet run -- browser control script --file demo-scripts\01-dialog-flow.cmgscript
+dotnet run -- browser control script --file demo-scripts\139-cli-variables.cmgscript --var user=Ada
 ```
 
 Validate a script without connecting to a browser:
@@ -255,5 +256,7 @@ dotnet run -- --firefox browser close
 - `136-parameterized-tests.cmgscript`: Demonstrates runner `test.each` with primitive list rows.
 - `137-parameterized-json-tests.cmgscript`: Demonstrates runner `test.each` with JSON object rows and dotted variables.
 - `138-report-annotations.cmgscript`: Demonstrates suite and test report annotations.
+- `139-cli-variables.cmgscript`: Demonstrates command-line `--var` / `--env` values in a direct script.
+- `140-runner-variables.cmgscript`: Demonstrates suite and test `var.*` declaration variables.
 
 Generated screenshots are written to `demo-output/`.

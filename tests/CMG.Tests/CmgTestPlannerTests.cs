@@ -159,6 +159,28 @@ public sealed class CmgTestPlannerTests
     }
 
     [Fact]
+    public void Plan_PrependsDeclarationVariablesBeforeMacros()
+    {
+        var document = new CmgDslParser().Parse("flow.cmgscript", """
+        describe "profile" var.user=Ada {
+          macro useUser {
+            type "#name" "${user}"
+          }
+
+          test "opens" var.user=Grace {
+            call useUser
+          }
+        }
+        """).Document!;
+
+        var test = Assert.Single(new CmgTestPlanner().Plan(document));
+
+        Assert.Equal("set", test.Actions[0].Kind);
+        Assert.Equal(["user", "Grace"], test.Actions[0].Arguments);
+        Assert.Equal("macro", test.Actions[1].Kind);
+    }
+
+    [Fact]
     public void Plan_ExpandsParameterizedJsonObjectTests()
     {
         var document = new CmgDslParser().Parse("flow.cmgscript", """

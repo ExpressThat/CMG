@@ -14,6 +14,15 @@ public interface IBrowserControlCommandHandler
     int RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts) =>
         RunScript(browserKind, file, gif, trace);
 
+    int RunScript(
+        BrowserKind browserKind,
+        string file,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        IReadOnlyDictionary<string, string> variables) =>
+        RunScript(browserKind, file, gif, trace, timeouts);
+
     int RunScriptAction(BrowserKind browserKind, string scriptLine);
 
     int ValidateScript(string file);
@@ -94,12 +103,23 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
 
     public int RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts)
     {
+        return RunScript(browserKind, file, gif, trace, timeouts, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+    }
+
+    public int RunScript(
+        BrowserKind browserKind,
+        string file,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        IReadOnlyDictionary<string, string> variables)
+    {
         if (!ValidateBrowserSelection(browserKind))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScript(browserKind, file, gif, trace, timeouts);
+        var result = browserControlService.RunScript(browserKind, file, gif, trace, timeouts, variables);
 
         return WriteScriptResult(result);
     }

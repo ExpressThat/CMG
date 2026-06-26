@@ -15,6 +15,15 @@ public interface IBrowserControlService
     ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts) =>
         RunScript(browserKind, file, gif, trace);
 
+    ScriptRunResult RunScript(
+        BrowserKind browserKind,
+        string file,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        IReadOnlyDictionary<string, string> variables) =>
+        RunScript(browserKind, file, gif, trace, timeouts);
+
     ScriptRunResult RunScriptAction(BrowserKind browserKind, string scriptLine);
 }
 
@@ -79,6 +88,17 @@ public sealed class BrowserControlService : IBrowserControlService
 
     public ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts)
     {
+        return RunScript(browserKind, file, gif, trace, timeouts, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+    }
+
+    public ScriptRunResult RunScript(
+        BrowserKind browserKind,
+        string file,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        IReadOnlyDictionary<string, string> variables)
+    {
         if (file is not "-" && !File.Exists(file))
         {
             return ScriptRunResult.Fail($"Script file '{file}' was not found.");
@@ -92,7 +112,7 @@ public sealed class BrowserControlService : IBrowserControlService
 
         try
         {
-            return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts);
+            return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, variables);
         }
         catch (System.Net.Http.HttpRequestException exception)
         {

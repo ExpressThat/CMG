@@ -22,13 +22,26 @@ public sealed class BrowserControlCommandBuilderScriptTests
     {
         var handler = new CapturingBrowserControlCommandHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --trace C:\\temp\\flow.trace.json --timeout 700 --navigation-timeout 800 --assertion-timeout 900").Invoke();
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --trace C:\\temp\\flow.trace.json --timeout 700 --navigation-timeout 800 --assertion-timeout 900 --var user=Ada --env mode=demo").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal("flow.cmgscript", handler.File);
         Assert.Equal("C:\\temp\\flow.gif", handler.Gif?.FullName);
         Assert.Equal("C:\\temp\\flow.trace.json", handler.Trace?.FullName);
         Assert.Equal(new ScriptTimeoutOptions(700, 800, 900), handler.Timeouts);
+        Assert.Equal("Ada", handler.Variables["user"]);
+        Assert.Equal("demo", handler.Variables["mode"]);
+    }
+
+    [Fact]
+    public void ScriptCommand_RejectsMalformedVariable()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --var broken").Invoke();
+
+        Assert.Equal(1, exitCode);
+        Assert.Null(handler.File);
     }
 
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
@@ -56,6 +69,9 @@ public sealed class BrowserControlCommandBuilderScriptTests
 
         public ScriptTimeoutOptions? Timeouts { get; private set; }
 
+        public IReadOnlyDictionary<string, string> Variables { get; private set; } =
+            new Dictionary<string, string>();
+
         public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output) => 0;
 
         public int RunScript(BrowserKind browserKind, string file, FileInfo? gif)
@@ -77,6 +93,19 @@ public sealed class BrowserControlCommandBuilderScriptTests
         {
             RunScript(browserKind, file, gif, trace);
             Timeouts = timeouts;
+            return 0;
+        }
+
+        public int RunScript(
+            BrowserKind browserKind,
+            string file,
+            FileInfo? gif,
+            FileInfo? trace,
+            ScriptTimeoutOptions? timeouts,
+            IReadOnlyDictionary<string, string> variables)
+        {
+            RunScript(browserKind, file, gif, trace, timeouts);
+            Variables = variables;
             return 0;
         }
 

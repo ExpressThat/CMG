@@ -18,7 +18,8 @@ public sealed partial class BrowserScriptRunner
         IBrowserAutomationClient automationClient,
         FileInfo? gif,
         FileInfo? trace = null,
-        ScriptTimeoutOptions? timeouts = null)
+        ScriptTimeoutOptions? timeouts = null,
+        IReadOnlyDictionary<string, string>? variables = null)
     {
         var readResult = ReadScript(file);
         if (!readResult.Success)
@@ -26,7 +27,7 @@ public sealed partial class BrowserScriptRunner
             return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
         }
 
-        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts);
+        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, variables);
     }
 
     public ScriptRunResult RunText(
@@ -34,9 +35,10 @@ public sealed partial class BrowserScriptRunner
         string remoteDebuggingUrl,
         IBrowserAutomationClient automationClient,
         FileInfo? gif = null,
-        ScriptTimeoutOptions? timeouts = null)
+        ScriptTimeoutOptions? timeouts = null,
+        IReadOnlyDictionary<string, string>? variables = null)
     {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts);
+        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts, variables);
     }
 
     private ScriptRunResult RunParsedScript(
@@ -45,7 +47,8 @@ public sealed partial class BrowserScriptRunner
         IBrowserAutomationClient automationClient,
         FileInfo? gif,
         FileInfo? trace,
-        ScriptTimeoutOptions? timeouts)
+        ScriptTimeoutOptions? timeouts,
+        IReadOnlyDictionary<string, string>? variables)
     {
         var importResult = ScriptImportExpander.Expand(script, Directory.GetCurrentDirectory());
         if (!importResult.Success)
@@ -67,6 +70,11 @@ public sealed partial class BrowserScriptRunner
             NavigationTimeout = timeouts?.NavigationTimeout,
             AssertionTimeout = timeouts?.AssertionTimeout
         };
+        foreach (var variable in variables ?? EmptyVariables)
+        {
+            context.SetVariable(variable.Key, variable.Value);
+        }
+
         var output = new List<string>();
         using var recorder = gif is null
             ? null
@@ -218,4 +226,7 @@ public sealed partial class BrowserScriptRunner
         !name.Equals("until", StringComparison.OrdinalIgnoreCase) &&
         !name.Equals("doWhile", StringComparison.OrdinalIgnoreCase) &&
         !name.Equals("doUntil", StringComparison.OrdinalIgnoreCase);
+
+    private static readonly IReadOnlyDictionary<string, string> EmptyVariables =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 }

@@ -74,8 +74,9 @@ public sealed partial class CmgTestPlanner
         IReadOnlyDictionary<string, string>? suiteOptions = null)
     {
         var name = suiteName is null ? test.Name : $"{suiteName} / {test.Name}";
-        var actions = macros.Concat(beforeEach).Concat(test.Children).Concat(afterEach).ToArray();
         var options = MergeOptions(suiteOptions, test.Options);
+        var declarationVariables = CmgVariables.FromDeclarationOptions(test.LineNumber, options);
+        var actions = declarationVariables.Concat(macros).Concat(beforeEach).Concat(test.Children).Concat(afterEach).ToArray();
         return new CmgTestCase(sourcePath, name, actions, options)
         {
             SuiteName = suiteName,

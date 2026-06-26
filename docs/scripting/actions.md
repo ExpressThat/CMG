@@ -1358,6 +1358,8 @@ Stores a variable for later `${name}` expansion.
 
 `set` is a scripting-only action. It is not exposed as a standalone `browser control` CLI command because CLI action invocations do not share DSL scope.
 
+Initial variables can also come from command-line `--var name=value` / `--env name=value` or runner declaration options such as `var.user=Ada`. These values are available before the first action runs. Declaration variables are inserted before macros and hooks, so helper macros can read them. A later `set` in the same script scope can replace the value.
+
 The two-argument form stores a literal value. The block form runs the wrapped actions and stores only the payload from the last output-producing action. For example, `set title { evaluate "document.title" }` stores only the document title string, not the `PASS`, `EVALUATE`, or `SET` log text.
 
 Block form rules:
