@@ -581,10 +581,12 @@ Pass `path=<file>` to every file action. For `readFile` and `fixture`, the first
 ```text
 Line 4: printPdf failed. printPdf requires path=<file>.
 Line 5: printPdf failed. printPdf option scale= must be a positive number.
-Line 6: printPdf failed. Firefox did not return PDF data.
+Line 6: printPdf failed. printPdf option format= must be Letter, Legal, Tabloid, Ledger, or A0-A6.
+Line 7: printPdf failed. printPdf option width= must be a positive size using in, cm, mm, px, or a bare inch value.
+Line 8: printPdf failed. Firefox did not return PDF data.
 ```
 
-PDF generation is available in both direct scripts and `cmg run`. If the browser provider does not return PDF bytes, CMG reports that provider failure directly.
+PDF generation is available in both direct scripts and `cmg run`. Invalid PDF options fail before the browser call with the specific option name. If the browser provider does not return PDF bytes, CMG reports that provider failure directly.
 
 ## Visual Assertion Failure
 

@@ -394,10 +394,10 @@ dotnet run -- browser control script --file demo-scripts\11-fixtures-and-files.c
 
 ```text
 navigate "C:\Projects\CMG\index.html"
-printPdf path="demo-output\page.pdf" printBackground=true
+printPdf path="demo-output\page.pdf" printBackground=true format=A4 marginTop=10mm marginBottom=12mm pageRanges="1"
 ```
 
-PDF generation works in direct browser-control scripts and `cmg run`. It is non-visual, so use a `step` or `caption` when a GIF should explain that the page is being printed.
+PDF generation works in direct browser-control scripts and `cmg run`. It accepts provider-style paper size, margin, range, scale, orientation, background, and CSS page-size options. It is non-visual, so use a `step` or `caption` when a GIF should explain that the page is being printed.
 
 Run the complete direct script:
 

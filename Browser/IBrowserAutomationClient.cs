@@ -134,7 +134,19 @@ public sealed record ViewportOptions(
 
 public sealed record ElementBox(double X, double Y, double Width, double Height);
 
-public sealed record PdfPrintOptions(bool Landscape, bool PrintBackground, double Scale);
+public sealed record PdfPrintOptions(
+    bool Landscape,
+    bool PrintBackground,
+    double Scale,
+    string? Format = null,
+    string? Width = null,
+    string? Height = null,
+    string? MarginTop = null,
+    string? MarginRight = null,
+    string? MarginBottom = null,
+    string? MarginLeft = null,
+    string? PageRanges = null,
+    bool PreferCssPageSize = false);
 
 public sealed record BrowserContextInfo(string Id, string TargetId, string Url, bool Active);
 

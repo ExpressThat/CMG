@@ -10,11 +10,14 @@ public sealed class BrowserScriptRunnerPdfActionTests
     {
         var client = new FakeAutomationClient();
         var path = TempPath();
-        var result = Runner().RunText($"printPdf path=\"{Slash(path)}\" landscape=true printBackground=false scale=0.8", "debug", client);
+        var result = Runner().RunText(
+            $"printPdf path=\"{Slash(path)}\" landscape=true printBackground=false scale=0.8 format=A4 marginTop=10mm pageRanges=\"1-2,4\" preferCssPageSize=true",
+            "debug",
+            client);
 
         Assert.True(result.Success);
         Assert.Equal([1, 2, 3], File.ReadAllBytes(path));
-        Assert.Equal(new PdfPrintOptions(true, false, 0.8), client.LastPdfOptions);
+        Assert.Equal(new PdfPrintOptions(true, false, 0.8, "A4", null, null, "10mm", null, null, null, "1-2,4", true), client.LastPdfOptions);
         Assert.Contains(result.StdoutLines, line => line.Contains("PDF", StringComparison.Ordinal));
     }
 
@@ -34,6 +37,24 @@ public sealed class BrowserScriptRunnerPdfActionTests
 
         Assert.False(result.Success);
         Assert.Contains("positive number", result.Error);
+    }
+
+    [Fact]
+    public void RunText_PrintPdfRejectsInvalidFormat()
+    {
+        var result = Runner().RunText("printPdf path=\"out.pdf\" format=Poster", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("format= must be", result.Error);
+    }
+
+    [Fact]
+    public void RunText_PrintPdfRejectsInvalidSize()
+    {
+        var result = Runner().RunText("printPdf path=\"out.pdf\" width=large", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("width= must be a positive size", result.Error);
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

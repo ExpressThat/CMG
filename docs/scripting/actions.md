@@ -451,6 +451,7 @@ Options:
 ```text
 printPdf path="demo-output\page.pdf" printBackground=true
 pdf path="demo-output\page-landscape.pdf" landscape=true scale=0.9
+printPdf path="demo-output\a4.pdf" format=A4 marginTop=10mm marginBottom=10mm pageRanges="1-2,4"
 ```
 
 Prints the current page to a PDF file. `pdf` is an alias for `printPdf`. This action is available in both direct browser-control scripts and `cmg run`.
@@ -461,6 +462,11 @@ Options:
 - `landscape`: Optional boolean. Default is `false`.
 - `printBackground`: Optional boolean. Default is `true`.
 - `scale`: Optional positive number. Default is `1`.
+- `format`: Optional paper format: `Letter`, `Legal`, `Tabloid`, `Ledger`, or `A0` through `A6`.
+- `width` / `height`: Optional custom paper size. Values accept bare inches, `in`, `cm`, `mm`, or `px`.
+- `marginTop` / `marginRight` / `marginBottom` / `marginLeft`: Optional page margins using the same size syntax.
+- `pageRanges`: Optional pages to print, for example `1-3,5`.
+- `preferCssPageSize`: Optional boolean. Prefer CSS `@page` size when the browser supports it.
 
 Output:
 

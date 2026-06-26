@@ -9,10 +9,20 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 0, 0);
         var path = RequiredPdfPath(action);
+        ValidatePdfOptions(action);
         var options = new PdfPrintOptions(
             GetBoolOption(action, "landscape"),
             GetBoolOption(action, "printBackground", defaultValue: true),
-            GetDoubleOption(action, "scale", 1));
+            GetDoubleOption(action, "scale", 1),
+            OptionValue(action, "format"),
+            OptionValue(action, "width"),
+            OptionValue(action, "height"),
+            OptionValue(action, "marginTop"),
+            OptionValue(action, "marginRight"),
+            OptionValue(action, "marginBottom"),
+            OptionValue(action, "marginLeft"),
+            OptionValue(action, "pageRanges"),
+            GetBoolOption(action, "preferCssPageSize"));
         var bytes = automationClient.PrintPdf(remoteDebuggingUrl, options);
         Directory.CreateDirectory(Path.GetDirectoryName(path) ?? Directory.GetCurrentDirectory());
         File.WriteAllBytes(path, bytes);
@@ -28,6 +38,25 @@ public sealed partial class BrowserScriptRunner
 
         return Path.GetFullPath(value);
     }
+
+    private static void ValidatePdfOptions(BrowserScriptAction action)
+    {
+        if (OptionValue(action, "format") is { } format && PdfPaper.TryFormat(format) is null)
+        {
+            throw new ScriptExecutionException($"{action.Name} option format= must be Letter, Legal, Tabloid, Ledger, or A0-A6.");
+        }
+
+        foreach (var option in new[] { "width", "height", "marginTop", "marginRight", "marginBottom", "marginLeft" })
+        {
+            if (OptionValue(action, option) is { } value && PdfPaper.Inches(value) is null)
+            {
+                throw new ScriptExecutionException($"{action.Name} option {option}= must be a positive size using in, cm, mm, px, or a bare inch value.");
+            }
+        }
+    }
+
+    private static string? OptionValue(BrowserScriptAction action, string name) =>
+        action.Options.TryGetValue(name, out var value) && !string.IsNullOrWhiteSpace(value) ? value : null;
 
     private static bool GetBoolOption(BrowserScriptAction action, string name, bool defaultValue = false)
     {

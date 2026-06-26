@@ -25,22 +25,6 @@ public sealed partial class FirefoxBiDiClient
             return DecodeScreenshot(response);
         });
 
-    public byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options) =>
-        Run(async () =>
-        {
-            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
-            var response = await session.SendCommand("browsingContext.print", writer =>
-            {
-                writer.WriteString("context", context.Id);
-                writer.WriteBoolean("background", options.PrintBackground);
-                writer.WriteString("orientation", options.Landscape ? "landscape" : "portrait");
-                writer.WriteNumber("scale", options.Scale);
-            });
-
-            return DecodePdf(response);
-        });
-
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) =>
         Run(async () =>
         {

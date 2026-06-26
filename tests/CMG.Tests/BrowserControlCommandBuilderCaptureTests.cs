@@ -19,6 +19,20 @@ public sealed class BrowserControlCommandBuilderCaptureTests
             handler.ScriptLine);
     }
 
+    [Fact]
+    public void PrintPdfCommand_MapsAdvancedOptionsToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control capture printPdf --path C:\\temp\\page.pdf --format A4 --margin-top 10mm --margin-bottom 0.5in --page-ranges 1-2,4 --prefer-css-page-size").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(BrowserKind.Chrome, handler.BrowserKind);
+        Assert.Equal(
+            "printPdf path=\"C:\\\\temp\\\\page.pdf\" format=\"A4\" marginTop=\"10mm\" marginBottom=\"0.5in\" pageRanges=\"1-2,4\" preferCssPageSize=\"true\"",
+            handler.ScriptLine);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");
