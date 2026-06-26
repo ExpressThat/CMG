@@ -1569,6 +1569,7 @@ Saves or loads page storage state for the current browser page. The state includ
 route "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
 intercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
 intercept "/api/profile" method=POST times=1 delay=250 status=201 body="{\"saved\":true}"
+mockResponse "/api/profile" header="X-Trace: demo" headers="Cache-Control: no-store; X-Mode: mock"
 intercept "/api/profile/\\d+" match=regex ignoreCase=true status=200 body="profile"
 intercept "/api/down" abort=true error="offline"
 waitForResponse "/api/profile" timeout=5000
@@ -1584,7 +1585,7 @@ replayHar path="artifacts\network.har"
 clearRoutes
 ```
 
-Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Routes and network waits match URLs with `match=contains|exact|regex`; default is `contains`. Use `ignoreCase=true` for case-insensitive URL matching. Use `method=` to restrict a route to one HTTP method, `times=` to remove it after a fixed number of matches, and `delay=` to simulate response latency. Use `abort=true` or `action=abort` to reject matching requests instead; aborted matches are recorded in the request failure log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest` waits for dispatch, `waitForRequestFinished` and `waitForResponse` wait for completed responses, and `waitForRequestFailed` waits for failures. Waits can also filter by `method=`, `status=`, response or error text with `contains=`, mocked-state with `mocked=true|false`, and headers with `header=`, `headerName=`, and `headerValue=`; timeout failures include the requested filters.
+Installs a page-level route for `fetch()` and `XMLHttpRequest`. `intercept` is an alias for `route` for Cypress-style scripts. Matching calls receive the configured mocked response and are recorded in the page response log. Routes and network waits match URLs with `match=contains|exact|regex`; default is `contains`. Use `ignoreCase=true` for case-insensitive URL matching. Use `method=` to restrict a route to one HTTP method, `times=` to remove it after a fixed number of matches, and `delay=` to simulate response latency. Routes can set mocked response headers with `header=`, `headers=`, `headerName=`, and `headerValue=`. Use `abort=true` or `action=abort` to reject matching requests instead; aborted matches are recorded in the request failure log. Requests are recorded before dispatch. Failed page-side `fetch()` and `XMLHttpRequest` calls are recorded in a separate failure log. `waitForRequest` waits for dispatch, `waitForRequestFinished` and `waitForResponse` wait for completed responses, and `waitForRequestFailed` waits for failures. Waits can also filter by `method=`, `status=`, response or error text with `contains=`, mocked-state with `mocked=true|false`, and headers with `header=`, `headerName=`, and `headerValue=`; timeout failures include the requested filters.
 
 Options:
 
@@ -1597,14 +1598,15 @@ Options:
 - `abort`: Optional boolean-like route abort switch. Use `true` to fail matching requests.
 - `action`: Optional route action. Use `abort` to fail matching requests.
 - `error`: Optional failure message for aborted routes. Default is `Request aborted by CMG route`.
+- `header`: Optional route response header formatted as `Name: value`; for waits, a header filter formatted as `Name` or `Name: value`.
+- `headers`: Optional route response headers separated by semicolons, for example `A: 1; B: 2`.
 - `timeout`: Optional for network waits. Default is `5000`.
 - `match`: Optional URL match mode for routes and network waits. Supports `contains`, `exact`, and `regex`. Default is `contains`.
 - `ignoreCase`: Optional boolean for URL matching on routes and network waits.
 - `contains`: Optional text filter for response bodies or failure messages on network waits.
 - `mocked`: Optional boolean filter for network waits. Use `true` for mocked route traffic or `false` for real page traffic.
-- `header`: Optional header filter for network waits, formatted as `Name` or `Name: value`.
-- `headerName`: Optional header name filter for network waits. Header names are matched case-insensitively.
-- `headerValue`: Optional header value substring filter. Requires `header` or `headerName`.
+- `headerName`: Optional route response header name; for waits, a header name filter. Header names are matched case-insensitively.
+- `headerValue`: Optional route response header value; for waits, a header value substring filter. On waits, requires `header` or `headerName`.
 
 `exportHar` writes captured response metadata and bodies to a HAR-like JSON file. `replayHar` reads that file and installs routes for each captured request URL.
 

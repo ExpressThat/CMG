@@ -27,6 +27,15 @@ public sealed class BrowserScriptRunnerNetworkMatchTests
     }
 
     [Fact]
+    public void RunText_RouteRejectsInvalidHeader()
+    {
+        var result = Runner().RunText("route \"/api\" header=Broken", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("headers must be formatted as Name: value", result.Error);
+    }
+
+    [Fact]
     public void RunText_WaitForResponseSupportsRegexAndIgnoreCase()
     {
         var client = new FakeAutomationClient();

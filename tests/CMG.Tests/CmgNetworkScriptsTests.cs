@@ -56,6 +56,22 @@ public sealed class CmgNetworkScriptsTests
     }
 
     [Fact]
+    public void Route_CanSetResponseHeaders()
+    {
+        var action = Node("route", ["/api"], new Dictionary<string, string>
+        {
+            ["headers"] = "X-Test: yes; Cache-Control: no-store",
+            ["header"] = "X-One: 1"
+        });
+        var script = CmgNetworkScripts.Route(action);
+
+        Assert.Contains("'x-test': 'yes'", script);
+        Assert.Contains("'cache-control': 'no-store'", script);
+        Assert.Contains("'x-one': '1'", script);
+        Assert.Contains("headers: route.headers", script);
+    }
+
+    [Fact]
     public void Route_CanDelayMatchingRequests()
     {
         var action = Node("route", ["/api"], new Dictionary<string, string> { ["delay"] = "250" });

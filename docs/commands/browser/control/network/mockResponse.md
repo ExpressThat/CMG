@@ -21,6 +21,10 @@ cmg browser control network mockResponse "<pattern>" [options]
 - `--times <count>`: Remove route after this many matches.
 - `--delay <milliseconds>`: Response delay.
 - `--abort`: Abort matching requests.
+- `--header <name: value>`: Mocked response header.
+- `--headers <headers>`: Mocked response headers separated by semicolons.
+- `--header-name <name>`: Mocked response header name.
+- `--header-value <value>`: Mocked response header value for `--header-name`.
 
 ## Stdout
 
@@ -31,7 +35,7 @@ ROUTE 001 /api/profile
 
 ## Stderr
 
-Writes browser, option, or action errors. Invalid match modes report `match= must be contains, exact, or regex`; invalid regex patterns report `Invalid network regex '<pattern>': <reason>`.
+Writes browser, option, or action errors. Invalid match modes report `match= must be contains, exact, or regex`; invalid regex patterns report `Invalid network regex '<pattern>': <reason>`. Invalid headers report `headers must be formatted as Name: value`.
 
 ## Exit Codes
 
@@ -43,5 +47,6 @@ Writes browser, option, or action errors. Invalid match modes report `match= mus
 ```powershell
 cmg browser control network mockResponse "/api/profile" --status 200 --body "{\"name\":\"CMG\"}" --content-type application/json
 cmg browser control network mockResponse "/api/profile/\d+" --match regex --ignore-case --status 200
+cmg browser control network mockResponse "/api/profile" --header-name X-Trace --header-value demo
 cmg browser control network mockResponse "/api/slow" --status 200 --delay 250
 ```

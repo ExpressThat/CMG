@@ -48,6 +48,10 @@ public sealed partial class BrowserControlCommandBuilder
         var times = new Option<int?>("--times") { Description = "Remove route after this many matches." };
         var delay = new Option<int?>("--delay") { Description = "Response delay in milliseconds." };
         var abort = new Option<bool>("--abort") { Description = "Abort matching requests." };
+        var header = new Option<string?>("--header") { Description = "Response header as Name: value." };
+        var headers = new Option<string?>("--headers") { Description = "Response headers separated by semicolons." };
+        var headerName = new Option<string?>("--header-name") { Description = "Response header name." };
+        var headerValue = new Option<string?>("--header-value") { Description = "Response header value." };
         var match = NavigationMatchOption();
         var ignoreCase = NavigationIgnoreCaseOption();
         var command = new Command(name, description)
@@ -60,12 +64,16 @@ public sealed partial class BrowserControlCommandBuilder
             times,
             delay,
             abort,
+            header,
+            headers,
+            headerName,
+            headerValue,
             match,
             ignoreCase
         };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], RouteOptions(parseResult, status, body, contentType, method, times, delay, abort, match, ignoreCase))));
+            ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], RouteOptions(parseResult, status, body, contentType, method, times, delay, abort, header, headers, headerName, headerValue, match, ignoreCase))));
         return command;
     }
 
@@ -111,6 +119,10 @@ public sealed partial class BrowserControlCommandBuilder
         Option<int?> times,
         Option<int?> delay,
         Option<bool> abort,
+        Option<string?> header,
+        Option<string?> headers,
+        Option<string?> headerName,
+        Option<string?> headerValue,
         Option<string?> match,
         Option<bool> ignoreCase) =>
         CompactOptions([
@@ -121,6 +133,10 @@ public sealed partial class BrowserControlCommandBuilder
             IntOption("times", parseResult.GetValue(times)),
             IntOption("delay", parseResult.GetValue(delay)),
             parseResult.GetValue(abort) ? ("abort", "true") : null,
+            StringOption("header", parseResult.GetValue(header)),
+            StringOption("headers", parseResult.GetValue(headers)),
+            StringOption("headerName", parseResult.GetValue(headerName)),
+            StringOption("headerValue", parseResult.GetValue(headerValue)),
             StringOption("match", parseResult.GetValue(match)),
             parseResult.GetValue(ignoreCase) ? ("ignoreCase", "true") : null
         ]);

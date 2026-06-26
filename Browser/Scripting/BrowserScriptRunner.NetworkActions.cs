@@ -32,6 +32,7 @@ public sealed partial class BrowserScriptRunner
         }
 
         ValidateNetworkUrlMatchOptions(action);
+        ValidateRouteHeaderOptions(action);
     }
 
     private static IReadOnlyList<string> ExecuteClearRoutes(
@@ -141,6 +142,36 @@ public sealed partial class BrowserScriptRunner
         if (match.Equals("regex", StringComparison.OrdinalIgnoreCase))
         {
             ValidateNetworkRegex(action);
+        }
+    }
+
+    private static void ValidateRouteHeaderOptions(BrowserScriptAction action)
+    {
+        if (action.Options.TryGetValue("headerValue", out var headerValue) &&
+            !string.IsNullOrWhiteSpace(headerValue) &&
+            !action.Options.ContainsKey("header") &&
+            !action.Options.ContainsKey("headerName"))
+        {
+            throw new ScriptExecutionException($"{action.Name} option headerValue= requires header= or headerName=.");
+        }
+
+        ValidateRouteHeader(action, action.Options.GetValueOrDefault("header"), "header");
+        foreach (var header in (action.Options.GetValueOrDefault("headers") ?? string.Empty).Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            ValidateRouteHeader(action, header, "headers");
+        }
+    }
+
+    private static void ValidateRouteHeader(BrowserScriptAction action, string? header, string option)
+    {
+        if (string.IsNullOrWhiteSpace(header))
+        {
+            return;
+        }
+
+        if (header.IndexOf(':') <= 0)
+        {
+            throw new ScriptExecutionException($"{action.Name} option {option}= headers must be formatted as Name: value.");
         }
     }
 

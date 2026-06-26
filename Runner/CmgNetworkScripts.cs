@@ -15,7 +15,8 @@ public static partial class CmgNetworkScripts
         var delay = action.Options.TryGetValue("delay", out var delayValue) ? delayValue : "0";
         var match = NetworkMatchMode(action);
         var ignoreCase = BoolLiteral(action.Options.GetValueOrDefault("ignoreCase"));
-        return InstallPrelude() + $"window.__cmgRoutes.push({{ pattern: {Quote(pattern)}, match: {Quote(match)}, ignoreCase: {ignoreCase}, method: {Quote(method)}, times: {times}, delay: {delay}, status: {status}, body: {Quote(body)}, contentType: {Quote(contentType)}, abort: {abort}, error: {Quote(error)} }}); true";
+        var headers = RouteHeaders(action, contentType);
+        return InstallPrelude() + $"window.__cmgRoutes.push({{ pattern: {Quote(pattern)}, match: {Quote(match)}, ignoreCase: {ignoreCase}, method: {Quote(method)}, times: {times}, delay: {delay}, status: {status}, body: {Quote(body)}, contentType: {Quote(contentType)}, headers: {headers}, abort: {abort}, error: {Quote(error)} }}); true";
     }
 
     public static string ClearRoutes() => "window.__cmgRoutes = []; true";
@@ -98,8 +99,8 @@ public static partial class CmgNetworkScripts
                   window.__cmgRequestFailures.push({ method, url, type: 'fetch', mocked: true, error: route.error || 'Request aborted by CMG route', headers });
                   throw new TypeError(route.error || 'Request aborted by CMG route');
                 }
-                const response = new Response(route.body, { status: route.status, headers: { 'content-type': route.contentType } });
-                window.__cmgResponses.push({ method, url, status: route.status, mocked: true, body: route.body, contentType: route.contentType, headers: { 'content-type': route.contentType } });
+                const response = new Response(route.body, { status: route.status, headers: route.headers || { 'content-type': route.contentType } });
+                window.__cmgResponses.push({ method, url, status: route.status, mocked: true, body: route.body, contentType: route.contentType, headers: route.headers || { 'content-type': route.contentType } });
                 return response;
               }
               try {
@@ -160,7 +161,7 @@ public static partial class CmgNetworkScripts
                 Object.defineProperty(xhr, 'responseText', { configurable: true, get: () => route.body });
                 Object.defineProperty(xhr, 'response', { configurable: true, get: () => route.body });
                 setTimeout(() => {
-                  window.__cmgResponses.push({ method, url, status: route.status, mocked: true, type: 'xhr', body: route.body, contentType: route.contentType, headers: { 'content-type': route.contentType } });
+                  window.__cmgResponses.push({ method, url, status: route.status, mocked: true, type: 'xhr', body: route.body, contentType: route.contentType, headers: route.headers || { 'content-type': route.contentType } });
                   xhr.onreadystatechange?.();
                   xhr.onload?.();
                   xhr.dispatchEvent(new Event('readystatechange'));
@@ -192,5 +193,35 @@ public static partial class CmgNetworkScripts
         return action.Options.TryGetValue("times", out var value) &&
             int.TryParse(value, out times) &&
             times > 0;
+    }
+
+    private static string RouteHeaders(CmgNode action, string contentType)
+    {
+        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["content-type"] = contentType
+        };
+        AddHeader(headers, action.Options.GetValueOrDefault("header"));
+        foreach (var header in (action.Options.GetValueOrDefault("headers") ?? string.Empty).Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            AddHeader(headers, header);
+        }
+
+        var name = action.Options.GetValueOrDefault("headerName");
+        var value = action.Options.GetValueOrDefault("headerValue");
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            headers[name.Trim().ToLowerInvariant()] = value ?? string.Empty;
+        }
+
+        return "{ " + string.Join(", ", headers.Select(header => $"{Quote(header.Key)}: {Quote(header.Value)}")) + " }";
+    }
+
+    private static void AddHeader(Dictionary<string, string> headers, string? header)
+    {
+        if (string.IsNullOrWhiteSpace(header)) return;
+        var index = header.IndexOf(':');
+        if (index <= 0) return;
+        headers[header[..index].Trim().ToLowerInvariant()] = header[(index + 1)..].Trim();
     }
 }

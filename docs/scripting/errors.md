@@ -493,6 +493,7 @@ Line 10: intercept failed. intercept option delay= must be a non-negative intege
 Line 11: waitForResponse failed. waitForResponse option match= must be contains, exact, or regex.
 Line 12: waitForRequest failed. Invalid network regex '[': Invalid pattern '[' at offset 1. Unterminated [] set.
 Line 13: route failed. route option ignoreCase= must be true or false.
+Line 14: route failed. route option header= headers must be formatted as Name: value.
 ```
 
 Routes and network waits match page `fetch()` and `XMLHttpRequest` URLs recorded by CMG's page-side network patch. Use `match=contains|exact|regex` and `ignoreCase=true` when substring matching is not specific enough. `waitForRequestFinished` waits for completed responses. `waitForRequestFailed` waits for rejected `fetch()` calls or XHR `error`, `abort`, or `timeout` events.
