@@ -14,6 +14,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string LastWaitSelector { get; private set; } = string.Empty;
     public string LastTypedSelector { get; private set; } = string.Empty;
     public string LastTypedText { get; private set; } = string.Empty;
+    public int LastTypeDelay { get; private set; }
     public string LastClearedSelector { get; private set; } = string.Empty;
     public string LastSelectedSelector { get; private set; } = string.Empty;
     public string LastSelectedValue { get; private set; } = string.Empty;
@@ -58,7 +59,13 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         LastTypedSelector = selector;
         LastTypedText = text;
     }
-    public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null) { }
+    public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, int delayMilliseconds = 80, Action? afterCharacter = null)
+    {
+        LastTypedSelector = selector;
+        LastTypedText = text;
+        LastTypeDelay = delayMilliseconds;
+        afterCharacter?.Invoke();
+    }
     public void Clear(string remoteDebuggingUrl, string selector) => LastClearedSelector = selector;
     public void Press(string remoteDebuggingUrl, string key) => KeyEvents.Add($"press:{key}");
     public void KeyDown(string remoteDebuggingUrl, string key)

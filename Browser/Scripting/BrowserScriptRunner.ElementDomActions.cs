@@ -17,12 +17,12 @@ public sealed partial class BrowserScriptRunner
         automationClient.Clear(remoteDebuggingUrl, selector);
         if (recorder is null)
         {
-            automationClient.Type(remoteDebuggingUrl, selector, action.Arguments[1]);
+            TypeWithoutRecorder(remoteDebuggingUrl, automationClient, action, selector);
             return [];
         }
 
         recorder.CaptureClickPulse();
-        automationClient.TypeProgressively(remoteDebuggingUrl, selector, action.Arguments[1], recorder.CaptureTypingFrame);
+        automationClient.TypeProgressively(remoteDebuggingUrl, selector, action.Arguments[1], GetTypingDelay(action), recorder.CaptureTypingFrame);
         return [];
     }
 

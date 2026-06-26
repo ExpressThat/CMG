@@ -137,7 +137,7 @@ public sealed partial class CmgActionLowerer
         return [
             .. resolved.PrefixLines,
             ToLine("clear", [resolved.Selector]),
-            ToLine("type", [resolved.Selector, action.Arguments[1]])
+            ToLine("type", [resolved.Selector, action.Arguments[1]], action.Options)
         ];
     }
 

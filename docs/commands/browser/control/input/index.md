@@ -16,8 +16,8 @@ cmg browser control input [command] [options]
 - [`contextClick`](contextClick.md): Right-click an element.
 - [`tap`](tap.md): Tap an element with touch-style events.
 - [`touchTap`](touchTap.md): Tap an element with touch-style events.
-- [`type`](type.md): Type text into an element.
-- [`pressSequentially`](pressSequentially.md): Type text into an element using sequential key presses.
+- [`type`](type.md): Type text into an element, optionally with per-character delay.
+- [`pressSequentially`](pressSequentially.md): Type text into an element using sequential key presses, optionally with per-character delay.
 - [`fill`](fill.md): Replace an input-like element value.
 - [`clear`](clear.md): Clear an input-like element.
 - [`check`](check.md): Check a checkbox-like element.

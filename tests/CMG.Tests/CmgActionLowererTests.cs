@@ -14,6 +14,15 @@ public sealed class CmgActionLowererTests
     }
 
     [Fact]
+    public void Lower_FillPreservesTypingOptions()
+    {
+        var action = Node("fill", ["#name", "Ross"], new Dictionary<string, string> { ["delay"] = "25" });
+        var lines = new CmgActionLowerer().Lower(action);
+
+        Assert.Equal(["clear \"#name\"", "type \"#name\" \"Ross\" delay=\"25\""], lines);
+    }
+
+    [Fact]
     public void Lower_StepAddsCaptionBeforeChildren()
     {
         var action = Node("step", ["Open"], [Node("click", ["#open"], [])]);

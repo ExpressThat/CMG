@@ -184,14 +184,20 @@ In GIF recordings, `tap` and `touchTap` move the virtual pointer to the target, 
 ```text
 type "<selector>" "text"
 pressSequentially "<selector>" "text"
+type "<selector>" "text" delay=25
 ```
 
 Focuses the element without scrolling, appends text to its current value, and dispatches `input` and `change` events. `pressSequentially` is a Playwright-style alias for the same visible typing path. The element center must already be inside the current viewport. Use `scrollIntoView` first when the script should move the page.
+
+Options:
+
+- `delay`: Optional milliseconds between typed characters. Must be zero or greater. Without GIF recording, omitting `delay` uses the fast native type path. With GIF recording, typing is progressive so every character can produce a frame; omitting `delay` uses the default visual typing delay.
 
 Example:
 
 ```text
 type "#profileName" "CMG Test Profile"
+pressSequentially "#profileName" "CMG Test Profile" delay=25
 ```
 
 ## `clear`
@@ -1446,7 +1452,7 @@ Alias for `showMessageBar`.
 fill "#name" "CMG"
 ```
 
-Clears the field and types the value. In GIF mode this keeps the same visible pointer and progressive typing behavior as `clear` plus `type`. This action works in direct browser-control scripts and `cmg run`.
+Clears the field and types the value. In GIF mode this keeps the same visible pointer and progressive typing behavior as `clear` plus `type`. `fill` accepts the same typing options as `type`, including `delay=`. This action works in direct browser-control scripts and `cmg run`.
 
 ### `check` And `uncheck`
 

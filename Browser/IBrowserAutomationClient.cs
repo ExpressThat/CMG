@@ -14,7 +14,7 @@ public interface IBrowserAutomationClient
 
     void Type(string remoteDebuggingUrl, string selector, string text);
 
-    void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null);
+    void TypeProgressively(string remoteDebuggingUrl, string selector, string text, int delayMilliseconds = 80, Action? afterCharacter = null);
 
     void Clear(string remoteDebuggingUrl, string selector);
 

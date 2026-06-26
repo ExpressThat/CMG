@@ -100,18 +100,20 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Text to append to the element value."
         };
+        var delay = CliIntOption("--delay", "Delay in milliseconds between typed characters.");
 
         var command = new Command(name, description)
         {
             selectorArgument,
-            textArgument
+            textArgument,
+            delay
         };
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
                 name,
-                parseResult.GetValue(selectorArgument) ?? string.Empty,
-                parseResult.GetValue(textArgument) ?? string.Empty)));
+                [parseResult.GetValue(selectorArgument) ?? string.Empty, parseResult.GetValue(textArgument) ?? string.Empty],
+                CompactOptions([IntOption("delay", parseResult.GetValue(delay))]))));
 
         return command;
     }

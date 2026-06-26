@@ -924,6 +924,19 @@ These aliases run through the same CMG actions as `expectTitle`, text assertions
 
 This direct-script example is available as `demo-scripts/45-provider-aliases.cmgscript`. The structured `cmg run` form is available as `demo-scripts/46-provider-aliases-runner.cmgscript`.
 
+## Typing Delay
+
+```text
+setContent "<main><label>Name <input id='name'></label><label>Handle <input id='handle'></label></main>"
+type "#name" "CMG" delay=25
+fill "#handle" "@cmg" delay=25
+assertText "body" "CMG"
+```
+
+`type`, `pressSequentially`, and `fill` accept `delay=` to control per-character pacing. GIF recordings still move the virtual pointer to the target and capture progressive typing frames.
+
+This direct-script example is available as `demo-scripts/102-typing-delay.cmgscript`. The structured `cmg run` form is available as `demo-scripts/103-typing-delay-runner.cmgscript`.
+
 ## Pointer Click Variants
 
 ```text

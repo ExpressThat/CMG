@@ -45,7 +45,7 @@ public sealed partial class BrowserScriptRunner
         var selector = ResolveSelector(remoteDebuggingUrl, automationClient, action);
         if (recorder is null)
         {
-            automationClient.Type(remoteDebuggingUrl, selector, action.Arguments[1]);
+            TypeWithoutRecorder(remoteDebuggingUrl, automationClient, action, selector);
             return [];
         }
 
@@ -54,6 +54,7 @@ public sealed partial class BrowserScriptRunner
             remoteDebuggingUrl,
             selector,
             action.Arguments[1],
+            GetTypingDelay(action),
             recorder.CaptureTypingFrame);
 
         return [];
@@ -65,6 +66,29 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 2, 2);
         automationClient.Select(remoteDebuggingUrl, ResolveSelector(remoteDebuggingUrl, automationClient, action), action.Arguments[1]);
         return [];
+    }
+
+    private static void TypeWithoutRecorder(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        string selector)
+    {
+        if (action.Options.ContainsKey("delay"))
+        {
+            automationClient.TypeProgressively(remoteDebuggingUrl, selector, action.Arguments[1], GetTypingDelay(action));
+            return;
+        }
+
+        automationClient.Type(remoteDebuggingUrl, selector, action.Arguments[1]);
+    }
+
+    private static int GetTypingDelay(BrowserScriptAction action)
+    {
+        var delay = GetIntOption(action, "delay", 80);
+        return delay >= 0
+            ? delay
+            : throw new ScriptExecutionException($"{action.Name} option delay= must be zero or greater.");
     }
 
     private static IReadOnlyList<string> ExecuteShowMessageBar(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)

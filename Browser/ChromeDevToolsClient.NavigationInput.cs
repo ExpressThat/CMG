@@ -72,7 +72,7 @@ public sealed partial class ChromeDevToolsClient
             $"element.focus({{ preventScroll: true }}); element.value = `${{element.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
     }
 
-    public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null)
+    public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, int delayMilliseconds = 80, Action? afterCharacter = null)
     {
         Click(remoteDebuggingUrl, selector);
 
@@ -80,7 +80,7 @@ public sealed partial class ChromeDevToolsClient
         {
             Type(remoteDebuggingUrl, selector, character.ToString());
             afterCharacter?.Invoke();
-            Thread.Sleep(80);
+            Thread.Sleep(delayMilliseconds);
         }
     }
 

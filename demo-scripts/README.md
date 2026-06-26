@@ -191,5 +191,7 @@ dotnet run -- --firefox browser close
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 - `100-click-options.cmgscript`: Demonstrates optioned click dispatch with button, modifiers, click count, and delay in a direct script.
 - `101-click-options-runner.cmgscript`: Demonstrates optioned click dispatch in the structured runner DSL.
+- `102-typing-delay.cmgscript`: Demonstrates provider-style typing delay in a direct script.
+- `103-typing-delay-runner.cmgscript`: Demonstrates provider-style typing delay in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.
