@@ -9,6 +9,8 @@ cmg browser control navigation [command] [options]
 ## Subcommands
 
 - [`navigate`](navigate.md): Navigate the primary page target.
+- [`goto`](goto.md): Navigate the primary page target.
+- [`visit`](visit.md): Navigate the primary page target.
 - [`reload`](reload.md): Reload the primary page target.
 - [`goBack`](goBack.md): Navigate one step back in page history.
 - [`goForward`](goForward.md): Navigate one step forward in page history.
@@ -36,6 +38,7 @@ cmg browser control navigation [command] [options]
 
 ```powershell
 cmg browser control navigation navigate "https://example.com"
+cmg browser control navigation goto "https://example.com"
 cmg browser control navigation reload
 cmg browser control navigation title
 cmg browser control navigation expectTitle "Checkout"

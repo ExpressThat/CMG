@@ -5,7 +5,7 @@ namespace CMG.Commands;
 
 public sealed partial class BrowserControlCommandBuilder
 {
-    private Command BuildPrintPdfCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildPrintPdfCommand(BrowserSelectionOptions browserOptions, string name)
     {
         var path = new Option<FileInfo>("--path")
         {
@@ -15,11 +15,11 @@ public sealed partial class BrowserControlCommandBuilder
         var landscape = CliStringOption("--landscape", "Use landscape orientation: true or false.");
         var printBackground = CliStringOption("--print-background", "Print backgrounds: true or false. Default is true.");
         var scale = new Option<double?>("--scale") { Description = "Positive print scale. Default is 1." };
-        var command = new Command("printPdf", "Print the current page to PDF.") { path, landscape, printBackground, scale };
+        var command = new Command(name, "Print the current page to PDF.") { path, landscape, printBackground, scale };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("printPdf", [], CompactOptions([
+            ToScriptLine(name, [], CompactOptions([
                 StringOption("path", parseResult.GetValue(path)?.FullName),
                 StringOption("landscape", parseResult.GetValue(landscape)),
                 StringOption("printBackground", parseResult.GetValue(printBackground)),

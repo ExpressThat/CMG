@@ -47,20 +47,20 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildNavigateCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildNavigateCommand(BrowserSelectionOptions browserOptions, string name)
     {
         var targetArgument = new Argument<string>("target")
         {
             Description = "URL, data URL, or local file path."
         };
 
-        var command = new Command("navigate", "Navigate the primary page target.")
+        var command = new Command(name, "Navigate the primary page target.")
         {
             targetArgument
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("navigate", parseResult.GetValue(targetArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(name, parseResult.GetValue(targetArgument) ?? string.Empty)));
 
         return command;
     }

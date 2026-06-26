@@ -13,7 +13,8 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "html", "Print an element's outer HTML."));
         command.Subcommands.Add(BuildScreenshotCommand(browserOptions));
         command.Subcommands.Add(BuildScreenshotPageCommand(browserOptions));
-        command.Subcommands.Add(BuildPrintPdfCommand(browserOptions));
+        command.Subcommands.Add(BuildPrintPdfCommand(browserOptions, "printPdf"));
+        command.Subcommands.Add(BuildPrintPdfCommand(browserOptions, "pdf"));
         command.Subcommands.Add(BuildExpectScreenshotCommand(browserOptions));
         command.Subcommands.Add(BuildExpectScreenshotCommand(browserOptions, "toHaveScreenshot"));
         return command;
@@ -218,32 +219,6 @@ public sealed partial class BrowserControlCommandBuilder
 
             return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("setViewport", [], options));
         });
-
-        return command;
-    }
-
-    private Command BuildDragAndDropCommand(BrowserSelectionOptions browserOptions, string name)
-    {
-        var sourceArgument = new Argument<string>("sourceSelector")
-        {
-            Description = "CSS selector for the drag source."
-        };
-        var targetArgument = new Argument<string>("targetSelector")
-        {
-            Description = "CSS selector for the drop target."
-        };
-
-        var command = new Command(name, "Drag one element onto another.")
-        {
-            sourceArgument,
-            targetArgument
-        };
-
-        command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                name,
-                parseResult.GetValue(sourceArgument) ?? string.Empty,
-                parseResult.GetValue(targetArgument) ?? string.Empty)));
 
         return command;
     }

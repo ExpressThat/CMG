@@ -9,7 +9,9 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command("navigation", "Navigation and page state commands.");
 
-        command.Subcommands.Add(BuildNavigateCommand(browserOptions));
+        command.Subcommands.Add(BuildNavigateCommand(browserOptions, "navigate"));
+        command.Subcommands.Add(BuildNavigateCommand(browserOptions, "goto"));
+        command.Subcommands.Add(BuildNavigateCommand(browserOptions, "visit"));
         command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "reload", "Reload the primary page target."));
         command.Subcommands.Add(BuildHistoryCommand(browserOptions, "goBack", "Navigate one step back in page history."));
         command.Subcommands.Add(BuildHistoryCommand(browserOptions, "goForward", "Navigate one step forward in page history."));

@@ -10,10 +10,16 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command("tabs", "Tab and popup target commands.");
 
         command.Subcommands.Add(BuildNoArgumentCommand(browserOptions, "list", "List available page targets.", "listTabs"));
-        command.Subcommands.Add(BuildOpenTabCommand(browserOptions));
-        command.Subcommands.Add(BuildWaitForTabCommand(browserOptions));
+        command.Subcommands.Add(BuildNoArgumentCommand(browserOptions, "listTabs", "List available page targets.", "listTabs"));
+        command.Subcommands.Add(BuildOpenTabCommand(browserOptions, "open", "openTab"));
+        command.Subcommands.Add(BuildOpenTabCommand(browserOptions, "openTab", "openTab"));
+        command.Subcommands.Add(BuildWaitForTabCommand(browserOptions, "wait", "waitForTab"));
+        command.Subcommands.Add(BuildWaitForTabCommand(browserOptions, "waitForTab", "waitForTab"));
+        command.Subcommands.Add(BuildWaitForTabCommand(browserOptions, "waitForPopup", "waitForPopup"));
         command.Subcommands.Add(BuildIndexedCommand(browserOptions, "activate", "Activate a page target by index.", "activateTab"));
+        command.Subcommands.Add(BuildIndexedCommand(browserOptions, "activateTab", "Activate a page target by index.", "activateTab"));
         command.Subcommands.Add(BuildIndexedCommand(browserOptions, "close", "Close a page target by index.", "closeTab"));
+        command.Subcommands.Add(BuildIndexedCommand(browserOptions, "closeTab", "Close a page target by index.", "closeTab"));
 
         return command;
     }
@@ -56,25 +62,25 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildOpenTabCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildOpenTabCommand(BrowserSelectionOptions browserOptions, string name, string action)
     {
         var targetArgument = new Argument<string>("target")
         {
             Description = "URL, data URL, or local file path to open in a new tab."
         };
 
-        var command = new Command("open", "Open a new tab.")
+        var command = new Command(name, "Open a new tab.")
         {
             targetArgument
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("openTab", parseResult.GetValue(targetArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(action, parseResult.GetValue(targetArgument) ?? string.Empty)));
 
         return command;
     }
 
-    private Command BuildWaitForTabCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildWaitForTabCommand(BrowserSelectionOptions browserOptions, string name, string action)
     {
         var countOption = new Option<int>("--count")
         {
@@ -87,7 +93,7 @@ public sealed partial class BrowserControlCommandBuilder
             DefaultValueFactory = _ => 5000
         };
 
-        var command = new Command("wait", "Wait until at least this many tabs exist.")
+        var command = new Command(name, "Wait until at least this many tabs exist.")
         {
             countOption,
             timeoutOption
@@ -95,7 +101,7 @@ public sealed partial class BrowserControlCommandBuilder
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "waitForTab",
+                action,
                 [],
                 [
                     ("count", parseResult.GetValue(countOption).ToString()),
