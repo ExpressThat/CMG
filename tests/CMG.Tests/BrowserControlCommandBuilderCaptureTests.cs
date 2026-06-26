@@ -20,6 +20,19 @@ public sealed class BrowserControlCommandBuilderCaptureTests
     }
 
     [Fact]
+    public void ExpectScreenshotCommand_MapsVisualOptionsToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control capture expectScreenshot --baseline C:\\temp\\page.png --full-page --mask #clock;#ad --mask-color #000000").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(
+            "expectScreenshot baseline=\"C:\\\\temp\\\\page.png\" fullPage=\"true\" mask=\"#clock;#ad\" maskColor=\"#000000\"",
+            handler.ScriptLine);
+    }
+
+    [Fact]
     public void PrintPdfCommand_MapsAdvancedOptionsToScriptAction()
     {
         var handler = new CapturingBrowserControlCommandHandler();

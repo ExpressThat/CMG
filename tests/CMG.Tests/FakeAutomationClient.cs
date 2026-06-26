@@ -24,6 +24,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public PdfPrintOptions? LastPdfOptions { get; private set; }
     public Queue<string> TextResponses { get; } = new();
     public Queue<string> EvaluateResponses { get; } = new();
+    public Queue<ElementBox> ElementBoxes { get; } = new();
     public Queue<IReadOnlyList<ChromePageTab>> TabResponses { get; } = new();
     public List<BrowserContextInfo> BrowserContexts { get; } = [];
     public List<BrowserWorkerInfo> Workers { get; } = [];
@@ -132,7 +133,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public ElementBox GetElementBox(string remoteDebuggingUrl, string selector)
     {
         LastElementBoxSelector = selector;
-        return new(0, 0, 1, 1);
+        return ElementBoxes.Count > 0 ? ElementBoxes.Dequeue() : new(0, 0, 1, 1);
     }
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) => new(0, 0);
     public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point) { }

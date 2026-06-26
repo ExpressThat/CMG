@@ -732,11 +732,11 @@ Coverage actions work in direct browser-control scripts and `cmg run`. They do n
 test "dialog matches baseline" {
   navigate "C:\Projects\CMG\index.html"
   click "#openProfileDialog"
-  expectScreenshot "#profileDialog" baseline="baselines\profile-dialog.png" output="demo-output\profile-dialog.actual.png" tolerance=0.01
+  expectScreenshot "#profileDialog" baseline="baselines\profile-dialog.png" output="demo-output\profile-dialog.actual.png" tolerance=0.01 mask="#clock"
 }
 ```
 
-If the baseline does not exist, CMG writes it from the actual screenshot and fails so the baseline can be reviewed.
+If the baseline does not exist, CMG writes it from the actual screenshot and fails so the baseline can be reviewed. Use `fullPage=true` for page-level full-scroll comparisons and `mask=` to cover dynamic elements before diffing.
 
 ## UI State Assertions
 

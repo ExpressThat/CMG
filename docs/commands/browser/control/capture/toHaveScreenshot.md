@@ -15,6 +15,9 @@ cmg browser control capture toHaveScreenshot [selector] --baseline <file> [optio
 - `--baseline <file>`: Required baseline PNG path.
 - `--output <file>`: Actual PNG output path. Default is `actual.png`.
 - `--tolerance <number>`: Allowed normalized diff. Default is `0`.
+- `--full-page`: Capture the full scrollable page for page screenshot assertions. Ignored when `[selector]` is provided.
+- `--mask <selectors>`: Semicolon-separated selectors or CMG rich locators to cover before comparison.
+- `--mask-color <hex>`: Mask fill color. Default is `#ff00ff`.
 
 ## Stdout
 
@@ -30,10 +33,11 @@ When the baseline is missing, CMG creates it from the actual screenshot and exit
 ## Exit Codes
 
 - `0`: Screenshot matched within tolerance.
-- `1`: Browser is not running, baseline was created, or the assertion failed.
+- `1`: Browser is not running, baseline was created, options are invalid, a mask selector was missing, or the assertion failed.
 
 ## Example
 
 ```powershell
 cmg browser control capture toHaveScreenshot "#dialog" --baseline baselines/dialog.png --output actual-dialog.png
+cmg browser control capture toHaveScreenshot --baseline baselines/page.png --full-page --mask "#clock;#ad"
 ```

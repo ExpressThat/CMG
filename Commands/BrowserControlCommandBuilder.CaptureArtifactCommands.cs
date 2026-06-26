@@ -66,14 +66,23 @@ public sealed partial class BrowserControlCommandBuilder
         };
         var output = new Option<FileInfo?>("--output") { Description = "Actual PNG output path. Default is actual.png." };
         var tolerance = new Option<double?>("--tolerance") { Description = "Allowed normalized diff. Default is 0." };
-        var command = new Command(name, "Compare an element or page screenshot to a baseline.") { selector, baseline, output, tolerance };
+        var fullPage = new Option<bool>("--full-page") { Description = "Capture the full scrollable page for page screenshot assertions." };
+        var mask = CliStringOption("--mask", "Semicolon-separated selectors to cover before comparison.");
+        var maskColor = CliStringOption("--mask-color", "Mask color as hex. Default is #ff00ff.");
+        var command = new Command(name, "Compare an element or page screenshot to a baseline.")
+        {
+            selector, baseline, output, tolerance, fullPage, mask, maskColor
+        };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine(name, OptionalArgument(parseResult, selector), CompactOptions([
                 StringOption("baseline", parseResult.GetValue(baseline)?.FullName),
                 StringOption("output", parseResult.GetValue(output)?.FullName),
-                StringOption("tolerance", parseResult.GetValue(tolerance)?.ToString())
+                StringOption("tolerance", parseResult.GetValue(tolerance)?.ToString()),
+                BoolOption("fullPage", parseResult.GetValue(fullPage) ? true : null),
+                StringOption("mask", parseResult.GetValue(mask)),
+                StringOption("maskColor", parseResult.GetValue(maskColor))
             ]))));
 
         return command;

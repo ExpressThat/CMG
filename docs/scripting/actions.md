@@ -1794,7 +1794,7 @@ Coverage actions do not move the virtual pointer. They are included in reports a
 
 ```text
 expectScreenshot "#dialog" baseline="baselines\dialog.png" output="demo-output\dialog.actual.png" tolerance=0.01
-expectScreenshot baseline="baselines\page.png" output="demo-output\page.actual.png"
+expectScreenshot baseline="baselines\page.png" output="demo-output\page.actual.png" fullPage=true mask="#clock;#ad"
 toHaveScreenshot "#dialog" baseline="baselines\dialog.png" output="demo-output\dialog.actual.png"
 ```
 
@@ -1805,6 +1805,9 @@ Options:
 - `baseline`: Baseline PNG path. If missing, CMG writes it from the actual image and fails with an explanatory reason.
 - `output`: Actual PNG path. Default is `actual.png`.
 - `tolerance`: Allowed normalized difference from `0` to `1`. Default is `0`.
+- `fullPage`: Optional boolean. For page assertions, captures the full scrollable page instead of only the viewport. Ignored when a selector is provided.
+- `mask`: Optional semicolon-separated selectors or rich locators to cover before comparison, for example `"#clock;hasText=.ad|Sponsored"`.
+- `maskColor`: Optional mask color as hex. Default is `#ff00ff`.
 
 When a selector is provided in GIF mode, CMG moves the virtual pointer to that element before the comparison frame. Page-level visual comparisons do not move the pointer. Wrap this action in a `step` when the GIF should include a caption explaining the comparison.
 

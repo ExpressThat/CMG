@@ -596,9 +596,10 @@ PDF generation is available in both direct scripts and `cmg run`. Invalid PDF op
 ```text
 STEP FAIL line=5 action=expectScreenshot reason=Screenshot diff 0.0321 exceeded tolerance 0.01.
 STEP FAIL line=6 action=toHaveScreenshot reason=Baseline 'dialog.png' did not exist. Created it from the actual screenshot.
+STEP FAIL line=7 action=expectScreenshot reason=expectScreenshot option fullPage= must be true or false.
 ```
 
-The `VISUAL_ACTUAL` output line points to the actual PNG written for review. If the baseline file is missing, CMG creates it from the actual screenshot and fails with a message saying the baseline was created.
+The `VISUAL_ACTUAL` output line points to the actual PNG written for review. If the baseline file is missing, CMG creates it from the actual screenshot and fails with a message saying the baseline was created. Mask selectors are resolved before comparison; missing mask elements fail the step with the selector-specific reason.
 
 ## UI State Assertion Failure
 
