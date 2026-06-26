@@ -13,7 +13,9 @@ public static partial class CmgNetworkScripts
         var method = action.Options.TryGetValue("method", out var methodValue) ? methodValue.ToUpperInvariant() : string.Empty;
         var times = TryReadTimes(action, out var timesValue) ? timesValue.ToString() : "null";
         var delay = action.Options.TryGetValue("delay", out var delayValue) ? delayValue : "0";
-        return InstallPrelude() + $"window.__cmgRoutes.push({{ pattern: {Quote(pattern)}, method: {Quote(method)}, times: {times}, delay: {delay}, status: {status}, body: {Quote(body)}, contentType: {Quote(contentType)}, abort: {abort}, error: {Quote(error)} }}); true";
+        var match = NetworkMatchMode(action);
+        var ignoreCase = BoolLiteral(action.Options.GetValueOrDefault("ignoreCase"));
+        return InstallPrelude() + $"window.__cmgRoutes.push({{ pattern: {Quote(pattern)}, match: {Quote(match)}, ignoreCase: {ignoreCase}, method: {Quote(method)}, times: {times}, delay: {delay}, status: {status}, body: {Quote(body)}, contentType: {Quote(contentType)}, abort: {abort}, error: {Quote(error)} }}); true";
     }
 
     public static string ClearRoutes() => "window.__cmgRoutes = []; true";
@@ -63,7 +65,7 @@ public static partial class CmgNetworkScripts
           };
           window.__cmgTakeRoute = (url, method) => {
             const index = window.__cmgRoutes.findIndex(route =>
-              url.includes(route.pattern) &&
+              window.__cmgRouteUrlMatches(route, url) &&
               (!route.method || route.method === String(method || 'GET').toUpperCase()));
             if (index < 0) return null;
             const route = window.__cmgRoutes[index];
@@ -72,6 +74,14 @@ public static partial class CmgNetworkScripts
               if (route.times <= 0) window.__cmgRoutes.splice(index, 1);
             }
             return route;
+          };
+          window.__cmgRouteUrlMatches = (route, url) => {
+            const ignoreCase = Boolean(route.ignoreCase);
+            const actual = ignoreCase ? String(url || '').toLowerCase() : String(url || '');
+            const pattern = ignoreCase ? String(route.pattern || '').toLowerCase() : String(route.pattern || '');
+            if (route.match === 'exact') return actual === pattern;
+            if (route.match === 'regex') return new RegExp(String(route.pattern || ''), ignoreCase ? 'i' : '').test(String(url || ''));
+            return actual.includes(pattern);
           };
           if (!window.__cmgFetchPatched) {
             window.__cmgFetchPatched = true;

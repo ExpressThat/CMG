@@ -40,7 +40,7 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildRouteCommand(BrowserSelectionOptions browserOptions, string name, string description)
     {
-        var pattern = new Argument<string>("pattern") { Description = "URL substring to match." };
+        var pattern = new Argument<string>("pattern") { Description = "URL text to match." };
         var status = new Option<int?>("--status") { Description = "Mocked response status." };
         var body = new Option<string?>("--body") { Description = "Mocked response body." };
         var contentType = new Option<string?>("--content-type") { Description = "Mocked response content type." };
@@ -48,10 +48,24 @@ public sealed partial class BrowserControlCommandBuilder
         var times = new Option<int?>("--times") { Description = "Remove route after this many matches." };
         var delay = new Option<int?>("--delay") { Description = "Response delay in milliseconds." };
         var abort = new Option<bool>("--abort") { Description = "Abort matching requests." };
-        var command = new Command(name, description) { pattern, status, body, contentType, method, times, delay, abort };
+        var match = NavigationMatchOption();
+        var ignoreCase = NavigationIgnoreCaseOption();
+        var command = new Command(name, description)
+        {
+            pattern,
+            status,
+            body,
+            contentType,
+            method,
+            times,
+            delay,
+            abort,
+            match,
+            ignoreCase
+        };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], RouteOptions(parseResult, status, body, contentType, method, times, delay, abort))));
+            ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], RouteOptions(parseResult, status, body, contentType, method, times, delay, abort, match, ignoreCase))));
         return command;
     }
 
@@ -96,7 +110,9 @@ public sealed partial class BrowserControlCommandBuilder
         Option<string?> method,
         Option<int?> times,
         Option<int?> delay,
-        Option<bool> abort) =>
+        Option<bool> abort,
+        Option<string?> match,
+        Option<bool> ignoreCase) =>
         CompactOptions([
             IntOption("status", parseResult.GetValue(status)),
             StringOption("body", parseResult.GetValue(body)),
@@ -104,6 +120,8 @@ public sealed partial class BrowserControlCommandBuilder
             StringOption("method", parseResult.GetValue(method)),
             IntOption("times", parseResult.GetValue(times)),
             IntOption("delay", parseResult.GetValue(delay)),
-            parseResult.GetValue(abort) ? ("abort", "true") : null
+            parseResult.GetValue(abort) ? ("abort", "true") : null,
+            StringOption("match", parseResult.GetValue(match)),
+            parseResult.GetValue(ignoreCase) ? ("ignoreCase", "true") : null
         ]);
 }

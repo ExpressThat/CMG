@@ -632,11 +632,11 @@ The request result appears in CLI output and reports. Failures include the expec
 ```text
 test "mocked profile" {
   navigate "https://example.com"
-  intercept "/api/profile" delay=250 status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
+  intercept "/api/profile/\\d+" match=regex ignoreCase=true delay=250 status=200 body="{\"name\":\"CMG\"}" contentType="application/json"
   intercept "/api/profile" method=POST status=201 body="created"
-  evaluate "fetch('/api/profile').then(r => r.text())"
+  evaluate "fetch('/api/Profile/42').then(r => r.text())"
   evaluate "fetch('/api/profile', { method: 'POST', headers: { Authorization: 'Bearer demo' } }).then(r => r.text())"
-  waitForRequestFinished "/api/profile"
+  waitForRequestFinished "/api/profile/42" ignoreCase=true
   waitForRequest "/api/profile" method=POST header="Authorization: Bearer"
   waitForResponse "/api/profile" method=POST status=201 contains=created mocked=true
   waitForResponse "/api/profile" header="Content-Type: text/plain"

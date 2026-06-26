@@ -1,7 +1,7 @@
 test "network match modes" {
   set page "C:/Projects/CMG/index.html"
   navigate "${page}"
-  route "/api/Profile/42" method=POST status=201 body="created" contentType="text/plain"
+  route "/api/profile/\\d+" match=regex ignoreCase=true method=POST status=201 body="created" contentType="text/plain"
   evaluate "fetch('/api/Profile/42', { method: 'POST', headers: { Authorization: 'Bearer demo' } }).then(r => r.text())"
   waitForEvent request "/api/profile/\\d+" match=regex ignoreCase=true method=POST header="Authorization: Bearer"
   waitForResponse "/api/Profile/42" match=exact status=201 contains=created mocked=true

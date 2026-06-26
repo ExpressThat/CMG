@@ -8,6 +8,7 @@ public sealed class BrowserControlCommandBuilderNetworkAliasTests
 {
     [Theory]
     [InlineData("route /api/profile --status 200", "route \"/api/profile\" status=\"200\"")]
+    [InlineData("route /api/.+ --match regex --ignore-case", "route \"/api/.+\" match=\"regex\" ignoreCase=\"true\"")]
     [InlineData("intercept /api/profile --method POST --times 1", "intercept \"/api/profile\" method=\"POST\" times=\"1\"")]
     [InlineData("mockResponse /api/profile --body ok --content-type text/plain", "mockResponse \"/api/profile\" body=\"ok\" contentType=\"text/plain\"")]
     public void RouteAliasCommands_MapToScriptActions(string commandTail, string expectedScript)

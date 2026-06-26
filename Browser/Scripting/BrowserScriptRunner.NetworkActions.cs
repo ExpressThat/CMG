@@ -30,6 +30,8 @@ public sealed partial class BrowserScriptRunner
         {
             throw new ScriptExecutionException($"{action.Name} option delay= must be a non-negative integer.");
         }
+
+        ValidateNetworkUrlMatchOptions(action);
     }
 
     private static IReadOnlyList<string> ExecuteClearRoutes(
@@ -112,6 +114,17 @@ public sealed partial class BrowserScriptRunner
             !action.Options.ContainsKey("headerName"))
         {
             throw new ScriptExecutionException($"{action.Name} option headerValue= requires header= or headerName=.");
+        }
+
+        ValidateNetworkUrlMatchOptions(action);
+    }
+
+    private static void ValidateNetworkUrlMatchOptions(BrowserScriptAction action)
+    {
+        if (action.Options.TryGetValue("ignoreCase", out var ignoreCase) &&
+            !bool.TryParse(ignoreCase, out _))
+        {
+            throw new ScriptExecutionException($"{action.Name} option ignoreCase= must be true or false.");
         }
 
         var match = action.Options.GetValueOrDefault("match") ?? action.Options.GetValueOrDefault("mode");

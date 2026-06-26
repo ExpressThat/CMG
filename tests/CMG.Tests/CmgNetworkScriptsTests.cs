@@ -40,6 +40,22 @@ public sealed class CmgNetworkScriptsTests
     }
 
     [Fact]
+    public void Route_CanMatchRegexUrlIgnoringCase()
+    {
+        var action = Node("route", ["/api/\\d+"], new Dictionary<string, string>
+        {
+            ["match"] = "regex",
+            ["ignoreCase"] = "true"
+        });
+        var script = CmgNetworkScripts.Route(action);
+
+        Assert.Contains("match: 'regex'", script);
+        Assert.Contains("ignoreCase: true", script);
+        Assert.Contains("__cmgRouteUrlMatches", script);
+        Assert.Contains("new RegExp", script);
+    }
+
+    [Fact]
     public void Route_CanDelayMatchingRequests()
     {
         var action = Node("route", ["/api"], new Dictionary<string, string> { ["delay"] = "250" });

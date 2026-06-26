@@ -47,7 +47,7 @@ cmg browser control network [command] [options]
 
 ```powershell
 cmg browser control network route "/api/profile" --status 200 --body "{\"name\":\"CMG\"}"
-cmg browser control network intercept "/api/profile" --method GET --status 200
+cmg browser control network intercept "/api/profile/\d+" --match regex --ignore-case --method GET --status 200
 cmg browser control network mockResponse "/api/profile" --status 200 --body "{\"name\":\"CMG\"}"
 cmg browser control network waitForResponse "/api/profile" --status 200 --timeout 5000
 cmg browser control network waitForResponse "/api/profile/\d+" --match regex --ignore-case

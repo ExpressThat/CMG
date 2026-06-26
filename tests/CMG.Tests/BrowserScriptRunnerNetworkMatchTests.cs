@@ -5,6 +5,28 @@ namespace CMG.Tests;
 public sealed class BrowserScriptRunnerNetworkMatchTests
 {
     [Fact]
+    public void RunText_RouteSupportsRegexAndIgnoreCase()
+    {
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText("route \"/api/profile/\\d+\" match=regex ignoreCase=true", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("match: 'regex'", client.LastExpression);
+        Assert.Contains("ignoreCase: true", client.LastExpression);
+        Assert.Contains("__cmgRouteUrlMatches", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_RouteRejectsInvalidRegex()
+    {
+        var result = Runner().RunText("intercept \"[\" match=regex", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("Invalid network regex '['", result.Error);
+    }
+
+    [Fact]
     public void RunText_WaitForResponseSupportsRegexAndIgnoreCase()
     {
         var client = new FakeAutomationClient();
