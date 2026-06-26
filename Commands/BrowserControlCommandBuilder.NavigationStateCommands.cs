@@ -15,12 +15,12 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "reload", "Reload the primary page target."));
         command.Subcommands.Add(BuildHistoryCommand(browserOptions, "goBack", "Navigate one step back in page history."));
         command.Subcommands.Add(BuildHistoryCommand(browserOptions, "goForward", "Navigate one step forward in page history."));
-        command.Subcommands.Add(BuildWaitForUrlCommand(browserOptions));
-        command.Subcommands.Add(BuildWaitForTitleCommand(browserOptions));
-        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "expectUrl", "Assert that the current URL contains text."));
-        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "expectTitle", "Assert that the current page title contains text."));
-        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "toHaveURL", "Assert that the current URL contains text."));
-        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "toHaveTitle", "Assert that the current page title contains text."));
+        command.Subcommands.Add(BuildWaitForNavigationValueCommand(browserOptions, "waitForUrl", "Wait until the current URL matches text.", "Expected URL text."));
+        command.Subcommands.Add(BuildWaitForNavigationValueCommand(browserOptions, "waitForTitle", "Wait until the current page title matches text.", "Expected title text."));
+        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "expectUrl", "Assert that the current URL matches text."));
+        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "expectTitle", "Assert that the current page title matches text."));
+        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "toHaveURL", "Assert that the current URL matches text."));
+        command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "toHaveTitle", "Assert that the current page title matches text."));
         command.Subcommands.Add(BuildWaitForLoadStateCommand(browserOptions));
         command.Subcommands.Add(BuildWaitForNavigationCommand(browserOptions));
         command.Subcommands.Add(BuildNoArgumentScriptCommand(browserOptions, "url", "Print the current page URL."));
@@ -63,56 +63,30 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildWaitForUrlCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildWaitForNavigationValueCommand(BrowserSelectionOptions browserOptions, string name, string description, string argumentDescription)
     {
-        var expectedArgument = new Argument<string>("expected")
-        {
-            Description = "Expected URL substring."
-        };
+        var expectedArgument = new Argument<string>("expected") { Description = argumentDescription };
         var timeoutOption = new Option<int>("--timeout")
         {
             Description = "Timeout in milliseconds.",
             DefaultValueFactory = _ => 5000
         };
+        var matchOption = NavigationMatchOption();
+        var ignoreCaseOption = NavigationIgnoreCaseOption();
 
-        var command = new Command("waitForUrl", "Wait until the current URL contains text.")
+        var command = new Command(name, description)
         {
             expectedArgument,
-            timeoutOption
+            timeoutOption,
+            matchOption,
+            ignoreCaseOption
         };
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "waitForUrl",
+                name,
                 [parseResult.GetValue(expectedArgument) ?? string.Empty],
-                [("timeout", parseResult.GetValue(timeoutOption).ToString())])));
-
-        return command;
-    }
-
-    private Command BuildWaitForTitleCommand(BrowserSelectionOptions browserOptions)
-    {
-        var expectedArgument = new Argument<string>("expected")
-        {
-            Description = "Expected title substring."
-        };
-        var timeoutOption = new Option<int>("--timeout")
-        {
-            Description = "Timeout in milliseconds.",
-            DefaultValueFactory = _ => 5000
-        };
-
-        var command = new Command("waitForTitle", "Wait until the current page title contains text.")
-        {
-            expectedArgument,
-            timeoutOption
-        };
-
-        command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "waitForTitle",
-                [parseResult.GetValue(expectedArgument) ?? string.Empty],
-                [("timeout", parseResult.GetValue(timeoutOption).ToString())])));
+                NavigationMatchOptions(parseResult, timeoutOption, matchOption, ignoreCaseOption))));
 
         return command;
     }
@@ -121,21 +95,43 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var expectedArgument = new Argument<string>("expected")
         {
-            Description = name.Contains("Title", StringComparison.Ordinal) ? "Expected title substring." : "Expected URL substring."
+            Description = name.Contains("Title", StringComparison.Ordinal) ? "Expected title text." : "Expected URL text."
         };
+        var matchOption = NavigationMatchOption();
+        var ignoreCaseOption = NavigationIgnoreCaseOption();
 
         var command = new Command(name, description)
         {
-            expectedArgument
+            expectedArgument,
+            matchOption,
+            ignoreCaseOption
         };
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
                 name,
-                parseResult.GetValue(expectedArgument) ?? string.Empty)));
+                [parseResult.GetValue(expectedArgument) ?? string.Empty],
+                NavigationMatchOptions(parseResult, null, matchOption, ignoreCaseOption))));
 
         return command;
     }
+
+    private static Option<string?> NavigationMatchOption() =>
+        new("--match") { Description = "Match mode: contains, exact, or regex." };
+
+    private static Option<bool> NavigationIgnoreCaseOption() =>
+        new("--ignore-case") { Description = "Use case-insensitive matching." };
+
+    private static IReadOnlyList<(string Key, string Value)> NavigationMatchOptions(
+        ParseResult parseResult,
+        Option<int>? timeout,
+        Option<string?> match,
+        Option<bool> ignoreCase) =>
+        CompactOptions([
+            timeout is null ? null : ("timeout", parseResult.GetValue(timeout).ToString()),
+            StringOption("match", parseResult.GetValue(match)),
+            parseResult.GetValue(ignoreCase) ? ("ignoreCase", "true") : null
+        ]);
 
     private Command BuildWaitForLoadStateCommand(BrowserSelectionOptions browserOptions)
     {

@@ -30,8 +30,8 @@ reload
 goBack timeout=5000
 goForward timeout=5000
 waitForUrl "/checkout" timeout=10000
-toHaveURL "/checkout"
-toHaveTitle "Checkout"
+toHaveURL "/checkout" match=exact
+toHaveTitle "checkout" ignoreCase=true
 waitForLoadState "complete" timeout=5000
 waitForLoadState "networkidle" timeout=5000
 waitForNavigation "/checkout" waitUntil=domcontentloaded timeout=10000
@@ -42,13 +42,15 @@ Runs common page navigation controls from both direct browser-control scripts an
 Options:
 
 - `timeout`: Optional for `goBack`, `goForward`, `waitForUrl`, `waitForLoadState`, and `waitForNavigation`. Default is `5000`.
+- `match`: Optional for `waitForUrl`, `waitForTitle`, `expectUrl`, `expectTitle`, `toHaveURL`, and `toHaveTitle`. Supports `contains`, `exact`, and `regex`. Default is `contains`.
+- `ignoreCase`: Optional for URL/title match actions. Use `true` for case-insensitive matching.
 - `waitUntil`: Optional for `waitForNavigation`. Supports `load`, `domcontentloaded`, `networkidle`, and `commit`. Default is `load`.
 - `state`: Alias for `waitUntil` on `waitForNavigation`.
 
 Arguments:
 
-- `waitForUrl`, `toHaveURL`: Required URL substring expected in `location.href`.
-- `toHaveTitle`: Required title substring expected in `document.title`.
+- `waitForUrl`, `toHaveURL`: Required URL text expected in `location.href`.
+- `toHaveTitle`: Required title text expected in `document.title`.
 - `waitForLoadState`: Optional state. Supports `loading`, `interactive`, `complete`, `load`, and `networkidle`. `load` is an alias for `complete`; `networkidle` waits for a complete document and a 500ms quiet window in CMG's page-side request log.
 - `waitForNavigation`: Optional URL substring expected in `location.href`.
 
@@ -1409,13 +1411,18 @@ Output:
 
 ```text
 expectUrl "/checkout"
-expectTitle "Checkout"
-waitForTitle "Checkout" timeout=5000
+expectTitle "Checkout" match=exact
+waitForTitle "checkout" ignoreCase=true timeout=5000
 ```
 
-Fails unless the current URL or title contains the expected text. `waitForTitle` polls until the title contains the expected text or the timeout expires.
+Fails unless the current URL or title matches the expected text. `waitForTitle` polls until the title matches or the timeout expires.
 
 These are shared actions, so they work in both direct browser-control scripts and `cmg run`.
+
+Options:
+
+- `match`: `contains`, `exact`, or `regex`. Default is `contains`.
+- `ignoreCase`: Use `true` for case-insensitive matching.
 
 Output:
 
@@ -1488,11 +1495,13 @@ Output:
 waitForUrl "/dashboard" timeout=10000
 ```
 
-Polls the current URL until it contains the expected text, then reports the matched URL. If the timeout expires, the failure reason includes the expected text, timeout, and last URL seen.
+Polls the current URL until it matches the expected text, then reports the matched URL. If the timeout expires, the failure reason includes the expected text, match mode, timeout, and last URL seen.
 
 Options:
 
 - `timeout`: Optional timeout in milliseconds. Default is `5000`.
+- `match`: `contains`, `exact`, or `regex`. Default is `contains`.
+- `ignoreCase`: Use `true` for case-insensitive matching.
 
 ### `localStorage`, `sessionStorage`, And `cookie`
 

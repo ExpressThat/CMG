@@ -3,16 +3,18 @@
 Runs the scripting `waitForUrl` action once from the command line.
 
 ```powershell
-cmg browser control navigation waitForUrl "<expected>" [--timeout <milliseconds>]
+cmg browser control navigation waitForUrl "<expected>" [--timeout <milliseconds>] [--match <mode>] [--ignore-case]
 ```
 
 ## Arguments
 
-- `<expected>`: URL substring to wait for.
+- `<expected>`: URL text to wait for.
 
 ## Options
 
 - `--timeout <milliseconds>`: Maximum wait time. Default is `5000`.
+- `--match <mode>`: Match mode: `contains`, `exact`, or `regex`. Default is `contains`.
+- `--ignore-case`: Use case-insensitive matching.
 
 ## Stdout
 
@@ -23,7 +25,7 @@ URL 001 https://example.com/checkout
 
 ## Stderr
 
-Writes browser, timeout, or URL mismatch errors. Timeout failures include the expected text, timeout, and last URL seen.
+Writes browser, timeout, option, regex, or URL mismatch errors. Timeout failures include the expected text, match mode, timeout, and last URL seen.
 
 ## Exit Codes
 
@@ -33,5 +35,5 @@ Writes browser, timeout, or URL mismatch errors. Timeout failures include the ex
 ## Example
 
 ```powershell
-cmg browser control navigation waitForUrl "checkout" --timeout 10000
+cmg browser control navigation waitForUrl "checkout/\\d+" --match regex --ignore-case --timeout 10000
 ```

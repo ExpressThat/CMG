@@ -402,9 +402,11 @@ Pass headers as quoted name/value pairs and pass `true` or `false` to `setOfflin
 ## Navigation Failure
 
 ```text
-Line 2: waitForUrl failed. URL did not match /checkout within 5000ms. Last URL: https://example.com/cart
-Line 2: toHaveURL failed. Expected URL to contain /checkout, got https://example.com/cart.
-Line 2: toHaveTitle failed. Expected title to contain Checkout, got Cart.
+Line 2: waitForUrl failed. URL did not match /checkout within 5000ms using contains match. Last URL: https://example.com/cart
+Line 2: toHaveURL failed. Expected URL to match /checkout using exact match, got https://example.com/cart.
+Line 2: toHaveTitle failed. Expected title to match Checkout using exact match, got Cart.
+Line 2: expectUrl failed. expectUrl option match= must be contains, exact, or regex.
+Line 2: expectTitle failed. Invalid navigation regex '[': Invalid pattern '[' at offset 1. Unterminated [] set.
 Line 3: waitForLoadState failed. waitForLoadState expects loading, interactive, complete, load, or networkidle.
 Line 4: waitForNavigation failed. waitForNavigation waitUntil= expects load, domcontentloaded, networkidle, or commit.
 Line 5: waitForNavigation failed. Navigation did not reach load within 5000ms. Last URL: https://example.com/cart; state: loading

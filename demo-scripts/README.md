@@ -147,6 +147,8 @@ dotnet run -- --firefox browser close
 - `57-page-error-absence-runner.cmgscript`: Demonstrates the same page-error absence assertions in the structured runner DSL.
 - `58-to-pass-block.cmgscript`: Demonstrates provider-style `toPass` retrying assertion blocks in a direct script.
 - `59-to-pass-block-runner.cmgscript`: Demonstrates the same `toPass` block in the structured runner DSL.
+- `60-navigation-match-modes.cmgscript`: Demonstrates exact, regex, and case-insensitive URL/title matching in a direct script.
+- `61-navigation-match-modes-runner.cmgscript`: Demonstrates the same navigation match modes in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

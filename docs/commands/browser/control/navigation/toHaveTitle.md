@@ -3,12 +3,17 @@
 Runs the scripting `toHaveTitle` action once from the command line.
 
 ```powershell
-cmg browser control navigation toHaveTitle "<expected>"
+cmg browser control navigation toHaveTitle "<expected>" [--match <mode>] [--ignore-case]
 ```
 
 ## Arguments
 
-- `<expected>`: Title substring expected in the current page title.
+- `<expected>`: Title text expected in the current page title.
+
+## Options
+
+- `--match <mode>`: Match mode: `contains`, `exact`, or `regex`. Default is `contains`.
+- `--ignore-case`: Use case-insensitive matching.
 
 ## Stdout
 
@@ -19,15 +24,15 @@ TITLE 001 Checkout
 
 ## Stderr
 
-Writes browser, JavaScript, or title mismatch errors.
+Writes browser, JavaScript, option, regex, or title mismatch errors.
 
 ## Exit Codes
 
-- `0`: The current title contained the expected text.
+- `0`: The current title matched the expected text.
 - `1`: Browser is not running, the title did not match, or the action failed.
 
 ## Example
 
 ```powershell
-cmg browser control navigation toHaveTitle "Checkout"
+cmg browser control navigation toHaveTitle "Checkout" --match exact
 ```

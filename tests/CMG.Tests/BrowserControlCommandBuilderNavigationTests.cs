@@ -8,9 +8,12 @@ public sealed class BrowserControlCommandBuilderNavigationTests
 {
     [Theory]
     [InlineData("expectUrl checkout", "expectUrl \"checkout\"")]
+    [InlineData("expectUrl checkout --match exact --ignore-case", "expectUrl \"checkout\" match=\"exact\" ignoreCase=\"true\"")]
     [InlineData("expectTitle Dashboard", "expectTitle \"Dashboard\"")]
+    [InlineData("expectTitle Dashboard --match regex", "expectTitle \"Dashboard\" match=\"regex\"")]
+    [InlineData("waitForUrl checkout --match regex --ignore-case", "waitForUrl \"checkout\" timeout=\"5000\" match=\"regex\" ignoreCase=\"true\"")]
     [InlineData("waitForTitle Dashboard", "waitForTitle \"Dashboard\" timeout=\"5000\"")]
-    [InlineData("waitForTitle Dashboard --timeout 250", "waitForTitle \"Dashboard\" timeout=\"250\"")]
+    [InlineData("waitForTitle Dashboard --timeout 250 --match exact --ignore-case", "waitForTitle \"Dashboard\" timeout=\"250\" match=\"exact\" ignoreCase=\"true\"")]
     [InlineData("toHaveURL checkout", "toHaveURL \"checkout\"")]
     [InlineData("toHaveTitle Dashboard", "toHaveTitle \"Dashboard\"")]
     [InlineData("waitForNavigation", "waitForNavigation")]

@@ -44,16 +44,50 @@ public sealed class BrowserScriptRunnerNavigationActionTests
         var result = Runner().RunText("waitForUrl \"/checkout\" timeout=1", "debug", client);
 
         Assert.False(result.Success);
-        Assert.Contains("URL did not match /checkout within 1ms", result.Error);
+        Assert.Contains("URL did not match /checkout within 1ms using contains match", result.Error);
+    }
+
+    [Fact]
+    public void RunText_WaitForUrlSupportsRegexIgnoreCaseMatch()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("https://example.test/Checkout/42");
+        var result = Runner().RunText("waitForUrl \"checkout/\\\\d+\" match=regex ignoreCase=true timeout=250", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("URL 001 https://example.test/Checkout/42", result.StdoutLines);
     }
 
     [Fact]
     public void RunText_ExpectTitleReturnsTitleOutput()
     {
-        var result = Runner().RunText("expectTitle \"Dashboard\"", "debug", new FakeAutomationClient());
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("Dashboard");
+        var result = Runner().RunText("expectTitle \"Dashboard\" match=exact", "debug", client);
 
-        Assert.True(result.Success);
-        Assert.Contains("TITLE 001 {}", result.StdoutLines);
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("document.title", client.LastExpression);
+        Assert.Contains("TITLE 001 Dashboard", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_ExpectTitleRejectsInvalidMatchMode()
+    {
+        var result = Runner().RunText("expectTitle \"Dashboard\" match=fuzzy", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("match= must be contains, exact, or regex", result.Error);
+    }
+
+    [Fact]
+    public void RunText_ExpectUrlReportsActualValueOnFailure()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("https://example.test/cart");
+        var result = Runner().RunText("expectUrl \"/checkout\" match=exact", "debug", client);
+
+        Assert.False(result.Success);
+        Assert.Contains("Expected URL to match /checkout using exact match, got https://example.test/cart", result.Error);
     }
 
     [Fact]
@@ -76,7 +110,7 @@ public sealed class BrowserScriptRunnerNavigationActionTests
         var result = Runner().RunText("waitForTitle \"Missing\" timeout=1", "debug", client);
 
         Assert.False(result.Success);
-        Assert.Contains("Title did not match Missing within 1ms", result.Error);
+        Assert.Contains("Title did not match Missing within 1ms using contains match", result.Error);
     }
 
     [Fact]

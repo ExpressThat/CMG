@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace CMG.Browser.Scripting;
 
 public sealed partial class BrowserScriptRunner
@@ -63,14 +65,20 @@ public sealed partial class BrowserScriptRunner
             action.Arguments[0],
             timeout,
             "URL",
-            "URL");
+            "URL",
+            action);
         return [$"URL {action.LineNumber:000} {url}"];
     }
 
     private static IReadOnlyList<string> ExpectUrl(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
-        var url = automationClient.Evaluate(remoteDebuggingUrl, BrowserNavigationScripts.ExpectUrl(action.Arguments[0]));
+        var url = automationClient.Evaluate(remoteDebuggingUrl, "location.href");
+        if (!NavigationMatches(url, action.Arguments[0], action))
+        {
+            throw new ScriptExecutionException(NavigationFailure("URL", action.Arguments[0], url, action));
+        }
+
         return [$"URL {action.LineNumber:000} {url}"];
     }
 
@@ -85,7 +93,8 @@ public sealed partial class BrowserScriptRunner
             action.Arguments[0],
             timeout,
             "Title",
-            "title");
+            "title",
+            action);
         return [$"TITLE {action.LineNumber:000} {title}"];
     }
 
@@ -96,14 +105,15 @@ public sealed partial class BrowserScriptRunner
         string expected,
         int timeout,
         string label,
-        string lastValueLabel)
+        string lastValueLabel,
+        BrowserScriptAction action)
     {
         var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeout);
         var actual = string.Empty;
         do
         {
             actual = automationClient.Evaluate(remoteDebuggingUrl, expression);
-            if (actual.Contains(expected, StringComparison.Ordinal))
+            if (NavigationMatches(actual, expected, action))
             {
                 return actual;
             }
@@ -113,15 +123,57 @@ public sealed partial class BrowserScriptRunner
         while (DateTimeOffset.UtcNow < deadline);
 
         throw new ScriptExecutionException(
-            $"{label} did not match {expected} within {timeout}ms. Last {lastValueLabel}: {actual}");
+            $"{label} did not match {expected} within {timeout}ms using {NavigationMatchMode(action)} match. Last {lastValueLabel}: {actual}");
     }
 
     private static IReadOnlyList<string> ExpectTitle(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
-        var title = automationClient.Evaluate(remoteDebuggingUrl, BrowserNavigationScripts.ExpectTitle(action.Arguments[0]));
+        var title = automationClient.Evaluate(remoteDebuggingUrl, "document.title");
+        if (!NavigationMatches(title, action.Arguments[0], action))
+        {
+            throw new ScriptExecutionException(NavigationFailure("title", action.Arguments[0], title, action));
+        }
+
         return [$"TITLE {action.LineNumber:000} {title}"];
     }
+
+    private static bool NavigationMatches(string actual, string expected, BrowserScriptAction action)
+    {
+        var comparison = GetBoolOption(action, "ignoreCase") ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        return NavigationMatchMode(action) switch
+        {
+            "exact" => string.Equals(actual, expected, comparison),
+            "regex" or "matches" => RegexMatchesNavigation(actual, expected, action),
+            _ => actual.Contains(expected, comparison)
+        };
+    }
+
+    private static string NavigationMatchMode(BrowserScriptAction action)
+    {
+        var mode = (action.Options.GetValueOrDefault("match") ?? action.Options.GetValueOrDefault("mode") ?? "contains").ToLowerInvariant();
+        if (mode is "contains" or "exact" or "regex" or "matches")
+        {
+            return mode;
+        }
+
+        throw new ScriptExecutionException($"{action.Name} option match= must be contains, exact, or regex.");
+    }
+
+    private static bool RegexMatchesNavigation(string actual, string pattern, BrowserScriptAction action)
+    {
+        try
+        {
+            return Regex.IsMatch(actual, pattern, GetBoolOption(action, "ignoreCase") ? RegexOptions.IgnoreCase : RegexOptions.None);
+        }
+        catch (ArgumentException exception)
+        {
+            throw new ScriptExecutionException($"Invalid navigation regex '{pattern}': {exception.Message}");
+        }
+    }
+
+    private static string NavigationFailure(string label, string expected, string actual, BrowserScriptAction action) =>
+        $"Expected {label} to match {expected} using {NavigationMatchMode(action)} match, got {actual}.";
 
     private static IReadOnlyList<string> WaitForLoadState(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {

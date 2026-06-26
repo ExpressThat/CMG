@@ -1,0 +1,5 @@
+set page "C:/Projects/CMG/index.html"
+navigate "${page}"
+expectUrl "index.html" match=regex ignoreCase=true
+expectTitle "CMG Browser Control Test Page" match=exact
+waitForTitle "browser control" ignoreCase=true timeout=500

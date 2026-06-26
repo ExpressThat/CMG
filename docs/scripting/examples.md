@@ -1063,12 +1063,16 @@ test "browser history" {
   goBack
   waitForUrl "/start"
   goForward
-  waitForUrl "/checkout"
+  waitForUrl "https://example.com/checkout" match=exact
+  toHaveURL "checkout$" match=regex ignoreCase=true
+  toHaveTitle "checkout" ignoreCase=true
   waitForNavigation "/checkout" waitUntil=load
   reload
   waitForLoadState "complete"
 }
 ```
+
+Direct-script navigation match modes are available as `demo-scripts/60-navigation-match-modes.cmgscript`. The structured runner form is available as `demo-scripts/61-navigation-match-modes-runner.cmgscript`.
 
 ## Explicit Waits
 
