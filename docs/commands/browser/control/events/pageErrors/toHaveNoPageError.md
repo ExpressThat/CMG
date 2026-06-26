@@ -3,7 +3,7 @@
 Provider-style alias for [`expectNoPageError`](expectNoPageError.md).
 
 ```powershell
-cmg browser control events pageErrors toHaveNoPageError [text] [--timeout <milliseconds>]
+cmg browser control events pageErrors toHaveNoPageError [text] [options]
 ```
 
 ## Arguments
@@ -13,6 +13,8 @@ cmg browser control events pageErrors toHaveNoPageError [text] [--timeout <milli
 ## Options
 
 - `--timeout <milliseconds>`: Observation window in milliseconds. Default is `0`.
+- `--match <contains|exact|regex>`: Page-error text match mode when `[text]` is provided. Default is `contains`.
+- `--ignore-case`: Match page-error text without case sensitivity.
 
 ## Stdout
 
@@ -28,11 +30,11 @@ Writes browser, argument, option, parse, or action errors. A matching page error
 ## Exit Codes
 
 - `0`: No matching page error was captured during the observation window.
-- `1`: Browser is not running, arguments or options are invalid, or a matching page error was captured.
+- `1`: Browser is not running, arguments or options are invalid, the regex is invalid, or a matching page error was captured.
 
 ## Examples
 
 ```powershell
 cmg browser control events pageErrors capturePageErrors
-cmg browser control events pageErrors toHaveNoPageError "Cannot read" --timeout 500
+cmg browser control events pageErrors toHaveNoPageError "Cannot read" --match exact --timeout 500
 ```

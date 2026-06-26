@@ -871,9 +871,9 @@ Output:
 
 ```text
 captureConsole
-waitForConsole "saved" level=info timeout=5000
+waitForConsole "^saved$" match=regex ignoreCase=true level=info timeout=5000
 expectNoConsole level=error timeout=250
-toHaveNoConsole "deprecated" level=warn
+toHaveNoConsole "deprecated" match=exact level=warn
 ```
 
 Installs a page-side console hook, waits for a captured console message, or asserts that no matching console message was captured. Call `captureConsole` before the page action that is expected to log. `waitForConsole` checks captured `log`, `info`, `warn`, and `error` calls. `expectNoConsole` and `toHaveNoConsole` default to the `error` level and can watch a short future window with `timeout=`.
@@ -882,6 +882,8 @@ Options:
 
 - `level`: Optional console level filter: `log`, `info`, `warn`, or `error`.
 - `timeout`: Optional timeout in milliseconds. Default is `5000` for `waitForConsole` and `0` for no-console assertions.
+- `match`: Optional text match mode: `contains`, `exact`, or `regex`. The `matches` alias is accepted for scripts.
+- `ignoreCase`: Optional boolean for text matching. Default is `false`.
 
 Output:
 
@@ -893,9 +895,9 @@ Output:
 
 ```text
 capturePageErrors
-waitForPageError "Cannot read" timeout=5000
+waitForPageError "Cannot read" match=contains ignoreCase=true timeout=5000
 expectNoPageError timeout=250
-toHaveNoPageError "ResizeObserver loop" timeout=250
+toHaveNoPageError "ResizeObserver loop" match=exact timeout=250
 ```
 
 Installs page-side listeners for `error` and `unhandledrejection` events, waits for a matching captured page error, or asserts that no matching page error was captured. Call `capturePageErrors` before the action expected to throw, reject, or remain clean.
@@ -904,6 +906,8 @@ Options:
 
 - `timeout`: Optional timeout in milliseconds for `waitForPageError`. Default is `5000`.
 - `timeout`: Optional observation window in milliseconds for no-page-error assertions. Default is `0`.
+- `match`: Optional text match mode: `contains`, `exact`, or `regex`. The `matches` alias is accepted for scripts.
+- `ignoreCase`: Optional boolean for text matching. Default is `false`.
 
 Output:
 
@@ -922,7 +926,7 @@ setDialogBehavior dismiss
 onDialog accept
 handleDialog dismiss
 dialogBehavior accept promptText="CMG"
-waitForDialog "Saved" timeout=5000
+waitForDialog "^Saved$" match=regex timeout=5000
 ```
 
 Installs page-side dialog automation for `alert`, `confirm`, and `prompt` calls in the current page and future navigations. Captured dialogs are logged with their type, message, accepted state, and prompt value when available. Install this before the action that opens a dialog.
@@ -936,6 +940,8 @@ Options:
 
 - `promptText`: Optional text returned from accepted prompts.
 - `timeout`: Optional for `waitForDialog`. Default is `5000`.
+- `match`: Optional dialog message match mode: `contains`, `exact`, or `regex`. The `matches` alias is accepted for scripts.
+- `ignoreCase`: Optional boolean for dialog message matching. Default is `false`.
 
 Output:
 

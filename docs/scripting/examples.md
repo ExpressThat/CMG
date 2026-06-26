@@ -927,12 +927,12 @@ test "logs save result" {
   navigate "https://example.com/settings"
   captureConsole
   click "#save"
-  waitForConsole "settings saved" level=info timeout=5000
+  waitForConsole "^settings saved$" match=regex ignoreCase=true level=info timeout=5000
   expectNoConsole level=error timeout=250
 }
 ```
 
-Console waits are useful when an app reports diagnostics through the browser console. No-console assertions catch unexpected errors or warnings without moving the virtual pointer. Reports and traces include the `CONSOLE` or `CONSOLE_OK` output line.
+Console waits are useful when an app reports diagnostics through the browser console. Text matching supports `match=contains|exact|regex` and `ignoreCase=true`. No-console assertions catch unexpected errors or warnings without moving the virtual pointer. Reports and traces include the `CONSOLE` or `CONSOLE_OK` output line.
 
 ## Page Error Feedback
 
@@ -941,11 +941,11 @@ test "captures page failure" {
   navigate "https://example.com/settings"
   capturePageErrors
   click "#breakPage"
-  waitForPageError "Cannot read" timeout=5000
+  waitForPageError "Cannot read" match=contains ignoreCase=true timeout=5000
 }
 ```
 
-Page-error capture records `error` and `unhandledrejection` events from the page. The output and failure reasons are included in reports and traces.
+Page-error capture records `error` and `unhandledrejection` events from the page. Text matching supports `match=contains|exact|regex` and `ignoreCase=true`. The output and failure reasons are included in reports and traces.
 
 ```text
 test "page stays error-free" {
@@ -1133,7 +1133,7 @@ test "handles prompt" {
   captureDialogs
   setDialogBehavior accept promptText="CMG"
   click "#openPrompt"
-  waitForDialog "Your name"
+  waitForDialog "^Your name$" match=regex
 }
 ```
 

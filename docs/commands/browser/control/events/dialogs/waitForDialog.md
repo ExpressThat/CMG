@@ -3,7 +3,7 @@
 Runs the scripting `waitForDialog` action once from the command line.
 
 ```powershell
-cmg browser control events dialogs waitForDialog "<text>" [--timeout <milliseconds>]
+cmg browser control events dialogs waitForDialog "<text>" [options]
 ```
 
 ## Arguments
@@ -13,6 +13,8 @@ cmg browser control events dialogs waitForDialog "<text>" [--timeout <millisecon
 ## Options
 
 - `--timeout <milliseconds>`: Timeout in milliseconds.
+- `--match <contains|exact|regex>`: Dialog message match mode. Default is `contains`.
+- `--ignore-case`: Match dialog text without case sensitivity.
 
 ## Stdout
 
@@ -28,10 +30,10 @@ Writes browser, argument, timeout, parse, or action errors.
 ## Exit Codes
 
 - `0`: Matching dialog was observed.
-- `1`: Browser is not running, arguments are invalid, or the wait timed out.
+- `1`: Browser is not running, arguments are invalid, the regex is invalid, or the wait timed out.
 
 ## Examples
 
 ```powershell
-cmg browser control events dialogs waitForDialog "Confirm" --timeout 5000
+cmg browser control events dialogs waitForDialog "^Confirm$" --match regex --timeout 5000
 ```

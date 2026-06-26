@@ -43,7 +43,10 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 1, 1);
         var timeout = GetIntOption(action, "timeout", 5_000);
-        var result = automationClient.Evaluate(remoteDebuggingUrl, BrowserDialogScripts.WaitForDialog(action.Arguments[0], timeout));
+        ValidateTextMatchOptions(action, action.Arguments[0]);
+        var result = automationClient.Evaluate(
+            remoteDebuggingUrl,
+            BrowserDialogScripts.WaitForDialog(action.Arguments[0], timeout, EventTextMatchMode(action), GetBoolOption(action, "ignoreCase")));
         return [$"DIALOG {action.LineNumber:000} {ParseDialogResult(result)}"];
     }
 

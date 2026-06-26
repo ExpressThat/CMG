@@ -19,9 +19,11 @@ public sealed class BrowserScriptRunnerPageErrorActionTests
     public void RunText_WaitForPageErrorEvaluatesMatcher()
     {
         var client = new FakeAutomationClient();
-        var result = Runner().RunText("waitForPageError \"boom\" timeout=10", "debug", client);
+        var result = Runner().RunText("waitForPageError \"boom\" match=regex ignoreCase=true timeout=10", "debug", client);
 
         Assert.True(result.Success);
+        Assert.Contains("const matchMode = \"regex\";", client.LastExpression);
+        Assert.Contains("const ignoreCase = true;", client.LastExpression);
         Assert.Contains("Page error", client.LastExpression);
         Assert.Contains(result.StdoutLines, line => line.StartsWith("PAGE_ERROR 001", StringComparison.Ordinal));
     }

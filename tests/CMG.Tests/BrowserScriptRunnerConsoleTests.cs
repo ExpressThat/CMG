@@ -37,6 +37,26 @@ public sealed class BrowserScriptRunnerConsoleTests
     }
 
     [Fact]
+    public void RunText_WaitForConsoleSupportsRegexAndIgnoreCase()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("waitForConsole \"SAVE[D]\" match=regex ignoreCase=true", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("const matchMode = \"regex\";", client.LastExpression);
+        Assert.Contains("const ignoreCase = true;", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_WaitForConsoleRejectsInvalidRegex()
+    {
+        var result = Runner().RunText("waitForConsole \"[\" match=regex", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("Invalid text regex '['", result.Error);
+    }
+
+    [Fact]
     public void RunText_ExpectNoConsoleUsesDefaultErrorLevel()
     {
         var client = new FakeAutomationClient();
@@ -58,6 +78,16 @@ public sealed class BrowserScriptRunnerConsoleTests
         Assert.Contains("deprecated", client.LastExpression);
         Assert.Contains("const level = \"warn\";", client.LastExpression);
         Assert.Contains(result.StdoutLines, line => line.Contains("level=warn", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_ToHaveNoConsoleSupportsExactMatch()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("toHaveNoConsole \"deprecated\" match=exact", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("const matchMode = \"exact\";", client.LastExpression);
     }
 
     [Fact]
@@ -90,6 +120,17 @@ public sealed class BrowserScriptRunnerConsoleTests
         Assert.True(result.Success);
         Assert.Contains("Cannot read", client.LastExpression);
         Assert.Contains(result.StdoutLines, line => line.Contains("PAGE_ERROR_OK", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_ToHaveNoPageErrorSupportsRegexAndIgnoreCase()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("toHaveNoPageError \"cannot read\" match=regex ignoreCase=true", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("const matchMode = \"regex\";", client.LastExpression);
+        Assert.Contains("const ignoreCase = true;", client.LastExpression);
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

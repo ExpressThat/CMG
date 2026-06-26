@@ -45,10 +45,20 @@ public sealed class BrowserScriptRunnerDialogActionTests
         var client = new FakeAutomationClient();
         client.EvaluateResponses.Enqueue("""{"success":true,"value":{"type":"alert","message":"Saved","accepted":true}}""");
 
-        var result = Runner().RunText("waitForDialog \"Saved\"", "debug", client);
+        var result = Runner().RunText("waitForDialog \"Saved\" match=exact", "debug", client);
 
         Assert.True(result.Success);
+        Assert.Contains("const matchMode = \"exact\";", client.LastExpression);
         Assert.Contains(result.StdoutLines, line => line.Contains("DIALOG 001", StringComparison.Ordinal) && line.Contains("\"type\":\"alert\"", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_WaitForDialogRejectsInvalidRegex()
+    {
+        var result = Runner().RunText("waitForDialog \"[\" match=regex", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("Invalid text regex '['", result.Error);
     }
 
     [Fact]

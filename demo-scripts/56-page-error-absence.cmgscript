@@ -3,4 +3,4 @@ navigate "${page}"
 capturePageErrors
 evaluate "window.__cmgPageErrorDemo = 'clean'; 'done'"
 expectNoPageError timeout=50
-toHaveNoPageError "Cannot read" timeout=50
+toHaveNoPageError "Cannot read" match=exact timeout=50

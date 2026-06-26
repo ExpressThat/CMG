@@ -26,13 +26,16 @@ public static class BrowserDialogScripts
         })()
         """;
 
-    public static string WaitForDialog(string pattern, int timeoutMilliseconds) =>
+    public static string WaitForDialog(string pattern, int timeoutMilliseconds, string matchMode = "contains", bool ignoreCase = false) =>
         $$"""
         new Promise(resolve => {
           const pattern = {{Quote(pattern)}};
+          const matchMode = {{Quote(matchMode)}};
+          const ignoreCase = {{ignoreCase.ToString().ToLowerInvariant()}};
+          const matchesText = {{TextMatcherScript()}};
           const deadline = Date.now() + {{timeoutMilliseconds}};
           const poll = () => {
-            const hit = (window.__cmgDialogs || []).find(dialog => dialog.message.includes(pattern));
+            const hit = (window.__cmgDialogs || []).find(dialog => matchesText(dialog.message, pattern, matchMode, ignoreCase));
             if (hit) {
               resolve(JSON.stringify({ success: true, value: hit }));
               return;
@@ -51,4 +54,16 @@ public static class BrowserDialogScripts
 
     private static string Quote(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
+
+    private static string TextMatcherScript() =>
+        """
+        (value, pattern, mode, ignoreCase) => {
+          if (!pattern) return true;
+          const actual = ignoreCase ? String(value || '').toLowerCase() : String(value || '');
+          const expected = ignoreCase ? String(pattern || '').toLowerCase() : String(pattern || '');
+          if (mode === 'exact') return actual === expected;
+          if (mode === 'regex') return new RegExp(String(pattern || ''), ignoreCase ? 'i' : '').test(String(value || ''));
+          return actual.includes(expected);
+        }
+        """;
 }

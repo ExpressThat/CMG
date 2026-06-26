@@ -9,6 +9,7 @@ public sealed class BrowserControlCommandBuilderEventAliasTests
     [Theory]
     [InlineData("console captureConsole", "captureConsole")]
     [InlineData("console waitForConsole Ready --level error", "waitForConsole \"Ready\" level=\"error\"")]
+    [InlineData("console wait Ready --match regex --ignore-case", "waitForConsole \"Ready\" match=\"regex\" ignoreCase=\"true\"")]
     [InlineData("console expectNoConsole --timeout 100", "expectNoConsole timeout=\"100\"")]
     [InlineData("console toHaveNoConsole deprecated --level warn", "toHaveNoConsole \"deprecated\" level=\"warn\"")]
     [InlineData("dialogs captureDialogs --prompt-text ok", "captureDialogs promptText=\"ok\"")]
@@ -16,12 +17,13 @@ public sealed class BrowserControlCommandBuilderEventAliasTests
     [InlineData("dialogs onDialog accept --prompt-text yes", "onDialog \"accept\" promptText=\"yes\"")]
     [InlineData("dialogs handleDialog dismiss", "handleDialog \"dismiss\"")]
     [InlineData("dialogs dialogBehavior accept", "dialogBehavior \"accept\"")]
-    [InlineData("dialogs waitForDialog Confirm", "waitForDialog \"Confirm\"")]
+    [InlineData("dialogs waitForDialog Confirm --match exact", "waitForDialog \"Confirm\" match=\"exact\"")]
     [InlineData("pageErrors capturePageErrors", "capturePageErrors")]
-    [InlineData("pageErrors waitForPageError Boom", "waitForPageError \"Boom\"")]
+    [InlineData("pageErrors waitForPageError Boom --match regex --ignore-case", "waitForPageError \"Boom\" match=\"regex\" ignoreCase=\"true\"")]
     [InlineData("pageErrors expectNoPageError --timeout 100", "expectNoPageError timeout=\"100\"")]
     [InlineData("pageErrors toHaveNoPageError Boom", "toHaveNoPageError \"Boom\"")]
     [InlineData("waitForEvent response /api --status 200", "waitForEvent \"response\" \"/api\" status=\"200\"")]
+    [InlineData("waitForEvent console Ready --match exact --ignore-case", "waitForEvent \"console\" \"Ready\" match=\"exact\" ignoreCase=\"true\"")]
     public void EventAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();

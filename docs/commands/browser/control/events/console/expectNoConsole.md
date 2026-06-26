@@ -3,7 +3,7 @@
 Runs the scripting `expectNoConsole` action once from the command line.
 
 ```powershell
-cmg browser control events console expectNoConsole [text] [--level <level>] [--timeout <milliseconds>]
+cmg browser control events console expectNoConsole [text] [options]
 ```
 
 ## Arguments
@@ -14,6 +14,8 @@ cmg browser control events console expectNoConsole [text] [--level <level>] [--t
 
 - `--level <level>`: Console level filter: `log`, `info`, `warn`, or `error`. Default is `error`.
 - `--timeout <milliseconds>`: Observation window in milliseconds. Default is `0`.
+- `--match <contains|exact|regex>`: Text match mode when `[text]` is provided. Default is `contains`.
+- `--ignore-case`: Match console text without case sensitivity.
 
 ## Stdout
 
@@ -29,12 +31,12 @@ Writes browser, argument, option, parse, or action errors. A matching console me
 ## Exit Codes
 
 - `0`: No matching console message was captured during the observation window.
-- `1`: Browser is not running, arguments or options are invalid, or a matching console message was captured.
+- `1`: Browser is not running, arguments or options are invalid, the regex is invalid, or a matching console message was captured.
 
 ## Examples
 
 ```powershell
 cmg browser control events console captureConsole
 cmg browser control events console expectNoConsole --level error --timeout 250
-cmg browser control events console expectNoConsole "deprecated" --level warn
+cmg browser control events console expectNoConsole "^deprecated$" --match regex --ignore-case --level warn
 ```

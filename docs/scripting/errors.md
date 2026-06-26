@@ -283,9 +283,10 @@ Use `fullPage=true` for a full scrollable page capture. Use `fullPage=false` or 
 
 ```text
 Line 7: waitForConsole failed. Console message 'settings saved' was not seen within 5000ms.
+Line 8: waitForConsole failed. Invalid text regex '[': ...
 ```
 
-Call `captureConsole` before the action that should log the message, and check the optional `level=` filter.
+Call `captureConsole` before the action that should log the message, and check the optional `level=` filter. Console text matching supports `match=contains|exact|regex` and `ignoreCase=true`.
 
 ## Unexpected Console Output
 
@@ -293,15 +294,16 @@ Call `captureConsole` before the action that should log the message, and check t
 Line 8: expectNoConsole failed. Unexpected console error: Save failed
 ```
 
-Call `captureConsole` before the action under observation. Use `level=`, optional text, and `timeout=` to narrow the rejected messages.
+Call `captureConsole` before the action under observation. Use `level=`, optional text, `match=`, `ignoreCase=`, and `timeout=` to narrow the rejected messages.
 
 ## Page Error Timeout
 
 ```text
 Line 8: waitForPageError failed. Page error 'Cannot read' was not seen within 5000ms.
+Line 9: waitForPageError failed. waitForPageError option match= must be contains, exact, or regex.
 ```
 
-Call `capturePageErrors` before the action that should throw or reject, and match text from the page error or rejected value.
+Call `capturePageErrors` before the action that should throw or reject, and match text from the page error or rejected value. Page-error matching supports `match=contains|exact|regex` and `ignoreCase=true`.
 
 ## Unexpected Page Error
 
@@ -309,7 +311,7 @@ Call `capturePageErrors` before the action that should throw or reject, and matc
 Line 9: expectNoPageError failed. Unexpected page error: Cannot read properties of null
 ```
 
-Call `capturePageErrors` before the action under observation. Use optional text and `timeout=` to narrow the rejected page errors.
+Call `capturePageErrors` before the action under observation. Use optional text, `match=`, `ignoreCase=`, and `timeout=` to narrow the rejected page errors.
 
 ## Init Script Failure
 
@@ -459,9 +461,10 @@ Keyboard actions require one key or text argument and operate on the current bro
 ```text
 Line 4: setDialogBehavior failed. setDialogBehavior expects accept or dismiss.
 Line 5: waitForDialog failed. Timed out waiting for dialog Saved
+Line 6: waitForDialog failed. Invalid text regex '[': ...
 ```
 
-Dialog waits match against captured `alert`, `confirm`, and `prompt` messages. Install `captureDialogs` before triggering the dialog.
+Dialog waits match against captured `alert`, `confirm`, and `prompt` messages. Install `captureDialogs` before triggering the dialog. Dialog matching supports `match=contains|exact|regex` and `ignoreCase=true`.
 
 ## Event Wait Failure
 

@@ -3,7 +3,7 @@
 Runs the scripting `waitForConsole` action once from the command line.
 
 ```powershell
-cmg browser control events console waitForConsole "<text>" [--level <level>] [--timeout <milliseconds>]
+cmg browser control events console waitForConsole "<text>" [options]
 ```
 
 ## Arguments
@@ -14,6 +14,8 @@ cmg browser control events console waitForConsole "<text>" [--level <level>] [--
 
 - `--level <level>`: Console level filter: `log`, `info`, `warn`, or `error`.
 - `--timeout <milliseconds>`: Timeout in milliseconds.
+- `--match <contains|exact|regex>`: Text match mode. Default is `contains`.
+- `--ignore-case`: Match console text without case sensitivity.
 
 ## Stdout
 
@@ -29,10 +31,10 @@ Writes browser, argument, timeout, parse, or action errors.
 ## Exit Codes
 
 - `0`: Matching console message was observed.
-- `1`: Browser is not running, arguments are invalid, or the wait timed out.
+- `1`: Browser is not running, arguments are invalid, the regex is invalid, or the wait timed out.
 
 ## Examples
 
 ```powershell
-cmg browser control events console waitForConsole "Ready" --level log --timeout 5000
+cmg browser control events console waitForConsole "^Ready$" --match regex --ignore-case --level log --timeout 5000
 ```

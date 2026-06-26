@@ -21,9 +21,10 @@ public sealed partial class BrowserScriptRunner
         var timeout = GetIntOption(action, "timeout", 5_000);
         var level = action.Options.TryGetValue("level", out var value) ? value : string.Empty;
         ValidateConsoleLevel(action, level);
+        ValidateTextMatchOptions(action, action.Arguments[0]);
         var result = automationClient.Evaluate(
             remoteDebuggingUrl,
-            BrowserConsoleScripts.WaitFor(action.Arguments[0], level, timeout));
+            BrowserConsoleScripts.WaitFor(action.Arguments[0], level, timeout, EventTextMatchMode(action), GetBoolOption(action, "ignoreCase")));
         return [$"CONSOLE {action.LineNumber:000} {result}"];
     }
 
@@ -36,7 +37,9 @@ public sealed partial class BrowserScriptRunner
         var timeout = GetIntOption(action, "timeout", 0);
         var level = action.Options.TryGetValue("level", out var levelValue) ? levelValue : "error";
         ValidateConsoleLevel(action, level);
-        automationClient.Evaluate(remoteDebuggingUrl, BrowserConsoleScripts.ExpectNone(action.Arguments.FirstOrDefault() ?? string.Empty, level, timeout));
+        var text = action.Arguments.FirstOrDefault() ?? string.Empty;
+        ValidateTextMatchOptions(action, text);
+        automationClient.Evaluate(remoteDebuggingUrl, BrowserConsoleScripts.ExpectNone(text, level, timeout, EventTextMatchMode(action), GetBoolOption(action, "ignoreCase")));
         return [$"CONSOLE_OK {action.LineNumber:000} level={level}"];
     }
 
@@ -67,7 +70,10 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 1, 1);
         var timeout = GetIntOption(action, "timeout", 5_000);
-        var result = automationClient.Evaluate(remoteDebuggingUrl, BrowserConsoleScripts.WaitForPageError(action.Arguments[0], timeout));
+        ValidateTextMatchOptions(action, action.Arguments[0]);
+        var result = automationClient.Evaluate(
+            remoteDebuggingUrl,
+            BrowserConsoleScripts.WaitForPageError(action.Arguments[0], timeout, EventTextMatchMode(action), GetBoolOption(action, "ignoreCase")));
         return [$"PAGE_ERROR {action.LineNumber:000} {result}"];
     }
 
@@ -78,7 +84,9 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 0, 1);
         var timeout = GetIntOption(action, "timeout", 0);
-        automationClient.Evaluate(remoteDebuggingUrl, BrowserConsoleScripts.ExpectNoPageError(action.Arguments.FirstOrDefault() ?? string.Empty, timeout));
+        var text = action.Arguments.FirstOrDefault() ?? string.Empty;
+        ValidateTextMatchOptions(action, text);
+        automationClient.Evaluate(remoteDebuggingUrl, BrowserConsoleScripts.ExpectNoPageError(text, timeout, EventTextMatchMode(action), GetBoolOption(action, "ignoreCase")));
         return [$"PAGE_ERROR_OK {action.LineNumber:000}"];
     }
 }

@@ -19,16 +19,19 @@ public static class BrowserConsoleScripts
         })()
         """;
 
-    public static string WaitFor(string text, string level, int timeout) =>
+    public static string WaitFor(string text, string level, int timeout, string matchMode = "contains", bool ignoreCase = false) =>
         $$"""
         new Promise((resolve, reject) => {
           const expected = {{Quote(text)}};
           const level = {{Quote(level)}};
+          const matchMode = {{Quote(matchMode)}};
+          const ignoreCase = {{ignoreCase.ToString().ToLowerInvariant()}};
+          const matchesText = {{TextMatcherScript()}};
           const deadline = Date.now() + {{timeout}};
           const poll = () => {
             const entries = window.__cmgConsole || [];
             const match = entries.find(entry =>
-              entry.text.includes(expected) && (!level || entry.level === level));
+              matchesText(entry.text, expected, matchMode, ignoreCase) && (!level || entry.level === level));
             if (match) { resolve(`${match.level}: ${match.text}`); return; }
             if (Date.now() >= deadline) {
               reject(new Error(`Console message '${expected}' was not seen within {{timeout}}ms.`));
@@ -40,13 +43,16 @@ public static class BrowserConsoleScripts
         })
         """;
 
-    public static string ExpectNone(string text, string level, int timeout) =>
+    public static string ExpectNone(string text, string level, int timeout, string matchMode = "contains", bool ignoreCase = false) =>
         $$"""
         new Promise((resolve, reject) => {
           const expected = {{Quote(text)}};
           const level = {{Quote(level)}};
+          const matchMode = {{Quote(matchMode)}};
+          const ignoreCase = {{ignoreCase.ToString().ToLowerInvariant()}};
+          const matchesText = {{TextMatcherScript()}};
           const matches = entry =>
-            (!expected || entry.text.includes(expected)) &&
+            matchesText(entry.text, expected, matchMode, ignoreCase) &&
             (!level || entry.level === level);
           const failure = () => (window.__cmgConsole || []).find(matches);
           const deadline = Date.now() + {{timeout}};
@@ -91,14 +97,17 @@ public static class BrowserConsoleScripts
         })()
         """;
 
-    public static string WaitForPageError(string text, int timeout) =>
+    public static string WaitForPageError(string text, int timeout, string matchMode = "contains", bool ignoreCase = false) =>
         $$"""
         new Promise((resolve, reject) => {
           const expected = {{Quote(text)}};
+          const matchMode = {{Quote(matchMode)}};
+          const ignoreCase = {{ignoreCase.ToString().ToLowerInvariant()}};
+          const matchesText = {{TextMatcherScript()}};
           const deadline = Date.now() + {{timeout}};
           const poll = () => {
             const entries = window.__cmgPageErrors || [];
-            const match = entries.find(entry => entry.text.includes(expected));
+            const match = entries.find(entry => matchesText(entry.text, expected, matchMode, ignoreCase));
             if (match) {
               resolve(`${match.type}: ${match.text}`);
               return;
@@ -115,11 +124,14 @@ public static class BrowserConsoleScripts
         })
         """;
 
-    public static string ExpectNoPageError(string text, int timeout) =>
+    public static string ExpectNoPageError(string text, int timeout, string matchMode = "contains", bool ignoreCase = false) =>
         $$"""
         new Promise((resolve, reject) => {
           const expected = {{Quote(text)}};
-          const matches = entry => !expected || entry.text.includes(expected);
+          const matchMode = {{Quote(matchMode)}};
+          const ignoreCase = {{ignoreCase.ToString().ToLowerInvariant()}};
+          const matchesText = {{TextMatcherScript()}};
+          const matches = entry => matchesText(entry.text, expected, matchMode, ignoreCase);
           const failure = () => (window.__cmgPageErrors || []).find(matches);
           const deadline = Date.now() + {{timeout}};
           const poll = () => {
@@ -142,4 +154,16 @@ public static class BrowserConsoleScripts
 
     private static string Quote(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
+
+    private static string TextMatcherScript() =>
+        """
+        (value, pattern, mode, ignoreCase) => {
+          if (!pattern) return true;
+          const actual = ignoreCase ? String(value || '').toLowerCase() : String(value || '');
+          const expected = ignoreCase ? String(pattern || '').toLowerCase() : String(pattern || '');
+          if (mode === 'exact') return actual === expected;
+          if (mode === 'regex') return new RegExp(String(pattern || ''), ignoreCase ? 'i' : '').test(String(value || ''));
+          return actual.includes(expected);
+        }
+        """;
 }
