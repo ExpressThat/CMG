@@ -25,6 +25,17 @@ public static class CmgHtmlReportWriter
                 builder.AppendLine($"<p>GIF: {Encode(test.GifPath)}</p>");
             }
 
+            if (test.Annotations.Count > 0)
+            {
+                builder.AppendLine("<ul>");
+                foreach (var annotation in test.Annotations)
+                {
+                    builder.AppendLine($"<li>{Encode(annotation.Type)}: {Encode(annotation.Description)}</li>");
+                }
+
+                builder.AppendLine("</ul>");
+            }
+
             builder.AppendLine("<pre>");
             foreach (var line in test.Output)
             {

@@ -16,6 +16,8 @@ Runner hooks include `beforeAll`, `afterAll`, `beforeEach`, and `afterEach`. Onc
 
 Parameterized runner tests use `test.each`, `it.each`, or `specify.each` with `values=`, `each=`, or `json=` data. They expand during planning into normal test cases before grep, tag filtering, `only`, retries, repeats, sharding, reports, traces, and per-test GIF paths are calculated.
 
+Runner declarations can include report annotations with `owner=`, `issue=`, `link=`, `requirement=`, `note=`, or `annotation.<type>=<description>`. Suite annotations cascade to child tests and are written to JSON, HTML, and JUnit reports.
+
 ## Options
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
@@ -65,6 +67,7 @@ TEST ERROR <file> reason=<reason>
 ```
 
 Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON reports include `status` values such as `passed`, `failed`, and `skipped`; JUnit reports emit `<skipped>` nodes for declaration-skipped tests and runtime skips.
+Report annotations are emitted as `annotations` in JSON, visible list items in HTML, and JUnit `<property name="cmg.annotation.<type>" ... />` entries.
 
 ## GIF Behavior
 
@@ -142,6 +145,10 @@ test.each "opens ${page}" as=page values="profile,checkout" tag=smoke {
 
 test.each "opens ${case.name}" as=case json="[{\"name\":\"Profile\",\"selector\":\"#profile\"}]" {
   click "${case.selector}"
+}
+
+test "annotated checkout" owner=qa issue="BUG-7" annotation.requirement="REQ-1" {
+  click "#checkout"
 }
 ```
 

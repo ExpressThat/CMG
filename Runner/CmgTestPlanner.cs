@@ -75,7 +75,12 @@ public sealed partial class CmgTestPlanner
     {
         var name = suiteName is null ? test.Name : $"{suiteName} / {test.Name}";
         var actions = macros.Concat(beforeEach).Concat(test.Children).Concat(afterEach).ToArray();
-        return new CmgTestCase(sourcePath, name, actions, MergeOptions(suiteOptions, test.Options)) { SuiteName = suiteName };
+        var options = MergeOptions(suiteOptions, test.Options);
+        return new CmgTestCase(sourcePath, name, actions, options)
+        {
+            SuiteName = suiteName,
+            Annotations = BuildAnnotations(options)
+        };
     }
 
     private static IReadOnlyDictionary<string, string> MergeOptions(
@@ -114,6 +119,9 @@ public sealed partial class CmgTestPlanner
 
         return merged;
     }
+
+    private static IReadOnlyList<CmgAnnotation> BuildAnnotations(IReadOnlyDictionary<string, string> options) =>
+        CmgAnnotations.FromOptions(options);
 
     private static bool IsSuite(CmgNode node) =>
         IsAny(node, "suite", "describe", "context");

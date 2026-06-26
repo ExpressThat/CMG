@@ -1,0 +1,5 @@
+describe "annotated report metadata" owner=qa annotation.requirement="REQ-1" {
+  test "records metadata in reports" issue="BUG-7" link="https://example.test/BUG-7" note="Used by release evidence" {
+    expect true
+  }
+}

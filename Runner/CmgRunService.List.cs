@@ -23,7 +23,8 @@ public sealed partial class CmgRunService
                 listed.Add(new CmgTestResult(test.Name, test.SourcePath, true, [], null, null, [])
                 {
                     Status = status == "skip" ? "skipped" : "listed",
-                    Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty
+                    Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty,
+                    Annotations = test.Annotations
                 });
             }
         }

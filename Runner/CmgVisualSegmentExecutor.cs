@@ -160,7 +160,7 @@ public sealed partial class CmgVisualSegmentExecutor
             gifs.Add(commandGif.FullName);
         }
 
-        return new CmgTestResult(test.Name, test.SourcePath, true, output, null, string.Join(';', gifs), steps);
+        return new CmgTestResult(test.Name, test.SourcePath, true, output, null, string.Join(';', gifs), steps) { Annotations = test.Annotations };
     }
 
     private ScriptRunResult RunLines(List<string> lines, string remoteDebuggingUrl, FileInfo? gif, ScriptTimeoutOptions? timeouts)
@@ -202,13 +202,10 @@ public sealed partial class CmgVisualSegmentExecutor
     {
         if (output.Any(line => line.StartsWith("SKIP ", StringComparison.Ordinal)))
         {
-            return new CmgTestResult(test.Name, test.SourcePath, true, output, error, string.Join(';', gifs), steps)
-            {
-                Status = "skipped"
-            };
+            return new CmgTestResult(test.Name, test.SourcePath, true, output, error, string.Join(';', gifs), steps) { Status = "skipped", Annotations = test.Annotations };
         }
 
-        return new CmgTestResult(test.Name, test.SourcePath, false, output, error, string.Join(';', gifs), steps);
+        return new CmgTestResult(test.Name, test.SourcePath, false, output, error, string.Join(';', gifs), steps) { Annotations = test.Annotations };
     }
 
     private static FileInfo? ResolveGifPath(CmgTestCase test, CmgNode action, CmgRunOptions options)

@@ -96,9 +96,14 @@ Tests can include options:
 test "checkout" tag=smoke,critical {
   click "#checkout"
 }
+
+test "checkout with metadata" owner=qa issue="BUG-7" link="https://example.test/BUG-7" annotation.requirement="REQ-1" {
+  click "#checkout"
+}
 ```
 
 Use `cmg run --tag smoke` to run tests with a matching tag. Use comma-separated tags when a test belongs to multiple groups.
+Report metadata options do not affect selection or browser behavior. `owner=`, `issue=`, `link=`, `requirement=`, `note=`, and `annotation.<type>=...` are written to JSON, HTML, and JUnit reports. Suite metadata cascades to child tests.
 
 `only`, `skip`, `fixme`, `todo`, and `slow` can be written either as options or provider-style dotted declarations. Dotted declarations normalize before planning:
 

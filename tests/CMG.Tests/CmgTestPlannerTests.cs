@@ -140,6 +140,25 @@ public sealed class CmgTestPlannerTests
     }
 
     [Fact]
+    public void Plan_BuildsAnnotationsFromSuiteAndTestOptions()
+    {
+        var document = new CmgDslParser().Parse("flow.cmgscript", """
+        describe "profile" owner=qa annotation.requirement="REQ-1" {
+          test "opens" issue="BUG-7" link="https://example.test/bug/7" {
+            caption "run"
+          }
+        }
+        """).Document!;
+
+        var test = Assert.Single(new CmgTestPlanner().Plan(document));
+
+        Assert.Contains(test.Annotations, annotation => annotation.Type == "owner" && annotation.Description == "qa");
+        Assert.Contains(test.Annotations, annotation => annotation.Type == "requirement" && annotation.Description == "REQ-1");
+        Assert.Contains(test.Annotations, annotation => annotation.Type == "issue" && annotation.Description == "BUG-7");
+        Assert.Contains(test.Annotations, annotation => annotation.Type == "link" && annotation.Description.Contains("bug/7"));
+    }
+
+    [Fact]
     public void Plan_ExpandsParameterizedJsonObjectTests()
     {
         var document = new CmgDslParser().Parse("flow.cmgscript", """

@@ -15,6 +15,17 @@ public static class CmgJUnitReportWriter
         foreach (var test in tests)
         {
             builder.AppendLine($"  <testcase classname=\"CMG\" name=\"{Encode(test.Name)}\">");
+            if (test.Annotations.Count > 0)
+            {
+                builder.AppendLine("    <properties>");
+                foreach (var annotation in test.Annotations)
+                {
+                    builder.AppendLine($"      <property name=\"cmg.annotation.{Encode(annotation.Type)}\" value=\"{Encode(annotation.Description)}\" />");
+                }
+
+                builder.AppendLine("    </properties>");
+            }
+
             if (IsSkipped(test))
             {
                 builder.AppendLine($"    <skipped message=\"{Encode(test.Error ?? "Skipped")}\" />");

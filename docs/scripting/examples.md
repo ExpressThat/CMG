@@ -15,6 +15,7 @@ For the full catalogue of advanced examples, see the [cookbook reference](cookbo
 | Handle failures clearly | [Failure Feedback](#failure-feedback) | `demo-scripts\52-explicit-fail.cmgscript` |
 | Tune one slow section | [Scoped Timeouts](#scoped-timeouts) | `demo-scripts\134-scoped-timeouts.cmgscript` |
 | Run the same test for data rows | [Parameterized Tests](#parameterized-tests) | `demo-scripts\136-parameterized-tests.cmgscript` |
+| Add report metadata | [Report Annotations](#report-annotations) | `demo-scripts\138-report-annotations.cmgscript` |
 
 Start the browser before running direct scripts:
 
@@ -195,6 +196,20 @@ test.each "opens ${case.name}" as=case json="[{\"name\":\"Profile\",\"selector\"
 ```
 
 Expanded tests are ordinary scheduled tests. They work with `--list`, `--grep`, `--tag`, retries, sharding, reports, traces, and per-test GIF recording.
+
+## Report Annotations
+
+Use runner declaration metadata when a report should explain ownership, issues, links, requirements, or notes:
+
+```text
+describe "checkout" owner=qa annotation.requirement="REQ-1" {
+  test "submits payment" issue="BUG-7" link="https://example.test/BUG-7" {
+    click "#pay"
+  }
+}
+```
+
+Annotations are report-only metadata. They appear in JSON, HTML, and JUnit reports and do not change browser execution or GIF recording.
 
 ## Common Next Steps
 

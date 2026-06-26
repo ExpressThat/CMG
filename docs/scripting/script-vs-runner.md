@@ -58,7 +58,7 @@ cmg run profile-dialog.cmgscript --report-html report.html --gif gifs
 ```
 
 Use the runner for repeatable test suites, PR evidence, smoke checks, retries, sharding, reports, and traces.
-Runner-only declaration features include suites, hooks, tags, `only`/`skip`/`slow`, and parameterized `test.each` rows.
+Runner-only declaration features include suites, hooks, tags, `only`/`skip`/`slow`, parameterized `test.each` rows, and report annotations.
 
 ## Moving A Direct Script Into The Runner
 

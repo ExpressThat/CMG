@@ -114,7 +114,8 @@ public sealed partial class CmgRunService : ICmgRunService
                     [],
                     validation.Error,
                     null,
-                    [new CmgStepResult(validation.LineNumber, validation.Action, false, [], validation.Error, null)]));
+                    [new CmgStepResult(validation.LineNumber, validation.Action, false, [], validation.Error, null)])
+                { Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty, Annotations = test.Annotations });
                 output.Add($"TEST FAIL {test.Name}");
                 if (!ContinueAfterFailureLimit(options, tests, output)) return false;
                 continue;
@@ -156,7 +157,8 @@ public sealed partial class CmgRunService : ICmgRunService
             uploadRunner);
         return executor.Run(test, remoteDebuggingUrl, options, attempt) with
         {
-            Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty
+            Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty,
+            Annotations = test.Annotations
         };
     }
 
@@ -166,7 +168,8 @@ public sealed partial class CmgRunService : ICmgRunService
         return new CmgTestResult(test.Name, test.SourcePath, true, [], reason, null, [])
         {
             Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty,
-            Status = "skipped"
+            Status = "skipped",
+            Annotations = test.Annotations
         };
     }
 

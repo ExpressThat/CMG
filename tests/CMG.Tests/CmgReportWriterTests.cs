@@ -49,6 +49,23 @@ public sealed class CmgReportWriterTests
         Assert.Contains("<skipped", junit);
     }
 
+    [Fact]
+    public void Reports_IncludeAnnotations()
+    {
+        var annotated = FailedTest() with
+        {
+            Annotations = [
+                new CmgAnnotation("owner", "qa"),
+                new CmgAnnotation("issue", "BUG-7")
+            ]
+        };
+
+        Assert.Contains("\"annotations\"", CmgJsonReportWriter.Write([annotated]));
+        Assert.Contains("\"type\": \"owner\"", CmgJsonReportWriter.Write([annotated]));
+        Assert.Contains("owner: qa", CmgHtmlReportWriter.Write([annotated]));
+        Assert.Contains("cmg.annotation.issue", CmgJUnitReportWriter.Write([annotated]));
+    }
+
     private static CmgTestResult FailedTest() =>
         new(
             "checkout",

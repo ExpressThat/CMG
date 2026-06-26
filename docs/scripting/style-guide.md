@@ -138,6 +138,7 @@ Write the simplest readable journey before adding abstraction:
 - Add `retry` or `toPass` around genuinely flaky waits or eventually-consistent checks.
 - Use `withTimeout` around one slow section instead of permanently changing defaults for the rest of the script.
 - Use `test.each` for small runner matrices where the expanded test names stay readable.
+- Add report annotations for ownership, issue links, or requirements when that context helps reviewers or agents.
 - Use `fail "reason"` for guard clauses when the script can explain the problem better than a generic assertion.
 - Avoid deeply nested control flow unless the nesting mirrors the user journey. Split a large branch into a macro when it becomes hard to scan.
 

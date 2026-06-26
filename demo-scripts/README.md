@@ -20,6 +20,7 @@ The full list below is a catalogue. If you are learning CMG, run these first:
 | Stop as skipped from runtime state | `132-runtime-skip.cmgscript` |
 | Scope timeout policy for one section | `134-scoped-timeouts.cmgscript` |
 | Expand a runner test for data rows | `136-parameterized-tests.cmgscript` |
+| Add report metadata annotations | `138-report-annotations.cmgscript` |
 
 For a guided introduction, use the [Quick Start](../docs/quick-start.md) before treating this folder as a reference.
 
@@ -248,5 +249,6 @@ dotnet run -- --firefox browser close
 - `135-scoped-timeouts-runner.cmgscript`: Demonstrates scoped timeout blocks in the structured runner DSL.
 - `136-parameterized-tests.cmgscript`: Demonstrates runner `test.each` with primitive list rows.
 - `137-parameterized-json-tests.cmgscript`: Demonstrates runner `test.each` with JSON object rows and dotted variables.
+- `138-report-annotations.cmgscript`: Demonstrates suite and test report annotations.
 
 Generated screenshots are written to `demo-output/`.

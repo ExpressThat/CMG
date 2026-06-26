@@ -30,7 +30,10 @@ public sealed record CmgTestCase(
     public IReadOnlyList<CmgNode> RootAfterAll { get; init; } = [];
     public IReadOnlyList<CmgNode> SuiteBeforeAll { get; init; } = [];
     public IReadOnlyList<CmgNode> SuiteAfterAll { get; init; } = [];
+    public IReadOnlyList<CmgAnnotation> Annotations { get; init; } = [];
 }
+
+public sealed record CmgAnnotation(string Type, string Description);
 
 public sealed record CmgRunOptions(
     BrowserKind BrowserKind,
@@ -68,4 +71,5 @@ public sealed record CmgTestResult(
 {
     public string Tags { get; init; } = string.Empty;
     public string Status { get; init; } = string.Empty;
+    public IReadOnlyList<CmgAnnotation> Annotations { get; init; } = [];
 }
