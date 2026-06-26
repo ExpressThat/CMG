@@ -6,3 +6,5 @@ set titleText {
 }
 showMessageBar "${titleText}"
 getAttribute "#openProfileDialog" "id"
+computedStyle "#openProfileDialog" "display"
+property "#openProfileDialog" "dataset.command"

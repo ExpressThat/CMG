@@ -1,0 +1,7 @@
+setContent "<main><button id='save' data-state='ready' style='display:grid'>Save profile</button></main>"
+computedStyle "#save" "display"
+property "#save" "dataset.state"
+set state {
+  property "#save" "dataset.state"
+}
+caption "Button state: ${state}"

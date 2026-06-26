@@ -9,9 +9,11 @@ public sealed class CmgActionLowererElementGetterTests
     [InlineData("innerText")]
     [InlineData("inputValue")]
     [InlineData("getAttribute")]
+    [InlineData("computedStyle")]
+    [InlineData("property")]
     public void Lower_ElementGetterPassesThrough(string name)
     {
-        string[] args = name == "getAttribute" ? ["#target", "href"] : ["#target"];
+        string[] args = name is "getAttribute" or "computedStyle" or "property" ? ["#target", "href"] : ["#target"];
         var line = Assert.Single(new CmgActionLowerer().Lower(
             new CmgNode(1, name, name, args, new Dictionary<string, string>(), [])));
 

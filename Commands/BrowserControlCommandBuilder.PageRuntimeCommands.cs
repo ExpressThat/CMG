@@ -13,6 +13,18 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "innerText", "Read element innerText."));
         command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "inputValue", "Read input-like element value."));
         command.Subcommands.Add(BuildGetAttributeCommand(browserOptions));
+        command.Subcommands.Add(BuildNamedElementGetterCommand(
+            browserOptions,
+            "computedStyle",
+            "property",
+            "CSS property name, such as display or background-color.",
+            "Read a computed CSS property."));
+        command.Subcommands.Add(BuildNamedElementGetterCommand(
+            browserOptions,
+            "property",
+            "name",
+            "Dot-separated JavaScript property path, such as dataset.state.",
+            "Read an element JavaScript property."));
         command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "count", "Count matching elements."));
         command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "locatorCount", "Count matching elements."));
         command.Subcommands.Add(BuildElementGetterCommand(browserOptions, "boundingBox", "Read an element bounding box."));
@@ -50,6 +62,22 @@ public sealed partial class BrowserControlCommandBuilder
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine("getAttribute", [parseResult.GetValue(selector) ?? string.Empty, parseResult.GetValue(name) ?? string.Empty], [])));
+        return command;
+    }
+
+    private Command BuildNamedElementGetterCommand(
+        BrowserSelectionOptions browserOptions,
+        string action,
+        string valueName,
+        string valueDescription,
+        string description)
+    {
+        var selector = CreateSelectorArgument();
+        var value = new Argument<string>(valueName) { Description = valueDescription };
+        var command = new Command(action, description) { selector, value };
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine(action, [parseResult.GetValue(selector) ?? string.Empty, parseResult.GetValue(value) ?? string.Empty], [])));
         return command;
     }
 

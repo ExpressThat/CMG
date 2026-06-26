@@ -49,7 +49,7 @@ public sealed class CmgValidator
             "expectattribute" or "expectchecked" or "unchecked" or "expectunchecked" or "tobeunchecked" or
             "expectcount" or "expectscreenshot" or "tohavescreenshot" or "dragto" or "tocontaintext" or
             "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or
-            "textcontent" or "innertext" or "inputvalue" or "getattribute" or
+            "textcontent" or "innertext" or "inputvalue" or "getattribute" or "computedstyle" or "property" or
             "expectnotvisible" or "tobenotvisible" or "expectnothidden" or "tobenothidden" or
             "expectnotenabled" or "tobenotenabled" or "expectnotdisabled" or "tobenotdisabled" or
             "expectnotattached" or "tobenotattached" or "expectnotdetached" or "tobenotdetached" or

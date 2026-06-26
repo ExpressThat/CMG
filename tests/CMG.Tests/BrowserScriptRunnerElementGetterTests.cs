@@ -92,6 +92,43 @@ public sealed class BrowserScriptRunnerElementGetterTests
         Assert.Contains("SET 001 href /profile", result.StdoutLines);
     }
 
+    [Theory]
+    [InlineData("computedStyle \"#status\" \"display\"", "getComputedStyle(element)", "STYLE 001 block", "block")]
+    [InlineData("property \"#status\" \"dataset.state\"", "const path = \"dataset.state\".split('.')", "PROPERTY 001 ready", "ready")]
+    public void RunText_InspectionGettersReturnPayload(
+        string script,
+        string expectedExpression,
+        string expectedOutput,
+        string payload)
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue(payload);
+
+        var result = Runner().RunText(script, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(expectedExpression, client.LastExpression);
+        Assert.Contains(expectedOutput, result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_SetBlockStoresComputedStylePayload()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("grid");
+        client.EvaluateResponses.Enqueue("grid");
+
+        var result = Runner().RunText("""
+        set display {
+          computedStyle "#app" "display"
+        }
+        evaluate "'${display}'"
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("SET 001 display grid", result.StdoutLines);
+    }
+
     [Fact]
     public void RunText_SetBlockStoresCountPayload()
     {

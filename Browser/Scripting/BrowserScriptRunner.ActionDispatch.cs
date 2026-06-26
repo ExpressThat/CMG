@@ -53,7 +53,7 @@ public sealed partial class BrowserScriptRunner
                 ExecuteTimeoutDefaultAction(action, context),
             "delay" => ExecuteDelay(action),
             "html" => ExecuteHtml(remoteDebuggingUrl, automationClient, action),
-            "textcontent" or "innertext" or "inputvalue" or "getattribute" or
+            "textcontent" or "innertext" or "inputvalue" or "getattribute" or "computedstyle" or "property" or
             "count" or "locatorcount" or "boundingbox" or "alltextcontents" or "allinnertexts" =>
                 ExecuteElementGetter(remoteDebuggingUrl, automationClient, action),
             "screenshot" => ExecuteScreenshot(remoteDebuggingUrl, automationClient, action),

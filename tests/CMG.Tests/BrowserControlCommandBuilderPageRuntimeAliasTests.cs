@@ -10,6 +10,8 @@ public sealed class BrowserControlCommandBuilderPageRuntimeAliasTests
     [InlineData("runtime evalOnSelector #title \"el => el.textContent\"", "evalOnSelector \"#title\" \"el => el.textContent\"")]
     [InlineData("runtime evalAll .row \"els => els.length\"", "evalAll \".row\" \"els => els.length\"")]
     [InlineData("runtime evaluateOnNewDocument \"window.ready = true\"", "evaluateOnNewDocument \"window.ready = true\"")]
+    [InlineData("runtime computedStyle #status display", "computedStyle \"#status\" \"display\"")]
+    [InlineData("runtime property #status dataset.state", "property \"#status\" \"dataset.state\"")]
     [InlineData("runtime count .row", "count \".row\"")]
     [InlineData("runtime locatorCount .row", "locatorCount \".row\"")]
     [InlineData("runtime boundingBox #card", "boundingBox \"#card\"")]

@@ -13,6 +13,8 @@ public sealed partial class BrowserScriptRunner
             "textcontent" or "innertext" => ElementText(remoteDebuggingUrl, automationClient, action),
             "inputvalue" => ElementEvaluate(remoteDebuggingUrl, automationClient, action, "VALUE", "element.value ?? ''", 1),
             "getattribute" => GetAttribute(remoteDebuggingUrl, automationClient, action),
+            "computedstyle" => ComputedStyle(remoteDebuggingUrl, automationClient, action),
+            "property" => Property(remoteDebuggingUrl, automationClient, action),
             "count" or "locatorcount" => ElementCount(remoteDebuggingUrl, automationClient, action),
             "boundingbox" => BoundingBox(remoteDebuggingUrl, automationClient, action),
             "alltextcontents" or "allinnertexts" => AllText(remoteDebuggingUrl, automationClient, action),
@@ -38,6 +40,29 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 2, 2);
         var expression = $"element.getAttribute({QuoteScriptString(action.Arguments[1])}) ?? ''";
         return ElementEvaluate(remoteDebuggingUrl, automationClient, action, "ATTRIBUTE", expression, 2);
+    }
+
+    private static IReadOnlyList<string> ComputedStyle(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 2, 2);
+        var expression = $"getComputedStyle(element).getPropertyValue({QuoteScriptString(action.Arguments[1])}) ?? ''";
+        return ElementEvaluate(remoteDebuggingUrl, automationClient, action, "STYLE", expression, 2);
+    }
+
+    private static IReadOnlyList<string> Property(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 2, 2);
+        var expression = "(() => { const path = "
+            + QuoteScriptString(action.Arguments[1])
+            + ".split('.'); let value = element; for (const part of path) value = value?.[part]; "
+            + "return typeof value === 'string' ? value : JSON.stringify(value ?? ''); })()";
+        return ElementEvaluate(remoteDebuggingUrl, automationClient, action, "PROPERTY", expression, 2);
     }
 
     private static IReadOnlyList<string> ElementCount(

@@ -228,5 +228,7 @@ dotnet run -- --firefox browser close
 - `121-screenshot-style-runner.cmgscript`: Demonstrates temporary CSS applied only to screenshot artifacts in the structured runner DSL.
 - `122-highlight.cmgscript`: Demonstrates temporary visual element highlighting in a direct script.
 - `123-highlight-runner.cmgscript`: Demonstrates temporary visual element highlighting in the structured runner DSL.
+- `124-element-style-property.cmgscript`: Demonstrates computed CSS and JavaScript property getters in a direct script.
+- `125-element-style-property-runner.cmgscript`: Demonstrates computed CSS and JavaScript property getters in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.

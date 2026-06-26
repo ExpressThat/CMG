@@ -130,6 +130,8 @@ set titleText {
 }
 showMessageBar "${titleText}"
 getAttribute "#openProfileDialog" "id"
+computedStyle "#openProfileDialog" "display"
+property "#openProfileDialog" "dataset.command"
 ```
 
 This example is available as `demo-scripts/28-element-getters.cmgscript`.

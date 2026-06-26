@@ -12,6 +12,8 @@ cmg browser control page runtime [command] [options]
 - [`innerText`](innerText.md): Read element `innerText`.
 - [`inputValue`](inputValue.md): Read an input-like element value.
 - [`getAttribute`](getAttribute.md): Read an element attribute.
+- [`computedStyle`](computedStyle.md): Read a computed CSS property.
+- [`property`](property.md): Read an element JavaScript property.
 - [`count`](count.md): Count matching elements.
 - [`locatorCount`](locatorCount.md): Count matching elements.
 - [`boundingBox`](boundingBox.md): Read an element bounding box.
@@ -42,4 +44,5 @@ cmg browser control page runtime [command] [options]
 cmg browser control page runtime count ".row"
 cmg browser control page runtime boundingBox "#card"
 cmg browser control page runtime allTextContents ".item"
+cmg browser control page runtime computedStyle "#status" display
 ```
