@@ -52,6 +52,9 @@ public sealed class BrowserScriptRunnerRichLocatorTests
     [InlineData("has=.item|.badge", "e.querySelector('.badge')")]
     [InlineData("hasNot=.item|.badge", "!e.querySelector('.badge')")]
     [InlineData("hasNotText=.item|Draft", "includes('Draft')")]
+    [InlineData("textExact=Save", ".trim() === 'Save'")]
+    [InlineData("role=button|Save", "accessibleName(e).includes('Save')")]
+    [InlineData("labelExact=Email", ".trim() === 'Email'")]
     public void RunText_ClickResolvesAdvancedFilterLocatorOptions(string locator, string expectedExpression)
     {
         var client = new FakeAutomationClient();
@@ -70,6 +73,16 @@ public sealed class BrowserScriptRunnerRichLocatorTests
 
         Assert.True(result.Success);
         Assert.Equal("[data-cmg-locator-id=\"__cmg_locator_1\"]", client.LastElementBoxSelector);
+    }
+
+    [Fact]
+    public void RunText_ExpectationAcceptsGenericExactLocatorOptions()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("expectVisible textExact=Save", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(".trim() === 'Save'", client.EvaluatedExpressions[0]);
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

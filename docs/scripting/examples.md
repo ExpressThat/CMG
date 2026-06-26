@@ -786,8 +786,11 @@ This example is available as `demo-scripts/37-evaluated-assertions.cmgscript`.
 ```text
 navigate "index.html"
 click "text=Open profile"
+click "textExact=Open profile"
+click "role=button|Open profile"
 waitForElement "text=Edit Browser Profile"
 type "label=Profile name" "Locator Agent"
+type "labelExact=Profile name" "Locator Agent"
 assertText "text=Edit Browser Profile" "Edit Browser Profile"
 hover "label=Profile name"
 click "nth=.command|1"

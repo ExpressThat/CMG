@@ -9,9 +9,11 @@ public static class CmgLocator
             return new CmgResolvedLocator(locator[4..], []);
         }
 
-        if (locator.StartsWith("testid=", StringComparison.OrdinalIgnoreCase))
+        if (locator.StartsWith("testid=", StringComparison.OrdinalIgnoreCase) ||
+            locator.StartsWith("testId=", StringComparison.OrdinalIgnoreCase) ||
+            locator.StartsWith("data-testid=", StringComparison.OrdinalIgnoreCase))
         {
-            return new CmgResolvedLocator($"[data-testid=\"{EscapeCss(locator[7..])}\"]", []);
+            return new CmgResolvedLocator($"[data-testid=\"{EscapeCss(locator[(locator.IndexOf('=') + 1)..])}\"]", []);
         }
 
         if (locator.StartsWith("placeholder=", StringComparison.OrdinalIgnoreCase))
@@ -44,12 +46,19 @@ public static class CmgLocator
         !locator.Contains('=', StringComparison.Ordinal) ||
         locator.StartsWith("css=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("testid=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("testId=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("data-testid=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("text=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("textExact=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("role=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("label=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("labelExact=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("placeholder=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("placeholderExact=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("alt=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("altExact=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("title=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("titleExact=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("xpath=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("first=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("last=", StringComparison.OrdinalIgnoreCase) ||
@@ -67,6 +76,8 @@ public static class CmgLocator
         if (!locator.Contains('=', StringComparison.Ordinal) ||
             locator.StartsWith("css=", StringComparison.OrdinalIgnoreCase) ||
             locator.StartsWith("testid=", StringComparison.OrdinalIgnoreCase) ||
+            locator.StartsWith("testId=", StringComparison.OrdinalIgnoreCase) ||
+            locator.StartsWith("data-testid=", StringComparison.OrdinalIgnoreCase) ||
             locator.StartsWith("placeholder=", StringComparison.OrdinalIgnoreCase) ||
             locator.StartsWith("alt=", StringComparison.OrdinalIgnoreCase) ||
             locator.StartsWith("title=", StringComparison.OrdinalIgnoreCase))
@@ -86,7 +97,7 @@ public static class CmgLocator
     {
         var kind = locator[..locator.IndexOf('=')].ToLowerInvariant();
         var value = locator[(locator.IndexOf('=') + 1)..];
-        const string helpers = "const implicitRole = e => e.tagName === 'BUTTON' ? 'button' : e.tagName === 'A' && e.hasAttribute('href') ? 'link' : e.tagName === 'INPUT' || e.tagName === 'TEXTAREA' ? 'textbox' : ''; const IsVisible = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };";
+        const string helpers = "const implicitRole = e => e.tagName === 'BUTTON' ? 'button' : e.tagName === 'A' && e.hasAttribute('href') ? 'link' : e.tagName === 'INPUT' || e.tagName === 'TEXTAREA' ? 'textbox' : ''; const accessibleName = e => e.getAttribute('aria-label') || e.getAttribute('alt') || e.getAttribute('title') || e.innerText || e.textContent || ''; const IsVisible = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };";
         return $"(() => {{ {helpers} const element = {BuildElementExpression(kind, value)}; if (!element) throw new Error('No element matched locator {locator}'); element.setAttribute('data-cmg-locator-id', '{marker}'); return true; }})()";
     }
 
@@ -94,8 +105,13 @@ public static class CmgLocator
         kind switch
         {
             "text" => $"Array.from(document.querySelectorAll('body *')).filter(e => (e.innerText || e.textContent || '').includes({QuoteJs(value)})).sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length || (a.innerText || a.textContent || '').length - (b.innerText || b.textContent || '').length)[0]",
-            "role" => $"Array.from(document.querySelectorAll('body *')).find(e => ((e.getAttribute('role') || implicitRole(e)) === {QuoteJs(value)}))",
+            "textexact" => $"Array.from(document.querySelectorAll('body *')).filter(e => ((e.innerText || e.textContent || '').trim() === {QuoteJs(value)})).sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length || (a.innerText || a.textContent || '').length - (b.innerText || b.textContent || '').length)[0]",
+            "role" => BuildRoleExpression(value),
             "label" => $"Array.from(document.querySelectorAll('label')).find(l => (l.innerText || '').includes({QuoteJs(value)}))?.control",
+            "labelexact" => $"Array.from(document.querySelectorAll('label')).find(l => (l.innerText || '').trim() === {QuoteJs(value)})?.control",
+            "placeholderexact" => $"Array.from(document.querySelectorAll('[placeholder]')).find(e => e.getAttribute('placeholder') === {QuoteJs(value)})",
+            "altexact" => $"Array.from(document.querySelectorAll('[alt]')).find(e => e.getAttribute('alt') === {QuoteJs(value)})",
+            "titleexact" => $"Array.from(document.querySelectorAll('[title]')).find(e => e.getAttribute('title') === {QuoteJs(value)})",
             "xpath" => $"document.evaluate({QuoteJs(value)}, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue",
             "first" => $"document.querySelector({QuoteJs(value)})",
             "last" => $"Array.from(document.querySelectorAll({QuoteJs(value)})).at(-1)",
@@ -107,6 +123,16 @@ public static class CmgLocator
             "visible" => $"Array.from(document.querySelectorAll({QuoteJs(value)})).find(IsVisible)",
             _ => "null"
         };
+
+    private static string BuildRoleExpression(string value)
+    {
+        if (SplitLocatorValue(value) is not { } parts)
+        {
+            return $"Array.from(document.querySelectorAll('body *')).find(e => ((e.getAttribute('role') || implicitRole(e)) === {QuoteJs(value)}))";
+        }
+
+        return $"Array.from(document.querySelectorAll('body *')).find(e => ((e.getAttribute('role') || implicitRole(e)) === {QuoteJs(parts.Left)}) && accessibleName(e).includes({QuoteJs(parts.Right)}))";
+    }
 
     private static string BuildNthExpression(string value)
     {

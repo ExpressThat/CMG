@@ -1,5 +1,11 @@
 setContent "<main><button class='cmd' onclick='result.textContent=\"first\"'>First</button><button class='cmd' onclick='result.textContent=\"second\"'>Second <span class='badge'>New</span></button><button class='cmd hidden' style='display:none'>Hidden</button><output id='result'>none</output></main>"
 
+click "textExact=First"
+expectText "#result" "first"
+
+click "role=button|Second"
+expectText "#result" "second"
+
 click "nth=.cmd|1"
 expectText "#result" "second"
 

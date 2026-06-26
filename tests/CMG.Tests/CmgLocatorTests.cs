@@ -17,6 +17,8 @@ public sealed class CmgLocatorTests
     [InlineData("first=.item", "document.querySelector")]
     [InlineData("last=.item", ".at(-1)")]
     [InlineData("nth=.item|2", "Number('2')")]
+    [InlineData("textExact=Save", ".trim() === 'Save'")]
+    [InlineData("role=button|Save", "accessibleName(e).includes('Save')")]
     [InlineData("has=.item|.badge", "e.querySelector('.badge')")]
     [InlineData("hasNot=.item|.badge", "!e.querySelector('.badge')")]
     [InlineData("hasText=.item|Save", "includes('Save')")]
@@ -37,5 +39,16 @@ public sealed class CmgLocatorTests
 
         Assert.Equal("[data-cmg-locator-id=\"__cmg_locator_4\"]", resolved.Selector);
         Assert.Contains("nth=.item|1", Assert.Single(resolved.PrefixLines));
+    }
+
+    [Theory]
+    [InlineData("testId=save")]
+    [InlineData("data-testid=save")]
+    public void Resolve_TestIdAliasesUseDataTestIdSelector(string locator)
+    {
+        var resolved = CmgLocator.Resolve(locator, 4);
+
+        Assert.Equal("[data-testid=\"save\"]", resolved.Selector);
+        Assert.Empty(resolved.PrefixLines);
     }
 }
