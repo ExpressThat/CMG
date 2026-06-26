@@ -133,14 +133,26 @@ These actions do not move the virtual pointer. Wrap them in `step`, `caption`, o
 
 ```text
 click "<selector>"
+click "<selector>" button=middle clickCount=2 delay=50 modifiers=Control+Shift x=8 y=12
 ```
 
 Clicks the element in the selected browser. `click` does not scroll automatically; the element center must already be inside the current viewport. Use `scrollIntoView` first when the script should move the page.
+
+When no click options are present, CMG uses the browser-native click path. When click options are present, CMG resolves the selector or rich locator, moves the GIF virtual pointer to the target, and dispatches a page-facing pointer/mouse sequence against that element.
+
+Options:
+
+- `button`: Optional mouse button: `left`, `right`, or `middle`. Default is `left`.
+- `clickCount` or `count`: Optional number of clicks. Must be at least `1`.
+- `delay`: Optional milliseconds between repeated clicks. Must be zero or greater.
+- `modifiers`: Optional comma- or plus-separated modifiers: `Alt`, `Control`, `Meta`, and `Shift`.
+- `x` / `y`: Optional offsets inside the target element. Defaults to the element center.
 
 Example:
 
 ```text
 click "#openProfileDialog"
+click "#openProfileDialog" button=left clickCount=2 modifiers=Shift
 ```
 
 ## `tap` And `touchTap`

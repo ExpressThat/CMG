@@ -15,6 +15,7 @@ public sealed class BrowserControlCommandBuilderInputAliasTests
     [InlineData("hotkey Control+Shift+P", "keyboardShortcut \"Control+Shift+P\"")]
     [InlineData("keyboardShortcut Meta+K", "keyboardShortcut \"Meta+K\"")]
     [InlineData("selectOption #plan pro", "selectOption \"#plan\" \"pro\"")]
+    [InlineData("click #save --button middle --click-count 2 --delay 10 --modifiers Control+Shift --x 4 --y 8", "click \"#save\" button=\"middle\" clickCount=\"2\" delay=\"10\" modifiers=\"Control+Shift\" x=\"4\" y=\"8\"")]
     public void InputAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();

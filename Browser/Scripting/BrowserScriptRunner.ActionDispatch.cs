@@ -30,7 +30,7 @@ public sealed partial class BrowserScriptRunner
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             "wait" => ExecuteWaitAlias(remoteDebuggingUrl, automationClient, action),
             "assertvisible" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
-            "click" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Click(remoteDebuggingUrl, selector)),
+            "click" => ExecuteClick(remoteDebuggingUrl, automationClient, action),
             "dblclick" or "doubleclick" or "rightclick" or "contextclick" => ExecuteMouseClickVariant(remoteDebuggingUrl, automationClient, action),
             "tap" or "touchtap" => ExecuteTap(remoteDebuggingUrl, automationClient, action, recorder),
             "presssequentially" => ExecuteType(remoteDebuggingUrl, automationClient, action with { Name = "type" }, recorder),

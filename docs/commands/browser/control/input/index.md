@@ -9,7 +9,7 @@ cmg browser control input [command] [options]
 ## Subcommands
 
 - [`waitForElement`](waitForElement.md): Wait until an element exists.
-- [`click`](click.md): Click an element.
+- [`click`](click.md): Click an element, with optional button, click count, modifier, delay, and element-offset controls.
 - [`dblclick`](dblclick.md): Double-click an element.
 - [`doubleClick`](doubleClick.md): Double-click an element.
 - [`rightClick`](rightClick.md): Right-click an element.

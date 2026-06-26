@@ -189,5 +189,7 @@ dotnet run -- --firefox browser close
 - `97-worker-event.cmgscript`: Demonstrates provider-style `waitForEvent worker` in a direct script.
 - `98-worker-event-runner.cmgscript`: Demonstrates provider-style `waitForEvent worker` in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
+- `100-click-options.cmgscript`: Demonstrates optioned click dispatch with button, modifiers, click count, and delay in a direct script.
+- `101-click-options-runner.cmgscript`: Demonstrates optioned click dispatch in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.

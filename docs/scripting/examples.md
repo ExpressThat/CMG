@@ -864,6 +864,20 @@ listWorkers
 
 This direct-script example is available as `demo-scripts/97-worker-event.cmgscript`. The structured `cmg run` form is available as `demo-scripts/98-worker-event-runner.cmgscript`.
 
+## Click Options
+
+```text
+setContent "<main><button id='target'>Click target</button><output id='result'>none</output><script>const target = document.querySelector('#target'); const result = document.querySelector('#result'); target.addEventListener('auxclick', event => { event.preventDefault(); result.textContent = event.shiftKey ? 'middle-shift' : 'middle'; }); target.addEventListener('dblclick', () => result.textContent = 'double');</script></main>"
+click "#target" button=middle modifiers=Shift
+expectText "#result" "middle-shift"
+click "#target" clickCount=2 delay=25
+expectText "#result" "double"
+```
+
+Optioned clicks still move the GIF virtual pointer before dispatching the configured pointer and mouse events. Plain clicks keep the browser-native click path.
+
+This direct-script example is available as `demo-scripts/100-click-options.cmgscript`. The structured `cmg run` form is available as `demo-scripts/101-click-options-runner.cmgscript`.
+
 ## Scoped Selectors With `within`
 
 ```text

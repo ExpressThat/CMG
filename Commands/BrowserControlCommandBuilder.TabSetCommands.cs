@@ -115,7 +115,7 @@ public sealed partial class BrowserControlCommandBuilder
     {
         return new Argument<string>("selector")
         {
-            Description = "CSS selector."
+            Description = "CSS selector or CMG rich locator."
         };
     }
 

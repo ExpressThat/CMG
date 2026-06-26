@@ -10,7 +10,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command("input", "Pointer, keyboard, and form input commands.");
 
         command.Subcommands.Add(BuildWaitForElementCommand(browserOptions));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "click", "Click an element."));
+        command.Subcommands.Add(BuildClickCommand(browserOptions));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "dblclick", "Double-click an element."));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "doubleClick", "Double-click an element."));
         command.Subcommands.Add(BuildSelectorCommand(browserOptions, "rightClick", "Right-click an element."));
@@ -113,6 +113,29 @@ public sealed partial class BrowserControlCommandBuilder
                 parseResult.GetValue(selectorArgument) ?? string.Empty,
                 parseResult.GetValue(textArgument) ?? string.Empty)));
 
+        return command;
+    }
+
+    private Command BuildClickCommand(BrowserSelectionOptions browserOptions)
+    {
+        var selector = CreateSelectorArgument();
+        var button = CliStringOption("--button", "Mouse button: left, right, or middle.");
+        var clickCount = CliIntOption("--click-count", "Number of clicks to dispatch.");
+        var delay = CliIntOption("--delay", "Delay in milliseconds between repeated clicks.");
+        var modifiers = CliStringOption("--modifiers", "Comma- or plus-separated modifiers: Alt, Control, Meta, Shift.");
+        var x = CliIntOption("--x", "X offset inside the element.");
+        var y = CliIntOption("--y", "Y offset inside the element.");
+        var command = new Command("click", "Click an element.") { selector, button, clickCount, delay, modifiers, x, y };
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine("click", [parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
+                StringOption("button", parseResult.GetValue(button)),
+                IntOption("clickCount", parseResult.GetValue(clickCount)),
+                IntOption("delay", parseResult.GetValue(delay)),
+                StringOption("modifiers", parseResult.GetValue(modifiers)),
+                IntOption("x", parseResult.GetValue(x)),
+                IntOption("y", parseResult.GetValue(y))
+            ]))));
         return command;
     }
 
