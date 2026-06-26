@@ -45,6 +45,29 @@ public sealed class BrowserScriptRunnerNavigationActionTests
     }
 
     [Fact]
+    public void RunText_WaitForTitleReturnsTitleOutput()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("Dashboard Home");
+        var result = Runner().RunText("waitForTitle \"Dashboard\" timeout=250", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal("document.title", client.LastExpression);
+        Assert.Contains("TITLE 001 Dashboard Home", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_WaitForTitleReportsTimeoutReason()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("Dashboard Home");
+        var result = Runner().RunText("waitForTitle \"Missing\" timeout=1", "debug", client);
+
+        Assert.False(result.Success);
+        Assert.Contains("Title did not match Missing within 1ms", result.Error);
+    }
+
+    [Fact]
     public void RunText_WaitForLoadStateSupportsNetworkIdle()
     {
         var client = new FakeAutomationClient();

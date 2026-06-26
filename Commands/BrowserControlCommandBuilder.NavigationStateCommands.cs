@@ -16,6 +16,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildHistoryCommand(browserOptions, "goBack", "Navigate one step back in page history."));
         command.Subcommands.Add(BuildHistoryCommand(browserOptions, "goForward", "Navigate one step forward in page history."));
         command.Subcommands.Add(BuildWaitForUrlCommand(browserOptions));
+        command.Subcommands.Add(BuildWaitForTitleCommand(browserOptions));
         command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "expectUrl", "Assert that the current URL contains text."));
         command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "expectTitle", "Assert that the current page title contains text."));
         command.Subcommands.Add(BuildExpectNavigationValueCommand(browserOptions, "toHaveURL", "Assert that the current URL contains text."));
@@ -83,6 +84,33 @@ public sealed partial class BrowserControlCommandBuilder
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
                 "waitForUrl",
+                [parseResult.GetValue(expectedArgument) ?? string.Empty],
+                [("timeout", parseResult.GetValue(timeoutOption).ToString())])));
+
+        return command;
+    }
+
+    private Command BuildWaitForTitleCommand(BrowserSelectionOptions browserOptions)
+    {
+        var expectedArgument = new Argument<string>("expected")
+        {
+            Description = "Expected title substring."
+        };
+        var timeoutOption = new Option<int>("--timeout")
+        {
+            Description = "Timeout in milliseconds.",
+            DefaultValueFactory = _ => 5000
+        };
+
+        var command = new Command("waitForTitle", "Wait until the current page title contains text.")
+        {
+            expectedArgument,
+            timeoutOption
+        };
+
+        command.SetAction(parseResult =>
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+                "waitForTitle",
                 [parseResult.GetValue(expectedArgument) ?? string.Empty],
                 [("timeout", parseResult.GetValue(timeoutOption).ToString())])));
 

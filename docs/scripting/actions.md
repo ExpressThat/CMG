@@ -1384,21 +1384,22 @@ Output:
 
 `dispatchEvent` does not move the virtual pointer. Use pointer actions such as `click`, `dblclick`, `doubleClick`, `rightClick`, or `contextClick` when the event should be visible in a GIF.
 
-### `expectUrl` And `expectTitle`
+### `expectUrl`, `expectTitle`, And `waitForTitle`
 
 ```text
 expectUrl "/checkout"
 expectTitle "Checkout"
+waitForTitle "Checkout" timeout=5000
 ```
 
-Fails unless the current URL or title contains the expected text.
+Fails unless the current URL or title contains the expected text. `waitForTitle` polls until the title contains the expected text or the timeout expires.
 
 These are shared actions, so they work in both direct browser-control scripts and `cmg run`.
 
 Output:
 
 - `URL <line> <url>` for `expectUrl`.
-- `TITLE <line> <title>` for `expectTitle`.
+- `TITLE <line> <title>` for `expectTitle` and `waitForTitle`.
 
 ### Element Assertion Aliases
 

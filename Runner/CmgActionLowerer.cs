@@ -39,7 +39,7 @@ public sealed partial class CmgActionLowerer
             "dblclick" or "doubleclick" => LowerMouseEvent(action, "dblclick", button: 0),
             "rightclick" or "contextclick" => LowerMouseEvent(action, "contextmenu", button: 2),
             "tap" or "touchtap" => LowerSelectorCommand(action.Kind, action),
-            "reload" or "goback" or "goforward" or "waitforurl" or "waitforloadstate" or "waitfornavigation" =>
+            "reload" or "goback" or "goforward" or "waitforurl" or "waitfortitle" or "waitforloadstate" or "waitfornavigation" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "waitforselector" or "waitforfunction" or "waitfortimeout" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],

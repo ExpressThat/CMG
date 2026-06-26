@@ -21,6 +21,7 @@ public sealed partial class BrowserScriptRunner
             "goback" => MoveHistory(remoteDebuggingUrl, automationClient, action, "back", "BACK"),
             "goforward" => MoveHistory(remoteDebuggingUrl, automationClient, action, "forward", "FORWARD"),
             "waitforurl" => WaitForUrl(remoteDebuggingUrl, automationClient, action),
+            "waitfortitle" => WaitForTitle(remoteDebuggingUrl, automationClient, action),
             "expecturl" => ExpectUrl(remoteDebuggingUrl, automationClient, action),
             "expecttitle" => ExpectTitle(remoteDebuggingUrl, automationClient, action),
             "waitforloadstate" => WaitForLoadState(remoteDebuggingUrl, automationClient, action),
@@ -64,6 +65,38 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 1, 1);
         var url = automationClient.Evaluate(remoteDebuggingUrl, BrowserNavigationScripts.ExpectUrl(action.Arguments[0]));
         return [$"URL {action.LineNumber:000} {url}"];
+    }
+
+    private static IReadOnlyList<string> WaitForTitle(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var timeout = GetIntOption(action, "timeout", 5_000);
+        var title = PollTitle(remoteDebuggingUrl, automationClient, action.Arguments[0], timeout);
+        return [$"TITLE {action.LineNumber:000} {title}"];
+    }
+
+    private static string PollTitle(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        string expected,
+        int timeout)
+    {
+        var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeout);
+        var title = string.Empty;
+        do
+        {
+            title = automationClient.Evaluate(remoteDebuggingUrl, "document.title");
+            if (title.Contains(expected, StringComparison.Ordinal))
+            {
+                return title;
+            }
+
+            Thread.Sleep(50);
+        }
+        while (DateTimeOffset.UtcNow < deadline);
+
+        throw new ScriptExecutionException(
+            $"Title did not match {expected} within {timeout}ms. Last title: {title}");
     }
 
     private static IReadOnlyList<string> ExpectTitle(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)

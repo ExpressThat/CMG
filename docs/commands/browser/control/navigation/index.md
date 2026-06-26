@@ -15,6 +15,7 @@ cmg browser control navigation [command] [options]
 - [`goBack`](goBack.md): Navigate one step back in page history.
 - [`goForward`](goForward.md): Navigate one step forward in page history.
 - [`waitForUrl`](waitForUrl.md): Wait until the current URL contains text.
+- [`waitForTitle`](waitForTitle.md): Wait until the current page title contains text.
 - [`expectUrl`](expectUrl.md): Assert that the current URL contains text.
 - [`expectTitle`](expectTitle.md): Assert that the current page title contains text.
 - [`toHaveURL`](toHaveURL.md): Assert that the current URL contains text.
@@ -41,6 +42,7 @@ cmg browser control navigation navigate "https://example.com"
 cmg browser control navigation goto "https://example.com"
 cmg browser control navigation reload
 cmg browser control navigation title
+cmg browser control navigation waitForTitle "Checkout" --timeout 5000
 cmg browser control navigation expectTitle "Checkout"
 cmg browser control navigation toHaveURL "checkout"
 cmg browser control navigation waitForLoadState complete

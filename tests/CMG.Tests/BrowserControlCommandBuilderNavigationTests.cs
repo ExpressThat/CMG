@@ -9,6 +9,8 @@ public sealed class BrowserControlCommandBuilderNavigationTests
     [Theory]
     [InlineData("expectUrl checkout", "expectUrl \"checkout\"")]
     [InlineData("expectTitle Dashboard", "expectTitle \"Dashboard\"")]
+    [InlineData("waitForTitle Dashboard", "waitForTitle \"Dashboard\" timeout=\"5000\"")]
+    [InlineData("waitForTitle Dashboard --timeout 250", "waitForTitle \"Dashboard\" timeout=\"250\"")]
     [InlineData("toHaveURL checkout", "toHaveURL \"checkout\"")]
     [InlineData("toHaveTitle Dashboard", "toHaveTitle \"Dashboard\"")]
     [InlineData("waitForNavigation", "waitForNavigation")]
