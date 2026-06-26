@@ -30,6 +30,8 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string ActiveBrowserContext { get; private set; } = string.Empty;
     public WorkerRouteOptions? LastWorkerRoute { get; private set; }
     public CoverageOptions? LastCoverageOptions { get; private set; }
+    public ScreenshotOptions? LastElementScreenshotOptions { get; private set; }
+    public ScreenshotOptions? LastPageScreenshotOptions { get; private set; }
     public ElementPoint? LastMouseMove { get; private set; }
     public ElementPoint? LastMouseDown { get; private set; }
     public ElementPoint? LastMouseUp { get; private set; }
@@ -42,7 +44,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public bool LastFullPageScreenshot { get; private set; }
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
-    public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) => [];
+    public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector, ScreenshotOptions? options = null)
+    {
+        LastElementScreenshotOptions = options ?? new();
+        return [];
+    }
     public string Navigate(string remoteDebuggingUrl, string target) => target;
     public void WaitForElement(string remoteDebuggingUrl, string selector, int timeoutMilliseconds) => LastWaitSelector = selector;
     public void Click(string remoteDebuggingUrl, string selector) => LastClickedSelector = selector;
@@ -109,9 +115,10 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public void MoveMouse(string remoteDebuggingUrl, ElementPoint point, int buttons) => LastMouseMove = point;
     public void MouseDown(string remoteDebuggingUrl, ElementPoint point) => LastMouseDown = point;
     public void MouseUp(string remoteDebuggingUrl, ElementPoint point) => LastMouseUp = point;
-    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false)
+    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false, ScreenshotOptions? options = null)
     {
-        LastFullPageScreenshot = fullPage;
+        LastPageScreenshotOptions = options ?? new(FullPage: fullPage);
+        LastFullPageScreenshot = LastPageScreenshotOptions.FullPage;
         using var image = new Image<Rgba32>(1, 1, Color.White);
         using var stream = new MemoryStream();
         image.SaveAsPng(stream);

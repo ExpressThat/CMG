@@ -33,6 +33,26 @@ public sealed class BrowserControlCommandBuilderCaptureTests
             handler.ScriptLine);
     }
 
+    [Fact]
+    public void ScreenshotCommand_MapsImageOptionsToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control capture screenshot #card --type jpeg --quality 75 --omit-background").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("screenshot \"#card\" type=\"jpeg\" quality=\"75\" omitBackground=\"true\"", handler.ScriptLine);
+    }
+
+    [Fact]
+    public void ScreenshotPageCommand_MapsImageOptionsToScriptAction()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control capture screenshotPage --full-page --type jpg --quality 80").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("screenshotPage type=\"jpg\" quality=\"80\" fullPage=\"true\"", handler.ScriptLine);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");

@@ -4,7 +4,7 @@ public interface IBrowserAutomationClient
 {
     string GetElementHtml(string remoteDebuggingUrl, string selector);
 
-    byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector);
+    byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector, ScreenshotOptions? options = null);
 
     string Navigate(string remoteDebuggingUrl, string target);
 
@@ -69,7 +69,7 @@ public interface IBrowserAutomationClient
 
     void MouseUp(string remoteDebuggingUrl, ElementPoint point);
 
-    byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false);
+    byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false, ScreenshotOptions? options = null);
 
     byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options);
 
@@ -133,6 +133,12 @@ public sealed record ViewportOptions(
     bool HasTouch = false);
 
 public sealed record ElementBox(double X, double Y, double Width, double Height);
+
+public sealed record ScreenshotOptions(
+    string Type = "png",
+    int? Quality = null,
+    bool FullPage = false,
+    bool OmitBackground = false);
 
 public sealed record PdfPrintOptions(
     bool Landscape,

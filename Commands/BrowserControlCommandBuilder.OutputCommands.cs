@@ -61,18 +61,24 @@ public sealed partial class BrowserControlCommandBuilder
         var selectorArgument = CreateSelectorArgument();
         var outputOption = new Option<FileInfo?>("--output")
         {
-            Description = "Write the PNG screenshot to this file instead of stdout data URL."
+            Description = "Write the screenshot to this file instead of stdout data URL."
         };
+        var typeOption = CliStringOption("--type", "Screenshot type: png, jpeg, or jpg. Default is png.");
+        var qualityOption = new Option<int?>("--quality") { Description = "JPEG quality from 0 to 100." };
+        var omitBackgroundOption = new Option<bool>("--omit-background") { Description = "Allow transparent background when supported." };
 
         var command = new Command("screenshot", "Capture an element screenshot.")
         {
             selectorArgument,
-            outputOption
+            outputOption,
+            typeOption,
+            qualityOption,
+            omitBackgroundOption
         };
 
         command.SetAction(parseResult =>
         {
-            var options = ToOutputOptions(parseResult.GetValue(outputOption));
+            var options = ScreenshotCliOptions(parseResult, outputOption, typeOption, qualityOption, omitBackgroundOption);
             return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
                 "screenshot",
                 [parseResult.GetValue(selectorArgument) ?? string.Empty],
@@ -86,22 +92,28 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var outputOption = new Option<FileInfo?>("--output")
         {
-            Description = "Write the PNG screenshot to this file instead of stdout data URL."
+            Description = "Write the screenshot to this file instead of stdout data URL."
         };
         var fullPageOption = new Option<bool>("--full-page")
         {
             Description = "Capture the full scrollable page instead of only the current viewport."
         };
+        var typeOption = CliStringOption("--type", "Screenshot type: png, jpeg, or jpg. Default is png.");
+        var qualityOption = new Option<int?>("--quality") { Description = "JPEG quality from 0 to 100." };
+        var omitBackgroundOption = new Option<bool>("--omit-background") { Description = "Allow transparent background when supported." };
 
         var command = new Command("screenshotPage", "Capture a page screenshot.")
         {
             outputOption,
-            fullPageOption
+            fullPageOption,
+            typeOption,
+            qualityOption,
+            omitBackgroundOption
         };
 
         command.SetAction(parseResult =>
         {
-            var options = ToOutputOptions(parseResult.GetValue(outputOption)).ToList();
+            var options = ScreenshotCliOptions(parseResult, outputOption, typeOption, qualityOption, omitBackgroundOption).ToList();
             if (parseResult.GetValue(fullPageOption))
             {
                 options.Add(("fullPage", "true"));

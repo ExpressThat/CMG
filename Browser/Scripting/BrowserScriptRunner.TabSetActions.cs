@@ -58,7 +58,7 @@ public sealed partial class BrowserScriptRunner
         return [];
     }
 
-    private static IReadOnlyList<string> WriteScreenshotOutput(BrowserScriptAction action, byte[] bytes)
+    private static IReadOnlyList<string> WriteScreenshotOutput(BrowserScriptAction action, byte[] bytes, string type = "png")
     {
         if (action.Options.TryGetValue("output", out var outputPath) && !string.IsNullOrWhiteSpace(outputPath))
         {
@@ -73,7 +73,7 @@ public sealed partial class BrowserScriptRunner
             return [$"SCREENSHOT {action.LineNumber:000} {fullPath}"];
         }
 
-        return [$"SCREENSHOT {action.LineNumber:000} data:image/png;base64,{Convert.ToBase64String(bytes)}"];
+        return [$"SCREENSHOT {action.LineNumber:000} data:{ScreenshotImage.MimeType(type)};base64,{Convert.ToBase64String(bytes)}"];
     }
 
     private static string QuoteJs(string value) =>

@@ -6,9 +6,14 @@ namespace CMG.Browser;
 
 public sealed partial class FirefoxBiDiClient
 {
-    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false) =>
+    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false, ScreenshotOptions? options = null) =>
         Run(async () =>
         {
+            options ??= new(FullPage: fullPage);
+            if (fullPage && !options.FullPage)
+            {
+                options = options with { FullPage = true };
+            }
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
             var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             if (promoteMessageBar)
@@ -19,10 +24,10 @@ public sealed partial class FirefoxBiDiClient
             var response = await session.SendCommand("browsingContext.captureScreenshot", writer =>
             {
                 writer.WriteString("context", context.Id);
-                writer.WriteString("origin", fullPage ? "document" : "viewport");
+                writer.WriteString("origin", options.FullPage ? "document" : "viewport");
             });
 
-            return DecodeScreenshot(response);
+            return ScreenshotImage.ConvertIfNeeded(DecodeScreenshot(response), options);
         });
 
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) =>

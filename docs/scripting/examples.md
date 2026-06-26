@@ -29,6 +29,7 @@ waitForElement "#profileDialog[open]" timeout=5000
 clear "#profileName"
 type "#profileName" "CMG Test Profile"
 screenshot "#profileDialog" output="profile-dialog.png"
+screenshot "#profileDialog" output="profile-dialog.jpg" type=jpeg quality=82
 click "#profileDialog button[value='close']"
 ```
 

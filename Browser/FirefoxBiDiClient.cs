@@ -12,9 +12,10 @@ public sealed partial class FirefoxBiDiClient : IBrowserAutomationClient
     public string GetElementHtml(string remoteDebuggingUrl, string selector) =>
         NonEmpty(Evaluate(remoteDebuggingUrl, $"document.querySelector({BrowserDomScripts.JsonString(selector)})?.outerHTML ?? null"), selector);
 
-    public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) =>
+    public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector, ScreenshotOptions? options = null) =>
         Run(async () =>
         {
+            options ??= new();
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
             var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             await Evaluate(session, context.Id, BrowserDomScripts.ScrollIntoView(selector));
@@ -32,6 +33,6 @@ public sealed partial class FirefoxBiDiClient : IBrowserAutomationClient
                 writer.WriteEndObject();
             });
 
-            return DecodeScreenshot(response);
+            return ScreenshotImage.ConvertIfNeeded(DecodeScreenshot(response), options);
         });
 }

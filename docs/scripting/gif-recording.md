@@ -11,6 +11,7 @@ cmg run flow.cmgscript --gif demo-output\runner-gifs
 
 - CMG captures the visible page viewport.
 - A frame is captured after visual actions. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
+- Explicit `screenshot` and `screenshotPage` actions can write PNG or JPEG artifacts with `type=` and `quality=`. GIF recorder frames always use CMG's internal PNG capture path so virtual pointer compositing and frame encoding stay consistent.
 - Click, type, clear, hover, select, wheel, and drag actions move the virtual pointer to the target selector when possible. User-like movement actions do not scroll automatically; add `scrollIntoView`, `scrollTo`, `scrollBy`, or `wheel` steps when the pointer should move to content outside the current viewport.
 - Rich locator filters such as `nth=`, `has=`, `hasNot=`, `hasText=`, `hasNotText=`, and `visible=` resolve to a temporary element marker before pointer movement. The GIF pointer moves to that resolved element, so filtered locators keep pointer events, hover state, drag ghosts, screenshots, and captions aligned with the browser action.
 - Low-level `mouseMove`, `mouseDown`, and `mouseUp` actions also move the virtual pointer in GIF mode and dispatch page-facing pointer/mouse events.

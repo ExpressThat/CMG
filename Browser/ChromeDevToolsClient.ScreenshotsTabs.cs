@@ -6,8 +6,14 @@ namespace CMG.Browser;
 
 public sealed partial class ChromeDevToolsClient
 {
-    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false)
+    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false, ScreenshotOptions? options = null)
     {
+        options ??= new(FullPage: fullPage);
+        if (fullPage && !options.FullPage)
+        {
+            options = options with { FullPage = true };
+        }
+
         return Run(async () =>
         {
             await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
@@ -16,9 +22,9 @@ public sealed partial class ChromeDevToolsClient
                 await PromoteMessageBar(session);
             }
 
-            var screenshot = fullPage
-                ? await CaptureFullPageScreenshot(session)
-                : await session.SendCommand("Page.captureScreenshot", writer => writer.WriteString("format", "png"));
+            var screenshot = options.FullPage
+                ? await CaptureFullPageScreenshot(session, options)
+                : await session.SendCommand("Page.captureScreenshot", writer => WriteScreenshotOptions(writer, options));
 
             if (!TryReadString(screenshot, "result", "data", out var data) || string.IsNullOrWhiteSpace(data))
             {
@@ -29,7 +35,7 @@ public sealed partial class ChromeDevToolsClient
         });
     }
 
-    private static async Task<JsonElement> CaptureFullPageScreenshot(DevToolsSession session)
+    private static async Task<JsonElement> CaptureFullPageScreenshot(DevToolsSession session, ScreenshotOptions options)
     {
         var metrics = await session.SendCommand("Page.getLayoutMetrics");
         if (!TryReadElement(metrics, ["result", "contentSize"], out var size) ||
@@ -41,7 +47,7 @@ public sealed partial class ChromeDevToolsClient
 
         return await session.SendCommand("Page.captureScreenshot", writer =>
         {
-            writer.WriteString("format", "png");
+            WriteScreenshotOptions(writer, options);
             writer.WriteBoolean("captureBeyondViewport", true);
             writer.WriteStartObject("clip");
             writer.WriteNumber("x", 0);

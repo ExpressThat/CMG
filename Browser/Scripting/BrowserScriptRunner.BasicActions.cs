@@ -92,15 +92,38 @@ public sealed partial class BrowserScriptRunner
     {
         action = NormalizeSelectorArgument(action);
         RequireArgumentCount(action, 1, 1);
-        var bytes = automationClient.GetElementScreenshot(remoteDebuggingUrl, ResolveSelector(remoteDebuggingUrl, automationClient, action));
-        return WriteScreenshotOutput(action, bytes);
+        var options = ScreenshotOptionsFor(action, fullPage: false);
+        var bytes = automationClient.GetElementScreenshot(remoteDebuggingUrl, ResolveSelector(remoteDebuggingUrl, automationClient, action), options);
+        return WriteScreenshotOutput(action, bytes, options.Type);
     }
 
     private static IReadOnlyList<string> ExecuteScreenshotPage(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 0, 0);
-        var bytes = automationClient.GetPageScreenshot(remoteDebuggingUrl, fullPage: GetBoolOption(action, "fullPage"));
-        return WriteScreenshotOutput(action, bytes);
+        var options = ScreenshotOptionsFor(action, GetBoolOption(action, "fullPage"));
+        var bytes = automationClient.GetPageScreenshot(remoteDebuggingUrl, options: options);
+        return WriteScreenshotOutput(action, bytes, options.Type);
+    }
+
+    private static ScreenshotOptions ScreenshotOptionsFor(BrowserScriptAction action, bool fullPage)
+    {
+        var type = ScreenshotImage.NormalizeType(action.Options.TryGetValue("type", out var rawType) ? rawType : "png");
+        if (type is not ("png" or "jpeg"))
+        {
+            throw new ScriptExecutionException($"{action.Name} option type= must be png, jpeg, or jpg.");
+        }
+
+        var quality = action.Options.ContainsKey("quality") ? GetIntOption(action, "quality", required: true) : (int?)null;
+        if (quality is not null && (quality < 0 || quality > 100))
+        {
+            throw new ScriptExecutionException($"{action.Name} option quality= must be between 0 and 100.");
+        }
+        if (quality is not null && type != "jpeg")
+        {
+            throw new ScriptExecutionException($"{action.Name} option quality= is only valid when type=jpeg.");
+        }
+
+        return new(type, quality, fullPage, GetBoolOption(action, "omitBackground"));
     }
 
     private static IReadOnlyList<string> ExecuteEvaluate(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)

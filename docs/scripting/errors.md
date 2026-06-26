@@ -277,10 +277,13 @@ Check the browser download directory, file pattern, and timeout. `download` igno
 
 ```text
 Line 4: screenshotPage failed. screenshotPage option fullPage= must be true or false.
-Line 5: screenshotPage failed. Firefox did not return screenshot image data.
+Line 5: screenshotPage failed. screenshotPage option type= must be png, jpeg, or jpg.
+Line 6: screenshot failed. screenshot option quality= must be between 0 and 100.
+Line 7: screenshot failed. screenshot option quality= is only valid when type=jpeg.
+Line 8: screenshotPage failed. Firefox did not return screenshot image data.
 ```
 
-Use `fullPage=true` for a full scrollable page capture. Use `fullPage=false` or leave it unset for the current viewport.
+Use `fullPage=true` for a full scrollable page capture. Use `type=jpeg quality=80` for a JPEG capture. Use `fullPage=false` or leave it unset for the current viewport.
 
 ## Console Timeout
 

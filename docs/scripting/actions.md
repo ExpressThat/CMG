@@ -422,29 +422,37 @@ html "#openProfileDialog"
 
 ```text
 screenshot "<selector>" output="element.png"
+screenshot "<selector>" output="element.jpg" type=jpeg quality=80
 screenshot "<selector>"
 ```
 
-Captures a PNG screenshot of an element.
+Captures a screenshot of an element. In GIF mode this is a visual action: CMG moves the virtual pointer to the target first so the recording shows what is being captured.
 
 Options:
 
-- `output`: Optional file path. Without it, stdout receives a `data:image/png;base64,...` result.
+- `output`: Optional file path. Without it, stdout receives a `data:image/png;base64,...` or `data:image/jpeg;base64,...` result.
+- `type`: Optional `png`, `jpeg`, or `jpg`. Default is `png`.
+- `quality`: Optional JPEG quality from `0` to `100`. Valid only when `type=jpeg` or `type=jpg`.
+- `omitBackground`: Optional boolean. Allows a transparent background when the browser supports it.
 
 ## `screenshotPage`
 
 ```text
 screenshotPage output="page.png"
 screenshotPage output="page-full.png" fullPage=true
+screenshotPage output="page.jpg" type=jpeg quality=85
 screenshotPage
 ```
 
-Captures a PNG screenshot of the primary page target.
+Captures a screenshot of the primary page target. Page screenshots do not move the virtual pointer; selector screenshots do.
 
 Options:
 
-- `output`: Optional file path. Without it, stdout receives a `data:image/png;base64,...` result.
+- `output`: Optional file path. Without it, stdout receives a `data:image/png;base64,...` or `data:image/jpeg;base64,...` result.
 - `fullPage`: Optional boolean. Default is `false`. When `true`, captures the full scrollable page instead of only the current viewport.
+- `type`: Optional `png`, `jpeg`, or `jpg`. Default is `png`.
+- `quality`: Optional JPEG quality from `0` to `100`. Valid only when `type=jpeg` or `type=jpg`.
+- `omitBackground`: Optional boolean. Allows a transparent background when the browser supports it.
 
 ## `printPdf`
 
