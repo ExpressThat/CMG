@@ -2176,16 +2176,22 @@ Direct browser-control scripts and `cmg run` both support:
 - Test id selectors, for example `"testid=save"`, mapped to `[data-testid='save']`.
 - Text locators, for example `"text=Save"`.
 - Exact text locators, for example `"textExact=Save"`.
+- Regex text locators, for example `"textRegex=^Save"`.
 - Role locators, for example `"role=button"`.
 - Role-plus-name locators, for example `"role=button|Save"`.
+- Role-plus-regex-name locators, for example `"roleRegex=button|^Save"`.
 - Label locators, for example `"label=Email"`.
 - Exact label locators, for example `"labelExact=Email"`.
+- Regex label locators, for example `"labelRegex=^Email"`.
 - Placeholder locators, for example `"placeholder=Search"`.
 - Exact placeholder locators, for example `"placeholderExact=Search"`.
+- Regex placeholder locators, for example `"placeholderRegex=Search$"`.
 - Alt text locators, for example `"alt=Logo"`.
 - Exact alt text locators, for example `"altExact=Logo"`.
+- Regex alt text locators, for example `"altRegex=Logo$"`.
 - Title locators, for example `"title=Close"`.
 - Exact title locators, for example `"titleExact=Close"`.
+- Regex title locators, for example `"titleRegex=Close$"`.
 - XPath locators, for example `"xpath=//button[.='Save']"`.
 - Filter locators:
   - `"first=.item"` resolves the first matching CSS element.
@@ -2204,7 +2210,9 @@ Direct browser-control scripts can pass locator forms as normal arguments or as 
 ```text
 click text=Save
 click textExact=Save
+click textRegex=^Save
 click "role=button|Save"
+click "roleRegex=button|^Save"
 type label=Email "agent@example.com"
 type labelExact=Email "agent@example.com"
 click "text=Save changes"

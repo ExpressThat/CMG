@@ -53,8 +53,11 @@ public sealed class BrowserScriptRunnerRichLocatorTests
     [InlineData("hasNot=.item|.badge", "!e.querySelector('.badge')")]
     [InlineData("hasNotText=.item|Draft", "includes('Draft')")]
     [InlineData("textExact=Save", ".trim() === 'Save'")]
+    [InlineData("textRegex=^Save", "new RegExp('^Save')")]
     [InlineData("role=button|Save", "accessibleName(e).includes('Save')")]
+    [InlineData("roleRegex=button|^Save", "new RegExp('^Save').test(accessibleName(e))")]
     [InlineData("labelExact=Email", ".trim() === 'Email'")]
+    [InlineData("labelRegex=^Email", "new RegExp('^Email')")]
     public void RunText_ClickResolvesAdvancedFilterLocatorOptions(string locator, string expectedExpression)
     {
         var client = new FakeAutomationClient();
@@ -79,10 +82,10 @@ public sealed class BrowserScriptRunnerRichLocatorTests
     public void RunText_ExpectationAcceptsGenericExactLocatorOptions()
     {
         var client = new FakeAutomationClient();
-        var result = Runner().RunText("expectVisible textExact=Save", "debug", client);
+        var result = Runner().RunText("expectVisible textRegex=^Save", "debug", client);
 
         Assert.True(result.Success, result.Error);
-        Assert.Contains(".trim() === 'Save'", client.EvaluatedExpressions[0]);
+        Assert.Contains("new RegExp('^Save')", client.EvaluatedExpressions[0]);
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

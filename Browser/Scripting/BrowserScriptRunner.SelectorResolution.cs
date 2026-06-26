@@ -43,7 +43,8 @@ public sealed partial class BrowserScriptRunner
     }
 
     private static bool IsLocatorOption(string key) =>
-        key is "css" or "testid" or "testId" or "data-testid" or "text" or "textExact" or "role" or "label" or "labelExact" or
-            "placeholder" or "placeholderExact" or "alt" or "altExact" or "title" or "titleExact" or "xpath" or
+        key is "css" or "testid" or "testId" or "data-testid" or "text" or "textExact" or "textRegex" or
+            "role" or "roleRegex" or "label" or "labelExact" or "labelRegex" or "placeholder" or "placeholderExact" or
+            "placeholderRegex" or "alt" or "altExact" or "altRegex" or "title" or "titleExact" or "titleRegex" or "xpath" or
             "first" or "last" or "nth" or "has" or "hasNot" or "hasText" or "hasNotText" or "visible";
 }

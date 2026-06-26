@@ -137,8 +137,9 @@ public static class CmgExpectationScripts
     }
 
     private static bool IsLocatorOption(string key) =>
-        key is "css" or "testid" or "testId" or "data-testid" or "text" or "textExact" or "role" or "label" or "labelExact" or
-            "placeholder" or "placeholderExact" or "alt" or "altExact" or "title" or "titleExact" or "xpath";
+        key is "css" or "testid" or "testId" or "data-testid" or "text" or "textExact" or "textRegex" or
+            "role" or "roleRegex" or "label" or "labelExact" or "labelRegex" or "placeholder" or "placeholderExact" or
+            "placeholderRegex" or "alt" or "altExact" or "altRegex" or "title" or "titleExact" or "titleRegex" or "xpath";
 
     private static string Fail(string message) =>
         $"(() => {{ throw new Error({QuoteJs(message)}); }})()";

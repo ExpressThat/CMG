@@ -18,7 +18,10 @@ public sealed class CmgLocatorTests
     [InlineData("last=.item", ".at(-1)")]
     [InlineData("nth=.item|2", "Number('2')")]
     [InlineData("textExact=Save", ".trim() === 'Save'")]
+    [InlineData("textRegex=^Save", "new RegExp('^Save')")]
     [InlineData("role=button|Save", "accessibleName(e).includes('Save')")]
+    [InlineData("roleRegex=button|^Save", "new RegExp('^Save').test(accessibleName(e))")]
+    [InlineData("labelRegex=^Email", "new RegExp('^Email')")]
     [InlineData("has=.item|.badge", "e.querySelector('.badge')")]
     [InlineData("hasNot=.item|.badge", "!e.querySelector('.badge')")]
     [InlineData("hasText=.item|Save", "includes('Save')")]
@@ -39,6 +42,14 @@ public sealed class CmgLocatorTests
 
         Assert.Equal("[data-cmg-locator-id=\"__cmg_locator_4\"]", resolved.Selector);
         Assert.Contains("nth=.item|1", Assert.Single(resolved.PrefixLines));
+    }
+
+    [Fact]
+    public void PrefixExpressions_RoleRegexRequiresRoleAndPattern()
+    {
+        var expression = Assert.Single(CmgLocator.PrefixExpressions("roleRegex=button", 7));
+
+        Assert.Contains("Locator roleRegex= requires <role>|<name-regex>", expression);
     }
 
     [Theory]

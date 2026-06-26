@@ -7,6 +7,12 @@ test "locator filters" {
   click "role=button|Second"
   expectText "#result" "second"
 
+  click "textRegex=^First$"
+  expectText "#result" "first"
+
+  click "roleRegex=button|Second"
+  expectText "#result" "second"
+
   click "nth=.cmd|1"
   expectText "#result" "second"
 

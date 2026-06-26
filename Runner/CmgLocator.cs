@@ -50,15 +50,21 @@ public static class CmgLocator
         locator.StartsWith("data-testid=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("text=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("textExact=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("textRegex=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("role=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("roleRegex=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("label=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("labelExact=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("labelRegex=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("placeholder=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("placeholderExact=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("placeholderRegex=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("alt=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("altExact=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("altRegex=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("title=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("titleExact=", StringComparison.OrdinalIgnoreCase) ||
+        locator.StartsWith("titleRegex=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("xpath=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("first=", StringComparison.OrdinalIgnoreCase) ||
         locator.StartsWith("last=", StringComparison.OrdinalIgnoreCase) ||
@@ -106,12 +112,18 @@ public static class CmgLocator
         {
             "text" => $"Array.from(document.querySelectorAll('body *')).filter(e => (e.innerText || e.textContent || '').includes({QuoteJs(value)})).sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length || (a.innerText || a.textContent || '').length - (b.innerText || b.textContent || '').length)[0]",
             "textexact" => $"Array.from(document.querySelectorAll('body *')).filter(e => ((e.innerText || e.textContent || '').trim() === {QuoteJs(value)})).sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length || (a.innerText || a.textContent || '').length - (b.innerText || b.textContent || '').length)[0]",
+            "textregex" => $"Array.from(document.querySelectorAll('body *')).filter(e => new RegExp({QuoteJs(value)}).test(e.innerText || e.textContent || '')).sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length || (a.innerText || a.textContent || '').length - (b.innerText || b.textContent || '').length)[0]",
             "role" => BuildRoleExpression(value),
+            "roleregex" => BuildRoleRegexExpression(value),
             "label" => $"Array.from(document.querySelectorAll('label')).find(l => (l.innerText || '').includes({QuoteJs(value)}))?.control",
             "labelexact" => $"Array.from(document.querySelectorAll('label')).find(l => (l.innerText || '').trim() === {QuoteJs(value)})?.control",
+            "labelregex" => $"Array.from(document.querySelectorAll('label')).find(l => new RegExp({QuoteJs(value)}).test(l.innerText || ''))?.control",
             "placeholderexact" => $"Array.from(document.querySelectorAll('[placeholder]')).find(e => e.getAttribute('placeholder') === {QuoteJs(value)})",
+            "placeholderregex" => $"Array.from(document.querySelectorAll('[placeholder]')).find(e => new RegExp({QuoteJs(value)}).test(e.getAttribute('placeholder') || ''))",
             "altexact" => $"Array.from(document.querySelectorAll('[alt]')).find(e => e.getAttribute('alt') === {QuoteJs(value)})",
+            "altregex" => $"Array.from(document.querySelectorAll('[alt]')).find(e => new RegExp({QuoteJs(value)}).test(e.getAttribute('alt') || ''))",
             "titleexact" => $"Array.from(document.querySelectorAll('[title]')).find(e => e.getAttribute('title') === {QuoteJs(value)})",
+            "titleregex" => $"Array.from(document.querySelectorAll('[title]')).find(e => new RegExp({QuoteJs(value)}).test(e.getAttribute('title') || ''))",
             "xpath" => $"document.evaluate({QuoteJs(value)}, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue",
             "first" => $"document.querySelector({QuoteJs(value)})",
             "last" => $"Array.from(document.querySelectorAll({QuoteJs(value)})).at(-1)",
@@ -133,6 +145,11 @@ public static class CmgLocator
 
         return $"Array.from(document.querySelectorAll('body *')).find(e => ((e.getAttribute('role') || implicitRole(e)) === {QuoteJs(parts.Left)}) && accessibleName(e).includes({QuoteJs(parts.Right)}))";
     }
+
+    private static string BuildRoleRegexExpression(string value) =>
+        SplitLocatorValue(value) is { } parts
+            ? $"Array.from(document.querySelectorAll('body *')).find(e => ((e.getAttribute('role') || implicitRole(e)) === {QuoteJs(parts.Left)}) && new RegExp({QuoteJs(parts.Right)}).test(accessibleName(e)))"
+            : "(() => { throw new Error('Locator roleRegex= requires <role>|<name-regex>.'); })()";
 
     private static string BuildNthExpression(string value)
     {
