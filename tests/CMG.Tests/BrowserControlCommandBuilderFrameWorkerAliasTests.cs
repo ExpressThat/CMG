@@ -27,6 +27,7 @@ public sealed class BrowserControlCommandBuilderFrameWorkerAliasTests
     [Theory]
     [InlineData("listWorkers", "listWorkers")]
     [InlineData("waitForWorker worker.js --timeout 1000", "waitForWorker \"worker.js\" timeout=\"1000\"")]
+    [InlineData("waitForWorker worker-\\d+\\.js --match regex --ignore-case", "waitForWorker \"worker-\\d+\\.js\" match=\"regex\" ignoreCase=\"true\"")]
     [InlineData("workerEvaluate self.location.href --target worker.js", "workerEvaluate \"self.location.href\" target=\"worker.js\"")]
     [InlineData("workerIntercept /api --status 201 --body ok", "workerIntercept \"/api\" status=\"201\" body=\"ok\"")]
     [InlineData("workerIntercept /api --body-file C:\\temp\\worker.json", "workerIntercept \"/api\" bodyFile=\"C:\\\\temp\\\\worker.json\"")]

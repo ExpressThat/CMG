@@ -1703,6 +1703,7 @@ These actions do not move the virtual pointer. They affect page-side requests an
 ```text
 listWorkers
 waitForWorker "worker.js" timeout=5000
+waitForWorker "worker-\\d+\\.js" match=regex ignoreCase=true timeout=5000
 workerEvaluate "self.location.href" target="worker.js"
 workerIntercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json" target="worker.js"
 workerIntercept "/api/profile/\\d+" match=regex ignoreCase=true bodyFile="fixtures/profile.json" header="X-Trace: demo" target="worker.js"
@@ -1713,14 +1714,14 @@ Inspects and controls worker targets exposed by the browser automation provider.
 Options:
 
 - `timeout`: Optional for `waitForWorker`. Default is `5000`.
+- `match`: Optional URL match mode for `waitForWorker` and `workerIntercept`. Supports `contains`, `exact`, and `regex`. Default is `contains`.
+- `ignoreCase`: Optional boolean for worker URL matching. `waitForWorker` defaults to case-insensitive matching.
 - `target`: Optional worker id or URL substring for `workerEvaluate` and `workerIntercept`.
 - `status`: Optional response status for `workerIntercept`. Default is `200`.
 - `body`: Optional response body for `workerIntercept`. Default is empty text.
 - `bodyFile`: Optional response body file for `workerIntercept`.
 - `file`: Alias for `bodyFile`.
 - `contentType`: Optional response content type for `workerIntercept`. Default is `text/plain`.
-- `match`: Optional URL match mode for `workerIntercept`. Supports `contains`, `exact`, and `regex`. Default is `contains`.
-- `ignoreCase`: Optional boolean for worker URL matching.
 - `header`: Optional worker response header formatted as `Name: value`.
 - `headers`: Optional semicolon-separated worker response headers.
 - `headerName`: Optional worker response header name.

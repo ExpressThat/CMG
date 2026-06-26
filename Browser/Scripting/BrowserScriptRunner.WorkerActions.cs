@@ -29,10 +29,14 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 1, 1);
         var timeout = GetIntOption(action, "timeout", 5_000);
+        ValidateNetworkUrlMatchOptions(action);
+        var mode = (action.Options.GetValueOrDefault("match") ?? "contains").ToLowerInvariant();
+        var ignoreCase = !action.Options.ContainsKey("ignoreCase") ||
+            (bool.TryParse(action.Options.GetValueOrDefault("ignoreCase"), out var parsedIgnoreCase) && parsedIgnoreCase);
         var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeout);
         do
         {
-            var match = automationClient.ListWorkers(remoteDebuggingUrl).FirstOrDefault(worker => worker.Url.Contains(action.Arguments[0], StringComparison.OrdinalIgnoreCase));
+            var match = automationClient.ListWorkers(remoteDebuggingUrl).FirstOrDefault(worker => WorkerUrlMatches(worker.Url, action.Arguments[0], mode, ignoreCase));
             if (match is not null)
             {
                 return [$"WORKER_READY {action.LineNumber:000} id={match.Id} url=\"{match.Url}\""];
@@ -43,6 +47,21 @@ public sealed partial class BrowserScriptRunner
         while (DateTimeOffset.UtcNow < deadline);
 
         throw new ScriptExecutionException($"Worker '{action.Arguments[0]}' was not available within {timeout}ms.");
+    }
+
+    private static bool WorkerUrlMatches(string url, string pattern, string mode, bool ignoreCase)
+    {
+        var actual = ignoreCase ? url.ToLowerInvariant() : url;
+        var expected = ignoreCase ? pattern.ToLowerInvariant() : pattern;
+        return mode switch
+        {
+            "exact" => actual == expected,
+            "regex" => System.Text.RegularExpressions.Regex.IsMatch(
+                url,
+                pattern,
+                ignoreCase ? System.Text.RegularExpressions.RegexOptions.IgnoreCase : System.Text.RegularExpressions.RegexOptions.None),
+            _ => actual.Contains(expected, StringComparison.Ordinal)
+        };
     }
 
     private static IReadOnlyList<string> WorkerEvaluate(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)

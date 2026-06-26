@@ -19,6 +19,30 @@ public sealed class BrowserScriptRunnerWorkerActionTests
     }
 
     [Fact]
+    public void RunText_WaitForWorkerSupportsRegexMatch()
+    {
+        var client = new FakeAutomationClient();
+        client.Workers.Add(new BrowserWorkerInfo("w1", "worker", "worker.js", "https://example.com/Worker-42.js"));
+
+        var result = Runner().RunText("waitForWorker \"worker-\\d+\\.js\" match=regex", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("WORKER_READY", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_WaitForWorkerSupportsExactCaseSensitiveMatch()
+    {
+        var client = new FakeAutomationClient();
+        client.Workers.Add(new BrowserWorkerInfo("w1", "worker", "worker.js", "https://example.com/Worker.js"));
+
+        var result = Runner().RunText("waitForWorker \"https://example.com/worker.js\" match=exact ignoreCase=false timeout=1", "debug", client);
+
+        Assert.False(result.Success);
+        Assert.Contains("was not available", result.Error);
+    }
+
+    [Fact]
     public void RunText_WorkerEvaluateReportsResult()
     {
         var result = Runner().RunText("workerEvaluate \"1 + 1\"", "debug", new FakeAutomationClient());

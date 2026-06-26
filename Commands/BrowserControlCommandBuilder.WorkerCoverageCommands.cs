@@ -35,13 +35,17 @@ public sealed partial class BrowserControlCommandBuilder
 
     private Command BuildWaitForWorkerCommand(BrowserSelectionOptions browserOptions, string name)
     {
-        var pattern = new Argument<string>("pattern") { Description = "Worker URL substring to match." };
+        var pattern = new Argument<string>("pattern") { Description = "Worker URL text to match." };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds. Default is 5000." };
-        var command = new Command(name, "Wait for a matching worker target.") { pattern, timeout };
+        var match = NavigationMatchOption();
+        var ignoreCase = NavigationIgnoreCaseOption();
+        var command = new Command(name, "Wait for a matching worker target.") { pattern, timeout, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine("waitForWorker", [parseResult.GetValue(pattern) ?? string.Empty], CompactOptions([
-                IntOption("timeout", parseResult.GetValue(timeout))
+                IntOption("timeout", parseResult.GetValue(timeout)),
+                StringOption("match", parseResult.GetValue(match)),
+                parseResult.GetValue(ignoreCase) ? ("ignoreCase", "true") : null
             ]))));
         return command;
     }

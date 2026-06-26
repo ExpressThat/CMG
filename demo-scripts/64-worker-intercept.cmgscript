@@ -1,4 +1,4 @@
 writeFile path="demo-output/worker-profile.json" text="{\"name\":\"CMG\"}"
-waitForWorker "worker.js" timeout=5000
+waitForWorker "worker\\.js" match=regex ignoreCase=true timeout=5000
 workerIntercept "/api/profile/\\d+" match=regex ignoreCase=true status=200 bodyFile="demo-output/worker-profile.json" contentType="application/json" header="X-Trace: worker" target="worker.js"
 workerEvaluate "fetch('/api/Profile/42').then(r => r.text())" target="worker.js"
