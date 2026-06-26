@@ -9,7 +9,7 @@ cmg browser control frames frameWaitForSelector "<frameSelector>" "<selector>" [
 ## Arguments
 
 - `<frameSelector>`: CSS selector for the same-origin iframe.
-- `<selector>`: CSS selector inside the iframe.
+- `<selector>`: CSS selector or CMG rich/provider locator inside the iframe.
 
 ## Options
 

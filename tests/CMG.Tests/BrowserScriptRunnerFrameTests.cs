@@ -16,6 +16,32 @@ public sealed class BrowserScriptRunnerFrameTests
     }
 
     [Fact]
+    public void RunText_FrameActionsResolveRichLocatorsInsideFrame()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("frameClick \"#frame\" \"getByRole=button|Save\"", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("const resolveFrameElement = locator =>", client.LastExpression);
+        Assert.Contains("getByRole", client.LastExpression);
+        Assert.Contains("accessibleName(e).includes(parts[1])", client.LastExpression);
+    }
+
+    [Fact]
+    public void RunText_FrameWaitAndTextAssertionsUseFrameLocatorResolver()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("""
+        frameWaitForSelector "#frame" "text=Ready"
+        frameToContainText "#frame" "getByTestId=status" "Saved"
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("resolveFrameElement(\"testid=status\")", client.LastExpression);
+        Assert.Contains("data-testid", client.LastExpression);
+    }
+
+    [Fact]
     public void RunText_FrameEvaluateReturnsResultLine()
     {
         var result = Runner().RunText("frameEvaluate \"#frame\" \"document.title\"", "debug", new FakeAutomationClient());

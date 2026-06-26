@@ -8,6 +8,7 @@ public sealed class BrowserControlCommandBuilderFrameWorkerAliasTests
 {
     [Theory]
     [InlineData("frameClick iframe #save", "frameClick \"iframe\" \"#save\"")]
+    [InlineData("frameClick iframe getByRole=button|Save", "frameClick \"iframe\" \"getByRole=button|Save\"")]
     [InlineData("frameHover iframe #save", "frameHover \"iframe\" \"#save\"")]
     [InlineData("frameType iframe #name CMG", "frameType \"iframe\" \"#name\" \"CMG\"")]
     [InlineData("frameFill iframe #name CMG", "frameFill \"iframe\" \"#name\" \"CMG\"")]

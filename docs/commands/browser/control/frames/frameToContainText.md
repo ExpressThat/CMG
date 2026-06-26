@@ -9,7 +9,7 @@ cmg browser control frames frameToContainText "<frameSelector>" "<selector>" "<t
 ## Arguments
 
 - `<frameSelector>`: CSS selector for the same-origin iframe.
-- `<selector>`: CSS selector inside the iframe.
+- `<selector>`: CSS selector or CMG rich/provider locator inside the iframe.
 - `<text>`: Expected text.
 
 ## Options

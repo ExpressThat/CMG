@@ -27,18 +27,21 @@ public sealed partial class BrowserScriptRunner
 
     private static string FrameElement(BrowserScriptAction action, Func<string, string, string> build)
     {
+        action = NormalizeFrameSelectorArgument(action);
         RequireArgumentCount(action, 2, 2);
         return build(action.Arguments[0], action.Arguments[1]);
     }
 
     private static string FrameText(BrowserScriptAction action, Func<string, string, string, string> build)
     {
+        action = NormalizeFrameSelectorArgument(action);
         RequireArgumentCount(action, 3, 3);
         return build(action.Arguments[0], action.Arguments[1], action.Arguments[2]);
     }
 
     private static string FrameAssertText(BrowserScriptAction action)
     {
+        action = NormalizeFrameSelectorArgument(action);
         RequireArgumentCount(action, 3, 3);
         ValidateTextMatchOptions(action, action.Arguments[2]);
         return BrowserFrameScripts.AssertText(
@@ -51,6 +54,7 @@ public sealed partial class BrowserScriptRunner
 
     private static string FrameWait(BrowserScriptAction action)
     {
+        action = NormalizeFrameSelectorArgument(action);
         RequireArgumentCount(action, 2, 2);
         return BrowserFrameScripts.WaitForElement(
             action.Arguments[0],
@@ -62,5 +66,22 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 2, 2);
         return BrowserFrameScripts.Evaluate(action.Arguments[0], action.Arguments[1]);
+    }
+
+    private static BrowserScriptAction NormalizeFrameSelectorArgument(BrowserScriptAction action)
+    {
+        var locator = action.Options.FirstOrDefault(pair => IsLocatorOption(pair.Key));
+        if (string.IsNullOrWhiteSpace(locator.Key) || action.Arguments.Count is 0)
+        {
+            return action;
+        }
+
+        var locatorArgument = CMG.Runner.CmgLocatorKeys.Format(locator.Key, locator.Value);
+        if (action.Arguments.Count > 1 && action.Arguments[1].Equals(locatorArgument, StringComparison.Ordinal))
+        {
+            return action;
+        }
+
+        return action with { Arguments = [action.Arguments[0], locatorArgument, .. action.Arguments.Skip(1)] };
     }
 }

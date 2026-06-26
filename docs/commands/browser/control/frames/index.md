@@ -37,6 +37,8 @@ cmg browser control frames [command] [options]
 
 - Requires a browser started with [`browser launch`](../../launch.md).
 - The iframe must be same-origin and ready.
+- The iframe selector itself is a top-page CSS selector.
+- The element selector inside the iframe can be CSS or a CMG rich/provider locator such as `getByRole=button|Save`, `text=Saved`, `getByTestId=status`, `xpath=//button`, or `hasText=.row|Ready`.
 - Runs the same underlying scripting actions as `browser control script`.
 - Script GIF recordings move the virtual pointer to the top-page coordinate inside the iframe for frame click, hover, type, and fill actions.
 - Writes `PASS` and `FRAME` or `FRAME_EVALUATE` output lines to stdout.
@@ -50,6 +52,7 @@ cmg browser control frames waitForElement "#checkoutFrame" "#email" --timeout 50
 cmg browser control frames waitForSelector "#checkoutFrame" "#status" --timeout 5000
 cmg browser control frames fill "#checkoutFrame" "#email" "agent@example.com"
 cmg browser control frames click "#checkoutFrame" "#save"
+cmg browser control frames click "#checkoutFrame" "getByRole=button|Save"
 cmg browser control frames assertText "#checkoutFrame" "#status" "^Saved$" --match regex --ignore-case
 cmg browser control frames toContainText "#checkoutFrame" "#status" "Saved"
 ```

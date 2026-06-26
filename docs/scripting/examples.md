@@ -1108,19 +1108,19 @@ test "saves checkout frame" {
   frame "#checkoutFrame" {
     waitForSelector "#email" timeout=5000
     fill "#email" "agent@example.com"
-    click "#save"
-    toContainText "#status" "Saved"
+    click "getByRole=button|Save"
+    toContainText "getByTestId=status" "Saved"
   }
 }
 ```
 
-Recorded frame pointer actions move the virtual pointer to the element's top-page coordinate inside the iframe. Frame text assertions support `match=contains|exact|regex` and `ignoreCase=true`. `frame` and `frameLocator` blocks are script-only scoped forms over the same frame actions. Frame actions require a same-origin iframe.
+Recorded frame pointer actions move the virtual pointer to the element's top-page coordinate inside the iframe. Frame element targets support CSS selectors and CMG rich/provider locators. Frame text assertions support `match=contains|exact|regex` and `ignoreCase=true`. `frame` and `frameLocator` blocks are script-only scoped forms over the same frame actions. Frame actions require a same-origin iframe.
 
 The direct frame aliases are available outside frame blocks too:
 
 ```text
 frameWaitForSelector "#checkoutFrame" "#status" timeout=5000
-frameToContainText "#checkoutFrame" "#status" "Saved"
+frameToContainText "#checkoutFrame" "getByTestId=status" "Saved"
 ```
 
 ## Download Flow

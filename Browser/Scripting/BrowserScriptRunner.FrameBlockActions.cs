@@ -24,6 +24,7 @@ public sealed partial class BrowserScriptRunner
             return action;
         }
 
+        action = NormalizeSelectorArgument(action);
         return action.Name.ToLowerInvariant() switch
         {
             "click" => FrameAction(action, "frameClick", frame, min: 1, max: 1),
