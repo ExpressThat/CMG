@@ -23,8 +23,23 @@ public static class BrowserFrameScripts
     public static string Fill(string frameSelector, string selector, string text) =>
         Element(frameSelector, selector, $"element.focus(); element.value = {Quote(text)}; dispatchInput(element); return true;");
 
-    public static string AssertText(string frameSelector, string selector, string expected) =>
-        Element(frameSelector, selector, $"const actual = element.innerText ?? element.textContent ?? ''; if (!actual.includes({Quote(expected)})) throw new Error(`Expected frame text to contain {Escape(expected)}, got ${{actual}}.`); return true;");
+    public static string AssertText(
+        string frameSelector,
+        string selector,
+        string expected,
+        string matchMode = "contains",
+        bool ignoreCase = false) =>
+        Element(frameSelector, selector, $$"""
+        const expected = {{Quote(expected)}};
+        const matchMode = {{Quote(matchMode)}};
+        const ignoreCase = {{ignoreCase.ToString().ToLowerInvariant()}};
+        const matchesText = {{TextMatcherScript()}};
+        const actual = element.innerText ?? element.textContent ?? '';
+        if (!matchesText(actual, expected, matchMode, ignoreCase)) {
+          throw new Error(`Expected frame text to match ${expected} using ${matchMode}, got ${actual}.`);
+        }
+        return true;
+        """);
 
     public static string Evaluate(string frameSelector, string expression) =>
         Wrap(frameSelector, $"return frame.contentWindow.eval({Quote(expression)});");
@@ -82,4 +97,15 @@ public static class BrowserFrameScripts
 
     private static string Escape(string value) =>
         value.Replace("`", "\\`", StringComparison.Ordinal).Replace("$", "\\$", StringComparison.Ordinal);
+
+    private static string TextMatcherScript() =>
+        """
+        (value, pattern, mode, ignoreCase) => {
+          const actual = ignoreCase ? String(value || '').toLowerCase() : String(value || '');
+          const expected = ignoreCase ? String(pattern || '').toLowerCase() : String(pattern || '');
+          if (mode === 'exact') return actual === expected;
+          if (mode === 'regex') return new RegExp(String(pattern || ''), ignoreCase ? 'i' : '').test(String(value || ''));
+          return actual.includes(expected);
+        }
+        """;
 }

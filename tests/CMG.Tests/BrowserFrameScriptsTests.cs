@@ -33,4 +33,14 @@ public sealed class BrowserFrameScriptsTests
         Assert.Contains("frameRect.left + rect.left", script);
         Assert.Contains("JSON.stringify", script);
     }
+
+    [Fact]
+    public void AssertText_UsesMatchModeAndIgnoreCase()
+    {
+        var script = BrowserFrameScripts.AssertText("#frame", "#status", "Saved", "regex", ignoreCase: true);
+
+        Assert.Contains("const matchMode = \"regex\";", script);
+        Assert.Contains("const ignoreCase = true;", script);
+        Assert.Contains("matchesText(actual, expected, matchMode, ignoreCase)", script);
+    }
 }

@@ -13,7 +13,7 @@ public sealed partial class BrowserScriptRunner
             "framehover" => FrameElement(action, BrowserFrameScripts.Hover),
             "frametype" => FrameText(action, BrowserFrameScripts.Type),
             "framefill" => FrameText(action, BrowserFrameScripts.Fill),
-            "frameasserttext" => FrameText(action, BrowserFrameScripts.AssertText),
+            "frameasserttext" => FrameAssertText(action),
             "framewaitforelement" => FrameWait(action),
             "frameevaluate" => FrameEvaluate(action),
             _ => throw new ScriptExecutionException($"Unknown frame action '{action.Name}'.")
@@ -35,6 +35,18 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 3, 3);
         return build(action.Arguments[0], action.Arguments[1], action.Arguments[2]);
+    }
+
+    private static string FrameAssertText(BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 3, 3);
+        ValidateTextMatchOptions(action, action.Arguments[2]);
+        return BrowserFrameScripts.AssertText(
+            action.Arguments[0],
+            action.Arguments[1],
+            action.Arguments[2],
+            EventTextMatchMode(action),
+            GetBoolOption(action, "ignoreCase"));
     }
 
     private static string FrameWait(BrowserScriptAction action)

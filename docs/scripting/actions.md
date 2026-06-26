@@ -1000,7 +1000,7 @@ frameType "#checkoutFrame" "#email" "agent@example.com"
 frameFill "#checkoutFrame" "#name" "CMG"
 frameHover "#checkoutFrame" "#help"
 frameWaitForElement "#checkoutFrame" "#ready" timeout=5000
-frameAssertText "#checkoutFrame" "#status" "Saved"
+frameAssertText "#checkoutFrame" "#status" "^Saved$" match=regex ignoreCase=true
 frameEvaluate "#checkoutFrame" "document.title"
 ```
 
@@ -1010,6 +1010,7 @@ GIF behavior:
 
 - `frameClick`, `frameType`, `frameFill`, and `frameHover` move the virtual pointer to the element's actual top-page coordinate inside the iframe before running.
 - Non-visual frame actions do not move the pointer, but their outputs and failures are captured in reports and traces.
+- `frameAssertText` supports `match=contains|exact|regex` plus `ignoreCase=true` for frame-local text assertions.
 
 Output:
 

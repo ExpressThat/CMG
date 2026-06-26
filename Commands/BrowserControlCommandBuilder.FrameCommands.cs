@@ -17,8 +17,8 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "frameType", "frameType", "Type text into an element inside an iframe."));
         command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "fill", "frameFill", "Fill an element inside an iframe."));
         command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "frameFill", "frameFill", "Fill an element inside an iframe."));
-        command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "assertText", "frameAssertText", "Assert text inside an iframe element."));
-        command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "frameAssertText", "frameAssertText", "Assert text inside an iframe element."));
+        command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "assertText"));
+        command.Subcommands.Add(BuildFrameAssertTextCommand(browserOptions, "frameAssertText"));
         command.Subcommands.Add(BuildFrameWaitCommand(browserOptions, "waitForElement"));
         command.Subcommands.Add(BuildFrameWaitCommand(browserOptions, "frameWaitForElement"));
         command.Subcommands.Add(BuildFrameEvaluateCommand(browserOptions, "evaluate"));
@@ -51,6 +51,27 @@ public sealed partial class BrowserControlCommandBuilder
                 parseResult.GetValue(selector) ?? string.Empty,
                 parseResult.GetValue(text) ?? string.Empty
             ], [])));
+        return command;
+    }
+
+    private Command BuildFrameAssertTextCommand(BrowserSelectionOptions browserOptions, string name)
+    {
+        var frame = FrameArgument();
+        var selector = CreateSelectorArgument();
+        var text = new Argument<string>("text") { Description = "Text value." };
+        var match = NavigationMatchOption();
+        var ignoreCase = NavigationIgnoreCaseOption();
+        var command = new Command(name, "Assert text inside an iframe element.") { frame, selector, text, match, ignoreCase };
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            ToScriptLine("frameAssertText", [
+                parseResult.GetValue(frame) ?? string.Empty,
+                parseResult.GetValue(selector) ?? string.Empty,
+                parseResult.GetValue(text) ?? string.Empty
+            ], CompactOptions([
+                StringOption("match", parseResult.GetValue(match)),
+                parseResult.GetValue(ignoreCase) ? ("ignoreCase", "true") : null
+            ]))));
         return command;
     }
 

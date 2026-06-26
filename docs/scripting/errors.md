@@ -326,10 +326,11 @@ Pass one inline script argument or `path=<file>`. Register init scripts before n
 
 ```text
 Line 8: frameClick failed. Iframe #checkoutFrame is not same-origin or is not ready.
-Line 9: frameAssertText failed. Expected frame text to contain Saved, got Saving.
+Line 9: frameAssertText failed. Expected frame text to match ^Saved$ using regex, got Saving.
+Line 10: frameAssertText failed. Invalid text regex '[': ...
 ```
 
-Frame actions require a same-origin iframe because they run through page JavaScript. Use tab or browser-context actions for cross-origin flows that open in their own page target.
+Frame actions require a same-origin iframe because they run through page JavaScript. Frame text assertions support `match=contains|exact|regex` and `ignoreCase=true`. Use tab or browser-context actions for cross-origin flows that open in their own page target.
 
 ## Clock Failure
 

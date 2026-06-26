@@ -39,5 +39,5 @@ cmg browser control frames [command] [options]
 cmg browser control frames waitForElement "#checkoutFrame" "#email" --timeout 5000
 cmg browser control frames fill "#checkoutFrame" "#email" "agent@example.com"
 cmg browser control frames click "#checkoutFrame" "#save"
-cmg browser control frames assertText "#checkoutFrame" "#status" "Saved"
+cmg browser control frames assertText "#checkoutFrame" "#status" "^Saved$" --match regex --ignore-case
 ```

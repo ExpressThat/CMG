@@ -1,0 +1,7 @@
+test "frame text match modes" {
+  navigate "https://example.com/checkout"
+  frameWaitForElement "#checkoutFrame" "#email" timeout=5000
+  frameFill "#checkoutFrame" "#email" "agent@example.com"
+  frameClick "#checkoutFrame" "#save"
+  frameAssertText "#checkoutFrame" "#status" "^Saved$" match=regex ignoreCase=true
+}

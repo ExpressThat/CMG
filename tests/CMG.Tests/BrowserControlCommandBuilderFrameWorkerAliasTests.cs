@@ -11,7 +11,7 @@ public sealed class BrowserControlCommandBuilderFrameWorkerAliasTests
     [InlineData("frameHover iframe #save", "frameHover \"iframe\" \"#save\"")]
     [InlineData("frameType iframe #name CMG", "frameType \"iframe\" \"#name\" \"CMG\"")]
     [InlineData("frameFill iframe #name CMG", "frameFill \"iframe\" \"#name\" \"CMG\"")]
-    [InlineData("frameAssertText iframe #status Ready", "frameAssertText \"iframe\" \"#status\" \"Ready\"")]
+    [InlineData("frameAssertText iframe #status Ready --match exact --ignore-case", "frameAssertText \"iframe\" \"#status\" \"Ready\" match=\"exact\" ignoreCase=\"true\"")]
     [InlineData("frameWaitForElement iframe #ready --timeout 1000", "frameWaitForElement \"iframe\" \"#ready\" timeout=\"1000\"")]
     [InlineData("frameEvaluate iframe document.title", "frameEvaluate \"iframe\" \"document.title\"")]
     public void FrameAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
