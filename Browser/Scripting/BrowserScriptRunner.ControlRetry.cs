@@ -12,11 +12,12 @@ public sealed partial class BrowserScriptRunner
     {
         if (action.Children.Count is 0)
         {
-            throw new ScriptExecutionException("retry requires a block body.");
+            throw new ScriptExecutionException($"{RetryName(action)} requires a block body.");
         }
 
         var max = RetryMax(action);
         var delay = RetryDelay(action);
+        var outputName = RetryOutputName(action);
         ScriptActionFailedException? last = null;
 
         for (var attempt = 1; attempt <= max; attempt++)
@@ -26,7 +27,7 @@ public sealed partial class BrowserScriptRunner
                 ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output);
                 if (attempt > 1)
                 {
-                    output.Add($"RETRY {action.LineNumber:000} success attempt={attempt}");
+                    output.Add($"{outputName} {action.LineNumber:000} success attempt={attempt}");
                 }
 
                 return;
@@ -39,7 +40,7 @@ public sealed partial class BrowserScriptRunner
                     break;
                 }
 
-                output.Add($"RETRY {action.LineNumber:000} attempt={attempt} failed={exception.Message}");
+                output.Add($"{outputName} {action.LineNumber:000} attempt={attempt} failed={exception.Message}");
                 if (delay > 0)
                 {
                     Thread.Sleep(delay);
@@ -47,7 +48,7 @@ public sealed partial class BrowserScriptRunner
             }
         }
 
-        throw new ScriptExecutionException($"retry exhausted {max} attempt(s). Last error: {last?.Message ?? "unknown failure"}");
+        throw new ScriptExecutionException($"{RetryName(action)} exhausted {max} attempt(s). Last error: {last?.Message ?? "unknown failure"}");
     }
 
     private static int RetryMax(BrowserScriptAction action)
@@ -56,15 +57,15 @@ public sealed partial class BrowserScriptRunner
         var hasOption = action.Options.TryGetValue("max", out var optionValue);
         if (hasOption && action.Arguments.Count > 0)
         {
-            throw new ScriptExecutionException("retry accepts either a positional count or max=, not both.");
+            throw new ScriptExecutionException($"{RetryName(action)} accepts either a positional count or max=, not both.");
         }
 
         var max = hasOption
-            ? ParseRetryInt(optionValue!, "max")
-            : action.Arguments.Count is 1 ? ParseRetryInt(action.Arguments[0], "max") : 3;
+            ? ParseRetryInt(action, optionValue!, "max")
+            : action.Arguments.Count is 1 ? ParseRetryInt(action, action.Arguments[0], "max") : 3;
         return max > 0
             ? max
-            : throw new ScriptExecutionException("retry max must be greater than 0.");
+            : throw new ScriptExecutionException($"{RetryName(action)} max must be greater than 0.");
     }
 
     private static int RetryDelay(BrowserScriptAction action)
@@ -74,19 +75,25 @@ public sealed partial class BrowserScriptRunner
             return 0;
         }
 
-        var delay = ParseRetryInt(value, "delay");
+        var delay = ParseRetryInt(action, value, "delay");
         return delay >= 0
             ? delay
-            : throw new ScriptExecutionException("retry delay must be 0 or greater.");
+            : throw new ScriptExecutionException($"{RetryName(action)} delay must be 0 or greater.");
     }
 
-    private static int ParseRetryInt(string value, string name)
+    private static int ParseRetryInt(BrowserScriptAction action, string value, string name)
     {
         if (!int.TryParse(value, out var parsed))
         {
-            throw new ScriptExecutionException($"retry {name} must be a whole number.");
+            throw new ScriptExecutionException($"{RetryName(action)} {name} must be a whole number.");
         }
 
         return parsed;
     }
+
+    private static string RetryName(BrowserScriptAction action) =>
+        action.Name.Equals("toPass", StringComparison.OrdinalIgnoreCase) ? "toPass" : "retry";
+
+    private static string RetryOutputName(BrowserScriptAction action) =>
+        action.Name.Equals("toPass", StringComparison.OrdinalIgnoreCase) ? "TO_PASS" : "RETRY";
 }

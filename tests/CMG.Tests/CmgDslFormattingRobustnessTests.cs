@@ -57,6 +57,22 @@ public sealed class CmgDslFormattingRobustnessTests
         Assert.Equal("2", test.Children[1].Options["max"]);
     }
 
+    [Fact]
+    public void Parse_ToPassAllowsOddSpacingAndInlineBlock()
+    {
+        var result = new CmgDslParser().Parse("flow.cmgscript", """
+        test "to pass" {      toPass        max=3        delay=10       {        expectText       "#status"        "Saved"       }       }
+        """);
+
+        Assert.True(result.Success, result.Error);
+        var test = Assert.Single(result.Document!.Nodes);
+        var block = Assert.Single(test.Children);
+        Assert.Equal("toPass", block.Kind);
+        Assert.Equal("3", block.Options["max"]);
+        Assert.Equal("10", block.Options["delay"]);
+        Assert.Equal("expectText", Assert.Single(block.Children).Kind);
+    }
+
     private sealed class TempScriptDirectory : IDisposable
     {
         private readonly string root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));

@@ -492,6 +492,18 @@ test "save eventually completes" {
 
 Failed attempts write `RETRY <line> attempt=<n> failed=<reason>` to stdout, and the successful attempt continues the script. Direct-script retry formatting is available as `demo-scripts/50-retry-block.cmgscript`. The structured `cmg run` form is available as `demo-scripts/51-retry-block-runner.cmgscript`.
 
+Use `toPass` when the block is mainly a provider-style assertion that should eventually pass:
+
+```text
+test "status eventually passes" {
+  toPass max=3 delay=100 {
+    expectText "#status" "Saved"
+  }
+}
+```
+
+`toPass` shares retry behavior but writes `TO_PASS` diagnostic lines. Direct-script `toPass` is available as `demo-scripts/58-to-pass-block.cmgscript`. The structured runner form is available as `demo-scripts/59-to-pass-block-runner.cmgscript`.
+
 Use explicit `fail` for intentional guard clauses. It is catchable inside `try`:
 
 ```text

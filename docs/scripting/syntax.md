@@ -73,6 +73,7 @@ Supported structural blocks:
 - `doWhile <condition> max=100 { ... }`
 - `doUntil <condition> max=100 { ... }`
 - `retry [count|max=<count>] delay=<milliseconds> { ... }`
+- `toPass [count|max=<count>] delay=<milliseconds> { ... }`
 - `foreach <variable> <value>... { ... }`
 - `foreachSelector <variable> "<selector>" { ... }`
 - `try { ... }`
@@ -210,16 +211,20 @@ foreachSelector row ".result" {
 
 `foreachSelector` binds the variable to a temporary CSS selector for each matched element and also exposes `${index}`. Macro definitions are block-scoped when declared inside another macro, branch, or loop. Top-level macros in `cmg run` are registered before each test.
 
-Use `retry` to rerun a block until it succeeds or the attempt limit is exhausted:
+Use `retry` or provider-style `toPass` to rerun a block until it succeeds or the attempt limit is exhausted:
 
 ```text
 retry max=3 delay=100 {
   click "#save"
   assertText "#status" "Saved"
 }
+
+toPass max=3 delay=100 {
+  assertText "#status" "Saved"
+}
 ```
 
-`retry 3 { ... }` is the positional form. `max=` must be greater than `0`; `delay=` is an optional pause in milliseconds between failed attempts.
+`retry 3 { ... }` and `toPass 3 { ... }` are positional forms. `max=` must be greater than `0`; `delay=` is an optional pause in milliseconds between failed attempts.
 
 Recoverable failure blocks use `try`, optional `catch`, and optional `finally`:
 

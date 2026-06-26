@@ -145,6 +145,8 @@ dotnet run -- --firefox browser close
 - `55-console-absence-runner.cmgscript`: Demonstrates the same console absence assertions in the structured runner DSL.
 - `56-page-error-absence.cmgscript`: Demonstrates `expectNoPageError` and `toHaveNoPageError` in a direct script.
 - `57-page-error-absence-runner.cmgscript`: Demonstrates the same page-error absence assertions in the structured runner DSL.
+- `58-to-pass-block.cmgscript`: Demonstrates provider-style `toPass` retrying assertion blocks in a direct script.
+- `59-to-pass-block-runner.cmgscript`: Demonstrates the same `toPass` block in the structured runner DSL.
 - `99-failure-missing-element.cmgscript`: Intentional failure example for error handling.
 
 Generated screenshots are written to `demo-output/`.

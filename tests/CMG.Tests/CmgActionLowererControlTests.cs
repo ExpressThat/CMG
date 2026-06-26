@@ -18,6 +18,7 @@ public sealed class CmgActionLowererControlTests
     [InlineData("doUntil")]
     [InlineData("repeat")]
     [InlineData("retry")]
+    [InlineData("toPass")]
     [InlineData("try")]
     [InlineData("catch")]
     [InlineData("finally")]

@@ -51,6 +51,7 @@ public sealed partial class BrowserScriptRunner
                 ExecuteRepeat(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
             case "retry":
+            case "topass":
                 ExecuteRetry(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
             case "break":
@@ -92,6 +93,7 @@ public sealed partial class BrowserScriptRunner
         name.Equals("doUntil", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("repeat", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("retry", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("toPass", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("break", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("continue", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("try", StringComparison.OrdinalIgnoreCase) ||

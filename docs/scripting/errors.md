@@ -650,6 +650,9 @@ Line 8: doWhile failed. doWhile exceeded max=100 iteration(s).
 Line 9: retry failed. retry requires a block body.
 Line 9: retry failed. retry max must be greater than 0.
 Line 9: retry failed. retry exhausted 3 attempt(s). Last error: Line 10: assertText failed. Expected text 'Ready' was not found. Actual text: 'Waiting'.
+Line 9: toPass failed. toPass requires a block body.
+Line 9: toPass failed. toPass max must be greater than 0.
+Line 9: toPass failed. toPass exhausted 3 attempt(s). Last error: Line 10: expectText failed. Expected text 'Ready' was not found. Actual text: 'Waiting'.
 break must be inside a loop.
 continue must be inside a loop.
 Line 10: catch failed. catch must follow a try block.
@@ -664,6 +667,6 @@ Define macros before calling them. Top-level macros in `cmg run` are registered 
 
 Loop variables and macro parameters are scoped to the loop iteration or macro call. `if`, `elseif`, `while`, `until`, `doWhile`, `doUntil`, and `switch` comparisons support `contains`, `matches`, and `in` in addition to numeric/string comparison operators. Inline actions in conditions are true when they succeed; value-producing actions can be compared by payload. Use `set` when a value must be available after the block completes.
 
-`retry` reruns a failing child block until it succeeds or its attempt limit is exhausted. Failed attempts are written to stdout with `RETRY <line> attempt=<n> failed=<reason>`, and an exhausted block reports the final child-action reason.
+`retry` and `toPass` rerun a failing child block until it succeeds or the attempt limit is exhausted. Failed attempts are written to stdout with `RETRY <line> attempt=<n> failed=<reason>` or `TO_PASS <line> attempt=<n> failed=<reason>`, and an exhausted block reports the final child-action reason.
 
 `try` can recover from expected action failures with `catch`. If the `catch` or `finally` body fails, that new failure becomes the script failure. If there is no `catch`, `finally` still runs and the original failure is reported.

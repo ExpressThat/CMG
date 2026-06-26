@@ -80,5 +80,40 @@ public sealed class BrowserScriptRunnerRetryTests
         Assert.Contains("retry requires a block body", result.Error);
     }
 
+    [Fact]
+    public void RunText_ToPassRepeatsUntilSuccess()
+    {
+        var client = new FakeAutomationClient();
+        client.TextResponses.Enqueue("Waiting");
+        client.TextResponses.Enqueue("Ready");
+
+        var result = Runner().RunText("""
+        toPass max=2 {
+          assertText "#status" "Ready"
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(result.StdoutLines, line => line.Contains("TO_PASS 001 attempt=1 failed", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line == "TO_PASS 001 success attempt=2");
+    }
+
+    [Fact]
+    public void RunText_ToPassFailsWithNamedReason()
+    {
+        var client = new FakeAutomationClient();
+        client.TextResponses.Enqueue("Waiting");
+        client.TextResponses.Enqueue("Still waiting");
+
+        var result = Runner().RunText("""
+        toPass max=2 {
+          assertText "#status" "Ready"
+        }
+        """, "debug", client);
+
+        Assert.False(result.Success);
+        Assert.Contains("toPass exhausted 2 attempt(s)", result.Error);
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }
