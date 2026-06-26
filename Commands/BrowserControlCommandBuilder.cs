@@ -34,6 +34,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildAssertionsGroup(browserOptions));
         command.Subcommands.Add(BuildStorageGroup(browserOptions));
         command.Subcommands.Add(BuildNetworkGroup(browserOptions));
+        command.Subcommands.Add(BuildEventsGroup(browserOptions));
 
         return command;
     }

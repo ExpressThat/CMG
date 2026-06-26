@@ -24,6 +24,7 @@ cmg browser control [command] [options]
 - [`assertions`](assertions/index.md): Page and element assertion commands.
 - [`storage`](storage/index.md): Storage and persisted browser state commands.
 - [`network`](network/index.md): Network routing, waits, HAR, and environment commands.
+- [`events`](events/index.md): Downloads, dialogs, console, page-error, and generic event waits.
 
 ## Examples
 
@@ -43,4 +44,5 @@ cmg browser control page evaluate "document.title"
 cmg browser control assertions assertText "h1" "Ready"
 cmg browser control storage local set token abc
 cmg browser control network waitForResponse "/api/profile" --status 200
+cmg browser control events dialogs behavior accept --prompt-text "yes"
 ```
