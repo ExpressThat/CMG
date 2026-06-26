@@ -32,6 +32,7 @@ cmg browser control capture [command] [options]
 cmg browser control capture getElement "h1" --html
 cmg browser control capture html "#profileDialog"
 cmg browser control capture screenshot "#profileDialog" --output profile-dialog.png
+cmg browser control capture screenshot "#profileDialog" --mask "#clock;#ad" --output masked-dialog.png
 cmg browser control capture screenshotPage --full-page --output page.png
 cmg browser control capture printPdf --path page.pdf
 cmg browser control capture pdf --path page.pdf

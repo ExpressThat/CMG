@@ -15,6 +15,8 @@ cmg browser control capture screenshotPage [--output <path>] [--full-page] [opti
 - `--omit-background`: Allow transparent page background when the browser supports it.
 - `--style <css>`: Temporary CSS applied only while the screenshot artifact is captured.
 - `--style-path <file>`: CSS file applied only while the screenshot artifact is captured. Cannot be combined with `--style`.
+- `--mask <selectors>`: Semicolon-separated CSS selectors or CMG rich locators to cover only during screenshot artifact capture.
+- `--mask-color <css-color>`: CSS color used for masks. Default is `#ff00ff`.
 - `--clip-x <pixels>`: Optional page or viewport clip X coordinate in CSS pixels.
 - `--clip-y <pixels>`: Optional page or viewport clip Y coordinate in CSS pixels.
 - `--clip-width <pixels>`: Optional clip width in CSS pixels. Must be greater than `0` when any clip option is used.
@@ -37,9 +39,9 @@ For JPEG output without `--output`, the data URL starts with `data:image/jpeg;ba
 
 ## Stderr
 
-Writes browser, capture, style file, or option errors. Invalid screenshot options report the specific option, such as `type= must be png, jpeg, or jpg`, `quality= must be between 0 and 100`, `quality= is only valid when type=jpeg`, or `style= and stylePath= cannot be used together`.
+Writes browser, capture, style file, missing-mask-selector, or option errors. Invalid screenshot options report the specific option, such as `type= must be png, jpeg, or jpg`, `quality= must be between 0 and 100`, `quality= is only valid when type=jpeg`, or `style= and stylePath= cannot be used together`.
 
-Clip options map to scripting `clipX`, `clipY`, `clipWidth`, and `clipHeight`. With `--full-page`, the clip is relative to the page document; otherwise it is relative to the current viewport.
+Clip options map to scripting `clipX`, `clipY`, `clipWidth`, and `clipHeight`. With `--full-page`, the clip is relative to the page document; otherwise it is relative to the current viewport. Masks are temporary page overlays for the screenshot artifact only; GIF frames keep showing the real page state.
 
 ## Exit Codes
 
@@ -54,4 +56,5 @@ cmg browser control capture screenshotPage --full-page --output page-full.png
 cmg browser control capture screenshotPage --type jpeg --quality 85 --output page.jpg
 cmg browser control capture screenshotPage --clip-x 40 --clip-y 120 --clip-width 640 --clip-height 360 --output crop.png
 cmg browser control capture screenshotPage --style-path fixtures\screenshot.css --output stable-page.png
+cmg browser control capture screenshotPage --mask "#clock;hasText=.ad|Sponsored" --mask-color "#000000" --output stable-page.png
 ```

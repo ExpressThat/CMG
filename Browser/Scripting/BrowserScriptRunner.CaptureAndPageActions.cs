@@ -14,6 +14,10 @@ public sealed partial class BrowserScriptRunner
             throw new ScriptExecutionException("screenshot clip options are only valid with screenshotPage.");
         }
         var selector = ResolveSelector(remoteDebuggingUrl, automationClient, action);
+        if (HasScreenshotMask(action))
+        {
+            automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector);
+        }
         var bytes = CaptureWithTemporaryStyle(
             action,
             remoteDebuggingUrl,
@@ -41,16 +45,14 @@ public sealed partial class BrowserScriptRunner
         Func<byte[]> capture)
     {
         var id = AddTemporaryScreenshotStyle(action, remoteDebuggingUrl, automationClient);
+        var maskIds = AddTemporaryScreenshotMasks(action, remoteDebuggingUrl, automationClient);
         try
         {
             return capture();
         }
         finally
         {
-            if (id is not null)
-            {
-                automationClient.Evaluate(remoteDebuggingUrl, $"document.querySelector('[data-cmg-screenshot-style=\"{id}\"]')?.remove(); true");
-            }
+            RemoveTemporaryScreenshotArtifacts(remoteDebuggingUrl, automationClient, id, maskIds);
         }
     }
 

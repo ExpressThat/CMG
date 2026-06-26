@@ -59,6 +59,34 @@ public sealed class BrowserScriptRunnerScreenshotTests
     }
 
     [Fact]
+    public void RunText_ScreenshotPageAppliesTemporaryMasks()
+    {
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText("screenshotPage mask=\"#clock;#ad\" maskColor=\"#000000\"", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("data-cmg-screenshot-mask", StringComparison.Ordinal) &&
+            expression.Contains("document.querySelector(\"#clock\")", StringComparison.Ordinal) &&
+            expression.Contains("background: \"#000000\"", StringComparison.Ordinal));
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("document.querySelector(\"#ad\")", StringComparison.Ordinal));
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("querySelectorAll('[data-cmg-screenshot-mask", StringComparison.Ordinal) &&
+            expression.Contains("forEach(e => e.remove())", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_ScreenshotMaskSupportsRichLocators()
+    {
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText("screenshotPage mask=\"text=Loading\"", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("No element matched locator text=Loading", StringComparison.Ordinal));
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("window.__cmgQuery?.(\"[data-cmg-locator-id=", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void RunText_ScreenshotReadsTemporaryStyleFromFile()
     {
         var path = Path.Combine(Path.GetTempPath(), $"cmg-style-{Guid.NewGuid():N}.css");

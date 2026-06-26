@@ -261,5 +261,7 @@ dotnet run -- --firefox browser close
 - `140-runner-variables.cmgscript`: Demonstrates suite and test `var.*` declaration variables.
 - `141-base-url.cmgscript`: Demonstrates command-line `--base-url` for relative navigation in a direct script.
 - `142-base-url-runner.cmgscript`: Demonstrates runner `baseUrl=` declarations for relative navigation.
+- `143-screenshot-mask.cmgscript`: Demonstrates screenshot artifact masks in a direct script.
+- `144-screenshot-mask-runner.cmgscript`: Demonstrates screenshot artifact masks in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.

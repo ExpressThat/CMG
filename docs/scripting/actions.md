@@ -548,6 +548,7 @@ html "#openProfileDialog"
 screenshot "<selector>" output="element.png"
 screenshot "<selector>" output="element.jpg" type=jpeg quality=80
 screenshot "<selector>" output="stable.png" style=".clock{visibility:hidden}"
+screenshot "<selector>" output="masked.png" mask="#clock;#ad" maskColor="#000000"
 screenshot "<selector>"
 ```
 
@@ -561,6 +562,8 @@ Options:
 - `omitBackground`: Optional boolean. Allows a transparent background when the browser supports it.
 - `style`: Optional CSS applied only while the screenshot artifact is captured, then removed.
 - `stylePath`: Optional CSS file applied only while the screenshot artifact is captured, then removed. Cannot be combined with `style`.
+- `mask`: Optional semicolon-separated selectors or rich locators to cover while the screenshot artifact is captured, then removed.
+- `maskColor`: Optional CSS color used for masks. Default is `#ff00ff`.
 
 ## `screenshotPage`
 
@@ -570,6 +573,7 @@ screenshotPage output="page-full.png" fullPage=true
 screenshotPage output="page.jpg" type=jpeg quality=85
 screenshotPage output="viewport-card.png" clipX=40 clipY=120 clipWidth=640 clipHeight=360
 screenshotPage output="stable-page.png" stylePath="fixtures\screenshot.css"
+screenshotPage output="masked-page.png" mask="#clock;hasText=.ad|Sponsored" maskColor="#000000"
 screenshotPage
 ```
 
@@ -584,9 +588,11 @@ Options:
 - `omitBackground`: Optional boolean. Allows a transparent background when the browser supports it.
 - `style`: Optional CSS applied only while the screenshot artifact is captured, then removed.
 - `stylePath`: Optional CSS file applied only while the screenshot artifact is captured, then removed. Cannot be combined with `style`.
+- `mask`: Optional semicolon-separated selectors or rich locators to cover while the screenshot artifact is captured, then removed.
+- `maskColor`: Optional CSS color used for masks. Default is `#ff00ff`.
 - `clipX` / `clipY` / `clipWidth` / `clipHeight`: Optional page or viewport clip rectangle in CSS pixels. `clipWidth` and `clipHeight` must be greater than `0`. With `fullPage=true`, the clip is relative to the page document; otherwise it is relative to the current viewport.
 
-Clipped and styled page screenshots do not move the virtual pointer. Element screenshots still move the pointer before capture in GIF mode. Temporary screenshot styles affect only the artifact capture and are removed before later actions continue.
+Clipped, styled, and masked page screenshots do not move the virtual pointer. Element screenshots still move the pointer before capture in GIF mode. Temporary screenshot styles and masks affect only the artifact capture and are removed before later actions continue, so GIF frames keep showing the real page state unless the script changes it directly.
 
 ## `printPdf`
 

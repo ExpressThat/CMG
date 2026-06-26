@@ -103,6 +103,20 @@ For drag evidence, run:
 cmg browser control script --file demo-scripts\07-complex-drag-flow.cmgscript --gif demo-output\complex-drag.gif
 ```
 
+For stable screenshot evidence, mask volatile regions only in the artifact. The GIF still shows the real page and pointer choreography:
+
+```text
+setContent "<main><h1>Evidence</h1><p id='clock'>12:34:56</p><button id='save'>Save</button></main>"
+screenshotPage output="demo-output\masked-evidence.png" mask="#clock" maskColor="#000000"
+```
+
+Run the complete screenshot mask demos:
+
+```powershell
+cmg browser control script --file demo-scripts\143-screenshot-mask.cmgscript
+cmg run demo-scripts\144-screenshot-mask-runner.cmgscript
+```
+
 ## Variables And Macros
 
 Use `set` for values and action output. The variable stores the actual payload value, not a pass/fail wrapper:
