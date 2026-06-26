@@ -535,6 +535,18 @@ Direct browser-control scripts can also record a block:
 
 ```text
 gif "open-dialog" output="demo-output\open-dialog.gif" {
+  step "Open dialog" {
+    click "#openProfileDialog"
+  }
+}
+```
+
+`step` works in direct browser-control scripts and `cmg run`. It shows a caption before running the wrapped actions, including inside GIF blocks, loops, macros, and `try`/`catch`. Child failures keep their own line number and action name.
+
+This shared direct-script example is available as `demo-scripts/112-direct-step-block.cmgscript`. The structured `cmg run` form is available as `demo-scripts/113-runner-step-block.cmgscript`.
+
+```text
+gif "open-dialog" output="demo-output\open-dialog.gif" {
   click "#openProfileDialog"
   waitForElement "#profileDialog[open]"
 }

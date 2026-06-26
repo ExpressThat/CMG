@@ -140,7 +140,7 @@ public sealed partial class BrowserScriptRunner
             "closetab" => ExecuteCloseTab(remoteDebuggingUrl, automationClient, action),
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" => ExecuteFileAction(action, context),
             "set" => ExecuteSet(remoteDebuggingUrl, automationClient, action, context, recorder),
-            "macro" or "call" or "return" or "within" or "frame" or "framelocator" or "if" or "elseif" or "else" or "switch" or "case" or "default" or
+            "step" or "macro" or "call" or "return" or "within" or "frame" or "framelocator" or "if" or "elseif" or "else" or "switch" or "case" or "default" or
             "for" or "foreach" or "foreachselector" or "while" or "until" or "dowhile" or "dountil" or "repeat" or "retry" or "topass" or "break" or "continue" or "try" or "catch" or "finally" =>
                 ExecuteControlAction(remoteDebuggingUrl, automationClient, action, context, recorder),
             _ => throw new ScriptExecutionException($"Unknown action '{action.Name}'.")

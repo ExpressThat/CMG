@@ -57,7 +57,7 @@ Supported structural blocks:
 - `afterAll { ... }` or `after { ... }`
 - `beforeEach { ... }`
 - `afterEach { ... }`
-- `step "caption" { ... }`
+- `step "caption" { ... }` in direct scripts and `cmg run`
 - `gif "name" { ... }`
 - `recordVideo "name" { ... }`
 - `screencast "name" { ... }`

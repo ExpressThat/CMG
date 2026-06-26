@@ -1434,7 +1434,7 @@ step "Open dialog" {
 }
 ```
 
-Adds a visible caption before running the wrapped actions. In GIF mode, the caption appears in the recording.
+Adds a visible caption before running the wrapped actions. This works in direct browser-control scripts and `cmg run`, including nested blocks, macros, imports, `try`/`catch`, loops, `gif` blocks, and scoped selectors. In GIF mode, the caption appears in the recording before the wrapped visual actions run. If a child action fails, the failure keeps the child's line number and action name so agent callers can see the precise cause.
 
 ### `gif`, `recordVideo`, And `screencast`
 

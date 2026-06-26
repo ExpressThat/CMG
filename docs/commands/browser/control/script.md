@@ -198,6 +198,15 @@ Message bar example:
 showMessageBar "Opening the profile dialog"
 ```
 
+Narrated step example:
+
+```text
+step "Opening the profile dialog" {
+  click "#openProfileDialog"
+  waitForElement "#profileDialog[open]"
+}
+```
+
 Complex drag example:
 
 ```text

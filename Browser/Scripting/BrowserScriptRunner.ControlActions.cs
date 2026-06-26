@@ -12,6 +12,9 @@ public sealed partial class BrowserScriptRunner
         var output = new List<string>();
         switch (action.Name.ToLowerInvariant())
         {
+            case "step":
+                ExecuteStep(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
             case "macro":
                 RegisterMacro(action, context);
                 return [$"MACRO {action.LineNumber:000} {action.Arguments[0]}"];
@@ -85,6 +88,7 @@ public sealed partial class BrowserScriptRunner
     }
 
     private static bool IsControlAction(string name) =>
+        name.Equals("step", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("macro", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("call", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("return", StringComparison.OrdinalIgnoreCase) ||
@@ -112,4 +116,17 @@ public sealed partial class BrowserScriptRunner
         name.Equals("switch", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("case", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("default", StringComparison.OrdinalIgnoreCase);
+
+    private void ExecuteStep(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        ScriptExecutionContext context,
+        Recording.ScriptGifRecorder? recorder,
+        List<string> output)
+    {
+        RequireArgumentCount(action, 1, 1);
+        automationClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0]);
+        ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output);
+    }
 }

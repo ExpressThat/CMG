@@ -201,5 +201,7 @@ dotnet run -- --firefox browser close
 - `109-press-delay-runner.cmgscript`: Demonstrates delayed keyboard press behavior in the structured runner DSL.
 - `110-drag-offsets.cmgscript`: Demonstrates source and target offsets for simple drag in a direct script.
 - `111-drag-offsets-runner.cmgscript`: Demonstrates source and target offsets for simple drag in the structured runner DSL.
+- `112-direct-step-block.cmgscript`: Demonstrates shared `step` caption blocks in a direct script.
+- `113-runner-step-block.cmgscript`: Demonstrates shared `step` caption blocks in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.
