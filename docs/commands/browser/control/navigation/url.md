@@ -1,9 +1,9 @@
-# `browser control url`
+# `browser control navigation url`
 
 Runs the scripting `url` action once from the command line.
 
 ```powershell
-cmg browser control url
+cmg browser control navigation url
 ```
 
 ## Stdout
@@ -25,5 +25,5 @@ Writes browser or evaluation errors.
 ## Example
 
 ```powershell
-cmg browser control url
+cmg browser control navigation url
 ```

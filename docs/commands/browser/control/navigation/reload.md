@@ -1,9 +1,9 @@
-# `browser control reload`
+# `browser control navigation reload`
 
 Runs the scripting `reload` action once from the command line.
 
 ```powershell
-cmg browser control reload
+cmg browser control navigation reload
 ```
 
 ## Stdout
@@ -25,5 +25,5 @@ Writes browser or reload errors.
 ## Example
 
 ```powershell
-cmg browser control reload
+cmg browser control navigation reload
 ```

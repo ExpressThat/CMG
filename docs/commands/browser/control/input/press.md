@@ -1,9 +1,9 @@
-# `browser control press`
+# `browser control input press`
 
 Runs the scripting `press` action once from the command line.
 
 ```powershell
-cmg browser control press "<key>"
+cmg browser control input press "<key>"
 ```
 
 ## Arguments
@@ -18,15 +18,9 @@ PASS 001 press Enter
 
 ## Stderr
 
-Writes browser or action errors.
+Writes browser or keyboard errors.
 
 ## Exit Codes
 
-- `0`: Key press completed.
+- `0`: The key press was dispatched.
 - `1`: Browser is not running or the action failed.
-
-## Example
-
-```powershell
-cmg browser control press "Escape"
-```

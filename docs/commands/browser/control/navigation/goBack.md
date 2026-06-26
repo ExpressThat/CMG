@@ -1,9 +1,9 @@
-# `browser control goBack`
+# `browser control navigation goBack`
 
 Runs the scripting `goBack` action once from the command line.
 
 ```powershell
-cmg browser control goBack [--timeout <milliseconds>]
+cmg browser control navigation goBack [--timeout <milliseconds>]
 ```
 
 ## Options
@@ -29,5 +29,5 @@ Writes browser, timeout, or navigation errors.
 ## Example
 
 ```powershell
-cmg browser control goBack --timeout 10000
+cmg browser control navigation goBack --timeout 10000
 ```

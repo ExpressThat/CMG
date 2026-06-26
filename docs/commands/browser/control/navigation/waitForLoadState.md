@@ -1,9 +1,9 @@
-# `browser control waitForLoadState`
+# `browser control navigation waitForLoadState`
 
 Runs the scripting `waitForLoadState` action once from the command line.
 
 ```powershell
-cmg browser control waitForLoadState [state] [--timeout <milliseconds>]
+cmg browser control navigation waitForLoadState [state] [--timeout <milliseconds>]
 ```
 
 ## Arguments
@@ -33,5 +33,5 @@ Writes browser, timeout, or invalid state errors.
 ## Example
 
 ```powershell
-cmg browser control waitForLoadState complete --timeout 10000
+cmg browser control navigation waitForLoadState complete --timeout 10000
 ```

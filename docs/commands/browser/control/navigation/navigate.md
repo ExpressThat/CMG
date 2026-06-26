@@ -1,9 +1,9 @@
-# `browser control navigate`
+# `browser control navigation navigate`
 
 Runs the scripting `navigate` action once from the command line.
 
 ```powershell
-cmg browser control navigate "<url-or-path>"
+cmg browser control navigation navigate "<url-or-path>"
 ```
 
 ## Arguments
@@ -12,8 +12,6 @@ cmg browser control navigate "<url-or-path>"
 
 ## Stdout
 
-Writes the same one-action script log as `browser control script`:
-
 ```text
 PASS 001 navigate C:\Projects\CMG\index.html
 NAVIGATED 001 file:///C:/Projects/CMG/index.html
@@ -21,7 +19,7 @@ NAVIGATED 001 file:///C:/Projects/CMG/index.html
 
 ## Stderr
 
-Writes browser, parse, or action errors. Invalid browser URLs and missing local path targets fail with a non-zero exit code instead of logging a successful navigation.
+Writes browser, path, or navigation errors.
 
 ## Exit Codes
 
@@ -31,5 +29,5 @@ Writes browser, parse, or action errors. Invalid browser URLs and missing local 
 ## Example
 
 ```powershell
-cmg browser control navigate "C:\Projects\CMG\index.html"
+cmg browser control navigation navigate "C:\Projects\CMG\index.html"
 ```

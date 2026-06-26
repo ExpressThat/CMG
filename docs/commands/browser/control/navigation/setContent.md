@@ -1,9 +1,9 @@
-# `browser control setContent`
+# `browser control navigation setContent`
 
 Runs the scripting `setContent` action once from the command line.
 
 ```powershell
-cmg browser control setContent "<html>"
+cmg browser control navigation setContent "<html>"
 ```
 
 ## Arguments
@@ -29,5 +29,5 @@ Writes browser or evaluation errors.
 ## Example
 
 ```powershell
-cmg browser control setContent "<main id='ready'>Ready</main>"
+cmg browser control navigation setContent "<main id='ready'>Ready</main>"
 ```

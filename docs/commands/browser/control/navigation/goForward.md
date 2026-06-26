@@ -1,9 +1,9 @@
-# `browser control goForward`
+# `browser control navigation goForward`
 
 Runs the scripting `goForward` action once from the command line.
 
 ```powershell
-cmg browser control goForward [--timeout <milliseconds>]
+cmg browser control navigation goForward [--timeout <milliseconds>]
 ```
 
 ## Options
@@ -29,5 +29,5 @@ Writes browser, timeout, or navigation errors.
 ## Example
 
 ```powershell
-cmg browser control goForward
+cmg browser control navigation goForward
 ```

@@ -17,24 +17,8 @@ cmg browser control [command] [options]
 - [`getElement`](getElement.md): Return HTML or a screenshot for a selected element.
 - [`script`](script.md): Run a `.cmgscript` browser automation script.
 - [`validateScript`](validateScript.md): Validate a `.cmgscript` browser automation script without running it.
-- [`navigate`](navigate.md): Navigate the primary page target.
-- [`reload`](reload.md): Reload the primary page target.
-- [`goBack`](goBack.md): Navigate one step back in page history.
-- [`goForward`](goForward.md): Navigate one step forward in page history.
-- [`waitForUrl`](waitForUrl.md): Wait until the current URL contains text.
-- [`waitForLoadState`](waitForLoadState.md): Wait until the page reaches a load state.
-- [`url`](url.md): Print the current page URL.
-- [`title`](title.md): Print the current page title.
-- [`content`](content.md): Print the current page HTML.
-- [`setContent`](setContent.md): Replace the current page HTML.
-- [`waitForElement`](waitForElement.md): Wait until an element exists.
-- [`click`](click.md): Click an element.
-- [`type`](type.md): Type text into an element.
-- [`clear`](clear.md): Clear an input-like element.
-- [`press`](press.md): Press a keyboard key.
-- [`hover`](hover.md): Hover an element.
-- [`scrollIntoView`](scrollIntoView.md): Scroll an element into view.
-- [`select`](select.md): Set a select-like element value.
+- [`navigation`](navigation/index.md): Navigation and page state commands.
+- [`input`](input/index.md): Pointer, keyboard, and form input commands.
 - [`showMessageBar`](showMessageBar.md): Inject or update a fixed message bar at the top of the page.
 - [`delay`](delay.md): Pause for a duration.
 - [`html`](html.md): Print an element's outer HTML.
@@ -43,7 +27,6 @@ cmg browser control [command] [options]
 - [`assertText`](assertText.md): Assert that an element contains text.
 - [`evaluate`](evaluate.md): Evaluate JavaScript in the primary page.
 - [`setViewport`](setViewport.md): Set viewport dimensions.
-- [`dragAndDrop`](dragAndDrop.md): Drag one element onto another.
 - [`listTabs`](listTabs.md): List available page targets.
 - [`activateTab`](activateTab.md): Activate a tab by index.
 - [`closeTab`](closeTab.md): Close a tab by index.
@@ -58,8 +41,8 @@ cmg --firefox browser control --help
 cmg browser control getElement "h1" --html
 cmg browser control validateScript --file flow.cmgscript
 cmg browser control script --file flow.cmgscript
-cmg browser control title
-cmg browser control waitForLoadState complete
-cmg browser control click "#openProfileDialog"
+cmg browser control navigation title
+cmg browser control navigation waitForLoadState complete
+cmg browser control input click "#openProfileDialog"
 cmg browser control screenshot "#profileDialog" --output profile-dialog.png
 ```

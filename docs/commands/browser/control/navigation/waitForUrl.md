@@ -1,9 +1,9 @@
-# `browser control waitForUrl`
+# `browser control navigation waitForUrl`
 
 Runs the scripting `waitForUrl` action once from the command line.
 
 ```powershell
-cmg browser control waitForUrl "<expected>" [--timeout <milliseconds>]
+cmg browser control navigation waitForUrl "<expected>" [--timeout <milliseconds>]
 ```
 
 ## Arguments
@@ -33,5 +33,5 @@ Writes browser, timeout, or URL mismatch errors.
 ## Example
 
 ```powershell
-cmg browser control waitForUrl "checkout" --timeout 10000
+cmg browser control navigation waitForUrl "checkout" --timeout 10000
 ```

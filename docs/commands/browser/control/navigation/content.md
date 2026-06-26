@@ -1,9 +1,9 @@
-# `browser control content`
+# `browser control navigation content`
 
 Runs the scripting `content` action once from the command line.
 
 ```powershell
-cmg browser control content
+cmg browser control navigation content
 ```
 
 ## Stdout
@@ -25,5 +25,5 @@ Writes browser or evaluation errors.
 ## Example
 
 ```powershell
-cmg browser control content
+cmg browser control navigation content
 ```

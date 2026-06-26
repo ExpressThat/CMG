@@ -1,9 +1,9 @@
-# `browser control title`
+# `browser control navigation title`
 
 Runs the scripting `title` action once from the command line.
 
 ```powershell
-cmg browser control title
+cmg browser control navigation title
 ```
 
 ## Stdout
@@ -25,5 +25,5 @@ Writes browser or evaluation errors.
 ## Example
 
 ```powershell
-cmg browser control title
+cmg browser control navigation title
 ```
