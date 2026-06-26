@@ -23,6 +23,7 @@ public sealed class BrowserControlCommandBuilderInputAliasTests
     [InlineData("selectOption #plan --index 2", "selectOption \"#plan\" index=\"2\"")]
     [InlineData("click #save --button middle --click-count 2 --delay 10 --modifiers Control+Shift --x 4 --y 8", "click \"#save\" button=\"middle\" clickCount=\"2\" delay=\"10\" modifiers=\"Control+Shift\" x=\"4\" y=\"8\"")]
     [InlineData("hover #save --modifiers Control+Shift --x 4 --y 8", "hover \"#save\" modifiers=\"Control+Shift\" x=\"4\" y=\"8\"")]
+    [InlineData("dragTo #source #target --source-x 4 --source-y 8 --target-x 12 --target-y 16", "dragTo \"#source\" \"#target\" sourceX=\"4\" sourceY=\"8\" targetX=\"12\" targetY=\"16\"")]
     public void InputAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
     {
         var handler = new CapturingBrowserControlCommandHandler();

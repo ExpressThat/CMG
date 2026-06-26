@@ -37,6 +37,9 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public ElementPoint? LastMouseMove { get; private set; }
     public ElementPoint? LastMouseDown { get; private set; }
     public ElementPoint? LastMouseUp { get; private set; }
+    public ElementPoint? LastBeginDragPoint { get; private set; }
+    public ElementPoint? LastMoveDragPoint { get; private set; }
+    public ElementPoint? LastEndDragPoint { get; private set; }
     public string LastDragSource { get; private set; } = string.Empty;
     public string LastDragTarget { get; private set; } = string.Empty;
     public string LastKeyDown { get; private set; } = string.Empty;
@@ -116,9 +119,9 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         LastDragTarget = targetSelector;
     }
     public void MouseDragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector, IReadOnlyList<ElementPoint> path, Action<ElementPoint>? afterMove = null) { }
-    public void BeginPageDrag(string remoteDebuggingUrl, string sourceSelector, ElementPoint point) { }
-    public void MovePageDrag(string remoteDebuggingUrl, ElementPoint point) { }
-    public void EndPageDrag(string remoteDebuggingUrl, ElementPoint point) { }
+    public void BeginPageDrag(string remoteDebuggingUrl, string sourceSelector, ElementPoint point) => LastBeginDragPoint = point;
+    public void MovePageDrag(string remoteDebuggingUrl, ElementPoint point) => LastMoveDragPoint = point;
+    public void EndPageDrag(string remoteDebuggingUrl, ElementPoint point) => LastEndDragPoint = point;
     public void RemoveDefaultDragGhost(string remoteDebuggingUrl) { }
     public void MoveMouse(string remoteDebuggingUrl, ElementPoint point, int buttons) => LastMouseMove = point;
     public void MouseDown(string remoteDebuggingUrl, ElementPoint point) => LastMouseDown = point;

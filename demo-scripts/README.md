@@ -199,5 +199,7 @@ dotnet run -- --firefox browser close
 - `107-hover-options-runner.cmgscript`: Demonstrates optioned hover dispatch in the structured runner DSL.
 - `108-press-delay.cmgscript`: Demonstrates delayed keyboard press behavior in a direct script.
 - `109-press-delay-runner.cmgscript`: Demonstrates delayed keyboard press behavior in the structured runner DSL.
+- `110-drag-offsets.cmgscript`: Demonstrates source and target offsets for simple drag in a direct script.
+- `111-drag-offsets-runner.cmgscript`: Demonstrates source and target offsets for simple drag in the structured runner DSL.
 
 Generated screenshots are written to `demo-output/`.

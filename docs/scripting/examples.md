@@ -975,6 +975,18 @@ press "Control+A" delay=25
 
 This direct-script example is available as `demo-scripts/108-press-delay.cmgscript`. The structured `cmg run` form is available as `demo-scripts/109-press-delay-runner.cmgscript`.
 
+## Drag Offsets
+
+```text
+setContent "<main><div id='source' draggable='true'>Drag</div><div id='target'>Drop</div><output id='result'>none</output><script>document.querySelector('#target').addEventListener('drop', event => { event.preventDefault(); document.querySelector('#result').textContent = event.clientX > 0 ? 'dropped' : 'missing'; }); document.querySelector('#target').addEventListener('dragover', event => event.preventDefault());</script></main>"
+dragTo "#source" "#target" sourceX=4 sourceY=8 targetX=12 targetY=16
+assertText "#result" "dropped"
+```
+
+`dragAndDrop` and `dragTo` accept element-relative source and target offsets. GIF recordings move the virtual pointer and drag ghost through the same points that receive the drag events.
+
+This direct-script example is available as `demo-scripts/110-drag-offsets.cmgscript`. The structured `cmg run` form is available as `demo-scripts/111-drag-offsets-runner.cmgscript`.
+
 ## Pointer Click Variants
 
 ```text

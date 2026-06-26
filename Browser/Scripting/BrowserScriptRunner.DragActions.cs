@@ -12,6 +12,12 @@ public sealed partial class BrowserScriptRunner
         }
 
         RequireArgumentCount(action, 2, 2);
+        if (HasSimpleDragOptions(action))
+        {
+            ExecuteOptionedSimpleDrag(remoteDebuggingUrl, automationClient, action, recorder);
+            return [];
+        }
+
         if (recorder is not null)
         {
             recorder.RecordDragAndDrop(action.Arguments[0], action.Arguments[1]);
@@ -22,6 +28,53 @@ public sealed partial class BrowserScriptRunner
         automationClient.DragAndDrop(remoteDebuggingUrl, action.Arguments[0], action.Arguments[1]);
         return [];
     }
+
+    private static bool HasSimpleDragOptions(BrowserScriptAction action) =>
+        action.Options.Keys.Any(key => key is "sourceX" or "sourceY" or "targetX" or "targetY");
+
+    private static void ExecuteOptionedSimpleDrag(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        ScriptGifRecorder? recorder)
+    {
+        var source = ResolveSelector(remoteDebuggingUrl, automationClient, action, 0);
+        var target = ResolveSelector(remoteDebuggingUrl, automationClient, action, 1);
+        var start = ResolveDragPoint(remoteDebuggingUrl, automationClient, action, source, "source");
+        var end = ResolveDragPoint(remoteDebuggingUrl, automationClient, action, target, "target");
+        if (recorder is not null)
+        {
+            recorder.RecordDragAndDrop(action with { Arguments = [source, target] }, start, end);
+            return;
+        }
+
+        automationClient.BeginPageDrag(remoteDebuggingUrl, source, start);
+        automationClient.MovePageDrag(remoteDebuggingUrl, end);
+        automationClient.EndPageDrag(remoteDebuggingUrl, end);
+    }
+
+    private static ElementPoint ResolveDragPoint(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        string selector,
+        string prefix)
+    {
+        var box = automationClient.GetElementBox(remoteDebuggingUrl, selector);
+        var x = DragOffset(action, $"{prefix}X", box.Width / 2);
+        var y = DragOffset(action, $"{prefix}Y", box.Height / 2);
+        return new ElementPoint(box.X + x, box.Y + y);
+    }
+
+    private static double DragOffset(BrowserScriptAction action, string option, double fallback) =>
+        action.Options.TryGetValue(option, out var value)
+            ? ParseDragOffset(value, $"{action.Name} option {option}=")
+            : fallback;
+
+    private static double ParseDragOffset(string value, string optionName) =>
+        double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var number) && number >= 0
+            ? number
+            : throw new ScriptExecutionException($"{optionName} must be zero or greater.");
 
     private static IReadOnlyList<string> ExecuteDragAndDropBlock(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action, ScriptGifRecorder? recorder)
     {

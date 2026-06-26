@@ -36,8 +36,8 @@ cmg browser control input [command] [options]
 - [`scrollIntoView`](scrollIntoView.md): Scroll an element into view.
 - [`select`](select.md): Set a select-like element value by value, label, or index.
 - [`selectOption`](selectOption.md): Set a select-like element value by value, label, or index.
-- [`dragAndDrop`](dragAndDrop.md): Drag one element onto another.
-- [`dragTo`](dragTo.md): Drag one element onto another.
+- [`dragAndDrop`](dragAndDrop.md): Drag one element onto another, optionally using source and target offsets.
+- [`dragTo`](dragTo.md): Drag one element onto another, optionally using source and target offsets.
 - [`mouse`](mouse/index.md): Low-level mouse movement and button commands.
 - [`scroll`](scroll/index.md): Window, element, and wheel scrolling commands.
 - [`clipboard`](clipboard/index.md): Page-side clipboard shim commands.

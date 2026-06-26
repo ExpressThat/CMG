@@ -846,6 +846,7 @@ These actions do not move the virtual pointer. In GIF recordings, wrap them in `
 ```text
 dragAndDrop "<sourceSelector>" "<targetSelector>"
 dragTo "<sourceSelector>" "<targetSelector>"
+dragTo "<sourceSelector>" "<targetSelector>" sourceX=8 sourceY=8 targetX=24 targetY=16
 dragAndDrop "<sourceSelector>" {
   delay 200
   hover "<selector>"
@@ -855,12 +856,18 @@ dragAndDrop "<sourceSelector>" {
 
 Dispatches drag-and-drop DOM events from the source element to the target element. `dragTo` is a provider-style alias for the simple two-selector drag path.
 
-Simple drag-and-drop does not scroll automatically. The source and target centers must both already be inside the current viewport. Use `scrollIntoView` and, when needed, a large enough viewport before dragging.
+Simple drag options:
+
+- `sourceX` / `sourceY`: Optional element-relative drag start offsets. Defaults to the source center.
+- `targetX` / `targetY`: Optional element-relative drop offsets. Defaults to the target center.
+
+Simple drag-and-drop does not scroll automatically. The source and target points must both already be inside the current viewport. Use `scrollIntoView` and, when needed, a large enough viewport before dragging. In GIF recordings, the virtual pointer, page drag lifecycle, and default drag ghost use the same source and target points.
 
 Example:
 
 ```text
 dragAndDrop "[data-command='browser launch']" "#dropQueue"
+dragTo "[data-command='browser launch']" "#dropQueue" sourceX=8 sourceY=8 targetX=24 targetY=16
 ```
 
 The block form is the complex drag sequence. It has no inline target selector; the target is provided by the required `drop` child action.
