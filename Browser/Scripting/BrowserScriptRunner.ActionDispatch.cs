@@ -60,6 +60,8 @@ public sealed partial class BrowserScriptRunner
             "expecteditable" or "tobeeditable" or "expectempty" or "tobeempty" or
             "expectfocused" or "tobefocused" or "expectinviewport" or "tobeinviewport" or
             "expectvalue" or "tohavevalue" or "expectattribute" or "tohaveattribute" or
+            "expectclass" or "tohaveclass" or "expectid" or "tohaveid" or
+            "expectcss" or "tohavecss" or "expectproperty" or "tohavejsproperty" or
             "expectchecked" or "tobechecked" or "expectcount" or "tohavecount" => ExecuteElementExpectation(remoteDebuggingUrl, automationClient, action),
             "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, automationClient, action),
             "expecteval" or "asserteval" or "expectexpression" or "assertexpression" =>

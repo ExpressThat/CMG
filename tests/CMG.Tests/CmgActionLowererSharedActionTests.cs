@@ -112,7 +112,23 @@ public sealed class CmgActionLowererSharedActionTests
         var line = new CmgActionLowerer().Lower(Node("expectValue", ["#target", "Save"])).Last();
 
         Assert.DoesNotContain(Environment.NewLine, line);
-        Assert.Contains("\\n", line);
+        Assert.Contains("Expected value", line);
+    }
+
+    [Theory]
+    [InlineData("toHaveClass", "class")]
+    [InlineData("toHaveId", "id")]
+    [InlineData("toHaveCSS", "css")]
+    [InlineData("toHaveJSProperty", "property")]
+    public void Lower_RichElementExpectationsGeneratePageAssertions(string kind, string mode)
+    {
+        var args = mode is "css" or "property"
+            ? new[] { "#target", mode is "css" ? "display" : "dataset.ready", "block" }
+            : ["#target", "ready"];
+        var line = new CmgActionLowerer().Lower(Node(kind, args)).Last();
+
+        Assert.Contains("evaluate", line);
+        Assert.Contains(mode is "property" ? "Expected property" : mode is "css" ? "Expected CSS" : $"Expected {mode}", line);
     }
 
     [Fact]

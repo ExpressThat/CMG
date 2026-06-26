@@ -18,6 +18,10 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     [InlineData("expectFocused", "focused")]
     [InlineData("expectInViewport", "inviewport")]
     [InlineData("expectValue", "value")]
+    [InlineData("expectClass", "class")]
+    [InlineData("expectId", "id")]
+    [InlineData("expectCSS", "css")]
+    [InlineData("expectProperty", "property")]
     [InlineData("expectChecked", "checked")]
     [InlineData("expectCount", "count")]
     public void RunText_ElementExpectationOutputsExpectationLine(string action, string mode)
@@ -26,6 +30,10 @@ public sealed class BrowserScriptRunnerElementExpectationTests
         var script = action switch
         {
             "expectValue" => $"{action} \"#target\" \"saved\" timeout=250",
+            "expectClass" => $"{action} \"#target\" \"ready\" timeout=250",
+            "expectId" => $"{action} \"#target\" \"target\" timeout=250",
+            "expectCSS" => $"{action} \"#target\" \"display\" \"block\" timeout=250",
+            "expectProperty" => $"{action} \"#target\" \"dataset.ready\" \"true\" timeout=250",
             "expectCount" => $"{action} \"#target\" 1 timeout=250",
             _ => $"{action} \"#target\" timeout=250"
         };
@@ -63,6 +71,10 @@ public sealed class BrowserScriptRunnerElementExpectationTests
     [InlineData("toBeInViewport \"#status\"")]
     [InlineData("toHaveValue \"#status\" \"Saved\"")]
     [InlineData("toHaveAttribute \"#status\" \"aria-label\" \"Saved\"")]
+    [InlineData("toHaveClass \"#status\" \"ready\"")]
+    [InlineData("toHaveId \"#status\" \"status\"")]
+    [InlineData("toHaveCSS \"#status\" \"display\" \"block\"")]
+    [InlineData("toHaveJSProperty \"#status\" \"dataset.ready\" \"true\"")]
     [InlineData("toBeChecked \"#status\"")]
     [InlineData("toHaveCount \"#status\" 1")]
     public void RunText_PlaywrightExpectationAliasesExecute(string script)

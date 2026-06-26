@@ -39,29 +39,16 @@ public static class CmgExpectationScripts
 
         var body = mode switch
         {
-            "value" => $"return element.value?.includes({QuoteJs(action.Arguments[1])}) ? null : 'Expected value to contain {action.Arguments[1]}, got ' + (element.value ?? '') + '.';",
-            "attribute" => $"const actual = element.getAttribute({QuoteJs(action.Arguments[1])}); return actual?.includes({QuoteJs(action.Arguments[2])}) ? null : 'Expected attribute {action.Arguments[1]} to contain {action.Arguments[2]}, got ' + actual + '.';",
-            _ => $"return Boolean(element.checked) === {ExpectedChecked(action).ToString().ToLowerInvariant()} ? null : 'Expected checked to be {ExpectedChecked(action).ToString().ToLowerInvariant()}, got ' + Boolean(element.checked) + '.';"
+            "value" => $"const actual = element.value ?? ''; const ok = actual.includes({QuoteJs(action.Arguments[1])}); const message = 'Expected value to contain {action.Arguments[1]}, got ' + actual + '.';",
+            "attribute" => $"const actual = element.getAttribute({QuoteJs(action.Arguments[1])}); const ok = actual?.includes({QuoteJs(action.Arguments[2])}); const message = 'Expected attribute {action.Arguments[1]} to contain {action.Arguments[2]}, got ' + actual + '.';",
+            "class" => $"const actual = element.className || ''; const ok = String(actual).split(/\\s+/).includes({QuoteJs(action.Arguments[1])}) || String(actual).includes({QuoteJs(action.Arguments[1])}); const message = 'Expected class to contain {action.Arguments[1]}, got ' + actual + '.';",
+            "id" => $"const actual = element.id || ''; const ok = actual === {QuoteJs(action.Arguments[1])}; const message = 'Expected id to be {action.Arguments[1]}, got ' + actual + '.';",
+            "css" => $"const actual = getComputedStyle(element).getPropertyValue({QuoteJs(action.Arguments[1])}).trim(); const ok = actual === {QuoteJs(action.Arguments[2])} || actual.includes({QuoteJs(action.Arguments[2])}); const message = 'Expected CSS {action.Arguments[1]} to contain {action.Arguments[2]}, got ' + actual + '.';",
+            "property" => $"const actual = {QuoteJs(action.Arguments[1])}.split('.').reduce((value, key) => value?.[key], element); const ok = String(actual ?? '').includes({QuoteJs(action.Arguments[2])}); const message = 'Expected property {action.Arguments[1]} to contain {action.Arguments[2]}, got ' + String(actual ?? '') + '.';",
+            _ => $"const actual = Boolean(element.checked); const ok = actual === {ExpectedChecked(action).ToString().ToLowerInvariant()}; const message = 'Expected checked to be {ExpectedChecked(action).ToString().ToLowerInvariant()}, got ' + actual + '.';"
         };
 
-        return $$"""
-        new Promise((resolve, reject) => {
-          const selector = {{QuoteJs(selector)}};
-          const deadline = Date.now() + {{timeout}};
-          const check = () => {
-            const element = document.querySelector(selector);
-            if (!element) return 'No element matched selector ' + selector + '.';
-            {{body}}
-          };
-          const poll = () => {
-            const error = check();
-            if (!error) { resolve(true); return; }
-            if (Date.now() >= deadline) { reject(new Error(error)); return; }
-            setTimeout(poll, 50);
-          };
-          poll();
-        })
-        """;
+        return $"(() => {{ const element = document.querySelector({QuoteJs(selector)}); if (!element) throw new Error('No element matched selector {selector}.'); {body} if (!ok) throw new Error(message); return true; }})()";
     }
 
     private static string BuildState(CmgNode action, string mode, string selector)
@@ -105,7 +92,7 @@ public static class CmgExpectationScripts
 
     private static int RequiredArgumentCount(string mode) => mode switch
     {
-        "attribute" => 3,
+        "attribute" or "css" or "property" => 3,
         "checked" => 1,
         "visible" or "hidden" or "enabled" or "disabled" or "attached" or "detached" or
         "editable" or "empty" or "focused" or "inviewport" => 1,

@@ -70,6 +70,14 @@ public sealed partial class BrowserControlCommandBuilder
         command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "attribute", "expectAttribute"));
         command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "expectAttribute", "expectAttribute"));
         command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "toHaveAttribute", "toHaveAttribute"));
+        command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "expectClass", "expectClass", "Assert that an element class contains text.", "Expected class token or fragment."));
+        command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "toHaveClass", "toHaveClass", "Assert that an element class contains text.", "Expected class token or fragment."));
+        command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "expectId", "expectId", "Assert that an element id matches text.", "Expected id."));
+        command.Subcommands.Add(BuildElementValueAssertionCommand(browserOptions, "toHaveId", "toHaveId", "Assert that an element id matches text.", "Expected id."));
+        command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "expectCSS", "expectCSS", "Assert that a computed CSS property contains text.", "CSS property name.", "Expected CSS value fragment."));
+        command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "toHaveCSS", "toHaveCSS", "Assert that a computed CSS property contains text.", "CSS property name.", "Expected CSS value fragment."));
+        command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "expectProperty", "expectProperty", "Assert that a DOM property contains text.", "DOM property path.", "Expected property value fragment."));
+        command.Subcommands.Add(BuildElementAttributeAssertionCommand(browserOptions, "toHaveJSProperty", "toHaveJSProperty", "Assert that a DOM property contains text.", "DOM property path.", "Expected property value fragment."));
         command.Subcommands.Add(BuildElementCheckedAssertionCommand(browserOptions, "checked", "expectChecked"));
         command.Subcommands.Add(BuildElementCheckedAssertionCommand(browserOptions, "expectChecked", "expectChecked"));
         command.Subcommands.Add(BuildElementCheckedAssertionCommand(browserOptions, "toBeChecked", "toBeChecked"));

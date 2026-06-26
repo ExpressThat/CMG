@@ -70,12 +70,14 @@ public sealed partial class BrowserControlCommandBuilder
     private Command BuildElementValueAssertionCommand(
         BrowserSelectionOptions browserOptions,
         string name,
-        string action)
+        string action,
+        string description = "Assert that an element value contains text.",
+        string expectedDescription = "Expected value fragment.")
     {
         var selector = CreateSelectorArgument();
-        var expected = new Argument<string>("expected") { Description = "Expected value fragment." };
+        var expected = new Argument<string>("expected") { Description = expectedDescription };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
-        var command = new Command(name, "Assert that an element value contains text.") { selector, expected, timeout };
+        var command = new Command(name, description) { selector, expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine(action, [
@@ -88,13 +90,16 @@ public sealed partial class BrowserControlCommandBuilder
     private Command BuildElementAttributeAssertionCommand(
         BrowserSelectionOptions browserOptions,
         string commandName,
-        string action)
+        string action,
+        string description = "Assert that an element attribute contains text.",
+        string nameDescription = "Attribute name.",
+        string expectedDescription = "Expected attribute value fragment.")
     {
         var selector = CreateSelectorArgument();
-        var name = new Argument<string>("name") { Description = "Attribute name." };
-        var expected = new Argument<string>("expected") { Description = "Expected attribute value fragment." };
+        var name = new Argument<string>("name") { Description = nameDescription };
+        var expected = new Argument<string>("expected") { Description = expectedDescription };
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
-        var command = new Command(commandName, "Assert that an element attribute contains text.") { selector, name, expected, timeout };
+        var command = new Command(commandName, description) { selector, name, expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine(action, [
