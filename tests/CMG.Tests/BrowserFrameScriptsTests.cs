@@ -9,6 +9,8 @@ public sealed class BrowserFrameScriptsTests
     {
         var script = BrowserFrameScripts.Click("#frame", "#save");
 
+        Assert.Contains("globalThis.document.querySelector", script);
+        Assert.Contains("const frameDocument = frame.contentDocument", script);
         Assert.Contains("contentDocument", script);
         Assert.Contains("MouseEvent('click'", script);
         Assert.Contains("#save", script);

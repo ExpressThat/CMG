@@ -68,10 +68,11 @@ public static class BrowserFrameScripts
     private static string Wrap(string frameSelector, string body) =>
         $$"""
         (() => {
-          const frame = document.querySelector({{Quote(frameSelector)}});
+          const frame = globalThis.document.querySelector({{Quote(frameSelector)}});
           if (!frame) throw new Error(`No iframe matched selector {{Escape(frameSelector)}}.`);
-          const document = frame.contentDocument;
-          if (!document) throw new Error(`Iframe {{Escape(frameSelector)}} is not same-origin or is not ready.`);
+          const frameDocument = frame.contentDocument;
+          if (!frameDocument) throw new Error(`Iframe {{Escape(frameSelector)}} is not same-origin or is not ready.`);
+          const document = frameDocument;
           {{body}}
         })()
         """;

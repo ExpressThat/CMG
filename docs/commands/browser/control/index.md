@@ -26,6 +26,7 @@ cmg browser control [command] [options]
 - [`network`](network/index.md): Network routing, waits, HAR, and environment commands.
 - [`events`](events/index.md): Downloads, dialogs, console, page-error, and generic event waits.
 - [`context`](context/index.md): Browser context, emulation, permission, and environment commands.
+- [`frames`](frames/index.md): Same-origin iframe interaction commands.
 
 ## Examples
 
@@ -47,4 +48,5 @@ cmg browser control storage local set token abc
 cmg browser control network waitForResponse "/api/profile" --status 200
 cmg browser control events dialogs behavior accept --prompt-text "yes"
 cmg browser control context emulate --width 390 --height 844 --mobile --touch
+cmg browser control frames fill "#checkoutFrame" "#email" "agent@example.com"
 ```
