@@ -28,38 +28,38 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildHeadersCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildHeadersCommand(BrowserSelectionOptions browserOptions, string name, string action, string description)
     {
         var pairs = new Argument<string[]>("pairs")
         {
             Arity = ArgumentArity.OneOrMore,
             Description = "Header name/value pairs."
         };
-        var command = new Command("setHeaders", "Set extra HTTP headers.") { pairs };
+        var command = new Command(name, description) { pairs };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("setExtraHTTPHeaders", parseResult.GetValue(pairs) ?? [], [])));
+            ToScriptLine(action, parseResult.GetValue(pairs) ?? [], [])));
         return command;
     }
 
-    private Command BuildCredentialsCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildCredentialsCommand(BrowserSelectionOptions browserOptions, string name, string action, string description)
     {
         var username = new Argument<string>("username") { Description = "HTTP auth username." };
         var password = new Argument<string>("password") { Description = "HTTP auth password." };
-        var command = new Command("setCredentials", "Set page-side HTTP credentials.") { username, password };
+        var command = new Command(name, description) { username, password };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("setHttpCredentials", [parseResult.GetValue(username) ?? string.Empty, parseResult.GetValue(password) ?? string.Empty], [])));
+            ToScriptLine(action, [parseResult.GetValue(username) ?? string.Empty, parseResult.GetValue(password) ?? string.Empty], [])));
         return command;
     }
 
-    private Command BuildProxyCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildProxyCommand(BrowserSelectionOptions browserOptions, string name, string action, string description)
     {
         var prefix = new Argument<string>("prefix") { Description = "Proxy URL prefix." };
-        var command = new Command("setProxy", "Set a page-side fetch/XHR proxy rewrite.") { prefix };
+        var command = new Command(name, description) { prefix };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
-            ToScriptLine("setProxy", parseResult.GetValue(prefix) ?? string.Empty)));
+            ToScriptLine(action, parseResult.GetValue(prefix) ?? string.Empty)));
         return command;
     }
 

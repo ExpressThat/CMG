@@ -19,10 +19,17 @@ cmg browser control network [command] [options]
 - [`exportHar`](exportHar.md): Export recorded page network traffic.
 - [`replayHar`](replayHar.md): Replay responses from a HAR file.
 - [`setHeaders`](setHeaders.md): Set extra HTTP headers.
+- [`setExtraHTTPHeaders`](setExtraHTTPHeaders.md): Set extra HTTP headers.
 - [`clearHeaders`](clearHeaders.md): Clear extra HTTP headers.
+- [`clearExtraHTTPHeaders`](clearExtraHTTPHeaders.md): Clear extra HTTP headers.
 - [`setCredentials`](setCredentials.md): Set page-side HTTP credentials.
+- [`setHttpCredentials`](setHttpCredentials.md): Set page-side HTTP credentials.
+- [`httpCredentials`](httpCredentials.md): Set page-side HTTP credentials.
+- [`authenticate`](authenticate.md): Set page-side HTTP credentials.
 - [`clearCredentials`](clearCredentials.md): Clear HTTP credentials.
+- [`clearHttpCredentials`](clearHttpCredentials.md): Clear HTTP credentials.
 - [`setProxy`](setProxy.md): Set a page-side fetch/XHR proxy rewrite.
+- [`proxy`](proxy.md): Set a page-side fetch/XHR proxy rewrite.
 - [`clearProxy`](clearProxy.md): Clear the page-side proxy rewrite.
 - [`setOffline`](setOffline.md): Enable or disable page-side offline simulation.
 - [`webSocket`](webSocket/index.md): WebSocket route and wait commands.

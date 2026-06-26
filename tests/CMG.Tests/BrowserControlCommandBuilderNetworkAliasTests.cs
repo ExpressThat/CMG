@@ -20,6 +20,26 @@ public sealed class BrowserControlCommandBuilderNetworkAliasTests
         Assert.Equal(expectedScript, handler.ScriptLine);
     }
 
+    [Theory]
+    [InlineData("setHeaders X-Test yes", "setExtraHTTPHeaders \"X-Test\" \"yes\"")]
+    [InlineData("setExtraHTTPHeaders X-Test yes", "setExtraHTTPHeaders \"X-Test\" \"yes\"")]
+    [InlineData("clearExtraHTTPHeaders", "clearExtraHTTPHeaders")]
+    [InlineData("setCredentials user pass", "setHttpCredentials \"user\" \"pass\"")]
+    [InlineData("setHttpCredentials user pass", "setHttpCredentials \"user\" \"pass\"")]
+    [InlineData("httpCredentials user pass", "setHttpCredentials \"user\" \"pass\"")]
+    [InlineData("authenticate user pass", "setHttpCredentials \"user\" \"pass\"")]
+    [InlineData("clearHttpCredentials", "clearHttpCredentials")]
+    [InlineData("proxy https://proxy.local/", "setProxy \"https://proxy.local/\"")]
+    public void EnvironmentAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse($"control network {commandTail}").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(BrowserKind.Chrome, handler.BrowserKind);
+        Assert.Equal(expectedScript, handler.ScriptLine);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");
