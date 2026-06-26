@@ -9,7 +9,9 @@ cmg browser control coverage [command] [options]
 ## Subcommands
 
 - [`start`](start.md): Start JavaScript and CSS coverage collection.
+- [`startCoverage`](startCoverage.md): Start JavaScript and CSS coverage collection.
 - [`stop`](stop.md): Stop coverage collection and print or write JSON.
+- [`stopCoverage`](stopCoverage.md): Stop coverage collection and print or write JSON.
 
 ## Behavior
 

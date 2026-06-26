@@ -9,12 +9,19 @@ cmg browser control frames [command] [options]
 ## Subcommands
 
 - [`click`](click.md): Click an element inside an iframe.
+- [`frameClick`](frameClick.md): Click an element inside an iframe.
 - [`hover`](hover.md): Hover an element inside an iframe.
+- [`frameHover`](frameHover.md): Hover an element inside an iframe.
 - [`type`](type.md): Type text into an element inside an iframe.
+- [`frameType`](frameType.md): Type text into an element inside an iframe.
 - [`fill`](fill.md): Fill an element inside an iframe.
+- [`frameFill`](frameFill.md): Fill an element inside an iframe.
 - [`assertText`](assertText.md): Assert text inside an iframe element.
+- [`frameAssertText`](frameAssertText.md): Assert text inside an iframe element.
 - [`waitForElement`](waitForElement.md): Wait for an element inside an iframe.
+- [`frameWaitForElement`](frameWaitForElement.md): Wait for an element inside an iframe.
 - [`evaluate`](evaluate.md): Evaluate JavaScript inside an iframe.
+- [`frameEvaluate`](frameEvaluate.md): Evaluate JavaScript inside an iframe.
 
 ## Behavior
 

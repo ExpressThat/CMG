@@ -10,12 +10,19 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command("frames", "Same-origin iframe interaction commands.");
 
         command.Subcommands.Add(BuildFrameElementCommand(browserOptions, "click", "frameClick", "Click an element inside an iframe."));
+        command.Subcommands.Add(BuildFrameElementCommand(browserOptions, "frameClick", "frameClick", "Click an element inside an iframe."));
         command.Subcommands.Add(BuildFrameElementCommand(browserOptions, "hover", "frameHover", "Hover an element inside an iframe."));
+        command.Subcommands.Add(BuildFrameElementCommand(browserOptions, "frameHover", "frameHover", "Hover an element inside an iframe."));
         command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "type", "frameType", "Type text into an element inside an iframe."));
+        command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "frameType", "frameType", "Type text into an element inside an iframe."));
         command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "fill", "frameFill", "Fill an element inside an iframe."));
+        command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "frameFill", "frameFill", "Fill an element inside an iframe."));
         command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "assertText", "frameAssertText", "Assert text inside an iframe element."));
-        command.Subcommands.Add(BuildFrameWaitCommand(browserOptions));
-        command.Subcommands.Add(BuildFrameEvaluateCommand(browserOptions));
+        command.Subcommands.Add(BuildFrameTextCommand(browserOptions, "frameAssertText", "frameAssertText", "Assert text inside an iframe element."));
+        command.Subcommands.Add(BuildFrameWaitCommand(browserOptions, "waitForElement"));
+        command.Subcommands.Add(BuildFrameWaitCommand(browserOptions, "frameWaitForElement"));
+        command.Subcommands.Add(BuildFrameEvaluateCommand(browserOptions, "evaluate"));
+        command.Subcommands.Add(BuildFrameEvaluateCommand(browserOptions, "frameEvaluate"));
 
         return command;
     }
@@ -47,12 +54,12 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildFrameWaitCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildFrameWaitCommand(BrowserSelectionOptions browserOptions, string name)
     {
         var frame = FrameArgument();
         var selector = CreateSelectorArgument();
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds. Default is 5000." };
-        var command = new Command("waitForElement", "Wait for an element inside an iframe.") { frame, selector, timeout };
+        var command = new Command(name, "Wait for an element inside an iframe.") { frame, selector, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine("frameWaitForElement", [parseResult.GetValue(frame) ?? string.Empty, parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
@@ -61,11 +68,11 @@ public sealed partial class BrowserControlCommandBuilder
         return command;
     }
 
-    private Command BuildFrameEvaluateCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildFrameEvaluateCommand(BrowserSelectionOptions browserOptions, string name)
     {
         var frame = FrameArgument();
         var expression = new Argument<string>("expression") { Description = "JavaScript expression evaluated in the iframe." };
-        var command = new Command("evaluate", "Evaluate JavaScript inside an iframe.") { frame, expression };
+        var command = new Command(name, "Evaluate JavaScript inside an iframe.") { frame, expression };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
             ToScriptLine("frameEvaluate", [parseResult.GetValue(frame) ?? string.Empty, parseResult.GetValue(expression) ?? string.Empty], [])));

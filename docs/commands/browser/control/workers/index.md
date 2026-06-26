@@ -9,9 +9,13 @@ cmg browser control workers [command] [options]
 ## Subcommands
 
 - [`list`](list.md): List worker targets.
+- [`listWorkers`](listWorkers.md): List worker targets.
 - [`wait`](wait.md): Wait for a matching worker target.
+- [`waitForWorker`](waitForWorker.md): Wait for a matching worker target.
 - [`evaluate`](evaluate.md): Evaluate JavaScript in a worker target.
+- [`workerEvaluate`](workerEvaluate.md): Evaluate JavaScript in a worker target.
 - [`intercept`](intercept.md): Patch worker fetch responses.
+- [`workerIntercept`](workerIntercept.md): Patch worker fetch responses.
 
 ## Behavior
 
