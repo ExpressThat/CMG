@@ -106,6 +106,7 @@ The first E2E slice covers:
 - Direct script and runner import expansion for validation, imported macros, returned values, and missing-import failure output.
 - GIF block actions for direct `gif`, provider-style `recordVideo`/`screencast` aliases, and command-level GIF suppression in direct scripts and `cmg run`.
 - Script trace actions for partial trace files, command-level trace suppression, and failure-time partial trace output.
+- Runner trace actions for partial trace files and failure-time partial trace output inside structured tests.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.
 - Direct script `skip` and soft assertion continuation/final-failure behavior.
 - Scoped locator behavior for rich locator filters, shadow DOM locators, `within`, and scoped `foreachSelector` in direct scripts and `cmg run`.
