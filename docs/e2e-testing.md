@@ -60,6 +60,7 @@ Keep E2E tests explicit and scenario-shaped:
 - `E2eParallelismGuardTests` enforces this model so shared browser collections and accidental serial assembly settings cannot be reintroduced silently.
 - Fixture CLI calls automatically scope `browser` commands with `browser --port <fixture-port>` and `run` commands with `--browser-port <fixture-port>`.
 - The fixture closes the selected browser port at disposal and falls back to killing any process ids left in CMG state files before deleting its workspace.
+- `BrowserFixtureIsolationE2eTests` verifies the fixture can launch, drive, close, and remove a browser-backed temporary workspace.
 - Non-browser E2E classes, such as help coverage and local file commands, use a lightweight CLI fixture and can also run within the eight-worker cap.
 - Keep independent browser scenarios in separate E2E classes when they do not need to share browser state. Smaller feature-shaped classes make focused local runs faster and easier to reason about.
 
