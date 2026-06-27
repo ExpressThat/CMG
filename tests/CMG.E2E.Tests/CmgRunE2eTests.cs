@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Xml.Linq;
 using CMG.E2E.Tests.Support;
 
 namespace CMG.E2E.Tests;
@@ -66,6 +68,10 @@ public sealed class CmgRunE2eTests
         CmgE2eAssert.FileExists(junit);
         CmgE2eAssert.DirectoryHasFiles(traceDir, "*.json");
         CmgE2eAssert.DirectoryHasFiles(gifDir, "*.gif");
+        AssertJsonReport(json);
+        AssertHtmlReport(html);
+        AssertJunitReport(junit);
+        AssertTraceFiles(traceDir);
     }
 
     [Fact]
@@ -104,4 +110,55 @@ public sealed class CmgRunE2eTests
         result.ShouldPass();
         result.StdoutContains("TEST PASS uses cli base url and env");
     }
+
+    private static void AssertJsonReport(string path)
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        var tests = document.RootElement.EnumerateArray().ToArray();
+        Assert.Contains(tests, test => HasStatus(test, "fixture suite / clicks fixture button", "passed"));
+        Assert.Contains(tests, test => HasStatus(test, "fixture suite / uses variables and macros", "passed"));
+        Assert.All(tests, test =>
+        {
+            Assert.True(test.GetProperty("success").GetBoolean());
+            Assert.False(string.IsNullOrWhiteSpace(test.GetProperty("gifPath").GetString()));
+            Assert.NotEmpty(test.GetProperty("steps").EnumerateArray());
+        });
+        Assert.Contains(tests, test => OutputContains(test, "PASS 008 assertText #status clicked"));
+        Assert.Contains(tests, test => StepOutputContains(test, "VALUE 008 Ada"));
+    }
+
+    private static void AssertHtmlReport(string path)
+    {
+        var html = File.ReadAllText(path);
+        Assert.Contains("fixture suite / clicks fixture button - pass", html, StringComparison.Ordinal);
+        Assert.Contains("fixture suite / uses variables and macros - pass", html, StringComparison.Ordinal);
+        Assert.Contains("GIF:", html, StringComparison.Ordinal);
+    }
+
+    private static void AssertJunitReport(string path)
+    {
+        var cases = XDocument.Load(path).Descendants("testcase").ToArray();
+        Assert.Contains(cases, test => test.Attribute("name")?.Value == "fixture suite / clicks fixture button");
+        Assert.Contains(cases, test => test.Attribute("name")?.Value == "fixture suite / uses variables and macros");
+        Assert.DoesNotContain(cases, test => test.Element("failure") is not null || test.Element("skipped") is not null);
+    }
+
+    private static void AssertTraceFiles(string directory)
+    {
+        var traces = Directory.EnumerateFiles(directory, "*.trace.json").Select(File.ReadAllText).ToArray();
+        Assert.Equal(2, traces.Length);
+        Assert.Contains(traces, trace => trace.Contains("\"name\": \"fixture suite / clicks fixture button\"", StringComparison.Ordinal));
+        Assert.Contains(traces, trace => trace.Contains("\"name\": \"fixture suite / uses variables and macros\"", StringComparison.Ordinal));
+        Assert.Contains(traces, trace => trace.Contains("VALUE 008 Ada", StringComparison.Ordinal));
+    }
+
+    private static bool HasStatus(JsonElement test, string name, string status) =>
+        test.GetProperty("name").GetString() == name &&
+        test.GetProperty("status").GetString() == status;
+
+    private static bool OutputContains(JsonElement test, string expected) =>
+        test.GetProperty("output").EnumerateArray().Any(line => line.GetString()?.Contains(expected, StringComparison.Ordinal) is true);
+
+    private static bool StepOutputContains(JsonElement test, string expected) =>
+        test.GetProperty("steps").EnumerateArray().Any(step => OutputContains(step, expected));
 }
