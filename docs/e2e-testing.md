@@ -84,7 +84,7 @@ The first E2E slice covers:
 - Browser-control network commands for routes, HAR export/replay, network waits, mocked failures, headers, and offline mode.
 - Browser-control network environment aliases for extra headers, HTTP credentials, proxy rewrites, mocked responses, and validation failures.
 - Browser-control WebSocket commands for route installation, socket waits, message waits, generic event waits, and route clearing against a real WebSocket handshake.
-- Direct script WebSocket actions for route installation, socket waits, message waits, generic `waitForEvent` aliases, route clearing, and validation failure output.
+- Direct script and runner WebSocket actions for route installation, socket waits, message waits, generic `waitForEvent` aliases, route clearing, trace output, and validation failure output.
 - Browser-control event commands for console messages, page errors, generic event waits, dialog capture, dialog behavior, and absence assertions.
 - Browser-control event aliases for console capture/waits, page-error capture/waits, generic `waitForEvent`, and dialog `onDialog`/`handleDialog`.
 - Direct script event actions for console capture/waits, page-error capture/waits, generic `waitForEvent`, absence assertions, and matcher validation failure output.
