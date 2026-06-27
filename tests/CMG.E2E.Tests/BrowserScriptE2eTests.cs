@@ -109,6 +109,35 @@ public sealed class BrowserScriptE2eTests
     }
 
     [Fact]
+    public void ScriptCommand_CommandTimeoutDefaultsApplyToDirectActions()
+    {
+        var script = fixture.CreateScript("script-command-timeouts.cmgscript", $$"""
+            navigate "{{fixture.FixtureHttpUri("index.html")}}" waitUntil=domcontentloaded
+            evaluate "setTimeout(() => document.querySelector('#status').textContent = 'delayed assertion', 80); true"
+            expectText "#status" "delayed assertion"
+            evaluate "setTimeout(() => window.__cliTimeoutReady = true, 80); true"
+            waitForFunction "window.__cliTimeoutReady === true"
+            """);
+
+        var result = fixture.Cli.Run(
+            "browser",
+            "control",
+            "script",
+            "--file",
+            script,
+            "--timeout",
+            "1000",
+            "--navigation-timeout",
+            "5000",
+            "--assertion-timeout",
+            "1000");
+
+        result.ShouldPass();
+        result.StdoutContains("PASS 003 expectText #status \"delayed assertion\"");
+        result.StdoutContains("FUNCTION 005");
+    }
+
+    [Fact]
     public void ScriptCommand_ReadsAndExecutesScriptFromStdin()
     {
         var result = fixture.Cli.RunWithInput(
