@@ -18,6 +18,7 @@ public sealed class CmgBrowserFixture : IDisposable
 
         var launch = Cli.Run("browser", "--port", browserPort.ToString(), "launch", "--headless", "--url", E2ePaths.FixtureUri("index.html"));
         launch.ShouldPass();
+        BrowserProcessId = ParseProcessId(launch.Stdout);
     }
 
     public CmgCli Cli { get; }
@@ -27,6 +28,8 @@ public sealed class CmgBrowserFixture : IDisposable
     public string OutputDirectory => Path.Combine(workspace, "output");
 
     public int BrowserPort => browserPort;
+
+    public int BrowserProcessId { get; }
 
     public string CreateScript(string name, string content)
     {
@@ -69,5 +72,14 @@ public sealed class CmgBrowserFixture : IDisposable
         var port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
         listener.Stop();
         return port;
+    }
+
+    private static int ParseProcessId(string output)
+    {
+        var marker = "PID: ";
+        var line = output.Split(Environment.NewLine).FirstOrDefault(line => line.Contains(marker, StringComparison.Ordinal));
+        return line is null || !int.TryParse(line[(line.IndexOf(marker, StringComparison.Ordinal) + marker.Length)..].TrimEnd('.'), out var processId)
+            ? throw new InvalidOperationException("Browser launch output did not include a process id.")
+            : processId;
     }
 }
