@@ -52,7 +52,7 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 0, 0);
         var waitUntil = GetHistoryWaitUntil(action);
         var timeout = GetIntOption(action, "timeout", 5_000);
-        var url = automationClient.Evaluate(remoteDebuggingUrl, BrowserNavigationScripts.History(direction, timeout));
+        var url = MoveHistoryAndWaitForUrlChange(remoteDebuggingUrl, automationClient, direction, timeout);
         return [HistoryOutput(remoteDebuggingUrl, automationClient, action, output, url, waitUntil, timeout)];
     }
 

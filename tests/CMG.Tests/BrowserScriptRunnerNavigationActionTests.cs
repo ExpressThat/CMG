@@ -34,25 +34,32 @@ public sealed class BrowserScriptRunnerNavigationActionTests
     }
 
     [Fact]
-    public void RunText_GoBackUsesHistoryScript()
+    public void RunText_GoBackPollsForChangedUrl()
     {
         var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("https://example.test/two");
+        client.EvaluateResponses.Enqueue("true");
+        client.EvaluateResponses.Enqueue("https://example.test/one");
         var result = Runner().RunText("goBack timeout=250", "debug", client);
 
         Assert.True(result.Success);
-        Assert.Contains("history.back()", client.LastExpression);
-        Assert.Contains("BACK 001 {}", result.StdoutLines);
+        Assert.Contains("location.href", client.LastExpression);
+        Assert.Contains("BACK 001 https://example.test/one", result.StdoutLines);
     }
 
     [Fact]
     public void RunText_GoBackCanWaitForProviderLoadState()
     {
         var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("https://example.test/two");
+        client.EvaluateResponses.Enqueue("true");
+        client.EvaluateResponses.Enqueue("https://example.test/one");
+        client.EvaluateResponses.Enqueue("complete");
         var result = Runner().RunText("goBack waitUntil=load timeout=250", "debug", client);
 
         Assert.True(result.Success);
         Assert.Contains("document.readyState === 'complete'", client.LastExpression);
-        Assert.Contains("BACK 001 {} waitUntil=load state={}", result.StdoutLines);
+        Assert.Contains("BACK 001 https://example.test/one waitUntil=load state=complete", result.StdoutLines);
     }
 
     [Fact]
