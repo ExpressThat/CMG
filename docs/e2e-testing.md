@@ -80,6 +80,7 @@ The first E2E slice covers:
 - Navigation, runtime text reads, input, assertions, screenshots, element HTML, and failure reasons.
 - Direct script execution with GIF and trace output.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.
+- Advanced script control flow for `for`, `foreach`, `foreachJson`, `foreachSelector`, `while`, `until`, `doWhile`, `doUntil`, `break`, `continue`, `retry`, `toPass`, and scoped timeout blocks.
 - Structured `cmg run` with reports, traces, optional GIFs, tags, variables, list mode, hooks, parameterized tests, runtime skips, soft assertions, retries, and max-failure stopping.
 
 Worker evaluation and interception are covered against real headless Chrome workers created from the fixture server after CMG initializes worker support.
