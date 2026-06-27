@@ -1394,8 +1394,20 @@ Block form rules:
 
 - The first argument is the variable name.
 - The block can contain any action that is valid in the current script type.
-- The stored value comes from the final output line in the block after the output label and line number are removed.
+- The stored value comes from the final value-producing output line in the block. CMG removes status labels and metadata, so `evaluate`, element getters, macro `return`, storage getters, and similar actions store the actual value rather than `PASS`, action names, operation names, or keys.
 - If the block does not produce any output, the `set` action fails.
+
+For storage getters, a missing `localStorage`, `sessionStorage`, or cookie value is stored as an empty string:
+
+```text
+set token {
+  localStorage get "token"
+}
+
+if ("${token}" == "") {
+  caption "token was missing"
+}
+```
 
 Output:
 
@@ -1869,7 +1881,7 @@ cookie get "mode"
 cookie clear
 ```
 
-Reads or mutates page storage from the current page context. These are shared actions, so they work in both direct browser-control scripts and `cmg run`.
+Reads or mutates page storage from the current page context. These are shared actions, so they work in both direct browser-control scripts and `cmg run`. `get` writes the actual value as its payload; missing web storage or cookie values produce an empty payload, which `set` blocks store as an empty string.
 
 Arguments:
 

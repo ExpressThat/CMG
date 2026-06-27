@@ -61,6 +61,41 @@ public sealed class BrowserScriptRunnerSetActionTests
     }
 
     [Fact]
+    public void RunText_SetBlockStoresStorageGetterValueOnly()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("token-value");
+        client.EvaluateResponses.Enqueue("token-value");
+
+        var result = Runner().RunText("""
+        set token {
+          localStorage get "token"
+        }
+        evaluate "'${token}'"
+        """, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("SET 001 token token-value", result.StdoutLines);
+        Assert.Contains("EVALUATE 004 token-value", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_SetBlockStoresMissingStorageGetterAsEmptyValue()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue(string.Empty);
+
+        var result = Runner().RunText("""
+        set token {
+          localStorage get "token"
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains("SET 001 token ", result.StdoutLines);
+    }
+
+    [Fact]
     public void RunText_SetBlockFailsWhenWrappedActionsProduceNoOutput()
     {
         var result = Runner().RunText("""

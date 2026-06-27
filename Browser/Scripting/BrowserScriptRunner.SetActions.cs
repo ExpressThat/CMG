@@ -36,6 +36,11 @@ public sealed partial class BrowserScriptRunner
             throw new ScriptExecutionException($"{blockName} block did not produce output.");
         }
 
+        if (TryExtractStructuredPayload(line, out var structuredPayload))
+        {
+            return structuredPayload;
+        }
+
         var first = line.IndexOf(' ');
         var second = first < 0 ? -1 : line.IndexOf(' ', first + 1);
         if (second < 0 || second + 1 >= line.Length)
@@ -44,6 +49,30 @@ public sealed partial class BrowserScriptRunner
         }
 
         return line[(second + 1)..];
+    }
+
+    private static bool TryExtractStructuredPayload(string line, out string payload)
+    {
+        payload = string.Empty;
+        var parts = line.Split(' ', 5);
+        if (parts.Length < 2)
+        {
+            return false;
+        }
+
+        if (parts[0] is "LOCAL_STORAGE" or "SESSION_STORAGE" or "COOKIE" && parts.Length >= 4 && parts[2] == "get")
+        {
+            payload = parts.Length is 5 ? parts[4] : string.Empty;
+            return true;
+        }
+
+        if (parts[0] is "CONTEXT_CREATED")
+        {
+            payload = parts.FirstOrDefault(part => part.StartsWith("id=", StringComparison.Ordinal))?["id=".Length..] ?? string.Empty;
+            return true;
+        }
+
+        return false;
     }
 
     private static bool IsSetPayloadLine(string line)

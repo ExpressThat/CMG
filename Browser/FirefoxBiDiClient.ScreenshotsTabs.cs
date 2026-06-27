@@ -140,14 +140,14 @@ public sealed partial class FirefoxBiDiClient
     public void UseBrowserContext(string remoteDebuggingUrl, string id)
     {
         var context = FindFirefoxContext(remoteDebuggingUrl, id) ??
-            throw new ChromeDevToolsException($"Browser context '{id}' was not found in this script run.");
+            throw new ChromeDevToolsException($"Browser context '{id}' was not found.");
         SetFirefoxActiveContext(remoteDebuggingUrl, context.TargetId);
     }
 
     public void CloseBrowserContext(string remoteDebuggingUrl, string id)
     {
         var context = FindFirefoxContext(remoteDebuggingUrl, id) ??
-            throw new ChromeDevToolsException($"Browser context '{id}' was not found in this script run.");
+            throw new ChromeDevToolsException($"Browser context '{id}' was not found.");
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);

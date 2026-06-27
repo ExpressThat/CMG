@@ -381,11 +381,11 @@ Context cleanup runs in the current page. If the page blocks same-origin storage
 ## Browser Context Failure
 
 ```text
-Line 3: useContext failed. Browser context 'ctx-2' was not found in this script run.
-Line 4: closeContext failed. Browser context 'ctx-2' was not found in this script run.
+Line 3: useContext failed. Browser context 'ctx-2' was not found.
+Line 4: closeContext failed. Browser context 'ctx-2' was not found.
 ```
 
-`useContext` and `closeContext` can only reference contexts created earlier in the same script run. Use the context id stored by `newContext ctx` through `${ctx}` when possible.
+Use a context id or target id from `newContext`, `listContexts`, or `browser control context browserContexts list`. In scripts, prefer storing the id with `newContext ctx` and referencing it through `${ctx}`.
 
 ## Accessibility Failure
 
