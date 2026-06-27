@@ -65,6 +65,26 @@ public sealed class BrowserInputActionE2eTests
         result.StderrContains("missing-upload.txt");
     }
 
+    [Fact]
+    public void DirectScript_DragAndDropBlockRunsAgainstBrowser()
+    {
+        var script = fixture.CreateScript("drag-block.cmgscript", $$"""
+            navigate "{{fixture.FixtureHttpUri("index.html")}}" waitUntil=domcontentloaded
+            scrollIntoView "#drag-source"
+            dragAndDrop "#drag-source" {
+              hover "#drop-zone"
+              waitForElement "#drop-zone"
+              drop "#drop-zone"
+            }
+            expectText "#drop-result" "dragged payload"
+            """);
+
+        var result = fixture.Cli.Run("browser", "control", "script", "--file", script);
+
+        result.ShouldPass();
+        result.StdoutContains("PASS 003 dragAndDrop");
+    }
+
     private static string ScriptPath(string path) =>
         path.Replace("\\", "/", StringComparison.Ordinal);
 }

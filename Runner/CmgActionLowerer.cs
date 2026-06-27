@@ -10,11 +10,12 @@ public sealed partial class CmgActionLowerer
         return name switch
         {
             "step" or "gif" or "recordvideo" or "screencast" => LowerStep(action),
+            "draganddrop" when action.Children.Count > 0 => LowerDragAndDropBlock(action),
             "macro" or "return" or "within" or "frame" or "framelocator" or "if" or "elseif" or "else" or "for" or "foreach" or "foreachjson" or "foreachlist" or "foreachselector" or "while" or "until" or
             "dowhile" or "dountil" or "repeat" or "retry" or "topass" or
             "withtimeout" or "withdefaulttimeout" or "withnavigationtimeout" or "withassertiontimeout" or "withexpecttimeout" or
             "try" or "catch" or "finally" or "switch" or "case" or "default" => LowerControlBlock(action),
-            "call" or "break" or "continue" => [ToLine(action.Kind, action.Arguments, action.Options)],
+            "call" or "break" or "continue" or "drop" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "caption" => [ToLine("showMessageBar", action.Arguments)],
             "fill" => LowerFill(action),
             "assertvisible" => LowerSelectorCommand("waitForElement", action),
@@ -120,6 +121,13 @@ public sealed partial class CmgActionLowerer
         var caption = action.Arguments.Count > 0 ? action.Arguments[0] : $"Step at line {action.LineNumber}";
         return [ToLine("showMessageBar", [caption]), .. action.Children.SelectMany(Lower)];
     }
+
+    private IReadOnlyList<string> LowerDragAndDropBlock(CmgNode action) =>
+        [
+            ToLine(action.Kind, action.Arguments, action.Options) + " {",
+            .. action.Children.Select(child => ToLine(child.Kind, child.Arguments, child.Options)),
+            "}"
+        ];
 
     private IReadOnlyList<string> LowerSet(CmgNode action)
     {

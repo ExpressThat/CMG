@@ -112,6 +112,31 @@ public sealed class BrowserInputRunnerActionE2eTests
         result.StderrContains("missing-runner-upload.txt");
     }
 
+    [Fact]
+    public void RunCommand_DragAndDropBlockRunsInsideTests()
+    {
+        var traceDir = fixture.OutputPath("runner-drag-block-traces");
+        var script = fixture.CreateScript("runner-drag-block.cmgscript", $$"""
+            test "runner drag block" {
+              navigate "{{fixture.FixtureHttpUri("index.html")}}" waitUntil=domcontentloaded
+              scrollIntoView "#drag-source"
+              dragAndDrop "#drag-source" {
+                hover "#drop-zone"
+                waitForElement "#drop-zone"
+                drop "#drop-zone"
+              }
+              expectText "#drop-result" "dragged payload"
+            }
+            """);
+
+        var result = fixture.Cli.Run("run", script, "--trace", traceDir);
+
+        result.ShouldPass();
+        result.StdoutContains("TEST PASS runner drag block");
+        var trace = File.ReadAllText(Directory.EnumerateFiles(traceDir, "*.trace.json").Single());
+        AssertTraceContains(trace, "dragAndDrop");
+    }
+
     private static void AssertTraceContains(string trace, string expected) =>
         Assert.Contains(expected, trace, StringComparison.Ordinal);
 
