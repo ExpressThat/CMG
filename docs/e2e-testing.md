@@ -118,6 +118,7 @@ The first E2E slice covers:
 - Script trace actions for partial trace files, command-level trace suppression, and failure-time partial trace output.
 - Runner trace actions for partial trace files and failure-time partial trace output inside structured tests.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.
+- Direct script and runner macro scoping for nested macros, parent-scope lookup, local variable isolation, `set { call ... }`, block `return`, trace output, and macro failure diagnostics.
 - Direct script `skip` and soft assertion continuation/final-failure behavior.
 - Runner runtime `skip` and soft assertion continuation/final-failure behavior across stdout, traces, and JSON reports.
 - Scoped locator behavior for rich locator filters, shadow DOM locators, `within`, and scoped `foreachSelector` in direct scripts and `cmg run`.
