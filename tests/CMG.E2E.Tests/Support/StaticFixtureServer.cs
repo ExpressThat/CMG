@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace CMG.E2E.Tests.Support;
@@ -25,6 +26,8 @@ public sealed class StaticFixtureServer : IDisposable
 
     public string Url(string fileName) => $"http://127.0.0.1:{Port}/{Uri.EscapeDataString(fileName)}";
 
+    public string WebSocketUrl(string path) => $"ws://127.0.0.1:{Port}/{path.TrimStart('/')}";
+
     public void Dispose()
     {
         cancellation.Cancel();
@@ -46,8 +49,8 @@ public sealed class StaticFixtureServer : IDisposable
         {
             try
             {
-                using var client = await listener.AcceptTcpClientAsync(cancellation.Token);
-                await Handle(client);
+                var client = await listener.AcceptTcpClientAsync(cancellation.Token);
+                _ = Task.Run(() => Handle(client), cancellation.Token);
             }
             catch (OperationCanceledException)
             {
@@ -62,11 +65,33 @@ public sealed class StaticFixtureServer : IDisposable
 
     private async Task Handle(TcpClient client)
     {
+        using (client)
+        {
+            await HandleClient(client);
+        }
+    }
+
+    private async Task HandleClient(TcpClient client)
+    {
         using var stream = client.GetStream();
         using var reader = new StreamReader(stream, Encoding.ASCII, leaveOpen: true);
         var request = await reader.ReadLineAsync(cancellation.Token) ?? string.Empty;
-        while (!string.IsNullOrEmpty(await reader.ReadLineAsync(cancellation.Token)))
+        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        string? line;
+        while (!string.IsNullOrEmpty(line = await reader.ReadLineAsync(cancellation.Token)))
         {
+            var index = line.IndexOf(':');
+            if (index > 0)
+            {
+                headers[line[..index].Trim()] = line[(index + 1)..].Trim();
+            }
+        }
+
+        if (headers.TryGetValue("Upgrade", out var upgrade) &&
+            upgrade.Equals("websocket", StringComparison.OrdinalIgnoreCase))
+        {
+            await AcceptWebSocket(stream, headers);
+            return;
         }
 
         var parts = request.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -81,6 +106,38 @@ public sealed class StaticFixtureServer : IDisposable
         }
 
         await Write(stream, "200 OK", ContentType(path), await File.ReadAllBytesAsync(path, cancellation.Token));
+    }
+
+    private async Task AcceptWebSocket(NetworkStream stream, IReadOnlyDictionary<string, string> headers)
+    {
+        if (!headers.TryGetValue("Sec-WebSocket-Key", out var key))
+        {
+            await Write(stream, "400 Bad Request", "text/plain", Encoding.UTF8.GetBytes("missing websocket key"));
+            return;
+        }
+
+        var accept = Convert.ToBase64String(SHA1.HashData(Encoding.ASCII.GetBytes(key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")));
+        var response = Encoding.ASCII.GetBytes(
+            "HTTP/1.1 101 Switching Protocols\r\n" +
+            "Upgrade: websocket\r\n" +
+            "Connection: Upgrade\r\n" +
+            $"Sec-WebSocket-Accept: {accept}\r\n\r\n");
+        await stream.WriteAsync(response, cancellation.Token);
+        await WaitForSocketClose(stream);
+    }
+
+    private async Task WaitForSocketClose(NetworkStream stream)
+    {
+        var buffer = new byte[128];
+        while (!cancellation.IsCancellationRequested)
+        {
+            if (stream.DataAvailable && await stream.ReadAsync(buffer, cancellation.Token) == 0)
+            {
+                return;
+            }
+
+            await Task.Delay(25, cancellation.Token);
+        }
     }
 
     private static async Task Write(Stream stream, string status, string contentType, byte[] body)

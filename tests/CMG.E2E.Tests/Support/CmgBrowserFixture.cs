@@ -35,6 +35,8 @@ public sealed class CmgBrowserFixture : IDisposable
 
     public string FixtureHttpUri(string name) => server.Url(name);
 
+    public string FixtureWebSocketUri(string path) => server.WebSocketUrl(path);
+
     public void Dispose()
     {
         try
