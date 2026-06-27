@@ -41,6 +41,7 @@ Add page affordances here when a new command or script action needs real browser
 The project is intended to grow until every command, every script action, and every meaningful failure path has E2E coverage. Unit tests still cover parser/lowering edge cases, but command/action behavior should graduate into E2E coverage when it depends on a browser, artifacts, process state, reports, GIFs, or real CLI output.
 
 Command behavior ownership is tracked in [`docs/e2e-command-coverage.md`](e2e-command-coverage.md). Script action behavior ownership is tracked in [`docs/e2e-script-action-coverage.md`](e2e-script-action-coverage.md). The E2E suite enforces that every documented command and every backticked action heading is mapped to at least one owning E2E file, and that each row declares valid coverage dimensions such as success, failure, artifact, GIF, trace, report, network, pointer, and state coverage. This keeps the remaining coverage work visible as the CLI and DSL grow.
+`ScriptActionDocsShapeE2eTests` enforces that scripting action headings either expose backticked DSL action names or are explicit group/reference sections, so new action docs do not fall out of action coverage discovery.
 
 Keep E2E tests explicit and scenario-shaped:
 
