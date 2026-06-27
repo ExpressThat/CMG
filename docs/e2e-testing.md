@@ -109,7 +109,7 @@ The first E2E slice covers:
 - Browser-control worker commands for real worker listing, waiting, evaluation, interception, and missing-worker wait failure output.
 - Direct script and runner worker actions for real worker listing, waits, evaluation, interception, and missing-worker failure output.
 - Local `files` command success and failure behavior.
-- API request command behavior for query parameters, headers, JSON/form/raw bodies, basic auth, status matching, output files, response headers, validation failures, and timeout failures.
+- API request command behavior for query parameters, headers, JSON/form/raw bodies, basic auth, `--ok`, status matching, output files, response-header assertions, validation failures, and timeout failures.
 - Script and runner `apiRequest` action behavior for query parameters, headers, status matching, output files, JSON bodies, and step failure diagnostics.
 - Navigation aliases and page state commands, including `goto`, `visit`, history back/forward, reload, URL/title waits and assertions, page content reads, `setContent`, runtime text reads, input, assertions, screenshots, element HTML, and failure reasons.
 - Page utility aliases for viewport sizing, captions/message bars, temporary highlights, and explicit delays.

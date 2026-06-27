@@ -68,13 +68,25 @@ public sealed class ApiCommandE2eTests : IClassFixture<CmgCliFixture>
     {
         using var server = FixtureServer();
 
+        var ok = fixture.Cli.Run("api", "request", "GET", server.UrlPath("api/status/418"), "--ok");
+        ok.ShouldFail();
+        ok.StderrContains("Expected ok=true, got status 418.");
+
         var status = fixture.Cli.Run("api", "request", "GET", server.UrlPath("api/status/418"), "--status", "200");
         status.ShouldFail();
         status.StderrContains("Expected status 200, got 418.");
 
+        var header = fixture.Cli.Run("api", "request", "GET", server.UrlPath("api/echo"), "--expect-header", "x-cmg-api=missing");
+        header.ShouldFail();
+        header.StderrContains("Expected response header 'x-cmg-api' to contain 'missing'.");
+
         var body = fixture.Cli.Run("api", "request", "GET", server.UrlPath("api/echo"), "--not-contains", "method");
         body.ShouldFail();
         body.StderrContains("Expected response body not to contain 'method'.");
+
+        var invalidTimeout = fixture.Cli.Run("api", "request", "GET", server.UrlPath("api/echo"), "--timeout", "0");
+        invalidTimeout.ShouldFail();
+        invalidTimeout.StderrContains("apiRequest option timeout= must be a positive number of milliseconds.");
 
         var timeout = fixture.Cli.Run("api", "request", "GET", server.UrlPath("api/slow"), "--timeout", "25");
         timeout.ShouldFail();
