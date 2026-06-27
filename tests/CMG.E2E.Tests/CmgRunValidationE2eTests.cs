@@ -87,4 +87,38 @@ public sealed class CmgRunValidationE2eTests : IClassFixture<CmgCliFixture>
         result.StderrContains("browser control script --file");
         result.StderrContains("docs/scripting/migration.md");
     }
+
+    [Fact]
+    public void RunCommand_SyntaxErrorReportsTestErrorWithFileName()
+    {
+        var script = fixture.CreateScript("broken-runner-syntax.cmgscript", """
+            test "broken" {
+            """);
+
+        var result = fixture.Cli.Run("run", script, "--list");
+
+        result.ShouldFail();
+        result.StdoutContains("TEST FAIL broken-runner-syntax.cmgscript");
+        result.StderrContains("TEST ERROR broken-runner-syntax.cmgscript reason=");
+        result.StderrContains("missing block close");
+    }
+
+    [Fact]
+    public void RunCommand_MissingImportReportsTestErrorWithFileName()
+    {
+        var script = fixture.CreateScript("missing-import-runner.cmgscript", """
+            import "missing-shared.cmgscript"
+            test "never planned" {
+              caption "never"
+            }
+            """);
+
+        var result = fixture.Cli.Run("run", script, "--list");
+
+        result.ShouldFail();
+        result.StdoutContains("TEST FAIL missing-import-runner.cmgscript");
+        result.StderrContains("TEST ERROR missing-import-runner.cmgscript reason=");
+        result.StderrContains("Imported script");
+        result.StderrContains("missing-shared.cmgscript");
+    }
 }

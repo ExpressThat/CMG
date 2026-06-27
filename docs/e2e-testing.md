@@ -127,7 +127,7 @@ The first E2E slice covers:
 - Runner control flow for `step` blocks, nested loops, selector/JSON iteration, `switch`, `try`/`catch`/`finally`, `retry`, `toPass`, scoped timeouts, trace output, and child-failure diagnostics.
 - Structured `cmg run` with reports, traces, optional GIFs, tags, `--var`/`--env` variables, command-line base URLs, list mode, hooks, parameterized tests, runtime skips, soft assertions, retries, and max-failure stopping.
 - Runner config/project execution for relative artifact paths, project names, project variables, CLI variable overrides, repeat scheduling, sharding, and missing-project failure behavior.
-- Runner pre-browser validation failures for invalid config JSON, invalid config field types, invalid shard values, invalid browser ports, unmatched script paths, and direct-script migration guidance.
+- Runner pre-browser validation failures for invalid config JSON, invalid config field types, invalid shard values, invalid browser ports, unmatched script paths, direct-script migration guidance, syntax errors, and missing imports.
 - Runner provider declarations for `.only`, `.skip`, `.fixme`, `.todo`, suite skip inheritance, and report annotations across JSON, HTML, and JUnit artifacts.
 
 Worker evaluation and interception are covered against real headless Chrome workers created from the fixture server after CMG initializes worker support.
