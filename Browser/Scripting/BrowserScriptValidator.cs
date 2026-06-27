@@ -1,3 +1,5 @@
+using CMG.Runner;
+
 namespace CMG.Browser.Scripting;
 
 public sealed class BrowserScriptValidator
@@ -22,11 +24,35 @@ public sealed class BrowserScriptValidator
 
     public ScriptValidationResult ValidateText(string script)
     {
+        var runnerParse = new CmgDslParser().Parse("<stdin>", script);
+        if (runnerParse.Success && runnerParse.Document is not null)
+        {
+            return ScriptValidationResult.Runner(
+                CountNodes(runnerParse.Document.Nodes, IsSuite),
+                CountNodes(runnerParse.Document.Nodes, IsTest),
+                CountNodes(runnerParse.Document.Nodes, IsMacro));
+        }
+
         var parseResult = parser.Parse(script);
         return parseResult.Success
             ? ScriptValidationResult.Ok(parseResult.Actions.Count)
             : ScriptValidationResult.Fail(parseResult.Error ?? "Could not parse script.");
     }
+
+    private static int CountNodes(IEnumerable<CmgNode> nodes, Func<CmgNode, bool> predicate) =>
+        nodes.Sum(node => (predicate(node) ? 1 : 0) + CountNodes(node.Children, predicate));
+
+    private static bool IsSuite(CmgNode node) =>
+        IsAny(node, "suite", "describe", "context");
+
+    private static bool IsTest(CmgNode node) =>
+        IsAny(node, "test", "it", "specify");
+
+    private static bool IsMacro(CmgNode node) =>
+        node.Kind.Equals("macro", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsAny(CmgNode node, params string[] names) =>
+        names.Any(name => node.Kind.Equals(name, StringComparison.OrdinalIgnoreCase));
 
     private static ScriptReadResult ReadScript(string file)
     {
@@ -55,9 +81,19 @@ public sealed class BrowserScriptValidator
     }
 }
 
-public sealed record ScriptValidationResult(bool Success, int ActionCount, string? Error)
+public sealed record ScriptValidationResult(
+    bool Success,
+    int ActionCount,
+    string? Error,
+    bool IsRunner = false,
+    int SuiteCount = 0,
+    int TestCount = 0,
+    int MacroCount = 0)
 {
     public static ScriptValidationResult Ok(int actionCount) => new(true, actionCount, null);
+
+    public static ScriptValidationResult Runner(int suiteCount, int testCount, int macroCount) =>
+        new(true, 0, null, true, suiteCount, testCount, macroCount);
 
     public static ScriptValidationResult Fail(string error) => new(false, 0, error);
 }

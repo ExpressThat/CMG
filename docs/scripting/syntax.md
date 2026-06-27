@@ -212,7 +212,7 @@ set title {
 }
 ```
 
-Block capture stores only the final payload value from the wrapped actions. It does not store the `PASS`, `EVALUATE`, or other output prefixes. This also works with `call`, so `set result { call helper }` stores the macro body's final payload value. A macro can return an action result by making that action the final payload, or it can return a variable/static value with `return "${value}"`.
+Block capture stores only the final payload value from the wrapped actions. It does not store the `PASS`, `EVALUATE`, source-line, context, or action metadata. This also works with `call`, so `set result { call helper }` stores the macro body's final payload value. A macro can return an action result by making that action the final payload, or it can return a variable/static value with `return "${value}"`.
 
 Variables are referenced as `${name}`. Dotted names such as `${case.name}` are supported for data-driven runner rows and can also be set manually. A macro reads from its own parameters and local `set` values first, then walks upward through the parent tree scopes where that macro was defined until it finds a matching variable. It does not read unrelated local variables from a caller outside that definition tree. Macro parameters and every `set` performed inside a macro are scoped to that macro call and do not mutate variables with the same name in a parent scope. Loop variables are scoped to the loop iteration. Explicit `set` variables outside macros remain available to later actions.
 
@@ -220,7 +220,7 @@ Direct scripts and runner tests can receive initial variables from the command l
 
 ## Control Flow And Macros
 
-Conditions support static values, variables, `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`, `matches`, `in`, `&&`, `||`, unary `!`, strings, numbers, and empty strings:
+Conditions support static values, variables, `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`, `matches`, `in`, `&&`, `||`, unary `!`, strings, numbers, booleans, and empty strings:
 
 ```text
 if (${count} > 5 && !(${mode} == "")) {
@@ -247,6 +247,8 @@ expect (${count} > 5)
 assert evaluate "document.title" contains "CMG"
 softExpect (${count} > 10) message="Count was lower than expected"
 ```
+
+Browser `evaluate` boolean payloads are normalized to lowercase `true` and `false`. Condition comparisons also accept boolean literals case-insensitively, so a captured `True` value still compares equal to `true`.
 
 Use `expect` or `assert` when a condition should fail the current script or test instead of selecting a branch. Use `softExpect`, `softAssert`, `expect.soft`, or `assert.soft` when a failed condition should be reported after later actions run.
 
@@ -311,6 +313,16 @@ frame "#checkoutFrame" {
 `repeat`, `for`, `foreach`, `foreachJson`, `foreachList`, `foreachSelector`, `while`, `until`, `doWhile`, and `doUntil` support `break` and `continue`. Condition loops have a safety guard and fail after `max=<count>` iterations; the default is `100`. `doWhile` and `doUntil` run their body once before evaluating the condition.
 
 `foreachJson` iterates a JSON array, `foreachList` iterates a delimited string, and `foreachSelector` binds the variable to a temporary CSS selector for each matched element. All three expose `${index}`. Macro definitions are block-scoped when declared inside another macro, branch, or loop. Top-level macros in `cmg run` are registered before each test.
+
+Script stdout uses one global sequence for the whole run. Actions inside macros, loops, `step`, retry, or handled branches include source context, for example:
+
+```text
+PASS 001 line=3 action=navigate https://example.test
+PASS 007 line=42 context="macro login > repeat[2/3]" action=click #save
+EVALUATE 008 line=43 context="macro login > repeat[2/3]" action=evaluate true
+```
+
+The `context=` field is omitted when there is no parent context. `PASS` and payload lines use a global run sequence so nested macro/loop output stays ordered. JSON and HTML runner reports expose sequence, source line, context, and action as separate fields for every step.
 
 `within "<container>" { ... }` scopes selector-based child actions to the container. Nested `within` blocks compose selectors. Pointer-aware child actions still use CMG's virtual pointer and GIF event path after scoping.
 

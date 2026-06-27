@@ -7,7 +7,8 @@ public sealed partial class CmgActionLowerer
         action = NormalizeLocatorOption(action);
         if (action.Arguments.Count is 1 && BodyTextAssertionNames.Contains(action.Kind.ToLowerInvariant()))
         {
-            return [ToLine(action.Kind, action.Arguments, action.Options)];
+            var bodyCommand = IsNegativeTextAssertion(action.Kind) ? action.Kind : "assertText";
+            return [ToLine(bodyCommand, ["body", action.Arguments[0]], action.Options)];
         }
 
         if (action.Arguments.Count is 0)

@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Browser.Scripting;
@@ -104,33 +103,33 @@ public sealed partial class BrowserScriptRunner
                 var error = $"Soft assertion failure(s): {string.Join(" | ", context.SoftFailures)}";
                 FinishRecording(recorder, output);
                 FinishTrace(context, success: false, error, output);
-                return ScriptRunResult.Fail(error, output);
+                return ScriptRunResult.Fail(error, output, context.StepRecords);
             }
         }
         catch (ScriptActionFailedException exception)
         {
             FinishRecording(recorder, output);
             FinishTrace(context, success: false, exception.Message, output);
-            return ScriptRunResult.Fail(exception.Message, output);
+            return ScriptRunResult.Fail(exception.Message, output, context.StepRecords);
         }
         catch (LoopControlException exception)
         {
             FinishRecording(recorder, output);
             FinishTrace(context, success: false, $"{exception.Kind} must be inside a loop.", output);
-            return ScriptRunResult.Fail($"{exception.Kind} must be inside a loop.", output);
+            return ScriptRunResult.Fail($"{exception.Kind} must be inside a loop.", output, context.StepRecords);
         }
         catch (ScriptSkipException exception)
         {
             output.Add($"SKIP {exception.LineNumber:000} {exception.Reason}");
             FinishRecording(recorder, output);
             FinishTrace(context, success: true, exception.Reason, output);
-            return ScriptRunResult.Skip(exception.Reason, output);
+            return ScriptRunResult.Skip(exception.Reason, output, context.StepRecords);
         }
 
         FinishRecording(recorder, output);
         FinishTrace(context, success: true, error: null, output);
 
-        return ScriptRunResult.Ok(output);
+        return ScriptRunResult.Ok(output, context.StepRecords);
     }
 
     private void ExecuteActions(
@@ -218,17 +217,22 @@ public sealed partial class BrowserScriptRunner
             action = ApplyFrameScope(action, context);
             action = ApplyTimeoutDefaults(action, context);
             recorder?.BeforeAction(action);
+            var sequence = context.NextSequence();
             var stepOutput = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
             recorder?.AfterAction(action);
-            var stepLines = new List<string> { $"PASS {stepNumber:000} {action.Name} {FormatActionForLog(action)}".TrimEnd() };
-            stepLines.AddRange(stepOutput);
+            var stepLines = new List<string> { FormatStepLine("PASS", sequence, action, context, FormatActionForLog(action)) };
+            stepLines.AddRange(FormatPayloadLines(stepOutput, sequence, action, context));
             output.AddRange(stepLines);
-            context.Trace?.Record(action, success: true, error: null, stepLines);
+            context.StepRecords.Add(new ScriptStepRecord(sequence, action.LineNumber, action.Name, context.CurrentContext, true, stepLines, null));
+            context.Trace?.Record(sequence, action, context.CurrentContext, success: true, error: null, stepLines);
         }
         catch (Exception exception) when (exception is ScriptExecutionException or ChromeDevToolsException or ElementNotFoundException)
         {
-            var error = $"Line {action.LineNumber}: {action.Name} failed. {exception.Message}";
-            context.Trace?.Record(action, success: false, error, []);
+            var contextText = string.IsNullOrWhiteSpace(context.CurrentContext) ? string.Empty : $" in {context.CurrentContext}";
+            var error = $"Line {action.LineNumber}: {action.Name} failed{contextText}. {exception.Message}";
+            var sequence = context.NextSequence();
+            context.StepRecords.Add(new ScriptStepRecord(sequence, action.LineNumber, action.Name, context.CurrentContext, false, [], error));
+            context.Trace?.Record(sequence, action, context.CurrentContext, success: false, error, []);
             throw new ScriptActionFailedException(error);
         }
     }

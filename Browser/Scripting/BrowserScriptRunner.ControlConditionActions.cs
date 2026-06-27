@@ -132,6 +132,22 @@ public sealed partial class BrowserScriptRunner
         var first = line.IndexOf(' ');
         var second = first < 0 ? -1 : line.IndexOf(' ', first + 1);
         if (second < 0 || second + 1 >= line.Length) return false;
+        var metadataIndex = line.IndexOf(" line=", StringComparison.Ordinal);
+        if (metadataIndex > second)
+        {
+            payload = line[(second + 1)..metadataIndex];
+            return true;
+        }
+
+        var actionIndex = line.IndexOf(" action=", StringComparison.Ordinal);
+        if (actionIndex >= 0)
+        {
+            var payloadStart = line.IndexOf(' ', actionIndex + " action=".Length);
+            if (payloadStart < 0 || payloadStart + 1 >= line.Length) return false;
+            payload = line[(payloadStart + 1)..];
+            return true;
+        }
+
         payload = line[(second + 1)..];
         return true;
     }

@@ -41,6 +41,11 @@ public sealed partial class BrowserScriptRunner
             return structuredPayload;
         }
 
+        if (TryExtractActionPayload(line, out var actionPayload))
+        {
+            return actionPayload;
+        }
+
         var first = line.IndexOf(' ');
         var second = first < 0 ? -1 : line.IndexOf(' ', first + 1);
         if (second < 0)
@@ -49,6 +54,34 @@ public sealed partial class BrowserScriptRunner
         }
 
         return line[(second + 1)..];
+    }
+
+    private static bool TryExtractActionPayload(string line, out string payload)
+    {
+        payload = string.Empty;
+        var first = line.IndexOf(' ');
+        var second = first < 0 ? -1 : line.IndexOf(' ', first + 1);
+        var metadataIndex = line.IndexOf(" line=", StringComparison.Ordinal);
+        if (second >= 0 && metadataIndex > second)
+        {
+            payload = line[(second + 1)..metadataIndex];
+            return true;
+        }
+
+        var actionIndex = line.IndexOf(" action=", StringComparison.Ordinal);
+        if (actionIndex < 0)
+        {
+            return false;
+        }
+
+        var payloadStart = line.IndexOf(' ', actionIndex + " action=".Length);
+        if (payloadStart < 0 || payloadStart + 1 >= line.Length)
+        {
+            return false;
+        }
+
+        payload = line[(payloadStart + 1)..];
+        return true;
     }
 
     private static bool TryExtractStructuredPayload(string line, out string payload)

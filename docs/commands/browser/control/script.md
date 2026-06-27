@@ -68,20 +68,23 @@ When `--trace` is provided, CMG writes a whole-run trace JSON file even when the
 Successful actions write parseable lines:
 
 ```text
-PASS 001 navigate C:\Projects\CMG\index.html
+PASS 001 line=1 action=navigate C:\Projects\CMG\index.html
 NAVIGATED 001 file:///C:/Projects/CMG/index.html
-PASS 002 waitForElement #openProfileDialog
-PASS 003 step Open dialog
-PASS 004 setDefaultTimeout 10000
-DEFAULT_TIMEOUT 004 10000
-PASS 005 screenshot #profileDialog
-SCREENSHOT 005 C:\Projects\CMG\profile-dialog.png
-PASS 006 evaluate document.title
-EVALUATE 006 CMG Browser Control Test Page
+PASS 002 line=2 action=waitForElement #openProfileDialog
+PASS 003 line=3 action=step Open dialog
+PASS 004 line=4 context="step Open dialog" action=click #openProfileDialog
+PASS 005 line=5 action=setDefaultTimeout 10000
+DEFAULT_TIMEOUT 005 10000
+PASS 006 line=6 action=screenshot #profileDialog
+SCREENSHOT 006 C:\Projects\CMG\profile-dialog.png
+PASS 007 line=7 action=evaluate document.title
+EVALUATE 007 CMG Browser Control Test Page
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 TRACE C:\Projects\CMG\demo-output\dialog-flow.trace.json
 SKIP 007 Feature flag disabled
 ```
+
+`PASS` sequence numbers increase globally for the whole script and include `line=<line> action=<action>`. Nested output from a macro, loop, `step`, retry, or handled branch also includes `context="..."`. Payload lines stay compact at top level and use the same sequence as their action when nested context metadata is present. Runner JSON/HTML reports expose sequence, source line, context, and action as structured fields for every step.
 
 Action-specific payload lines are documented in the [action reference](../../../scripting/actions.md).
 
@@ -91,6 +94,7 @@ Failure output includes the script line number, action, and reason:
 
 ```text
 Line 4: waitForElement failed. No element matched selector '#missing'.
+Line 8: click failed in macro login > repeat[2/3]. No element matched selector '#save'.
 ```
 
 ## Exit Codes

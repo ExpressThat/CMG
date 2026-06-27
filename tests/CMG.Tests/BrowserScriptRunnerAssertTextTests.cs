@@ -14,7 +14,7 @@ public sealed class BrowserScriptRunnerAssertTextTests
         var result = Runner().RunText("assertText \"#status\" \"ready\" timeout=500", "debug", client);
 
         Assert.True(result.Success);
-        Assert.Contains(result.StdoutLines, line => line.Contains("PASS 001 assertText", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("action=assertText #status ready", StringComparison.Ordinal));
     }
 
     [Fact]

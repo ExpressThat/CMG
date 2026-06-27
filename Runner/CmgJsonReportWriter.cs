@@ -32,7 +32,7 @@ public static class CmgJsonReportWriter
 
             writer.WriteEndArray();
             writer.WriteStartArray("output");
-            foreach (var line in CleanOutput(test.Output))
+            foreach (var line in CleanOutputForReports(test.Output))
             {
                 writer.WriteStringValue(line);
             }
@@ -42,13 +42,16 @@ public static class CmgJsonReportWriter
             foreach (var step in test.Steps)
             {
                 writer.WriteStartObject();
+                writer.WriteNumber("sequence", step.Sequence);
                 writer.WriteNumber("lineNumber", step.LineNumber);
                 writer.WriteString("name", step.Name);
+                writer.WriteString("action", string.IsNullOrWhiteSpace(step.Action) ? step.Name : step.Action);
+                writer.WriteString("context", step.Context);
                 writer.WriteBoolean("success", step.Success);
                 writer.WriteString("error", step.Error);
                 writer.WriteString("gifPath", step.GifPath);
                 writer.WriteStartArray("output");
-                foreach (var line in CleanOutput(step.Output))
+                foreach (var line in CleanOutputForReports(step.Output))
                 {
                     writer.WriteStringValue(line);
                 }
@@ -69,17 +72,26 @@ public static class CmgJsonReportWriter
     private static string Status(CmgTestResult test) =>
         string.IsNullOrWhiteSpace(test.Status) ? test.Success ? "passed" : "failed" : test.Status;
 
-    private static IEnumerable<string> CleanOutput(IEnumerable<string> lines)
+    public static IEnumerable<string> CleanOutputForReports(IEnumerable<string> lines)
     {
         var generatedEvaluateLines = new HashSet<int>();
+        var suppressNextEvaluatePayload = false;
         foreach (var line in lines)
         {
             if (IsGeneratedEvaluatePassLine(line, out var lineNumber))
             {
                 generatedEvaluateLines.Add(lineNumber);
+                suppressNextEvaluatePayload = true;
                 continue;
             }
 
+            if (suppressNextEvaluatePayload && IsEvaluatePayloadLine(line, out _))
+            {
+                suppressNextEvaluatePayload = false;
+                continue;
+            }
+
+            suppressNextEvaluatePayload = false;
             if (IsEvaluatePayloadLine(line, out lineNumber) && generatedEvaluateLines.Contains(lineNumber))
             {
                 continue;
@@ -92,18 +104,43 @@ public static class CmgJsonReportWriter
     private static bool IsGeneratedEvaluatePassLine(string line, out int lineNumber)
     {
         lineNumber = 0;
-        return line.StartsWith("PASS ", StringComparison.Ordinal) &&
-            TryReadLineNumber(line, "PASS ".Length, out lineNumber) &&
-            line.Length > "PASS 000 ".Length &&
-            line["PASS 000 ".Length..].StartsWith("evaluate ", StringComparison.Ordinal) &&
-            (line.Contains("(() =>", StringComparison.Ordinal) || line.Contains("(async () =>", StringComparison.Ordinal));
+        return (line.StartsWith("PASS ", StringComparison.Ordinal) &&
+                TryReadLineNumber(line, "PASS ".Length, out lineNumber) &&
+                line.Length > "PASS 000 ".Length &&
+                line["PASS 000 ".Length..].StartsWith("evaluate ", StringComparison.Ordinal) &&
+                IsGeneratedEvaluatePayload(line)) ||
+            (TryReadStructuredSequence(line, out lineNumber) &&
+                line.Contains(" action=evaluate", StringComparison.Ordinal) &&
+                IsGeneratedEvaluatePayload(line));
     }
+
+    private static bool IsGeneratedEvaluatePayload(string line) =>
+        line.Contains("new Promise((resolve, reject)", StringComparison.Ordinal) ||
+        line.Contains("__cmg_locator_", StringComparison.Ordinal) ||
+        line.Contains("__cmgLocatorElements", StringComparison.Ordinal) ||
+        line.Contains("(() =>", StringComparison.Ordinal) ||
+        line.Contains("(async () =>", StringComparison.Ordinal);
 
     private static bool IsEvaluatePayloadLine(string line, out int lineNumber)
     {
         lineNumber = 0;
-        return line.StartsWith("EVALUATE ", StringComparison.Ordinal) &&
-            TryReadLineNumber(line, "EVALUATE ".Length, out lineNumber);
+        return TryReadStructuredSequence(line, out lineNumber) ||
+            line.StartsWith("EVALUATE ", StringComparison.Ordinal) && TryReadLineNumber(line, "EVALUATE ".Length, out lineNumber) ||
+            line.StartsWith("FRAME_EVALUATE ", StringComparison.Ordinal) && TryReadLineNumber(line, "FRAME_EVALUATE ".Length, out lineNumber) ||
+            line.StartsWith("WORKER_EVALUATE ", StringComparison.Ordinal) && TryReadLineNumber(line, "WORKER_EVALUATE ".Length, out lineNumber);
+    }
+
+    private static bool TryReadStructuredSequence(string line, out int sequence)
+    {
+        sequence = 0;
+        var first = line.IndexOf(' ');
+        if (first < 0)
+        {
+            return false;
+        }
+
+        return TryReadLineNumber(line, first + 1, out sequence) &&
+            line.Contains(" line=", StringComparison.Ordinal);
     }
 
     private static bool TryReadLineNumber(string line, int start, out int lineNumber)

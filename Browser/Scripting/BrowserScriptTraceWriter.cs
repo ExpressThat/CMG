@@ -26,8 +26,10 @@ internal static class BrowserScriptTraceWriter
     private static void WriteStep(Utf8JsonWriter writer, BrowserScriptTraceStep step)
     {
         writer.WriteStartObject();
+        writer.WriteNumber("sequence", step.Sequence);
         writer.WriteNumber("lineNumber", step.LineNumber);
         writer.WriteString("name", step.Name);
+        writer.WriteString("context", step.Context);
         writer.WriteBoolean("success", step.Success);
         writer.WriteString("error", step.Error);
         writer.WriteStartArray("output");

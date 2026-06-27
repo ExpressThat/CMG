@@ -54,7 +54,7 @@ public sealed class BrowserScriptRunnerImportTests
             var result = Runner().Run(main, "debug", new FakeAutomationClient(), gif: null);
 
             Assert.True(result.Success, result.Error);
-            Assert.Contains("PASS 001 caption Imported", result.StdoutLines);
+            Assert.Contains(result.StdoutLines, line => line.Contains("action=caption Imported", StringComparison.Ordinal));
         }
         finally
         {
@@ -79,8 +79,8 @@ public sealed class BrowserScriptRunnerImportTests
             var result = Runner().Run(main, "debug", new FakeAutomationClient(), gif: null);
 
             Assert.True(result.Success, result.Error);
-            Assert.Contains("PASS 001 caption Imported", result.StdoutLines);
-            Assert.Contains("PASS 003 caption \"done; still one caption\"", result.StdoutLines);
+            Assert.Contains(result.StdoutLines, line => line.Contains("action=caption Imported", StringComparison.Ordinal));
+            Assert.Contains(result.StdoutLines, line => line.Contains("action=caption \"done; still one caption\"", StringComparison.Ordinal));
         }
         finally
         {

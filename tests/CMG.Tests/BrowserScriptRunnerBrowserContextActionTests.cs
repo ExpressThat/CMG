@@ -29,7 +29,7 @@ public sealed class BrowserScriptRunnerBrowserContextActionTests
         var result = Runner().RunText("listContexts", "debug", client);
 
         Assert.True(result.Success);
-        Assert.Contains("CONTEXT 0 id=context-1", string.Join('\n', result.StdoutLines));
+        Assert.Contains("id=context-1", string.Join('\n', result.StdoutLines));
     }
 
     [Fact]

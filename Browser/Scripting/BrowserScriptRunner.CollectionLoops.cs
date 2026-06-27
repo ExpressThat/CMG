@@ -18,7 +18,7 @@ public sealed partial class BrowserScriptRunner
         for (var index = 0; index < values.Count; index++)
         {
             var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output,
-                [(variable, values[index]), ("index", index.ToString())]);
+                [(variable, values[index]), ("index", index.ToString())], $"foreachJson {variable} index={index}");
             if (control == "break") break;
         }
     }
@@ -43,7 +43,7 @@ public sealed partial class BrowserScriptRunner
         for (var index = 0; index < values.Length; index++)
         {
             var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output,
-                [(action.Arguments[0], values[index]), ("index", index.ToString())]);
+                [(action.Arguments[0], values[index]), ("index", index.ToString())], $"foreachList {action.Arguments[0]}={values[index]} index={index}");
             if (control == "break") break;
         }
     }

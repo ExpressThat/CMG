@@ -51,7 +51,13 @@ public sealed partial class ChromeDevToolsClient
 
             if (result.TryGetProperty("value", out var value))
             {
-                return value.ValueKind is JsonValueKind.String ? value.GetString() ?? string.Empty : value.ToString();
+                return value.ValueKind switch
+                {
+                    JsonValueKind.String => value.GetString() ?? string.Empty,
+                    JsonValueKind.True => "true",
+                    JsonValueKind.False => "false",
+                    _ => value.ToString()
+                };
             }
 
             return result.TryGetProperty("description", out var description) ? description.GetString() ?? string.Empty : string.Empty;

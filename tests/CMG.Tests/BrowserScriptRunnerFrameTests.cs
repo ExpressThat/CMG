@@ -179,11 +179,11 @@ public sealed class BrowserScriptRunnerFrameTests
         """, "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("FRAME 002 frameFill", result.StdoutLines);
-        Assert.Contains("FRAME 003 frameClick", result.StdoutLines);
-        Assert.Contains("FRAME 004 frameAssertText", result.StdoutLines);
-        Assert.Contains("FRAME_STYLE 005", string.Join('\n', result.StdoutLines));
-        Assert.Contains("FRAME_PROPERTY 006", string.Join('\n', result.StdoutLines));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("FRAME ", StringComparison.Ordinal) && line.Contains("frameFill", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("FRAME ", StringComparison.Ordinal) && line.Contains("frameClick", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("FRAME ", StringComparison.Ordinal) && line.Contains("frameAssertText", StringComparison.Ordinal));
+        Assert.Contains("FRAME_STYLE ", string.Join('\n', result.StdoutLines));
+        Assert.Contains("FRAME_PROPERTY ", string.Join('\n', result.StdoutLines));
         Assert.Contains("FRAME_EVALUATE 007", string.Join('\n', result.StdoutLines));
         Assert.Contains("document.title", client.LastExpression);
     }
@@ -214,8 +214,8 @@ public sealed class BrowserScriptRunnerFrameTests
         var result = Runner().RunText("""	  frameLocator     "#frame"   {   hover     "#help"  ;  waitForSelector    "#ready" timeout=250   }""", "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("FRAME 002 frameHover", result.StdoutLines);
-        Assert.Contains("FRAME 003 frameWaitForElement", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("FRAME ", StringComparison.Ordinal) && line.Contains("frameHover", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("FRAME ", StringComparison.Ordinal) && line.Contains("frameWaitForElement", StringComparison.Ordinal));
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

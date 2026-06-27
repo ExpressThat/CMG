@@ -148,6 +148,7 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 1, 1);
         automationClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0]);
-        ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output);
+        context.PushExecutionContext($"step {action.Arguments[0]}", () =>
+            ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output));
     }
 }

@@ -21,9 +21,10 @@ public sealed partial class BrowserScriptRunner
         }
 
         var values = Range(start, end, step).Select(value => (variable, value.ToString()));
+        var iteration = 0;
         foreach (var pair in values)
         {
-            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [pair]);
+            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [pair], $"for[{++iteration}]");
             if (control == "break") break;
         }
     }
@@ -38,9 +39,10 @@ public sealed partial class BrowserScriptRunner
     {
         RequireArgumentCount(action, 2, int.MaxValue);
         var variable = action.Arguments[0];
-        foreach (var value in action.Arguments.Skip(1))
+        var values = action.Arguments.Skip(1).ToArray();
+        for (var index = 0; index < values.Length; index++)
         {
-            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [(variable, value)]);
+            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [(variable, values[index])], $"foreach {variable}={values[index]} index={index}");
             if (control == "break") break;
         }
     }
@@ -59,7 +61,7 @@ public sealed partial class BrowserScriptRunner
         if (count < 0) throw new ScriptExecutionException("repeat count must be 0 or greater.");
         for (var index = 0; index < count; index++)
         {
-            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [(variable, index.ToString())]);
+            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [(variable, index.ToString())], $"repeat[{index + 1}/{count}]");
             if (control == "break") break;
         }
     }
@@ -82,7 +84,7 @@ public sealed partial class BrowserScriptRunner
                 throw new ScriptExecutionException($"while exceeded max={max} iteration(s).");
             }
 
-            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [("index", (iterations - 1).ToString())]);
+            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [("index", (iterations - 1).ToString())], $"while[{iterations}]");
             if (control == "break") break;
         }
     }
@@ -105,7 +107,7 @@ public sealed partial class BrowserScriptRunner
                 throw new ScriptExecutionException($"until exceeded max={max} iteration(s).");
             }
 
-            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [("index", (iterations - 1).ToString())]);
+            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [("index", (iterations - 1).ToString())], $"until[{iterations}]");
             if (control == "break") break;
         }
     }
@@ -129,7 +131,7 @@ public sealed partial class BrowserScriptRunner
                 throw new ScriptExecutionException($"{action.Name} exceeded max={max} iteration(s).");
             }
 
-            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [("index", (iterations - 1).ToString())]);
+            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [("index", (iterations - 1).ToString())], $"{action.Name}[{iterations}]");
             if (control == "break") break;
 
             var condition = EvaluateCondition(remoteDebuggingUrl, automationClient, action, context, recorder);
@@ -144,12 +146,14 @@ public sealed partial class BrowserScriptRunner
         ScriptExecutionContext context,
         Recording.ScriptGifRecorder? recorder,
         List<string> output,
-        IEnumerable<(string Key, string Value)> variables)
+        IEnumerable<(string Key, string Value)> variables,
+        string contextName)
     {
         try
         {
             WithVariables(context, variables, () =>
-                ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output));
+                context.PushExecutionContext(contextName, () =>
+                    ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output)));
             return string.Empty;
         }
         catch (LoopControlException exception) when (exception.Kind is "break" or "continue")

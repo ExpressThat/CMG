@@ -1,9 +1,12 @@
 using CMG.Browser.Scripting;
+using System.Text.RegularExpressions;
 
 namespace CMG.Runner;
 
 public sealed partial class CmgVisualSegmentExecutor
 {
+    private static readonly Regex StructuredLineRegex = new(@"^(?<prefix>[A-Z_]+ \d{3}) line=(?<line>\d+)(?<suffix>.*)$", RegexOptions.Compiled);
+
     private CmgScriptBatchRun RunLines(
         List<string> lines,
         Dictionary<int, int> lineMap,
@@ -21,7 +24,35 @@ public sealed partial class CmgVisualSegmentExecutor
         var map = new Dictionary<int, int>(lineMap);
         lines.Clear();
         lineMap.Clear();
-        return new CmgScriptBatchRun(scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, timeouts, baseUrl), map);
+        return new CmgScriptBatchRun(MapScriptResult(scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, timeouts, baseUrl), map), map);
+    }
+
+    private static ScriptRunResult MapScriptResult(ScriptRunResult result, IReadOnlyDictionary<int, int> lineMap)
+    {
+        var mappedSteps = result.StepRecords
+            .Select(step => step with
+            {
+                LineNumber = lineMap.GetValueOrDefault(step.LineNumber, step.LineNumber),
+                Output = step.Output.Select(line => RewriteStructuredLine(line, lineMap)).ToArray()
+            })
+            .ToArray();
+        return result with
+        {
+            StdoutLines = result.StdoutLines.Select(line => RewriteStructuredLine(line, lineMap)).ToArray(),
+            Steps = mappedSteps
+        };
+    }
+
+    private static string RewriteStructuredLine(string line, IReadOnlyDictionary<int, int> lineMap)
+    {
+        var match = StructuredLineRegex.Match(line);
+        if (!match.Success || !int.TryParse(match.Groups["line"].Value, out var lineNumber))
+        {
+            return line;
+        }
+
+        var sourceLine = lineMap.GetValueOrDefault(lineNumber, lineNumber);
+        return $"{match.Groups["prefix"].Value} line={sourceLine}{match.Groups["suffix"].Value}";
     }
 
     private void AddPending(

@@ -26,7 +26,7 @@ public sealed class BrowserScriptRunnerFailActionTests
         """, "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Equal("Line 2: fail failed. Expected branch", client.LastTypedText);
+        Assert.Equal("Line 2: fail failed in try. Expected branch", client.LastTypedText);
     }
 
     [Fact]

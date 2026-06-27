@@ -9,7 +9,7 @@ public static class CmgHtmlReportWriter
     {
         var builder = new StringBuilder();
         builder.AppendLine("<!doctype html><html><head><meta charset=\"utf-8\"><title>CMG Report</title>");
-        builder.AppendLine("<style>body{font:14px system-ui;margin:24px} .pass{color:#047857}.fail{color:#b91c1c} pre{background:#f3f4f6;padding:12px;overflow:auto}</style>");
+        builder.AppendLine("<style>body{font:14px system-ui;margin:24px} .pass{color:#047857}.fail{color:#b91c1c} table{border-collapse:collapse;width:100%;margin-top:12px} th,td{border-bottom:1px solid #e5e7eb;padding:6px;text-align:left;vertical-align:top} code,pre{background:#f3f4f6;padding:2px 4px} pre{padding:8px;overflow:auto;white-space:pre-wrap}</style>");
         builder.AppendLine("</head><body><h1>CMG Report</h1>");
         foreach (var test in tests)
         {
@@ -41,13 +41,34 @@ public static class CmgHtmlReportWriter
                 builder.AppendLine("</ul>");
             }
 
-            builder.AppendLine("<pre>");
-            foreach (var line in test.Output)
+            if (test.Steps.Count > 0)
             {
-                builder.AppendLine(Encode(line));
-            }
+                builder.AppendLine("<table><thead><tr><th>#</th><th>Line</th><th>Context</th><th>Action</th><th>Status</th><th>Output</th></tr></thead><tbody>");
+                foreach (var step in test.Steps.OrderBy(step => step.Sequence is 0 ? int.MaxValue : step.Sequence))
+                {
+                    builder.AppendLine("<tr>");
+                    builder.AppendLine($"<td>{(step.Sequence is 0 ? string.Empty : step.Sequence.ToString())}</td>");
+                    builder.AppendLine($"<td>{step.LineNumber}</td>");
+                    builder.AppendLine($"<td>{Encode(step.Context)}</td>");
+                    builder.AppendLine($"<td>{Encode(string.IsNullOrWhiteSpace(step.Action) ? step.Name : step.Action)}</td>");
+                    builder.AppendLine($"<td>{(step.Success ? "pass" : "fail")}</td>");
+                    builder.AppendLine($"<td><pre>{Encode(string.Join('\n', CleanOutput(step.Output)))}</pre></td>");
+                    builder.AppendLine("</tr>");
+                }
 
-            builder.AppendLine("</pre></section>");
+                builder.AppendLine("</tbody></table>");
+            }
+            else
+            {
+                builder.AppendLine("<pre>");
+                foreach (var line in CleanOutput(test.Output))
+                {
+                    builder.AppendLine(Encode(line));
+                }
+
+                builder.AppendLine("</pre>");
+            }
+            builder.AppendLine("</section>");
         }
 
         builder.AppendLine("</body></html>");
@@ -58,4 +79,7 @@ public static class CmgHtmlReportWriter
 
     private static string Status(CmgTestResult test) =>
         string.IsNullOrWhiteSpace(test.Status) ? test.Success ? "pass" : "fail" : test.Status;
+
+    private static IEnumerable<string> CleanOutput(IEnumerable<string> lines) =>
+        CmgJsonReportWriter.CleanOutputForReports(lines);
 }

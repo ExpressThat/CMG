@@ -18,14 +18,14 @@ internal sealed class BrowserScriptTraceSession
 
     public bool IsActive { get; private set; } = true;
 
-    public void Record(BrowserScriptAction action, bool success, string? error, IReadOnlyList<string> output)
+    public void Record(int sequence, BrowserScriptAction action, string context, bool success, string? error, IReadOnlyList<string> output)
     {
         if (!IsActive)
         {
             return;
         }
 
-        steps.Add(new BrowserScriptTraceStep(action.LineNumber, action.Name, success, error, output));
+        steps.Add(new BrowserScriptTraceStep(sequence, action.LineNumber, action.Name, context, success, error, output));
     }
 
     public string Finish(string? path, bool success, string? error)

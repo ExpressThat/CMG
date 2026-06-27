@@ -95,8 +95,8 @@ public sealed class BrowserScriptRunnerWaitActionTests
 
         Assert.True(result.Success, result.Error);
         Assert.Equal(100, client.LastWaitTimeout);
-        Assert.Contains("SELECTOR 003 #inside", result.StdoutLines);
-        Assert.Contains("SELECTOR 005 #outside", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("SELECTOR ", StringComparison.Ordinal) && line.Contains("#inside", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("SELECTOR ", StringComparison.Ordinal) && line.Contains("#outside", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public sealed class BrowserScriptRunnerWaitActionTests
             timeouts: new ScriptTimeoutOptions(DefaultTimeout: 100, AssertionTimeout: 250));
 
         Assert.True(result.Success, result.Error);
-        Assert.Contains("PASS 001 assertText #status Ready", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.Contains("action=assertText #status Ready", StringComparison.Ordinal));
     }
 
     [Fact]

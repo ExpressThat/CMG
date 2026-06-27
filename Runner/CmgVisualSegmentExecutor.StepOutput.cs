@@ -5,9 +5,38 @@ public sealed partial class CmgVisualSegmentExecutor
     private static void AttachStepOutput(
         List<CmgStepResult> steps,
         IReadOnlyList<string> lines,
+        IReadOnlyList<Browser.Scripting.ScriptStepRecord> records,
         IReadOnlyDictionary<int, int> lineMap,
         CmgNode? action)
     {
+        foreach (var record in records)
+        {
+            var index = steps.FindLastIndex(step => step.Sequence == record.Sequence);
+            var result = new CmgStepResult(
+                record.LineNumber,
+                record.Action,
+                record.Success,
+                record.Output,
+                record.Error,
+                null,
+                record.Sequence,
+                record.Context,
+                record.Action);
+            if (index >= 0)
+            {
+                steps[index] = result;
+            }
+            else
+            {
+                steps.Add(result);
+            }
+        }
+
+        if (records.Count > 0)
+        {
+            return;
+        }
+
         foreach (var line in lines)
         {
             if (!TryReadOutputLineNumber(line, out var lineNumber))

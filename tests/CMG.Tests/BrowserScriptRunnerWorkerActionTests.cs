@@ -14,7 +14,7 @@ public sealed class BrowserScriptRunnerWorkerActionTests
         var result = Runner().RunText("listWorkers\nwaitForWorker \"worker.js\"", "debug", client);
 
         Assert.True(result.Success);
-        Assert.Contains(result.StdoutLines, line => line.StartsWith("WORKER 0 id=w1", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("WORKER ", StringComparison.Ordinal) && line.Contains("id=w1", StringComparison.Ordinal));
         Assert.Contains(result.StdoutLines, line => line.StartsWith("WORKER_READY", StringComparison.Ordinal));
     }
 

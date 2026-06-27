@@ -1,6 +1,6 @@
 # `browser control validateScript`
 
-Validates a `.cmgscript` browser automation script without launching or connecting to a browser.
+Validates a `.cmgscript` browser automation script or structured runner file without launching or connecting to a browser.
 
 ```powershell
 cmg browser control validateScript --file <path>
@@ -17,18 +17,27 @@ cmg browser control validateScript --file -
 - Expands line-level `import "path"` statements before parsing.
 - Resolves relative imports from the validated script file's directory.
 - Parses block structure, quoted strings, options, nested control flow, macros, and weird whitespace formatting.
+- Automatically detects structured runner files that use `suite`/`describe`/`context` or `test`/`it`/`specify`.
 - Does not execute browser actions, JavaScript, assertions, macros, GIF recording, or network/file actions.
 - Does not require `browser launch`, `--chrome`, `--edge`, or `--firefox`.
 
 ## Stdout
 
-On success, writes one parseable line:
+On success, writes one parseable line. Direct browser-control scripts report top-level actions:
 
 ```text
 SCRIPT VALID actions=<count>
 ```
 
 `actions` is the number of top-level parsed script actions after import expansion.
+
+Structured runner files report runner declarations:
+
+```text
+SCRIPT VALID runner suites=<count> tests=<count> macros=<count>
+```
+
+`suites`, `tests`, and `macros` are counted after import expansion.
 
 ## Stderr
 

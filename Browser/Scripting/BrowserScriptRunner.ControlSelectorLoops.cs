@@ -20,7 +20,7 @@ public sealed partial class BrowserScriptRunner
         {
             var itemSelector = $"#__cmg_foreach_{action.LineNumber}_{index}";
             automationClient.Evaluate(remoteDebuggingUrl, MarkSelectorMatch(selector, index, action.LineNumber));
-            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [(variable, itemSelector), ("index", index.ToString())]);
+            var control = ExecuteLoopIteration(remoteDebuggingUrl, automationClient, action, context, recorder, output, [(variable, itemSelector), ("index", index.ToString())], $"foreachSelector {variable} index={index}");
             if (control == "break") break;
         }
     }

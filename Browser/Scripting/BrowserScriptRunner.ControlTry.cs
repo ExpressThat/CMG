@@ -19,7 +19,8 @@ public sealed partial class BrowserScriptRunner
         try
         {
             WithMacroScope(context, () =>
-                ExecuteActions(remoteDebuggingUrl, automationClient, tryBranch.Children, context, recorder, output));
+                context.PushExecutionContext("try", () =>
+                    ExecuteActions(remoteDebuggingUrl, automationClient, tryBranch.Children, context, recorder, output)));
         }
         catch (ScriptActionFailedException exception)
         {
@@ -35,7 +36,8 @@ public sealed partial class BrowserScriptRunner
             if (finallyBranch is not null)
             {
                 WithMacroScope(context, () =>
-                    ExecuteActions(remoteDebuggingUrl, automationClient, finallyBranch.Children, context, recorder, output));
+                    context.PushExecutionContext("finally", () =>
+                        ExecuteActions(remoteDebuggingUrl, automationClient, finallyBranch.Children, context, recorder, output)));
             }
         }
 
@@ -57,7 +59,8 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 0, 1);
         var values = action.Arguments.Count is 1 ? [(action.Arguments[0], error)] : Array.Empty<(string, string)>();
         WithVariables(context, values, () =>
-            ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output));
+            context.PushExecutionContext("catch", () =>
+                ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output)));
     }
 
     private static void ValidateTryBranches(

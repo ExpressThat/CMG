@@ -6,4 +6,7 @@ public sealed record CmgStepResult(
     bool Success,
     IReadOnlyList<string> Output,
     string? Error,
-    string? GifPath);
+    string? GifPath,
+    int Sequence = 0,
+    string Context = "",
+    string Action = "");

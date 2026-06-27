@@ -75,8 +75,8 @@ public sealed class BrowserScriptRunnerSetActionTests
         """, "debug", client);
 
         Assert.True(result.Success);
-        Assert.Contains("SET 001 token token-value", result.StdoutLines);
-        Assert.Contains("EVALUATE 004 token-value", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("SET ", StringComparison.Ordinal) && line.Contains("token token-value", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("EVALUATE ", StringComparison.Ordinal) && line.Contains("token-value", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public sealed class BrowserScriptRunnerSetActionTests
         """, "debug", client);
 
         Assert.True(result.Success);
-        Assert.Contains("SET 001 token ", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("SET ", StringComparison.Ordinal) && line.Contains(" token", StringComparison.Ordinal));
     }
 
     [Fact]

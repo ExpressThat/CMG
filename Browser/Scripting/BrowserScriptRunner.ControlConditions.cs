@@ -130,6 +130,11 @@ public sealed partial class BrowserScriptRunner
         {
             var l = Unquote(left.Trim());
             var r = Unquote(right.Trim());
+            if (TryReadBoolean(l, out var lb) && TryReadBoolean(r, out var rb))
+            {
+                return op switch { "==" => lb == rb, "!=" => lb != rb, _ => false };
+            }
+
             if (double.TryParse(l, NumberStyles.Float, CultureInfo.InvariantCulture, out var ln) &&
                 double.TryParse(r, NumberStyles.Float, CultureInfo.InvariantCulture, out var rn))
             {
@@ -155,6 +160,24 @@ public sealed partial class BrowserScriptRunner
 
         private static bool Truthy(string value) =>
             value.Length > 0 && !value.Equals("false", StringComparison.OrdinalIgnoreCase) && value is not "0";
+
+        private static bool TryReadBoolean(string value, out bool result)
+        {
+            if (value.Equals("true", StringComparison.OrdinalIgnoreCase))
+            {
+                result = true;
+                return true;
+            }
+
+            if (value.Equals("false", StringComparison.OrdinalIgnoreCase))
+            {
+                result = false;
+                return true;
+            }
+
+            result = false;
+            return false;
+        }
 
         private static string Unquote(string value) =>
             value.Length >= 2 && value[0] == '"' && value[^1] == '"' ? value[1..^1] : value;

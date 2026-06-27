@@ -201,7 +201,8 @@ public sealed partial class CmgActionLowererTests
     {
         var line = Assert.Single(new CmgActionLowerer().Lower(Node(name, ["Ready"], [])));
 
-        Assert.Equal($"{name} \"Ready\"", line);
+        var command = name.Equals("contains", StringComparison.OrdinalIgnoreCase) ? "assertText" : name;
+        Assert.Equal($"{command} \"body\" \"Ready\"", line);
     }
 
     [Fact]

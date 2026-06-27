@@ -84,7 +84,7 @@ Invalid run config files fail before browser connection or test listing. Stderr 
 
 If no selected CMG browser is running, stderr tells the caller which launch command to run, for example `No CMG-controlled Chrome instance is running. Run 'cmg browser launch' first.` Use `--auto-launch` when the runner should start the selected browser automatically, and add `--headless` when that auto-launched browser should not open a visible window.
 
-Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON reports include `status` values such as `passed`, `failed`, and `skipped`; generated internal evaluate steps are omitted from JSON report output so the report stays focused on high-level steps. Traces keep lower-level diagnostics. JUnit reports emit `<skipped>` nodes for declaration-skipped tests and runtime skips.
+Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON step entries include separate `sequence`, `lineNumber`, `context`, and `action` fields; agents should use those fields instead of parsing human stdout strings. HTML reports render the same source-aware step order as a table. Generated internal evaluate/actionability/locator steps are omitted from JSON and HTML report output so reports stay focused on high-level actions. Traces keep lower-level diagnostics. JUnit reports emit `<skipped>` nodes for declaration-skipped tests and runtime skips.
 Report annotations are emitted as `annotations` in JSON, visible list items in HTML, and JUnit `<property name="cmg.annotation.<type>" ... />` entries.
 
 ## GIF Behavior

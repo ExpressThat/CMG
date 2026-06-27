@@ -88,7 +88,7 @@ public sealed class BrowserScriptRunnerElementGetterTests
         """, "debug", client);
 
         Assert.True(result.Success);
-        Assert.Contains("ATTRIBUTE 002 /profile", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("ATTRIBUTE ", StringComparison.Ordinal) && line.Contains("/profile", StringComparison.Ordinal));
         Assert.Contains("SET 001 href /profile", result.StdoutLines);
     }
 

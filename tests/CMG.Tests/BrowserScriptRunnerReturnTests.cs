@@ -23,7 +23,7 @@ public sealed class BrowserScriptRunnerReturnTests
         """, "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("RETURN 002 Agent", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("RETURN ", StringComparison.Ordinal) && line.Contains("Agent", StringComparison.Ordinal));
         Assert.Contains("SET 006 name Agent", result.StdoutLines);
         Assert.Contains("EVALUATE 009 Agent", result.StdoutLines);
     }

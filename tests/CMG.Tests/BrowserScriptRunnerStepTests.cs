@@ -17,9 +17,9 @@ public sealed class BrowserScriptRunnerStepTests
 
         Assert.True(result.Success, result.Error);
         Assert.Equal("#open", client.LastClickedSelector);
-        Assert.Contains("PASS 001 step Open", result.StdoutLines);
-        Assert.Contains("PASS 001 click #open", result.StdoutLines);
-        Assert.Contains("PASS 002 caption Done", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.Contains("action=step Open", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("context=\"step Open\" action=click #open", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("context=\"step Open\" action=caption Done", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public sealed class BrowserScriptRunnerStepTests
 
         Assert.True(result.Success, result.Error);
         Assert.Equal("#save", client.LastClickedSelector);
-        Assert.Contains("PASS 002 step \"Use #save\"", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.Contains("action=step \"Use #save\"", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public sealed class BrowserScriptRunnerStepTests
         """, "debug", new FakeAutomationClient());
 
         Assert.False(result.Success);
-        Assert.Equal("Line 2: fail failed. Missing setup", result.Error);
+        Assert.Equal("Line 2: fail failed in step Guard. Missing setup", result.Error);
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

@@ -25,7 +25,7 @@ public sealed class BrowserScriptRunnerSwitchTests
         """, "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("EVALUATE 007 ok", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("EVALUATE ", StringComparison.Ordinal) && line.Contains("ok", StringComparison.Ordinal));
         Assert.DoesNotContain(result.StdoutLines, line => line.Contains("wrong", StringComparison.Ordinal));
     }
 

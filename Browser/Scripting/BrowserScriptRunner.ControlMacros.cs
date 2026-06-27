@@ -36,7 +36,8 @@ public sealed partial class BrowserScriptRunner
         }
 
         WithMacroVariables(context, macro, parameterNames.Zip(values), () =>
-            ExecuteActions(remoteDebuggingUrl, automationClient, macroAction.Children, context, recorder, output));
+            context.PushExecutionContext($"macro {macroAction.Arguments[0]}", () =>
+                ExecuteActions(remoteDebuggingUrl, automationClient, macroAction.Children, context, recorder, output)));
     }
 
     private void ExecuteReturn(

@@ -24,7 +24,8 @@ public sealed partial class BrowserScriptRunner
         {
             try
             {
-                ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output);
+                context.PushExecutionContext($"{RetryName(action)}[{attempt}/{max}]", () =>
+                    ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output));
                 if (attempt > 1)
                 {
                     output.Add($"{outputName} {action.LineNumber:000} success attempt={attempt}");

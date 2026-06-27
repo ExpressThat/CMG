@@ -166,6 +166,12 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         var result = scriptValidator.ValidateFile(file);
         if (result.Success)
         {
+            if (result.IsRunner)
+            {
+                Console.WriteLine($"SCRIPT VALID runner suites={result.SuiteCount} tests={result.TestCount} macros={result.MacroCount}");
+                return 0;
+            }
+
             Console.WriteLine($"SCRIPT VALID actions={result.ActionCount}");
             return 0;
         }

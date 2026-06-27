@@ -22,10 +22,10 @@ public sealed class CmgReportWriterTests
         var test = FailedTest() with
         {
             Output = [
-                "PASS 001 evaluate \"(() => { return true; })()\"",
-                "EVALUATE 001 true",
-                "PASS 002 evaluate 1 + 1",
-                "EVALUATE 002 2"
+                "PASS 001 line=1 action=evaluate \"(() => { return true; })()\"",
+                "EVALUATE 001 line=1 action=evaluate true",
+                "PASS 002 line=2 action=evaluate 1 + 1",
+                "EVALUATE 002 line=2 action=evaluate 2"
             ],
             Steps = [
                 new CmgStepResult(
@@ -33,10 +33,10 @@ public sealed class CmgReportWriterTests
                     "evaluate",
                     true,
                     [
-                        "PASS 001 evaluate \"(() => { return true; })()\"",
-                        "EVALUATE 001 true",
-                        "PASS 002 evaluate 1 + 1",
-                        "EVALUATE 002 2"
+                        "PASS 001 line=1 action=evaluate \"(() => { return true; })()\"",
+                        "EVALUATE 001 line=1 action=evaluate true",
+                        "PASS 002 line=2 action=evaluate 1 + 1",
+                        "EVALUATE 002 line=2 action=evaluate 2"
                     ],
                     null,
                     null)
@@ -48,14 +48,48 @@ public sealed class CmgReportWriterTests
         var output = document.RootElement[0].GetProperty("output").EnumerateArray().Select(line => line.GetString()).ToArray();
         var stepOutput = document.RootElement[0].GetProperty("steps")[0].GetProperty("output").EnumerateArray().Select(line => line.GetString()).ToArray();
 
-        Assert.DoesNotContain("PASS 001 evaluate \"(() => { return true; })()\"", output);
-        Assert.DoesNotContain("EVALUATE 001 true", output);
-        Assert.Contains("PASS 002 evaluate 1 + 1", output);
-        Assert.Contains("EVALUATE 002 2", output);
-        Assert.DoesNotContain("PASS 001 evaluate \"(() => { return true; })()\"", stepOutput);
-        Assert.DoesNotContain("EVALUATE 001 true", stepOutput);
-        Assert.Contains("PASS 002 evaluate 1 + 1", stepOutput);
-        Assert.Contains("EVALUATE 002 2", stepOutput);
+        Assert.DoesNotContain("PASS 001 line=1 action=evaluate \"(() => { return true; })()\"", output);
+        Assert.DoesNotContain("EVALUATE 001 line=1 action=evaluate true", output);
+        Assert.Contains("PASS 002 line=2 action=evaluate 1 + 1", output);
+        Assert.Contains("EVALUATE 002 line=2 action=evaluate 2", output);
+        Assert.DoesNotContain("PASS 001 line=1 action=evaluate \"(() => { return true; })()\"", stepOutput);
+        Assert.DoesNotContain("EVALUATE 001 line=1 action=evaluate true", stepOutput);
+        Assert.Contains("PASS 002 line=2 action=evaluate 1 + 1", stepOutput);
+        Assert.Contains("EVALUATE 002 line=2 action=evaluate 2", stepOutput);
+    }
+
+    [Fact]
+    public void JsonReport_IncludesStructuredStepFields()
+    {
+        var report = CmgJsonReportWriter.Write([FailedTest() with
+        {
+            Steps = [new CmgStepResult(42, "click", true, ["PASS 007 line=42 context=\"macro login > repeat[2/3]\" action=click #save"], null, null, 7, "macro login > repeat[2/3]", "click")]
+        }]);
+
+        using var document = JsonDocument.Parse(report);
+        var step = document.RootElement[0].GetProperty("steps")[0];
+        Assert.Equal(7, step.GetProperty("sequence").GetInt32());
+        Assert.Equal(42, step.GetProperty("lineNumber").GetInt32());
+        Assert.Equal("macro login > repeat[2/3]", step.GetProperty("context").GetString());
+        Assert.Equal("click", step.GetProperty("action").GetString());
+    }
+
+    [Fact]
+    public void HtmlReport_FiltersGeneratedInternalsAndShowsStepTable()
+    {
+        var report = CmgHtmlReportWriter.Write([FailedTest() with
+        {
+            Steps = [new CmgStepResult(42, "evaluate", true, [
+                "PASS 001 line=42 action=evaluate new Promise((resolve, reject) => {})",
+                "EVALUATE 001 line=42 action=evaluate true",
+                "PASS 003 line=43 action=evaluate 1 + 1",
+                "EVALUATE 003 line=43 action=evaluate 2"
+            ], null, null, 1, "", "evaluate")]
+        }]);
+
+        Assert.Contains("<table>", report);
+        Assert.DoesNotContain("new Promise((resolve, reject)", report);
+        Assert.Contains("EVALUATE 003 line=43 action=evaluate 2", report);
     }
 
     [Fact]

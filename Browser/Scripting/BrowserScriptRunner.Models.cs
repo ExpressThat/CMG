@@ -1,14 +1,30 @@
 
 namespace CMG.Browser.Scripting;
 
-public sealed record ScriptRunResult(bool Success, IReadOnlyList<string> StdoutLines, string? Error, bool Skipped = false)
+public sealed record ScriptRunResult(
+    bool Success,
+    IReadOnlyList<string> StdoutLines,
+    string? Error,
+    bool Skipped = false,
+    IReadOnlyList<ScriptStepRecord>? Steps = null)
 {
-    public static ScriptRunResult Ok(IReadOnlyList<string> stdoutLines) => new(true, stdoutLines, null);
+    public IReadOnlyList<ScriptStepRecord> StepRecords => Steps ?? [];
 
-    public static ScriptRunResult Fail(string error, IReadOnlyList<string>? stdoutLines = null) => new(false, stdoutLines ?? [], error);
+    public static ScriptRunResult Ok(IReadOnlyList<string> stdoutLines, IReadOnlyList<ScriptStepRecord>? steps = null) => new(true, stdoutLines, null, Steps: steps);
 
-    public static ScriptRunResult Skip(string reason, IReadOnlyList<string>? stdoutLines = null) => new(false, stdoutLines ?? [], reason, true);
+    public static ScriptRunResult Fail(string error, IReadOnlyList<string>? stdoutLines = null, IReadOnlyList<ScriptStepRecord>? steps = null) => new(false, stdoutLines ?? [], error, Steps: steps);
+
+    public static ScriptRunResult Skip(string reason, IReadOnlyList<string>? stdoutLines = null, IReadOnlyList<ScriptStepRecord>? steps = null) => new(false, stdoutLines ?? [], reason, true, steps);
 }
+
+public sealed record ScriptStepRecord(
+    int Sequence,
+    int LineNumber,
+    string Action,
+    string Context,
+    bool Success,
+    IReadOnlyList<string> Output,
+    string? Error);
 
 public sealed record ScriptTimeoutOptions(
     int? DefaultTimeout = null,
@@ -20,6 +36,7 @@ internal sealed class ScriptExecutionContext
     private List<Dictionary<string, string>> variableScopes = [new(StringComparer.Ordinal)];
     private readonly List<string> selectorScopes = [];
     private readonly List<string> frameScopes = [];
+    private readonly List<string> contextScopes = [];
 
     public Dictionary<string, ScriptMacro> Macros { get; } = new(StringComparer.OrdinalIgnoreCase);
 
@@ -35,11 +52,19 @@ internal sealed class ScriptExecutionContext
 
     public List<string> SoftFailures { get; } = [];
 
+    public List<ScriptStepRecord> StepRecords { get; } = [];
+
     public int CurrentVariableScopeIndex => variableScopes.Count - 1;
 
     public string? CurrentSelectorScope => selectorScopes.Count is 0 ? null : selectorScopes[^1];
 
     public string? CurrentFrameScope => frameScopes.Count is 0 ? null : frameScopes[^1];
+
+    public string CurrentContext => contextScopes.Count is 0 ? string.Empty : string.Join(" > ", contextScopes);
+
+    public int NextSequence() => ++StepSequence;
+
+    private int StepSequence { get; set; }
 
     public bool TryGetVariable(string name, out string value)
     {
@@ -116,13 +141,28 @@ internal sealed class ScriptExecutionContext
             frameScopes.RemoveAt(frameScopes.Count - 1);
         }
     }
+
+    public void PushExecutionContext(string value, Action body)
+    {
+        contextScopes.Add(value);
+        try
+        {
+            body();
+        }
+        finally
+        {
+            contextScopes.RemoveAt(contextScopes.Count - 1);
+        }
+    }
 }
 
 internal sealed record ScriptMacro(BrowserScriptAction Action, int DefinitionScopeIndex);
 
 internal sealed record BrowserScriptTraceStep(
+    int Sequence,
     int LineNumber,
     string Name,
+    string Context,
     bool Success,
     string? Error,
     IReadOnlyList<string> Output);

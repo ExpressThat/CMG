@@ -41,8 +41,8 @@ public sealed class BrowserScriptRunnerControlFlowTests
         """, "debug", client);
 
         Assert.True(result.Success);
-        Assert.Contains("SET 004 title CMG", result.StdoutLines);
-        Assert.Contains("EVALUATE 007 CMG", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("SET ", StringComparison.Ordinal) && line.Contains(" title CMG", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("EVALUATE ", StringComparison.Ordinal) && line.Contains(" CMG", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public sealed class BrowserScriptRunnerControlFlowTests
         """, "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("EVALUATE 006 outer", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("EVALUATE ", StringComparison.Ordinal) && line.Contains(" outer", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public sealed class BrowserScriptRunnerControlFlowTests
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
         Assert.Contains(result.StdoutLines, line => line.StartsWith("SET ", StringComparison.Ordinal) && line.Contains(" first global", StringComparison.Ordinal));
         Assert.Contains(result.StdoutLines, line => line.StartsWith("SET ", StringComparison.Ordinal) && line.Contains(" second local", StringComparison.Ordinal));
-        Assert.Contains(result.StdoutLines, line => line.StartsWith("EVALUATE ", StringComparison.Ordinal) && line.EndsWith(" global", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("EVALUATE ", StringComparison.Ordinal) && line.Contains(" global", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public sealed class BrowserScriptRunnerControlFlowTests
         """, "debug", new FakeAutomationClient());
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("SET 015 final parent-inner-parent", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("SET ", StringComparison.Ordinal) && line.Contains(" final parent-inner-parent", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public sealed class BrowserScriptRunnerControlFlowTests
         """, "debug", new FakeAutomationClient());
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("SET 009 final global", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("SET ", StringComparison.Ordinal) && line.Contains(" final global", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -215,8 +215,8 @@ public sealed class BrowserScriptRunnerControlFlowTests
         """, "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("SET 004 name Agent", result.StdoutLines);
-        Assert.Contains("EVALUATE 007 Agent", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("SET ", StringComparison.Ordinal) && line.Contains(" name Agent", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("EVALUATE ", StringComparison.Ordinal) && line.Contains(" Agent", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -230,7 +230,7 @@ public sealed class BrowserScriptRunnerControlFlowTests
         """, "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
-        Assert.Contains("EVALUATE 002 Profile", result.StdoutLines);
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("EVALUATE ", StringComparison.Ordinal) && line.Contains(" Profile", StringComparison.Ordinal));
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
