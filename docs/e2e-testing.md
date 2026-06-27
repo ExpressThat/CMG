@@ -95,7 +95,7 @@ The first E2E slice covers:
 - Direct script and runner WebSocket actions for route installation, socket waits, message waits, generic `waitForEvent` aliases, route clearing, trace output, and validation failure output.
 - Browser-control event commands for console messages, page errors, generic event waits, dialog capture, dialog behavior, and absence assertions.
 - Browser-control event aliases for console capture/waits, page-error capture/waits, generic `waitForEvent`, and dialog `onDialog`/`handleDialog`.
-- Direct script and runner event actions for console capture/waits, page-error capture/waits, generic `waitForEvent`, dialog handling, absence assertions, trace output, and matcher validation failure diagnostics.
+- Direct script and runner event actions for console capture/waits, page-error capture/waits, generic `waitForEvent` including download waits, dialog handling, absence assertions, trace output, and matcher validation failure diagnostics.
 - Browser-control coverage commands for start/stop aliases, file-backed coverage output, stdout JSON output, and validation failures.
 - Runner coverage actions for file-backed coverage output and per-step coverage failure diagnostics.
 - Browser-control tab alias commands for listing, opening, waiting, popup waits, activation, closing, and tab-count failure reasons.

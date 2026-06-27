@@ -15,6 +15,8 @@ public sealed class BrowserEventActionE2eTests
     [Fact]
     public void DirectScript_ConsoleAndPageErrorActionsRunAgainstBrowser()
     {
+        Directory.CreateDirectory(fixture.OutputDirectory);
+        File.WriteAllText(fixture.OutputPath("generic-event-download.txt"), "download-ready");
         var script = fixture.CreateScript("event-actions.cmgscript", $$"""
             navigate "{{fixture.FixtureHttpUri("index.html")}}" waitUntil=domcontentloaded
             captureConsole
@@ -28,6 +30,7 @@ public sealed class BrowserEventActionE2eTests
             waitForPageError "direct page boom" timeout=5000
             expectNoPageError "not emitted" timeout=10
             waitForEvent pageError text="direct page boom" timeout=5000
+            waitForEvent download directory="{{ScriptPath(fixture.OutputDirectory)}}" pattern="generic-event-download.txt" timeout=1000
             """);
 
         var result = fixture.Cli.Run("browser", "control", "script", "--file", script);
@@ -41,6 +44,7 @@ public sealed class BrowserEventActionE2eTests
         result.StdoutContains("PAGE_ERROR 010");
         result.StdoutContains("PAGE_ERROR_OK 011");
         result.StdoutContains("PAGE_ERROR 012");
+        result.StdoutContains("DOWNLOAD 013");
     }
 
     [Fact]
@@ -60,6 +64,8 @@ public sealed class BrowserEventActionE2eTests
     [Fact]
     public void RunCommand_EventAndDialogActionsRunInsideTests()
     {
+        Directory.CreateDirectory(fixture.OutputDirectory);
+        File.WriteAllText(fixture.OutputPath("runner-generic-event-download.txt"), "download-ready");
         var traceDir = fixture.OutputPath("runner-event-traces");
         var script = fixture.CreateScript("runner-event-actions.cmgscript", $$"""
             test "runner event actions" {
@@ -84,6 +90,7 @@ public sealed class BrowserEventActionE2eTests
               click "#dialog-confirm"
               waitForEvent dialog message="fixture confirm" timeout=5000
               expectText "#status" "confirm dismissed"
+              waitForEvent download directory="{{ScriptPath(fixture.OutputDirectory)}}" pattern="runner-generic-event-download.txt" timeout=1000
             }
             """);
 
@@ -101,6 +108,7 @@ public sealed class BrowserEventActionE2eTests
         AssertTraceContains(trace, "PAGE_ERROR_OK");
         AssertTraceContains(trace, "DIALOG_BEHAVIOR");
         AssertTraceContains(trace, "DIALOG ");
+        AssertTraceContains(trace, "DOWNLOAD");
     }
 
     [Fact]
@@ -123,4 +131,7 @@ public sealed class BrowserEventActionE2eTests
 
     private static void AssertTraceContains(string trace, string expected) =>
         Assert.Contains(expected, trace, StringComparison.Ordinal);
+
+    private static string ScriptPath(string path) =>
+        path.Replace("\\", "/", StringComparison.Ordinal);
 }
