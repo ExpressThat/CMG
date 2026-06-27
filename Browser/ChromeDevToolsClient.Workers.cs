@@ -8,13 +8,18 @@ namespace CMG.Browser;
 public sealed partial class ChromeDevToolsClient
 {
     public IReadOnlyList<BrowserWorkerInfo> ListWorkers(string remoteDebuggingUrl) =>
-        Run(async () => (await GetWorkerTargets(remoteDebuggingUrl))
+        Run(async () => MergeWorkerTargets(await GetWorkerTargets(remoteDebuggingUrl), ListPageBridgeWorkers(remoteDebuggingUrl))
             .Select(worker => new BrowserWorkerInfo(worker.Id, worker.Type, worker.Title, worker.Url))
             .ToArray());
 
     public string EvaluateWorker(string remoteDebuggingUrl, string? target, string expression) =>
         Run(async () =>
         {
+            if (TryEvaluatePageBridgeWorker(remoteDebuggingUrl, target, expression, out var bridgeResult))
+            {
+                return bridgeResult;
+            }
+
             try
             {
                 await using var session = await DevToolsSession.Connect(await GetBrowserWebSocketDebuggerUrl(remoteDebuggingUrl), enablePage: false);
@@ -41,7 +46,9 @@ public sealed partial class ChromeDevToolsClient
         });
 
     public int InterceptWorkerRequests(string remoteDebuggingUrl, string? target, WorkerRouteOptions options) =>
-        int.Parse(EvaluateWorker(remoteDebuggingUrl, target, BuildWorkerInterceptScript(options)), CultureInfo.InvariantCulture);
+        TryInterceptPageBridgeWorker(remoteDebuggingUrl, target, options, out var count)
+            ? count
+            : int.Parse(EvaluateWorker(remoteDebuggingUrl, target, BuildWorkerInterceptScript(options)), CultureInfo.InvariantCulture);
 
     private static async Task<IReadOnlyList<WorkerTarget>> GetWorkerTargets(string remoteDebuggingUrl)
     {
@@ -59,8 +66,21 @@ public sealed partial class ChromeDevToolsClient
 
         return string.IsNullOrWhiteSpace(target)
             ? workers[0]
-            : workers.FirstOrDefault(worker => worker.Id == target || worker.Url.Contains(target, StringComparison.OrdinalIgnoreCase)) ??
+            : workers.FirstOrDefault(worker => worker.Id == target ||
+                worker.Url.Contains(target, StringComparison.OrdinalIgnoreCase) ||
+                worker.Title.Contains(target, StringComparison.OrdinalIgnoreCase)) ??
                 throw new ChromeDevToolsException($"No worker matched '{target}'.");
+    }
+
+    private static IReadOnlyList<WorkerTarget> MergeWorkerTargets(IReadOnlyList<WorkerTarget> first, IReadOnlyList<WorkerTarget> second)
+    {
+        var workers = first.ToDictionary(worker => worker.Id, StringComparer.OrdinalIgnoreCase);
+        foreach (var worker in second)
+        {
+            workers[worker.Id] = worker;
+        }
+
+        return workers.Values.ToArray();
     }
 
     private static async Task<IReadOnlyList<WorkerTarget>> GetWorkerTargets(DevToolsSession session)

@@ -55,11 +55,11 @@ The first E2E slice covers:
 - Browser-control WebSocket commands for route installation, socket waits, message waits, generic event waits, and route clearing against a real WebSocket handshake.
 - Browser-control event commands for console messages, page errors, generic event waits, dialog capture, dialog behavior, and absence assertions.
 - Browser-control advanced input commands for clipboard shims, tap/touch tap, mouse movement/buttons, scroll/wheel, custom events, file upload aliases, and download wait success/failure behavior.
-- Browser-control worker discovery commands for real worker listing and missing-worker wait failure output.
+- Browser-control worker commands for real worker listing, waiting, evaluation, interception, and missing-worker wait failure output.
 - Local `files` command success and failure behavior.
 - Navigation, runtime text reads, input, assertions, screenshots, element HTML, and failure reasons.
 - Direct script execution with GIF and trace output.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.
 - Structured `cmg run` with reports, traces, optional GIFs, tags, variables, and list mode.
 
-Known remaining E2E gaps include worker evaluation/interception against real Chrome worker targets. Current CDP target metadata exposes the worker target but not its URL in the exercised headless flow, and attached-worker runtime evaluation still needs a product fix before those commands can be honestly proven end to end.
+Worker evaluation and interception are covered against real headless Chrome workers created from the fixture server after CMG initializes worker support.

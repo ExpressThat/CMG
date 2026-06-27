@@ -14,18 +14,28 @@ public sealed class BrowserWorkerCommandE2eTests
     }
 
     [Fact]
-    public void WorkerCommands_ListRealWorkerAndReportMissingWorkerWait()
+    public void WorkerCommands_WaitEvaluateAndInterceptRealWorker()
     {
         Navigate();
         var workerUrl = fixture.FixtureHttpUri("worker-fixture.js");
+        Run("browser", "control", "workers", "list");
         Evaluate($$"""
-        window.__cmgWorker = new Worker({{JsonSerializer.Serialize(workerUrl)}});
+        window.__cmgWorker = new Worker({{JsonSerializer.Serialize(workerUrl)}}, { name: "worker-fixture.js" });
         window.__cmgWorker.addEventListener('message', event => window.__cmgWorkerReply = event.data.value);
         true
         """);
 
-        Run("browser", "control", "workers", "list").StdoutContains("WORKER");
+        Run("browser", "control", "workers", "list").StdoutContains("worker-fixture.js");
         Run("browser", "control", "workers", "listWorkers").StdoutContains("WORKER");
+        Run("browser", "control", "workers", "wait", "worker-fixture.js", "--timeout", "5000");
+        Run("browser", "control", "workers", "waitForWorker", "worker-fixture\\.js$", "--match", "regex", "--timeout", "5000");
+        Run("browser", "control", "workers", "evaluate", "self.__cmgWorkerState.startedAt > 0", "--target", "worker-fixture.js")
+            .StdoutContains("true");
+        Run("browser", "control", "workers", "workerEvaluate", "self.__cmgWorkerState.messages.length", "--target", "worker-fixture.js")
+            .StdoutContains("0");
+        Run("browser", "control", "workers", "intercept", "worker-mocked.json", "--body", "{\"from\":\"worker\"}", "--content-type", "application/json", "--target", "worker-fixture.js");
+        Run("browser", "control", "workers", "workerEvaluate", "fetch('/worker-mocked.json').then(r => r.text())", "--target", "worker-fixture.js")
+            .StdoutContains("{\"from\":\"worker\"}");
 
         var missing = fixture.Cli.Run(
             "browser",

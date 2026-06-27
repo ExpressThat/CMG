@@ -2081,21 +2081,26 @@ These actions do not move the virtual pointer. They affect page-side requests an
 
 ```text
 listWorkers
+evaluate "window.worker = new Worker('/worker.js', { name: 'worker.js' }); true"
 waitForWorker "worker.js" timeout=5000
 waitForWorker "worker-\\d+\\.js" match=regex ignoreCase=true timeout=5000
-workerEvaluate "self.location.href" target="worker.js"
+workerEvaluate "self.ready === true" target="worker.js"
 workerIntercept "/api/profile" status=200 body="{\"name\":\"CMG\"}" contentType="application/json" target="worker.js"
 workerIntercept "/api/profile/\\d+" match=regex ignoreCase=true bodyFile="fixtures/profile.json" header="X-Trace: demo" target="worker.js"
 ```
 
-Inspects and controls worker targets exposed by the browser automation provider. `workerIntercept` patches a matched worker's `fetch()` function so worker-originated requests can receive deterministic responses. Worker intercepts support the same URL match modes, file-backed bodies, and response header options as page `route`. The optional `target` option can be a worker id or URL substring; when omitted, CMG uses the first available worker.
+Inspects and controls worker targets exposed by the browser automation provider. `listWorkers`, `workerEvaluate`, and `workerIntercept` initialize CMG's page-side worker bridge. Same-origin classic workers created after that initialization keep CMG-owned id, URL, and worker name/title metadata so they can be targeted reliably in headless Chrome.
+
+`workerIntercept` patches a matched worker's `fetch()` function so worker-originated requests can receive deterministic responses. Worker intercepts support the same URL match modes, file-backed bodies, and response header options as page `route`. The optional `target` option can be a worker id, URL substring, or worker name/title substring; when omitted, CMG uses the first available worker.
+
+Workers that already existed before bridge initialization are still listed from browser target metadata when Chrome exposes them, but URL/title metadata and direct evaluation depend on what the browser target reports. Worker interception does not rewrite browser-level navigation requests, service worker traffic, module workers, or cross-origin workers.
 
 Options:
 
 - `timeout`: Optional for `waitForWorker`. Default is `5000`.
 - `match`: Optional URL match mode for `waitForWorker` and `workerIntercept`. Supports `contains`, `exact`, and `regex`. Default is `contains`.
 - `ignoreCase`: Optional boolean for worker URL matching. `waitForWorker` defaults to case-insensitive matching.
-- `target`: Optional worker id or URL substring for `workerEvaluate` and `workerIntercept`.
+- `target`: Optional worker id, URL substring, or worker name/title substring for `workerEvaluate` and `workerIntercept`.
 - `status`: Optional response status for `workerIntercept`. Default is `200`.
 - `body`: Optional response body for `workerIntercept`. Default is empty text.
 - `bodyFile`: Optional response body file for `workerIntercept`.
