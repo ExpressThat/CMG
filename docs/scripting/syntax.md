@@ -322,7 +322,7 @@ PASS 007 line=42 context="macro login > repeat[2/3]" action=click #save
 EVALUATE 008 line=43 context="macro login > repeat[2/3]" action=evaluate true
 ```
 
-The `context=` field is omitted when there is no parent context. `PASS` and payload lines use a global run sequence so nested macro/loop output stays ordered. JSON and HTML runner reports expose sequence, source line, context, and action as separate fields for every step.
+The `context=` field is omitted when there is no parent context. `PASS` and payload lines use a global run sequence so nested macro/loop output stays ordered. JSON and HTML runner reports expose sequence, source line, context, and action as separate fields for every public executed step. Generated internal evaluate/actionability/locator steps are omitted from public reports and kept in trace/debug artifacts.
 
 `within "<container>" { ... }` scopes selector-based child actions to the container. Nested `within` blocks compose selectors. Pointer-aware child actions still use CMG's virtual pointer and GIF event path after scoping.
 

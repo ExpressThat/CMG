@@ -104,6 +104,26 @@ public sealed class CmgVisualSegmentExecutorTests
         Assert.Contains("NAVIGATED 001 https://override.test/checkout", result.Output);
     }
 
+    [Fact]
+    public void Run_DoesNotEmitPlannedPlaceholderSteps()
+    {
+        var test = new CmgTestCase(
+            "flow.cmgscript",
+            "runtime steps",
+            [
+                Node("navigate", ["https://example.test"]),
+                Node("click", ["#save"])
+            ],
+            new Dictionary<string, string>());
+
+        var result = Executor(new FakeAutomationClient()).Run(test, "debug", Options(), attempt: 1);
+
+        Assert.True(result.Success, result.Error);
+        Assert.All(result.Steps, step => Assert.NotEqual(0, step.Sequence));
+        Assert.Contains(result.Steps, step => step.Action == "navigate");
+        Assert.Contains(result.Steps, step => step.Action == "click");
+    }
+
     private static CmgVisualSegmentExecutor Executor(IBrowserAutomationClient client) =>
         new(
             new BrowserScriptRunner(new BrowserScriptParser()),

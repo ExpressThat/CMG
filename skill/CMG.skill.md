@@ -23,7 +23,7 @@ Use CMG when you need a real browser action, a repeatable browser script, a stru
 4. Parse results predictably.
    - Exit code `0` means success; exit code `1` means failure.
    - Treat stdout as parseable command output: `PASS 001 line=3 action=navigate ...`; nested macro/loop/step output adds `context="..."`.
-   - For runner reports, prefer JSON step fields (`sequence`, `lineNumber`, `context`, `action`) instead of parsing human output strings.
+   - For runner reports, prefer JSON step fields (`sequence`, `lineNumber`, `context`, `action`) instead of parsing human output strings. JSON/HTML steps are public executed steps only; trace artifacts keep raw internals.
    - Treat stderr as diagnostics, including failed step/test reasons.
 5. Use safe paths.
    - Write artifacts under an explicit workspace folder such as `artifacts/` or `demo-output/`.

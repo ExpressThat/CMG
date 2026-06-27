@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace CMG.Runner;
 
-public static class CmgJsonReportWriter
+public static partial class CmgJsonReportWriter
 {
     public static string Write(IReadOnlyList<CmgTestResult> tests)
     {
@@ -31,15 +31,16 @@ public static class CmgJsonReportWriter
             }
 
             writer.WriteEndArray();
+            var publicSteps = PublicSteps(test.Steps);
             writer.WriteStartArray("output");
-            foreach (var line in CleanOutputForReports(test.Output))
+            foreach (var line in PublicOutput(test.Output, test.Steps))
             {
                 writer.WriteStringValue(line);
             }
 
             writer.WriteEndArray();
             writer.WriteStartArray("steps");
-            foreach (var step in test.Steps)
+            foreach (var step in publicSteps)
             {
                 writer.WriteStartObject();
                 writer.WriteNumber("sequence", step.Sequence);
@@ -133,14 +134,15 @@ public static class CmgJsonReportWriter
     private static bool TryReadStructuredSequence(string line, out int sequence)
     {
         sequence = 0;
-        var first = line.IndexOf(' ');
-        if (first < 0)
-        {
-            return false;
-        }
-
-        return TryReadLineNumber(line, first + 1, out sequence) &&
+        return TryReadLeadingSequence(line, out sequence) &&
             line.Contains(" line=", StringComparison.Ordinal);
+    }
+
+    private static bool TryReadLeadingSequence(string line, out int sequence)
+    {
+        sequence = 0;
+        var first = line.IndexOf(' ');
+        return first >= 0 && TryReadLineNumber(line, first + 1, out sequence);
     }
 
     private static bool TryReadLineNumber(string line, int start, out int lineNumber)
@@ -149,4 +151,5 @@ public static class CmgJsonReportWriter
         return line.Length >= start + 3 &&
             int.TryParse(line.AsSpan(start, 3), out lineNumber);
     }
+
 }

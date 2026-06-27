@@ -147,10 +147,6 @@ public sealed partial class CmgVisualSegmentExecutor
                 ? lowerer.LowerRecordingBlock(action)
                 : lowerer.Lower(action);
             AddPending(pending, pendingLineMap, action, lines);
-            if (!IsRecordingBlock(action.Kind))
-            {
-                steps.Add(new CmgStepResult(action.LineNumber, action.Kind, true, [], null, null));
-            }
         }
 
         var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, commandGif, timeouts, baseUrl);

@@ -34,12 +34,26 @@ public sealed class CmgReportWriterTests
                     true,
                     [
                         "PASS 001 line=1 action=evaluate \"(() => { return true; })()\"",
-                        "EVALUATE 001 line=1 action=evaluate true",
+                        "EVALUATE 001 line=1 action=evaluate true"
+                    ],
+                    null,
+                    null,
+                    1,
+                    "",
+                    "evaluate"),
+                new CmgStepResult(
+                    2,
+                    "evaluate",
+                    true,
+                    [
                         "PASS 002 line=2 action=evaluate 1 + 1",
                         "EVALUATE 002 line=2 action=evaluate 2"
                     ],
                     null,
-                    null)
+                    null,
+                    2,
+                    "",
+                    "evaluate")
             ]
         };
 
@@ -50,12 +64,12 @@ public sealed class CmgReportWriterTests
 
         Assert.DoesNotContain("PASS 001 line=1 action=evaluate \"(() => { return true; })()\"", output);
         Assert.DoesNotContain("EVALUATE 001 line=1 action=evaluate true", output);
-        Assert.Contains("PASS 002 line=2 action=evaluate 1 + 1", output);
-        Assert.Contains("EVALUATE 002 line=2 action=evaluate 2", output);
+        Assert.Contains("PASS 001 line=2 action=evaluate 1 + 1", output);
+        Assert.Contains("EVALUATE 001 line=2 action=evaluate 2", output);
         Assert.DoesNotContain("PASS 001 line=1 action=evaluate \"(() => { return true; })()\"", stepOutput);
         Assert.DoesNotContain("EVALUATE 001 line=1 action=evaluate true", stepOutput);
-        Assert.Contains("PASS 002 line=2 action=evaluate 1 + 1", stepOutput);
-        Assert.Contains("EVALUATE 002 line=2 action=evaluate 2", stepOutput);
+        Assert.Contains("PASS 001 line=2 action=evaluate 1 + 1", stepOutput);
+        Assert.Contains("EVALUATE 001 line=2 action=evaluate 2", stepOutput);
     }
 
     [Fact]
@@ -68,7 +82,7 @@ public sealed class CmgReportWriterTests
 
         using var document = JsonDocument.Parse(report);
         var step = document.RootElement[0].GetProperty("steps")[0];
-        Assert.Equal(7, step.GetProperty("sequence").GetInt32());
+        Assert.Equal(1, step.GetProperty("sequence").GetInt32());
         Assert.Equal(42, step.GetProperty("lineNumber").GetInt32());
         Assert.Equal("macro login > repeat[2/3]", step.GetProperty("context").GetString());
         Assert.Equal("click", step.GetProperty("action").GetString());
@@ -84,12 +98,71 @@ public sealed class CmgReportWriterTests
                 "EVALUATE 001 line=42 action=evaluate true",
                 "PASS 003 line=43 action=evaluate 1 + 1",
                 "EVALUATE 003 line=43 action=evaluate 2"
-            ], null, null, 1, "", "evaluate")]
+            ], null, null, 1, "", "evaluate"),
+            new CmgStepResult(43, "evaluate", true, [
+                "PASS 003 line=43 action=evaluate 1 + 1",
+                "EVALUATE 003 line=43 action=evaluate 2"
+            ], null, null, 3, "", "evaluate")]
         }]);
 
         Assert.Contains("<table>", report);
         Assert.DoesNotContain("new Promise((resolve, reject)", report);
-        Assert.Contains("EVALUATE 003 line=43 action=evaluate 2", report);
+        Assert.Contains("EVALUATE 001 line=43 action=evaluate 2", report);
+    }
+
+    [Fact]
+    public void JsonReport_PublicStepsOmitInternalsAndRenumberContiguously()
+    {
+        var report = CmgJsonReportWriter.Write([FailedTest() with
+        {
+            Output = [
+                "PASS 005 line=20 action=evaluate new Promise((resolve, reject) => {})",
+                "EVALUATE 005 line=20 action=evaluate true",
+                "PASS 007 line=21 action=click #save",
+                "PASS 009 line=22 action=screenshot #taskList",
+                "SCREENSHOT 022 artifacts/task-list.png"
+            ],
+            Steps = [
+                new CmgStepResult(20, "evaluate", true, [
+                    "PASS 005 line=20 action=evaluate new Promise((resolve, reject) => {})",
+                    "EVALUATE 005 line=20 action=evaluate true"
+                ], null, null, 5, "", "evaluate"),
+                new CmgStepResult(21, "click", true, [
+                    "PASS 007 line=21 action=click #save"
+                ], null, null, 7, "", "click"),
+                new CmgStepResult(22, "screenshot", true, [
+                    "PASS 009 line=22 action=screenshot #taskList",
+                    "SCREENSHOT 022 artifacts/task-list.png"
+                ], null, null, 9, "", "screenshot")
+            ]
+        }]);
+
+        using var document = JsonDocument.Parse(report);
+        var steps = document.RootElement[0].GetProperty("steps").EnumerateArray().ToArray();
+        Assert.Equal(2, steps.Length);
+        Assert.Equal([1, 2], steps.Select(step => step.GetProperty("sequence").GetInt32()).ToArray());
+        Assert.Equal(["click", "screenshot"], steps.Select(step => step.GetProperty("action").GetString() ?? string.Empty).ToArray());
+        var screenshotOutput = steps[1].GetProperty("output").EnumerateArray().Select(line => line.GetString()).ToArray();
+        Assert.Contains("PASS 002 line=22 action=screenshot #taskList", screenshotOutput);
+        Assert.Contains("SCREENSHOT 002 artifacts/task-list.png", screenshotOutput);
+        Assert.DoesNotContain("new Promise((resolve, reject)", report);
+    }
+
+    [Fact]
+    public void JsonReport_OmitsSequenceZeroPlannedPlaceholders()
+    {
+        var report = CmgJsonReportWriter.Write([FailedTest() with
+        {
+            Steps = [
+                new CmgStepResult(20, "click", true, [], null, null),
+                new CmgStepResult(20, "click", true, ["PASS 004 line=20 action=click #save"], null, null, 4, "", "click")
+            ]
+        }]);
+
+        using var document = JsonDocument.Parse(report);
+        var steps = document.RootElement[0].GetProperty("steps").EnumerateArray().ToArray();
+        Assert.Single(steps);
+        Assert.Equal(1, steps[0].GetProperty("sequence").GetInt32());
     }
 
     [Fact]

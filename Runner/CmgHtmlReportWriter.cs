@@ -41,13 +41,14 @@ public static class CmgHtmlReportWriter
                 builder.AppendLine("</ul>");
             }
 
-            if (test.Steps.Count > 0)
+            var publicSteps = CmgJsonReportWriter.PublicSteps(test.Steps);
+            if (publicSteps.Count > 0)
             {
                 builder.AppendLine("<table><thead><tr><th>#</th><th>Line</th><th>Context</th><th>Action</th><th>Status</th><th>Output</th></tr></thead><tbody>");
-                foreach (var step in test.Steps.OrderBy(step => step.Sequence is 0 ? int.MaxValue : step.Sequence))
+                foreach (var step in publicSteps)
                 {
                     builder.AppendLine("<tr>");
-                    builder.AppendLine($"<td>{(step.Sequence is 0 ? string.Empty : step.Sequence.ToString())}</td>");
+                    builder.AppendLine($"<td>{step.Sequence}</td>");
                     builder.AppendLine($"<td>{step.LineNumber}</td>");
                     builder.AppendLine($"<td>{Encode(step.Context)}</td>");
                     builder.AppendLine($"<td>{Encode(string.IsNullOrWhiteSpace(step.Action) ? step.Name : step.Action)}</td>");
@@ -61,7 +62,7 @@ public static class CmgHtmlReportWriter
             else
             {
                 builder.AppendLine("<pre>");
-                foreach (var line in CleanOutput(test.Output))
+                foreach (var line in CmgJsonReportWriter.PublicOutput(test.Output, test.Steps))
                 {
                     builder.AppendLine(Encode(line));
                 }
