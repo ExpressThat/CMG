@@ -21,6 +21,13 @@ public sealed class CmgCliFixture : IDisposable
 
     public string OutputPath(string name) => Path.Combine(OutputDirectory, name);
 
+    public string CreateScript(string name, string content)
+    {
+        var path = Path.Combine(workspace, name);
+        File.WriteAllText(path, content);
+        return path;
+    }
+
     public void Dispose()
     {
         try
