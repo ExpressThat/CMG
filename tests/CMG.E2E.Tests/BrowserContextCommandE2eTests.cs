@@ -3,7 +3,8 @@ using CMG.E2E.Tests.Support;
 
 namespace CMG.E2E.Tests;
 
-public sealed partial class BrowserContextCommandE2eTests : IClassFixture<CmgBrowserFixture>
+[Collection(CmgE2eCollection.Name)]
+public sealed partial class BrowserContextCommandE2eTests
 {
     private readonly CmgBrowserFixture fixture;
 

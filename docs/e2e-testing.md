@@ -19,8 +19,8 @@ dotnet test tests\CMG.E2E.Tests\CMG.E2E.Tests.csproj --no-build
 - Launches the built CMG app as an external process.
 - Builds CMG once through the E2E test project's `ProjectReference`; individual E2E CLI calls reuse the built apphost (`CMG.exe` when available) rather than invoking `dotnet run`.
 - Starts Chrome headless with `cmg browser --port <free-port> launch --headless`.
-- Uses an isolated temporary `LOCALAPPDATA` directory per test class so tests do not touch a developer's normal CMG browser state.
-- Starts a tiny local static HTTP fixture server per browser fixture for origin-sensitive behavior such as cookies, network, workers, and future request tests.
+- Uses an isolated temporary `LOCALAPPDATA` directory for the shared browser E2E fixture so tests do not touch a developer's normal CMG browser state.
+- Starts a tiny local static HTTP fixture server for the shared browser fixture for origin-sensitive behavior such as cookies, network, workers, and future request tests.
 - Reuses the same C# fixture server for API command tests through `/api/echo`, `/api/status/<code>`, and `/api/slow`.
 - Drives the browser through real CLI commands, direct `.cmgscript` files, and `cmg run` test files.
 - Writes and verifies real screenshots, GIFs, traces, JSON reports, HTML reports, and JUnit reports.
@@ -53,8 +53,8 @@ Keep E2E tests explicit and scenario-shaped:
 
 - `dotnet test` builds CMG once through the E2E project reference. The fixture then reuses the built apphost for individual CLI calls.
 - `--no-build` is the fastest local loop when code has already been built.
-- Browser E2E tests use isolated class fixtures. Each browser fixture gets a separate Chrome process, remote debugging port, browser profile, `LOCALAPPDATA` root, output directory, and fixture server.
-- The E2E assembly disables xUnit test parallelization. Fixtures are isolated, but full-suite runs are serial to avoid shared DevTools/process-cleanup contention while commands are spawning external CMG processes.
+- Browser E2E tests use the shared `CmgE2eCollection` fixture. The fixture owns one Chrome process, remote debugging port, browser profile, `LOCALAPPDATA` root, output directory, and fixture server for the browser-backed collection.
+- The E2E assembly disables xUnit test parallelization. The shared browser fixture is isolated from local developer state, and full-suite runs are serial to avoid shared DevTools/process-cleanup contention while commands are spawning external CMG processes.
 - Fixture CLI calls automatically scope `browser` commands with `browser --port <fixture-port>` and `run` commands with `--browser-port <fixture-port>`.
 - The fixture closes the selected browser port at disposal and falls back to killing any process ids left in CMG state files before deleting its workspace.
 - Non-browser E2E classes, such as help coverage and local file commands, use a lightweight CLI fixture and do not launch Chrome.

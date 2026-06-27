@@ -2,7 +2,8 @@ using CMG.E2E.Tests.Support;
 
 namespace CMG.E2E.Tests;
 
-public sealed class BrowserEventAliasCommandE2eTests : IClassFixture<CmgBrowserFixture>
+[Collection(CmgE2eCollection.Name)]
+public sealed class BrowserEventAliasCommandE2eTests
 {
     private readonly CmgBrowserFixture fixture;
 
