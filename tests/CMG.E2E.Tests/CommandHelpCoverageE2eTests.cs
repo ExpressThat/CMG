@@ -1,9 +1,12 @@
 using CMG.E2E.Tests.Support;
+using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 
 namespace CMG.E2E.Tests;
 
 public sealed class CommandHelpCoverageE2eTests : IClassFixture<CmgCliFixture>
 {
+    private static readonly Regex CommandHeadingPattern = new("^# `(?<command>[^`]+)`$", RegexOptions.Compiled);
     private readonly CmgCliFixture fixture;
 
     public CommandHelpCoverageE2eTests(CmgCliFixture fixture)
@@ -12,30 +15,36 @@ public sealed class CommandHelpCoverageE2eTests : IClassFixture<CmgCliFixture>
     }
 
     [Fact]
-    public void RepresentativeCommands_HaveWorkingExternalHelp()
+    public void DocumentedCommands_HaveWorkingExternalHelp()
     {
-        foreach (var command in RepresentativeCommands())
+        var failures = new ConcurrentBag<string>();
+        Parallel.ForEach(DocumentedCommands(), new ParallelOptions { MaxDegreeOfParallelism = 8 }, command =>
         {
             var result = fixture.Cli.RunWithTimeout(TimeSpan.FromSeconds(20), [.. command, "--help"]);
-            Assert.True(
-                result.ExitCode is 0 && result.Stdout.Contains("Usage:", StringComparison.Ordinal),
-                $"{string.Join(' ', command)} => exit {result.ExitCode}\n{result.Stdout}\n{result.Stderr}");
-        }
+            if (result.ExitCode is not 0 || !result.Stdout.Contains("Usage:", StringComparison.Ordinal))
+            {
+                failures.Add($"{string.Join(' ', command)} => exit {result.ExitCode}\n{result.Stdout}\n{result.Stderr}");
+            }
+        });
+
+        Assert.Empty(failures);
 
         Assert.False(
             Directory.Exists(Path.Combine(fixture.LocalAppData, "CMG")),
             "Help commands must not create browser state or require a launched browser.");
     }
 
-    private static IEnumerable<string[]> RepresentativeCommands()
+    private static IEnumerable<string[]> DocumentedCommands()
     {
-        yield return ["browser"];
-        yield return ["browser", "launch"];
-        yield return ["browser", "control", "script"];
-        yield return ["browser", "control", "input", "click"];
-        yield return ["browser", "control", "network", "route"];
-        yield return ["run"];
-        yield return ["files", "read"];
-        yield return ["api", "request"];
+        var commandDocs = Path.Combine(E2ePaths.RepositoryRoot(), "docs", "commands");
+        foreach (var path in Directory.EnumerateFiles(commandDocs, "*.md", SearchOption.AllDirectories).Order())
+        {
+            var firstLine = File.ReadLines(path).FirstOrDefault() ?? string.Empty;
+            var match = CommandHeadingPattern.Match(firstLine);
+            if (match.Success)
+            {
+                yield return match.Groups["command"].Value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
     }
 }
