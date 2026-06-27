@@ -65,7 +65,7 @@ Keep E2E tests explicit and scenario-shaped:
 The first E2E slice covers:
 
 - Browser lifecycle launch/close behavior.
-- App attach validation failure, successful attach to a real debugging endpoint, and app launch missing-executable failure output.
+- App attach validation failures, successful attach to a real debugging endpoint, app launch validation failures, missing-executable output, and missing-debug-endpoint output.
 - Every documented command page under `docs/commands/`, including nested command groups and leaf commands, exposes working external `--help` output without creating browser state or requiring a launched browser.
 - A broad browser action-surface script covering navigation, input, assertions, dialogs, frames, storage, emulation, clocks, looping, branching, try/catch, and trace output.
 - Artifact and state actions for visual assertions, screenshots, PDFs, coverage, storage state, local file actions, and tab control.

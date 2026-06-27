@@ -32,6 +32,18 @@ public sealed class BrowserLifecycleE2eTests
     }
 
     [Fact]
+    public void AppAttachFailure_RejectsInvalidPidAndTimeout()
+    {
+        var pid = fixture.Cli.Run("browser", "app", "attach", "--pid", "-1", "--connect-timeout", "0");
+        var timeout = fixture.Cli.Run("browser", "app", "attach", "--connect-timeout", "-1");
+
+        pid.ShouldFail();
+        pid.StderrContains("--pid must be 0 or greater.");
+        timeout.ShouldFail();
+        timeout.StderrContains("--connect-timeout must be 0 or greater.");
+    }
+
+    [Fact]
     public void AppAttach_UsesExistingDebugEndpointForControlCommands()
     {
         var result = fixture.Cli.Run(
@@ -52,6 +64,23 @@ public sealed class BrowserLifecycleE2eTests
     }
 
     [Fact]
+    public void AppLaunchFailure_RejectsInvalidKind()
+    {
+        var result = fixture.Cli.Run(
+            "browser",
+            "app",
+            "launch",
+            SystemExecutable("cmd.exe"),
+            "--kind",
+            "native",
+            "--connect-timeout",
+            "0");
+
+        result.ShouldFail();
+        result.StderrContains("App kind must be 'electron' or 'webview2'.");
+    }
+
+    [Fact]
     public void AppLaunchFailure_ExplainsMissingExecutable()
     {
         var missing = Path.Combine(fixture.OutputDirectory, "missing-electron.exe");
@@ -66,6 +95,22 @@ public sealed class BrowserLifecycleE2eTests
 
         result.ShouldFail();
         result.StdoutContains("was not found");
+    }
+
+    [Fact]
+    public void AppLaunchFailure_WhenEndpointIsMissingExplainsConnectionReason()
+    {
+        var result = fixture.Cli.Run(
+            "browser",
+            "app",
+            "launch",
+            SystemExecutable("cmd.exe"),
+            "--connect-timeout",
+            "50");
+
+        result.ShouldFail();
+        result.StdoutContains("App launched, but CMG could not connect to");
+        result.StdoutContains("Reason:");
     }
 
     [Fact]
@@ -85,4 +130,6 @@ public sealed class BrowserLifecycleE2eTests
         result.StderrContains("No CMG-controlled Chrome instance is running.");
     }
 
+    private static string SystemExecutable(string name) =>
+        Path.Combine(Environment.SystemDirectory, name);
 }
