@@ -40,6 +40,8 @@ Add page affordances here when a new command or script action needs real browser
 
 The project is intended to grow until every command, every script action, and every meaningful failure path has E2E coverage. Unit tests still cover parser/lowering edge cases, but command/action behavior should graduate into E2E coverage when it depends on a browser, artifacts, process state, reports, GIFs, or real CLI output.
 
+Command behavior ownership is tracked in [`docs/e2e-command-coverage.md`](e2e-command-coverage.md). The E2E suite enforces that every documented command is mapped to at least one owning E2E file, which keeps the remaining command coverage work visible as the CLI grows.
+
 Keep E2E tests explicit and scenario-shaped:
 
 - One C# test file per command or feature area.
