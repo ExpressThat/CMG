@@ -71,4 +71,20 @@ public sealed class CmgRunValidationE2eTests : IClassFixture<CmgCliFixture>
         result.ShouldFail();
         result.StderrContains($"No CMG script files matched '{missingDirectory}'.");
     }
+
+    [Fact]
+    public void RunCommand_DirectScriptReportsMigrationGuidance()
+    {
+        var script = fixture.CreateScript("direct-script-migration.cmgscript", """
+            navigate "https://example.test"
+            """);
+
+        var result = fixture.Cli.Run("run", script, "--list");
+
+        result.ShouldFail();
+        result.StdoutContains("TEST FAIL direct-script-migration.cmgscript");
+        result.StderrContains("requires structured tests");
+        result.StderrContains("browser control script --file");
+        result.StderrContains("docs/scripting/migration.md");
+    }
 }
