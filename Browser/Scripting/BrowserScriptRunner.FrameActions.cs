@@ -7,6 +7,11 @@ public sealed partial class BrowserScriptRunner
         IBrowserAutomationClient automationClient,
         BrowserScriptAction action)
     {
+        if (action.Name.ToLowerInvariant() is "framewaitforelement" or "framewaitforselector")
+        {
+            return ExecuteFrameWait(remoteDebuggingUrl, automationClient, action);
+        }
+
         var script = action.Name.ToLowerInvariant() switch
         {
             "frameclick" => FrameElement(action, BrowserFrameScripts.Click),
@@ -14,7 +19,6 @@ public sealed partial class BrowserScriptRunner
             "frametype" => FrameText(action, BrowserFrameScripts.Type),
             "framefill" => FrameText(action, BrowserFrameScripts.Fill),
             "frameasserttext" or "frameexpecttext" or "frametohavetext" or "frametocontaintext" or "framecontains" => FrameAssertText(action),
-            "framewaitforelement" or "framewaitforselector" => FrameWait(action),
             "frameevaluate" => FrameEvaluate(action),
             "frametextcontent" or "frameinnertext" or "frameinputvalue" or "framegetattribute" or
             "framecomputedstyle" or "frameproperty" or "framecount" or "framelocatorcount" or
@@ -51,16 +55,6 @@ public sealed partial class BrowserScriptRunner
             action.Arguments[2],
             EventTextMatchMode(action),
             GetBoolOption(action, "ignoreCase"));
-    }
-
-    private static string FrameWait(BrowserScriptAction action)
-    {
-        action = NormalizeFrameSelectorArgument(action);
-        RequireArgumentCount(action, 2, 2);
-        return BrowserFrameScripts.WaitForElement(
-            action.Arguments[0],
-            action.Arguments[1],
-            GetIntOption(action, "timeout", 5_000));
     }
 
     private static string FrameEvaluate(BrowserScriptAction action)

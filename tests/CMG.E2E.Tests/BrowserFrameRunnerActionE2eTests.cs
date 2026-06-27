@@ -77,6 +77,25 @@ public sealed class BrowserFrameRunnerActionE2eTests
         result.StderrContains("#missing-frame-child");
     }
 
+    [Fact]
+    public void RunCommand_FrameWaitFailureReportsActualStep()
+    {
+        var script = fixture.CreateScript("runner-frame-wait-failure.cmgscript", $$"""
+            test "runner frame wait failure" {
+              navigate "{{fixture.FixtureHttpUri("index.html")}}" waitUntil=domcontentloaded
+              frameWaitForElement "#fixture-frame" "#missing-frame-child" timeout=50
+              caption "should not run"
+            }
+            """);
+
+        var result = fixture.Cli.Run("run", script);
+
+        result.ShouldFail();
+        result.StderrContains("STEP FAIL");
+        result.StderrContains("action=frameWaitForElement");
+        result.StderrContains("#missing-frame-child");
+    }
+
     private static void AssertTraceContains(string trace, string expected) =>
         Assert.Contains(expected, trace, StringComparison.Ordinal);
 }

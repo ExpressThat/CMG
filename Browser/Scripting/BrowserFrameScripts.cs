@@ -93,6 +93,18 @@ public static class BrowserFrameScripts
         });
         """);
 
+    public static string SelectorState(string frameSelector, string selector) =>
+        Wrap(frameSelector, $$"""
+        const element = resolveFrameElement({{Quote(selector)}});
+        if (!element) return JSON.stringify({ attached: false, visible: false });
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        const visible = rect.width > 0 && rect.height > 0 &&
+          style.visibility !== 'hidden' && style.display !== 'none' &&
+          Number(style.opacity || '1') !== 0;
+        return JSON.stringify({ attached: true, visible });
+        """);
+
     private static string ElementValue(string frameSelector, string selector, string body) =>
         Element(frameSelector, selector, body);
 

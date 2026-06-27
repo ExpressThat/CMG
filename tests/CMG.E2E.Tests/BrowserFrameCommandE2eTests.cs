@@ -63,6 +63,24 @@ public sealed class BrowserFrameCommandE2eTests
         missing.StderrContains("#missing-frame-child");
     }
 
+    [Fact]
+    public void FrameWaitFailure_ReportsMissingSelector()
+    {
+        Navigate();
+        var missing = fixture.Cli.Run(
+            "browser",
+            "control",
+            "frames",
+            "frameWaitForElement",
+            "#fixture-frame",
+            "#missing-frame-child",
+            "--timeout",
+            "50");
+
+        missing.ShouldFail();
+        missing.StderrContains("#missing-frame-child");
+    }
+
     private CmgResult Run(params string[] args)
     {
         var result = fixture.Cli.Run(args);

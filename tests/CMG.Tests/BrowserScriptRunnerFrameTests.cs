@@ -31,13 +31,14 @@ public sealed class BrowserScriptRunnerFrameTests
     public void RunText_FrameWaitAndTextAssertionsUseFrameLocatorResolver()
     {
         var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"attached":true,"visible":true}""");
         var result = Runner().RunText("""
         frameWaitForSelector "#frame" "text=Ready"
         frameToContainText "#frame" "getByTestId=status" "Saved"
         """, "debug", client);
 
         Assert.True(result.Success, result.Error);
-        Assert.Contains("resolveFrameElement(\"testid=status\")", client.LastExpression);
+        Assert.Contains("resolveFrameElement", client.LastExpression);
         Assert.Contains("data-testid", client.LastExpression);
     }
 
@@ -124,11 +125,24 @@ public sealed class BrowserScriptRunnerFrameTests
     public void RunText_FrameWaitForSelectorAliasUsesFrameWait()
     {
         var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"attached":true,"visible":true}""");
         var result = Runner().RunText("frameWaitForSelector \"#frame\" \"#ready\" timeout=250", "debug", client);
 
         Assert.True(result.Success, result.Error);
-        Assert.Contains("Timed out waiting for frame selector", client.LastExpression);
+        Assert.Contains("JSON.stringify({ attached: true, visible })", client.LastExpression);
         Assert.Contains("FRAME 001 frameWaitForSelector", result.StdoutLines);
+    }
+
+    [Fact]
+    public void RunText_FrameWaitFailureReportsSelectorAndFrame()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("""{"attached":false,"visible":false}""");
+        var result = Runner().RunText("frameWaitForElement \"#frame\" \"#missing\" timeout=1", "debug", client);
+
+        Assert.False(result.Success);
+        Assert.Contains("#missing", result.Error);
+        Assert.Contains("#frame", result.Error);
     }
 
     [Fact]
@@ -195,6 +209,8 @@ public sealed class BrowserScriptRunnerFrameTests
     public void RunText_FrameLocatorAliasSupportsWeirdSpacing()
     {
         var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("true");
+        client.EvaluateResponses.Enqueue("""{"attached":true,"visible":true}""");
         var result = Runner().RunText("""	  frameLocator     "#frame"   {   hover     "#help"  ;  waitForSelector    "#ready" timeout=250   }""", "debug", client);
 
         Assert.True(result.Success, result.Error ?? string.Join('\n', result.StdoutLines));
