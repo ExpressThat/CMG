@@ -99,6 +99,14 @@ public sealed partial class RunCommandBuilder
         {
             Description = "Remote debugging port for the browser instance used by this run."
         };
+        var autoLaunchOption = new Option<bool>("--auto-launch")
+        {
+            Description = "Launch the selected browser automatically when no CMG-controlled browser is running."
+        };
+        var headlessOption = new Option<bool>("--headless")
+        {
+            Description = "Launch the browser in headless mode when --auto-launch starts a browser."
+        };
         var variableOption = new Option<string[]>("--var")
         {
             Description = "Initial runner variable as name=value. Can be repeated."
@@ -129,6 +137,8 @@ public sealed partial class RunCommandBuilder
             assertionTimeoutOption,
             baseUrlOption,
             browserPortOption,
+            autoLaunchOption,
+            headlessOption,
             variableOption,
             envOption
         };
@@ -183,7 +193,9 @@ public sealed partial class RunCommandBuilder
                 StringValue(parseResult, baseUrlOption, project?.BaseUrl ?? config.BaseUrl),
                 variables,
                 project?.Name ?? string.Empty,
-                parseResult.GetValue(browserPortOption));
+                parseResult.GetValue(browserPortOption),
+                parseResult.GetValue(autoLaunchOption),
+                parseResult.GetValue(headlessOption));
         });
 
         return command;

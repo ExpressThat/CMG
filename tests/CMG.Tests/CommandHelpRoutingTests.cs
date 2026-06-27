@@ -89,6 +89,8 @@ public sealed class CommandHelpRoutingTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             string projectName = "",
-            int? browserPort = null) => throw new InvalidOperationException();
+            int? browserPort = null,
+            bool autoLaunch = false,
+            bool autoLaunchHeadless = false) => throw new InvalidOperationException();
     }
 }

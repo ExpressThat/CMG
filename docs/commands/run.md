@@ -45,6 +45,8 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--assertion-timeout <milliseconds>`: Default timeout for assertions. Overrides `--timeout` for assertion actions.
 - `--base-url <url>`: Absolute base URL used to resolve relative `navigate`, `goto`, `visit`, `openTab`, and `newContext url=` targets in every selected test.
 - `--browser-port <port>`: Remote debugging port for the browser instance used by this run. Use this with browsers launched through `cmg browser --port <port> launch`.
+- `--auto-launch`: Launch the selected browser automatically when no CMG-controlled browser is running. The launch uses the selected browser and `--browser-port` value with the same defaults as `cmg browser launch`.
+- `--headless`: Launch the selected browser in headless mode when `--auto-launch` starts a browser. Chrome and Edge receive `--headless=new`; Firefox receives `--headless`.
 - `--var <name=value>`: Initial variable for every selected test. Can be repeated. Later entries with the same name replace earlier entries.
 - `--env <name=value>`: Alias for `--var`, intended for CI and agent-provided environment values.
 - `--chrome`: Use Chrome. This is the default.
@@ -80,7 +82,9 @@ TEST ERROR <file> reason=<reason>
 
 Invalid run config files fail before browser connection or test listing. Stderr names the config problem, for example `Run config option 'retries' must be an integer.` or `Run config '<path>' was not valid JSON. ...`.
 
-Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON reports include `status` values such as `passed`, `failed`, and `skipped`; JUnit reports emit `<skipped>` nodes for declaration-skipped tests and runtime skips.
+If no selected CMG browser is running, stderr tells the caller which launch command to run, for example `No CMG-controlled Chrome instance is running. Run 'cmg browser launch' first.` Use `--auto-launch` when the runner should start the selected browser automatically, and add `--headless` when that auto-launched browser should not open a visible window.
+
+Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON reports include `status` values such as `passed`, `failed`, and `skipped`; generated internal evaluate steps are omitted from JSON report output so the report stays focused on high-level steps. Traces keep lower-level diagnostics. JUnit reports emit `<skipped>` nodes for declaration-skipped tests and runtime skips.
 Report annotations are emitted as `annotations` in JSON, visible list items in HTML, and JUnit `<property name="cmg.annotation.<type>" ... />` entries.
 
 ## GIF Behavior
@@ -102,7 +106,7 @@ Actions, locators, control flow, loops, macros, scoped variables, and `gif` bloc
 ## Exit Codes
 
 - `0`: All tests passed.
-- `1`: At least one test failed, no script files matched, the selected browser is invalid, `--browser-port` is outside `1..65535`, the selected `--project` is missing or invalid, or the selected browser is not running.
+- `1`: At least one test failed, no script files matched, the selected browser is invalid, `--browser-port` is outside `1..65535`, the selected `--project` is missing or invalid, the selected browser is not running, or `--auto-launch` could not start it.
 
 ## Examples
 
@@ -124,6 +128,8 @@ cmg run tests\flows --browser-port 9333
 cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --list
 cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project chrome-smoke
 cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project firefox-smoke
+cmg run tests\flows --auto-launch
+cmg run tests\flows --auto-launch --headless
 ```
 
 Example config:

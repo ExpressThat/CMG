@@ -96,7 +96,9 @@ public sealed class RunCommandBuilderProjectTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             string projectName = "",
-            int? browserPort = null)
+            int? browserPort = null,
+            bool autoLaunch = false,
+            bool autoLaunchHeadless = false)
         {
             BrowserKind = browserKind;
             Path = path;

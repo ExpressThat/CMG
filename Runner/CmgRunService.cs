@@ -21,9 +21,11 @@ public sealed partial class CmgRunService : ICmgRunService
     private readonly CmgStorageStateRunner storageStateRunner;
     private readonly CmgVisualAssertionRunner visualAssertionRunner;
     private readonly CmgUploadRunner uploadRunner;
+    private readonly IBrowserController browserController;
 
     public CmgRunService(
         BrowserStateStore stateStore,
+        IBrowserController browserController,
         BrowserAutomationClientFactory automationClientFactory,
         BrowserScriptRunner scriptRunner,
         CmgDslParser parser,
@@ -36,6 +38,7 @@ public sealed partial class CmgRunService : ICmgRunService
         CmgUploadRunner uploadRunner)
     {
         this.stateStore = stateStore;
+        this.browserController = browserController;
         this.automationClientFactory = automationClientFactory;
         this.scriptRunner = scriptRunner;
         this.parser = parser;
@@ -64,7 +67,23 @@ public sealed partial class CmgRunService : ICmgRunService
         var state = stateStore.Load(options.BrowserKind, options.BrowserPort);
         if (state is null)
         {
-            return CmgRunResult.Fail($"No CMG-controlled {options.BrowserKind.DisplayName()} instance is running.");
+            if (!options.AutoLaunch)
+            {
+                return CmgRunResult.Fail(MissingBrowserMessage(options));
+            }
+
+            var launch = browserController.Launch(options.BrowserKind, AutoLaunchArguments(options), options.BrowserPort);
+            if (launch.ExitCode is not 0 || string.IsNullOrWhiteSpace(launch.RemoteDebuggingUrl))
+            {
+                return CmgRunResult.Fail($"Could not auto-launch {options.BrowserKind.DisplayName()} for cmg run. {launch.Message}");
+            }
+
+            state = stateStore.Load(options.BrowserKind, options.BrowserPort)
+                ?? new BrowserState(
+                    0,
+                    options.BrowserPort ?? options.BrowserKind.DefaultRemoteDebuggingPort(),
+                    launch.RemoteDebuggingUrl,
+                    string.Empty);
         }
 
         var tests = new List<CmgTestResult>();
@@ -174,5 +193,25 @@ public sealed partial class CmgRunService : ICmgRunService
             }
         }
     }
+
+    private static string MissingBrowserMessage(CmgRunOptions options) =>
+        $"No CMG-controlled {options.BrowserKind.DisplayName()} instance is running. Run '{LaunchCommand(options)}' first.";
+
+    private static string LaunchCommand(CmgRunOptions options)
+    {
+        var browserPrefix = options.BrowserKind switch
+        {
+            BrowserKind.Edge => "--edge ",
+            BrowserKind.Firefox => "--firefox ",
+            _ => string.Empty
+        };
+        var port = options.BrowserPort is null ? string.Empty : $" --port {options.BrowserPort.Value}";
+        return $"cmg {browserPrefix}browser{port} launch";
+    }
+
+    private static IReadOnlyList<string> AutoLaunchArguments(CmgRunOptions options) =>
+        options.AutoLaunchHeadless
+            ? [options.BrowserKind.UsesFirefoxBiDi() ? "--headless" : "--headless=new"]
+            : [];
 
 }

@@ -56,7 +56,9 @@ public sealed record CmgRunOptions(
     string? BaseUrl,
     IReadOnlyDictionary<string, string> Variables,
     string ProjectName = "",
-    int? BrowserPort = null);
+    int? BrowserPort = null,
+    bool AutoLaunch = false,
+    bool AutoLaunchHeadless = false);
 
 public sealed partial record CmgRunResult(
     bool Success,

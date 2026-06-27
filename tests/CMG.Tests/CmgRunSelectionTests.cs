@@ -125,7 +125,7 @@ public sealed class CmgRunSelectionTests
             0,
             0,
             repeatEach,
-            true,
+            false,
             shardIndex,
             shardCount,
             null,

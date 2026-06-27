@@ -25,7 +25,9 @@ public interface ICmgRunCommandHandler
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         string projectName = "",
-        int? browserPort = null);
+        int? browserPort = null,
+        bool autoLaunch = false,
+        bool autoLaunchHeadless = false);
 }
 
 public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
@@ -58,7 +60,9 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         string projectName = "",
-        int? browserPort = null)
+        int? browserPort = null,
+        bool autoLaunch = false,
+        bool autoLaunchHeadless = false)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
@@ -99,7 +103,9 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             baseUrl,
             variables,
             projectName,
-            browserPort));
+            browserPort,
+            autoLaunch,
+            autoLaunchHeadless));
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);

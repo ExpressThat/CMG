@@ -2,6 +2,43 @@
 
 CMG is a command-line browser control tool intended to be called by AI agents.
 
+## Agent Quick Contract
+
+Use CMG when you need a real browser action, a repeatable browser script, a structured test run, or visual evidence such as screenshots, GIFs, traces, and reports.
+
+1. Start or select a browser.
+   - Chrome is the default: `cmg browser launch`.
+   - Use `cmg --edge browser launch` or `cmg --firefox browser launch` for other browsers.
+   - Use the same top-level browser option for launch, control, run, and close.
+2. Choose the smallest surface that fits the task.
+   - One action: `cmg browser control <group> <command> ...`.
+   - Multi-step direct automation: `cmg browser control script --file flow.cmgscript`.
+   - Generated script from stdin: `cmg browser control script --file -`.
+   - Structured tests, retries, reports, traces, sharding, or per-test GIFs: `cmg run <path>`.
+   - Add `--auto-launch` to `cmg run` when the runner should start the selected browser if it is not already running. Add `--headless` with `--auto-launch` for CI or background runs.
+3. Capture useful artifacts when the user needs evidence.
+   - Direct script GIF: `cmg browser control script --file flow.cmgscript --gif artifacts/flow.gif`.
+   - Runner GIFs: `cmg run tests --gif artifacts/gifs`.
+   - Runner reports/traces: `cmg run tests --report-json artifacts/report.json --trace artifacts/traces`.
+4. Parse results predictably.
+   - Exit code `0` means success; exit code `1` means failure.
+   - Treat stdout as parseable command output.
+   - Treat stderr as diagnostics, including failed step/test reasons.
+5. Use safe paths.
+   - Write artifacts under an explicit workspace folder such as `artifacts/` or `demo-output/`.
+   - Prefer relative paths in scripts and examples unless the user gave an absolute path.
+   - Use `--output` or `output=` for file artifacts; otherwise screenshot commands may print `data:image/png;base64,...`.
+6. Close the browser when finished: `cmg browser close`.
+
+For extra detail in this generated skill file:
+
+- See `## Source: README.md` for the product overview and common workflows.
+- See `## Source: docs/quick-start.md` for the fastest launch, run, and artifact examples.
+- See `## Source: docs/commands.md` and `## Source: docs/commands/run.md` for exact CLI arguments, stdout/stderr, exit codes, and examples.
+- See `## Source: docs/scripting/index.md`, `## Source: docs/scripting/syntax.md`, and `## Source: docs/scripting/actions.md` for `.cmgscript` syntax and action behavior.
+- See `## Source: docs/scripting/gif-recording.md` for GIF and visual evidence rules.
+- See `## Source: demo-scripts/README.md` and the later demo script sources for runnable examples.
+
 ## How Agents Should Use CMG
 
 - Start a controlled browser with `cmg browser launch` before page control commands.

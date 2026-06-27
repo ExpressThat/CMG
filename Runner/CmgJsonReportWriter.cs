@@ -32,7 +32,7 @@ public static class CmgJsonReportWriter
 
             writer.WriteEndArray();
             writer.WriteStartArray("output");
-            foreach (var line in test.Output)
+            foreach (var line in CleanOutput(test.Output))
             {
                 writer.WriteStringValue(line);
             }
@@ -48,7 +48,7 @@ public static class CmgJsonReportWriter
                 writer.WriteString("error", step.Error);
                 writer.WriteString("gifPath", step.GifPath);
                 writer.WriteStartArray("output");
-                foreach (var line in step.Output)
+                foreach (var line in CleanOutput(step.Output))
                 {
                     writer.WriteStringValue(line);
                 }
@@ -68,4 +68,48 @@ public static class CmgJsonReportWriter
 
     private static string Status(CmgTestResult test) =>
         string.IsNullOrWhiteSpace(test.Status) ? test.Success ? "passed" : "failed" : test.Status;
+
+    private static IEnumerable<string> CleanOutput(IEnumerable<string> lines)
+    {
+        var generatedEvaluateLines = new HashSet<int>();
+        foreach (var line in lines)
+        {
+            if (IsGeneratedEvaluatePassLine(line, out var lineNumber))
+            {
+                generatedEvaluateLines.Add(lineNumber);
+                continue;
+            }
+
+            if (IsEvaluatePayloadLine(line, out lineNumber) && generatedEvaluateLines.Contains(lineNumber))
+            {
+                continue;
+            }
+
+            yield return line;
+        }
+    }
+
+    private static bool IsGeneratedEvaluatePassLine(string line, out int lineNumber)
+    {
+        lineNumber = 0;
+        return line.StartsWith("PASS ", StringComparison.Ordinal) &&
+            TryReadLineNumber(line, "PASS ".Length, out lineNumber) &&
+            line.Length > "PASS 000 ".Length &&
+            line["PASS 000 ".Length..].StartsWith("evaluate ", StringComparison.Ordinal) &&
+            (line.Contains("(() =>", StringComparison.Ordinal) || line.Contains("(async () =>", StringComparison.Ordinal));
+    }
+
+    private static bool IsEvaluatePayloadLine(string line, out int lineNumber)
+    {
+        lineNumber = 0;
+        return line.StartsWith("EVALUATE ", StringComparison.Ordinal) &&
+            TryReadLineNumber(line, "EVALUATE ".Length, out lineNumber);
+    }
+
+    private static bool TryReadLineNumber(string line, int start, out int lineNumber)
+    {
+        lineNumber = 0;
+        return line.Length >= start + 3 &&
+            int.TryParse(line.AsSpan(start, 3), out lineNumber);
+    }
 }

@@ -12,7 +12,7 @@ public sealed class RunCommandBuilderTests
     {
         var handler = new CapturingRunCommandHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "run flows --timeout 700 --navigation-timeout 800 --assertion-timeout 900 --base-url https://example.test/app/ --browser-port 9333 --var user=Ada --env mode=demo").Invoke();
+            "run flows --timeout 700 --navigation-timeout 800 --assertion-timeout 900 --base-url https://example.test/app/ --browser-port 9333 --auto-launch --headless --var user=Ada --env mode=demo").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal("flows", handler.Path);
@@ -21,6 +21,8 @@ public sealed class RunCommandBuilderTests
         Assert.Equal(900, handler.AssertionTimeout);
         Assert.Equal("https://example.test/app/", handler.BaseUrl);
         Assert.Equal(9333, handler.BrowserPort);
+        Assert.True(handler.AutoLaunch);
+        Assert.True(handler.AutoLaunchHeadless);
         Assert.Equal("Ada", handler.Variables["user"]);
         Assert.Equal("demo", handler.Variables["mode"]);
     }
@@ -155,6 +157,10 @@ public sealed class RunCommandBuilderTests
 
         public int? BrowserPort { get; private set; }
 
+        public bool AutoLaunch { get; private set; }
+
+        public bool AutoLaunchHeadless { get; private set; }
+
         public int Run(
             BrowserKind browserKind,
             string path,
@@ -176,7 +182,9 @@ public sealed class RunCommandBuilderTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             string projectName = "",
-            int? browserPort = null)
+            int? browserPort = null,
+            bool autoLaunch = false,
+            bool autoLaunchHeadless = false)
         {
             BrowserKind = browserKind;
             Path = path;
@@ -196,6 +204,8 @@ public sealed class RunCommandBuilderTests
             Variables = variables;
             ProjectName = projectName;
             BrowserPort = browserPort;
+            AutoLaunch = autoLaunch;
+            AutoLaunchHeadless = autoLaunchHeadless;
             return 0;
         }
     }

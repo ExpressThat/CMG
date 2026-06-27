@@ -1,4 +1,5 @@
 using CMG.Runner;
+using System.Text.Json;
 
 namespace CMG.Tests;
 
@@ -13,6 +14,48 @@ public sealed class CmgReportWriterTests
         Assert.Contains("\"status\": \"failed\"", report);
         Assert.Contains("\"lineNumber\": 12", report);
         Assert.Contains("No element matched", report);
+    }
+
+    [Fact]
+    public void JsonReport_FiltersGeneratedEvaluateInternals()
+    {
+        var test = FailedTest() with
+        {
+            Output = [
+                "PASS 001 evaluate \"(() => { return true; })()\"",
+                "EVALUATE 001 true",
+                "PASS 002 evaluate 1 + 1",
+                "EVALUATE 002 2"
+            ],
+            Steps = [
+                new CmgStepResult(
+                    1,
+                    "evaluate",
+                    true,
+                    [
+                        "PASS 001 evaluate \"(() => { return true; })()\"",
+                        "EVALUATE 001 true",
+                        "PASS 002 evaluate 1 + 1",
+                        "EVALUATE 002 2"
+                    ],
+                    null,
+                    null)
+            ]
+        };
+
+        var report = CmgJsonReportWriter.Write([test]);
+        using var document = JsonDocument.Parse(report);
+        var output = document.RootElement[0].GetProperty("output").EnumerateArray().Select(line => line.GetString()).ToArray();
+        var stepOutput = document.RootElement[0].GetProperty("steps")[0].GetProperty("output").EnumerateArray().Select(line => line.GetString()).ToArray();
+
+        Assert.DoesNotContain("PASS 001 evaluate \"(() => { return true; })()\"", output);
+        Assert.DoesNotContain("EVALUATE 001 true", output);
+        Assert.Contains("PASS 002 evaluate 1 + 1", output);
+        Assert.Contains("EVALUATE 002 2", output);
+        Assert.DoesNotContain("PASS 001 evaluate \"(() => { return true; })()\"", stepOutput);
+        Assert.DoesNotContain("EVALUATE 001 true", stepOutput);
+        Assert.Contains("PASS 002 evaluate 1 + 1", stepOutput);
+        Assert.Contains("EVALUATE 002 2", stepOutput);
     }
 
     [Fact]
