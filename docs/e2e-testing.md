@@ -51,6 +51,7 @@ The first E2E slice covers:
 - A broad browser action-surface script covering navigation, input, assertions, dialogs, frames, storage, emulation, clocks, looping, branching, try/catch, and trace output.
 - Artifact and state actions for visual assertions, screenshots, PDFs, coverage, storage state, local file actions, and tab control.
 - Browser-control CLI behavior for waits, runtime getters, input, assertions, storage, cookies, context/emulation, isolated browser contexts, clock, accessibility, frames, tabs, and capture artifacts.
+- Runtime setup actions for init scripts, exposed functions/bindings, script/style tag injection, generated page content, HTML reads, and bounding boxes.
 - Browser-control network commands for routes, HAR export/replay, network waits, mocked failures, headers, and offline mode.
 - Browser-control WebSocket commands for route installation, socket waits, message waits, generic event waits, and route clearing against a real WebSocket handshake.
 - Browser-control event commands for console messages, page errors, generic event waits, dialog capture, dialog behavior, and absence assertions.

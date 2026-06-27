@@ -793,7 +793,7 @@ exposeFunction cmgAdd "(a, b) => a + b"
 exposeBinding cmgBinding "(source, value) => `${source.name}:${value}`"
 ```
 
-Installs a named page-side function in the current page and future navigations. `exposeFunction` calls the supplied JavaScript function with the page arguments. `exposeBinding` calls the supplied function with a source object as the first argument, followed by page arguments.
+Installs a named page-side function in the current page and future navigations. `exposeFunction` calls the supplied JavaScript function with the page arguments. `exposeBinding` calls the supplied function with a source object as the first argument, followed by page arguments. The source object exposes `page`, `frame`, and `name` fields.
 
 Arguments:
 
