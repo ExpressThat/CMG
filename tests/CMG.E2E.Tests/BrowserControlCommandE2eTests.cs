@@ -75,6 +75,33 @@ public sealed class BrowserControlCommandE2eTests : IClassFixture<CmgBrowserFixt
     }
 
     [Fact]
+    public void PageUtilityAliases_RunAgainstBrowser()
+    {
+        Navigate();
+
+        Run("browser", "control", "page", "setViewport", "--width", "900", "--height", "700");
+        Run("browser", "control", "page", "evaluate", "window.innerWidth + 'x' + window.innerHeight")
+            .StdoutContains("900x700");
+        Run("browser", "control", "page", "viewport", "--width", "760", "--height", "640");
+        Run("browser", "control", "page", "evaluate", "window.innerWidth + 'x' + window.innerHeight")
+            .StdoutContains("760x640");
+        Run("browser", "control", "page", "setViewportSize", "--width", "1024", "--height", "768", "--device-scale-factor", "1");
+        Run("browser", "control", "page", "evaluate", "window.innerWidth + 'x' + window.innerHeight")
+            .StdoutContains("1024x768");
+
+        Run("browser", "control", "page", "showMessageBar", "CLI message");
+        Run("browser", "control", "page", "evaluate", "document.getElementById('__cmg_message_bar_text')?.textContent")
+            .StdoutContains("CLI message");
+        Run("browser", "control", "page", "caption", "Alias caption");
+        Run("browser", "control", "page", "evaluate", "document.getElementById('__cmg_message_bar_text')?.textContent")
+            .StdoutContains("Alias caption");
+        Run("browser", "control", "page", "highlight", "#primary", "--color", "#2563eb", "--message", "Primary", "--duration", "5000");
+        Run("browser", "control", "page", "evaluate", "document.querySelector('[data-cmg-highlight]')?.textContent")
+            .StdoutContains("Primary");
+        Run("browser", "control", "page", "delay", "1");
+    }
+
+    [Fact]
     public void ValidationFailure_ReturnsUsefulReason()
     {
         var result = fixture.Cli.Run("browser", "control", "assertions", "expectText", "#missing", "never", "--timeout", "10");

@@ -79,6 +79,7 @@ The first E2E slice covers:
 - Local `files` command success and failure behavior.
 - API request command behavior for query parameters, headers, JSON/form/raw bodies, basic auth, status matching, output files, response headers, validation failures, and timeout failures.
 - Navigation aliases and page state commands, including `goto`, `visit`, history back/forward, reload, URL/title waits and assertions, page content reads, `setContent`, runtime text reads, input, assertions, screenshots, element HTML, and failure reasons.
+- Page utility aliases for viewport sizing, captions/message bars, temporary highlights, and explicit delays.
 - Direct script execution with GIF and trace output.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.
 - Advanced script control flow for `for`, `foreach`, `foreachJson`, `foreachSelector`, `while`, `until`, `doWhile`, `doUntil`, `break`, `continue`, `retry`, `toPass`, and scoped timeout blocks.
