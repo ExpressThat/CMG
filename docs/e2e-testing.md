@@ -80,6 +80,7 @@ The first E2E slice covers:
 - Browser-control network environment aliases for extra headers, HTTP credentials, proxy rewrites, mocked responses, and validation failures.
 - Browser-control WebSocket commands for route installation, socket waits, message waits, generic event waits, and route clearing against a real WebSocket handshake.
 - Browser-control event commands for console messages, page errors, generic event waits, dialog capture, dialog behavior, and absence assertions.
+- Browser-control event aliases for console capture/waits, page-error capture/waits, generic `waitForEvent`, and dialog `onDialog`/`handleDialog`.
 - Browser-control coverage commands for start/stop aliases, file-backed coverage output, stdout JSON output, and validation failures.
 - Browser-control tab alias commands for listing, opening, waiting, popup waits, activation, closing, and tab-count failure reasons.
 - Browser-control capture commands for element screenshots, direct element screenshot output, page clips, temporary styles, masks, visual assertion aliases, PDF options, and validation failures.
