@@ -51,7 +51,7 @@ public sealed class BrowserScriptRunnerSwitchTests
           }
         }
         switch "smoke" {
-          case in "unit" "smoke" "e2e" {
+          case in "unit" "smoke" "integration" {
             type "#in" "yes"
           }
         }
