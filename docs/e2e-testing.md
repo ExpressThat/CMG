@@ -76,6 +76,7 @@ The first E2E slice covers:
 - Browser-control WebSocket commands for route installation, socket waits, message waits, generic event waits, and route clearing against a real WebSocket handshake.
 - Browser-control event commands for console messages, page errors, generic event waits, dialog capture, dialog behavior, and absence assertions.
 - Browser-control coverage commands for start/stop aliases, file-backed coverage output, stdout JSON output, and validation failures.
+- Browser-control tab alias commands for listing, opening, waiting, popup waits, activation, closing, and tab-count failure reasons.
 - Browser-control advanced input commands for clipboard shims, tap/touch tap, mouse movement/buttons, scroll/wheel, custom events, file upload aliases, and download wait success/failure behavior.
 - Browser-control worker commands for real worker listing, waiting, evaluation, interception, and missing-worker wait failure output.
 - Local `files` command success and failure behavior.
