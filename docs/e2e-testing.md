@@ -83,6 +83,7 @@ The first E2E slice covers:
 - Runner navigation and wait actions for navigation aliases, history, reload, URL/title/load/network waits, selector/function/fixed waits, auto wait aliases, trace output, and exact failure-step diagnostics.
 - Browser-control provider-style assertion aliases for text absence, state assertions, values, attributes, class/id/CSS/property, accessibility name, role, checked state, and counts.
 - Browser-control assertion alias coverage for direct CLI text, body text, state, eval, value, attribute, accessibility, checked, and count variants.
+- Direct script assertion aliases for state, value, multi-value, attribute, class/id/CSS/property, accessibility name, role, checked, count, text presence/absence, eval assertions, and failure diagnostics.
 - Runner assertion aliases for state, value, multi-value, attribute, class/id/CSS/property, accessibility name, role, checked, count, text presence/absence, trace output, and exact failure-step diagnostics.
 - Runtime setup actions for init scripts, exposed functions/bindings, script/style tag injection, generated page content, HTML reads, and bounding boxes.
 - Runner runtime setup actions for init scripts, exposed functions/bindings, script/style tags, generated content, element HTML, bounding boxes, trace output, and failure diagnostics.
