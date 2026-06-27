@@ -5,7 +5,8 @@ public sealed partial class CmgVisualSegmentExecutor
     private static void AttachStepOutput(
         List<CmgStepResult> steps,
         IReadOnlyList<string> lines,
-        IReadOnlyDictionary<int, int> lineMap)
+        IReadOnlyDictionary<int, int> lineMap,
+        CmgNode? action)
     {
         foreach (var line in lines)
         {
@@ -18,6 +19,11 @@ public sealed partial class CmgVisualSegmentExecutor
             var index = steps.FindLastIndex(step => step.LineNumber == sourceLine);
             if (index < 0)
             {
+                if (action is not null)
+                {
+                    steps.Add(new CmgStepResult(sourceLine, FindNodeKindByLine(action, sourceLine) ?? action.Kind, true, [line], null, null));
+                }
+
                 continue;
             }
 
@@ -54,7 +60,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var index = steps.FindLastIndex(step => step.LineNumber == sourceLine);
         if (index < 0)
         {
-            steps.Add(new CmgStepResult(sourceLine, fallback.Kind, false, output, error, gif?.FullName));
+            steps.Add(new CmgStepResult(sourceLine, FindNodeKindByLine(fallback, sourceLine) ?? fallback.Kind, false, output, error, gif?.FullName));
             return;
         }
 
@@ -73,5 +79,24 @@ public sealed partial class CmgVisualSegmentExecutor
         var colon = error.IndexOf(':', StringComparison.Ordinal);
         return colon > "Line ".Length &&
             int.TryParse(error["Line ".Length..colon], out lineNumber);
+    }
+
+    private static string? FindNodeKindByLine(CmgNode node, int lineNumber)
+    {
+        if (node.LineNumber == lineNumber)
+        {
+            return node.Kind;
+        }
+
+        foreach (var child in node.Children)
+        {
+            var match = FindNodeKindByLine(child, lineNumber);
+            if (match is not null)
+            {
+                return match;
+            }
+        }
+
+        return null;
     }
 }

@@ -102,4 +102,49 @@ public sealed class BrowserControlFlowScriptE2eTests
         result.StdoutContains("TO_PASS ");
         result.StdoutContains("EXPECT_EVAL ");
     }
+
+    [Fact]
+    public void ScriptCommand_StepBlockShowsCaptionAndRunsChildren()
+    {
+        var trace = fixture.OutputPath("step-block.trace.json");
+        var script = fixture.CreateScript("step-block.cmgscript", $$"""
+        navigate "{{fixture.FixtureHttpUri("index.html")}}" waitUntil=domcontentloaded
+        step "Open primary flow" {
+          scrollIntoView "#primary"
+          click "#primary"
+          assertText "#status" "clicked"
+        }
+        set captionText { evaluate "document.getElementById('__cmg_message_bar_text')?.textContent" }
+        expect ("${captionText}" == "Open primary flow")
+        """);
+
+        var result = fixture.Cli.Run("browser", "control", "script", "--file", script, "--trace", trace);
+
+        result.ShouldPass();
+        result.StdoutContains("PASS 002 step");
+        result.StdoutContains("PASS 002 click #primary");
+        CmgE2eAssert.FileExists(trace);
+        AssertTraceContains(File.ReadAllText(trace), "Open primary flow");
+    }
+
+    [Fact]
+    public void ScriptCommand_StepChildFailureReportsChildReason()
+    {
+        var script = fixture.CreateScript("step-child-failure.cmgscript", $$"""
+        navigate "{{fixture.FixtureHttpUri("index.html")}}" waitUntil=domcontentloaded
+        step "Guard child failure" {
+          assertText "#status" "not the status" timeout=20
+        }
+        """);
+
+        var result = fixture.Cli.Run("browser", "control", "script", "--file", script);
+
+        result.ShouldFail();
+        result.StderrContains("Line 3");
+        result.StderrContains("assertText");
+        result.StderrContains("not the status");
+    }
+
+    private static void AssertTraceContains(string trace, string expected) =>
+        Assert.Contains(expected, trace, StringComparison.Ordinal);
 }

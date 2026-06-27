@@ -123,8 +123,8 @@ The first E2E slice covers:
 - Direct script `skip` and soft assertion continuation/final-failure behavior.
 - Runner runtime `skip` and soft assertion continuation/final-failure behavior across stdout, traces, and JSON reports.
 - Scoped locator behavior for rich locator filters, shadow DOM locators, `within`, and scoped `foreachSelector` in direct scripts and `cmg run`.
-- Advanced script control flow for `for`, `foreach`, `foreachJson`, `foreachSelector`, `while`, `until`, `doWhile`, `doUntil`, `break`, `continue`, `retry`, `toPass`, and scoped timeout blocks.
-- Runner control flow for nested loops, selector/JSON iteration, `switch`, `try`/`catch`/`finally`, `retry`, `toPass`, scoped timeouts, trace output, and failure diagnostics.
+- Advanced script control flow for `step` blocks, `for`, `foreach`, `foreachJson`, `foreachSelector`, `while`, `until`, `doWhile`, `doUntil`, `break`, `continue`, `retry`, `toPass`, scoped timeout blocks, trace output, and child-failure diagnostics.
+- Runner control flow for `step` blocks, nested loops, selector/JSON iteration, `switch`, `try`/`catch`/`finally`, `retry`, `toPass`, scoped timeouts, trace output, and child-failure diagnostics.
 - Structured `cmg run` with reports, traces, optional GIFs, tags, variables, list mode, hooks, parameterized tests, runtime skips, soft assertions, retries, and max-failure stopping.
 - Runner config/project execution for relative artifact paths, project names, project variables, CLI variable overrides, repeat scheduling, sharding, and missing-project failure behavior.
 - Runner provider declarations for `.only`, `.skip`, `.fixme`, `.todo`, suite skip inheritance, and report annotations across JSON, HTML, and JUnit artifacts.

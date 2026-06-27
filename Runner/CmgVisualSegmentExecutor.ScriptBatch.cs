@@ -24,12 +24,24 @@ public sealed partial class CmgVisualSegmentExecutor
         return new CmgScriptBatchRun(scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, timeouts, baseUrl), map);
     }
 
-    private static void AddPending(
+    private void AddPending(
         List<string> pending,
         Dictionary<int, int> lineMap,
         CmgNode action,
         IReadOnlyList<string> lines)
     {
+        if (action.Kind.Equals("step", StringComparison.OrdinalIgnoreCase) && action.Children.Count > 0 && lines.Count > 0)
+        {
+            pending.Add(lines[0]);
+            lineMap[pending.Count] = action.LineNumber;
+            foreach (var child in action.Children)
+            {
+                AddPending(pending, lineMap, child, lowerer.Lower(child));
+            }
+
+            return;
+        }
+
         foreach (var line in lines)
         {
             pending.Add(line);

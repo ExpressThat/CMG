@@ -137,6 +137,51 @@ public sealed class BrowserControlFlowRunnerActionE2eTests
         result.StderrContains("max");
     }
 
+    [Fact]
+    public void RunCommand_StepBlockRunsChildrenAndTracesCaption()
+    {
+        var traceDir = fixture.OutputPath("runner-step-traces");
+        var script = fixture.CreateScript("runner-step-block.cmgscript", $$"""
+            test "runner step block" {
+              navigate "{{fixture.FixtureHttpUri("index.html")}}" waitUntil=domcontentloaded
+              step "Runner primary flow" {
+                scrollIntoView "#primary"
+                click "#primary"
+                assertText "#status" "clicked"
+              }
+              set captionText { evaluate "document.getElementById('__cmg_message_bar_text')?.textContent" }
+              expect ("${captionText}" == "Runner primary flow")
+            }
+            """);
+
+        var result = fixture.Cli.Run("run", script, "--trace", traceDir);
+
+        result.ShouldPass();
+        result.StdoutContains("TEST PASS runner step block");
+        var trace = File.ReadAllText(Directory.EnumerateFiles(traceDir, "*.trace.json").Single());
+        AssertTraceContains(trace, "Runner primary flow");
+    }
+
+    [Fact]
+    public void RunCommand_StepChildFailureReportsChildAction()
+    {
+        var script = fixture.CreateScript("runner-step-child-failure.cmgscript", $$"""
+            test "runner step child failure" {
+              navigate "{{fixture.FixtureHttpUri("index.html")}}" waitUntil=domcontentloaded
+              step "Runner child failure" {
+                assertText "#status" "not the status" timeout=20
+              }
+            }
+            """);
+
+        var result = fixture.Cli.Run("run", script);
+
+        result.ShouldFail();
+        result.StderrContains("STEP FAIL");
+        result.StderrContains("action=assertText");
+        result.StderrContains("not the status");
+    }
+
     private static void AssertTraceContains(string trace, string expected) =>
         Assert.Contains(expected, trace, StringComparison.Ordinal);
 }

@@ -177,7 +177,7 @@ public sealed partial class CmgVisualSegmentExecutor
         out string? error)
     {
         output.AddRange(result.StdoutLines);
-        AttachStepOutput(steps, result.StdoutLines, lineMap);
+        AttachStepOutput(steps, result.StdoutLines, lineMap, action);
         error = result.Error;
         if (!result.Success && !result.Skipped && action is not null)
         {
