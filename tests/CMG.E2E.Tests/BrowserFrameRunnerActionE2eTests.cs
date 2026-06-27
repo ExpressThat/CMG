@@ -2,8 +2,7 @@ using CMG.E2E.Tests.Support;
 
 namespace CMG.E2E.Tests;
 
-[Collection(CmgE2eCollection.Name)]
-public sealed class BrowserFrameRunnerActionE2eTests
+public sealed class BrowserFrameRunnerActionE2eTests : IClassFixture<CmgBrowserFixture>
 {
     private readonly CmgBrowserFixture fixture;
 
