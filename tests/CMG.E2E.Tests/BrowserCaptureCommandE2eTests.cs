@@ -55,6 +55,27 @@ public sealed class BrowserCaptureCommandE2eTests
         result.StderrContains("quality= is only valid when type=jpeg");
     }
 
+    [Fact]
+    public void ExpectScreenshot_WithMissingBaselineCreatesBaselineAndFailsClearly()
+    {
+        Navigate();
+        var baseline = fixture.OutputPath("missing-baseline-created.png");
+
+        var result = fixture.Cli.Run(
+            "browser",
+            "control",
+            "capture",
+            "expectScreenshot",
+            "#visible-target",
+            "--baseline",
+            baseline);
+
+        result.ShouldFail();
+        result.StderrContains("did not exist. Created it from the actual screenshot.");
+        result.StderrContains("missing-baseline-created.png");
+        CmgE2eAssert.FileExists(baseline);
+    }
+
     private void Navigate()
     {
         Run("browser", "control", "navigation", "navigate", fixture.FixtureHttpUri("index.html"), "--wait-until", "domcontentloaded");
