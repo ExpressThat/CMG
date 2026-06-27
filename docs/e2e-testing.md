@@ -116,7 +116,7 @@ The first E2E slice covers:
 - Direct script execution from files and stdin with GIF, trace output, command-line `--base-url`, timeout defaults, `--var`/`--env` variables, plus stdin script validation that does not require a launched browser.
 - Direct script and runner import expansion for validation, imported macros, returned values, and missing-import failure output.
 - GIF block actions for direct `gif`, provider-style `recordVideo`/`screencast` aliases, and command-level GIF suppression in direct scripts and `cmg run`.
-- Script trace actions for partial trace files, command-level trace suppression, and failure-time partial trace output.
+- Script trace actions for partial trace files, command-level trace suppression, command-level failure traces, and failure-time partial trace output.
 - Runner trace actions for partial trace files and failure-time partial trace output inside structured tests.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.
 - Direct script and runner macro scoping for nested macros, parent-scope lookup, local variable isolation, `set { call ... }`, block `return`, trace output, and macro failure diagnostics.

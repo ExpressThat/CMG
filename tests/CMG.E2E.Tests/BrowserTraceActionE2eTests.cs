@@ -58,6 +58,26 @@ public sealed class BrowserTraceActionE2eTests
     }
 
     [Fact]
+    public void CommandTraceFailure_WritesFailureReasonAndStep()
+    {
+        var trace = fixture.OutputPath("failed-command-script.trace.json");
+        var script = fixture.CreateScript("failed-command-trace.cmgscript", $$"""
+        navigate "{{fixture.FixtureHttpUri("index.html")}}" waitUntil=domcontentloaded
+        assertText "#status" "not clicked" timeout=20
+        """);
+
+        var result = fixture.Cli.Run("browser", "control", "script", "--file", script, "--trace", trace);
+
+        result.ShouldFail();
+        result.StderrContains("not clicked");
+        result.StdoutContains("TRACE ");
+        CmgE2eAssert.FileExists(trace);
+        AssertTraceContains(trace, "\"success\": false");
+        AssertTraceContains(trace, "\"name\": \"assertText\"");
+        AssertTraceContains(trace, "not clicked");
+    }
+
+    [Fact]
     public void TraceActionFailure_WritesPartialFailureTrace()
     {
         var trace = fixture.OutputPath("failed-partial-script.trace.json");
