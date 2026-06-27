@@ -7,6 +7,22 @@ public sealed class ScriptActionCoverageE2eTests
 {
     private static readonly Regex HeadingPattern = new("^#{2,3} ", RegexOptions.Compiled);
     private static readonly Regex InlineCodePattern = new("`(?<name>[^`]+)`", RegexOptions.Compiled);
+    private static readonly string[] AllowedDimensions =
+    [
+        "artifact",
+        "browser",
+        "failure",
+        "gif",
+        "network",
+        "pointer",
+        "report",
+        "runner",
+        "state",
+        "structural",
+        "success",
+        "trace",
+        "visual",
+    ];
 
     [Fact]
     public void DocumentedScriptActions_HaveDeclaredE2eCoverage()
@@ -34,6 +50,19 @@ public sealed class ScriptActionCoverageE2eTests
             .ToArray();
 
         Assert.Empty(missing);
+    }
+
+    [Fact]
+    public void DeclaredScriptActionCoverage_HasValidCoverageDimensions()
+    {
+        var root = E2ePaths.RepositoryRoot();
+        var failures = CoverageRows(root)
+            .Where(row => row.Dimensions.Length is 0 ||
+                          row.Dimensions.Except(AllowedDimensions, StringComparer.Ordinal).Any())
+            .Select(row => string.Join(", ", row.Actions))
+            .ToArray();
+
+        Assert.Empty(failures);
     }
 
     private static SortedSet<string> DocumentedActions(string root)
@@ -86,7 +115,7 @@ public sealed class ScriptActionCoverageE2eTests
         }
 
         var cells = line.Trim('|').Split('|').Select(cell => cell.Trim()).ToArray();
-        if (cells.Length < 3 || cells[0] is "Actions")
+        if (cells.Length < 4 || cells[0] is "Actions")
         {
             return null;
         }
@@ -98,8 +127,12 @@ public sealed class ScriptActionCoverageE2eTests
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(owner => owner.Trim('`'))
             .ToArray();
-        return new CoverageRow(actions, owners);
+        var dimensions = cells[2]
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(dimension => dimension.Trim('`'))
+            .ToArray();
+        return new CoverageRow(actions, owners, dimensions);
     }
 
-    private sealed record CoverageRow(string[] Actions, string[] Owners);
+    private sealed record CoverageRow(string[] Actions, string[] Owners, string[] Dimensions);
 }

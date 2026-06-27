@@ -6,6 +6,21 @@ namespace CMG.E2E.Tests;
 public sealed class CommandBehaviorCoverageE2eTests
 {
     private static readonly Regex CommandHeadingPattern = new("^# `(?<command>[^`]+)`$", RegexOptions.Compiled);
+    private static readonly string[] AllowedDimensions =
+    [
+        "artifact",
+        "browser",
+        "cleanup",
+        "failure",
+        "gif",
+        "help",
+        "network",
+        "report",
+        "state",
+        "success",
+        "trace",
+        "visual",
+    ];
 
     [Fact]
     public void DocumentedCommands_HaveDeclaredBehaviorCoverage()
@@ -35,6 +50,19 @@ public sealed class CommandBehaviorCoverageE2eTests
         Assert.Empty(missing);
     }
 
+    [Fact]
+    public void DeclaredBehaviorCoverage_HasValidCoverageDimensions()
+    {
+        var root = E2ePaths.RepositoryRoot();
+        var failures = CoveragePatterns(root)
+            .Where(pattern => pattern.Dimensions.Length is 0 ||
+                              pattern.Dimensions.Except(AllowedDimensions, StringComparer.Ordinal).Any())
+            .Select(pattern => pattern.Pattern)
+            .ToArray();
+
+        Assert.Empty(failures);
+    }
+
     private static List<CoveragePattern> CoveragePatterns(string root)
     {
         var path = Path.Combine(root, "docs", "e2e-command-coverage.md");
@@ -56,7 +84,7 @@ public sealed class CommandBehaviorCoverageE2eTests
             .Split('|')
             .Select(cell => cell.Trim())
             .ToArray();
-        if (cells.Length < 3 || cells[0] is "Command pattern")
+        if (cells.Length < 4 || cells[0] is "Command pattern")
         {
             return null;
         }
@@ -72,7 +100,11 @@ public sealed class CommandBehaviorCoverageE2eTests
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(owner => owner.Trim('`'))
             .ToArray();
-        return new CoveragePattern(pattern, isPrefix, owners);
+        var dimensions = cells[2]
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(dimension => dimension.Trim('`'))
+            .ToArray();
+        return new CoveragePattern(pattern, isPrefix, owners, dimensions);
     }
 
     private static IEnumerable<string> DocumentedCommands(string root)
@@ -89,7 +121,7 @@ public sealed class CommandBehaviorCoverageE2eTests
         }
     }
 
-    private sealed record CoveragePattern(string Pattern, bool IsPrefix, string[] Owners)
+    private sealed record CoveragePattern(string Pattern, bool IsPrefix, string[] Owners, string[] Dimensions)
     {
         public bool Covers(string command) =>
             IsPrefix
