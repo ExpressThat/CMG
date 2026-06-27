@@ -113,7 +113,7 @@ The first E2E slice covers:
 - Script and runner `apiRequest` action behavior for query parameters, headers, status matching, output files, JSON bodies, and step failure diagnostics.
 - Navigation aliases and page state commands, including `goto`, `visit`, history back/forward, reload, URL/title waits and assertions, page content reads, `setContent`, runtime text reads, input, assertions, screenshots, element HTML, and failure reasons.
 - Page utility aliases for viewport sizing, captions/message bars, temporary highlights, and explicit delays.
-- Direct script execution with GIF, trace output, command-line `--base-url`, `--var`/`--env` variables, plus stdin script validation that does not require a launched browser.
+- Direct script execution from files and stdin with GIF, trace output, command-line `--base-url`, `--var`/`--env` variables, plus stdin script validation that does not require a launched browser.
 - Direct script and runner import expansion for validation, imported macros, returned values, and missing-import failure output.
 - GIF block actions for direct `gif`, provider-style `recordVideo`/`screencast` aliases, and command-level GIF suppression in direct scripts and `cmg run`.
 - Script trace actions for partial trace files, command-level trace suppression, and failure-time partial trace output.

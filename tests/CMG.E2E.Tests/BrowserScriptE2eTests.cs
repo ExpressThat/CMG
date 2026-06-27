@@ -107,4 +107,25 @@ public sealed class BrowserScriptE2eTests
         result.StdoutContains("index.html waitUntil=domcontentloaded");
         result.StdoutContains("PASS 002 expectText #title \"CMG E2E Fixture\"");
     }
+
+    [Fact]
+    public void ScriptCommand_ReadsAndExecutesScriptFromStdin()
+    {
+        var result = fixture.Cli.RunWithInput(
+            $$"""
+            navigate "{{fixture.FixtureHttpUri("index.html")}}" waitUntil=domcontentloaded
+            click "#primary"
+            expectText "#status" "clicked"
+            """,
+            "browser",
+            "control",
+            "script",
+            "--file",
+            "-");
+
+        result.ShouldPass();
+        result.StdoutContains("PASS 001 navigate");
+        result.StdoutContains("PASS 002 click #primary");
+        result.StdoutContains("PASS 003 expectText #status clicked");
+    }
 }
