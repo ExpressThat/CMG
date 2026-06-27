@@ -54,6 +54,7 @@ Keep E2E tests explicit and scenario-shaped:
 - `dotnet test` builds CMG once through the E2E project reference. The fixture then reuses the built apphost for individual CLI calls.
 - `--no-build` is the fastest local loop when code has already been built.
 - Browser E2E tests use isolated class fixtures. Each browser fixture gets a separate Chrome process, remote debugging port, browser profile, `LOCALAPPDATA` root, output directory, and fixture server.
+- The E2E assembly disables xUnit test parallelization. Fixtures are isolated, but full-suite runs are serial to avoid shared DevTools/process-cleanup contention while commands are spawning external CMG processes.
 - Fixture CLI calls automatically scope `browser` commands with `browser --port <fixture-port>` and `run` commands with `--browser-port <fixture-port>`.
 - The fixture closes the selected browser port at disposal and falls back to killing any process ids left in CMG state files before deleting its workspace.
 - Non-browser E2E classes, such as help coverage and local file commands, use a lightweight CLI fixture and do not launch Chrome.
@@ -68,7 +69,7 @@ The first E2E slice covers:
 - All documented leaf commands expose working `--help` output.
 - A broad browser action-surface script covering navigation, input, assertions, dialogs, frames, storage, emulation, clocks, looping, branching, try/catch, and trace output.
 - Artifact and state actions for visual assertions, screenshots, PDFs, coverage, storage state, local file actions, and tab control.
-- Browser-control CLI behavior for waits, runtime getters, input, assertions, storage, cookies, context/emulation, isolated browser contexts, clock, accessibility, frames, tabs, and capture artifacts.
+- Browser-control CLI behavior for waits, runtime getters, input, assertions, storage, cookies, context/emulation, isolated browser contexts, clock, accessibility, frame actions/getters/failure reasons, tabs, and capture artifacts.
 - Browser-control storage lifecycle commands for local/session storage remove/clear, cookie attributes/remove/clear, storage-state save/load, and validation failures.
 - Browser-control wait command aliases for selector states, function waits, fixed waits, auto waits, and selector-state failure reasons.
 - Browser-control provider-style assertion aliases for text absence, state assertions, values, attributes, class/id/CSS/property, accessibility name, role, checked state, and counts.

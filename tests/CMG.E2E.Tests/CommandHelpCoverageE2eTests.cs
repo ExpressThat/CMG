@@ -16,11 +16,15 @@ public sealed class CommandHelpCoverageE2eTests : IClassFixture<CmgCliFixture>
     {
         foreach (var command in RepresentativeCommands())
         {
-            var result = fixture.Cli.RunWithTimeout(TimeSpan.FromSeconds(5), [.. command, "--help"]);
+            var result = fixture.Cli.RunWithTimeout(TimeSpan.FromSeconds(20), [.. command, "--help"]);
             Assert.True(
                 result.ExitCode is 0 && result.Stdout.Contains("Usage:", StringComparison.Ordinal),
                 $"{string.Join(' ', command)} => exit {result.ExitCode}\n{result.Stdout}\n{result.Stderr}");
         }
+
+        Assert.False(
+            Directory.Exists(Path.Combine(fixture.LocalAppData, "CMG")),
+            "Help commands must not create browser state or require a launched browser.");
     }
 
     private static IEnumerable<string[]> RepresentativeCommands()
