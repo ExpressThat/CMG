@@ -10,7 +10,7 @@ public sealed class StaticFixtureServer : IDisposable
 {
     private readonly TcpListener listener;
     private readonly CancellationTokenSource cancellation = new();
-    private readonly Task loop;
+    private readonly Thread loop;
 
     public StaticFixtureServer(string root)
     {
@@ -18,7 +18,8 @@ public sealed class StaticFixtureServer : IDisposable
         listener = new TcpListener(IPAddress.Loopback, 0);
         listener.Start();
         Port = ((IPEndPoint)listener.LocalEndpoint).Port;
-        loop = Task.Run(AcceptLoop);
+        loop = new Thread(AcceptLoop) { IsBackground = true, Name = "CMG fixture server" };
+        loop.Start();
     }
 
     public string Root { get; }
@@ -35,53 +36,53 @@ public sealed class StaticFixtureServer : IDisposable
     {
         cancellation.Cancel();
         listener.Stop();
-        try
-        {
-            loop.Wait(TimeSpan.FromSeconds(2));
-        }
-        catch (AggregateException)
-        {
-        }
+        loop.Join(TimeSpan.FromSeconds(2));
 
         cancellation.Dispose();
     }
 
-    private async Task AcceptLoop()
+    private void AcceptLoop()
     {
         while (!cancellation.IsCancellationRequested)
         {
             try
             {
-                var client = await listener.AcceptTcpClientAsync(cancellation.Token);
-                _ = Task.Run(() => Handle(client), cancellation.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                return;
+                var client = listener.AcceptTcpClient();
+                ThreadPool.QueueUserWorkItem(_ => Handle(client));
             }
             catch (SocketException) when (cancellation.IsCancellationRequested)
             {
                 return;
             }
+            catch (ObjectDisposedException) when (cancellation.IsCancellationRequested)
+            {
+                return;
+            }
         }
     }
 
-    private async Task Handle(TcpClient client)
+    private void Handle(TcpClient client)
     {
         using (client)
         {
-            await HandleClient(client);
+            try
+            {
+                HandleClient(client);
+            }
+            catch (Exception exception) when (exception is IOException or SocketException)
+            {
+            }
         }
     }
 
-    private async Task HandleClient(TcpClient client)
+    private void HandleClient(TcpClient client)
     {
         using var stream = client.GetStream();
         using var reader = new StreamReader(stream, Encoding.ASCII, leaveOpen: true);
-        var request = await reader.ReadLineAsync(cancellation.Token) ?? string.Empty;
+        var request = reader.ReadLine() ?? string.Empty;
         var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         string? line;
-        while (!string.IsNullOrEmpty(line = await reader.ReadLineAsync(cancellation.Token)))
+        while (!string.IsNullOrEmpty(line = reader.ReadLine()))
         {
             var index = line.IndexOf(':');
             if (index > 0)
@@ -93,7 +94,7 @@ public sealed class StaticFixtureServer : IDisposable
         if (headers.TryGetValue("Upgrade", out var upgrade) &&
             upgrade.Equals("websocket", StringComparison.OrdinalIgnoreCase))
         {
-            await AcceptWebSocket(stream, headers);
+            AcceptWebSocket(stream, headers);
             return;
         }
 
@@ -101,7 +102,7 @@ public sealed class StaticFixtureServer : IDisposable
         var method = parts.Length > 0 ? parts[0] : "GET";
         var target = parts.Length > 1 ? parts[1] : "/index.html";
         var uri = new Uri($"http://fixture.local{target}", UriKind.Absolute);
-        if (await TryHandleApi(stream, reader, method, uri, headers))
+        if (TryHandleApi(stream, reader, method, uri, headers))
         {
             return;
         }
@@ -112,14 +113,14 @@ public sealed class StaticFixtureServer : IDisposable
         var insideRoot = !Path.GetRelativePath(root, path).StartsWith("..", StringComparison.Ordinal);
         if (!insideRoot || !File.Exists(path))
         {
-            await Write(stream, "404 Not Found", "text/plain", Encoding.UTF8.GetBytes("not found"));
+            Write(stream, "404 Not Found", "text/plain", Encoding.UTF8.GetBytes("not found"));
             return;
         }
 
-        await Write(stream, "200 OK", ContentType(path), await File.ReadAllBytesAsync(path, cancellation.Token));
+        Write(stream, "200 OK", ContentType(path), File.ReadAllBytes(path));
     }
 
-    private async Task<bool> TryHandleApi(
+    private bool TryHandleApi(
         NetworkStream stream,
         StreamReader reader,
         string method,
@@ -134,24 +135,24 @@ public sealed class StaticFixtureServer : IDisposable
         if (uri.AbsolutePath.StartsWith("/api/status/", StringComparison.OrdinalIgnoreCase))
         {
             var status = uri.AbsolutePath.Split('/').Last();
-            await Write(stream, $"{status} Fixture", "text/plain", Encoding.UTF8.GetBytes($"status {status}"));
+            Write(stream, $"{status} Fixture", "text/plain", Encoding.UTF8.GetBytes($"status {status}"));
             return true;
         }
 
         if (uri.AbsolutePath.Equals("/api/slow", StringComparison.OrdinalIgnoreCase))
         {
-            await Task.Delay(TimeSpan.FromSeconds(2), cancellation.Token);
-            await Write(stream, "200 OK", "text/plain", Encoding.UTF8.GetBytes("slow ok"));
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+            Write(stream, "200 OK", "text/plain", Encoding.UTF8.GetBytes("slow ok"));
             return true;
         }
 
         if (!uri.AbsolutePath.Equals("/api/echo", StringComparison.OrdinalIgnoreCase))
         {
-            await Write(stream, "404 Not Found", "text/plain", Encoding.UTF8.GetBytes("api not found"));
+            Write(stream, "404 Not Found", "text/plain", Encoding.UTF8.GetBytes("api not found"));
             return true;
         }
 
-        var body = await ReadBody(reader, headers);
+        var body = ReadBody(reader, headers);
         var payload = new Dictionary<string, string?>
         {
             ["method"] = method,
@@ -162,11 +163,11 @@ public sealed class StaticFixtureServer : IDisposable
             ["authorization"] = DecodeBasicAuth(headers.GetValueOrDefault("Authorization"))
         };
         var json = JsonSerializer.Serialize(payload);
-        await Write(stream, "200 OK", "application/json", Encoding.UTF8.GetBytes(json), ("x-cmg-api", "fixture"));
+        Write(stream, "200 OK", "application/json", Encoding.UTF8.GetBytes(json), ("x-cmg-api", "fixture"));
         return true;
     }
 
-    private static async Task<string> ReadBody(StreamReader reader, IReadOnlyDictionary<string, string> headers)
+    private static string ReadBody(StreamReader reader, IReadOnlyDictionary<string, string> headers)
     {
         if (!headers.TryGetValue("Content-Length", out var value) || !int.TryParse(value, out var length) || length <= 0)
         {
@@ -174,7 +175,7 @@ public sealed class StaticFixtureServer : IDisposable
         }
 
         var buffer = new char[length];
-        var read = await reader.ReadBlockAsync(buffer, 0, length);
+        var read = reader.ReadBlock(buffer, 0, length);
         return new string(buffer, 0, read);
     }
 
@@ -188,11 +189,11 @@ public sealed class StaticFixtureServer : IDisposable
         return Encoding.UTF8.GetString(Convert.FromBase64String(value["Basic ".Length..]));
     }
 
-    private async Task AcceptWebSocket(NetworkStream stream, IReadOnlyDictionary<string, string> headers)
+    private void AcceptWebSocket(NetworkStream stream, IReadOnlyDictionary<string, string> headers)
     {
         if (!headers.TryGetValue("Sec-WebSocket-Key", out var key))
         {
-            await Write(stream, "400 Bad Request", "text/plain", Encoding.UTF8.GetBytes("missing websocket key"));
+            Write(stream, "400 Bad Request", "text/plain", Encoding.UTF8.GetBytes("missing websocket key"));
             return;
         }
 
@@ -202,25 +203,25 @@ public sealed class StaticFixtureServer : IDisposable
             "Upgrade: websocket\r\n" +
             "Connection: Upgrade\r\n" +
             $"Sec-WebSocket-Accept: {accept}\r\n\r\n");
-        await stream.WriteAsync(response, cancellation.Token);
-        await WaitForSocketClose(stream);
+        stream.Write(response);
+        WaitForSocketClose(stream);
     }
 
-    private async Task WaitForSocketClose(NetworkStream stream)
+    private void WaitForSocketClose(NetworkStream stream)
     {
         var buffer = new byte[128];
         while (!cancellation.IsCancellationRequested)
         {
-            if (stream.DataAvailable && await stream.ReadAsync(buffer, cancellation.Token) == 0)
+            if (stream.DataAvailable && stream.Read(buffer) == 0)
             {
                 return;
             }
 
-            await Task.Delay(25, cancellation.Token);
+            Thread.Sleep(25);
         }
     }
 
-    private static async Task Write(Stream stream, string status, string contentType, byte[] body, params (string Name, string Value)[] headers)
+    private static void Write(Stream stream, string status, string contentType, byte[] body, params (string Name, string Value)[] headers)
     {
         var headerBuilder = new StringBuilder()
             .Append($"HTTP/1.1 {status}\r\n")
@@ -234,8 +235,8 @@ public sealed class StaticFixtureServer : IDisposable
 
         headerBuilder.Append("\r\n");
         var headerBytes = Encoding.ASCII.GetBytes(headerBuilder.ToString());
-        await stream.WriteAsync(headerBytes);
-        await stream.WriteAsync(body);
+        stream.Write(headerBytes);
+        stream.Write(body);
     }
 
     private static string ContentType(string path) =>
