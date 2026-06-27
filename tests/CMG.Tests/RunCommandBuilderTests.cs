@@ -153,8 +153,6 @@ public sealed class RunCommandBuilderTests
 
         public string ProjectName { get; private set; } = string.Empty;
 
-        public int Workers { get; private set; }
-
         public int? BrowserPort { get; private set; }
 
         public int Run(
@@ -178,7 +176,6 @@ public sealed class RunCommandBuilderTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             string projectName = "",
-            int workers = 1,
             int? browserPort = null)
         {
             BrowserKind = browserKind;
@@ -198,7 +195,6 @@ public sealed class RunCommandBuilderTests
             BaseUrl = baseUrl;
             Variables = variables;
             ProjectName = projectName;
-            Workers = workers;
             BrowserPort = browserPort;
             return 0;
         }

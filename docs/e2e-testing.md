@@ -53,11 +53,11 @@ Keep E2E tests explicit and scenario-shaped:
 
 - `dotnet test` builds CMG once through the E2E project reference. The fixture then reuses the built apphost for individual CLI calls.
 - `--no-build` is the fastest local loop when code has already been built.
-- Browser E2E tests run in parallel across class fixtures, capped at four concurrent classes. Each class gets a separate Chrome process, remote debugging port, browser profile, `LOCALAPPDATA` root, output directory, and fixture server.
+- Browser E2E tests use isolated class fixtures. Each browser fixture gets a separate Chrome process, remote debugging port, browser profile, `LOCALAPPDATA` root, output directory, and fixture server.
 - Fixture CLI calls automatically scope `browser` commands with `browser --port <fixture-port>` and `run` commands with `--browser-port <fixture-port>`.
 - The fixture closes the selected browser port at disposal and falls back to killing any process ids left in CMG state files before deleting its workspace.
 - Non-browser E2E classes, such as help coverage and local file commands, use a lightweight CLI fixture and do not launch Chrome.
-- Keep independent browser scenarios in separate E2E classes when they do not need to share browser state. xUnit parallelizes across classes, not within a single class fixture, so one giant class becomes a sequential slow lane.
+- Keep independent browser scenarios in separate E2E classes when they do not need to share browser state. Smaller feature-shaped classes make focused local runs faster and easier to reason about.
 
 ## Current Seed Coverage
 

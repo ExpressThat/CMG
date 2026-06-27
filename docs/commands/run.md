@@ -29,7 +29,6 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
 - `--config <file>`: JSON run config file. CLI options override config values.
 - `--project <name>`: Named project from the run config. Project values override global config values, and CLI options override both.
-- `--workers <count>`: Number of selected tests to run concurrently. Values below `1` are treated as `1`.
 - `--report-json <file>`: Write a JSON test report.
 - `--report-html <file>`: Write an HTML test report.
 - `--report-junit <file>`: Write a JUnit XML test report.
@@ -66,8 +65,6 @@ TEST LIST <run|skip> <name>
 
 Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
 Parameterized tests print and report their expanded names, for example `TEST LIST run opens profile`. Project runs include the project name in brackets, for example `TEST LIST run [firefox-smoke] checkout`.
-
-When `--workers` is greater than `1`, CMG buffers each test result and prints `TEST PASS` / `TEST FAIL` / `TEST SKIP` lines in deterministic schedule order. Runs with `--max-failures` or ordering hooks such as `beforeAll` / `afterAll` execute sequentially so setup and teardown semantics stay predictable.
 
 When a step fails, stderr also includes:
 
@@ -123,10 +120,10 @@ cmg run tests\flows --timeout 10000 --navigation-timeout 15000 --assertion-timeo
 cmg run tests\flows --var user=Ada --env mode=demo
 cmg run tests\flows --base-url https://example.test/app/
 cmg browser --port 9333 launch --headless
-cmg run tests\flows --browser-port 9333 --workers 4
+cmg run tests\flows --browser-port 9333
 cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --list
-cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project chrome-smoke --workers 4
-cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project firefox-smoke --workers 4
+cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project chrome-smoke
+cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project firefox-smoke
 ```
 
 Example config:

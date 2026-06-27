@@ -43,7 +43,7 @@ For structured test runs, use `cmg run --browser-port <port>` to target a browse
 ## Command Groups
 
 - [`browser`](commands/browser/index.md): Browser lifecycle and capture commands.
-- [`run`](commands/run.md): Run CMG DSL tests with optional GIFs, reports, traces, JSON config projects, and workers.
+- [`run`](commands/run.md): Run CMG DSL tests with optional GIFs, reports, traces, and JSON config projects.
 - [`api`](commands/api/index.md): HTTP API utility commands.
 - [`files`](commands/files/index.md): Local file utility commands.
 

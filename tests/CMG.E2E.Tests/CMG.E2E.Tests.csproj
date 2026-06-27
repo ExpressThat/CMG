@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <None Include="Fixtures\**\*.*" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

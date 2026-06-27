@@ -76,7 +76,7 @@ public sealed class CmgRunE2eTests : IClassFixture<CmgBrowserFixture>
             }
             """);
 
-        var result = fixture.Cli.Run("run", testScript, "--tag", "list", "--workers", "2", "--list");
+        var result = fixture.Cli.Run("run", testScript, "--tag", "list", "--list");
 
         result.ShouldPass();
         result.StdoutContains("TEST LIST run listed only");

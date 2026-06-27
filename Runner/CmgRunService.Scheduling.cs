@@ -9,33 +9,6 @@ public sealed partial class CmgRunService
         List<CmgTestResult> tests,
         List<string> output)
     {
-        if (options.Workers <= 1 || options.MaxFailures > 0 || selectedTests.Any(HasOrderingHooks))
-        {
-            return RunSelectedTestsSequentially(selectedTests, remoteDebuggingUrl, options, tests, output);
-        }
-
-        var results = new CmgTestResult[selectedTests.Count];
-        Parallel.ForEach(
-            selectedTests.Select((test, index) => (test, index)),
-            new ParallelOptions { MaxDegreeOfParallelism = options.Workers },
-            item => results[item.index] = RunScheduledTest(item.test, remoteDebuggingUrl, options));
-
-        foreach (var result in results)
-        {
-            tests.Add(result);
-            output.Add(TestOutput(StatusWord(result), result.Name, options));
-        }
-
-        return true;
-    }
-
-    private bool RunSelectedTestsSequentially(
-        IReadOnlyList<CmgTestCase> selectedTests,
-        string remoteDebuggingUrl,
-        CmgRunOptions options,
-        List<CmgTestResult> tests,
-        List<string> output)
-    {
         foreach (var test in selectedTests)
         {
             var result = RunScheduledTest(test, remoteDebuggingUrl, options);
@@ -77,10 +50,6 @@ public sealed partial class CmgRunService
 
         return RunTestWithRetries(test, remoteDebuggingUrl, options);
     }
-
-    private static bool HasOrderingHooks(CmgTestCase test) =>
-        test.RootBeforeAll.Count > 0 || test.RootAfterAll.Count > 0 ||
-        test.SuiteBeforeAll.Count > 0 || test.SuiteAfterAll.Count > 0;
 
     private static string StatusWord(CmgTestResult result) =>
         result.Status.Equals("skipped", StringComparison.OrdinalIgnoreCase) ? "SKIP" : result.Success ? "PASS" : "FAIL";

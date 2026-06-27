@@ -56,7 +56,6 @@ public sealed record CmgRunOptions(
     string? BaseUrl,
     IReadOnlyDictionary<string, string> Variables,
     string ProjectName = "",
-    int Workers = 1,
     int? BrowserPort = null);
 
 public sealed partial record CmgRunResult(

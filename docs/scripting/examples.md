@@ -82,7 +82,7 @@ Use a runner config when CI or an agent should reuse the same reports, traces, r
 ```powershell
 cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --list
 cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --var mode=cli
-cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project chrome-smoke --workers 4
+cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project chrome-smoke
 ```
 
 ## Visual Evidence

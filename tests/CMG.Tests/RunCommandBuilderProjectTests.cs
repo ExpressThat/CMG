@@ -28,7 +28,7 @@ public sealed class RunCommandBuilderProjectTests
         }
         """);
         var handler = new CapturingRunCommandHandler();
-        var exitCode = BuildRoot(handler).Parse($"run flows --config \"{config}\" --project firefox-smoke --workers 3").Invoke();
+        var exitCode = BuildRoot(handler).Parse($"run flows --config \"{config}\" --project firefox-smoke").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal(BrowserKind.Firefox, handler.BrowserKind);
@@ -36,7 +36,6 @@ public sealed class RunCommandBuilderProjectTests
         Assert.Equal("https://firefox.test/", handler.BaseUrl);
         Assert.Equal("smoke", handler.Tag);
         Assert.Equal(2, handler.Retries);
-        Assert.Equal(3, handler.Workers);
         Assert.Equal("firefox", handler.Variables["tenant"]);
     }
 
@@ -73,7 +72,6 @@ public sealed class RunCommandBuilderProjectTests
         public int Retries { get; private set; }
         public string? BaseUrl { get; private set; }
         public string ProjectName { get; private set; } = string.Empty;
-        public int Workers { get; private set; }
         public IReadOnlyDictionary<string, string> Variables { get; private set; } =
             new Dictionary<string, string>();
 
@@ -98,7 +96,6 @@ public sealed class RunCommandBuilderProjectTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             string projectName = "",
-            int workers = 1,
             int? browserPort = null)
         {
             BrowserKind = browserKind;
@@ -108,7 +105,6 @@ public sealed class RunCommandBuilderProjectTests
             BaseUrl = baseUrl;
             Variables = variables;
             ProjectName = projectName;
-            Workers = workers;
             return 0;
         }
     }

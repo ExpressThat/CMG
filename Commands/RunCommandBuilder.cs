@@ -27,11 +27,6 @@ public sealed partial class RunCommandBuilder
         {
             Description = "Named project from the run config."
         };
-        var workersOption = new Option<int>("--workers")
-        {
-            Description = "Number of selected tests to run concurrently.",
-            DefaultValueFactory = _ => 1
-        };
         var gifOption = new Option<DirectoryInfo?>("--gif")
         {
             Description = "Write per-test GIF recordings to this directory."
@@ -117,7 +112,6 @@ public sealed partial class RunCommandBuilder
             pathArgument,
             configOption,
             projectOption,
-            workersOption,
             gifOption,
             jsonOption,
             htmlOption,
@@ -189,7 +183,6 @@ public sealed partial class RunCommandBuilder
                 StringValue(parseResult, baseUrlOption, project?.BaseUrl ?? config.BaseUrl),
                 variables,
                 project?.Name ?? string.Empty,
-                Math.Max(1, parseResult.GetValue(workersOption)),
                 parseResult.GetValue(browserPortOption));
         });
 

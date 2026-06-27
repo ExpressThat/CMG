@@ -25,7 +25,6 @@ public interface ICmgRunCommandHandler
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         string projectName = "",
-        int workers = 1,
         int? browserPort = null);
 }
 
@@ -59,7 +58,6 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         string projectName = "",
-        int workers = 1,
         int? browserPort = null)
     {
         if (browserKind is BrowserKind.InvalidSelection)
@@ -101,7 +99,6 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             baseUrl,
             variables,
             projectName,
-            Math.Max(1, workers),
             browserPort));
         foreach (var line in result.StdoutLines)
         {
