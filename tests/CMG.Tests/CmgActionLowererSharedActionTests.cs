@@ -6,9 +6,11 @@ public sealed class CmgActionLowererSharedActionTests
 {
     [Theory]
     [InlineData("waitForConsole", "saved", "waitForConsole \"saved\"")]
+    [InlineData("listConsole", null, "listConsole")]
     [InlineData("expectNoConsole", null, "expectNoConsole")]
     [InlineData("toHaveNoConsole", "deprecated", "toHaveNoConsole \"deprecated\"")]
     [InlineData("capturePageErrors", null, "capturePageErrors")]
+    [InlineData("listPageErrors", null, "listPageErrors")]
     [InlineData("waitForPageError", "boom", "waitForPageError \"boom\"")]
     [InlineData("expectNoPageError", null, "expectNoPageError")]
     [InlineData("toHaveNoPageError", "boom", "toHaveNoPageError \"boom\"")]

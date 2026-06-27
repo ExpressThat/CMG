@@ -2,50 +2,6 @@ using CMG.Browser.Scripting;
 
 namespace CMG.Browser;
 
-public interface IBrowserControlCommandHandler
-{
-    int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output);
-
-    int GetElement(BrowserKind browserKind, int? port, string selector, bool html, bool screenshot, FileInfo? output) =>
-        GetElement(browserKind, selector, html, screenshot, output);
-
-    int RunScript(BrowserKind browserKind, string file, FileInfo? gif);
-
-    int RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace) =>
-        RunScript(browserKind, file, gif);
-
-    int RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts) =>
-        RunScript(browserKind, file, gif, trace);
-
-    int RunScript(
-        BrowserKind browserKind,
-        int? port,
-        string file,
-        FileInfo? gif,
-        FileInfo? trace,
-        ScriptTimeoutOptions? timeouts,
-        string? baseUrl,
-        IReadOnlyDictionary<string, string> variables) =>
-        RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables);
-
-    int RunScript(
-        BrowserKind browserKind,
-        string file,
-        FileInfo? gif,
-        FileInfo? trace,
-        ScriptTimeoutOptions? timeouts,
-        string? baseUrl,
-        IReadOnlyDictionary<string, string> variables) =>
-        RunScript(browserKind, file, gif, trace, timeouts);
-
-    int RunScriptAction(BrowserKind browserKind, string scriptLine);
-
-    int RunScriptAction(BrowserKind browserKind, int? port, string scriptLine) =>
-        RunScriptAction(browserKind, scriptLine);
-
-    int ValidateScript(string file);
-}
-
 public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
 {
     private readonly IBrowserControlService browserControlService;
@@ -161,9 +117,40 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         return WriteScriptResult(result);
     }
 
+    public int RunInlineScript(
+        BrowserKind browserKind,
+        int? port,
+        string script,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
+        IReadOnlyDictionary<string, string> variables)
+    {
+        if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
+        {
+            return 1;
+        }
+
+        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables);
+
+        return WriteScriptResult(result);
+    }
+
     public int ValidateScript(string file)
     {
         var result = scriptValidator.ValidateFile(file);
+        return WriteValidationResult(result);
+    }
+
+    public int ValidateInlineScript(string script)
+    {
+        var result = scriptValidator.ValidateText(script);
+        return WriteValidationResult(result);
+    }
+
+    private static int WriteValidationResult(ScriptValidationResult result)
+    {
         if (result.Success)
         {
             if (result.IsRunner)

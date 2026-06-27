@@ -9,6 +9,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string LastExpression { get; private set; } = string.Empty;
     public List<string> EvaluatedExpressions { get; } = [];
     public string LastInitScript { get; private set; } = string.Empty;
+    public string LastDiagnosticsUrl { get; private set; } = string.Empty;
     public string LastClickedSelector { get; private set; } = string.Empty;
     public string LastHoveredSelector { get; private set; } = string.Empty;
     public string LastWaitSelector { get; private set; } = string.Empty;
@@ -112,6 +113,10 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     {
         LastInitScript = source;
         return "init-1";
+    }
+    public void ArmDiagnostics(string remoteDebuggingUrl)
+    {
+        LastDiagnosticsUrl = remoteDebuggingUrl;
     }
     public void SetViewport(string remoteDebuggingUrl, ViewportOptions options)
     {

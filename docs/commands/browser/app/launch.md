@@ -26,6 +26,7 @@ cmg --edge browser app launch <executable> --kind webview2 --port 9333
 - `webview2` requires Windows. macOS WKWebView and Linux WebKitGTK do not expose Chromium CDP or WebDriver BiDi.
 - CMG waits for the app's Chromium debugging endpoint before saving state. If the app starts but the endpoint is blocked, late, or not exposed, CMG exits with a reason instead of leaving stale browser state.
 - On success, CMG stores the app's debugging URL in the selected Chrome or Edge state slot. Existing browser-control commands, scripts, `cmg run`, GIF recording, virtual pointer events, drag ghosts, captions, traces, and reports then target the app.
+- On success, CMG arms page-side diagnostics capture for console messages and page errors. Captured diagnostics are stored in `window.__cmgConsole` and `window.__cmgPageErrors` and continue accumulating between CMG CLI invocations. Capture is forward-only; events before launch/diagnostics arming cannot be recovered.
 - `--firefox` is rejected because this command needs a Chromium CDP endpoint.
 
 ## Stdout

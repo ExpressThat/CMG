@@ -5,12 +5,14 @@ Validates a `.cmgscript` browser automation script or structured runner file wit
 ```powershell
 cmg browser control validateScript --file <path>
 cmg browser control validateScript --file -
+cmg browser control validateScript --inline "<script>"
 ```
 
 ## Options
 
-- `--file <path>`: Path to a `.cmgscript` file.
+- `--file <path>`: Path to a `.cmgscript` file. Specify exactly one of `--file` or `--inline`.
 - `--file -`: Read script text from stdin.
+- `--inline <script>`: Inline `.cmgscript` text to validate. Specify exactly one of `--file` or `--inline`.
 
 ## Behavior
 
@@ -20,6 +22,7 @@ cmg browser control validateScript --file -
 - Automatically detects structured runner files that use `suite`/`describe`/`context` or `test`/`it`/`specify`.
 - Does not execute browser actions, JavaScript, assertions, macros, GIF recording, or network/file actions.
 - Does not require `browser launch`, `--chrome`, `--edge`, or `--firefox`.
+- `--file -` fails with `No script text was provided on stdin for --file -.` when stdin is empty.
 
 ## Stdout
 
@@ -59,4 +62,5 @@ Line 4: unterminated quoted string.
 ```powershell
 cmg browser control validateScript --file demo-scripts\48-weird-formatting.cmgscript
 Get-Content .\flow.cmgscript | cmg browser control validateScript --file -
+cmg browser control validateScript --inline "navigate https://example.test"
 ```

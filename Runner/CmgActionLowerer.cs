@@ -72,10 +72,10 @@ public sealed partial class CmgActionLowerer
             "setclipboard" or "writeclipboard" or "readclipboard" or "clearclipboard" or
             "emulate" or "emulatemedia" or "setgeolocation" or "grantpermissions" or "clearpermissions" or
             "setjavascriptenabled" or "javascriptenabled" or "bypasscsp" or "serviceworkers" or "setserviceworkers" or "waitfordownload" or
-            "captureconsole" or "waitforconsole" or "expectnoconsole" or "tohavenoconsole" or "capturedialogs" or
+            "captureconsole" or "listconsole" or "waitforconsole" or "expectnoconsole" or "tohavenoconsole" or "capturedialogs" or
             "setdialogbehavior" or "ondialog" or "handledialog" or "dialogbehavior" or "waitfordialog" or
             "waitforevent" or
-            "capturepageerrors" or "waitforpageerror" or "expectnopageerror" or "tohavenopageerror" or
+            "capturepageerrors" or "listpageerrors" or "waitforpageerror" or "expectnopageerror" or "tohavenopageerror" or
             "route" or "mockresponse" or "intercept" or "clearroutes" or "waitforrequest" or "waitforrequestfinished" or "waitforrequestfailed" or "waitforresponse" or "exporthar" or "replayhar" or
             "routewebsocket" or "clearwebsocketroutes" or "waitforwebsocket" or "waitforwebsocketmessage" or
             "setextrahttpheaders" or "setheaders" or "clearextrahttpheaders" or "clearheaders" or

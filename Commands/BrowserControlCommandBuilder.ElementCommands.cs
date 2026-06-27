@@ -54,8 +54,11 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var fileOption = new Option<string>("--file")
         {
-            Description = "Path to a .cmgscript file, or '-' to read from stdin.",
-            Required = true
+            Description = "Path to a .cmgscript file, or '-' to read from stdin."
+        };
+        var inlineOption = new Option<string>("--inline")
+        {
+            Description = "Inline .cmgscript text to run."
         };
 
         var gifOption = new Option<FileInfo?>("--gif")
@@ -94,6 +97,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command("script", "Run a .cmgscript browser automation script.")
         {
             fileOption,
+            inlineOption,
             gifOption,
             traceOption,
             timeoutOption,
@@ -107,6 +111,12 @@ public sealed partial class BrowserControlCommandBuilder
         command.SetAction(parseResult =>
         {
             var file = parseResult.GetValue(fileOption) ?? string.Empty;
+            var inline = parseResult.GetValue(inlineOption);
+            if (!ValidateScriptInput(file, inline))
+            {
+                return 1;
+            }
+
             var gif = parseResult.GetValue(gifOption);
             var trace = parseResult.GetValue(traceOption);
             var timeouts = new ScriptTimeoutOptions(
@@ -121,14 +131,11 @@ public sealed partial class BrowserControlCommandBuilder
                 return 1;
             }
 
-            return browserControlCommandHandler.RunScript(
-                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
-                file,
-                gif,
-                trace,
-                timeouts,
-                parseResult.GetValue(baseUrlOption),
-                variables);
+            var browserKind = CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions);
+            var port = CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions);
+            return inline is null
+                ? browserControlCommandHandler.RunScript(browserKind, port, file, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables)
+                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables);
         });
 
         return command;
@@ -138,18 +145,46 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var fileOption = new Option<string>("--file")
         {
-            Description = "Path to a .cmgscript file, or '-' to read from stdin.",
-            Required = true
+            Description = "Path to a .cmgscript file, or '-' to read from stdin."
+        };
+        var inlineOption = new Option<string>("--inline")
+        {
+            Description = "Inline .cmgscript text to validate."
         };
 
         var command = new Command("validateScript", "Validate a .cmgscript browser automation script without running it.")
         {
-            fileOption
+            fileOption,
+            inlineOption
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.ValidateScript(parseResult.GetValue(fileOption) ?? string.Empty));
+        {
+            var file = parseResult.GetValue(fileOption) ?? string.Empty;
+            var inline = parseResult.GetValue(inlineOption);
+            if (!ValidateScriptInput(file, inline))
+            {
+                return 1;
+            }
+
+            return inline is null
+                ? browserControlCommandHandler.ValidateScript(file)
+                : browserControlCommandHandler.ValidateInlineScript(inline);
+        });
 
         return command;
+    }
+
+    private static bool ValidateScriptInput(string file, string? inline)
+    {
+        var hasFile = !string.IsNullOrWhiteSpace(file);
+        var hasInline = inline is not null;
+        if (hasFile == hasInline)
+        {
+            Console.Error.WriteLine("Specify exactly one script input: --file or --inline.");
+            return false;
+        }
+
+        return true;
     }
 }

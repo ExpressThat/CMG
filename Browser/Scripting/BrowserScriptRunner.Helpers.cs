@@ -40,7 +40,10 @@ public sealed partial class BrowserScriptRunner
 
         if (file is "-")
         {
-            return ScriptReadResult.Ok(Console.In.ReadToEnd());
+            var script = Console.In.ReadToEnd();
+            return string.IsNullOrEmpty(script)
+                ? ScriptReadResult.Fail("No script text was provided on stdin for --file -.")
+                : ScriptReadResult.Ok(script);
         }
 
         if (!File.Exists(file))

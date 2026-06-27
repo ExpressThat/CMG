@@ -20,6 +20,9 @@ Use CMG when you need a real browser action, a repeatable browser script, a stru
    - Direct script GIF: `cmg browser control script --file flow.cmgscript --gif artifacts/flow.gif`.
    - Runner GIFs: `cmg run tests --gif artifacts/gifs`.
    - Runner reports/traces: `cmg run tests --report-json artifacts/report.json --trace artifacts/traces`.
+   - Browser diagnostics are armed automatically by `cmg browser launch`, `cmg browser app launch`, and `cmg browser app attach`.
+   - After risky UI actions, inspect captured browser fallout with `listPageErrors` and `listConsole level=error`, then gate with `expectNoPageError timeout=250` and `expectNoConsole level=error timeout=250`.
+   - `captureConsole` and `capturePageErrors` are deprecated compatibility aliases for ensuring capture is installed; they are usually unnecessary and do not clear existing entries.
 4. Parse results predictably.
    - Exit code `0` means success; exit code `1` means failure.
    - Treat stdout as parseable command output: `PASS 001 line=3 action=navigate ...`; nested macro/loop/step output adds `context="..."`.
@@ -49,9 +52,11 @@ For extra detail in this generated skill file:
 - Use `cmg browser control <action>` for one-off actions.
 - Use `cmg browser control script --file <path>` for multi-step flows.
 - Use `cmg browser control script --file -` to pipe a generated `.cmgscript` from stdin.
+- Use `cmg browser control script --inline "<script>"` for short generated scripts when quoting is practical.
 - Prefer scripts whenever doing more than one action on a page. A script gives the agent one parseable run, one exit code, deterministic ordering, and optional GIF recording.
 - Add `--gif <path>` to script runs when a visual recording is useful.
 - Treat stdout as parseable command output and stderr as failure diagnostics.
+- For browser-side failures after visual testing, prefer `listPageErrors` and `listConsole level=error` to inspect captured events. CMG captures only from launch/attach/arming time forward; it cannot recover earlier browser history.
 - Check exit code `0` for success and `1` for failures.
 - Prefer selectors that work in the browser, such as `#id`, `.class`, `[data-name='value']`, and combined CSS selectors.
 - For screenshots without `--output` or `output=`, expect `data:image/png;base64,...`.

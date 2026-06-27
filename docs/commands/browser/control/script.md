@@ -6,6 +6,7 @@ Chrome is the default. Use `--chrome` to select Chrome explicitly, `--edge` for 
 
 ```powershell
 cmg browser control script --file <path>
+cmg browser control script --inline "<script>"
 cmg browser --port <port> control script --file <path>
 cmg browser control script --file -
 cmg browser control script --file <path> --gif <path>
@@ -20,8 +21,9 @@ cmg --firefox browser control script --file <path>
 
 ## Options
 
-- `--file <path>`: Path to a `.cmgscript` file.
+- `--file <path>`: Path to a `.cmgscript` file. Specify exactly one of `--file` or `--inline`.
 - `--file -`: Read script text from stdin.
+- `--inline <script>`: Run inline `.cmgscript` text. Specify exactly one of `--file` or `--inline`.
 - `--gif <path>`: Optional output path for an animated GIF recording of the script run.
 - `--trace <path>`: Optional output path for a CMG script trace JSON file. The trace includes step names, line numbers, stdout lines, and failure reasons.
 - `--timeout <milliseconds>`: Default timeout for timeout-capable waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions that do not set `timeout=`.
@@ -36,6 +38,7 @@ cmg --firefox browser control script --file <path>
 - Requires a browser started with [`browser launch`](../launch.md). For Edge, use `cmg --edge browser launch`. For Firefox, use `cmg --firefox browser launch`.
 - Use `cmg browser --port <port> control script --file <path>` when the target browser was launched with `cmg browser --port <port> launch`.
 - Use [`validateScript`](validateScript.md) to check imports and syntax before connecting to a browser.
+- `--file -` fails with `No script text was provided on stdin for --file -.` when stdin is empty.
 - Executes actions in file order and stops on the first failed action.
 - `skip "reason"` stops the script as skipped, writes `SKIP <line> <reason>` to stdout, and exits `0`.
 - Writes step logs and action outputs to stdout.
@@ -47,6 +50,7 @@ cmg --firefox browser control script --file <path>
 - Initial `--var` and `--env` values are available as `${name}` before the first action, macro call, condition, or `set` block runs.
 - `set` is a script action for scoped variables and command-result capture. It is intentionally not a CLI command because it only has meaning inside a script scope.
 - Uses the selected browser automation protocol through the active CMG endpoint: Chrome DevTools Protocol for Chrome and Edge, WebDriver BiDi for Firefox.
+- Browser diagnostics are armed automatically when CMG launches or attaches to a browser/app. Console messages and page errors accumulate in page-side buffers between CMG commands from that arming point forward. Use `listConsole`, `listPageErrors`, `expectNoConsole`, and `expectNoPageError` after risky interactions. Events that occurred before launch/attach/diagnostics arming cannot be recovered.
 - Browser JavaScript dialogs are handled explicitly. CMG does not silently remove, accept, or dismiss dialogs through the browser protocol. Add `captureDialogs` or `setDialogBehavior` before the action that opens an `alert`, `confirm`, or `prompt`.
 
 ## GIF Behavior
@@ -125,6 +129,7 @@ Run a script with initial variables:
 ```powershell
 cmg browser control script --file demo-scripts\139-cli-variables.cmgscript --var user=Ada
 cmg browser control script --file demo-scripts\141-base-url.cmgscript --base-url https://example.test/app/
+cmg browser control script --inline "listConsole level=error"
 ```
 
 More syntax and action details are documented in the [scripting guide](../../../scripting/index.md). Style guidance is in the [CMG script style guide](../../../scripting/style-guide.md).

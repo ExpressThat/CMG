@@ -30,6 +30,7 @@ cmg --firefox browser launch [browser-arguments...]
 - Persists browser state per browser and port. Default ports keep the standard state files; custom ports use port-suffixed state files.
 - Only one CMG-controlled browser instance is launched per browser and port. Calling this command again for the same browser and port reports the existing process. Calling it with a different port can launch another same-browser instance.
 - If no non-option argument is supplied, the browser opens `about:blank`.
+- On successful launch, CMG arms page-side diagnostics capture for console messages and page errors. Captured diagnostics are stored in `window.__cmgConsole` and `window.__cmgPageErrors` and continue accumulating between CMG CLI invocations. Capture is forward-only; events before launch/diagnostics arming cannot be recovered.
 
 ## Stdout
 

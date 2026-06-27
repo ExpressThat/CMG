@@ -1069,16 +1069,34 @@ Output:
 
 - `DOWNLOAD <line> <path>` on success.
 
-## `captureConsole`, `waitForConsole`, `expectNoConsole`, And `toHaveNoConsole`
+## `captureConsole`, `listConsole`, `waitForConsole`, `expectNoConsole`, And `toHaveNoConsole`
 
 ```text
 captureConsole
+listConsole level=error
 waitForConsole "^saved$" match=regex ignoreCase=true level=info timeout=5000
 expectNoConsole level=error timeout=250
 toHaveNoConsole "deprecated" match=exact level=warn
 ```
 
-Installs a page-side console hook, waits for a captured console message, or asserts that no matching console message was captured. Call `captureConsole` before the page action that is expected to log. `waitForConsole` checks captured `log`, `info`, `warn`, and `error` calls. `expectNoConsole` and `toHaveNoConsole` default to the `error` level and can watch a short future window with `timeout=`.
+Lists captured console messages, waits for a captured console message, or asserts that no matching console message was captured. CMG arms diagnostics automatically when it launches or attaches to a controlled browser/app. Captured messages live in `window.__cmgConsole` and continue accumulating between CMG commands from that point forward. Events before launch/attach/arming are not recoverable.
+
+`captureConsole` is deprecated as a new-workflow requirement. It remains as an idempotent compatibility action that ensures capture is installed and does not clear existing entries. The old "arm before the interaction" workflow is easy for agents to miss and loses errors that occur between commands; prefer automatic launch/attach capture plus `listConsole` and assertions.
+
+`listConsole` and `waitForConsole` check captured `log`, `info`, `warn`, and `error` calls. `expectNoConsole` and `toHaveNoConsole` default to the `error` level and can watch a short future window with `timeout=`.
+
+For visual testing and debugging, interact first, then list and assert:
+
+```text
+click "#save"
+screenshotPage output="artifacts/after-click.png"
+listPageErrors
+listConsole level=error
+expectNoPageError timeout=250
+expectNoConsole level=error timeout=250
+```
+
+If a matching console error is captured, `expectNoConsole` fails and reports the message in stderr. To dump captured entries for debugging, use `listConsole` with optional `level=`, text, `match=`, and `ignoreCase=` filters. To wait for one future or existing matching message, use `waitForConsole "." level=error match=regex timeout=250`, which emits a `CONSOLE` stdout line.
 
 Options:
 
@@ -1090,19 +1108,26 @@ Options:
 Output:
 
 - `CONSOLE_CAPTURE <line>` when the hook is installed.
+- `CONSOLE_LIST <line> count=<n>` when captured console entries are listed.
+- `CONSOLE_ENTRY <line> index=<i> level=<level> text=<message>` for each listed console entry.
 - `CONSOLE <line> <level>: <text>` when a matching message is found.
 - `CONSOLE_OK <line> level=<level>` when no matching console message is found.
 
-## `capturePageErrors`, `waitForPageError`, `expectNoPageError`, And `toHaveNoPageError`
+## `capturePageErrors`, `listPageErrors`, `waitForPageError`, `expectNoPageError`, And `toHaveNoPageError`
 
 ```text
 capturePageErrors
+listPageErrors
 waitForPageError "Cannot read" match=contains ignoreCase=true timeout=5000
 expectNoPageError timeout=250
 toHaveNoPageError "ResizeObserver loop" match=exact timeout=250
 ```
 
-Installs page-side listeners for `error` and `unhandledrejection` events, waits for a matching captured page error, or asserts that no matching page error was captured. Call `capturePageErrors` before the action expected to throw, reject, or remain clean.
+Lists captured page errors, waits for a matching captured page error, or asserts that no matching page error was captured. CMG arms diagnostics automatically when it launches or attaches to a controlled browser/app. Captured `error` and `unhandledrejection` events live in `window.__cmgPageErrors` and continue accumulating between CMG commands from that point forward. Events before launch/attach/arming are not recoverable.
+
+`capturePageErrors` is deprecated as a new-workflow requirement. It remains as an idempotent compatibility action that ensures capture is installed and does not clear existing entries. Prefer automatic launch/attach capture plus `listPageErrors` and assertions.
+
+If a matching page error is captured, `expectNoPageError` fails and reports the message in stderr. To dump captured entries for debugging, use `listPageErrors` with optional text, `match=`, and `ignoreCase=` filters. To wait for one future or existing matching page error, use `waitForPageError "." match=regex timeout=250`, which emits a `PAGE_ERROR` stdout line.
 
 Options:
 
@@ -1114,6 +1139,8 @@ Options:
 Output:
 
 - `PAGE_ERROR_CAPTURE <line>` when the hook is installed.
+- `PAGE_ERROR_LIST <line> count=<n>` when captured page errors are listed.
+- `PAGE_ERROR_ENTRY <line> index=<i> type=<type> source=<source> line=<pageLine> column=<pageColumn> text=<message>` for each listed page error.
 - `PAGE_ERROR <line> <type>: <text>` when a matching page error is found.
 - `PAGE_ERROR_OK <line>` when no matching page error is found.
 

@@ -3,48 +3,6 @@ using CMG.Runner;
 
 namespace CMG.Browser;
 
-public interface IBrowserControlService
-{
-    ElementResult GetElement(BrowserKind browserKind, string selector, ElementOutputMode outputMode);
-
-    ElementResult GetElement(BrowserKind browserKind, int? port, string selector, ElementOutputMode outputMode) =>
-        GetElement(browserKind, selector, outputMode);
-
-    ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif);
-
-    ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace) =>
-        RunScript(browserKind, file, gif);
-
-    ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts) =>
-        RunScript(browserKind, file, gif, trace);
-
-    ScriptRunResult RunScript(
-        BrowserKind browserKind,
-        int? port,
-        string file,
-        FileInfo? gif,
-        FileInfo? trace,
-        ScriptTimeoutOptions? timeouts,
-        string? baseUrl,
-        IReadOnlyDictionary<string, string> variables) =>
-        RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables);
-
-    ScriptRunResult RunScript(
-        BrowserKind browserKind,
-        string file,
-        FileInfo? gif,
-        FileInfo? trace,
-        ScriptTimeoutOptions? timeouts,
-        string? baseUrl,
-        IReadOnlyDictionary<string, string> variables) =>
-        RunScript(browserKind, file, gif, trace, timeouts);
-
-    ScriptRunResult RunScriptAction(BrowserKind browserKind, string scriptLine);
-
-    ScriptRunResult RunScriptAction(BrowserKind browserKind, int? port, string scriptLine) =>
-        RunScriptAction(browserKind, scriptLine);
-}
-
 public sealed class BrowserControlService : IBrowserControlService
 {
     private readonly BrowserStateStore stateStore;
@@ -173,6 +131,32 @@ public sealed class BrowserControlService : IBrowserControlService
         try
         {
             return scriptRunner.RunText(scriptLine, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind));
+        }
+        catch (System.Net.Http.HttpRequestException exception)
+        {
+            return ScriptRunResult.Fail(BuildBrowserConnectionMessage(browserKind, exception));
+        }
+    }
+
+    public ScriptRunResult RunScriptText(
+        BrowserKind browserKind,
+        int? port,
+        string script,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
+        IReadOnlyDictionary<string, string> variables)
+    {
+        var state = stateStore.Load(browserKind, port);
+        if (state is null)
+        {
+            return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind, port));
+        }
+
+        try
+        {
+            return scriptRunner.RunText(script, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables);
         }
         catch (System.Net.Http.HttpRequestException exception)
         {

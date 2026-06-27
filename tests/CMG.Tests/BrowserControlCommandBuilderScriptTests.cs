@@ -45,6 +45,39 @@ public sealed class BrowserControlCommandBuilderScriptTests
         Assert.Null(handler.File);
     }
 
+    [Fact]
+    public void ScriptCommand_MapsInlineScript()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control script --inline \"navigate https://example.test\" --trace C:\\temp\\inline.trace.json").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("navigate https://example.test", handler.InlineScript);
+        Assert.Equal("C:\\temp\\inline.trace.json", handler.Trace?.FullName);
+        Assert.Null(handler.File);
+    }
+
+    [Fact]
+    public void ScriptCommand_RejectsFileAndInlineTogether()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control script --file flow.cmgscript --inline \"navigate /\"").Invoke();
+
+        Assert.Equal(1, exitCode);
+        Assert.Null(handler.File);
+        Assert.Null(handler.InlineScript);
+    }
+
+    [Fact]
+    public void ValidateScriptCommand_MapsInlineScript()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control validateScript --inline \"navigate https://example.test\"").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("navigate https://example.test", handler.ValidatedInlineScript);
+    }
+
     private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");
@@ -63,6 +96,10 @@ public sealed class BrowserControlCommandBuilderScriptTests
         public string? File { get; private set; }
 
         public string? ScriptLine { get; private set; }
+
+        public string? InlineScript { get; private set; }
+
+        public string? ValidatedInlineScript { get; private set; }
 
         public FileInfo? Gif { get; private set; }
 
@@ -120,6 +157,31 @@ public sealed class BrowserControlCommandBuilderScriptTests
             return 0;
         }
 
+        public int RunInlineScript(
+            BrowserKind browserKind,
+            int? port,
+            string script,
+            FileInfo? gif,
+            FileInfo? trace,
+            ScriptTimeoutOptions? timeouts,
+            string? baseUrl,
+            IReadOnlyDictionary<string, string> variables)
+        {
+            InlineScript = script;
+            Gif = gif;
+            Trace = trace;
+            Timeouts = timeouts;
+            BaseUrl = baseUrl;
+            Variables = variables;
+            return 0;
+        }
+
         public int ValidateScript(string file) => 0;
+
+        public int ValidateInlineScript(string script)
+        {
+            ValidatedInlineScript = script;
+            return 0;
+        }
     }
 }

@@ -48,8 +48,10 @@ public sealed partial class BrowserControlCommandBuilder
     private Command BuildConsoleGroup(BrowserSelectionOptions browserOptions)
     {
         var command = new Command("console", "Console capture and wait commands.");
-        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "capture", "Capture future console messages.", "captureConsole"));
-        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "captureConsole", "Capture future console messages.", "captureConsole"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "capture", "Ensure console diagnostics capture is installed.", "captureConsole"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "captureConsole", "Ensure console diagnostics capture is installed.", "captureConsole"));
+        command.Subcommands.Add(BuildConsoleListCommand(browserOptions, "list", "listConsole"));
+        command.Subcommands.Add(BuildConsoleListCommand(browserOptions, "listConsole", "listConsole"));
         command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "wait", "waitForConsole", "Wait for a matching console message.", includeLevel: true));
         command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "waitForConsole", "waitForConsole", "Wait for a matching console message.", includeLevel: true));
         command.Subcommands.Add(BuildNoConsoleCommand(browserOptions, "expectNoConsole", "expectNoConsole"));
@@ -75,8 +77,10 @@ public sealed partial class BrowserControlCommandBuilder
     private Command BuildPageErrorsGroup(BrowserSelectionOptions browserOptions)
     {
         var command = new Command("pageErrors", "Page error capture, wait, and absence assertion commands.");
-        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "capture", "Capture future page errors.", "capturePageErrors"));
-        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "capturePageErrors", "Capture future page errors.", "capturePageErrors"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "capture", "Ensure page-error diagnostics capture is installed.", "capturePageErrors"));
+        command.Subcommands.Add(BuildNetworkNoArgumentCommand(browserOptions, "capturePageErrors", "Ensure page-error diagnostics capture is installed.", "capturePageErrors"));
+        command.Subcommands.Add(BuildPageErrorListCommand(browserOptions, "list", "listPageErrors"));
+        command.Subcommands.Add(BuildPageErrorListCommand(browserOptions, "listPageErrors", "listPageErrors"));
         command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "wait", "waitForPageError", "Wait for a matching page error.", includeLevel: false));
         command.Subcommands.Add(BuildMessageWaitCommand(browserOptions, "waitForPageError", "waitForPageError", "Wait for a matching page error.", includeLevel: false));
         command.Subcommands.Add(BuildNoPageErrorCommand(browserOptions, "expectNoPageError", "expectNoPageError"));
@@ -123,6 +127,35 @@ public sealed partial class BrowserControlCommandBuilder
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
             CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(text) ?? string.Empty], EventWaitOptions(parseResult, timeout, includeLevel ? level : null, match, ignoreCase))));
+
+        return command;
+    }
+
+    private Command BuildConsoleListCommand(BrowserSelectionOptions browserOptions, string name, string action)
+    {
+        var text = OptionalTextArgument("text", "Optional console text to include.");
+        var level = CliStringOption("--level", "Console level filter: log, info, warn, or error.");
+        var match = NavigationMatchOption();
+        var ignoreCase = NavigationIgnoreCaseOption();
+        var command = new Command(name, "List captured console messages.") { text, level, match, ignoreCase };
+
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
+            ToScriptLine(action, OptionalArgument(parseResult, text), EventWaitOptions(parseResult, null, level, match, ignoreCase))));
+
+        return command;
+    }
+
+    private Command BuildPageErrorListCommand(BrowserSelectionOptions browserOptions, string name, string action)
+    {
+        var text = OptionalTextArgument("text", "Optional page-error text to include.");
+        var match = NavigationMatchOption();
+        var ignoreCase = NavigationIgnoreCaseOption();
+        var command = new Command(name, "List captured page errors.") { text, match, ignoreCase };
+
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
+            ToScriptLine(action, OptionalArgument(parseResult, text), EventWaitOptions(parseResult, null, null, match, ignoreCase))));
 
         return command;
     }

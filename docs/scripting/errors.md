@@ -314,7 +314,9 @@ Line 7: waitForConsole failed. Console message 'settings saved' was not seen wit
 Line 8: waitForConsole failed. Invalid text regex '[': ...
 ```
 
-Call `captureConsole` before the action that should log the message, and check the optional `level=` filter. Console text matching supports `match=contains|exact|regex` and `ignoreCase=true`.
+CMG arms console diagnostics automatically when it launches or attaches to a controlled browser/app. Check that the message happened after launch/attach/diagnostics arming, and check the optional `level=` filter. Console text matching supports `match=contains|exact|regex` and `ignoreCase=true`.
+
+For visual diagnostics, interact with the page, then run `listConsole level=error`, `listPageErrors`, `expectNoConsole level=error timeout=250`, and `expectNoPageError timeout=250`. A matching console error fails the script and includes the captured text in the failure reason. Use `waitForConsole "." level=error match=regex timeout=250` when the caller wants to retrieve one matching error line as `CONSOLE <line> error: <text>`. Capture is forward-only; events before launch/attach/arming cannot be recovered.
 
 ## Unexpected Console Output
 
@@ -322,7 +324,18 @@ Call `captureConsole` before the action that should log the message, and check t
 Line 8: expectNoConsole failed. Unexpected console error: Save failed
 ```
 
-Call `captureConsole` before the action under observation. Use `level=`, optional text, `match=`, `ignoreCase=`, and `timeout=` to narrow the rejected messages.
+Use `listConsole level=error` to inspect captured errors, then use `level=`, optional text, `match=`, `ignoreCase=`, and `timeout=` to narrow the rejected messages. `captureConsole` is a deprecated compatibility action for ensuring capture is installed; it does not clear existing entries.
+
+Pair console checks with page-error checks when diagnosing browser UI failures:
+
+```text
+click "#risky"
+screenshotPage output="artifacts/after-click.png"
+listPageErrors
+listConsole level=error
+expectNoPageError timeout=250
+expectNoConsole level=error timeout=250
+```
 
 ## Page Error Timeout
 
@@ -331,7 +344,9 @@ Line 8: waitForPageError failed. Page error 'Cannot read' was not seen within 50
 Line 9: waitForPageError failed. waitForPageError option match= must be contains, exact, or regex.
 ```
 
-Call `capturePageErrors` before the action that should throw or reject, and match text from the page error or rejected value. Page-error matching supports `match=contains|exact|regex` and `ignoreCase=true`.
+CMG arms page-error diagnostics automatically when it launches or attaches to a controlled browser/app. Check that the error happened after launch/attach/diagnostics arming, and match text from the page error or rejected value. Page-error matching supports `match=contains|exact|regex` and `ignoreCase=true`.
+
+For visual diagnostics, interact with the page, then run `listPageErrors`, `listConsole level=error`, `expectNoPageError timeout=250`, and `expectNoConsole level=error timeout=250`. A matching page error fails the script and includes the captured text in the failure reason. Use `waitForPageError "." match=regex timeout=250` when the caller wants to retrieve one matching error line as `PAGE_ERROR <line> <type>: <text>`. Capture is forward-only; events before launch/attach/arming cannot be recovered.
 
 ## Unexpected Page Error
 
@@ -339,7 +354,7 @@ Call `capturePageErrors` before the action that should throw or reject, and matc
 Line 9: expectNoPageError failed. Unexpected page error: Cannot read properties of null
 ```
 
-Call `capturePageErrors` before the action under observation. Use optional text, `match=`, `ignoreCase=`, and `timeout=` to narrow the rejected page errors.
+Use `listPageErrors` to inspect captured errors, then use optional text, `match=`, `ignoreCase=`, and `timeout=` to narrow the rejected page errors. `capturePageErrors` is a deprecated compatibility action for ensuring capture is installed; it does not clear existing entries.
 
 ## Init Script Failure
 

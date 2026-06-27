@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using CMG.Browser.Scripting;
 
 namespace CMG.Browser;
 
@@ -132,6 +133,22 @@ public sealed partial class FirefoxBiDiClient
             InitScripts[key] = scripts;
             return scripts.Count.ToString(CultureInfo.InvariantCulture);
         }
+    }
+
+    public void ArmDiagnostics(string remoteDebuggingUrl)
+    {
+        var source = BrowserConsoleScripts.InstallDiagnostics();
+        Run(async () =>
+        {
+            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
+            await session.SendCommand("script.addPreloadScript", writer =>
+            {
+                writer.WriteString("functionDeclaration", $"() => {{ {source}; }}");
+            });
+            _ = ReadScriptResultValue(await Evaluate(session, context.Id, source));
+            return true;
+        });
     }
 
     private static async Task ApplyInitScripts(FirefoxBiDiSession session, string remoteDebuggingUrl)

@@ -26,7 +26,6 @@ public sealed partial class BrowserScriptRunner
         {
             return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
         }
-
         return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables);
     }
 
@@ -35,11 +34,12 @@ public sealed partial class BrowserScriptRunner
         string remoteDebuggingUrl,
         IBrowserAutomationClient automationClient,
         FileInfo? gif = null,
+        FileInfo? trace = null,
         ScriptTimeoutOptions? timeouts = null,
         string? baseUrl = null,
         IReadOnlyDictionary<string, string>? variables = null)
     {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts, baseUrl, variables);
+        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables);
     }
 
     private ScriptRunResult RunParsedScript(

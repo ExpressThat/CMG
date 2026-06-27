@@ -20,6 +20,7 @@ cmg --edge browser app attach --port 9333 --pid 1234
 - Use this when an Electron app was started with `--remote-debugging-port=<port>` or a Windows WebView2 app was started with `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=<port>`.
 - CMG verifies the remote debugging endpoint before saving state unless `--connect-timeout 0` is used.
 - After attach, existing browser-control commands, scripts, `cmg run`, GIF recording, virtual pointer events, drag ghosts, captions, traces, and reports target the app.
+- On success, CMG arms page-side diagnostics capture for console messages and page errors. Captured diagnostics are stored in `window.__cmgConsole` and `window.__cmgPageErrors` and continue accumulating between CMG CLI invocations. Capture is forward-only; events before attach/diagnostics arming cannot be recovered.
 - `--firefox` is rejected because this command needs a Chromium CDP endpoint.
 - If the endpoint is not reachable, CMG reports the connection reason and leaves the previous browser state unchanged.
 

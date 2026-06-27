@@ -26,11 +26,16 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
 {
     private readonly IBrowserController browserController;
     private readonly IBrowserAppController browserAppController;
+    private readonly BrowserAutomationClientFactory automationClientFactory;
 
-    public BrowserCommandHandler(IBrowserController browserController, IBrowserAppController browserAppController)
+    public BrowserCommandHandler(
+        IBrowserController browserController,
+        IBrowserAppController browserAppController,
+        BrowserAutomationClientFactory automationClientFactory)
     {
         this.browserController = browserController;
         this.browserAppController = browserAppController;
+        this.automationClientFactory = automationClientFactory;
     }
 
     public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url)
@@ -57,6 +62,7 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
 
         if (result.RemoteDebuggingUrl is not null)
         {
+            ArmDiagnostics(browserKind, result.RemoteDebuggingUrl);
             Console.WriteLine($"Remote debugging: {result.RemoteDebuggingUrl}");
         }
 
@@ -82,6 +88,11 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
         }
 
         var result = browserAppController.Launch(browserKind, executable, appKind, options, arguments);
+        if (result.ExitCode is 0 && result.RemoteDebuggingUrl is not null)
+        {
+            ArmDiagnostics(browserKind, result.RemoteDebuggingUrl);
+        }
+
         WriteLaunchResult(result);
         return result.ExitCode;
     }
@@ -100,6 +111,11 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
         }
 
         var result = browserAppController.Attach(browserKind, options, processId);
+        if (result.ExitCode is 0 && result.RemoteDebuggingUrl is not null)
+        {
+            ArmDiagnostics(browserKind, result.RemoteDebuggingUrl);
+        }
+
         WriteLaunchResult(result);
         return result.ExitCode;
     }
@@ -208,6 +224,18 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
         if (result.RemoteDebuggingUrl is not null)
         {
             Console.WriteLine($"Remote debugging: {result.RemoteDebuggingUrl}");
+        }
+    }
+
+    private void ArmDiagnostics(BrowserKind browserKind, string remoteDebuggingUrl)
+    {
+        try
+        {
+            automationClientFactory.Create(browserKind).ArmDiagnostics(remoteDebuggingUrl);
+        }
+        catch (Exception exception) when (exception is ChromeDevToolsException or HttpRequestException or TaskCanceledException or InvalidOperationException)
+        {
+            Console.Error.WriteLine($"Warning: diagnostics capture was not armed: {exception.Message}");
         }
     }
 }

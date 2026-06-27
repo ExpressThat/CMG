@@ -8,6 +8,8 @@ public sealed class BrowserControlCommandBuilderEventAliasTests
 {
     [Theory]
     [InlineData("console captureConsole", "captureConsole")]
+    [InlineData("console listConsole Boom --level error --match exact --ignore-case", "listConsole \"Boom\" level=\"error\" match=\"exact\" ignoreCase=\"true\"")]
+    [InlineData("console list --level warn", "listConsole level=\"warn\"")]
     [InlineData("console waitForConsole Ready --level error", "waitForConsole \"Ready\" level=\"error\"")]
     [InlineData("console wait Ready --match regex --ignore-case", "waitForConsole \"Ready\" match=\"regex\" ignoreCase=\"true\"")]
     [InlineData("console expectNoConsole --timeout 100", "expectNoConsole timeout=\"100\"")]
@@ -19,6 +21,8 @@ public sealed class BrowserControlCommandBuilderEventAliasTests
     [InlineData("dialogs dialogBehavior accept", "dialogBehavior \"accept\"")]
     [InlineData("dialogs waitForDialog Confirm --match exact", "waitForDialog \"Confirm\" match=\"exact\"")]
     [InlineData("pageErrors capturePageErrors", "capturePageErrors")]
+    [InlineData("pageErrors listPageErrors Boom --match regex --ignore-case", "listPageErrors \"Boom\" match=\"regex\" ignoreCase=\"true\"")]
+    [InlineData("pageErrors list", "listPageErrors")]
     [InlineData("pageErrors waitForPageError Boom --match regex --ignore-case", "waitForPageError \"Boom\" match=\"regex\" ignoreCase=\"true\"")]
     [InlineData("pageErrors expectNoPageError --timeout 100", "expectNoPageError timeout=\"100\"")]
     [InlineData("pageErrors toHaveNoPageError Boom", "toHaveNoPageError \"Boom\"")]

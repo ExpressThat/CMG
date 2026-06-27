@@ -2,20 +2,80 @@ namespace CMG.Browser.Scripting;
 
 public static class BrowserConsoleScripts
 {
+    public static string InstallDiagnostics() =>
+        """
+        (() => {
+          window.__cmgConsole = Array.isArray(window.__cmgConsole) ? window.__cmgConsole : [];
+          if (!window.__cmgConsoleInstalled) {
+            window.__cmgConsoleInstalled = true;
+            window.__cmgConsoleOriginals = window.__cmgConsoleOriginals || {};
+            for (const level of ['log', 'info', 'warn', 'error']) {
+              const original = window.__cmgConsoleOriginals[level] || console[level].bind(console);
+              window.__cmgConsoleOriginals[level] = original;
+              console[level] = (...args) => {
+                window.__cmgConsole.push({ level, text: args.map(value => String(value)).join(' ') });
+                original(...args);
+              };
+            }
+          }
+
+          window.__cmgPageErrors = Array.isArray(window.__cmgPageErrors) ? window.__cmgPageErrors : [];
+          if (!window.__cmgPageErrorsInstalled) {
+            window.__cmgPageErrorsInstalled = true;
+            window.addEventListener('error', event => {
+              window.__cmgPageErrors.push({
+                type: 'error',
+                text: event.message || String(event.error || ''),
+                source: event.filename || '',
+                line: event.lineno || 0,
+                column: event.colno || 0
+              });
+            });
+            window.addEventListener('unhandledrejection', event => {
+              window.__cmgPageErrors.push({
+                type: 'unhandledrejection',
+                text: String(event.reason?.message || event.reason || ''),
+                source: '',
+                line: 0,
+                column: 0
+              });
+            });
+          }
+          return true;
+        })()
+        """;
+
     public static string Install() =>
         """
         (() => {
-          if (window.__cmgConsoleInstalled) return true;
-          window.__cmgConsoleInstalled = true;
-          window.__cmgConsole = [];
-          for (const level of ['log', 'info', 'warn', 'error']) {
-            const original = console[level].bind(console);
-            console[level] = (...args) => {
-              window.__cmgConsole.push({ level, text: args.map(String).join(' ') });
-              original(...args);
-            };
+          window.__cmgConsole = Array.isArray(window.__cmgConsole) ? window.__cmgConsole : [];
+          if (!window.__cmgConsoleInstalled) {
+            window.__cmgConsoleInstalled = true;
+            window.__cmgConsoleOriginals = window.__cmgConsoleOriginals || {};
+            for (const level of ['log', 'info', 'warn', 'error']) {
+              const original = window.__cmgConsoleOriginals[level] || console[level].bind(console);
+              window.__cmgConsoleOriginals[level] = original;
+              console[level] = (...args) => {
+                window.__cmgConsole.push({ level, text: args.map(value => String(value)).join(' ') });
+                original(...args);
+              };
+            }
           }
           return true;
+        })()
+        """;
+
+    public static string List(string text, string level, string matchMode = "contains", bool ignoreCase = false) =>
+        $$"""
+        (() => {
+          const expected = {{Quote(text)}};
+          const level = {{Quote(level)}};
+          const matchMode = {{Quote(matchMode)}};
+          const ignoreCase = {{ignoreCase.ToString().ToLowerInvariant()}};
+          const matchesText = {{TextMatcherScript()}};
+          return JSON.stringify((window.__cmgConsole || [])
+            .map((entry, index) => ({ index, level: String(entry.level || ''), text: String(entry.text || '') }))
+            .filter(entry => matchesText(entry.text, expected, matchMode, ignoreCase) && (!level || entry.level === level)));
         })()
         """;
 
@@ -72,28 +132,49 @@ public static class BrowserConsoleScripts
     public static string InstallPageErrors() =>
         """
         (() => {
-          if (window.__cmgPageErrorsInstalled) return true;
-          window.__cmgPageErrorsInstalled = true;
-          window.__cmgPageErrors = [];
-          window.addEventListener('error', event => {
-            window.__cmgPageErrors.push({
-              type: 'error',
-              text: event.message || String(event.error || ''),
-              source: event.filename || '',
-              line: event.lineno || 0,
-              column: event.colno || 0
+          window.__cmgPageErrors = Array.isArray(window.__cmgPageErrors) ? window.__cmgPageErrors : [];
+          if (!window.__cmgPageErrorsInstalled) {
+            window.__cmgPageErrorsInstalled = true;
+            window.addEventListener('error', event => {
+              window.__cmgPageErrors.push({
+                type: 'error',
+                text: event.message || String(event.error || ''),
+                source: event.filename || '',
+                line: event.lineno || 0,
+                column: event.colno || 0
+              });
             });
-          });
-          window.addEventListener('unhandledrejection', event => {
-            window.__cmgPageErrors.push({
-              type: 'unhandledrejection',
-              text: String(event.reason?.message || event.reason || ''),
-              source: '',
-              line: 0,
-              column: 0
+            window.addEventListener('unhandledrejection', event => {
+              window.__cmgPageErrors.push({
+                type: 'unhandledrejection',
+                text: String(event.reason?.message || event.reason || ''),
+                source: '',
+                line: 0,
+                column: 0
+              });
             });
-          });
+          }
           return true;
+        })()
+        """;
+
+    public static string ListPageErrors(string text, string matchMode = "contains", bool ignoreCase = false) =>
+        $$"""
+        (() => {
+          const expected = {{Quote(text)}};
+          const matchMode = {{Quote(matchMode)}};
+          const ignoreCase = {{ignoreCase.ToString().ToLowerInvariant()}};
+          const matchesText = {{TextMatcherScript()}};
+          return JSON.stringify((window.__cmgPageErrors || [])
+            .map((entry, index) => ({
+              index,
+              type: String(entry.type || ''),
+              source: String(entry.source || ''),
+              line: Number(entry.line || 0),
+              column: Number(entry.column || 0),
+              text: String(entry.text || '')
+            }))
+            .filter(entry => matchesText(entry.text, expected, matchMode, ignoreCase)));
         })()
         """;
 

@@ -42,12 +42,12 @@ public sealed partial class BrowserControlCommandBuilder
 
     private static IReadOnlyList<(string Key, string Value)> EventWaitOptions(
         ParseResult parseResult,
-        Option<int?> timeout,
+        Option<int?>? timeout,
         Option<string?>? level,
         Option<string?> match,
         Option<bool> ignoreCase) =>
         CompactOptions([
-            IntOption("timeout", parseResult.GetValue(timeout)),
+            IntOption("timeout", timeout is null ? null : parseResult.GetValue(timeout)),
             StringOption("level", level is null ? null : parseResult.GetValue(level)),
             StringOption("match", parseResult.GetValue(match)),
             parseResult.GetValue(ignoreCase) ? ("ignoreCase", "true") : null
