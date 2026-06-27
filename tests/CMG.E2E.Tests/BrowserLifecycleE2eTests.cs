@@ -23,6 +23,34 @@ public sealed class BrowserLifecycleE2eTests
     }
 
     [Fact]
+    public void LaunchFailure_RejectsInvalidBrowserPort()
+    {
+        var result = fixture.Cli.Run("browser", "--port", "0", "launch", "--headless");
+
+        result.ShouldFail();
+        result.StderrContains("--port must be between 1 and 65535.");
+    }
+
+    [Fact]
+    public void Close_WithUnusedPortReportsNoBrowserAndIgnoredArguments()
+    {
+        var result = fixture.Cli.Run("browser", "--port", "1", "close", "--leftover", "value");
+
+        result.ShouldPass();
+        result.StdoutContains("No CMG-controlled Chrome instance is running.");
+        result.StdoutContains("Ignored arguments: --leftover value");
+    }
+
+    [Fact]
+    public void CloseFailure_RejectsInvalidBrowserPort()
+    {
+        var result = fixture.Cli.Run("browser", "--port", "0", "close");
+
+        result.ShouldFail();
+        result.StderrContains("--port must be between 1 and 65535.");
+    }
+
+    [Fact]
     public void AppAttachFailure_RejectsInvalidPort()
     {
         var result = fixture.Cli.Run("browser", "app", "attach", "--port", "0");
