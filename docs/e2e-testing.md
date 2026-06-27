@@ -81,6 +81,7 @@ The first E2E slice covers:
 - Browser-control provider-style assertion aliases for text absence, state assertions, values, attributes, class/id/CSS/property, accessibility name, role, checked state, and counts.
 - Browser-control assertion alias coverage for direct CLI text, body text, state, eval, value, attribute, accessibility, checked, and count variants.
 - Runtime setup actions for init scripts, exposed functions/bindings, script/style tag injection, generated page content, HTML reads, and bounding boxes.
+- Runner runtime setup actions for init scripts, exposed functions/bindings, script/style tags, generated content, element HTML, bounding boxes, trace output, and failure diagnostics.
 - Browser-control network commands for routes, HAR export/replay, network waits, mocked failures, headers, and offline mode.
 - Direct script and runner network actions for routes, HAR export/replay, request/response waits, mocked failures, trace output, and failure diagnostics.
 - Browser-control network environment aliases for extra headers, HTTP credentials, proxy rewrites, mocked responses, and validation failures.
