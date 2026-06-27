@@ -56,7 +56,7 @@ public sealed class CmgBrowserFixture : IDisposable
     }
 }
 
-[CollectionDefinition(Name)]
+[CollectionDefinition(Name, DisableParallelization = true)]
 public sealed class CmgE2eCollection : ICollectionFixture<CmgBrowserFixture>
 {
     public const string Name = "CMG browser E2E";
