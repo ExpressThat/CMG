@@ -74,7 +74,7 @@ The first E2E slice covers:
 - Direct script clock and accessibility actions for fake time, clock restore, accessibility snapshots, accessible-role checks, and validation failure output.
 - Browser-control context aliases for JavaScript toggling, service-worker mode, context clear, and context reset.
 - Direct script and runner environment actions for locale, timezone, media, geolocation, permission grants, permission clearing, trace output, and validation failure diagnostics.
-- Direct script context policy actions for JavaScript blocking, CSP bypass, service-worker blocking, context clearing, and context reset.
+- Direct script and runner context policy actions for JavaScript blocking, CSP bypass, service-worker blocking, context clearing/reset, trace output, and validation failure diagnostics.
 - Browser-control storage lifecycle commands for local/session storage remove/clear, cookie attributes/remove/clear, storage-state save/load, and validation failures.
 - Direct script and runner storage actions for local/session storage, cookies, storage-state save/load, trace output, and validation failure diagnostics.
 - Browser-control wait command aliases for selector states, function waits, fixed waits, auto waits, and selector-state failure reasons.
