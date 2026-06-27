@@ -81,4 +81,30 @@ public sealed class BrowserScriptE2eTests
         result.ShouldFail();
         Assert.True(result.Stderr.Length > 0 || result.Stdout.Length > 0);
     }
+
+    [Fact]
+    public void ScriptCommand_BaseUrlAndEnvResolveRelativeNavigationAndVariables()
+    {
+        var script = fixture.CreateScript("script-base-url-env.cmgscript", """
+            navigate "index.html" waitUntil=domcontentloaded
+            expectText "#title" "${expectedTitle}"
+            """);
+
+        var result = fixture.Cli.Run(
+            "browser",
+            "control",
+            "script",
+            "--file",
+            script,
+            "--base-url",
+            fixture.FixtureHttpPath("/"),
+            "--env",
+            "expectedTitle=CMG E2E Fixture");
+
+        result.ShouldPass();
+        result.StdoutContains("PASS 001 navigate index.html");
+        result.StdoutContains("NAVIGATED 001");
+        result.StdoutContains("index.html waitUntil=domcontentloaded");
+        result.StdoutContains("PASS 002 expectText #title \"CMG E2E Fixture\"");
+    }
 }
