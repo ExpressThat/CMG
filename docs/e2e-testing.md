@@ -81,7 +81,7 @@ The first E2E slice covers:
 - Direct script and runner storage actions for local/session storage, cookies, storage-state save/load, trace output, and validation failure diagnostics.
 - Browser-control wait command aliases for selector states, function waits, fixed waits, auto waits, and selector-state failure reasons.
 - Browser-control navigation/runtime aliases for `expectUrl`, `waitForNavigation`, `waitForNetworkIdle`, `evalOnSelector`, and `evalAll`.
-- Runner navigation and wait actions for navigation aliases, history, reload, URL/title/load/network waits, selector/function/fixed waits, auto wait aliases, trace output, and exact failure-step diagnostics.
+- Runner navigation and wait actions for navigation aliases, history, reload, URL/title/load/network waits, selector/function/fixed waits, auto wait aliases, persistent and scoped timeout defaults, trace output, and exact failure-step diagnostics.
 - Browser-control provider-style assertion aliases for text absence, state assertions, values, attributes, class/id/CSS/property, accessibility name, role, checked state, and counts.
 - Browser-control assertion alias coverage for direct CLI text, body text, state, eval, value, attribute, accessibility, checked, and count variants.
 - Direct script assertion aliases for state, value, multi-value, attribute, class/id/CSS/property, accessibility name, role, checked, count, text presence/absence, eval assertions, and failure diagnostics.

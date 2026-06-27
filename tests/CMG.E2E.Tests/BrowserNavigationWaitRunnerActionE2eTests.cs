@@ -20,10 +20,14 @@ public sealed class BrowserNavigationWaitRunnerActionE2eTests
         var traceDir = fixture.OutputPath("runner-navigation-wait-traces");
         var script = fixture.CreateScript("runner-navigation-wait-actions.cmgscript", $$"""
             test "runner navigation and wait actions" {
+              setDefaultTimeout 1000
+              setDefaultNavigationTimeout 5000
+              setDefaultAssertionTimeout 1000
+              setDefaultExpectTimeout 1000
               navigate "{{first}}" waitUntil=domcontentloaded
-              waitForSelector "#primary" state=visible timeout=1000
-              waitForElement "#title" timeout=1000
-              waitForFunction "document.readyState === 'complete'" timeout=1000
+              waitForSelector "#primary" state=visible
+              waitForElement "#title"
+              waitForFunction "document.readyState === 'complete'"
               waitForTimeout "1"
               expectUrl "nav-one"
               expectTitle "CMG E2E Fixture"
@@ -39,6 +43,12 @@ public sealed class BrowserNavigationWaitRunnerActionE2eTests
               waitForNetworkIdle timeout=5000
               evaluate "setTimeout(() => window.__runnerDelayedReady = true, 50); true"
               waitForFunction "window.__runnerDelayedReady === true" timeout=1000
+              withNavigationTimeout 5000 {
+                waitForTitle "CMG E2E Fixture"
+              }
+              withExpectTimeout 1000 {
+                expectText "#title" "CMG E2E Fixture"
+              }
               wait "#primary" timeout=1000
               wait "1"
             }
@@ -49,6 +59,9 @@ public sealed class BrowserNavigationWaitRunnerActionE2eTests
         result.ShouldPass();
         result.StdoutContains("TEST PASS runner navigation and wait actions");
         var trace = File.ReadAllText(Directory.EnumerateFiles(traceDir, "*.trace.json").Single());
+        AssertTraceContains(trace, "DEFAULT_TIMEOUT");
+        AssertTraceContains(trace, "DEFAULT_NAVIGATION_TIMEOUT");
+        AssertTraceContains(trace, "DEFAULT_ASSERTION_TIMEOUT");
         AssertTraceContains(trace, "NAVIGATED");
         AssertTraceContains(trace, "SELECTOR");
         AssertTraceContains(trace, "FUNCTION");

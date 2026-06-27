@@ -18,7 +18,9 @@ public sealed class BrowserScriptE2eTests
         var script = fixture.CreateScript("script-flow.cmgscript", $$"""
             navigate "{{E2ePaths.FixtureUri("index.html")}}"
             setDefaultTimeout 3000
+            setDefaultNavigationTimeout 3000
             setDefaultAssertionTimeout 3000
+            setDefaultExpectTimeout 3000
             setViewport 1280 1400
             captureDialogs
             setDialogBehavior accept promptText="typed prompt"
