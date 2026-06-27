@@ -119,6 +119,7 @@ The first E2E slice covers:
 - Runner trace actions for partial trace files and failure-time partial trace output inside structured tests.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.
 - Direct script `skip` and soft assertion continuation/final-failure behavior.
+- Runner runtime `skip` and soft assertion continuation/final-failure behavior across stdout, traces, and JSON reports.
 - Scoped locator behavior for rich locator filters, shadow DOM locators, `within`, and scoped `foreachSelector` in direct scripts and `cmg run`.
 - Advanced script control flow for `for`, `foreach`, `foreachJson`, `foreachSelector`, `while`, `until`, `doWhile`, `doUntil`, `break`, `continue`, `retry`, `toPass`, and scoped timeout blocks.
 - Runner control flow for nested loops, selector/JSON iteration, `switch`, `try`/`catch`/`finally`, `retry`, `toPass`, scoped timeouts, trace output, and failure diagnostics.
