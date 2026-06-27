@@ -70,6 +70,7 @@ The first E2E slice covers:
 - A broad browser action-surface script covering navigation, input, assertions, dialogs, frames, storage, emulation, clocks, looping, branching, try/catch, and trace output.
 - Artifact and state actions for visual assertions, screenshots, PDFs, coverage, storage state, local file actions, and tab control.
 - Browser-control CLI behavior for waits, runtime getters, input, assertions, storage, cookies, context/emulation, isolated browser contexts, clock, accessibility, frame actions/getters/failure reasons, tabs, and capture artifacts.
+- Direct script and runner isolated browser-context actions for context creation, id capture, listing, switching, closing, storage isolation, trace output, and missing-context diagnostics.
 - Runner frame actions for frame click/fill/type/hover, waits, text assertions, evaluation, getters, trace output, missing frame-wait diagnostics, and exact failure-step diagnostics.
 - Browser-control clock/accessibility aliases for `restoreClock`, `accessibilitySnapshot`, `expectAccessible`, and accessibility failure reasons.
 - Direct script and runner clock/accessibility actions for fake time, clock restore, accessibility snapshots, accessible-role checks, trace output, and validation failure diagnostics.
