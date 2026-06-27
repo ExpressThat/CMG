@@ -81,6 +81,7 @@ The first E2E slice covers:
 - Browser-control navigation/runtime aliases for `expectUrl`, `waitForNavigation`, `waitForNetworkIdle`, `evalOnSelector`, and `evalAll`.
 - Browser-control provider-style assertion aliases for text absence, state assertions, values, attributes, class/id/CSS/property, accessibility name, role, checked state, and counts.
 - Browser-control assertion alias coverage for direct CLI text, body text, state, eval, value, attribute, accessibility, checked, and count variants.
+- Runner assertion aliases for state, value, multi-value, attribute, class/id/CSS/property, accessibility name, role, checked, count, text presence/absence, trace output, and exact failure-step diagnostics.
 - Runtime setup actions for init scripts, exposed functions/bindings, script/style tag injection, generated page content, HTML reads, and bounding boxes.
 - Runner runtime setup actions for init scripts, exposed functions/bindings, script/style tags, generated content, element HTML, bounding boxes, trace output, and failure diagnostics.
 - Browser-control network commands for routes, HAR export/replay, network waits, mocked failures, headers, and offline mode.

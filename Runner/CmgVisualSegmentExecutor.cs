@@ -181,7 +181,7 @@ public sealed partial class CmgVisualSegmentExecutor
         error = result.Error;
         if (!result.Success && !result.Skipped && action is not null)
         {
-            steps.Add(new CmgStepResult(action.LineNumber, action.Kind, false, result.StdoutLines, result.Error, gif?.FullName));
+            AttachStepFailure(steps, result.Error, result.StdoutLines, lineMap, action, gif);
         }
 
         return result.Success;
