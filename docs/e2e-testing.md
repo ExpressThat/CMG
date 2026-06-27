@@ -83,6 +83,7 @@ The first E2E slice covers:
 - Browser-control tab alias commands for listing, opening, waiting, popup waits, activation, closing, and tab-count failure reasons.
 - Browser-control capture commands for element screenshots, direct element screenshot output, page clips, temporary styles, masks, visual assertion aliases, PDF options, and validation failures.
 - Browser-control advanced input commands for clipboard shims, tap/touch tap, mouse movement/buttons, scroll/wheel, custom events, file upload aliases, and download wait success/failure behavior.
+- Browser-control input aliases for double/right click, sequential typing, selection, blur, key down/up, hotkeys, select options, drag aliases, low-level mouse aliases, scroll aliases, and select-file upload.
 - Browser-control worker commands for real worker listing, waiting, evaluation, interception, and missing-worker wait failure output.
 - Local `files` command success and failure behavior.
 - API request command behavior for query parameters, headers, JSON/form/raw bodies, basic auth, status matching, output files, response headers, validation failures, and timeout failures.

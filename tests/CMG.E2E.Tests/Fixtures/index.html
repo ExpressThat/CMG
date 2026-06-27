@@ -138,6 +138,13 @@
       counter.textContent = String(count);
       localStorage.setItem('cmg-e2e', 'clicked');
     });
+    document.getElementById('primary').addEventListener('dblclick', () => { status.textContent = 'double clicked'; });
+    document.getElementById('primary').addEventListener('contextmenu', event => {
+      event.preventDefault();
+      status.textContent = 'context clicked';
+    });
+    document.addEventListener('keydown', event => { window.__cmgLastKeyDown = event.key; });
+    document.addEventListener('keyup', event => { window.__cmgLastKeyUp = event.key; });
 
     document.getElementById('delayed').addEventListener('click', () => {
       setTimeout(() => { status.textContent = 'delayed complete'; }, 120);
