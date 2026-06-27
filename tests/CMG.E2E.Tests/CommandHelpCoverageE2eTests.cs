@@ -33,10 +33,20 @@ public sealed class CommandHelpCoverageE2eTests : IClassFixture<CmgCliFixture>
             "Help commands must not create browser state or require a launched browser.");
     }
 
+    [Fact]
+    public void CommandDocs_AllExposeCommandHeadings()
+    {
+        var missing = CommandDocFiles()
+            .Where(path => !CommandHeadingPattern.IsMatch(File.ReadLines(path).FirstOrDefault() ?? string.Empty))
+            .Select(path => Path.GetRelativePath(E2ePaths.RepositoryRoot(), path).Replace('\\', '/'))
+            .ToArray();
+
+        Assert.Empty(missing);
+    }
+
     private static IEnumerable<string[]> DocumentedCommands()
     {
-        var commandDocs = Path.Combine(E2ePaths.RepositoryRoot(), "docs", "commands");
-        foreach (var path in Directory.EnumerateFiles(commandDocs, "*.md", SearchOption.AllDirectories).Order())
+        foreach (var path in CommandDocFiles())
         {
             var firstLine = File.ReadLines(path).FirstOrDefault() ?? string.Empty;
             var match = CommandHeadingPattern.Match(firstLine);
@@ -45,5 +55,11 @@ public sealed class CommandHelpCoverageE2eTests : IClassFixture<CmgCliFixture>
                 yield return match.Groups["command"].Value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             }
         }
+    }
+
+    private static IEnumerable<string> CommandDocFiles()
+    {
+        var commandDocs = Path.Combine(E2ePaths.RepositoryRoot(), "docs", "commands");
+        return Directory.EnumerateFiles(commandDocs, "*.md", SearchOption.AllDirectories).Order();
     }
 }
