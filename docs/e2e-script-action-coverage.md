@@ -6,6 +6,15 @@ This is a coverage ownership map, not a claim that every argument, option, and f
 
 Allowed dimensions: `artifact`, `browser`, `failure`, `gif`, `network`, `pointer`, `report`, `runner`, `state`, `structural`, `success`, `trace`, `visual`.
 
+Minimum rules:
+
+- Every row must declare both `success` and `failure`.
+- GIF/video/screencast rows must declare `gif`.
+- Screenshot/PDF/HTML artifact rows must declare `artifact`.
+- Network, API, WebSocket, and worker rows must declare `network`.
+- Runner suite/test/hook rows must declare `report`.
+- Pointer rows covering clicks, taps, hovers, mouse moves, or drag actions must declare `pointer`.
+
 | Actions | E2E coverage owner | Coverage dimensions | Coverage notes |
 | --- | --- | --- | --- |
 | `setDefaultTimeout`, `setDefaultNavigationTimeout`, `setDefaultAssertionTimeout`, `setDefaultExpectTimeout`, `withTimeout`, `withDefaultTimeout`, `withNavigationTimeout`, `withAssertionTimeout`, `withExpectTimeout` | `BrowserNavigationWaitRunnerActionE2eTests.cs`, `BrowserScriptE2eTests.cs` | `success`, `failure`, `runner`, `state` | Default timeout commands and scoped timeout behavior. |

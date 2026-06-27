@@ -63,6 +63,22 @@ public sealed class CommandBehaviorCoverageE2eTests
         Assert.Empty(failures);
     }
 
+    [Fact]
+    public void DeclaredBehaviorCoverage_HasMinimumExpectedDimensions()
+    {
+        var root = E2ePaths.RepositoryRoot();
+        var failures = CoveragePatterns(root)
+            .Where(pattern => !HasAny(pattern, "success", "failure", "help") ||
+                              Needs(pattern, "network") && !Has(pattern, "network") ||
+                              Needs(pattern, "capture") && !HasAll(pattern, "artifact", "visual") ||
+                              pattern.Pattern is "run" && !HasAll(pattern, "report", "gif", "trace") ||
+                              pattern.Pattern is "browser control script" && !HasAll(pattern, "gif", "trace"))
+            .Select(pattern => pattern.Pattern)
+            .ToArray();
+
+        Assert.Empty(failures);
+    }
+
     private static List<CoveragePattern> CoveragePatterns(string root)
     {
         var path = Path.Combine(root, "docs", "e2e-command-coverage.md");
@@ -129,4 +145,16 @@ public sealed class CommandBehaviorCoverageE2eTests
                   command.StartsWith(Pattern + " ", StringComparison.Ordinal)
                 : command.Equals(Pattern, StringComparison.Ordinal);
     }
+
+    private static bool Has(CoveragePattern pattern, string dimension) =>
+        pattern.Dimensions.Contains(dimension, StringComparer.Ordinal);
+
+    private static bool HasAny(CoveragePattern pattern, params string[] dimensions) =>
+        dimensions.Any(dimension => Has(pattern, dimension));
+
+    private static bool HasAll(CoveragePattern pattern, params string[] dimensions) =>
+        dimensions.All(dimension => Has(pattern, dimension));
+
+    private static bool Needs(CoveragePattern pattern, string term) =>
+        pattern.Pattern.Contains(term, StringComparison.Ordinal);
 }

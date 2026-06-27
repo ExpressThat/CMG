@@ -6,6 +6,14 @@ Rows ending in `*` cover the command group and all documented child commands bel
 
 Allowed dimensions: `artifact`, `browser`, `cleanup`, `failure`, `gif`, `help`, `network`, `report`, `state`, `success`, `trace`, `visual`.
 
+Minimum rules:
+
+- Every row must declare at least one of `success`, `failure`, or `help`.
+- Network command rows must declare `network`.
+- Capture command rows must declare both `artifact` and `visual`.
+- `browser control script` must declare both `gif` and `trace`.
+- `run` must declare `report`, `gif`, and `trace`.
+
 | Command pattern | E2E coverage owner | Coverage dimensions | Coverage notes |
 | --- | --- | --- | --- |
 | `api` | `ApiCommandE2eTests.cs` | `help`, `success`, `failure` | Group help and API command surface. |

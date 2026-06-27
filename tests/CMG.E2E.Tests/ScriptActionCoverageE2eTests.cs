@@ -65,6 +65,24 @@ public sealed class ScriptActionCoverageE2eTests
         Assert.Empty(failures);
     }
 
+    [Fact]
+    public void DeclaredScriptActionCoverage_HasMinimumExpectedDimensions()
+    {
+        var root = E2ePaths.RepositoryRoot();
+        var failures = CoverageRows(root)
+            .Where(row => !HasAll(row, "success", "failure") ||
+                          AnyActionContains(row, "gif", "recordVideo", "screencast") && !Has(row, "gif") ||
+                          AnyActionContains(row, "screenshot", "printPdf", "html") && !Has(row, "artifact") ||
+                          AnyActionContains(row, "route", "Request", "Response", "WebSocket", "Worker", "api") &&
+                          !Has(row, "network") ||
+                          AnyActionContains(row, "suite", "test", "before", "after") && !Has(row, "report") ||
+                          AnyActionContains(row, "click", "tap", "hover", "Mouse", "drag") && !Has(row, "pointer"))
+            .Select(row => string.Join(", ", row.Actions))
+            .ToArray();
+
+        Assert.Empty(failures);
+    }
+
     private static SortedSet<string> DocumentedActions(string root)
     {
         var path = Path.Combine(root, "docs", "scripting", "actions.md");
@@ -135,4 +153,13 @@ public sealed class ScriptActionCoverageE2eTests
     }
 
     private sealed record CoverageRow(string[] Actions, string[] Owners, string[] Dimensions);
+
+    private static bool Has(CoverageRow row, string dimension) =>
+        row.Dimensions.Contains(dimension, StringComparer.Ordinal);
+
+    private static bool HasAll(CoverageRow row, params string[] dimensions) =>
+        dimensions.All(dimension => Has(row, dimension));
+
+    private static bool AnyActionContains(CoverageRow row, params string[] terms) =>
+        row.Actions.Any(action => terms.Any(term => action.Contains(term, StringComparison.Ordinal)));
 }
