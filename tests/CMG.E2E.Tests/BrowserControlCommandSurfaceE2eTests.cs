@@ -49,6 +49,47 @@ public sealed class BrowserControlCommandSurfaceE2eTests : IClassFixture<CmgBrow
         Run("browser", "control", "storage", "cookie", "get", "cookie-key").StdoutContains("cookie-value");
     }
 
+    [Fact]
+    public void ProviderStyleAssertionAliases_RunAgainstBrowser()
+    {
+        Navigate();
+        Run("browser", "control", "input", "fill", "#name", "CMG");
+        Run("browser", "control", "input", "focus", "#name");
+        Run("browser", "control", "input", "check", "#agree");
+        Run("browser", "control", "page", "evaluate", "const select = document.querySelector('#multi'); for (const option of select.options) option.selected = ['alpha','beta'].includes(option.value); select.dispatchEvent(new Event('change', { bubbles: true })); true");
+
+        Run("browser", "control", "assertions", "toHaveText", "#title", "CMG");
+        Run("browser", "control", "assertions", "toHaveNoText", "#status", "missing", "--timeout", "50");
+        Run("browser", "control", "assertions", "toBeVisible", "#visible-target");
+        Run("browser", "control", "assertions", "toBeHidden", "#hidden-target");
+        Run("browser", "control", "assertions", "toBeEnabled", "#primary");
+        var disabled = fixture.Cli.Run("browser", "control", "assertions", "toBeDisabled", "#primary", "--timeout", "50");
+        disabled.ShouldFail();
+        Run("browser", "control", "assertions", "toBeAttached", "#primary");
+        Run("browser", "control", "assertions", "toBeNotAttached", "#not-present", "--timeout", "50");
+        Run("browser", "control", "assertions", "toBeEditable", "#name");
+        Run("browser", "control", "assertions", "toBeNotEditable", "#primary");
+        Run("browser", "control", "assertions", "toBeEmpty", "#empty-target");
+        Run("browser", "control", "assertions", "toBeNotEmpty", "#title");
+        Run("browser", "control", "assertions", "toBeFocused", "#name");
+        Run("browser", "control", "assertions", "toBeNotFocused", "#primary");
+        Run("browser", "control", "input", "scrollIntoView", "#visible-target");
+        Run("browser", "control", "assertions", "toBeInViewport", "#visible-target");
+        Run("browser", "control", "assertions", "toHaveValue", "#name", "CMG");
+        Run("browser", "control", "assertions", "toHaveValues", "#multi", "alpha", "beta");
+        Run("browser", "control", "assertions", "toHaveAttribute", "#primary", "data-state", "idle");
+        Run("browser", "control", "assertions", "toHaveClass", "#class-target", "beta");
+        Run("browser", "control", "assertions", "toHaveId", "#primary", "primary");
+        Run("browser", "control", "assertions", "toHaveCSS", "#css-target", "color", "rgb(10, 20, 30)");
+        Run("browser", "control", "assertions", "toHaveJSProperty", "#primary", "dataset.state", "idle");
+        Run("browser", "control", "assertions", "toHaveAccessibleName", "#visible-target", "Visible target");
+        Run("browser", "control", "assertions", "toHaveRole", "#visible-target", "button");
+        Run("browser", "control", "assertions", "toBeChecked", "#agree");
+        Run("browser", "control", "input", "uncheck", "#agree");
+        Run("browser", "control", "assertions", "toBeUnchecked", "#agree");
+        Run("browser", "control", "assertions", "toHaveCount", ".item", "3");
+    }
+
     private CmgResult Run(params string[] args)
     {
         var result = fixture.Cli.Run(args);
