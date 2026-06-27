@@ -76,6 +76,7 @@ The first E2E slice covers:
 - Script environment actions for locale, timezone, media, geolocation, permission grants, permission clearing, and validation failure output.
 - Direct script context policy actions for JavaScript blocking, CSP bypass, service-worker blocking, context clearing, and context reset.
 - Browser-control storage lifecycle commands for local/session storage remove/clear, cookie attributes/remove/clear, storage-state save/load, and validation failures.
+- Direct script and runner storage actions for local/session storage, cookies, storage-state save/load, trace output, and validation failure diagnostics.
 - Browser-control wait command aliases for selector states, function waits, fixed waits, auto waits, and selector-state failure reasons.
 - Browser-control navigation/runtime aliases for `expectUrl`, `waitForNavigation`, `waitForNetworkIdle`, `evalOnSelector`, and `evalAll`.
 - Browser-control provider-style assertion aliases for text absence, state assertions, values, attributes, class/id/CSS/property, accessibility name, role, checked state, and counts.
