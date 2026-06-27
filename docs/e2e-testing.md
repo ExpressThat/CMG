@@ -96,6 +96,7 @@ The first E2E slice covers:
 - Runner coverage actions for file-backed coverage output and per-step coverage failure diagnostics.
 - Browser-control tab alias commands for listing, opening, waiting, popup waits, activation, closing, and tab-count failure reasons.
 - Browser-control capture commands for element screenshots, direct element screenshot output, page clips, temporary styles, masks, visual assertion aliases, PDF options, and validation failures.
+- Runner artifact, page, file, and tab actions for screenshots, visual checks, PDFs, file round trips, page getters/content replacement, tab waits, trace output, and failure diagnostics.
 - Browser-control advanced input commands for clipboard shims, tap/touch tap, mouse movement/buttons, scroll/wheel, custom events, file upload aliases, and download wait success/failure behavior.
 - Direct script input actions for clipboard shims, multi-file uploads, upload aliases, download waits, and missing upload-file failure output.
 - Runner advanced input actions for clipboard shims, tap/touch tap, pointer/keyboard/form aliases, drag/scroll/wheel, upload aliases, download waits, trace output, and failure diagnostics.
