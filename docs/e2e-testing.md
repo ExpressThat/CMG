@@ -95,6 +95,7 @@ The first E2E slice covers:
 - Direct script input actions for clipboard shims, multi-file uploads, upload aliases, download waits, and missing upload-file failure output.
 - Browser-control input aliases for double/right click, sequential typing, selection, blur, key down/up, hotkeys, select options, drag aliases, low-level mouse aliases, scroll aliases, and select-file upload.
 - Browser-control worker commands for real worker listing, waiting, evaluation, interception, and missing-worker wait failure output.
+- Direct script and runner worker actions for real worker listing, waits, evaluation, interception, and missing-worker failure output.
 - Local `files` command success and failure behavior.
 - API request command behavior for query parameters, headers, JSON/form/raw bodies, basic auth, status matching, output files, response headers, validation failures, and timeout failures.
 - Script and runner `apiRequest` action behavior for query parameters, headers, status matching, output files, JSON bodies, and step failure diagnostics.
