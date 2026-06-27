@@ -41,12 +41,23 @@ public sealed class CmgCli
 
     public CmgResult RunWithTimeout(TimeSpan timeout, params string[] arguments)
     {
+        return RunProcess(timeout, standardInput: null, arguments);
+    }
+
+    public CmgResult RunWithInput(string standardInput, params string[] arguments)
+    {
+        return RunProcess(TimeSpan.FromSeconds(60), standardInput, arguments);
+    }
+
+    private CmgResult RunProcess(TimeSpan timeout, string? standardInput, params string[] arguments)
+    {
         var startInfo = new ProcessStartInfo
         {
             FileName = dllFallback is null ? executable : "dotnet",
             WorkingDirectory = E2ePaths.RepositoryRoot(),
             RedirectStandardOutput = true,
             RedirectStandardError = true,
+            RedirectStandardInput = standardInput is not null,
             UseShellExecute = false
         };
 
@@ -62,6 +73,12 @@ public sealed class CmgCli
 
         startInfo.Environment["LOCALAPPDATA"] = localAppData;
         using var process = Process.Start(startInfo) ?? throw new InvalidOperationException("dotnet process did not start.");
+        if (standardInput is not null)
+        {
+            process.StandardInput.Write(standardInput);
+            process.StandardInput.Close();
+        }
+
         var stdoutTask = process.StandardOutput.ReadToEndAsync();
         var stderrTask = process.StandardError.ReadToEndAsync();
 
