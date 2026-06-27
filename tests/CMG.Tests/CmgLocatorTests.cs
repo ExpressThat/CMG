@@ -56,6 +56,7 @@ public sealed class CmgLocatorTests
         Assert.Contains(expected, expression);
         Assert.Contains("__cmgLocatorElements", expression);
         Assert.Contains("__cmg_locator_7", expression);
+        Assert.Contains("removeAttribute?.('data-cmg-locator-id')", expression);
     }
 
     [Fact]

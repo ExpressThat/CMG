@@ -194,6 +194,16 @@ public sealed partial class CmgActionLowererTests
         Assert.Contains("timeout=\"500\"", line);
     }
 
+    [Theory]
+    [InlineData("contains")]
+    [InlineData("notContains")]
+    public void Lower_BodyTextAssertionsPreserveOneArgumentFormForWithinScope(string name)
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node(name, ["Ready"], [])));
+
+        Assert.Equal($"{name} \"Ready\"", line);
+    }
+
     [Fact]
     public void Lower_EmulatePassesOptionsToScriptRunner()
     {

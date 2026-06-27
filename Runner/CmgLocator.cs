@@ -65,7 +65,7 @@ public static partial class CmgLocator
         var kind = CmgLocatorKeys.Normalize(locator[..locator.IndexOf('=')]).ToLowerInvariant();
         var value = locator[(locator.IndexOf('=') + 1)..];
         const string helpers = "const implicitRole = e => e.tagName === 'BUTTON' ? 'button' : e.tagName === 'A' && e.hasAttribute('href') ? 'link' : e.tagName === 'INPUT' || e.tagName === 'TEXTAREA' ? 'textbox' : ''; const accessibleName = e => e.getAttribute('aria-label') || e.getAttribute('alt') || e.getAttribute('title') || e.innerText || e.textContent || ''; const IsVisible = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };";
-        return $"(() => {{ {InstallQueryRegistry()} {helpers} const element = {BuildElementExpression(kind, value)}; if (!element) throw new Error('No element matched locator {locator}'); window.__cmgLocatorElements['{marker}'] = element; element.setAttribute?.('data-cmg-locator-id', '{marker}'); return true; }})()";
+        return $"(() => {{ {InstallQueryRegistry()} {helpers} {ClearStaleMarkers()} const element = {BuildElementExpression(kind, value)}; if (!element) throw new Error('No element matched locator {locator}'); window.__cmgLocatorElements['{marker}'] = element; element.setAttribute?.('data-cmg-locator-id', '{marker}'); return true; }})()";
     }
 
     private static string BuildElementExpression(string kind, string value) =>
@@ -168,6 +168,9 @@ public static partial class CmgLocator
 
     private static string InstallQueryRegistry() =>
         "window.__cmgLocatorElements ||= {}; window.__cmgQuery = selector => { const id = selector.match(/^\\[data-cmg-locator-id=\"([^\"]+)\"\\]$/)?.[1]; return id && window.__cmgLocatorElements[id]?.isConnected ? window.__cmgLocatorElements[id] : document.querySelector(selector); }; window.__cmgQueryAll = selector => { const hit = window.__cmgQuery(selector); const id = selector.match(/^\\[data-cmg-locator-id=\"([^\"]+)\"\\]$/)?.[1]; return id ? (hit ? [hit] : []) : Array.from(document.querySelectorAll(selector)); };";
+
+    private static string ClearStaleMarkers() =>
+        "Object.values(window.__cmgLocatorElements || {}).forEach(e => e?.removeAttribute?.('data-cmg-locator-id')); window.__cmgLocatorElements = {};";
 
     private static (string Left, string Right)? SplitLocatorValue(string value)
     {
