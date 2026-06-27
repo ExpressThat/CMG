@@ -15,9 +15,11 @@ public sealed record ScriptParseResult(bool Success, IReadOnlyList<BrowserScript
     public static ScriptParseResult Fail(string error) => new(false, [], error);
 }
 
-internal sealed record TokenizeResult(bool Success, IReadOnlyList<string> Tokens, string? Error)
+internal sealed record ScriptToken(string Value, bool StartedQuoted);
+
+internal sealed record TokenizeResult(bool Success, IReadOnlyList<ScriptToken> Tokens, string? Error)
 {
-    public static TokenizeResult Ok(IReadOnlyList<string> tokens) => new(true, tokens, null);
+    public static TokenizeResult Ok(IReadOnlyList<ScriptToken> tokens) => new(true, tokens, null);
 
     public static TokenizeResult Fail(string error) => new(false, [], error);
 }

@@ -39,6 +39,17 @@ public sealed class BrowserScriptParserTests
     }
 
     [Fact]
+    public void Parse_TreatsQuotedEqualsTokenAsPositionalArgument()
+    {
+        var result = new BrowserScriptParser().Parse("expectUrl \"ALIAS=NAV\" ignoreCase=\"true\"");
+        var action = Assert.Single(result.Actions);
+
+        Assert.True(result.Success);
+        Assert.Equal("ALIAS=NAV", Assert.Single(action.Arguments));
+        Assert.Equal("true", action.Options["ignoreCase"]);
+    }
+
+    [Fact]
     public void Parse_PreservesEmptyQuotedStrings()
     {
         var result = new BrowserScriptParser().Parse("if \"\" == \"\" {\n  evaluate \"true\"\n}");

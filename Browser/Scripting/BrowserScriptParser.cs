@@ -71,14 +71,14 @@ public sealed class BrowserScriptParser
 
             foreach (var token in tokens.Skip(1))
             {
-                var equalsIndex = token.IndexOf('=');
-                if (equalsIndex > 0 && IsOptionKey(token[..equalsIndex]))
+                var equalsIndex = token.Value.IndexOf('=');
+                if (!token.StartedQuoted && equalsIndex > 0 && IsOptionKey(token.Value[..equalsIndex]))
                 {
-                    options[token[..equalsIndex]] = token[(equalsIndex + 1)..];
+                    options[token.Value[..equalsIndex]] = token.Value[(equalsIndex + 1)..];
                     continue;
                 }
 
-                positional.Add(token);
+                positional.Add(token.Value);
             }
 
             IReadOnlyList<BrowserScriptAction> children = [];
@@ -97,7 +97,7 @@ public sealed class BrowserScriptParser
             actions.Add(new BrowserScriptAction(
                 lineNumber,
                 rawLine,
-                tokens[0],
+                tokens[0].Value,
                 positional,
                 options,
                 children));
@@ -113,10 +113,11 @@ public sealed class BrowserScriptParser
 
     private static TokenizeResult Tokenize(string line, int lineNumber)
     {
-        var tokens = new List<string>();
+        var tokens = new List<ScriptToken>();
         var current = new List<char>();
         var inQuotes = false;
         var tokenStarted = false;
+        var tokenStartedQuoted = false;
 
         for (var index = 0; index < line.Length; index++)
         {
@@ -149,6 +150,11 @@ public sealed class BrowserScriptParser
 
             if (character is '"')
             {
+                if (!tokenStarted)
+                {
+                    tokenStartedQuoted = true;
+                }
+
                 inQuotes = !inQuotes;
                 tokenStarted = true;
                 continue;
@@ -156,7 +162,7 @@ public sealed class BrowserScriptParser
 
             if (char.IsWhiteSpace(character) && !inQuotes)
             {
-                AddCurrentToken(tokens, current, ref tokenStarted);
+                AddCurrentToken(tokens, current, ref tokenStarted, ref tokenStartedQuoted);
                 continue;
             }
 
@@ -169,21 +175,22 @@ public sealed class BrowserScriptParser
             return TokenizeResult.Fail($"Line {lineNumber}: unterminated quoted string.");
         }
 
-        AddCurrentToken(tokens, current, ref tokenStarted);
+        AddCurrentToken(tokens, current, ref tokenStarted, ref tokenStartedQuoted);
 
         return TokenizeResult.Ok(tokens);
     }
 
-    private static void AddCurrentToken(List<string> tokens, List<char> current, ref bool tokenStarted)
+    private static void AddCurrentToken(List<ScriptToken> tokens, List<char> current, ref bool tokenStarted, ref bool tokenStartedQuoted)
     {
         if (!tokenStarted)
         {
             return;
         }
 
-        tokens.Add(new string(current.ToArray()));
+        tokens.Add(new ScriptToken(new string(current.ToArray()), tokenStartedQuoted));
         current.Clear();
         tokenStarted = false;
+        tokenStartedQuoted = false;
     }
 
     private static bool IsOptionKey(string value)
