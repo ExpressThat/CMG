@@ -61,6 +61,7 @@ public sealed class BrowserWorkerActionE2eTests
         listWorkers
         evaluate "window['{{workerName}}'] = new Worker('{{fixture.FixtureHttpUri("worker-fixture.js")}}', { name: '{{workerName}}' }); true"
         waitForWorker "worker-fixture.js" timeout=5000
+        listWorkers
         workerEvaluate "self.__cmgWorkerState.startedAt > 0" target="{{workerName}}"
         workerIntercept "worker-action-mock.txt" body="{{body}}" contentType="text/plain" target="{{workerName}}"
         workerEvaluate "fetch('/worker-action-mock.txt').then(r => r.text())" target="{{workerName}}"

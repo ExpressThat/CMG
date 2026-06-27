@@ -86,6 +86,9 @@ public sealed class BrowserLifecycleE2eTests
         result.ShouldPass();
         result.StdoutContains("Attached CMG to app debugging endpoint");
 
+        var navigate = fixture.Cli.Run("browser", "control", "navigation", "goto", E2ePaths.FixtureUri("index.html"));
+        navigate.ShouldPass();
+
         var title = fixture.Cli.Run("browser", "control", "navigation", "title");
         title.ShouldPass();
         title.StdoutContains("CMG E2E Fixture");

@@ -60,6 +60,7 @@ public sealed class BrowserCaptureCommandE2eTests
     {
         Navigate();
         var baseline = fixture.OutputPath("missing-baseline-created.png");
+        var actual = fixture.OutputPath("missing-baseline-actual.png");
 
         var result = fixture.Cli.Run(
             "browser",
@@ -68,12 +69,15 @@ public sealed class BrowserCaptureCommandE2eTests
             "expectScreenshot",
             "#visible-target",
             "--baseline",
-            baseline);
+            baseline,
+            "--output",
+            actual);
 
         result.ShouldFail();
         result.StderrContains("did not exist. Created it from the actual screenshot.");
         result.StderrContains("missing-baseline-created.png");
         CmgE2eAssert.FileExists(baseline);
+        CmgE2eAssert.FileExists(actual);
     }
 
     private void Navigate()
