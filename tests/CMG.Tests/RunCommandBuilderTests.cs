@@ -12,7 +12,7 @@ public sealed class RunCommandBuilderTests
     {
         var handler = new CapturingRunCommandHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "run flows --timeout 700 --navigation-timeout 800 --assertion-timeout 900 --base-url https://example.test/app/ --var user=Ada --env mode=demo").Invoke();
+            "run flows --timeout 700 --navigation-timeout 800 --assertion-timeout 900 --base-url https://example.test/app/ --browser-port 9333 --var user=Ada --env mode=demo").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal("flows", handler.Path);
@@ -20,6 +20,7 @@ public sealed class RunCommandBuilderTests
         Assert.Equal(800, handler.NavigationTimeout);
         Assert.Equal(900, handler.AssertionTimeout);
         Assert.Equal("https://example.test/app/", handler.BaseUrl);
+        Assert.Equal(9333, handler.BrowserPort);
         Assert.Equal("Ada", handler.Variables["user"]);
         Assert.Equal("demo", handler.Variables["mode"]);
     }
@@ -154,6 +155,8 @@ public sealed class RunCommandBuilderTests
 
         public int Workers { get; private set; }
 
+        public int? BrowserPort { get; private set; }
+
         public int Run(
             BrowserKind browserKind,
             string path,
@@ -175,7 +178,8 @@ public sealed class RunCommandBuilderTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             string projectName = "",
-            int workers = 1)
+            int workers = 1,
+            int? browserPort = null)
         {
             BrowserKind = browserKind;
             Path = path;
@@ -195,6 +199,7 @@ public sealed class RunCommandBuilderTests
             Variables = variables;
             ProjectName = projectName;
             Workers = workers;
+            BrowserPort = browserPort;
             return 0;
         }
     }

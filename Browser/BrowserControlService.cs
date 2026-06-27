@@ -7,6 +7,9 @@ public interface IBrowserControlService
 {
     ElementResult GetElement(BrowserKind browserKind, string selector, ElementOutputMode outputMode);
 
+    ElementResult GetElement(BrowserKind browserKind, int? port, string selector, ElementOutputMode outputMode) =>
+        GetElement(browserKind, selector, outputMode);
+
     ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif);
 
     ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace) =>
@@ -14,6 +17,17 @@ public interface IBrowserControlService
 
     ScriptRunResult RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts) =>
         RunScript(browserKind, file, gif, trace);
+
+    ScriptRunResult RunScript(
+        BrowserKind browserKind,
+        int? port,
+        string file,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
+        IReadOnlyDictionary<string, string> variables) =>
+        RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables);
 
     ScriptRunResult RunScript(
         BrowserKind browserKind,
@@ -26,6 +40,9 @@ public interface IBrowserControlService
         RunScript(browserKind, file, gif, trace, timeouts);
 
     ScriptRunResult RunScriptAction(BrowserKind browserKind, string scriptLine);
+
+    ScriptRunResult RunScriptAction(BrowserKind browserKind, int? port, string scriptLine) =>
+        RunScriptAction(browserKind, scriptLine);
 }
 
 public sealed class BrowserControlService : IBrowserControlService
@@ -46,10 +63,15 @@ public sealed class BrowserControlService : IBrowserControlService
 
     public ElementResult GetElement(BrowserKind browserKind, string selector, ElementOutputMode outputMode)
     {
-        var state = stateStore.Load(browserKind);
+        return GetElement(browserKind, port: null, selector, outputMode);
+    }
+
+    public ElementResult GetElement(BrowserKind browserKind, int? port, string selector, ElementOutputMode outputMode)
+    {
+        var state = stateStore.Load(browserKind, port);
         if (state is null)
         {
-            return ElementResult.Fail(BuildBrowserNotRunningMessage(browserKind));
+            return ElementResult.Fail(BuildBrowserNotRunningMessage(browserKind, port));
         }
 
         var automationClient = automationClientFactory.Create(browserKind);
@@ -101,15 +123,28 @@ public sealed class BrowserControlService : IBrowserControlService
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables)
     {
+        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables);
+    }
+
+    public ScriptRunResult RunScript(
+        BrowserKind browserKind,
+        int? port,
+        string file,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
+        IReadOnlyDictionary<string, string> variables)
+    {
         if (file is not "-" && !File.Exists(file))
         {
             return ScriptRunResult.Fail($"Script file '{file}' was not found.");
         }
 
-        var state = stateStore.Load(browserKind);
+        var state = stateStore.Load(browserKind, port);
         if (state is null)
         {
-            return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind));
+            return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind, port));
         }
 
         try
@@ -124,10 +159,15 @@ public sealed class BrowserControlService : IBrowserControlService
 
     public ScriptRunResult RunScriptAction(BrowserKind browserKind, string scriptLine)
     {
-        var state = stateStore.Load(browserKind);
+        return RunScriptAction(browserKind, port: null, scriptLine);
+    }
+
+    public ScriptRunResult RunScriptAction(BrowserKind browserKind, int? port, string scriptLine)
+    {
+        var state = stateStore.Load(browserKind, port);
         if (state is null)
         {
-            return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind));
+            return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind, port));
         }
 
         try
@@ -140,8 +180,11 @@ public sealed class BrowserControlService : IBrowserControlService
         }
     }
 
-    private static string BuildBrowserNotRunningMessage(BrowserKind browserKind) =>
-        $"No CMG-controlled {browserKind.DisplayName()} instance is running. Run 'cmg {browserKind.CommandOptionPrefix()}browser launch' first.";
+    private static string BuildBrowserNotRunningMessage(BrowserKind browserKind, int? port)
+    {
+        var selector = port is null ? string.Empty : $"--port {port} ";
+        return $"No CMG-controlled {browserKind.DisplayName()} instance is running. Run 'cmg {browserKind.CommandOptionPrefix()}browser {selector}launch' first.";
+    }
 
     private static string BuildBrowserConnectionMessage(BrowserKind browserKind, Exception exception) =>
         $"Could not connect to the CMG-controlled {browserKind.DisplayName()} browser endpoint. Run 'cmg {browserKind.CommandOptionPrefix()}browser launch' again. Reason: {exception.Message}";

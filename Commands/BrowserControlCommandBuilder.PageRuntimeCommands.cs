@@ -49,7 +49,7 @@ public sealed partial class BrowserControlCommandBuilder
         var selector = CreateSelectorArgument();
         var command = new Command(action, description) { selector };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, parseResult.GetValue(selector) ?? string.Empty)));
         return command;
     }
@@ -60,7 +60,7 @@ public sealed partial class BrowserControlCommandBuilder
         var name = new Argument<string>("name") { Description = "Attribute name." };
         var command = new Command("getAttribute", "Read an element attribute.") { selector, name };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("getAttribute", [parseResult.GetValue(selector) ?? string.Empty, parseResult.GetValue(name) ?? string.Empty], [])));
         return command;
     }
@@ -76,7 +76,7 @@ public sealed partial class BrowserControlCommandBuilder
         var value = new Argument<string>(valueName) { Description = valueDescription };
         var command = new Command(action, description) { selector, value };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(selector) ?? string.Empty, parseResult.GetValue(value) ?? string.Empty], [])));
         return command;
     }
@@ -87,7 +87,7 @@ public sealed partial class BrowserControlCommandBuilder
         var expression = new Argument<string>("expression") { Description = "JavaScript expression or function." };
         var command = new Command(action, description) { selector, expression };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(selector) ?? string.Empty, parseResult.GetValue(expression) ?? string.Empty], [])));
         return command;
     }
@@ -98,7 +98,7 @@ public sealed partial class BrowserControlCommandBuilder
         var path = new Option<FileInfo?>("--path") { Description = "JavaScript file to register." };
         var command = new Command(name, "Register JavaScript for future documents.") { source, path };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, OptionalArgument(parseResult, source), CompactOptions([
                 StringOption("path", parseResult.GetValue(path)?.FullName)
             ]))));
@@ -113,7 +113,7 @@ public sealed partial class BrowserControlCommandBuilder
         var contentOption = CliStringOption("--content", "Inline content option.");
         var command = new Command(action, description) { content, url, path, contentOption };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, OptionalArgument(parseResult, content), CompactOptions([
                 StringOption("url", parseResult.GetValue(url)),
                 StringOption("path", parseResult.GetValue(path)?.FullName),
@@ -128,7 +128,7 @@ public sealed partial class BrowserControlCommandBuilder
         var expression = new Argument<string>("expression") { Description = "JavaScript function expression." };
         var command = new Command(action, description) { name, expression };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(name) ?? string.Empty, parseResult.GetValue(expression) ?? string.Empty], [])));
         return command;
     }

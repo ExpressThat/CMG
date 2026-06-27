@@ -6,6 +6,7 @@ Chrome is the default. Use `--chrome` to select Chrome explicitly, `--edge` for 
 
 ```powershell
 cmg browser control script --file <path>
+cmg browser --port <port> control script --file <path>
 cmg browser control script --file -
 cmg browser control script --file <path> --gif <path>
 cmg browser control script --file <path> --trace <path>
@@ -33,6 +34,7 @@ cmg --firefox browser control script --file <path>
 ## Behavior
 
 - Requires a browser started with [`browser launch`](../launch.md). For Edge, use `cmg --edge browser launch`. For Firefox, use `cmg --firefox browser launch`.
+- Use `cmg browser --port <port> control script --file <path>` when the target browser was launched with `cmg browser --port <port> launch`.
 - Use [`validateScript`](validateScript.md) to check imports and syntax before connecting to a browser.
 - Executes actions in file order and stops on the first failed action.
 - `skip "reason"` stops the script as skipped, writes `SKIP <line> <reason>` to stdout, and exits `0`.

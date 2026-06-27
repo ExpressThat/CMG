@@ -100,6 +100,10 @@ public sealed partial class RunCommandBuilder
         {
             Description = "Base URL used to resolve relative navigation targets."
         };
+        var browserPortOption = new Option<int?>("--browser-port")
+        {
+            Description = "Remote debugging port for the browser instance used by this run."
+        };
         var variableOption = new Option<string[]>("--var")
         {
             Description = "Initial runner variable as name=value. Can be repeated."
@@ -130,6 +134,7 @@ public sealed partial class RunCommandBuilder
             navigationTimeoutOption,
             assertionTimeoutOption,
             baseUrlOption,
+            browserPortOption,
             variableOption,
             envOption
         };
@@ -184,7 +189,8 @@ public sealed partial class RunCommandBuilder
                 StringValue(parseResult, baseUrlOption, project?.BaseUrl ?? config.BaseUrl),
                 variables,
                 project?.Name ?? string.Empty,
-                Math.Max(1, parseResult.GetValue(workersOption)));
+                Math.Max(1, parseResult.GetValue(workersOption)),
+                parseResult.GetValue(browserPortOption));
         });
 
         return command;

@@ -4,6 +4,7 @@ public sealed class CmgBrowserFixture : IDisposable
 {
     private readonly string workspace;
     private readonly StaticFixtureServer server;
+    private readonly int browserPort;
 
     public CmgBrowserFixture()
     {
@@ -12,9 +13,10 @@ public sealed class CmgBrowserFixture : IDisposable
         Directory.CreateDirectory(LocalAppData);
         Directory.CreateDirectory(OutputDirectory);
         server = new StaticFixtureServer(Path.Combine(E2ePaths.RepositoryRoot(), "tests", "CMG.E2E.Tests", "Fixtures"));
-        Cli = new CmgCli(E2ePaths.RepositoryRoot(), LocalAppData);
+        browserPort = FreeTcpPort();
+        Cli = new CmgCli(E2ePaths.RepositoryRoot(), LocalAppData, browserPort);
 
-        var launch = Cli.Run("browser", "launch", "--headless", "--url", E2ePaths.FixtureUri("index.html"));
+        var launch = Cli.Run("browser", "--port", browserPort.ToString(), "launch", "--headless", "--url", E2ePaths.FixtureUri("index.html"));
         launch.ShouldPass();
     }
 
@@ -23,6 +25,8 @@ public sealed class CmgBrowserFixture : IDisposable
     public string LocalAppData => Path.Combine(workspace, "appdata");
 
     public string OutputDirectory => Path.Combine(workspace, "output");
+
+    public int BrowserPort => browserPort;
 
     public string CreateScript(string name, string content)
     {
@@ -41,7 +45,8 @@ public sealed class CmgBrowserFixture : IDisposable
     {
         try
         {
-            Cli.Run("browser", "close");
+            Cli.Run("browser", "--port", browserPort.ToString(), "close");
+            Cli.KillTrackedBrowser();
         }
         finally
         {
@@ -56,10 +61,13 @@ public sealed class CmgBrowserFixture : IDisposable
             server.Dispose();
         }
     }
-}
 
-[CollectionDefinition(Name, DisableParallelization = true)]
-public sealed class CmgE2eCollection : ICollectionFixture<CmgBrowserFixture>
-{
-    public const string Name = "CMG browser E2E";
+    private static int FreeTcpPort()
+    {
+        var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
+        listener.Start();
+        var port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
+        listener.Stop();
+        return port;
+    }
 }

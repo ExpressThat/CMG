@@ -39,4 +39,12 @@ public static class BrowserKindExtensions
 
     public static bool UsesChromiumDevTools(this BrowserKind browserKind) =>
         browserKind is BrowserKind.Chrome or BrowserKind.Edge;
+
+    public static int DefaultRemoteDebuggingPort(this BrowserKind browserKind) =>
+        browserKind switch
+        {
+            BrowserKind.Edge => 9224,
+            BrowserKind.Firefox => 9223,
+            _ => 9222
+        };
 }

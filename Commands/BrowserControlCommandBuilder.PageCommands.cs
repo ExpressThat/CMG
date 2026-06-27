@@ -34,7 +34,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("highlight", [parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
                 StringOption("color", parseResult.GetValue(color)),
                 StringOption("message", parseResult.GetValue(message)),

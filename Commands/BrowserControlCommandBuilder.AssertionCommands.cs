@@ -14,7 +14,7 @@ public sealed partial class BrowserControlCommandBuilder
         var ignoreCase = new Option<bool?>("--ignore-case") { Description = "Match text case-insensitively." };
         var command = new Command(action, description) { selector, expected, timeout, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [
                 parseResult.GetValue(selector) ?? string.Empty,
                 parseResult.GetValue(expected) ?? string.Empty
@@ -30,7 +30,7 @@ public sealed partial class BrowserControlCommandBuilder
         var ignoreCase = new Option<bool?>("--ignore-case") { Description = "Match text case-insensitively." };
         var command = new Command(action, description) { expected, timeout, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(expected) ?? string.Empty], TextAssertionOptions(parseResult, timeout, match, ignoreCase))));
         return command;
     }
@@ -47,7 +47,7 @@ public sealed partial class BrowserControlCommandBuilder
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
         var command = new Command(name, description) { expression, equals, contains, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(expression) ?? string.Empty], CompactOptions([
                 StringOption("equals", parseResult.GetValue(equals)),
                 StringOption("contains", parseResult.GetValue(contains)),
@@ -66,7 +66,7 @@ public sealed partial class BrowserControlCommandBuilder
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
         var command = new Command(name, description) { selector, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(selector) ?? string.Empty], TimeoutOptions(parseResult, timeout))));
         return command;
     }
@@ -83,7 +83,7 @@ public sealed partial class BrowserControlCommandBuilder
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
         var command = new Command(name, description) { selector, expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [
                 parseResult.GetValue(selector) ?? string.Empty,
                 parseResult.GetValue(expected) ?? string.Empty
@@ -105,7 +105,7 @@ public sealed partial class BrowserControlCommandBuilder
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
         var command = new Command(name, "Assert that selected values match in order.") { selector, expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [
                 parseResult.GetValue(selector) ?? string.Empty,
                 .. (parseResult.GetValue(expected) ?? [])
@@ -127,7 +127,7 @@ public sealed partial class BrowserControlCommandBuilder
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
         var command = new Command(commandName, description) { selector, name, expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [
                 parseResult.GetValue(selector) ?? string.Empty,
                 parseResult.GetValue(name) ?? string.Empty,
@@ -146,7 +146,7 @@ public sealed partial class BrowserControlCommandBuilder
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
         var command = new Command(name, "Assert that an element is checked or unchecked.") { selector, expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, CheckedArguments(parseResult, selector, expected), TimeoutOptions(parseResult, timeout))));
         return command;
     }
@@ -161,7 +161,7 @@ public sealed partial class BrowserControlCommandBuilder
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
         var command = new Command(name, "Assert the number of matching elements.") { selector, expected, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [
                 parseResult.GetValue(selector) ?? string.Empty,
                 parseResult.GetValue(expected).ToString()

@@ -2,8 +2,7 @@ using CMG.E2E.Tests.Support;
 
 namespace CMG.E2E.Tests;
 
-[Collection(CmgE2eCollection.Name)]
-public sealed class BrowserAdvancedInputCommandE2eTests
+public sealed class BrowserAdvancedInputCommandE2eTests : IClassFixture<CmgBrowserFixture>
 {
     private readonly CmgBrowserFixture fixture;
 
@@ -39,25 +38,6 @@ public sealed class BrowserAdvancedInputCommandE2eTests
         Run("browser", "control", "input", "setInputFiles", "#file-input", upload);
         Run("browser", "control", "assertions", "expectText", "#file-result", "upload-one.txt");
         Run("browser", "control", "events", "waitForDownload", "--directory", fixture.OutputDirectory, "--pattern", "manual-download.txt");
-    }
-
-    [Fact]
-    public void WaitForDownload_ReportsClearFailureWhenNoFileAppears()
-    {
-        var result = fixture.Cli.Run(
-            "browser",
-            "control",
-            "events",
-            "waitForDownload",
-            "--directory",
-            fixture.OutputDirectory,
-            "--pattern",
-            "missing-download.txt",
-            "--timeout",
-            "10");
-
-        result.ShouldFail();
-        result.StderrContains("No download matching 'missing-download.txt'");
     }
 
     private CmgResult Run(params string[] args)

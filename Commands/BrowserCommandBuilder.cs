@@ -18,12 +18,18 @@ public sealed class BrowserCommandBuilder
 
     public Command Build(BrowserSelectionOptions browserOptions)
     {
+        var portOption = new Option<int?>("--port")
+        {
+            Description = "Remote debugging port for the browser instance. Defaults to the selected browser default."
+        };
+        var scopedBrowserOptions = browserOptions with { Port = portOption };
         var browserCommand = new Command("browser", "Browser lifecycle and capture commands.");
+        browserCommand.Options.Add(portOption);
 
-        browserCommand.Subcommands.Add(BuildLaunchCommand(browserOptions));
-        browserCommand.Subcommands.Add(BuildAppCommand(browserOptions));
-        browserCommand.Subcommands.Add(BuildCloseCommand(browserOptions));
-        browserCommand.Subcommands.Add(browserControlCommandBuilder.Build(browserOptions));
+        browserCommand.Subcommands.Add(BuildLaunchCommand(scopedBrowserOptions));
+        browserCommand.Subcommands.Add(BuildAppCommand(scopedBrowserOptions));
+        browserCommand.Subcommands.Add(BuildCloseCommand(scopedBrowserOptions));
+        browserCommand.Subcommands.Add(browserControlCommandBuilder.Build(scopedBrowserOptions));
 
         return browserCommand;
     }
@@ -39,7 +45,6 @@ public sealed class BrowserCommandBuilder
         {
             Description = "Initial URL or path to open."
         };
-
         var command = new Command("launch", "Launch a browser instance.")
         {
             arguments,
@@ -54,7 +59,8 @@ public sealed class BrowserCommandBuilder
                 CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 values,
                 parseResult.GetValue(headlessOption),
-                parseResult.GetValue(urlOption));
+                parseResult.GetValue(urlOption),
+                CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions));
         });
 
         return command;
@@ -156,7 +162,6 @@ public sealed class BrowserCommandBuilder
     private Command BuildCloseCommand(BrowserSelectionOptions browserOptions)
     {
         var arguments = CreateTrailingArguments("Additional browser close arguments.");
-
         var command = new Command("close", "Close the active browser instance.")
         {
             arguments
@@ -165,7 +170,10 @@ public sealed class BrowserCommandBuilder
         command.SetAction(parseResult =>
         {
             var values = parseResult.GetValue(arguments) ?? [];
-            return browserCommandHandler.Close(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), values);
+            return browserCommandHandler.Close(
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                values,
+                CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions));
         });
 
         return command;

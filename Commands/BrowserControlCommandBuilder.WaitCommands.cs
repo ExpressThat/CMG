@@ -42,7 +42,7 @@ public sealed partial class BrowserControlCommandBuilder
         }
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(selector) ?? string.Empty], WaitSelectorOptions(parseResult, timeout, state, includeState))));
         return command;
     }
@@ -63,7 +63,7 @@ public sealed partial class BrowserControlCommandBuilder
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds when target is a selector." };
         var command = new Command("auto", "Wait for milliseconds or for an element selector.") { target, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("wait", [parseResult.GetValue(target) ?? string.Empty], TimeoutOptions(parseResult, timeout))));
         return command;
     }
@@ -74,7 +74,7 @@ public sealed partial class BrowserControlCommandBuilder
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds." };
         var command = new Command(name, "Wait until a JavaScript expression becomes truthy.") { expression, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("waitForFunction", [parseResult.GetValue(expression) ?? string.Empty], TimeoutOptions(parseResult, timeout))));
         return command;
     }
@@ -84,7 +84,7 @@ public sealed partial class BrowserControlCommandBuilder
         var milliseconds = new Argument<int>("milliseconds") { Description = "Delay duration in milliseconds." };
         var command = new Command(name, "Wait for a fixed duration.") { milliseconds };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("waitForTimeout", parseResult.GetValue(milliseconds).ToString())));
         return command;
     }

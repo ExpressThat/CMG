@@ -5,4 +5,5 @@ namespace CMG.Commands;
 public sealed record BrowserSelectionOptions(
     Option<bool> Chrome,
     Option<bool> Edge,
-    Option<bool> Firefox);
+    Option<bool> Firefox,
+    Option<int?>? Port = null);

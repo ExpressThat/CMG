@@ -27,7 +27,7 @@ public sealed partial class BrowserControlCommandBuilder
         AddDownloadOptions(command, out var directory, out var pattern, out var timeout);
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("download", [parseResult.GetValue(selector) ?? string.Empty], DownloadOptions(parseResult, directory, pattern, timeout))));
 
         return command;
@@ -39,7 +39,7 @@ public sealed partial class BrowserControlCommandBuilder
         AddDownloadOptions(command, out var directory, out var pattern, out var timeout);
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("waitForDownload", [], DownloadOptions(parseResult, directory, pattern, timeout))));
 
         return command;
@@ -90,7 +90,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command(name, "Install dialog capture with default accept behavior.") { promptText };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [], DialogOptions(parseResult, promptText))));
 
         return command;
@@ -103,7 +103,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command(name, "Set automated browser dialog behavior.") { behavior, promptText };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(behavior) ?? string.Empty], DialogOptions(parseResult, promptText))));
 
         return command;
@@ -121,7 +121,7 @@ public sealed partial class BrowserControlCommandBuilder
             : new Command(name, description) { text, timeout, match, ignoreCase };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(text) ?? string.Empty], EventWaitOptions(parseResult, timeout, includeLevel ? level : null, match, ignoreCase))));
 
         return command;
@@ -137,7 +137,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command(name, "Assert that no matching console message is captured.") { text, timeout, level, match, ignoreCase };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, OptionalArgument(parseResult, text), EventWaitOptions(parseResult, timeout, level, match, ignoreCase))));
 
         return command;
@@ -152,7 +152,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command(name, "Assert that no matching page error is captured.") { text, timeout, match, ignoreCase };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, OptionalArgument(parseResult, text), EventWaitOptions(parseResult, timeout, null, match, ignoreCase))));
 
         return command;
@@ -183,7 +183,7 @@ public sealed partial class BrowserControlCommandBuilder
         }
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("waitForEvent", EventArguments(parseResult, eventName, matcher), EventOptions(parseResult, timeout, level, count, directory, pattern, url, message, text, method, status, contains, mocked, match, ignoreCase))));
 
         return command;

@@ -2,12 +2,11 @@ using CMG.E2E.Tests.Support;
 
 namespace CMG.E2E.Tests;
 
-[Collection(CmgE2eCollection.Name)]
-public sealed class FilesCommandE2eTests
+public sealed class FilesCommandE2eTests : IClassFixture<CmgCliFixture>
 {
-    private readonly CmgBrowserFixture fixture;
+    private readonly CmgCliFixture fixture;
 
-    public FilesCommandE2eTests(CmgBrowserFixture fixture)
+    public FilesCommandE2eTests(CmgCliFixture fixture)
     {
         this.fixture = fixture;
     }

@@ -7,10 +7,12 @@ public sealed class CmgCli
     private readonly string localAppData;
     private readonly string executable;
     private readonly string? dllFallback;
+    private readonly int? browserPort;
 
-    public CmgCli(string root, string localAppData)
+    public CmgCli(string root, string localAppData, int? browserPort = null)
     {
         this.localAppData = localAppData;
+        this.browserPort = browserPort;
         executable = ResolveExecutable(root);
         dllFallback = executable.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) ? executable : null;
     }
@@ -34,6 +36,11 @@ public sealed class CmgCli
 
     public CmgResult Run(params string[] arguments)
     {
+        return RunWithTimeout(TimeSpan.FromSeconds(60), arguments);
+    }
+
+    public CmgResult RunWithTimeout(TimeSpan timeout, params string[] arguments)
+    {
         var startInfo = new ProcessStartInfo
         {
             FileName = dllFallback is null ? executable : "dotnet",
@@ -48,7 +55,7 @@ public sealed class CmgCli
             startInfo.ArgumentList.Add(dllFallback);
         }
 
-        foreach (var argument in arguments)
+        foreach (var argument in BrowserScopedArguments(arguments))
         {
             startInfo.ArgumentList.Add(argument);
         }
@@ -58,15 +65,94 @@ public sealed class CmgCli
         var stdoutTask = process.StandardOutput.ReadToEndAsync();
         var stderrTask = process.StandardError.ReadToEndAsync();
 
-        if (!process.WaitForExit(60_000))
+        if (!process.WaitForExit((int)timeout.TotalMilliseconds))
         {
             process.Kill(entireProcessTree: true);
-            throw new TimeoutException($"CMG command timed out: {string.Join(' ', arguments)}");
+            process.WaitForExit(5_000);
+            return new CmgResult(-1, Output(stdoutTask), Output(stderrTask), arguments);
         }
 
         var stdout = stdoutTask.GetAwaiter().GetResult();
         var stderr = stderrTask.GetAwaiter().GetResult();
         return new CmgResult(process.ExitCode, stdout, stderr, arguments);
+    }
+
+    private static string Output(Task<string> task) =>
+        task.IsCompletedSuccessfully ? task.Result : string.Empty;
+
+    private IEnumerable<string> BrowserScopedArguments(IReadOnlyList<string> arguments)
+    {
+        if (browserPort is null || arguments.Count is 0)
+        {
+            return arguments;
+        }
+
+        if (arguments[0] == "run" && !arguments.Contains("--browser-port"))
+        {
+            return arguments.Take(1)
+                .Concat(["--browser-port", browserPort.Value.ToString()])
+                .Concat(arguments.Skip(1));
+        }
+
+        if (arguments[0] != "browser")
+        {
+            return arguments;
+        }
+
+        if (arguments.Count > 1 && arguments[1] == "--port")
+        {
+            return arguments;
+        }
+
+        return arguments.Take(1)
+            .Concat(["--port", browserPort.Value.ToString()])
+            .Concat(arguments.Skip(1));
+    }
+
+    public void KillTrackedBrowser()
+    {
+        var stateDirectory = Path.Combine(localAppData, "CMG");
+        if (!Directory.Exists(stateDirectory))
+        {
+            return;
+        }
+
+        foreach (var stateFile in Directory.EnumerateFiles(stateDirectory, "*.browser.state").Append(Path.Combine(stateDirectory, "browser.state")))
+        {
+            KillTrackedBrowser(stateFile);
+        }
+    }
+
+    private static void KillTrackedBrowser(string stateFile)
+    {
+        if (!File.Exists(stateFile))
+        {
+            return;
+        }
+
+        var processId = File.ReadAllLines(stateFile)
+            .Select(line => line.Split('=', 2))
+            .FirstOrDefault(parts => parts.Length is 2 && parts[0].Equals("ProcessId", StringComparison.OrdinalIgnoreCase))?[1];
+        if (!int.TryParse(processId, out var pid))
+        {
+            return;
+        }
+
+        try
+        {
+            var process = Process.GetProcessById(pid);
+            if (!process.HasExited)
+            {
+                process.Kill(entireProcessTree: true);
+                process.WaitForExit(5_000);
+            }
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
     }
 }
 

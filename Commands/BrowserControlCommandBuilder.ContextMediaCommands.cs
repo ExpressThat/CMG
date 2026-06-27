@@ -22,7 +22,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("emulateMedia", [], CompactOptions([
                 StringOption("media", parseResult.GetValue(media)),
                 StringOption("colorScheme", parseResult.GetValue(color)),

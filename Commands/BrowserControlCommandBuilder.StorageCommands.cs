@@ -64,7 +64,7 @@ public sealed partial class BrowserControlCommandBuilder
         }
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 action,
                 Compact([
                     parseResult.GetValue(operationArgument),
@@ -98,7 +98,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.SetAction(parseResult =>
         {
             var options = ToOutputOptions(parseResult.GetValue(pathOption));
-            return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 "storageState",
                 [parseResult.GetValue(operationArgument) ?? string.Empty],
                 options.Select(option => (option.Key is "output" ? "path" : option.Key, option.Value)).ToArray()));

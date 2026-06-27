@@ -33,7 +33,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(action, parseResult.GetValue(messageArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(action, parseResult.GetValue(messageArgument) ?? string.Empty)));
 
         return command;
     }
@@ -51,7 +51,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("delay", parseResult.GetValue(millisecondsArgument).ToString())));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine("delay", parseResult.GetValue(millisecondsArgument).ToString())));
 
         return command;
     }
@@ -83,7 +83,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 "assertText",
                 [
                     parseResult.GetValue(selectorArgument) ?? string.Empty,
@@ -107,7 +107,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("evaluate", parseResult.GetValue(expressionArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine("evaluate", parseResult.GetValue(expressionArgument) ?? string.Empty)));
 
         return command;
     }
@@ -167,7 +167,7 @@ public sealed partial class BrowserControlCommandBuilder
                 options.Add(("hasTouch", "true"));
             }
 
-            return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("setViewport", [], options));
+            return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine("setViewport", [], options));
         });
 
         return command;

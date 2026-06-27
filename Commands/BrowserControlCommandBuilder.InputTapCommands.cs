@@ -23,7 +23,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(name, CompactArguments(parseResult.GetValue(selector)), CompactOptions([
                 IntOption("x", parseResult.GetValue(x)),
                 IntOption("y", parseResult.GetValue(y))

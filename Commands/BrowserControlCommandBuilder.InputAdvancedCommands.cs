@@ -24,7 +24,7 @@ public sealed partial class BrowserControlCommandBuilder
         AddPointerOptions(command, out var x, out var y, out var selector, out var edge, out var inset);
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, OptionalArgument(parseResult, target), PointerOptions(parseResult, x, y, selector, edge, inset))));
 
         return command;
@@ -48,7 +48,7 @@ public sealed partial class BrowserControlCommandBuilder
         AddScrollOptions(command, out var x, out var y, out var selector);
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("scrollTo", OptionalArgument(parseResult, target), ScrollOptions(parseResult, x, y, selector))));
 
         return command;
@@ -72,7 +72,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command(name, "Scroll by a delta.") { xArgument, yArgument, xOption, yOption, selector };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("scrollBy", CompactIntArguments(parseResult.GetValue(xArgument), parseResult.GetValue(yArgument)), CompactOptions([
                 IntOption("x", parseResult.GetValue(xOption)),
                 IntOption("y", parseResult.GetValue(yOption)),
@@ -93,7 +93,7 @@ public sealed partial class BrowserControlCommandBuilder
         command.Options.Add(deltaY);
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("wheel", OptionalArgument(parseResult, target), CompactOptions([
                 .. PointerOptions(parseResult, x, y, selector, edge, inset).Select<(string Key, string Value), (string Key, string Value)?>(option => option),
                 IntOption("deltaX", parseResult.GetValue(deltaX)),
@@ -120,7 +120,7 @@ public sealed partial class BrowserControlCommandBuilder
         var text = new Argument<string>("text") { Description = "Clipboard text." };
         var command = new Command(name, "Set clipboard shim text.") { text };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(name is "writeClipboard" ? "writeClipboard" : "setClipboard", parseResult.GetValue(text) ?? string.Empty)));
         return command;
     }
@@ -135,7 +135,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command("dispatchEvent", "Dispatch an Event or CustomEvent on an element.") { selector, eventName, detail, bubbles, cancelable };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("dispatchEvent", [parseResult.GetValue(selector) ?? string.Empty, parseResult.GetValue(eventName) ?? string.Empty], CompactOptions([
                 StringOption("detail", parseResult.GetValue(detail)),
                 StringOption("bubbles", parseResult.GetValue(bubbles)),
@@ -165,7 +165,7 @@ public sealed partial class BrowserControlCommandBuilder
             var values = new List<string> { parseResult.GetValue(selector) ?? string.Empty };
             values.AddRange((parseResult.GetValue(files) ?? []).Select(file => file.FullName));
             return browserControlCommandHandler.RunScriptAction(
-                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
                 ToScriptLine(name, values, []));
         });
 

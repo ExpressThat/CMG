@@ -4,6 +4,7 @@ Launches a CMG-controlled browser instance with remote debugging enabled. Chrome
 
 ```powershell
 cmg browser launch [browser-arguments...] [options]
+cmg browser --port <port> launch [browser-arguments...] [options]
 cmg --chrome browser launch [browser-arguments...]
 cmg --edge browser launch [browser-arguments...]
 cmg --firefox browser launch [browser-arguments...]
@@ -18,12 +19,16 @@ cmg --firefox browser launch [browser-arguments...]
 - `--headless`: Launch in headless mode. Chrome and Edge receive `--headless=new`; Firefox receives `--headless`.
 - `--url <target>`: Initial URL or path to open. This is appended after raw browser arguments.
 
+## Browser Group Options
+
+- `browser --port <port>`: Remote debugging port for this browser instance. Defaults to Chrome `9222`, Edge `9224`, and Firefox `9223`. Put this after `browser` and before `launch`.
+
 ## Behavior
 
-- Starts Chrome with `--remote-debugging-port=9222`, Edge with `--remote-debugging-port=9224`, or Firefox with `--remote-debugging-port 9223`.
-- Uses a dedicated Chrome profile at `%LOCALAPPDATA%\CMG\chrome-profile`, Edge profile at `%LOCALAPPDATA%\CMG\edge-profile`, or Firefox profile at `%LOCALAPPDATA%\CMG\firefox-profile`.
-- Persists Chrome state at `%LOCALAPPDATA%\CMG\browser.state`, Edge state at `%LOCALAPPDATA%\CMG\edge.browser.state`, or Firefox state at `%LOCALAPPDATA%\CMG\firefox.browser.state`.
-- Only one CMG-controlled browser instance is launched. Calling this command again while the tracked process is running reports the existing process instead of opening another window.
+- Starts Chrome with `--remote-debugging-port=9222`, Edge with `--remote-debugging-port=9224`, or Firefox with `--remote-debugging-port 9223` unless `browser --port <port>` is provided.
+- Uses a dedicated profile per browser and port. Default ports keep `%LOCALAPPDATA%\CMG\chrome-profile`, `%LOCALAPPDATA%\CMG\edge-profile`, or `%LOCALAPPDATA%\CMG\firefox-profile`; custom ports use a port-suffixed profile directory.
+- Persists browser state per browser and port. Default ports keep the standard state files; custom ports use port-suffixed state files.
+- Only one CMG-controlled browser instance is launched per browser and port. Calling this command again for the same browser and port reports the existing process. Calling it with a different port can launch another same-browser instance.
 - If no non-option argument is supplied, the browser opens `about:blank`.
 
 ## Stdout
@@ -59,13 +64,15 @@ Remote debugging: http://127.0.0.1:9222
 ## Exit Codes
 
 - `0`: The selected browser is running or was launched successfully.
-- `1`: The selected browser could not be found or launched.
+- `1`: The selected browser could not be found or launched, or `browser --port` is outside `1..65535`.
 
 ## Examples
 
 ```powershell
 cmg browser launch
 cmg --chrome browser launch
+cmg browser --port 9333 launch --headless
+cmg browser --port 9333 launch --url https://example.com
 cmg browser launch --headless --url https://example.com
 cmg browser launch --window-size=1200,800
 cmg browser launch https://example.com

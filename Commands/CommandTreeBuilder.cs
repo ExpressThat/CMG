@@ -75,4 +75,7 @@ public sealed class CommandTreeBuilder : ICommandTreeBuilder
 
         return parseResult.GetValue(browserOptions.Firefox) ? BrowserKind.Firefox : BrowserKind.Chrome;
     }
+
+    public static int? GetBrowserPort(ParseResult parseResult, BrowserSelectionOptions browserOptions) =>
+        browserOptions.Port is null ? null : parseResult.GetValue(browserOptions.Port);
 }

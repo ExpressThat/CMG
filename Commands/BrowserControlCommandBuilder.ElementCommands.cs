@@ -44,7 +44,7 @@ public sealed partial class BrowserControlCommandBuilder
             var screenshot = parseResult.GetValue(screenshotOption);
             var output = parseResult.GetValue(outputOption);
 
-            return browserControlCommandHandler.GetElement(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), selector, html, screenshot, output);
+            return browserControlCommandHandler.GetElement(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), selector, html, screenshot, output);
         });
 
         return command;
@@ -122,7 +122,7 @@ public sealed partial class BrowserControlCommandBuilder
             }
 
             return browserControlCommandHandler.RunScript(
-                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
                 file,
                 gif,
                 trace,

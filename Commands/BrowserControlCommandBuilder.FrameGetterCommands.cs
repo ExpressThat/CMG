@@ -37,7 +37,7 @@ public sealed partial class BrowserControlCommandBuilder
         var selector = CreateSelectorArgument();
         var command = new Command(name, description) { frame, selector };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(frame) ?? string.Empty, parseResult.GetValue(selector) ?? string.Empty], [])));
         return command;
     }
@@ -55,7 +55,7 @@ public sealed partial class BrowserControlCommandBuilder
         var value = new Argument<string>(valueName) { Description = valueDescription };
         var command = new Command(name, description) { frame, selector, value };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [
                 parseResult.GetValue(frame) ?? string.Empty,
                 parseResult.GetValue(selector) ?? string.Empty,

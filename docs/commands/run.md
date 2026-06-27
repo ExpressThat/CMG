@@ -45,6 +45,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--navigation-timeout <milliseconds>`: Default timeout for navigation actions and navigation waits.
 - `--assertion-timeout <milliseconds>`: Default timeout for assertions. Overrides `--timeout` for assertion actions.
 - `--base-url <url>`: Absolute base URL used to resolve relative `navigate`, `goto`, `visit`, `openTab`, and `newContext url=` targets in every selected test.
+- `--browser-port <port>`: Remote debugging port for the browser instance used by this run. Use this with browsers launched through `cmg browser --port <port> launch`.
 - `--var <name=value>`: Initial variable for every selected test. Can be repeated. Later entries with the same name replace earlier entries.
 - `--env <name=value>`: Alias for `--var`, intended for CI and agent-provided environment values.
 - `--chrome`: Use Chrome. This is the default.
@@ -104,7 +105,7 @@ Actions, locators, control flow, loops, macros, scoped variables, and `gif` bloc
 ## Exit Codes
 
 - `0`: All tests passed.
-- `1`: At least one test failed, no script files matched, the selected browser is invalid, the selected `--project` is missing or invalid, or the selected browser is not running.
+- `1`: At least one test failed, no script files matched, the selected browser is invalid, `--browser-port` is outside `1..65535`, the selected `--project` is missing or invalid, or the selected browser is not running.
 
 ## Examples
 
@@ -121,6 +122,8 @@ cmg run tests\flows --list --grep checkout
 cmg run tests\flows --timeout 10000 --navigation-timeout 15000 --assertion-timeout 5000
 cmg run tests\flows --var user=Ada --env mode=demo
 cmg run tests\flows --base-url https://example.test/app/
+cmg browser --port 9333 launch --headless
+cmg run tests\flows --browser-port 9333 --workers 4
 cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --list
 cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project chrome-smoke --workers 4
 cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project firefox-smoke --workers 4

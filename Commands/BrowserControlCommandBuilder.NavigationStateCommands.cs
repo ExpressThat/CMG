@@ -38,7 +38,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command(name, description);
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), name));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), name));
 
         return command;
     }
@@ -63,7 +63,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 name,
                 [parseResult.GetValue(expectedArgument) ?? string.Empty],
                 NavigationMatchOptions(parseResult, timeoutOption, matchOption, ignoreCaseOption))));
@@ -88,7 +88,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 name,
                 [parseResult.GetValue(expectedArgument) ?? string.Empty],
                 NavigationMatchOptions(parseResult, null, matchOption, ignoreCaseOption))));
@@ -133,7 +133,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 "waitForLoadState",
                 [parseResult.GetValue(stateArgument) ?? "load"],
                 [("timeout", parseResult.GetValue(timeoutOption).ToString())])));
@@ -155,7 +155,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 name,
                 [],
                 CompactOptions([
@@ -189,7 +189,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 "waitForNavigation",
                 Compact([parseResult.GetValue(expectedArgument)]),
                 CompactOptions([
@@ -213,7 +213,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 "setContent",
                 parseResult.GetValue(htmlArgument) ?? string.Empty)));
 

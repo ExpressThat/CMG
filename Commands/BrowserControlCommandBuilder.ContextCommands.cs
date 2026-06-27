@@ -51,7 +51,7 @@ public sealed partial class BrowserControlCommandBuilder
         }
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("emulate", [], EmulateOptions(parseResult, device, width, height, scale, mobile, touch, userAgent, locale, timezone, colorScheme, reducedMotion, geolocation, permissions))));
 
         return command;
@@ -65,7 +65,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command("setGeolocation", "Set page-visible geolocation.") { latitude, longitude, accuracy };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("setGeolocation", [], CompactOptions([
                 StringOption("latitude", parseResult.GetValue(latitude).ToString()),
                 StringOption("longitude", parseResult.GetValue(longitude).ToString()),
@@ -85,7 +85,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command("grantPermissions", "Grant page-side permissions.") { permissions };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("grantPermissions", parseResult.GetValue(permissions) ?? [], [])));
 
         return command;
@@ -96,7 +96,7 @@ public sealed partial class BrowserControlCommandBuilder
         var enabled = new Argument<bool>("enabled") { Description = "true to enable, false to disable." };
         var command = new Command(name, description) { enabled };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(name, parseResult.GetValue(enabled).ToString().ToLowerInvariant())));
         return command;
     }
@@ -111,7 +111,7 @@ public sealed partial class BrowserControlCommandBuilder
         var mode = new Argument<string>("mode") { Description = "Service worker mode: allow or block." };
         var command = new Command(name, "Allow or block service worker registration.") { mode };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(name, parseResult.GetValue(mode) ?? string.Empty)));
         return command;
     }
@@ -140,7 +140,7 @@ public sealed partial class BrowserControlCommandBuilder
         var url = CliStringOption("--url", "Initial URL. Default is about:blank.");
         var command = new Command(name, "Create and activate a fresh browser context.") { url };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("newContext", [], CompactOptions([StringOption("url", parseResult.GetValue(url))]))));
         return command;
     }
@@ -150,7 +150,7 @@ public sealed partial class BrowserControlCommandBuilder
         var id = new Argument<string>("id") { Description = "Context id or target id." };
         var command = new Command(name, description) { id };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, parseResult.GetValue(id) ?? string.Empty)));
         return command;
     }

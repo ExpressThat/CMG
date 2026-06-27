@@ -4,12 +4,14 @@ Browser interaction and page control command group.
 
 ```powershell
 cmg browser control [command] [options]
+cmg browser --port <port> control [command] [options]
 ```
 
 ## Behavior
 
 - Contains commands that interact with the active page in the selected browser. Chrome and Edge use Chrome DevTools Protocol; Firefox uses WebDriver BiDi.
 - Run [`browser launch`](../launch.md) before using control commands. Include the same top-level browser option on launch and control commands when using `--edge` or `--firefox`.
+- Use `cmg browser --port <port> control ...` to target a non-default browser instance launched with `cmg browser --port <port> launch`.
 - The scripting `set` action is intentionally not exposed as a CLI command because CLI invocations do not share DSL variable scope. Use `set` inside `.cmgscript` files and run them with [`script`](script.md) or `cmg run`.
 - Running `browser control` without a subcommand exits with `1`.
 
@@ -38,6 +40,7 @@ cmg browser control [command] [options]
 
 ```powershell
 cmg browser control --help
+cmg browser --port 9333 control page evaluate "document.title"
 cmg --edge browser control --help
 cmg --firefox browser control --help
 cmg browser control capture getElement "h1" --html

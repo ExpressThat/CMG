@@ -4,16 +4,15 @@ namespace CMG.Browser;
 
 public interface IBrowserController
 {
-    BrowserLaunchResult Launch(BrowserKind browserKind, IReadOnlyList<string> additionalArguments);
+    BrowserLaunchResult Launch(BrowserKind browserKind, IReadOnlyList<string> additionalArguments, int? remoteDebuggingPort = null);
 
     BrowserCloseResult Close(BrowserKind browserKind);
+
+    BrowserCloseResult Close(BrowserKind browserKind, int? port);
 }
 
 public sealed class BrowserController : IBrowserController
 {
-    private const int ChromeRemoteDebuggingPort = 9222;
-    private const int EdgeRemoteDebuggingPort = 9224;
-    private const int FirefoxRemoteDebuggingPort = 9223;
     private readonly BrowserStateStore stateStore;
 
     public BrowserController(BrowserStateStore stateStore)
@@ -21,9 +20,10 @@ public sealed class BrowserController : IBrowserController
         this.stateStore = stateStore;
     }
 
-    public BrowserLaunchResult Launch(BrowserKind browserKind, IReadOnlyList<string> additionalArguments)
+    public BrowserLaunchResult Launch(BrowserKind browserKind, IReadOnlyList<string> additionalArguments, int? remoteDebuggingPort = null)
     {
-        if (TryGetRunningBrowser(browserKind, out var runningState))
+        var port = remoteDebuggingPort ?? browserKind.DefaultRemoteDebuggingPort();
+        if (TryGetRunningBrowser(browserKind, port, out var runningState))
         {
             return new BrowserLaunchResult(
                 0,
@@ -31,7 +31,7 @@ public sealed class BrowserController : IBrowserController
                 runningState.RemoteDebuggingUrl);
         }
 
-        stateStore.Clear(browserKind);
+        stateStore.Clear(browserKind, port);
 
         var executablePath = FindExecutable(browserKind);
         if (executablePath is null)
@@ -42,19 +42,18 @@ public sealed class BrowserController : IBrowserController
                 null);
         }
 
-        var userDataDirectory = BrowserPaths.GetUserDataDirectory(browserKind);
+        var userDataDirectory = BrowserPaths.GetUserDataDirectory(browserKind, port);
         Directory.CreateDirectory(userDataDirectory);
         WriteBrowserPreferences(browserKind, userDataDirectory);
 
-        var remoteDebuggingPort = GetRemoteDebuggingPort(browserKind);
-        var remoteDebuggingUrl = GetRemoteDebuggingUrl(browserKind, remoteDebuggingPort);
+        var remoteDebuggingUrl = GetRemoteDebuggingUrl(browserKind, port);
         var processStartInfo = new ProcessStartInfo
         {
             FileName = executablePath,
             UseShellExecute = true
         };
 
-        foreach (var argument in BuildBrowserArguments(browserKind, remoteDebuggingPort, userDataDirectory, additionalArguments))
+            foreach (var argument in BuildBrowserArguments(browserKind, port, userDataDirectory, additionalArguments))
         {
             processStartInfo.ArgumentList.Add(argument);
         }
@@ -67,9 +66,16 @@ public sealed class BrowserController : IBrowserController
                 return new BrowserLaunchResult(1, $"{browserKind.DisplayName()} did not start.", null);
             }
 
+            if (!BrowserEndpointProbe.WaitUntilReady(browserKind, remoteDebuggingUrl, TimeSpan.FromSeconds(10)))
+            {
+                process.Kill(entireProcessTree: true);
+                stateStore.Clear(browserKind, port);
+                return new BrowserLaunchResult(1, $"{browserKind.DisplayName()} launched but did not expose debugging at {remoteDebuggingUrl}.", null);
+            }
+
             stateStore.Save(browserKind, new BrowserState(
                 process.Id,
-                remoteDebuggingPort,
+                port,
                 remoteDebuggingUrl,
                 userDataDirectory));
 
@@ -86,7 +92,12 @@ public sealed class BrowserController : IBrowserController
 
     public BrowserCloseResult Close(BrowserKind browserKind)
     {
-        var state = stateStore.Load(browserKind);
+        return Close(browserKind, port: null);
+    }
+
+    public BrowserCloseResult Close(BrowserKind browserKind, int? port)
+    {
+        var state = stateStore.Load(browserKind, port);
         if (state is null)
         {
             return new BrowserCloseResult(0, $"No CMG-controlled {browserKind.DisplayName()} instance is running.");
@@ -94,7 +105,7 @@ public sealed class BrowserController : IBrowserController
 
         if (!TryGetProcess(state.ProcessId, out var process))
         {
-            stateStore.Clear(browserKind);
+            stateStore.Clear(browserKind, port);
             return new BrowserCloseResult(0, $"CMG-controlled {browserKind.DisplayName()} was not running. Cleared stale browser state.");
         }
 
@@ -110,7 +121,7 @@ public sealed class BrowserController : IBrowserController
             }
 
             process.WaitForExit();
-            stateStore.Clear(browserKind);
+            stateStore.Clear(browserKind, port);
 
             return new BrowserCloseResult(0, $"Closed CMG-controlled {browserKind.DisplayName()}. PID: {state.ProcessId}.");
         }
@@ -120,9 +131,9 @@ public sealed class BrowserController : IBrowserController
         }
     }
 
-    private bool TryGetRunningBrowser(BrowserKind browserKind, out BrowserState state)
+    private bool TryGetRunningBrowser(BrowserKind browserKind, int port, out BrowserState state)
     {
-        state = stateStore.Load(browserKind) ?? BrowserState.Empty;
+        state = stateStore.Load(browserKind, port) ?? BrowserState.Empty;
 
         return state.ProcessId > 0 && TryGetProcess(state.ProcessId, out _);
     }
@@ -152,14 +163,6 @@ public sealed class BrowserController : IBrowserController
             BrowserKind.Edge => EdgeExecutableLocator.Find(),
             BrowserKind.Firefox => FirefoxExecutableLocator.Find(),
             _ => ChromeExecutableLocator.Find()
-        };
-
-    private static int GetRemoteDebuggingPort(BrowserKind browserKind) =>
-        browserKind switch
-        {
-            BrowserKind.Edge => EdgeRemoteDebuggingPort,
-            BrowserKind.Firefox => FirefoxRemoteDebuggingPort,
-            _ => ChromeRemoteDebuggingPort
         };
 
     private static string GetRemoteDebuggingUrl(BrowserKind browserKind, int remoteDebuggingPort) =>

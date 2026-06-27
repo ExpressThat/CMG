@@ -2,8 +2,7 @@ using CMG.E2E.Tests.Support;
 
 namespace CMG.E2E.Tests;
 
-[Collection(CmgE2eCollection.Name)]
-public sealed class BrowserLifecycleE2eTests
+public sealed class BrowserLifecycleE2eTests : IClassFixture<CmgBrowserFixture>
 {
     private readonly CmgBrowserFixture fixture;
 
@@ -19,7 +18,7 @@ public sealed class BrowserLifecycleE2eTests
 
         result.ShouldPass();
         result.StdoutContains("Chrome is already running for CMG.");
-        result.StdoutContains("Remote debugging: http://127.0.0.1:9222");
+        result.StdoutContains($"Remote debugging: http://127.0.0.1:{fixture.BrowserPort}");
     }
 
     [Fact]
@@ -29,5 +28,22 @@ public sealed class BrowserLifecycleE2eTests
 
         result.ShouldFail();
         result.StderrContains("--port must be between 1 and 65535.");
+    }
+
+    [Fact]
+    public void Control_WithWrongPortReportsNoSelectedBrowser()
+    {
+        var result = fixture.Cli.Run(
+            "browser",
+            "--port",
+            "1",
+            "control",
+            "page",
+            "runtime",
+            "textContent",
+            "#title");
+
+        result.ShouldFail();
+        result.StderrContains("No CMG-controlled Chrome instance is running.");
     }
 }

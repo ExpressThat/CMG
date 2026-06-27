@@ -35,7 +35,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command(commandName, description) { now };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("clock", [], CompactOptions([
                 StringOption("now", parseResult.GetValue(now)?.ToString())
             ]))));
@@ -49,7 +49,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command("tick", "Advance deterministic page-side time.") { milliseconds };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("tick", parseResult.GetValue(milliseconds).ToString())));
 
         return command;
@@ -62,7 +62,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command(commandName, description) { selector, output };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("accessibilitySnapshot", OptionalArgument(parseResult, selector), CompactOptions([
                 StringOption("output", parseResult.GetValue(output)?.FullName)
             ]))));
@@ -81,7 +81,7 @@ public sealed partial class BrowserControlCommandBuilder
         var command = new Command(commandName, description) { role, name };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("expectAccessible", [], CompactOptions([
                 StringOption("role", parseResult.GetValue(role)),
                 StringOption("name", parseResult.GetValue(name))

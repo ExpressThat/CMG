@@ -33,7 +33,7 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command(name, description);
 
-        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), action));
+        command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), action));
 
         return command;
     }
@@ -57,7 +57,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(action, [], [("index", parseResult.GetValue(indexOption).ToString())])));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(action, [], [("index", parseResult.GetValue(indexOption).ToString())])));
 
         return command;
     }
@@ -75,7 +75,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(action, parseResult.GetValue(targetArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(action, parseResult.GetValue(targetArgument) ?? string.Empty)));
 
         return command;
     }
@@ -100,7 +100,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 action,
                 [],
                 [

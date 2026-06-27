@@ -61,7 +61,7 @@ public sealed partial class CmgRunService : ICmgRunService
             return ListTests(files, options);
         }
 
-        var state = stateStore.Load(options.BrowserKind);
+        var state = stateStore.Load(options.BrowserKind, options.BrowserPort);
         if (state is null)
         {
             return CmgRunResult.Fail($"No CMG-controlled {options.BrowserKind.DisplayName()} instance is running.");

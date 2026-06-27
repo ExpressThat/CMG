@@ -25,7 +25,8 @@ public interface ICmgRunCommandHandler
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         string projectName = "",
-        int workers = 1);
+        int workers = 1,
+        int? browserPort = null);
 }
 
 public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
@@ -58,11 +59,18 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         string projectName = "",
-        int workers = 1)
+        int workers = 1,
+        int? browserPort = null)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
             Console.Error.WriteLine("Use only one browser option: --chrome, --edge, or --firefox.");
+            return 1;
+        }
+
+        if (browserPort is not null and (< 1 or > 65535))
+        {
+            Console.Error.WriteLine("--browser-port must be between 1 and 65535.");
             return 1;
         }
 
@@ -93,7 +101,8 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             baseUrl,
             variables,
             projectName,
-            Math.Max(1, workers)));
+            Math.Max(1, workers),
+            browserPort));
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);

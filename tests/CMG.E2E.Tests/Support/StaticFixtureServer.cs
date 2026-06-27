@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace CMG.E2E.Tests.Support;
 
@@ -25,6 +26,8 @@ public sealed class StaticFixtureServer : IDisposable
     public int Port { get; }
 
     public string Url(string fileName) => $"http://127.0.0.1:{Port}/{Uri.EscapeDataString(fileName)}";
+
+    public string UrlPath(string path) => $"http://127.0.0.1:{Port}/{path.TrimStart('/')}";
 
     public string WebSocketUrl(string path) => $"ws://127.0.0.1:{Port}/{path.TrimStart('/')}";
 
@@ -95,7 +98,15 @@ public sealed class StaticFixtureServer : IDisposable
         }
 
         var parts = request.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var relative = parts.Length > 1 ? Uri.UnescapeDataString(parts[1].TrimStart('/')) : "index.html";
+        var method = parts.Length > 0 ? parts[0] : "GET";
+        var target = parts.Length > 1 ? parts[1] : "/index.html";
+        var uri = new Uri($"http://fixture.local{target}", UriKind.Absolute);
+        if (await TryHandleApi(stream, reader, method, uri, headers))
+        {
+            return;
+        }
+
+        var relative = Uri.UnescapeDataString(uri.AbsolutePath.TrimStart('/'));
         var root = Path.GetFullPath(Root);
         var path = Path.GetFullPath(Path.Combine(root, relative));
         var insideRoot = !Path.GetRelativePath(root, path).StartsWith("..", StringComparison.Ordinal);
@@ -106,6 +117,75 @@ public sealed class StaticFixtureServer : IDisposable
         }
 
         await Write(stream, "200 OK", ContentType(path), await File.ReadAllBytesAsync(path, cancellation.Token));
+    }
+
+    private async Task<bool> TryHandleApi(
+        NetworkStream stream,
+        StreamReader reader,
+        string method,
+        Uri uri,
+        IReadOnlyDictionary<string, string> headers)
+    {
+        if (!uri.AbsolutePath.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (uri.AbsolutePath.StartsWith("/api/status/", StringComparison.OrdinalIgnoreCase))
+        {
+            var status = uri.AbsolutePath.Split('/').Last();
+            await Write(stream, $"{status} Fixture", "text/plain", Encoding.UTF8.GetBytes($"status {status}"));
+            return true;
+        }
+
+        if (uri.AbsolutePath.Equals("/api/slow", StringComparison.OrdinalIgnoreCase))
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2), cancellation.Token);
+            await Write(stream, "200 OK", "text/plain", Encoding.UTF8.GetBytes("slow ok"));
+            return true;
+        }
+
+        if (!uri.AbsolutePath.Equals("/api/echo", StringComparison.OrdinalIgnoreCase))
+        {
+            await Write(stream, "404 Not Found", "text/plain", Encoding.UTF8.GetBytes("api not found"));
+            return true;
+        }
+
+        var body = await ReadBody(reader, headers);
+        var payload = new Dictionary<string, string?>
+        {
+            ["method"] = method,
+            ["query"] = uri.Query.TrimStart('?'),
+            ["body"] = body,
+            ["contentType"] = headers.GetValueOrDefault("Content-Type"),
+            ["xAgent"] = headers.GetValueOrDefault("x-agent"),
+            ["authorization"] = DecodeBasicAuth(headers.GetValueOrDefault("Authorization"))
+        };
+        var json = JsonSerializer.Serialize(payload);
+        await Write(stream, "200 OK", "application/json", Encoding.UTF8.GetBytes(json), ("x-cmg-api", "fixture"));
+        return true;
+    }
+
+    private static async Task<string> ReadBody(StreamReader reader, IReadOnlyDictionary<string, string> headers)
+    {
+        if (!headers.TryGetValue("Content-Length", out var value) || !int.TryParse(value, out var length) || length <= 0)
+        {
+            return string.Empty;
+        }
+
+        var buffer = new char[length];
+        var read = await reader.ReadBlockAsync(buffer, 0, length);
+        return new string(buffer, 0, read);
+    }
+
+    private static string? DecodeBasicAuth(string? value)
+    {
+        if (value is null || !value.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
+        {
+            return value;
+        }
+
+        return Encoding.UTF8.GetString(Convert.FromBase64String(value["Basic ".Length..]));
     }
 
     private async Task AcceptWebSocket(NetworkStream stream, IReadOnlyDictionary<string, string> headers)
@@ -140,11 +220,21 @@ public sealed class StaticFixtureServer : IDisposable
         }
     }
 
-    private static async Task Write(Stream stream, string status, string contentType, byte[] body)
+    private static async Task Write(Stream stream, string status, string contentType, byte[] body, params (string Name, string Value)[] headers)
     {
-        var header = Encoding.ASCII.GetBytes(
-            $"HTTP/1.1 {status}\r\nContent-Type: {contentType}\r\nContent-Length: {body.Length}\r\nConnection: close\r\n\r\n");
-        await stream.WriteAsync(header);
+        var headerBuilder = new StringBuilder()
+            .Append($"HTTP/1.1 {status}\r\n")
+            .Append($"Content-Type: {contentType}\r\n")
+            .Append($"Content-Length: {body.Length}\r\n")
+            .Append("Connection: close\r\n");
+        foreach (var extraHeader in headers)
+        {
+            headerBuilder.Append($"{extraHeader.Name}: {extraHeader.Value}\r\n");
+        }
+
+        headerBuilder.Append("\r\n");
+        var headerBytes = Encoding.ASCII.GetBytes(headerBuilder.ToString());
+        await stream.WriteAsync(headerBytes);
         await stream.WriteAsync(body);
     }
 

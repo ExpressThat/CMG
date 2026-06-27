@@ -35,7 +35,7 @@ public sealed partial class BrowserControlCommandBuilder
                 animations,
                 caret);
             return browserControlCommandHandler.RunScriptAction(
-                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
                 ToScriptLine("screenshot", [parseResult.GetValue(selector) ?? string.Empty], options));
         });
 
@@ -86,7 +86,7 @@ public sealed partial class BrowserControlCommandBuilder
             }
 
             return browserControlCommandHandler.RunScriptAction(
-                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
                 ToScriptLine("screenshotPage", [], options));
         });
 

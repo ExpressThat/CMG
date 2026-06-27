@@ -49,7 +49,34 @@ public sealed class BrowserAppCommandBuilderTests
         Assert.Equal(123, handler.ProcessId);
     }
 
-    private static RootCommand BuildRoot(CapturingBrowserCommandHandler browserHandler)
+    [Fact]
+    public void BrowserPort_MapsLaunchAndCloseInstanceSelection()
+    {
+        var handler = new CapturingBrowserCommandHandler();
+        var root = BuildRoot(handler);
+
+        Assert.Equal(0, root.Parse("browser --port 9333 launch --headless --url https://example.test").Invoke());
+        Assert.Equal(9333, handler.LaunchPort);
+
+        Assert.Equal(0, root.Parse("browser --port 9333 close").Invoke());
+        Assert.Equal(9333, handler.ClosePort);
+    }
+
+    [Fact]
+    public void BrowserPort_MapsControlCommandsToSelectedInstance()
+    {
+        var controlHandler = new NoopBrowserControlCommandHandler();
+        var exitCode = BuildRoot(new CapturingBrowserCommandHandler(), controlHandler)
+            .Parse("browser --port 9334 control script --file flow.cmgscript")
+            .Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(9334, controlHandler.Port);
+    }
+
+    private static RootCommand BuildRoot(
+        CapturingBrowserCommandHandler browserHandler,
+        NoopBrowserControlCommandHandler? controlHandler = null)
     {
         var chrome = new Option<bool>("--chrome");
         var edge = new Option<bool>("--edge");
@@ -61,7 +88,7 @@ public sealed class BrowserAppCommandBuilderTests
         root.Options.Add(firefox);
         root.Subcommands.Add(new BrowserCommandBuilder(
             browserHandler,
-            new BrowserControlCommandBuilder(new NoopBrowserControlCommandHandler()))
+            new BrowserControlCommandBuilder(controlHandler ?? new NoopBrowserControlCommandHandler()))
             .Build(browserOptions));
         return root;
     }
@@ -82,9 +109,19 @@ public sealed class BrowserAppCommandBuilderTests
 
         public int ProcessId { get; private set; }
 
+        public int? LaunchPort { get; private set; }
+
+        public int? ClosePort { get; private set; }
+
         public IReadOnlyList<string> Arguments { get; private set; } = [];
 
         public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url) => 0;
+
+        public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url, int? port)
+        {
+            LaunchPort = port;
+            return 0;
+        }
 
         public int LaunchApp(
             BrowserKind browserKind,
@@ -111,6 +148,12 @@ public sealed class BrowserAppCommandBuilderTests
 
         public int Close(BrowserKind browserKind, IReadOnlyList<string> arguments) => 0;
 
+        public int Close(BrowserKind browserKind, IReadOnlyList<string> arguments, int? port)
+        {
+            ClosePort = port;
+            return 0;
+        }
+
         private void CaptureOptions(BrowserAppDebugOptions options)
         {
             Port = options.Port;
@@ -121,9 +164,25 @@ public sealed class BrowserAppCommandBuilderTests
 
     private sealed class NoopBrowserControlCommandHandler : IBrowserControlCommandHandler
     {
+        public int? Port { get; private set; }
+
         public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output) => 0;
 
         public int RunScript(BrowserKind browserKind, string file, FileInfo? gif) => 0;
+
+        public int RunScript(
+            BrowserKind browserKind,
+            int? port,
+            string file,
+            FileInfo? gif,
+            FileInfo? trace,
+            ScriptTimeoutOptions? timeouts,
+            string? baseUrl,
+            IReadOnlyDictionary<string, string> variables)
+        {
+            Port = port;
+            return 0;
+        }
 
         public int RunScriptAction(BrowserKind browserKind, string scriptLine) => 0;
 

@@ -9,7 +9,7 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var command = new Command(name, description);
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             action));
         return command;
     }
@@ -23,7 +23,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
         var command = new Command(action, description) { path };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [], [("path", parseResult.GetValue(path)?.FullName ?? string.Empty)])));
         return command;
     }
@@ -37,7 +37,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
         var command = new Command(name, description) { pairs };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, parseResult.GetValue(pairs) ?? [], [])));
         return command;
     }
@@ -48,7 +48,7 @@ public sealed partial class BrowserControlCommandBuilder
         var password = new Argument<string>("password") { Description = "HTTP auth password." };
         var command = new Command(name, description) { username, password };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(username) ?? string.Empty, parseResult.GetValue(password) ?? string.Empty], [])));
         return command;
     }
@@ -58,7 +58,7 @@ public sealed partial class BrowserControlCommandBuilder
         var prefix = new Argument<string>("prefix") { Description = "Proxy URL prefix." };
         var command = new Command(name, description) { prefix };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, parseResult.GetValue(prefix) ?? string.Empty)));
         return command;
     }
@@ -68,7 +68,7 @@ public sealed partial class BrowserControlCommandBuilder
         var enabled = new Argument<bool>("enabled") { Description = "true to simulate offline; false to restore." };
         var command = new Command("setOffline", "Enable or disable page-side offline simulation.") { enabled };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("setOffline", parseResult.GetValue(enabled).ToString().ToLowerInvariant())));
         return command;
     }
@@ -94,7 +94,7 @@ public sealed partial class BrowserControlCommandBuilder
         var ignoreCase = NavigationIgnoreCaseOption();
         var command = new Command("route", "Install a WebSocket route.") { pattern, message, close, code, reason, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("routeWebSocket", [parseResult.GetValue(pattern) ?? string.Empty], CompactOptions([
                 StringOption("message", parseResult.GetValue(message)),
                 BoolOption("close", parseResult.GetValue(close)),
@@ -114,7 +114,7 @@ public sealed partial class BrowserControlCommandBuilder
         var ignoreCase = NavigationIgnoreCaseOption();
         var command = new Command(name, description) { pattern, timeout, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(pattern) ?? string.Empty], CompactOptions([
                 IntOption("timeout", parseResult.GetValue(timeout)),
                 StringOption("match", parseResult.GetValue(match)),

@@ -66,7 +66,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 "waitForElement",
                 [parseResult.GetValue(selectorArgument) ?? string.Empty],
                 [("timeout", parseResult.GetValue(timeoutOption).ToString())])));
@@ -83,7 +83,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(name, parseResult.GetValue(selectorArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(name, parseResult.GetValue(selectorArgument) ?? string.Empty)));
 
         return command;
     }
@@ -110,7 +110,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 name,
                 [parseResult.GetValue(selectorArgument) ?? string.Empty, parseResult.GetValue(textArgument) ?? string.Empty],
                 CompactOptions([IntOption("delay", parseResult.GetValue(delay))]))));
@@ -129,7 +129,7 @@ public sealed partial class BrowserControlCommandBuilder
         var y = CliIntOption("--y", "Y offset inside the element.");
         var command = new Command("click", "Click an element.") { selector, button, clickCount, delay, modifiers, x, y };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("click", [parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
                 StringOption("button", parseResult.GetValue(button)),
                 IntOption("clickCount", parseResult.GetValue(clickCount)),
@@ -149,7 +149,7 @@ public sealed partial class BrowserControlCommandBuilder
         var y = CliIntOption("--y", "Y offset inside the element.");
         var command = new Command("hover", "Hover an element.") { selector, modifiers, x, y };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("hover", [parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
                 StringOption("modifiers", parseResult.GetValue(modifiers)),
                 IntOption("x", parseResult.GetValue(x)),
@@ -166,7 +166,7 @@ public sealed partial class BrowserControlCommandBuilder
         var y = CliIntOption("--y", "Y offset inside the element.");
         var command = new Command(name, description) { selector, modifiers, x, y };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(name, [parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
                 StringOption("modifiers", parseResult.GetValue(modifiers)),
                 IntOption("x", parseResult.GetValue(x)),
@@ -190,7 +190,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 "fill",
                 parseResult.GetValue(selectorArgument) ?? string.Empty,
                 parseResult.GetValue(textArgument) ?? string.Empty)));
@@ -225,7 +225,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 name,
                 CompactArguments(parseResult.GetValue(selectorArgument), parseResult.GetValue(valueArgument)),
                 CompactOptions([

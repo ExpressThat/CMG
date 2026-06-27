@@ -44,7 +44,7 @@ public sealed partial class BrowserControlCommandBuilder
         var selector = CreateSelectorArgument();
         var command = new Command(name, description) { frame, selector };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(frame) ?? string.Empty, parseResult.GetValue(selector) ?? string.Empty], [])));
         return command;
     }
@@ -56,7 +56,7 @@ public sealed partial class BrowserControlCommandBuilder
         var text = new Argument<string>("text") { Description = "Text value." };
         var command = new Command(name, description) { frame, selector, text };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [
                 parseResult.GetValue(frame) ?? string.Empty,
                 parseResult.GetValue(selector) ?? string.Empty,
@@ -79,7 +79,7 @@ public sealed partial class BrowserControlCommandBuilder
         var ignoreCase = NavigationIgnoreCaseOption();
         var command = new Command(name, "Assert text inside an iframe element.") { frame, selector, text, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [
                 parseResult.GetValue(frame) ?? string.Empty,
                 parseResult.GetValue(selector) ?? string.Empty,
@@ -103,7 +103,7 @@ public sealed partial class BrowserControlCommandBuilder
         var timeout = new Option<int?>("--timeout") { Description = "Timeout in milliseconds. Default is 5000." };
         var command = new Command(name, "Wait for an element inside an iframe.") { frame, selector, timeout };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(action, [parseResult.GetValue(frame) ?? string.Empty, parseResult.GetValue(selector) ?? string.Empty], CompactOptions([
                 IntOption("timeout", parseResult.GetValue(timeout))
             ]))));
@@ -116,7 +116,7 @@ public sealed partial class BrowserControlCommandBuilder
         var expression = new Argument<string>("expression") { Description = "JavaScript expression evaluated in the iframe." };
         var command = new Command(name, "Evaluate JavaScript inside an iframe.") { frame, expression };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("frameEvaluate", [parseResult.GetValue(frame) ?? string.Empty, parseResult.GetValue(expression) ?? string.Empty], [])));
         return command;
     }

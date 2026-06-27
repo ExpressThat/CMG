@@ -4,6 +4,9 @@ public interface IBrowserCommandHandler
 {
     int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url);
 
+    int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url, int? port) =>
+        Launch(browserKind, arguments, headless, url);
+
     int LaunchApp(
         BrowserKind browserKind,
         FileInfo executable,
@@ -14,6 +17,9 @@ public interface IBrowserCommandHandler
     int AttachApp(BrowserKind browserKind, BrowserAppDebugOptions options, int processId);
 
     int Close(BrowserKind browserKind, IReadOnlyList<string> arguments);
+
+    int Close(BrowserKind browserKind, IReadOnlyList<string> arguments, int? port) =>
+        Close(browserKind, arguments);
 }
 
 public sealed class BrowserCommandHandler : IBrowserCommandHandler
@@ -29,13 +35,23 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
 
     public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url)
     {
+        return Launch(browserKind, arguments, headless, url, port: null);
+    }
+
+    public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url, int? port)
+    {
         if (browserKind is BrowserKind.InvalidSelection)
         {
             Console.Error.WriteLine("Use only one browser option: --chrome, --edge, or --firefox.");
             return 1;
         }
 
-        var result = browserController.Launch(browserKind, BuildLaunchArguments(browserKind, arguments, headless, url));
+        if (!ValidatePort(port))
+        {
+            return 1;
+        }
+
+        var result = browserController.Launch(browserKind, BuildLaunchArguments(browserKind, arguments, headless, url), port);
 
         Console.WriteLine(result.Message);
 
@@ -110,13 +126,23 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
 
     public int Close(BrowserKind browserKind, IReadOnlyList<string> arguments)
     {
+        return Close(browserKind, arguments, port: null);
+    }
+
+    public int Close(BrowserKind browserKind, IReadOnlyList<string> arguments, int? port)
+    {
         if (browserKind is BrowserKind.InvalidSelection)
         {
             Console.Error.WriteLine("Use only one browser option: --chrome, --edge, or --firefox.");
             return 1;
         }
 
-        var result = browserController.Close(browserKind);
+        if (!ValidatePort(port))
+        {
+            return 1;
+        }
+
+        var result = browserController.Close(browserKind, port);
 
         Console.WriteLine(result.Message);
 
@@ -163,6 +189,17 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
 
         exitCode = 0;
         return true;
+    }
+
+    private static bool ValidatePort(int? port)
+    {
+        if (port is null || port is >= 1 and <= 65535)
+        {
+            return true;
+        }
+
+        Console.Error.WriteLine("--port must be between 1 and 65535.");
+        return false;
     }
 
     private static void WriteLaunchResult(BrowserLaunchResult result)

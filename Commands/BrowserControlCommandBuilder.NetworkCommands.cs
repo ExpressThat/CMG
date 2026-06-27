@@ -74,7 +74,7 @@ public sealed partial class BrowserControlCommandBuilder
             ignoreCase
         };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], RouteOptions(parseResult, status, body, bodyFile, contentType, method, times, delay, abort, header, headers, headerName, headerValue, match, ignoreCase))));
         return command;
     }
@@ -107,7 +107,7 @@ public sealed partial class BrowserControlCommandBuilder
             ignoreCase
         };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(name, [parseResult.GetValue(pattern) ?? string.Empty], WaitOptions(parseResult, timeout, method, status, contains, mocked, header, headerName, headerValue, match, ignoreCase))));
         return command;
     }

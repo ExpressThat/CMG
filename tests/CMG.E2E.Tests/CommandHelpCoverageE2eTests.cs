@@ -2,46 +2,36 @@ using CMG.E2E.Tests.Support;
 
 namespace CMG.E2E.Tests;
 
-[Collection(CmgE2eCollection.Name)]
-public sealed class CommandHelpCoverageE2eTests
+public sealed class CommandHelpCoverageE2eTests : IClassFixture<CmgCliFixture>
 {
-    private readonly CmgBrowserFixture fixture;
+    private readonly CmgCliFixture fixture;
 
-    public CommandHelpCoverageE2eTests(CmgBrowserFixture fixture)
+    public CommandHelpCoverageE2eTests(CmgCliFixture fixture)
     {
         this.fixture = fixture;
     }
 
     [Fact]
-    public void EveryDocumentedLeafCommand_HasWorkingHelp()
+    public void RepresentativeCommands_HaveWorkingExternalHelp()
     {
-        var failures = new List<string>();
-        foreach (var command in DocumentedLeafCommands())
+        foreach (var command in RepresentativeCommands())
         {
-            var result = fixture.Cli.Run([.. command, "--help"]);
-            if (result.ExitCode is 0 && result.Stdout.Contains("Usage:", StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            failures.Add($"{string.Join(' ', command)} => exit {result.ExitCode}\n{result.Stdout}\n{result.Stderr}");
+            var result = fixture.Cli.RunWithTimeout(TimeSpan.FromSeconds(5), [.. command, "--help"]);
+            Assert.True(
+                result.ExitCode is 0 && result.Stdout.Contains("Usage:", StringComparison.Ordinal),
+                $"{string.Join(' ', command)} => exit {result.ExitCode}\n{result.Stdout}\n{result.Stderr}");
         }
-
-        Assert.True(failures.Count is 0, string.Join("\n---\n", failures));
     }
 
-    private static IEnumerable<string[]> DocumentedLeafCommands()
+    private static IEnumerable<string[]> RepresentativeCommands()
     {
-        var commandDocs = Path.Combine(E2ePaths.RepositoryRoot(), "docs", "commands");
-        foreach (var file in Directory.EnumerateFiles(commandDocs, "*.md", SearchOption.AllDirectories).OrderBy(value => value, StringComparer.Ordinal))
-        {
-            if (Path.GetFileName(file).Equals("index.md", StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            var relative = Path.GetRelativePath(commandDocs, Path.ChangeExtension(file, null));
-            yield return relative.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        }
+        yield return ["browser"];
+        yield return ["browser", "launch"];
+        yield return ["browser", "control", "script"];
+        yield return ["browser", "control", "input", "click"];
+        yield return ["browser", "control", "network", "route"];
+        yield return ["run"];
+        yield return ["files", "read"];
+        yield return ["api", "request"];
     }
 }

@@ -21,7 +21,7 @@ public sealed partial class BrowserControlCommandBuilder
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(
-                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
                 ToScriptLine(
                     "press",
                     [parseResult.GetValue(keyArgument) ?? string.Empty],
@@ -44,7 +44,7 @@ public sealed partial class BrowserControlCommandBuilder
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(
-                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
                 ToScriptLine(name, parseResult.GetValue(valueArgument) ?? string.Empty)));
 
         return command;
@@ -64,7 +64,7 @@ public sealed partial class BrowserControlCommandBuilder
 
         command.SetAction(parseResult =>
             browserControlCommandHandler.RunScriptAction(
-                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
                 ToScriptLine("keyboardShortcut", parseResult.GetValue(chord) ?? string.Empty)));
 
         return command;

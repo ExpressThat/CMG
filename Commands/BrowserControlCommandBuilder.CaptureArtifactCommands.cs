@@ -31,7 +31,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(name, [], CompactOptions([
                 StringOption("path", parseResult.GetValue(path)?.FullName),
                 StringOption("landscape", parseResult.GetValue(landscape)),
@@ -75,7 +75,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine(name, OptionalArgument(parseResult, selector), CompactOptions([
                 StringOption("baseline", parseResult.GetValue(baseline)?.FullName),
                 StringOption("output", parseResult.GetValue(output)?.FullName),

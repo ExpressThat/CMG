@@ -41,7 +41,7 @@ public sealed partial class BrowserControlCommandBuilder
         var ignoreCase = NavigationIgnoreCaseOption();
         var command = new Command(name, "Wait for a matching worker target.") { pattern, timeout, match, ignoreCase };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("waitForWorker", [parseResult.GetValue(pattern) ?? string.Empty], CompactOptions([
                 IntOption("timeout", parseResult.GetValue(timeout)),
                 StringOption("match", parseResult.GetValue(match)),
@@ -56,7 +56,7 @@ public sealed partial class BrowserControlCommandBuilder
         var target = CliStringOption("--target", "Worker id or URL substring. Defaults to the first worker.");
         var command = new Command(name, "Evaluate JavaScript in a worker target.") { expression, target };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("workerEvaluate", [parseResult.GetValue(expression) ?? string.Empty], CompactOptions([
                 StringOption("target", parseResult.GetValue(target))
             ]))));
@@ -93,7 +93,7 @@ public sealed partial class BrowserControlCommandBuilder
             target
         };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("workerIntercept", [parseResult.GetValue(pattern) ?? string.Empty], CompactOptions([
                 IntOption("status", parseResult.GetValue(status)),
                 StringOption("body", parseResult.GetValue(body)),
@@ -116,7 +116,7 @@ public sealed partial class BrowserControlCommandBuilder
         var css = CliStringOption("--css", "Collect CSS coverage: true or false. Default is true.");
         var command = new Command(name, "Start JavaScript and CSS coverage collection.") { js, css };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("startCoverage", [], CompactOptions([
                 StringOption("js", parseResult.GetValue(js)),
                 StringOption("css", parseResult.GetValue(css))
@@ -129,7 +129,7 @@ public sealed partial class BrowserControlCommandBuilder
         var path = new Option<FileInfo?>("--path") { Description = "Write coverage JSON to this path instead of stdout." };
         var command = new Command(name, "Stop coverage collection and print or write JSON.") { path };
         command.SetAction(parseResult => browserControlCommandHandler.RunScriptAction(
-            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+            CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
             ToScriptLine("stopCoverage", [], CompactOptions([
                 StringOption("path", parseResult.GetValue(path)?.FullName)
             ]))));

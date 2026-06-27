@@ -98,7 +98,8 @@ public sealed class RunCommandBuilderProjectTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             string projectName = "",
-            int workers = 1)
+            int workers = 1,
+            int? browserPort = null)
         {
             BrowserKind = browserKind;
             Path = path;

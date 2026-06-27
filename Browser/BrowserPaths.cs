@@ -15,10 +15,20 @@ public static class BrowserPaths
             ? StateFile
             : Path.Combine(AppDataDirectory, $"{browserKind.StateName()}.browser.state");
 
+    public static string GetStateFile(BrowserKind browserKind, int? port) =>
+        IsDefaultBrowserPort(browserKind, port)
+            ? GetStateFile(browserKind)
+            : Path.Combine(AppDataDirectory, $"{browserKind.StateName()}-{port}.browser.state");
+
     public static string GetUserDataDirectory(BrowserKind browserKind) =>
         browserKind is BrowserKind.Chrome
             ? UserDataDirectory
             : Path.Combine(AppDataDirectory, $"{browserKind.StateName()}-profile");
+
+    public static string GetUserDataDirectory(BrowserKind browserKind, int port) =>
+        port == browserKind.DefaultRemoteDebuggingPort()
+            ? GetUserDataDirectory(browserKind)
+            : Path.Combine(AppDataDirectory, $"{browserKind.StateName()}-profile-{port}");
 
     public static string GetActiveTargetFile(string key) =>
         Path.Combine(AppDataDirectory, $"active-target-{Sanitize(key)}.state");
@@ -33,4 +43,7 @@ public static class BrowserPaths
         var invalid = Path.GetInvalidFileNameChars();
         return string.Concat(value.Select(character => invalid.Contains(character) ? '_' : character));
     }
+
+    private static bool IsDefaultBrowserPort(BrowserKind browserKind, int? port) =>
+        port is null || port == browserKind.DefaultRemoteDebuggingPort();
 }
