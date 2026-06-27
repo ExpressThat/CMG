@@ -29,6 +29,28 @@ public sealed class BrowserScriptRunnerNavigationAliasTests
     }
 
     [Fact]
+    public void RunText_BaseUrlWinsWhenRelativeTargetExistsLocally()
+    {
+        var file = Path.Combine(Directory.GetCurrentDirectory(), "cmg-local-target.html");
+        File.WriteAllText(file, "<!doctype html>");
+        try
+        {
+            var result = Runner().RunText(
+                "navigate \"cmg-local-target.html\"",
+                "debug",
+                new FakeAutomationClient(),
+                baseUrl: "https://example.test/app/");
+
+            Assert.True(result.Success, result.Error);
+            Assert.Contains("NAVIGATED 001 https://example.test/app/cmg-local-target.html", result.StdoutLines);
+        }
+        finally
+        {
+            File.Delete(file);
+        }
+    }
+
+    [Fact]
     public void RunText_NavigateReportsInvalidBaseUrl()
     {
         var result = Runner().RunText(

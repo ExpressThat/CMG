@@ -59,19 +59,24 @@ public sealed partial class BrowserScriptRunner
 
     private static string NormalizeNavigationTarget(string target, string? baseUrl = null)
     {
-        if (File.Exists(target))
-        {
-            return new Uri(Path.GetFullPath(target)).AbsoluteUri;
-        }
-
         if (IsAbsoluteUri(target))
         {
             return target;
         }
 
+        if (Path.IsPathRooted(target) && File.Exists(target))
+        {
+            return new Uri(Path.GetFullPath(target)).AbsoluteUri;
+        }
+
         if (!string.IsNullOrWhiteSpace(baseUrl))
         {
             return new Uri(new Uri(baseUrl), target).AbsoluteUri;
+        }
+
+        if (File.Exists(target))
+        {
+            return new Uri(Path.GetFullPath(target)).AbsoluteUri;
         }
 
         if (LooksLikeLocalPath(target))

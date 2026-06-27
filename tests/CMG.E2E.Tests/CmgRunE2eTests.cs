@@ -82,4 +82,26 @@ public sealed class CmgRunE2eTests
         result.ShouldPass();
         result.StdoutContains("TEST LIST run listed only");
     }
+
+    [Fact]
+    public void RunCommand_BaseUrlAndEnvResolveRelativeNavigationAndVariables()
+    {
+        var testScript = fixture.CreateScript("runner-base-url-env.cmgscript", """
+            test "uses cli base url and env" {
+              navigate "index.html" waitUntil=domcontentloaded
+              expectText "#title" "${expectedTitle}"
+            }
+            """);
+
+        var result = fixture.Cli.Run(
+            "run",
+            testScript,
+            "--base-url",
+            fixture.FixtureHttpPath("/"),
+            "--env",
+            "expectedTitle=CMG E2E Fixture");
+
+        result.ShouldPass();
+        result.StdoutContains("TEST PASS uses cli base url and env");
+    }
 }
