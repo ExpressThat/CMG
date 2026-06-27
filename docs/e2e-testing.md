@@ -45,7 +45,7 @@ Command behavior ownership is tracked in [`docs/e2e-command-coverage.md`](e2e-co
 Keep E2E tests explicit and scenario-shaped:
 
 - One C# test file per command or feature area.
-- C# files must stay under 250 lines.
+- C# files must stay under 250 lines. `E2eFileSizeGuardTests` enforces this limit.
 - Large `.cmgscript` scenarios may exceed 250 lines when needed, but keep one scenario per file.
 - If a script is correct and an E2E test exposes an unexpected failure, fix the CMG root cause rather than forcing the script around the bug.
 - Prefer real headless browser checks over mocks.
