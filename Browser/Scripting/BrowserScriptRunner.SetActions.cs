@@ -43,7 +43,7 @@ public sealed partial class BrowserScriptRunner
 
         var first = line.IndexOf(' ');
         var second = first < 0 ? -1 : line.IndexOf(' ', first + 1);
-        if (second < 0 || second + 1 >= line.Length)
+        if (second < 0)
         {
             throw new ScriptExecutionException($"{blockName} could not read a payload from '{line}'.");
         }

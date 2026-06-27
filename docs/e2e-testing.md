@@ -73,6 +73,7 @@ The first E2E slice covers:
 - Browser-control clock/accessibility aliases for `restoreClock`, `accessibilitySnapshot`, `expectAccessible`, and accessibility failure reasons.
 - Browser-control context aliases for JavaScript toggling, service-worker mode, context clear, and context reset.
 - Script environment actions for locale, timezone, media, geolocation, permission grants, permission clearing, and validation failure output.
+- Direct script context policy actions for JavaScript blocking, CSP bypass, service-worker blocking, context clearing, and context reset.
 - Browser-control storage lifecycle commands for local/session storage remove/clear, cookie attributes/remove/clear, storage-state save/load, and validation failures.
 - Browser-control wait command aliases for selector states, function waits, fixed waits, auto waits, and selector-state failure reasons.
 - Browser-control navigation/runtime aliases for `expectUrl`, `waitForNavigation`, `waitForNetworkIdle`, `evalOnSelector`, and `evalAll`.
