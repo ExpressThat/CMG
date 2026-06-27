@@ -71,7 +71,7 @@ The first E2E slice covers:
 - Artifact and state actions for visual assertions, screenshots, PDFs, coverage, storage state, local file actions, and tab control.
 - Browser-control CLI behavior for waits, runtime getters, input, assertions, storage, cookies, context/emulation, isolated browser contexts, clock, accessibility, frame actions/getters/failure reasons, tabs, and capture artifacts.
 - Browser-control clock/accessibility aliases for `restoreClock`, `accessibilitySnapshot`, `expectAccessible`, and accessibility failure reasons.
-- Direct script clock and accessibility actions for fake time, clock restore, accessibility snapshots, accessible-role checks, and validation failure output.
+- Direct script and runner clock/accessibility actions for fake time, clock restore, accessibility snapshots, accessible-role checks, trace output, and validation failure diagnostics.
 - Browser-control context aliases for JavaScript toggling, service-worker mode, context clear, and context reset.
 - Direct script and runner environment actions for locale, timezone, media, geolocation, permission grants, permission clearing, trace output, and validation failure diagnostics.
 - Direct script and runner context policy actions for JavaScript blocking, CSP bypass, service-worker blocking, context clearing/reset, trace output, and validation failure diagnostics.
