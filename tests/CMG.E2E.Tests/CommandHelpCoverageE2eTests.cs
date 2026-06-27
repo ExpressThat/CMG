@@ -1,5 +1,4 @@
 using CMG.E2E.Tests.Support;
-using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace CMG.E2E.Tests;
@@ -17,15 +16,15 @@ public sealed class CommandHelpCoverageE2eTests : IClassFixture<CmgCliFixture>
     [Fact]
     public void DocumentedCommands_HaveWorkingExternalHelp()
     {
-        var failures = new ConcurrentBag<string>();
-        Parallel.ForEach(DocumentedCommands(), new ParallelOptions { MaxDegreeOfParallelism = 8 }, command =>
+        var failures = new List<string>();
+        foreach (var command in DocumentedCommands())
         {
             var result = fixture.Cli.RunWithTimeout(TimeSpan.FromSeconds(20), [.. command, "--help"]);
             if (result.ExitCode is not 0 || !result.Stdout.Contains("Usage:", StringComparison.Ordinal))
             {
                 failures.Add($"{string.Join(' ', command)} => exit {result.ExitCode}\n{result.Stdout}\n{result.Stderr}");
             }
-        });
+        }
 
         Assert.Empty(failures);
 
