@@ -101,5 +101,6 @@ The first E2E slice covers:
 - Advanced script control flow for `for`, `foreach`, `foreachJson`, `foreachSelector`, `while`, `until`, `doWhile`, `doUntil`, `break`, `continue`, `retry`, `toPass`, and scoped timeout blocks.
 - Structured `cmg run` with reports, traces, optional GIFs, tags, variables, list mode, hooks, parameterized tests, runtime skips, soft assertions, retries, and max-failure stopping.
 - Runner config/project execution for relative artifact paths, project names, project variables, CLI variable overrides, repeat scheduling, sharding, and missing-project failure behavior.
+- Runner provider declarations for `.only`, `.skip`, `.fixme`, `.todo`, suite skip inheritance, and report annotations across JSON, HTML, and JUnit artifacts.
 
 Worker evaluation and interception are covered against real headless Chrome workers created from the fixture server after CMG initializes worker support.
