@@ -57,6 +57,7 @@ Keep E2E tests explicit and scenario-shaped:
 - `--no-build` is the fastest local loop when code has already been built.
 - Browser E2E test classes use `IClassFixture<CmgBrowserFixture>`. Each browser-backed class owns its own Chrome process, remote debugging port, browser profile, `LOCALAPPDATA` root, output directory, and fixture server.
 - The E2E assembly allows up to eight xUnit workers with `MaxParallelThreads = 8`. xUnit schedules classes automatically; at most eight browser fixtures should be active at once, and each fixture cleans up its own browser process and temporary workspace.
+- `E2eParallelismGuardTests` enforces this model so shared browser collections and accidental serial assembly settings cannot be reintroduced silently.
 - Fixture CLI calls automatically scope `browser` commands with `browser --port <fixture-port>` and `run` commands with `--browser-port <fixture-port>`.
 - The fixture closes the selected browser port at disposal and falls back to killing any process ids left in CMG state files before deleting its workspace.
 - Non-browser E2E classes, such as help coverage and local file commands, use a lightweight CLI fixture and can also run within the eight-worker cap.
