@@ -44,6 +44,23 @@ public sealed class CommandHelpCoverageE2eTests : IClassFixture<CmgCliFixture>
         Assert.Empty(missing);
     }
 
+    [Fact]
+    public void CommandDocHeadings_MatchTheirPaths()
+    {
+        var mismatches = CommandDocFiles()
+            .Select(path => new
+            {
+                Path = Path.GetRelativePath(E2ePaths.RepositoryRoot(), path).Replace('\\', '/'),
+                Expected = ExpectedCommandFromPath(path),
+                Actual = CommandHeadingPattern.Match(File.ReadLines(path).FirstOrDefault() ?? string.Empty).Groups["command"].Value
+            })
+            .Where(doc => doc.Actual != doc.Expected)
+            .Select(doc => $"{doc.Path}: expected '{doc.Expected}', got '{doc.Actual}'")
+            .ToArray();
+
+        Assert.Empty(mismatches);
+    }
+
     private static IEnumerable<string[]> DocumentedCommands()
     {
         foreach (var path in CommandDocFiles())
@@ -61,5 +78,15 @@ public sealed class CommandHelpCoverageE2eTests : IClassFixture<CmgCliFixture>
     {
         var commandDocs = Path.Combine(E2ePaths.RepositoryRoot(), "docs", "commands");
         return Directory.EnumerateFiles(commandDocs, "*.md", SearchOption.AllDirectories).Order();
+    }
+
+    private static string ExpectedCommandFromPath(string path)
+    {
+        var commandDocs = Path.Combine(E2ePaths.RepositoryRoot(), "docs", "commands");
+        var parts = Path.GetRelativePath(commandDocs, path).Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var commandParts = parts[^1] == "index.md"
+            ? parts[..^1]
+            : parts[..^1].Append(Path.GetFileNameWithoutExtension(parts[^1]));
+        return string.Join(' ', commandParts);
     }
 }

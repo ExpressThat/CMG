@@ -59,7 +59,7 @@ Keep E2E tests explicit and scenario-shaped:
 - Browser E2E test classes use `IClassFixture<CmgBrowserFixture>`. Each browser-backed class owns its own Chrome process, remote debugging port, browser profile, `LOCALAPPDATA` root, output directory, and fixture server.
 - The E2E assembly allows up to eight xUnit workers with `MaxParallelThreads = 8`. xUnit schedules classes automatically; at most eight browser fixtures should be active at once, and each fixture cleans up its own browser process and temporary workspace.
 - `E2eParallelismGuardTests` enforces this model so shared browser collections and accidental serial assembly settings cannot be reintroduced silently.
-- `CommandHelpCoverageE2eTests` enforces that every command doc has a command heading so documented commands cannot fall out of help coverage.
+- `CommandHelpCoverageE2eTests` enforces that every command doc has a command heading matching its path so documented commands cannot fall out of help coverage or point at the wrong command.
 - Fixture CLI calls automatically scope `browser` commands with `browser --port <fixture-port>` and `run` commands with `--browser-port <fixture-port>`.
 - The fixture closes the selected browser port at disposal and falls back to killing any process ids left in CMG state files before deleting its workspace.
 - `BrowserFixtureIsolationE2eTests` verifies the fixture can launch, drive, close, and remove a browser-backed temporary workspace.
