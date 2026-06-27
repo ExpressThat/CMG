@@ -100,6 +100,7 @@ The first E2E slice covers:
 - GIF block actions for direct `gif`, provider-style `recordVideo`/`screencast` aliases, and command-level GIF suppression in direct scripts and `cmg run`.
 - Script trace actions for partial trace files, command-level trace suppression, and failure-time partial trace output.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.
+- Direct script `skip` and soft assertion continuation/final-failure behavior.
 - Scoped locator behavior for rich locator filters, shadow DOM locators, `within`, and scoped `foreachSelector` in direct scripts and `cmg run`.
 - Advanced script control flow for `for`, `foreach`, `foreachJson`, `foreachSelector`, `while`, `until`, `doWhile`, `doUntil`, `break`, `continue`, `retry`, `toPass`, and scoped timeout blocks.
 - Structured `cmg run` with reports, traces, optional GIFs, tags, variables, list mode, hooks, parameterized tests, runtime skips, soft assertions, retries, and max-failure stopping.
