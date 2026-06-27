@@ -89,6 +89,7 @@ The first E2E slice covers:
 - Browser-control event aliases for console capture/waits, page-error capture/waits, generic `waitForEvent`, and dialog `onDialog`/`handleDialog`.
 - Direct script event actions for console capture/waits, page-error capture/waits, generic `waitForEvent`, absence assertions, and matcher validation failure output.
 - Browser-control coverage commands for start/stop aliases, file-backed coverage output, stdout JSON output, and validation failures.
+- Runner coverage actions for file-backed coverage output and per-step coverage failure diagnostics.
 - Browser-control tab alias commands for listing, opening, waiting, popup waits, activation, closing, and tab-count failure reasons.
 - Browser-control capture commands for element screenshots, direct element screenshot output, page clips, temporary styles, masks, visual assertion aliases, PDF options, and validation failures.
 - Browser-control advanced input commands for clipboard shims, tap/touch tap, mouse movement/buttons, scroll/wheel, custom events, file upload aliases, and download wait success/failure behavior.
