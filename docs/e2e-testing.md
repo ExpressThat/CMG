@@ -8,9 +8,16 @@ The E2E project runs the CLI as an external process with:
 dotnet test tests\CMG.E2E.Tests\CMG.E2E.Tests.csproj /p:UseSharedCompilation=false
 ```
 
+For repeat local runs after a successful build, use:
+
+```powershell
+dotnet test tests\CMG.E2E.Tests\CMG.E2E.Tests.csproj --no-build
+```
+
 ## What It Does
 
 - Launches the built CMG app as an external process.
+- Builds CMG once through the E2E test project's `ProjectReference`; individual E2E CLI calls reuse the built apphost (`CMG.exe` when available) rather than invoking `dotnet run`.
 - Starts Chrome headless with `cmg browser launch --headless`.
 - Uses an isolated temporary `LOCALAPPDATA` directory so tests do not touch a developer's normal CMG browser state.
 - Starts a tiny local static HTTP fixture server for origin-sensitive behavior such as cookies, network, workers, and future request tests.
@@ -41,6 +48,12 @@ Keep E2E tests explicit and scenario-shaped:
 - Prefer real headless browser checks over mocks.
 - Verify parseable stdout, stderr, exit codes, and generated artifacts.
 
+## Speed Notes
+
+- `dotnet test` builds CMG once through the E2E project reference. The fixture then reuses the built apphost for individual CLI calls.
+- `--no-build` is the fastest local loop when code has already been built.
+- The suite currently uses one shared browser fixture and runs browser E2E tests serially to avoid cross-test state bleed. Future parallelization should use isolated browser fixtures and isolated `LOCALAPPDATA` roots per parallel shard.
+
 ## Current Seed Coverage
 
 The first E2E slice covers:
@@ -61,6 +74,6 @@ The first E2E slice covers:
 - Navigation, runtime text reads, input, assertions, screenshots, element HTML, and failure reasons.
 - Direct script execution with GIF and trace output.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.
-- Structured `cmg run` with reports, traces, optional GIFs, tags, variables, and list mode.
+- Structured `cmg run` with reports, traces, optional GIFs, tags, variables, list mode, hooks, parameterized tests, runtime skips, soft assertions, retries, and max-failure stopping.
 
 Worker evaluation and interception are covered against real headless Chrome workers created from the fixture server after CMG initializes worker support.
