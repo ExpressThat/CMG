@@ -16,9 +16,10 @@ public sealed partial class CmgVisualSegmentExecutor
         out string? error)
     {
         var pending = new List<string>();
+        var pendingLineMap = new Dictionary<int, int>();
         foreach (var action in actions)
         {
-            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, pending, output, steps, out error))
+            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, pending, pendingLineMap, output, steps, out error))
             {
                 if (error is not null)
                 {
@@ -28,10 +29,11 @@ public sealed partial class CmgVisualSegmentExecutor
                 continue;
             }
 
-            pending.AddRange(lowerer.Lower(action));
+            AddPending(pending, pendingLineMap, action, lowerer.Lower(action));
         }
 
-        return AppendResult(RunLines(pending, remoteDebuggingUrl, gif, timeouts, baseUrl), output, steps, actions.LastOrDefault(), gif, out error);
+        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl);
+        return AppendResult(final.Result, final.LineMap, output, steps, actions.LastOrDefault(), gif, out error);
     }
 
     private bool TryRunDirectAction(
@@ -41,6 +43,7 @@ public sealed partial class CmgVisualSegmentExecutor
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
         List<string> pending,
+        Dictionary<int, int> pendingLineMap,
         List<string> output,
         List<CmgStepResult> steps,
         out string? error)
@@ -51,8 +54,8 @@ public sealed partial class CmgVisualSegmentExecutor
             return false;
         }
 
-        var flush = RunLines(pending, remoteDebuggingUrl, gif, timeouts, baseUrl);
-        if (!AppendResult(flush, output, steps, action, gif, out error))
+        var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl);
+        if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif, out error))
         {
             return true;
         }

@@ -36,6 +36,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var output = new List<string>();
         var gifs = new List<string>();
         var pending = new List<string>();
+        var pendingLineMap = new Dictionary<int, int>();
         var steps = new List<CmgStepResult>();
         var commandGif = BuildGifPath(test, options, attempt);
         var suppressGifBlocks = commandGif is not null;
@@ -46,8 +47,8 @@ public sealed partial class CmgVisualSegmentExecutor
         {
             if (IsRecordingBlock(action.Kind) && !suppressGifBlocks)
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
-                if (!AppendResult(flush, output, steps, action, gif: null, out var error))
+                var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
+                if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
                 }
@@ -68,8 +69,8 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
-                if (!AppendResult(flush, output, steps, action, gif: null, out var error))
+                var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
+                if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
                 }
@@ -87,8 +88,8 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("storageState", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
-                if (!AppendResult(flush, output, steps, action, gif: null, out var error))
+                var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
+                if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
                 }
@@ -106,8 +107,8 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("expectScreenshot", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
-                if (!AppendResult(flush, output, steps, action, gif: null, out var error))
+                var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
+                if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
                 }
@@ -125,8 +126,8 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("uploadFiles", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
-                if (!AppendResult(flush, output, steps, action, gif: null, out var error))
+                var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl);
+                if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps);
                 }
@@ -145,15 +146,15 @@ public sealed partial class CmgVisualSegmentExecutor
             var lines = suppressGifBlocks && IsRecordingBlock(action.Kind)
                 ? lowerer.LowerRecordingBlock(action)
                 : lowerer.Lower(action);
-            pending.AddRange(lines);
+            AddPending(pending, pendingLineMap, action, lines);
             if (!IsRecordingBlock(action.Kind))
             {
                 steps.Add(new CmgStepResult(action.LineNumber, action.Kind, true, [], null, null));
             }
         }
 
-        var final = RunLines(pending, remoteDebuggingUrl, commandGif, timeouts, baseUrl);
-        if (!AppendResult(final, output, steps, test.Actions.LastOrDefault(), commandGif, out var finalError))
+        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, commandGif, timeouts, baseUrl);
+        if (!AppendResult(final.Result, final.LineMap, output, steps, test.Actions.LastOrDefault(), commandGif, out var finalError))
         {
             return Fail(test, output, finalError, gifs, steps);
         }
@@ -166,25 +167,9 @@ public sealed partial class CmgVisualSegmentExecutor
         return new CmgTestResult(test.Name, test.SourcePath, true, output, null, string.Join(';', gifs), steps) { Annotations = test.Annotations };
     }
 
-    private ScriptRunResult RunLines(
-        List<string> lines,
-        string remoteDebuggingUrl,
-        FileInfo? gif,
-        ScriptTimeoutOptions? timeouts,
-        string? baseUrl)
-    {
-        if (lines.Count is 0)
-        {
-            return ScriptRunResult.Ok([]);
-        }
-
-        var script = string.Join(Environment.NewLine, lines);
-        lines.Clear();
-        return scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, timeouts, baseUrl);
-    }
-
     private static bool AppendResult(
         ScriptRunResult result,
+        IReadOnlyDictionary<int, int> lineMap,
         List<string> output,
         List<CmgStepResult> steps,
         CmgNode? action,
@@ -192,7 +177,7 @@ public sealed partial class CmgVisualSegmentExecutor
         out string? error)
     {
         output.AddRange(result.StdoutLines);
-        AttachStepOutput(steps, result.StdoutLines);
+        AttachStepOutput(steps, result.StdoutLines, lineMap);
         error = result.Error;
         if (!result.Success && !result.Skipped && action is not null)
         {

@@ -2,7 +2,10 @@ namespace CMG.Runner;
 
 public sealed partial class CmgVisualSegmentExecutor
 {
-    private static void AttachStepOutput(List<CmgStepResult> steps, IReadOnlyList<string> lines)
+    private static void AttachStepOutput(
+        List<CmgStepResult> steps,
+        IReadOnlyList<string> lines,
+        IReadOnlyDictionary<int, int> lineMap)
     {
         foreach (var line in lines)
         {
@@ -11,7 +14,8 @@ public sealed partial class CmgVisualSegmentExecutor
                 continue;
             }
 
-            var index = steps.FindLastIndex(step => step.LineNumber == lineNumber);
+            var sourceLine = lineMap.GetValueOrDefault(lineNumber, lineNumber);
+            var index = steps.FindLastIndex(step => step.LineNumber == sourceLine);
             if (index < 0)
             {
                 continue;
