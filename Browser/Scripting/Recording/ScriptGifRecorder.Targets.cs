@@ -1,4 +1,6 @@
 
+using CMG.Runner;
+
 namespace CMG.Browser.Scripting.Recording;
 
 public sealed partial class ScriptGifRecorder
@@ -74,8 +76,9 @@ public sealed partial class ScriptGifRecorder
             ? ParseNonNegativeNumber(insetValue, "inset")
             : 16;
 
+        var resolved = ResolveLocator(selector, action.LineNumber);
         var viewport = devToolsClient.GetViewportSize(remoteDebuggingUrl);
-        var box = devToolsClient.GetElementBox(remoteDebuggingUrl, selector);
+        var box = devToolsClient.GetElementBox(remoteDebuggingUrl, resolved);
         var left = Clamp(box.X + inset, 0, viewport.Width);
         var right = Clamp(box.X + box.Width - inset, 0, viewport.Width);
         var top = Clamp(box.Y + inset, 0, viewport.Height);
@@ -144,6 +147,21 @@ public sealed partial class ScriptGifRecorder
 
     private static double Clamp(double value, double min, double max) =>
         Math.Min(max, Math.Max(min, value));
+
+    private string ResolveLocator(string locator, int lineNumber)
+    {
+        if (remoteDebuggingUrl is null)
+        {
+            return locator;
+        }
+
+        foreach (var expression in CmgLocator.PrefixExpressions(locator, lineNumber))
+        {
+            devToolsClient.Evaluate(remoteDebuggingUrl, expression);
+        }
+
+        return CmgLocator.Resolve(locator, lineNumber).Selector;
+    }
 
     private static string FormatNumber(double value) =>
         value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);

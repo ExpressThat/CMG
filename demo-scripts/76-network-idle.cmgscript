@@ -1,0 +1,5 @@
+set page "C:\Projects\CMG\index.html"
+
+navigate "${page}"
+waitForNetworkIdle timeout=5000
+networkIdle timeout=5000

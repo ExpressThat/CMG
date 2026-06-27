@@ -1,0 +1,3 @@
+setContent "<!doctype html><title>Drag Offsets</title><main><div id='source' draggable='true'>Drag</div><div id='target'>Drop</div><output id='result'>none</output><script>document.querySelector('#target').addEventListener('drop', event => { event.preventDefault(); document.querySelector('#result').textContent = event.clientX > 0 ? 'dropped' : 'missing'; }); document.querySelector('#target').addEventListener('dragover', event => event.preventDefault());</script></main>"
+dragTo "#source" "#target" sourceX=4 sourceY=8 targetX=12 targetY=16
+assertText "#result" "dropped"

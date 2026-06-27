@@ -1,0 +1,9 @@
+describe "runner variables" var.user=Ada {
+  test "uses declaration variables" {
+    expect (${user} == "Ada")
+  }
+
+  test "overrides suite variables" var.user=Grace {
+    expect (${user} == "Grace")
+  }
+}

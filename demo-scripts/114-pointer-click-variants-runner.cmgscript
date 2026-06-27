@@ -1,0 +1,8 @@
+test "pointer click variant options" {
+  setContent "<button id='target'>Click target</button><output id='result'>none</output><script>const target = document.querySelector('#target'); const result = document.querySelector('#result'); target.addEventListener('dblclick', () => result.textContent = 'double'); target.addEventListener('contextmenu', event => { event.preventDefault(); result.textContent = 'right'; });</script>"
+  waitForElement "#target"
+  doubleClick "#target" modifiers=Shift x=8 y=8
+  assertText "#result" "double"
+  contextClick "#target" modifiers=Control x=12 y=8
+  assertText "#result" "right"
+}

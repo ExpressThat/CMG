@@ -1,0 +1,5 @@
+describe "base URL navigation" baseUrl="https://example.test/app/" {
+  test "uses declaration base URL" {
+    navigate "profile"
+  }
+}

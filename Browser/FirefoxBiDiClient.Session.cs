@@ -24,50 +24,10 @@ public sealed partial class FirefoxBiDiClient
             await session.SendCommand("session.new", writer =>
             {
                 writer.WriteStartObject("capabilities");
-                writer.WriteString("unhandledPromptBehavior", "accept");
                 writer.WriteEndObject();
             });
-            await session.EnableAutoPromptHandling();
-            await session.InstallAutoAcceptDialogs();
 
             return session;
-        }
-
-        public async Task EnableAutoPromptHandling()
-        {
-            await SendCommand("session.subscribe", writer =>
-            {
-                writer.WriteStartArray("events");
-                writer.WriteStringValue("browsingContext.userPromptOpened");
-                writer.WriteEndArray();
-            });
-        }
-
-        public async Task InstallAutoAcceptDialogs()
-        {
-            try
-            {
-                await SendCommand("script.addPreloadScript", writer =>
-                {
-                    writer.WriteString("functionDeclaration", BrowserDomScripts.AutoAcceptDialogsPreload());
-                });
-
-                foreach (var context in await GetTopLevelContexts())
-                {
-                    await SendCommand("script.evaluate", writer =>
-                    {
-                        writer.WriteString("expression", BrowserDomScripts.AutoAcceptDialogs());
-                        writer.WriteBoolean("awaitPromise", true);
-                        writer.WriteString("resultOwnership", "none");
-                        writer.WriteStartObject("target");
-                        writer.WriteString("context", context.Id);
-                        writer.WriteEndObject();
-                    });
-                }
-            }
-            catch (ChromeDevToolsException)
-            {
-            }
         }
 
         private static string NormalizeWebSocketUrl(string remoteDebuggingUrl)
@@ -78,13 +38,13 @@ public sealed partial class FirefoxBiDiClient
                 : remoteDebuggingUrl;
         }
 
-        public async Task<FirefoxContext> GetPrimaryContext() =>
-            (await GetTopLevelContexts()).FirstOrDefault() ??
+        public async Task<FirefoxContext> GetPrimaryContext(string remoteDebuggingUrl) =>
+            (await GetTopLevelContexts(remoteDebuggingUrl)).FirstOrDefault() ??
             throw new ChromeDevToolsException("No Firefox browsing context was available through WebDriver BiDi.");
 
-        public async Task<FirefoxContext> GetContextAt(int index)
+        public async Task<FirefoxContext> GetContextAt(string remoteDebuggingUrl, int index)
         {
-            var contexts = await GetTopLevelContexts();
+            var contexts = await GetTopLevelContexts(remoteDebuggingUrl);
             if (index < 0 || index >= contexts.Count)
             {
                 throw new ChromeDevToolsException($"Tab index {index} does not exist. Available tab count: {contexts.Count}.");
@@ -93,7 +53,7 @@ public sealed partial class FirefoxBiDiClient
             return contexts[index];
         }
 
-        public async Task<IReadOnlyList<FirefoxContext>> GetTopLevelContexts()
+        public async Task<IReadOnlyList<FirefoxContext>> GetTopLevelContexts(string? remoteDebuggingUrl = null)
         {
             var response = await SendCommand("browsingContext.getTree");
             if (!TryReadElement(response, ["result", "contexts"], out var contextsElement) ||
@@ -102,7 +62,7 @@ public sealed partial class FirefoxBiDiClient
                 throw new ChromeDevToolsException("Firefox did not return browsing contexts.");
             }
 
-            return contextsElement
+            var contexts = contextsElement
                 .EnumerateArray()
                 .Where(context => TryReadString(context, "context", out _))
                 .Select(context =>
@@ -113,6 +73,8 @@ public sealed partial class FirefoxBiDiClient
                 })
                 .Where(context => !string.IsNullOrWhiteSpace(context.Id))
                 .ToArray();
+
+            return remoteDebuggingUrl is null ? contexts : PrioritizeFirefoxActiveContext(remoteDebuggingUrl, contexts);
         }
 
         public async Task<JsonElement> SendCommand(string method, Action<Utf8JsonWriter>? writeParams = null)
@@ -142,7 +104,6 @@ public sealed partial class FirefoxBiDiClient
                     !responseId.TryGetInt32(out var responseCommandId) ||
                     responseCommandId != id)
                 {
-                    await HandleProtocolEvent(document.RootElement);
                     continue;
                 }
 
@@ -154,42 +115,6 @@ public sealed partial class FirefoxBiDiClient
 
                 return document.RootElement.Clone();
             }
-        }
-
-        private async Task HandleProtocolEvent(JsonElement root)
-        {
-            if (!TryReadString(root, "method", out var method) ||
-                !string.Equals(method, "browsingContext.userPromptOpened", StringComparison.Ordinal) ||
-                !TryReadString(root, ["params", "context"], out var context) ||
-                string.IsNullOrWhiteSpace(context))
-            {
-                return;
-            }
-
-            await SendCommandWithoutResponse("browsingContext.handleUserPrompt", writer =>
-            {
-                writer.WriteString("context", context);
-                writer.WriteBoolean("accept", true);
-            });
-        }
-
-        private async Task SendCommandWithoutResponse(string method, Action<Utf8JsonWriter>? writeParams = null)
-        {
-            var id = Interlocked.Increment(ref commandId);
-            using var commandStream = new MemoryStream();
-
-            await using (var writer = new Utf8JsonWriter(commandStream))
-            {
-                writer.WriteStartObject();
-                writer.WriteNumber("id", id);
-                writer.WriteString("method", method);
-                writer.WriteStartObject("params");
-                writeParams?.Invoke(writer);
-                writer.WriteEndObject();
-                writer.WriteEndObject();
-            }
-
-            await socket.SendAsync(commandStream.ToArray(), WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
         public async ValueTask DisposeAsync()

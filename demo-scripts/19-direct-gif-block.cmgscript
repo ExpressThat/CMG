@@ -1,0 +1,6 @@
+# Demonstrates a direct browser-control script GIF block.
+
+gif "direct-block" output="demo-output/direct-block.gif" {
+  showMessageBar "Recording a direct script GIF block"
+  delay 250
+}

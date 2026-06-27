@@ -35,8 +35,9 @@ public sealed partial class ChromeDevToolsClient : IBrowserAutomationClient
         });
     }
 
-    public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector)
+    public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector, ScreenshotOptions? options = null)
     {
+        options ??= new();
         return Run(async () =>
         {
             var pageTargets = await GetPageWebSocketDebuggerUrls(remoteDebuggingUrl);
@@ -55,7 +56,7 @@ public sealed partial class ChromeDevToolsClient : IBrowserAutomationClient
 
                 var screenshot = await session.SendCommand("Page.captureScreenshot", writer =>
                 {
-                    writer.WriteString("format", "png");
+                    WriteScreenshotOptions(writer, options);
                     writer.WriteStartObject("clip");
                     writer.WriteNumber("x", clip.X);
                     writer.WriteNumber("y", clip.Y);
@@ -77,6 +78,30 @@ public sealed partial class ChromeDevToolsClient : IBrowserAutomationClient
         });
     }
 
+    private static void WriteScreenshotOptions(Utf8JsonWriter writer, ScreenshotOptions options)
+    {
+        var type = ScreenshotImage.NormalizeType(options.Type);
+        writer.WriteString("format", type);
+        if (type == "jpeg" && options.Quality is { } quality)
+        {
+            writer.WriteNumber("quality", quality);
+        }
+        if (options.OmitBackground)
+        {
+            writer.WriteBoolean("omitBackground", true);
+        }
+        if (options.Clip is { } clip)
+        {
+            writer.WriteStartObject("clip");
+            writer.WriteNumber("x", clip.X);
+            writer.WriteNumber("y", clip.Y);
+            writer.WriteNumber("width", clip.Width);
+            writer.WriteNumber("height", clip.Height);
+            writer.WriteNumber("scale", 1);
+            writer.WriteEndObject();
+        }
+    }
+
     private static async Task<ElementClip> GetElementPageClip(DevToolsSession session, string selector)
     {
         var response = await session.SendCommand("Runtime.evaluate", writer =>
@@ -85,7 +110,7 @@ public sealed partial class ChromeDevToolsClient : IBrowserAutomationClient
                 "expression",
                 $$"""
                 (() => {
-                  const element = document.querySelector({{ToJsonStringLiteral(selector)}});
+                  const element = {{BrowserDomScripts.Query(selector)}};
                   if (!element) return null;
                   const rect = element.getBoundingClientRect();
                   return {

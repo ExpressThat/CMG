@@ -1,0 +1,5 @@
+startTracing path="demo-output\direct-script.trace.json"
+setContent "<!doctype html><title>Trace Demo</title><main><h1>Trace Demo</h1></main>"
+title
+expectText "body" "Trace Demo"
+stopTracing

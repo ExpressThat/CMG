@@ -1,0 +1,6 @@
+set page "C:/Projects/CMG/index.html"
+navigate "${page}"
+setContent "<main><p id='status'>Saved</p></main>"
+toPass max=3 delay=10 {
+  expectText "#status" "Saved"
+}

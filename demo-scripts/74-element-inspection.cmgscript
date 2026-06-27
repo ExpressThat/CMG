@@ -1,0 +1,10 @@
+setContent "<!doctype html><title>Element Inspection</title><main><h1 data-state='ready' style='display:block'>Inventory</h1><ul><li>One</li><li>Two</li><li>Three</li></ul></main>"
+set itemCount {
+  count "li"
+}
+allTextContents "li"
+allInnerTexts "li"
+boundingBox "h1"
+computedStyle "h1" "display"
+property "h1" "dataset.state"
+expectEval "'${itemCount}' === '3'"

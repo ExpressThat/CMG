@@ -1,0 +1,16 @@
+test "normal provider declaration" {
+  caption "normal"
+}
+
+test.skip "skipped provider declaration" reason="demonstrating skip" {
+  fail "this action is not run"
+}
+
+test.fixme "fixme provider declaration"
+test.todo "todo provider declaration"
+
+describe.skip "skipped provider suite" {
+  it "inherits suite skip" skip=false {
+    fail "this action is not run"
+  }
+}

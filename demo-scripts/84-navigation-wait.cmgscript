@@ -1,0 +1,3 @@
+navigate "C:\Projects\CMG\index.html" waitUntil=domcontentloaded timeout=5000
+goto "C:\Projects\CMG\index.html" waitUntil=load timeout=5000
+visit "C:\Projects\CMG\index.html" waitUntil=commit timeout=5000

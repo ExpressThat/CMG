@@ -24,30 +24,24 @@ public sealed partial class BrowserControlCommandBuilder
             return 1;
         });
 
-        command.Subcommands.Add(BuildGetElementCommand(browserOptions));
         command.Subcommands.Add(BuildScriptCommand(browserOptions));
-        command.Subcommands.Add(BuildNavigateCommand(browserOptions));
-        command.Subcommands.Add(BuildWaitForElementCommand(browserOptions));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "click", "Click an element."));
-        command.Subcommands.Add(BuildTypeCommand(browserOptions));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "clear", "Clear an input-like element."));
-        command.Subcommands.Add(BuildPressCommand(browserOptions));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "hover", "Hover an element."));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "scrollIntoView", "Scroll an element into view."));
-        command.Subcommands.Add(BuildSelectCommand(browserOptions));
-        command.Subcommands.Add(BuildShowMessageBarCommand(browserOptions));
-        command.Subcommands.Add(BuildDelayCommand(browserOptions));
-        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "html", "Print an element's outer HTML."));
-        command.Subcommands.Add(BuildScreenshotCommand(browserOptions));
-        command.Subcommands.Add(BuildScreenshotPageCommand(browserOptions));
-        command.Subcommands.Add(BuildAssertTextCommand(browserOptions));
-        command.Subcommands.Add(BuildEvaluateCommand(browserOptions));
-        command.Subcommands.Add(BuildSetViewportCommand(browserOptions));
-        command.Subcommands.Add(BuildDragAndDropCommand(browserOptions));
-        command.Subcommands.Add(BuildNoArgumentCommand(browserOptions, "listTabs", "List available page targets."));
-        command.Subcommands.Add(BuildIndexedCommand(browserOptions, "activateTab", "Activate a page target by index."));
-        command.Subcommands.Add(BuildIndexedCommand(browserOptions, "closeTab", "Close a page target by index."));
-        command.Subcommands.Add(BuildSetCommand(browserOptions));
+        command.Subcommands.Add(BuildValidateScriptCommand());
+        command.Subcommands.Add(BuildNavigationGroup(browserOptions));
+        command.Subcommands.Add(BuildWaitGroup(browserOptions));
+        command.Subcommands.Add(BuildInputGroup(browserOptions));
+        command.Subcommands.Add(BuildTabsGroup(browserOptions));
+        command.Subcommands.Add(BuildCaptureGroup(browserOptions));
+        command.Subcommands.Add(BuildPageGroup(browserOptions));
+        command.Subcommands.Add(BuildAssertionsGroup(browserOptions));
+        command.Subcommands.Add(BuildStorageGroup(browserOptions));
+        command.Subcommands.Add(BuildNetworkGroup(browserOptions));
+        command.Subcommands.Add(BuildEventsGroup(browserOptions));
+        command.Subcommands.Add(BuildContextGroup(browserOptions));
+        command.Subcommands.Add(BuildFramesGroup(browserOptions));
+        command.Subcommands.Add(BuildWorkersGroup(browserOptions));
+        command.Subcommands.Add(BuildCoverageGroup(browserOptions));
+        command.Subcommands.Add(BuildClockGroup(browserOptions));
+        command.Subcommands.Add(BuildAccessibilityGroup(browserOptions));
 
         return command;
     }

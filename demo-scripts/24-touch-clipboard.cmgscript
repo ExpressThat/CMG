@@ -1,0 +1,10 @@
+# Demonstrates touch-style tap and deterministic page-side clipboard actions.
+navigate "index.html"
+waitForElement "#openProfileDialog"
+setClipboard "CMG clipboard"
+readClipboard
+tap "#openProfileDialog"
+touchTap x=120 y=240
+waitForElement "#profileDialog[open]"
+clearClipboard
+click "#profileDialog button[value='close']"

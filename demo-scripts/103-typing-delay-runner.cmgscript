@@ -1,0 +1,7 @@
+test "typing delay" {
+  setContent "<!doctype html><title>Typing Delay</title><main><label>Name <input id='name'></label><label>Handle <input id='handle'></label><p id='status'>Ready</p></main>"
+  pressSequentially "#name" "CMG" delay=25
+  fill "#handle" "@cmg" delay=25
+  assertText "body" "CMG"
+  assertText "body" "@cmg"
+}

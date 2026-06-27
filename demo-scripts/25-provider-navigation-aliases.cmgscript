@@ -1,0 +1,5 @@
+# Demonstrates provider-style navigation aliases.
+visit "index.html"
+waitForElement "#openProfileDialog"
+goto "index.html"
+waitForElement "#openProfileDialog"

@@ -1,0 +1,33 @@
+set token "global"
+
+macro readGlobal {
+  return "${token}"
+}
+
+macro parent {
+  set token "parent"
+
+  macro child {
+    set beforeShadow {
+      return "${token}"
+    }
+    set token "child"
+    return "${beforeShadow}-${token}"
+  }
+
+  set childResult {
+    call child
+  }
+
+  set topResult {
+    call readGlobal
+  }
+
+  return "${childResult}-${token}-${topResult}"
+}
+
+set result {
+  call parent
+}
+
+showMessageBar "${result}"

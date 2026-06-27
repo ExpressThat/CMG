@@ -1,0 +1,4 @@
+setContent "<main><button id='save'>Save profile</button><p>Highlight turns an automation target into visible evidence.</p></main>"
+highlight "#save" message="Save profile" color="#2563eb" duration=1500
+caption "The highlighted element is the next target"
+click "#save"

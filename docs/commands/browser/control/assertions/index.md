@@ -1,0 +1,140 @@
+# `browser control assertions`
+
+Page and element assertion command group.
+
+```powershell
+cmg browser control assertions [command] [options]
+```
+
+## Subcommands
+
+- [`assertText`](assertText.md): Assert that an element contains text.
+- [`expectText`](expectText.md): Assert that an element contains text.
+- [`toHaveText`](toHaveText.md): Assert that an element contains text.
+- [`toContainText`](toContainText.md): Assert that an element contains text.
+- [`containsText`](containsText.md): Assert that an element contains text.
+- [`waitForText`](waitForText.md): Wait until an element contains text.
+- [`contains`](contains.md): Assert that the page body contains text.
+- [`notContains`](notContains.md): Assert that the page body does not contain text.
+- [`expectNoText`](expectNoText.md): Assert that an element does not contain text.
+- [`expectNotText`](expectNotText.md): Assert that an element does not contain text.
+- [`notContainsText`](notContainsText.md): Assert that an element does not contain text.
+- [`toNotContainText`](toNotContainText.md): Assert that an element does not contain text.
+- [`toHaveNoText`](toHaveNoText.md): Assert that an element does not contain text.
+- [`eval`](eval.md): Assert a JavaScript expression result.
+- [`expectEval`](expectEval.md): Assert a JavaScript expression result.
+- [`assertEval`](assertEval.md): Assert a JavaScript expression result.
+- [`expectExpression`](expectExpression.md): Assert a JavaScript expression result.
+- [`assertExpression`](assertExpression.md): Assert a JavaScript expression result.
+- [`assertVisible`](assertVisible.md): Assert that an element exists and is visible.
+- [`visible`](visible.md): Assert that an element is visible.
+- [`hidden`](hidden.md): Assert that an element is hidden.
+- [`enabled`](enabled.md): Assert that an element is enabled.
+- [`disabled`](disabled.md): Assert that an element is disabled.
+- [`expectVisible`](expectVisible.md): Exact scripting alias for `visible`.
+- [`toBeVisible`](toBeVisible.md): Exact scripting alias for `visible`.
+- [`expectNotVisible`](expectNotVisible.md): Assert that an element is not visible.
+- [`toBeNotVisible`](toBeNotVisible.md): Playwright-style negative visibility alias.
+- [`waitForVisible`](waitForVisible.md): Wait until an element is visible.
+- [`expectHidden`](expectHidden.md): Exact scripting alias for `hidden`.
+- [`toBeHidden`](toBeHidden.md): Exact scripting alias for `hidden`.
+- [`expectNotHidden`](expectNotHidden.md): Assert that an element is visible.
+- [`toBeNotHidden`](toBeNotHidden.md): Playwright-style negative hidden alias.
+- [`waitForHidden`](waitForHidden.md): Wait until an element is hidden.
+- [`expectEnabled`](expectEnabled.md): Exact scripting alias for `enabled`.
+- [`toBeEnabled`](toBeEnabled.md): Exact scripting alias for `enabled`.
+- [`expectNotEnabled`](expectNotEnabled.md): Assert that an element is disabled.
+- [`toBeNotEnabled`](toBeNotEnabled.md): Playwright-style negative enabled alias.
+- [`expectDisabled`](expectDisabled.md): Exact scripting alias for `disabled`.
+- [`toBeDisabled`](toBeDisabled.md): Exact scripting alias for `disabled`.
+- [`expectNotDisabled`](expectNotDisabled.md): Assert that an element is enabled.
+- [`toBeNotDisabled`](toBeNotDisabled.md): Playwright-style negative disabled alias.
+- [`expectAttached`](expectAttached.md): Assert that an element is attached.
+- [`toBeAttached`](toBeAttached.md): Playwright-style alias for `expectAttached`.
+- [`expectNotAttached`](expectNotAttached.md): Assert that an element is detached.
+- [`toBeNotAttached`](toBeNotAttached.md): Playwright-style negative attached alias.
+- [`expectDetached`](expectDetached.md): Assert that an element is detached.
+- [`toBeDetached`](toBeDetached.md): Playwright-style alias for `expectDetached`.
+- [`expectNotDetached`](expectNotDetached.md): Assert that an element is attached.
+- [`toBeNotDetached`](toBeNotDetached.md): Playwright-style negative detached alias.
+- [`expectEditable`](expectEditable.md): Assert that an element is editable.
+- [`toBeEditable`](toBeEditable.md): Playwright-style alias for `expectEditable`.
+- [`expectNotEditable`](expectNotEditable.md): Assert that an element is not editable.
+- [`toBeNotEditable`](toBeNotEditable.md): Playwright-style negative editable alias.
+- [`expectEmpty`](expectEmpty.md): Assert that an element is empty.
+- [`toBeEmpty`](toBeEmpty.md): Playwright-style alias for `expectEmpty`.
+- [`expectNotEmpty`](expectNotEmpty.md): Assert that an element is not empty.
+- [`toBeNotEmpty`](toBeNotEmpty.md): Playwright-style negative empty alias.
+- [`expectFocused`](expectFocused.md): Assert that an element is focused.
+- [`toBeFocused`](toBeFocused.md): Playwright-style alias for `expectFocused`.
+- [`expectNotFocused`](expectNotFocused.md): Assert that an element is not focused.
+- [`toBeNotFocused`](toBeNotFocused.md): Playwright-style negative focused alias.
+- [`expectInViewport`](expectInViewport.md): Assert that an element intersects the viewport.
+- [`toBeInViewport`](toBeInViewport.md): Playwright-style alias for `expectInViewport`.
+- [`expectNotInViewport`](expectNotInViewport.md): Assert that an element does not intersect the viewport.
+- [`toBeNotInViewport`](toBeNotInViewport.md): Playwright-style negative viewport alias.
+- [`value`](value.md): Assert that an element value contains text.
+- [`expectValue`](expectValue.md): Exact scripting alias for `value`.
+- [`toHaveValue`](toHaveValue.md): Exact scripting alias for `value`.
+- [`expectValues`](expectValues.md): Assert that selected values match in order.
+- [`toHaveValues`](toHaveValues.md): Playwright-style alias for `expectValues`.
+- [`attribute`](attribute.md): Assert that an element attribute contains text.
+- [`expectAttribute`](expectAttribute.md): Exact scripting alias for `attribute`.
+- [`toHaveAttribute`](toHaveAttribute.md): Exact scripting alias for `attribute`.
+- [`expectClass`](expectClass.md): Assert that an element class contains a value.
+- [`toHaveClass`](toHaveClass.md): Playwright-style alias for `expectClass`.
+- [`expectId`](expectId.md): Assert that an element id equals a value.
+- [`toHaveId`](toHaveId.md): Playwright-style alias for `expectId`.
+- [`expectCSS`](expectCSS.md): Assert that a computed CSS property contains a value.
+- [`toHaveCSS`](toHaveCSS.md): Playwright-style alias for `expectCSS`.
+- [`expectProperty`](expectProperty.md): Assert that a DOM property contains a value.
+- [`toHaveJSProperty`](toHaveJSProperty.md): Playwright-style alias for `expectProperty`.
+- [`expectAccessibleName`](expectAccessibleName.md): Assert that an element accessible name contains text.
+- [`toHaveAccessibleName`](toHaveAccessibleName.md): Playwright-style alias for `expectAccessibleName`.
+- [`expectRole`](expectRole.md): Assert that an element role matches text.
+- [`toHaveRole`](toHaveRole.md): Playwright-style alias for `expectRole`.
+- [`checked`](checked.md): Assert that an element is checked or unchecked.
+- [`expectChecked`](expectChecked.md): Exact scripting alias for `checked`.
+- [`toBeChecked`](toBeChecked.md): Exact scripting alias for `checked`.
+- [`expectNotChecked`](expectNotChecked.md): Assert that an element is unchecked.
+- [`toBeNotChecked`](toBeNotChecked.md): Playwright-style negative checked alias.
+- [`unchecked`](unchecked.md): Assert that an element is unchecked.
+- [`expectUnchecked`](expectUnchecked.md): Exact scripting alias for `unchecked`.
+- [`toBeUnchecked`](toBeUnchecked.md): Playwright-style alias for `expectUnchecked`.
+- [`count`](count.md): Assert the number of matching elements.
+- [`expectCount`](expectCount.md): Exact scripting alias for `count`.
+- [`toHaveCount`](toHaveCount.md): Exact scripting alias for `count`.
+
+## Behavior
+
+- Requires a browser started with [`browser launch`](../../launch.md).
+- Runs the same underlying scripting actions as `browser control script`.
+- Writes `PASS` output lines to stdout when assertions pass.
+- Writes assertion, browser, selector, parse, or action errors to stderr.
+- Exits `0` on success and `1` on failure.
+
+## Examples
+
+```powershell
+cmg browser control assertions assertText "h1" "Ready"
+cmg browser control assertions waitForText "#status" "Saved" --timeout 5000
+cmg browser control assertions contains "Welcome"
+cmg browser control assertions assertVisible "#save" --timeout 5000
+cmg browser control assertions visible "#save" --timeout 5000
+cmg browser control assertions toBeVisible "#save"
+cmg browser control assertions toBeNotVisible "#spinner"
+cmg browser control assertions toBeEditable "#name"
+cmg browser control assertions toBeNotEditable "#readonly"
+cmg browser control assertions toBeInViewport "#save"
+cmg browser control assertions toBeNotInViewport "#offscreen"
+cmg browser control assertions toHaveValue "#name" "Ada"
+cmg browser control assertions toHaveValues "#plans" "basic" "pro"
+cmg browser control assertions toHaveClass "#save" "ready"
+cmg browser control assertions toHaveCSS "#save" "display" "block"
+cmg browser control assertions toHaveAccessibleName "#save" "Save"
+cmg browser control assertions toHaveRole "#save" "button"
+cmg browser control assertions toBeNotChecked "#marketing"
+cmg browser control assertions toBeUnchecked "#marketing"
+cmg browser control assertions eval "document.title" --equals "Checkout"
+cmg browser control assertions expectExpression "window.appReady" --timeout 5000
+```

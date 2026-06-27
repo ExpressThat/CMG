@@ -1,0 +1,7 @@
+test "navigation match modes" {
+  set page "C:/Projects/CMG/index.html"
+  navigate "${page}"
+  toHaveURL "index.html" match=regex ignoreCase=true
+  toHaveTitle "CMG Browser Control Test Page" match=exact
+  waitForTitle "browser control" ignoreCase=true timeout=500
+}

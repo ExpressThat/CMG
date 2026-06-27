@@ -53,7 +53,7 @@ public sealed partial class ChromeDevToolsClient
                 "expression",
                 $$"""
                 (() => {
-                  const element = document.querySelector({{ToJsonStringLiteral(selector)}});
+                  const element = {{BrowserDomScripts.Query(selector)}};
                   if (!element) return null;
                   const rect = element.getBoundingClientRect();
                   return {
@@ -119,24 +119,6 @@ public sealed partial class ChromeDevToolsClient
             writer.WriteString("button", "left");
             writer.WriteNumber("clickCount", 1);
         });
-    }
-
-    private static async Task TryAcceptJavaScriptDialog(DevToolsSession session)
-    {
-        try
-        {
-            await session.SendCommand("Page.handleJavaScriptDialog", writer => writer.WriteBoolean("accept", true));
-            await session.SendCommand("Runtime.evaluate", writer =>
-            {
-                writer.WriteString(
-                    "expression",
-                    "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))");
-                writer.WriteBoolean("awaitPromise", true);
-            });
-        }
-        catch (ChromeDevToolsException)
-        {
-        }
     }
 
     private static async Task EnsurePointInViewport(DevToolsSession session, string selector, double x, double y)

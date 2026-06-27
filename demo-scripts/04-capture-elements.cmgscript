@@ -4,4 +4,5 @@ waitForElement "#openProfileDialog" timeout=5000
 
 html "#openProfileDialog"
 screenshot "#openProfileDialog" output="demo-output/open-profile-button.png"
+screenshot "#openProfileDialog" output="demo-output/open-profile-button.jpg" type=jpeg quality=82
 screenshotPage output="demo-output/full-page.png"

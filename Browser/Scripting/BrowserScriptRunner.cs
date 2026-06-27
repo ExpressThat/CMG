@@ -12,7 +12,15 @@ public sealed partial class BrowserScriptRunner
         this.parser = parser;
     }
 
-    public ScriptRunResult Run(string file, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif)
+    public ScriptRunResult Run(
+        string file,
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        FileInfo? gif,
+        FileInfo? trace = null,
+        ScriptTimeoutOptions? timeouts = null,
+        string? baseUrl = null,
+        IReadOnlyDictionary<string, string>? variables = null)
     {
         var readResult = ReadScript(file);
         if (!readResult.Success)
@@ -20,23 +28,67 @@ public sealed partial class BrowserScriptRunner
             return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
         }
 
-        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif);
+        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables);
     }
 
-    public ScriptRunResult RunText(string script, string remoteDebuggingUrl, IBrowserAutomationClient automationClient)
+    public ScriptRunResult RunText(
+        string script,
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        FileInfo? gif = null,
+        ScriptTimeoutOptions? timeouts = null,
+        string? baseUrl = null,
+        IReadOnlyDictionary<string, string>? variables = null)
     {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif: null);
+        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts, baseUrl, variables);
     }
 
-    private ScriptRunResult RunParsedScript(string script, string remoteDebuggingUrl, IBrowserAutomationClient automationClient, FileInfo? gif)
+    private ScriptRunResult RunParsedScript(
+        string script,
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
+        IReadOnlyDictionary<string, string>? variables)
     {
+        var importResult = ScriptImportExpander.Expand(script, Directory.GetCurrentDirectory());
+        if (!importResult.Success)
+        {
+            return ScriptRunResult.Fail(importResult.Error ?? "Could not import script.");
+        }
+
+        script = importResult.Script ?? string.Empty;
         var parseResult = parser.Parse(script);
         if (!parseResult.Success)
         {
             return ScriptRunResult.Fail(parseResult.Error ?? "Could not parse script.");
         }
 
-        var context = new ScriptExecutionContext();
+        string? normalizedBaseUrl;
+        try
+        {
+            normalizedBaseUrl = NormalizeBaseUrl(baseUrl);
+        }
+        catch (ScriptExecutionException exception)
+        {
+            return ScriptRunResult.Fail(exception.Message);
+        }
+
+        var context = new ScriptExecutionContext
+        {
+            Trace = trace is null ? null : new BrowserScriptTraceSession(trace.FullName, suppressNested: true),
+            DefaultTimeout = timeouts?.DefaultTimeout,
+            NavigationTimeout = timeouts?.NavigationTimeout,
+            AssertionTimeout = timeouts?.AssertionTimeout,
+            BaseUrl = normalizedBaseUrl
+        };
+        foreach (var variable in variables ?? EmptyVariables)
+        {
+            context.SetVariable(variable.Key, variable.Value);
+        }
+
         var output = new List<string>();
         using var recorder = gif is null
             ? null
@@ -44,72 +96,151 @@ public sealed partial class BrowserScriptRunner
 
         recorder?.Start(remoteDebuggingUrl);
 
-        for (var index = 0; index < parseResult.Actions.Count; index++)
+        try
         {
-            var stepNumber = index + 1;
-            var action = ExpandVariables(parseResult.Actions[index], context);
-
-            try
+            ExecuteActions(remoteDebuggingUrl, automationClient, parseResult.Actions, context, recorder, output);
+            if (context.SoftFailures.Count > 0)
             {
-                recorder?.BeforeAction(action);
-                var stepOutput = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
-                recorder?.AfterAction(action);
-                output.Add($"PASS {stepNumber:000} {action.Name} {FormatActionForLog(action)}".TrimEnd());
-                output.AddRange(stepOutput);
-            }
-            catch (Exception exception) when (exception is ScriptExecutionException or ChromeDevToolsException or ElementNotFoundException)
-            {
+                var error = $"Soft assertion failure(s): {string.Join(" | ", context.SoftFailures)}";
                 FinishRecording(recorder, output);
-
-                return ScriptRunResult.Fail(
-                    $"Line {action.LineNumber}: {action.Name} failed. {exception.Message}",
-                    output);
+                FinishTrace(context, success: false, error, output);
+                return ScriptRunResult.Fail(error, output);
             }
+        }
+        catch (ScriptActionFailedException exception)
+        {
+            FinishRecording(recorder, output);
+            FinishTrace(context, success: false, exception.Message, output);
+            return ScriptRunResult.Fail(exception.Message, output);
+        }
+        catch (LoopControlException exception)
+        {
+            FinishRecording(recorder, output);
+            FinishTrace(context, success: false, $"{exception.Kind} must be inside a loop.", output);
+            return ScriptRunResult.Fail($"{exception.Kind} must be inside a loop.", output);
+        }
+        catch (ScriptSkipException exception)
+        {
+            output.Add($"SKIP {exception.LineNumber:000} {exception.Reason}");
+            FinishRecording(recorder, output);
+            FinishTrace(context, success: true, exception.Reason, output);
+            return ScriptRunResult.Skip(exception.Reason, output);
         }
 
         FinishRecording(recorder, output);
+        FinishTrace(context, success: true, error: null, output);
 
         return ScriptRunResult.Ok(output);
     }
 
-    private IReadOnlyList<string> ExecuteAction(
+    private void ExecuteActions(
         string remoteDebuggingUrl,
         IBrowserAutomationClient automationClient,
-        BrowserScriptAction action,
+        IReadOnlyList<BrowserScriptAction> actions,
         ScriptExecutionContext context,
-        ScriptGifRecorder? recorder)
+        ScriptGifRecorder? recorder,
+        List<string> output)
     {
-        if (action.Children.Count > 0 && !string.Equals(action.Name, "dragAndDrop", StringComparison.OrdinalIgnoreCase))
+        for (var index = 0; index < actions.Count; index++)
         {
-            throw new ScriptExecutionException($"Action '{action.Name}' does not accept a block body.");
+            if (actions[index].Name.Equals("if", StringComparison.OrdinalIgnoreCase))
+            {
+                var branches = CollectBranches(actions, ref index);
+                ExecuteIf(remoteDebuggingUrl, automationClient, branches, context, recorder, output);
+                continue;
+            }
+
+            if (actions[index].Name.Equals("try", StringComparison.OrdinalIgnoreCase))
+            {
+                var branches = CollectTryBranches(actions, ref index);
+                ExecuteTry(remoteDebuggingUrl, automationClient, branches, context, recorder, output);
+                continue;
+            }
+
+            if (IsConditionalBranch(actions[index].Name) || IsTryBranch(actions[index].Name) || IsSwitchBranch(actions[index].Name))
+            {
+                var parent = IsTryBranch(actions[index].Name) ? "try" : IsSwitchBranch(actions[index].Name) ? "switch" : "if";
+                throw new ScriptActionFailedException($"Line {actions[index].LineNumber}: {actions[index].Name} failed. {actions[index].Name} must follow a {parent} block.");
+            }
+
+            ExecuteOneAction(remoteDebuggingUrl, automationClient, actions[index], context, recorder, output, index + 1);
+        }
+    }
+
+    private static IReadOnlyList<BrowserScriptAction> CollectBranches(IReadOnlyList<BrowserScriptAction> actions, ref int index)
+    {
+        var branches = new List<BrowserScriptAction> { actions[index] };
+        while (index + 1 < actions.Count && IsConditionalBranch(actions[index + 1].Name))
+        {
+            branches.Add(actions[++index]);
         }
 
-        return action.Name.ToLowerInvariant() switch
-        {
-            "navigate" => ExecuteNavigate(remoteDebuggingUrl, automationClient, action),
-            "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
-            "click" => ExecuteSelectorAction(action, selector => automationClient.Click(remoteDebuggingUrl, selector)),
-            "type" => ExecuteType(remoteDebuggingUrl, automationClient, action, recorder),
-            "clear" => ExecuteSelectorAction(action, selector => automationClient.Clear(remoteDebuggingUrl, selector)),
-            "press" => ExecutePress(remoteDebuggingUrl, automationClient, action),
-            "hover" => ExecuteSelectorAction(action, selector => automationClient.Hover(remoteDebuggingUrl, selector)),
-            "scrollintoview" => ExecuteSelectorAction(action, selector => automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
-            "select" => ExecuteSelect(remoteDebuggingUrl, automationClient, action),
-            "showmessagebar" => ExecuteShowMessageBar(remoteDebuggingUrl, automationClient, action),
-            "delay" => ExecuteDelay(action),
-            "html" => ExecuteHtml(remoteDebuggingUrl, automationClient, action),
-            "screenshot" => ExecuteScreenshot(remoteDebuggingUrl, automationClient, action),
-            "screenshotpage" => ExecuteScreenshotPage(remoteDebuggingUrl, automationClient, action),
-            "asserttext" => ExecuteAssertText(remoteDebuggingUrl, automationClient, action),
-            "evaluate" => ExecuteEvaluate(remoteDebuggingUrl, automationClient, action),
-            "setviewport" => ExecuteSetViewport(remoteDebuggingUrl, automationClient, action),
-            "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),
-            "draganddrop" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action, recorder),
-            "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),
-            "activatetab" => ExecuteActivateTab(remoteDebuggingUrl, automationClient, action),
-            "closetab" => ExecuteCloseTab(remoteDebuggingUrl, automationClient, action),
-            "set" => ExecuteSet(action, context),
-            _ => throw new ScriptExecutionException($"Unknown action '{action.Name}'.")
-        };
+        return branches;
     }
+
+    private static bool IsConditionalBranch(string name) =>
+        name.Equals("elseif", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("else", StringComparison.OrdinalIgnoreCase);
+
+    private static IReadOnlyList<BrowserScriptAction> CollectTryBranches(IReadOnlyList<BrowserScriptAction> actions, ref int index)
+    {
+        var branches = new List<BrowserScriptAction> { actions[index] };
+        while (index + 1 < actions.Count && IsTryBranch(actions[index + 1].Name))
+        {
+            branches.Add(actions[++index]);
+        }
+
+        return branches;
+    }
+
+    private static bool IsTryBranch(string name) =>
+        name.Equals("catch", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("finally", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsSwitchBranch(string name) =>
+        name.Equals("case", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("default", StringComparison.OrdinalIgnoreCase);
+
+    private void ExecuteOneAction(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction sourceAction,
+        ScriptExecutionContext context,
+        ScriptGifRecorder? recorder,
+        List<string> output,
+        int stepNumber)
+    {
+        var action = sourceAction;
+        try
+        {
+            action = ShouldExpandBeforeDispatch(sourceAction.Name) ? ExpandVariables(sourceAction, context) : sourceAction;
+            action = ApplySelectorScope(action, context);
+            action = ApplyFrameScope(action, context);
+            action = ApplyTimeoutDefaults(action, context);
+            recorder?.BeforeAction(action);
+            var stepOutput = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
+            recorder?.AfterAction(action);
+            var stepLines = new List<string> { $"PASS {stepNumber:000} {action.Name} {FormatActionForLog(action)}".TrimEnd() };
+            stepLines.AddRange(stepOutput);
+            output.AddRange(stepLines);
+            context.Trace?.Record(action, success: true, error: null, stepLines);
+        }
+        catch (Exception exception) when (exception is ScriptExecutionException or ChromeDevToolsException or ElementNotFoundException)
+        {
+            var error = $"Line {action.LineNumber}: {action.Name} failed. {exception.Message}";
+            context.Trace?.Record(action, success: false, error, []);
+            throw new ScriptActionFailedException(error);
+        }
+    }
+
+    private static bool ShouldExpandBeforeDispatch(string name) =>
+        !name.Equals("if", StringComparison.OrdinalIgnoreCase) &&
+        !name.Equals("elseif", StringComparison.OrdinalIgnoreCase) &&
+        !name.Equals("while", StringComparison.OrdinalIgnoreCase) &&
+        !name.Equals("until", StringComparison.OrdinalIgnoreCase) &&
+        !name.Equals("doWhile", StringComparison.OrdinalIgnoreCase) &&
+        !name.Equals("doUntil", StringComparison.OrdinalIgnoreCase);
+
+    private static readonly IReadOnlyDictionary<string, string> EmptyVariables =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 }

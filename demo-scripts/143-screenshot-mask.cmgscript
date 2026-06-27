@@ -1,0 +1,5 @@
+# Masks volatile regions only in the screenshot artifact.
+setContent "<main><h1>Masked screenshot evidence</h1><p id='clock'>Timestamp 12:34:56</p><p class='ad'>Sponsored content</p><button id='save'>Save</button></main>"
+caption "The artifact masks the timestamp and ad while GIFs keep the real page visible"
+screenshotPage output="demo-output\screenshot-mask.png" mask="#clock;hasText=.ad|Sponsored" maskColor="#000000"
+screenshot "#save" output="demo-output\screenshot-mask-button.png" mask="#clock" maskColor="#000000"

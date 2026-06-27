@@ -1,0 +1,4 @@
+test.each "json row ${case.name}" as=case json="[{\"name\":\"Profile\",\"selector\":\"#profile\"},{\"name\":\"Checkout\",\"selector\":\"#checkout\"}]" {
+  set target "${case.selector}"
+  expect (${target} != "")
+}

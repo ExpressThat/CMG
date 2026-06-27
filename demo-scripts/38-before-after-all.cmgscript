@@ -1,0 +1,26 @@
+beforeAll {
+  setContent "<main><button id='run'>Run</button><output id='status'>Ready</output></main>"
+}
+
+afterAll {
+  caption "Root teardown"
+}
+
+suite "hooked flow" {
+  beforeAll {
+    caption "Suite setup"
+  }
+
+  test "uses setup page" {
+    click "#run"
+    expectText "#status" "Ready"
+  }
+
+  test "second selected test" {
+    expectText "#status" "Ready"
+  }
+
+  afterAll {
+    caption "Suite teardown"
+  }
+}

@@ -1,0 +1,7 @@
+test "explicit fail can be caught" {
+  try {
+    fail "Expected optional panel"
+  } catch error {
+    caption "${error}"
+  }
+}

@@ -1,184 +1,295 @@
-# `.cmgscript` Examples
+# CMG Examples
 
-Runnable demo scripts live in [`../../demo-scripts/`](../../demo-scripts/).
+Use this page as a learning path. It starts with small scripts you can run immediately, then points to deeper examples when you need a specific capability.
 
-Record a demo as a GIF:
+For the full catalogue of advanced examples, see the [cookbook reference](cookbook-reference.md). Runnable files live in [`../../demo-scripts/`](../../demo-scripts/).
+
+## Start Here
+
+| Goal | Read | Run |
+| --- | --- | --- |
+| Make a first GIF | [First GIF](#first-gif) | `demo-scripts\01-dialog-flow.cmgscript` |
+| Write a first test | [First Test](#first-test) | `demo-scripts\20-runner-flow.cmgscript` |
+| Show pointer behavior | [Visual Evidence](#visual-evidence) | `demo-scripts\10-css-hover-states.cmgscript` |
+| Reuse script logic | [Variables And Macros](#variables-and-macros) | `demo-scripts\30-control-flow-macros.cmgscript` |
+| Handle failures clearly | [Failure Feedback](#failure-feedback) | `demo-scripts\52-explicit-fail.cmgscript` |
+| Tune one slow section | [Scoped Timeouts](#scoped-timeouts) | `demo-scripts\134-scoped-timeouts.cmgscript` |
+| Run the same test for data rows | [Parameterized Tests](#parameterized-tests) | `demo-scripts\136-parameterized-tests.cmgscript` |
+| Add report metadata | [Report Annotations](#report-annotations) | `demo-scripts\138-report-annotations.cmgscript` |
+| Parameterize scripts from outside | [Initial Variables](#initial-variables) | `demo-scripts\139-cli-variables.cmgscript` |
+| Use relative navigation | [Base URL](#base-url) | `demo-scripts\141-base-url.cmgscript` |
+
+Start the browser before running direct scripts:
 
 ```powershell
-dotnet run -- browser control script --file demo-scripts\01-dialog-flow.cmgscript --gif demo-output\dialog-flow.gif
+cmg browser launch
 ```
 
-## Dialog Flow
+When developing from the repository, use `dotnet run --` in place of `cmg`.
+
+## First GIF
+
+Create a short browser-control script:
 
 ```text
 navigate "C:\Projects\CMG\index.html"
 waitForElement "#openProfileDialog" timeout=5000
-click "#openProfileDialog"
-waitForElement "#profileDialog[open]" timeout=5000
-clear "#profileName"
-type "#profileName" "CMG Test Profile"
-screenshot "#profileDialog" output="profile-dialog.png"
-click "#profileDialog button[value='close']"
-```
 
-## Capture HTML And Screenshot Data URLs
-
-```text
-navigate "C:\Projects\CMG\index.html"
-waitForElement "#openProfileDialog"
-html "#openProfileDialog"
-screenshot "#openProfileDialog"
-```
-
-## Validate Text
-
-```text
-navigate "C:\Projects\CMG\index.html"
-assertText "h1" "CMG Browser Control Test Page"
-```
-
-## Page Message Bar
-
-```text
-navigate "C:\Projects\CMG\index.html"
-showMessageBar "Opening the profile dialog"
-screenshotPage output="message-bar.png"
-```
-
-## Variables
-
-```text
-set button "#openProfileDialog"
-navigate "C:\Projects\CMG\index.html"
-waitForElement "${button}"
-click "${button}"
-```
-
-## Drag And Drop
-
-```text
-navigate "C:\Projects\CMG\index.html"
-setViewport width=900 height=700
-waitForElement "#dropQueue"
-scrollIntoView "#dragdrop"
-dragAndDrop "[data-command='browser launch']" "#dropQueue"
-assertText "#dropQueue" "browser launch"
-```
-
-## Complex Drag And Drop
-
-```text
-navigate "C:\Projects\CMG\index.html"
-setViewport width=900 height=700
-waitForElement "#dropQueue"
-scrollIntoView "#dragdrop"
-
-dragAndDrop "[data-command='browser launch']" {
-  delay 200
-  hover "#dropQueue"
-  delay 200
-  drop "#dropQueue"
+step "Open the profile dialog" {
+  click "#openProfileDialog"
 }
 
-assertText "#dropQueue" "browser launch"
+type "#profileName" "CMG quick start"
 ```
 
-Run the complete example:
+Record it:
 
 ```powershell
-dotnet run -- browser control script --file demo-scripts\07-complex-drag-flow.cmgscript --gif demo-output\complex-drag.gif
+cmg browser control script --file first-gif.cmgscript --gif demo-output\first-gif.gif
 ```
 
-## Drag Pointer Movement
+The recording shows CMG's virtual pointer, real page pointer events, hover states, typed text, captions, and any captured frames before a failure.
 
-Use `moveMouse` during GIF recording to move a dragged item to a viewport-relative point. The pointer movement and delay dispatch browser mouse, pointer, drag, and dragover events.
+## First Test
+
+Use `cmg run` when the same actions should become repeatable tests with reports and optional per-test GIFs:
 
 ```text
-navigate "C:\Projects\CMG\index.html"
-setViewport width=900 height=700
-waitForElement "#dropQueue"
-scrollIntoView "#dragdrop"
+suite "profile dialog" {
+  beforeEach {
+    navigate "C:\Projects\CMG\index.html"
+    waitForElement "#openProfileDialog"
+  }
 
-dragAndDrop "[data-command='browser launch']" {
-  moveMouse "center"
-  delay 200
-  hover "#dropQueue"
-  delay 200
-  drop "#dropQueue"
+  test "opens" tag=smoke {
+    click "#openProfileDialog"
+    expectVisible "#profileDialog"
+    expectText "#lastDialogAction" "None"
+  }
 }
 ```
 
-Run the `moveMouse` demo with GIF recording:
+Run it with reports:
 
 ```powershell
-dotnet run -- browser control script --file demo-scripts\08-gif-move-mouse.cmgscript --gif demo-output\gif-move-mouse.gif
+cmg run profile.test.cmgscript --report-html demo-output\report.html --report-json demo-output\report.json
 ```
 
-For pages that auto-scroll while a dragged item is held near the lower viewport edge, use `moveMouse "bottom"` with `delay` inside the drag block:
+Add `--gif demo-output\gifs` when every selected test should produce a whole-test GIF.
 
-```text
-navigate "C:\Projects\CMG\index.html"
-setViewport width=900 height=700
-waitForElement "#dropQueue"
-scrollIntoView "#dragdrop"
-
-dragAndDrop "[data-command='browser launch']" {
-  moveMouse "bottom"
-  delay 800
-  moveMouse "center"
-  delay 200
-  moveMouse "bottom"
-  delay 800
-  drop "#dropQueue"
-}
-```
-
-Run the bottom-edge drag demo with GIF recording:
+Use a runner config when CI or an agent should reuse the same reports, traces, retries, variables, and selection defaults:
 
 ```powershell
-dotnet run -- browser control script --file demo-scripts\09-drag-autoscroll.cmgscript --gif demo-output\drag-autoscroll.gif
+cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --list
+cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --var mode=cli
+cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project chrome-smoke
 ```
 
-For apps that scroll a canvas or content area instead of the browser window, target the scroll container edge:
+## Visual Evidence
 
-```text
-dragAndDrop ".library-item" {
-  moveMouse selector=".content-area" edge=bottom inset=24
-  delay 1500
-  moveMouse selector=".content-area" edge=bottom inset=24
-  delay 1500
-  drop ".content-drop-target"
-}
-```
-
-## CSS Hover States
-
-The virtual pointer in GIF mode triggers real browser hover state. This demo moves across elements with CSS `:hover` styling, asserts that the hover card received a browser hover event, and captures the visual state.
+Pointer-aware actions move the same virtual pointer that appears in GIFs. This keeps the visible pointer, browser events, hover state, screenshots, drag ghosts, and captions aligned.
 
 ```text
 navigate "C:\Projects\CMG\index.html"
-setViewport width=900 height=700
 waitForElement "#hoverDemoCard"
-scrollIntoView "#hoverStates"
-hover "#hoverDemoCard"
-assertText "#hoverStateText" "Hover card active"
-evaluate "getComputedStyle(document.querySelector('#hoverDemoCard')).transform !== 'none'"
-screenshot "#hoverStates" output="demo-output\css-hover-card.png"
-hover "#hoverDemoButton"
-hover "#hoverDemoInput"
+
+step "Show the hover card" {
+  hover "#hoverDemoCard"
+  expectText "#hoverStateText" "Hover card active"
+}
 ```
 
-Run it with GIF recording:
+Run the complete hover demo:
 
 ```powershell
-dotnet run -- browser control script --file demo-scripts\10-css-hover-states.cmgscript --gif demo-output\css-hover-states.gif
+cmg browser control script --file demo-scripts\10-css-hover-states.cmgscript --gif demo-output\css-hover-states.gif
 ```
 
-## Stdin
+For drag evidence, run:
 
 ```powershell
-@"
-navigate "C:\Projects\CMG\index.html"
-waitForElement "#openProfileDialog"
-"@ | cmg browser control script --file -
+cmg browser control script --file demo-scripts\07-complex-drag-flow.cmgscript --gif demo-output\complex-drag.gif
 ```
+
+For stable screenshot evidence, mask volatile regions only in the artifact. The GIF still shows the real page and pointer choreography:
+
+```text
+setContent "<main><h1>Evidence</h1><p id='clock'>12:34:56</p><button id='save'>Save</button></main>"
+screenshotPage output="demo-output\masked-evidence.png" mask="#clock" maskColor="#000000" animations=disabled caret=hide
+```
+
+Run the complete screenshot mask demos:
+
+```powershell
+cmg browser control script --file demo-scripts\143-screenshot-mask.cmgscript
+cmg run demo-scripts\144-screenshot-mask-runner.cmgscript
+cmg browser control script --file demo-scripts\145-screenshot-deterministic.cmgscript
+cmg run demo-scripts\146-screenshot-deterministic-runner.cmgscript
+```
+
+## Variables And Macros
+
+Use `set` for values and action output. The variable stores the actual payload value, not a pass/fail wrapper:
+
+```text
+set title {
+  evaluate "document.title"
+}
+
+if (${title} contains "CMG") {
+  caption "Loaded ${title}"
+}
+
+expect (${title} contains "CMG")
+expect evaluate "document.title" contains "CMG"
+softExpect (${title} contains "Dashboard") message="Dashboard title was not shown"
+```
+
+Macros are reusable, scoped blocks:
+
+```text
+macro openProfile name {
+  click "#openProfileDialog"
+  fill "#profileName" "${name}"
+  return "${name}"
+}
+
+set savedName {
+  call openProfile "Ada"
+}
+
+set labels {
+  allTextContents ".command"
+}
+
+foreachJson label "${labels}" {
+  caption "Command ${index}: ${label}"
+}
+```
+
+Variables set inside a macro are local to that macro call. A macro can read variables from the parent tree where it was defined, and local values shadow parent values without mutating them.
+
+## Initial Variables
+
+Use command-line variables when an agent, CI job, or wrapper needs to supply data without editing the script:
+
+```powershell
+cmg browser control script --file demo-scripts\139-cli-variables.cmgscript --var user=Ada
+cmg run demo-scripts\140-runner-variables.cmgscript --env tenant=demo
+```
+
+Use runner declaration variables when the value belongs with the suite or test:
+
+```text
+describe "tenant flow" var.tenant=demo {
+  test "uses default tenant" {
+    expect (${tenant} == "demo")
+  }
+
+  test "overrides tenant" var.tenant=staging {
+    expect (${tenant} == "staging")
+  }
+}
+```
+
+Declaration variables are inserted before macros and hooks, so helper macros can read them. Test-level values override suite-level values, and explicit `set` actions can still change values later in the current script scope.
+
+## Base URL
+
+Use `--base-url` when scripts should navigate relative to an app root:
+
+```powershell
+cmg browser control script --file demo-scripts\141-base-url.cmgscript --base-url https://example.test/app/
+cmg run demo-scripts\142-base-url-runner.cmgscript --base-url https://example.test/app/
+```
+
+Runner suites and tests can declare their own base URL:
+
+```text
+describe "app" baseUrl="https://example.test/app/" {
+  test "opens profile" {
+    navigate "profile"
+  }
+}
+```
+
+Base URL resolution affects `navigate`, `goto`, `visit`, `openTab`, and `newContext url=`. It does not move the virtual pointer by itself; pointer-aware actions after navigation keep their normal GIF behavior.
+
+## Failure Feedback
+
+Assertions and explicit failures explain what broke. Use `expect` or `assert` for generic conditions, `softExpect` when later diagnostics should still run, `skip` when the flow is not applicable, and `fail` when a script has its own reason to abort:
+
+```text
+expect (${savedName} != "") message="Profile name was not saved"
+softExpect evaluate "window.optionalPanelReady" == "true" message="Optional panel did not load"
+
+if (${featureEnabled} == false) {
+  skip "Feature flag disabled"
+}
+
+try {
+  fail "Expected optional panel"
+} catch error {
+  caption "${error}"
+}
+```
+
+Runner failures include `STEP FAIL` diagnostics on stderr and report entries with the line, action, and reason.
+
+## Scoped Timeouts
+
+Use scoped timeout blocks when one slow section needs longer waits without changing the rest of the script:
+
+```text
+withTimeout 10000 {
+  waitForSelector "#slow-panel"
+}
+
+withTimeout default=5000 navigation=15000 assertion=2000 {
+  navigate "C:\Projects\CMG\index.html" waitUntil=load
+  expectText "#status" "Ready"
+}
+```
+
+The old timeout defaults are restored after the block, even if a child action fails and a surrounding `try` catches it. The block itself is non-visual; pointer-aware child actions still record through CMG's normal virtual pointer path.
+
+## Parameterized Tests
+
+Use `test.each`, `it.each`, or `specify.each` when one runner test should execute once per data row:
+
+```text
+test.each "opens ${page}" as=page values="profile,checkout" tag=smoke {
+  click "#${page}"
+}
+
+test.each "opens ${case.name}" as=case json="[{\"name\":\"Profile\",\"selector\":\"#profile\"}]" {
+  click "${case.selector}"
+}
+```
+
+Expanded tests are ordinary scheduled tests. They work with `--list`, `--grep`, `--tag`, retries, sharding, reports, traces, and per-test GIF recording.
+
+## Report Annotations
+
+Use runner declaration metadata when a report should explain ownership, issues, links, requirements, or notes:
+
+```text
+describe "checkout" owner=qa annotation.requirement="REQ-1" {
+  test "submits payment" issue="BUG-7" link="https://example.test/BUG-7" {
+    click "#pay"
+  }
+}
+```
+
+Annotations are report-only metadata. They appear in JSON, HTML, and JUnit reports and do not change browser execution or GIF recording.
+
+## Common Next Steps
+
+| Need | Where To Go |
+| --- | --- |
+| Choose direct scripts or `cmg run` | [Script vs Runner](script-vs-runner.md) |
+| Find an action family quickly | [Action Index](action-index.md) |
+| Learn syntax, logic, loops, and macros | [Syntax](syntax.md) |
+| Understand GIF blocks and `--gif` | [GIF Recording](gif-recording.md) |
+| Write maintainable scripts | [Style Guide](style-guide.md) |
+| Browse every example pattern | [Cookbook Reference](cookbook-reference.md) |

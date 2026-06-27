@@ -1,0 +1,4 @@
+caption "Set a scoped cookie"
+cookie set "cmgScoped" "demo" path="/app" sameSite="Lax" secure="true"
+cookie get "cmgScoped"
+cookie remove "cmgScoped" path="/app"

@@ -1,0 +1,9 @@
+test "click options" {
+  setContent "<main><button id='target'>Click target</button><output id='result'>none</output><script>const target = document.querySelector('#target'); const result = document.querySelector('#result'); target.addEventListener('auxclick', event => { event.preventDefault(); result.textContent = event.shiftKey ? 'middle-shift' : 'middle'; }); target.addEventListener('dblclick', () => result.textContent = 'double');</script></main>"
+
+  click "#target" button=middle modifiers=Shift
+  expectText "#result" "middle-shift"
+
+  click "#target" clickCount=2 delay=25
+  expectText "#result" "double"
+}

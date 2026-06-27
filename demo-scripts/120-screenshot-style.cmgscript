@@ -1,0 +1,3 @@
+setContent "<main><h1>Styled screenshot</h1><p class='clock'>Timestamp 12:34:56</p><p>Stable visual evidence keeps the meaningful content.</p></main>"
+caption "Hide volatile text only in the screenshot artifact"
+screenshotPage output="demo-output\screenshot-style.png" style=".clock{visibility:hidden}"

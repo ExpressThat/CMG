@@ -82,6 +82,16 @@ public sealed partial class FirefoxBiDiClient
         return Convert.FromBase64String(data);
     }
 
+    private static byte[] DecodePdf(JsonElement response)
+    {
+        if (!TryReadString(response, ["result", "data"], out var data) || string.IsNullOrWhiteSpace(data))
+        {
+            throw new ChromeDevToolsException("Firefox did not return PDF data.");
+        }
+
+        return Convert.FromBase64String(data);
+    }
+
     private static string ReadScriptResultValue(JsonElement response)
     {
         if (!TryReadElement(response, ["result", "result"], out var result) ||
@@ -89,6 +99,11 @@ public sealed partial class FirefoxBiDiClient
             type is "undefined" or "null")
         {
             return string.Empty;
+        }
+
+        if (type is "exception")
+        {
+            throw new ChromeDevToolsException("JavaScript evaluation failed.");
         }
 
         if (!result.TryGetProperty("value", out var value))

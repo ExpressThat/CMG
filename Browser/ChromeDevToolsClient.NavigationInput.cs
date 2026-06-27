@@ -11,6 +11,7 @@ public sealed partial class ChromeDevToolsClient
         return Run(async () =>
         {
             await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            await ApplyInitScripts(session, remoteDebuggingUrl);
             var response = await session.SendCommand("Page.navigate", writer => writer.WriteString("url", target));
             if (TryReadString(response, ["result", "errorText"], out var errorText) &&
                 !string.IsNullOrWhiteSpace(errorText))
@@ -57,7 +58,6 @@ public sealed partial class ChromeDevToolsClient
             await EnsurePointInViewport(session, selector, clip.CenterX, clip.CenterY);
             await ClickAt(session, clip.CenterX, clip.CenterY);
             await Task.Delay(50);
-            await TryAcceptJavaScriptDialog(session);
 
             return true;
         });
@@ -72,7 +72,7 @@ public sealed partial class ChromeDevToolsClient
             $"element.focus({{ preventScroll: true }}); element.value = `${{element.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
     }
 
-    public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, Action? afterCharacter = null)
+    public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, int delayMilliseconds = 80, Action? afterCharacter = null)
     {
         Click(remoteDebuggingUrl, selector);
 
@@ -80,7 +80,7 @@ public sealed partial class ChromeDevToolsClient
         {
             Type(remoteDebuggingUrl, selector, character.ToString());
             afterCharacter?.Invoke();
-            Thread.Sleep(80);
+            Thread.Sleep(delayMilliseconds);
         }
     }
 
@@ -95,25 +95,35 @@ public sealed partial class ChromeDevToolsClient
 
     public void Press(string remoteDebuggingUrl, string key)
     {
+        KeyDown(remoteDebuggingUrl, key);
+        KeyUp(remoteDebuggingUrl, key);
+    }
+
+    public void KeyDown(string remoteDebuggingUrl, string key) =>
+        DispatchKey(remoteDebuggingUrl, key, "keyDown");
+
+    public void KeyUp(string remoteDebuggingUrl, string key) =>
+        DispatchKey(remoteDebuggingUrl, key, "keyUp");
+
+    public void InsertText(string remoteDebuggingUrl, string text) =>
         Run(async () =>
         {
             await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
-
-            await session.SendCommand("Input.dispatchKeyEvent", writer =>
-            {
-                writer.WriteString("type", "keyDown");
-                writer.WriteString("key", key);
-            });
-
-            await session.SendCommand("Input.dispatchKeyEvent", writer =>
-            {
-                writer.WriteString("type", "keyUp");
-                writer.WriteString("key", key);
-            });
-
+            await session.SendCommand("Input.insertText", writer => writer.WriteString("text", text));
             return true;
         });
-    }
+
+    private void DispatchKey(string remoteDebuggingUrl, string key, string type) =>
+        Run(async () =>
+        {
+            await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
+            await session.SendCommand("Input.dispatchKeyEvent", writer =>
+            {
+                writer.WriteString("type", type);
+                writer.WriteString("key", key);
+            });
+            return true;
+        });
 
     public void Hover(string remoteDebuggingUrl, string selector)
     {

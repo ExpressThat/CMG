@@ -1,0 +1,103 @@
+using CMG.Browser;
+using CMG.Runner;
+
+namespace CMG.Browser.Scripting;
+
+public sealed partial class BrowserScriptRunner
+{
+    private static IReadOnlyList<string> ExecuteElementExpectation(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action)
+    {
+        var mode = action.Name.ToLowerInvariant() switch
+        {
+            "expectvisible" or "tobevisible" or "waitforvisible" or "expectnothidden" or "tobenothidden" => "visible",
+            "expecthidden" or "tobehidden" or "waitforhidden" or "expectnotvisible" or "tobenotvisible" => "hidden",
+            "expectenabled" or "tobeenabled" or "expectnotdisabled" or "tobenotdisabled" => "enabled",
+            "expectdisabled" or "tobedisabled" or "expectnotenabled" or "tobenotenabled" => "disabled",
+            "expectattached" or "tobeattached" or "expectnotdetached" or "tobenotdetached" => "attached",
+            "expectdetached" or "tobedetached" or "expectnotattached" or "tobenotattached" => "detached",
+            "expecteditable" or "tobeeditable" => "editable",
+            "expectnoteditable" or "tobenoteditable" => "noteditable",
+            "expectempty" or "tobeempty" => "empty",
+            "expectnotempty" or "tobenotempty" => "notempty",
+            "expectfocused" or "tobefocused" => "focused",
+            "expectnotfocused" or "tobenotfocused" => "notfocused",
+            "expectinviewport" or "tobeinviewport" => "inviewport",
+            "expectnotinviewport" or "tobenotinviewport" => "notinviewport",
+            "expectvalue" or "tohavevalue" => "value",
+            "expectvalues" or "tohavevalues" => "values",
+            "expectattribute" or "tohaveattribute" => "attribute",
+            "expectclass" or "tohaveclass" => "class",
+            "expectid" or "tohaveid" => "id",
+            "expectcss" or "tohavecss" => "css",
+            "expectproperty" or "tohavejsproperty" => "property",
+            "expectaccessiblename" or "tohaveaccessiblename" => "accessiblename",
+            "expectrole" or "tohaverole" => "role",
+            "expectchecked" or "tobechecked" => "checked",
+            "unchecked" or "expectunchecked" or "tobeunchecked" or "expectnotchecked" or "tobenotchecked" => "unchecked",
+            "expectcount" or "tohavecount" => "count",
+            _ => throw new ScriptExecutionException($"Unknown element expectation '{action.Name}'.")
+        };
+        action = NormalizeLocatorArgument(action);
+        var plan = CmgExpectationScripts.Expressions(ToNode(action), mode);
+        if (plan.Error is not null)
+        {
+            throw new ScriptExecutionException(plan.Error);
+        }
+
+        RunExpectationUntilReady(remoteDebuggingUrl, automationClient, action, plan);
+        return [$"EXPECT {action.LineNumber:000} {mode} {action.Arguments[0]}"];
+    }
+
+    private static void RunExpectationUntilReady(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        CmgExpectationPlan plan)
+    {
+        var timeout = GetIntOption(action, "timeout", 0);
+        var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeout);
+        Exception? last = null;
+        do
+        {
+            try
+            {
+                foreach (var expression in plan.PrefixExpressions)
+                {
+                    automationClient.Evaluate(remoteDebuggingUrl, expression);
+                }
+
+                automationClient.Evaluate(remoteDebuggingUrl, plan.Expression);
+                return;
+            }
+            catch (ChromeDevToolsException exception)
+            {
+                last = exception;
+                if (timeout <= 0)
+                {
+                    throw;
+                }
+
+                Thread.Sleep(50);
+            }
+        }
+        while (DateTimeOffset.UtcNow < deadline);
+
+        throw new ScriptExecutionException(last?.Message ?? $"{action.Name} did not pass within {timeout}ms.");
+    }
+
+    private static BrowserScriptAction NormalizeLocatorArgument(BrowserScriptAction action)
+    {
+        var locator = action.Options.FirstOrDefault(pair => IsLocatorOption(pair.Key));
+        if (string.IsNullOrWhiteSpace(locator.Key))
+        {
+            return action;
+        }
+
+        var options = action.Options.Where(pair => !pair.Key.Equals(locator.Key, StringComparison.Ordinal)).ToDictionary();
+        return action with { Arguments = [CmgLocatorKeys.Format(locator.Key, locator.Value), .. action.Arguments], Options = options };
+    }
+
+}

@@ -13,8 +13,7 @@ public sealed partial class BrowserScriptRunner
             Options = action.Options.ToDictionary(
                 pair => pair.Key,
                 pair => ExpandVariables(pair.Value, context),
-                StringComparer.OrdinalIgnoreCase),
-            Children = action.Children.Select(child => ExpandVariables(child, context)).ToArray()
+                StringComparer.OrdinalIgnoreCase)
         };
     }
 
@@ -23,7 +22,7 @@ public sealed partial class BrowserScriptRunner
         return VariableRegex().Replace(value, match =>
         {
             var name = match.Groups[1].Value;
-            if (!context.Variables.TryGetValue(name, out var replacement))
+            if (!context.TryGetVariable(name, out var replacement))
             {
                 throw new ScriptExecutionException($"Variable '{name}' is not defined.");
             }
@@ -49,11 +48,32 @@ public sealed partial class BrowserScriptRunner
             return ScriptReadResult.Fail($"Script file '{file}' was not found.");
         }
 
-        return ScriptReadResult.Ok(File.ReadAllText(file));
+        var fullPath = Path.GetFullPath(file);
+        var expanded = ScriptImportExpander.Expand(
+            File.ReadAllText(fullPath),
+            Path.GetDirectoryName(fullPath) ?? Directory.GetCurrentDirectory());
+        return expanded.Success
+            ? ScriptReadResult.Ok(expanded.Script ?? string.Empty)
+            : ScriptReadResult.Fail(expanded.Error ?? "Could not import script.");
     }
 
-    private static string NormalizeNavigationTarget(string target)
+    private static string NormalizeNavigationTarget(string target, string? baseUrl = null)
     {
+        if (IsAbsoluteUri(target))
+        {
+            return target;
+        }
+
+        if (Path.IsPathRooted(target) && File.Exists(target))
+        {
+            return new Uri(Path.GetFullPath(target)).AbsoluteUri;
+        }
+
+        if (!string.IsNullOrWhiteSpace(baseUrl))
+        {
+            return new Uri(new Uri(baseUrl), target).AbsoluteUri;
+        }
+
         if (File.Exists(target))
         {
             return new Uri(Path.GetFullPath(target)).AbsoluteUri;
@@ -66,6 +86,21 @@ public sealed partial class BrowserScriptRunner
 
         return target;
     }
+
+    private static string? NormalizeBaseUrl(string? baseUrl)
+    {
+        if (string.IsNullOrWhiteSpace(baseUrl))
+        {
+            return null;
+        }
+
+        return Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri)
+            ? uri.AbsoluteUri
+            : throw new ScriptExecutionException($"baseUrl must be an absolute URL, got '{baseUrl}'.");
+    }
+
+    private static bool IsAbsoluteUri(string target) =>
+        Uri.TryCreate(target, UriKind.Absolute, out _);
 
     private static bool LooksLikeLocalPath(string target) =>
         !target.Contains("://", StringComparison.Ordinal) &&
@@ -109,7 +144,7 @@ public sealed partial class BrowserScriptRunner
     {
         if (!int.TryParse(value, out var number) || number < 0)
         {
-            throw new ScriptExecutionException($"'{name}' must be a positive whole number.");
+            throw new ScriptExecutionException($"{name}= must be zero or greater.");
         }
 
         return number;
@@ -136,6 +171,17 @@ public sealed partial class BrowserScriptRunner
         output.Add($"GIF {recorder.OutputPath}");
     }
 
-    [GeneratedRegex(@"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")]
+    private static void FinishTrace(ScriptExecutionContext context, bool success, string? error, List<string> output)
+    {
+        if (context.Trace?.IsActive is not true || context.Trace.OutputPath is null)
+        {
+            return;
+        }
+
+        var path = context.Trace.Finish(null, success, error);
+        output.Add($"TRACE {path}");
+    }
+
+    [GeneratedRegex(@"\$\{([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\}")]
     private static partial Regex VariableRegex();
 }

@@ -4,7 +4,7 @@ public sealed class BrowserScriptParser
 {
     public ScriptParseResult Parse(string script)
     {
-        var lines = script.ReplaceLineEndings("\n").Split('\n');
+        var lines = ScriptLineNormalizer.Normalize(script);
         var parseResult = ParseActions(lines, 0, stopAtBlockEnd: false);
         if (!parseResult.Success)
         {
@@ -71,14 +71,14 @@ public sealed class BrowserScriptParser
 
             foreach (var token in tokens.Skip(1))
             {
-                var equalsIndex = token.IndexOf('=');
-                if (equalsIndex > 0 && IsOptionKey(token[..equalsIndex]))
+                var equalsIndex = token.Value.IndexOf('=');
+                if (!token.StartedQuoted && equalsIndex > 0 && IsOptionKey(token.Value[..equalsIndex]))
                 {
-                    options[token[..equalsIndex]] = token[(equalsIndex + 1)..];
+                    options[token.Value[..equalsIndex]] = token.Value[(equalsIndex + 1)..];
                     continue;
                 }
 
-                positional.Add(token);
+                positional.Add(token.Value);
             }
 
             IReadOnlyList<BrowserScriptAction> children = [];
@@ -97,7 +97,7 @@ public sealed class BrowserScriptParser
             actions.Add(new BrowserScriptAction(
                 lineNumber,
                 rawLine,
-                tokens[0],
+                tokens[0].Value,
                 positional,
                 options,
                 children));
@@ -113,9 +113,11 @@ public sealed class BrowserScriptParser
 
     private static TokenizeResult Tokenize(string line, int lineNumber)
     {
-        var tokens = new List<string>();
+        var tokens = new List<ScriptToken>();
         var current = new List<char>();
         var inQuotes = false;
+        var tokenStarted = false;
+        var tokenStartedQuoted = false;
 
         for (var index = 0; index < line.Length; index++)
         {
@@ -148,16 +150,23 @@ public sealed class BrowserScriptParser
 
             if (character is '"')
             {
+                if (!tokenStarted)
+                {
+                    tokenStartedQuoted = true;
+                }
+
                 inQuotes = !inQuotes;
+                tokenStarted = true;
                 continue;
             }
 
             if (char.IsWhiteSpace(character) && !inQuotes)
             {
-                AddCurrentToken(tokens, current);
+                AddCurrentToken(tokens, current, ref tokenStarted, ref tokenStartedQuoted);
                 continue;
             }
 
+            tokenStarted = true;
             current.Add(character);
         }
 
@@ -166,20 +175,22 @@ public sealed class BrowserScriptParser
             return TokenizeResult.Fail($"Line {lineNumber}: unterminated quoted string.");
         }
 
-        AddCurrentToken(tokens, current);
+        AddCurrentToken(tokens, current, ref tokenStarted, ref tokenStartedQuoted);
 
         return TokenizeResult.Ok(tokens);
     }
 
-    private static void AddCurrentToken(List<string> tokens, List<char> current)
+    private static void AddCurrentToken(List<ScriptToken> tokens, List<char> current, ref bool tokenStarted, ref bool tokenStartedQuoted)
     {
-        if (current.Count is 0)
+        if (!tokenStarted)
         {
             return;
         }
 
-        tokens.Add(new string(current.ToArray()));
+        tokens.Add(new ScriptToken(new string(current.ToArray()), tokenStartedQuoted));
         current.Clear();
+        tokenStarted = false;
+        tokenStartedQuoted = false;
     }
 
     private static bool IsOptionKey(string value)
@@ -189,40 +200,6 @@ public sealed class BrowserScriptParser
             return false;
         }
 
-        return value.All(character => char.IsLetterOrDigit(character) || character is '-' or '_');
+        return value.All(character => char.IsLetterOrDigit(character) || character is '-' or '_' or '.');
     }
-}
-
-public sealed record BrowserScriptAction(
-    int LineNumber,
-    string RawLine,
-    string Name,
-    IReadOnlyList<string> Arguments,
-    IReadOnlyDictionary<string, string> Options,
-    IReadOnlyList<BrowserScriptAction> Children);
-
-public sealed record ScriptParseResult(bool Success, IReadOnlyList<BrowserScriptAction> Actions, string? Error)
-{
-    public static ScriptParseResult Ok(IReadOnlyList<BrowserScriptAction> actions) => new(true, actions, null);
-
-    public static ScriptParseResult Fail(string error) => new(false, [], error);
-}
-
-internal sealed record TokenizeResult(bool Success, IReadOnlyList<string> Tokens, string? Error)
-{
-    public static TokenizeResult Ok(IReadOnlyList<string> tokens) => new(true, tokens, null);
-
-    public static TokenizeResult Fail(string error) => new(false, [], error);
-}
-
-internal sealed record ActionListParseResult(
-    bool Success,
-    IReadOnlyList<BrowserScriptAction> Actions,
-    int NextIndex,
-    string? Error)
-{
-    public static ActionListParseResult Ok(IReadOnlyList<BrowserScriptAction> actions, int nextIndex) =>
-        new(true, actions, nextIndex, null);
-
-    public static ActionListParseResult Fail(string error) => new(false, [], 0, error);
 }

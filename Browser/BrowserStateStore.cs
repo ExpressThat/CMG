@@ -9,7 +9,12 @@ public sealed class BrowserStateStore
 
     public BrowserState? Load(BrowserKind browserKind)
     {
-        var stateFile = BrowserPaths.GetStateFile(browserKind);
+        return Load(browserKind, port: null);
+    }
+
+    public BrowserState? Load(BrowserKind browserKind, int? port)
+    {
+        var stateFile = BrowserPaths.GetStateFile(browserKind, port);
         if (!File.Exists(stateFile))
         {
             return null;
@@ -27,11 +32,11 @@ public sealed class BrowserStateStore
             return null;
         }
 
-        _ = int.TryParse(values.GetValueOrDefault(nameof(BrowserState.RemoteDebuggingPort)), out var port);
+        _ = int.TryParse(values.GetValueOrDefault(nameof(BrowserState.RemoteDebuggingPort)), out var storedPort);
 
         return new BrowserState(
             processId,
-            port,
+            storedPort,
             values.GetValueOrDefault(nameof(BrowserState.RemoteDebuggingUrl)) ?? string.Empty,
             values.GetValueOrDefault(nameof(BrowserState.UserDataDirectory)) ?? string.Empty);
     }
@@ -43,9 +48,14 @@ public sealed class BrowserStateStore
 
     public void Save(BrowserKind browserKind, BrowserState state)
     {
+        Save(browserKind, state, state.RemoteDebuggingPort);
+    }
+
+    public void Save(BrowserKind browserKind, BrowserState state, int? port)
+    {
         BrowserPaths.EnsureAppDataDirectory();
 
-        File.WriteAllLines(BrowserPaths.GetStateFile(browserKind), [
+        File.WriteAllLines(BrowserPaths.GetStateFile(browserKind, port), [
             $"{nameof(BrowserState.ProcessId)}={state.ProcessId}",
             $"{nameof(BrowserState.RemoteDebuggingPort)}={state.RemoteDebuggingPort}",
             $"{nameof(BrowserState.RemoteDebuggingUrl)}={state.RemoteDebuggingUrl}",
@@ -60,7 +70,12 @@ public sealed class BrowserStateStore
 
     public void Clear(BrowserKind browserKind)
     {
-        var stateFile = BrowserPaths.GetStateFile(browserKind);
+        Clear(browserKind, port: null);
+    }
+
+    public void Clear(BrowserKind browserKind, int? port)
+    {
+        var stateFile = BrowserPaths.GetStateFile(browserKind, port);
         if (File.Exists(stateFile))
         {
             File.Delete(stateFile);

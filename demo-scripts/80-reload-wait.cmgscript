@@ -1,0 +1,4 @@
+set page "C:\Projects\CMG\index.html"
+
+navigate "${page}"
+reload waitUntil=domcontentloaded timeout=5000

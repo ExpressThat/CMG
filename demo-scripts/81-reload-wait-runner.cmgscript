@@ -1,0 +1,4 @@
+test "reload wait" {
+  navigate "C:\Projects\CMG\index.html"
+  reload waitUntil=domcontentloaded timeout=5000
+}

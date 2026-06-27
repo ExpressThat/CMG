@@ -10,7 +10,7 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext();
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             var source = await GetElementRect(session, context.Id, sourceSelector);
             var target = await GetElementRect(session, context.Id, targetSelector);
             await EnsurePointInViewport(session, context.Id, sourceSelector, source.X + source.Width / 2, source.Y + source.Height / 2);

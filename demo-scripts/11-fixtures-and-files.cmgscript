@@ -1,0 +1,4 @@
+readFile payload path="index.html"
+writeFile path="demo-output/fixture-copy.txt" text="${payload}"
+appendFile path="demo-output/fixture-copy.txt" text="\n<!-- checked by CMG -->"
+expectFile path="demo-output/fixture-copy.txt" contains="checked by CMG"

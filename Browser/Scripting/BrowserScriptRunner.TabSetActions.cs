@@ -13,6 +13,41 @@ public sealed partial class BrowserScriptRunner
             .ToArray();
     }
 
+    private static IReadOnlyList<string> ExecuteOpenTab(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        ScriptExecutionContext context)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var target = NormalizeNavigationTarget(action.Arguments[0], context.BaseUrl);
+        automationClient.OpenTab(remoteDebuggingUrl, target);
+        return [$"TAB_OPENED {action.LineNumber:000} {target}"];
+    }
+
+    private static IReadOnlyList<string> ExecuteWaitForTab(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    {
+        RequireArgumentCount(action, 0, 0);
+        var expected = GetIntOption(action, "count", required: true);
+        var timeout = GetIntOption(action, "timeout", 5_000);
+        var deadline = DateTimeOffset.UtcNow.AddMilliseconds(timeout);
+        IReadOnlyList<CMG.Browser.ChromePageTab> tabs;
+
+        do
+        {
+            tabs = automationClient.ListTabs(remoteDebuggingUrl);
+            if (tabs.Count >= expected)
+            {
+                return [$"TAB_COUNT {action.LineNumber:000} {tabs.Count}"];
+            }
+
+            Thread.Sleep(50);
+        }
+        while (DateTimeOffset.UtcNow < deadline);
+
+        throw new ScriptExecutionException($"Expected at least {expected} tab(s) within {timeout}ms, got {tabs.Count}.");
+    }
+
     private static IReadOnlyList<string> ExecuteActivateTab(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 0, 0);
@@ -27,14 +62,7 @@ public sealed partial class BrowserScriptRunner
         return [];
     }
 
-    private static IReadOnlyList<string> ExecuteSet(BrowserScriptAction action, ScriptExecutionContext context)
-    {
-        RequireArgumentCount(action, 2, 2);
-        context.Variables[action.Arguments[0]] = action.Arguments[1];
-        return [];
-    }
-
-    private static IReadOnlyList<string> WriteScreenshotOutput(BrowserScriptAction action, byte[] bytes)
+    private static IReadOnlyList<string> WriteScreenshotOutput(BrowserScriptAction action, byte[] bytes, string type = "png")
     {
         if (action.Options.TryGetValue("output", out var outputPath) && !string.IsNullOrWhiteSpace(outputPath))
         {
@@ -49,6 +77,6 @@ public sealed partial class BrowserScriptRunner
             return [$"SCREENSHOT {action.LineNumber:000} {fullPath}"];
         }
 
-        return [$"SCREENSHOT {action.LineNumber:000} data:image/png;base64,{Convert.ToBase64String(bytes)}"];
+        return [$"SCREENSHOT {action.LineNumber:000} data:{ScreenshotImage.MimeType(type)};base64,{Convert.ToBase64String(bytes)}"];
     }
 }

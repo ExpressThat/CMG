@@ -5,20 +5,35 @@ namespace CMG.Commands;
 
 public sealed partial class BrowserControlCommandBuilder
 {
-    private Command BuildShowMessageBarCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildCaptureGroup(BrowserSelectionOptions browserOptions)
+    {
+        var command = new Command("capture", "Element and page capture commands.");
+
+        command.Subcommands.Add(BuildGetElementCommand(browserOptions));
+        command.Subcommands.Add(BuildSelectorCommand(browserOptions, "html", "Print an element's outer HTML."));
+        command.Subcommands.Add(BuildScreenshotCommand(browserOptions));
+        command.Subcommands.Add(BuildScreenshotPageCommand(browserOptions));
+        command.Subcommands.Add(BuildPrintPdfCommand(browserOptions, "printPdf"));
+        command.Subcommands.Add(BuildPrintPdfCommand(browserOptions, "pdf"));
+        command.Subcommands.Add(BuildExpectScreenshotCommand(browserOptions));
+        command.Subcommands.Add(BuildExpectScreenshotCommand(browserOptions, "toHaveScreenshot"));
+        return command;
+    }
+
+    private Command BuildShowMessageBarCommand(BrowserSelectionOptions browserOptions, string action)
     {
         var messageArgument = new Argument<string>("message")
         {
             Description = "Message to show in a fixed bar at the top of the page."
         };
 
-        var command = new Command("showMessageBar", "Inject or update a fixed message bar at the top of the page.")
+        var command = new Command(action, "Inject or update a fixed message bar at the top of the page.")
         {
             messageArgument
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("showMessageBar", parseResult.GetValue(messageArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(action, parseResult.GetValue(messageArgument) ?? string.Empty)));
 
         return command;
     }
@@ -36,51 +51,7 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("delay", parseResult.GetValue(millisecondsArgument).ToString())));
-
-        return command;
-    }
-
-    private Command BuildScreenshotCommand(BrowserSelectionOptions browserOptions)
-    {
-        var selectorArgument = CreateSelectorArgument();
-        var outputOption = new Option<FileInfo?>("--output")
-        {
-            Description = "Write the PNG screenshot to this file instead of stdout data URL."
-        };
-
-        var command = new Command("screenshot", "Capture an element screenshot.")
-        {
-            selectorArgument,
-            outputOption
-        };
-
-        command.SetAction(parseResult =>
-        {
-            var options = ToOutputOptions(parseResult.GetValue(outputOption));
-            return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "screenshot",
-                [parseResult.GetValue(selectorArgument) ?? string.Empty],
-                options));
-        });
-
-        return command;
-    }
-
-    private Command BuildScreenshotPageCommand(BrowserSelectionOptions browserOptions)
-    {
-        var outputOption = new Option<FileInfo?>("--output")
-        {
-            Description = "Write the PNG screenshot to this file instead of stdout data URL."
-        };
-
-        var command = new Command("screenshotPage", "Capture a full viewport screenshot.")
-        {
-            outputOption
-        };
-
-        command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("screenshotPage", [], ToOutputOptions(parseResult.GetValue(outputOption)))));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine("delay", parseResult.GetValue(millisecondsArgument).ToString())));
 
         return command;
     }
@@ -92,18 +63,33 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Expected text fragment."
         };
+        var timeoutOption = new Option<int?>("--timeout")
+        {
+            Description = "Timeout in milliseconds."
+        };
+        var matchOption = CliStringOption("--match", "Text match mode: contains, exact, or regex.");
+        var ignoreCaseOption = new Option<bool?>("--ignore-case")
+        {
+            Description = "Match text case-insensitively."
+        };
 
         var command = new Command("assertText", "Assert that an element contains text.")
         {
             selectorArgument,
-            expectedArgument
+            expectedArgument,
+            timeoutOption,
+            matchOption,
+            ignoreCaseOption
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(
                 "assertText",
-                parseResult.GetValue(selectorArgument) ?? string.Empty,
-                parseResult.GetValue(expectedArgument) ?? string.Empty)));
+                [
+                    parseResult.GetValue(selectorArgument) ?? string.Empty,
+                    parseResult.GetValue(expectedArgument) ?? string.Empty
+                ],
+                TextAssertionOptions(parseResult, timeoutOption, matchOption, ignoreCaseOption))));
 
         return command;
     }
@@ -121,12 +107,12 @@ public sealed partial class BrowserControlCommandBuilder
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine("evaluate", parseResult.GetValue(expressionArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine("evaluate", parseResult.GetValue(expressionArgument) ?? string.Empty)));
 
         return command;
     }
 
-    private Command BuildSetViewportCommand(BrowserSelectionOptions browserOptions)
+    private Command BuildSetViewportCommand(BrowserSelectionOptions browserOptions, string name)
     {
         var widthOption = new Option<int>("--width")
         {
@@ -138,47 +124,51 @@ public sealed partial class BrowserControlCommandBuilder
             Description = "Viewport height in CSS pixels.",
             Required = true
         };
+        var scaleOption = new Option<double?>("--device-scale-factor")
+        {
+            Description = "Device scale factor. Default is 1."
+        };
+        var mobileOption = new Option<bool>("--mobile")
+        {
+            Description = "Use mobile viewport metrics."
+        };
+        var touchOption = new Option<bool>("--touch")
+        {
+            Description = "Enable touch viewport hints."
+        };
 
-        var command = new Command("setViewport", "Set viewport dimensions.")
+        var command = new Command(name, "Set viewport dimensions.")
         {
             widthOption,
-            heightOption
+            heightOption,
+            scaleOption,
+            mobileOption,
+            touchOption
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "setViewport",
-                [],
-                [
-                    ("width", parseResult.GetValue(widthOption).ToString()),
-                    ("height", parseResult.GetValue(heightOption).ToString())
-                ])));
-
-        return command;
-    }
-
-    private Command BuildDragAndDropCommand(BrowserSelectionOptions browserOptions)
-    {
-        var sourceArgument = new Argument<string>("sourceSelector")
         {
-            Description = "CSS selector for the drag source."
-        };
-        var targetArgument = new Argument<string>("targetSelector")
-        {
-            Description = "CSS selector for the drop target."
-        };
+            var options = new List<(string Key, string Value)>
+            {
+                ("width", parseResult.GetValue(widthOption).ToString()),
+                ("height", parseResult.GetValue(heightOption).ToString())
+            };
+            var scale = parseResult.GetValue(scaleOption);
+            if (scale is not null)
+            {
+                options.Add(("deviceScaleFactor", scale.Value.ToString()));
+            }
+            if (parseResult.GetValue(mobileOption))
+            {
+                options.Add(("isMobile", "true"));
+            }
+            if (parseResult.GetValue(touchOption))
+            {
+                options.Add(("hasTouch", "true"));
+            }
 
-        var command = new Command("dragAndDrop", "Drag one element onto another.")
-        {
-            sourceArgument,
-            targetArgument
-        };
-
-        command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), ToScriptLine(
-                "dragAndDrop",
-                parseResult.GetValue(sourceArgument) ?? string.Empty,
-                parseResult.GetValue(targetArgument) ?? string.Empty)));
+            return browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine("setViewport", [], options));
+        });
 
         return command;
     }

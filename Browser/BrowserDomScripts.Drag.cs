@@ -8,8 +8,8 @@ public static partial class BrowserDomScripts
     public static string DragAndDrop(string sourceSelector, string targetSelector) =>
         $$"""
         (() => {
-          const source = document.querySelector({{JsonString(sourceSelector)}});
-          const target = document.querySelector({{JsonString(targetSelector)}});
+          const source = {{Query(sourceSelector)}};
+          const target = {{Query(targetSelector)}};
           if (!source || !target) return false;
           const dataTransfer = new DataTransfer();
           const preserveWritableDataTransferState = propertyName => {
@@ -41,7 +41,7 @@ public static partial class BrowserDomScripts
     public static string BeginDrag(string sourceSelector, ElementPoint point) =>
         $$"""
         (() => {
-          const source = document.querySelector({{JsonString(sourceSelector)}});
+          const source = {{Query(sourceSelector)}};
           if (!source) return false;
           const dataTransfer = new DataTransfer();
           const preserveWritableDataTransferState = propertyName => {

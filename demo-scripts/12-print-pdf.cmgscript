@@ -1,0 +1,2 @@
+navigate "index.html"
+printPdf path="demo-output/page.pdf" printBackground=true format=A4 marginTop=10mm marginRight=10mm marginBottom=12mm marginLeft=10mm pageRanges="1"

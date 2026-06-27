@@ -1,0 +1,13 @@
+test.slow "slow visual flow" {
+  setContent "<main><button id='save'>Save</button><output id='status'>Ready</output></main>"
+  waitForSelector "#save"
+  expectText "#status" "Ready"
+  click "#save"
+}
+
+describe.slow "slow suite" {
+  it "inherits slow timeout policy" {
+    waitForSelector "#save"
+    expectText "#status" "Ready"
+  }
+}

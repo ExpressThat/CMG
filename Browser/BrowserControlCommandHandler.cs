@@ -6,23 +6,67 @@ public interface IBrowserControlCommandHandler
 {
     int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output);
 
+    int GetElement(BrowserKind browserKind, int? port, string selector, bool html, bool screenshot, FileInfo? output) =>
+        GetElement(browserKind, selector, html, screenshot, output);
+
     int RunScript(BrowserKind browserKind, string file, FileInfo? gif);
 
+    int RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace) =>
+        RunScript(browserKind, file, gif);
+
+    int RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts) =>
+        RunScript(browserKind, file, gif, trace);
+
+    int RunScript(
+        BrowserKind browserKind,
+        int? port,
+        string file,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
+        IReadOnlyDictionary<string, string> variables) =>
+        RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables);
+
+    int RunScript(
+        BrowserKind browserKind,
+        string file,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
+        IReadOnlyDictionary<string, string> variables) =>
+        RunScript(browserKind, file, gif, trace, timeouts);
+
     int RunScriptAction(BrowserKind browserKind, string scriptLine);
+
+    int RunScriptAction(BrowserKind browserKind, int? port, string scriptLine) =>
+        RunScriptAction(browserKind, scriptLine);
+
+    int ValidateScript(string file);
 }
 
 public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
 {
     private readonly IBrowserControlService browserControlService;
+    private readonly BrowserScriptValidator scriptValidator;
 
-    public BrowserControlCommandHandler(IBrowserControlService browserControlService)
+    public BrowserControlCommandHandler(
+        IBrowserControlService browserControlService,
+        BrowserScriptValidator scriptValidator)
     {
         this.browserControlService = browserControlService;
+        this.scriptValidator = scriptValidator;
     }
 
     public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output)
     {
-        if (!ValidateBrowserSelection(browserKind))
+        return GetElement(browserKind, port: null, selector, html, screenshot, output);
+    }
+
+    public int GetElement(BrowserKind browserKind, int? port, string selector, bool html, bool screenshot, FileInfo? output)
+    {
+        if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
@@ -33,7 +77,7 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
             return 1;
         }
 
-        var result = browserControlService.GetElement(browserKind, selector, html ? ElementOutputMode.Html : ElementOutputMode.Screenshot);
+        var result = browserControlService.GetElement(browserKind, port, selector, html ? ElementOutputMode.Html : ElementOutputMode.Screenshot);
 
         if (!result.Success)
         {
@@ -72,24 +116,77 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
 
     public int RunScript(BrowserKind browserKind, string file, FileInfo? gif)
     {
-        if (!ValidateBrowserSelection(browserKind))
+        return RunScript(browserKind, file, gif, trace: null);
+    }
+
+    public int RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace)
+    {
+        return RunScript(browserKind, file, gif, trace, timeouts: null);
+    }
+
+    public int RunScript(BrowserKind browserKind, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts)
+    {
+        return RunScript(browserKind, file, gif, trace, timeouts, baseUrl: null, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+    }
+
+    public int RunScript(
+        BrowserKind browserKind,
+        string file,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
+        IReadOnlyDictionary<string, string> variables)
+    {
+        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables);
+    }
+
+    public int RunScript(
+        BrowserKind browserKind,
+        int? port,
+        string file,
+        FileInfo? gif,
+        FileInfo? trace,
+        ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
+        IReadOnlyDictionary<string, string> variables)
+    {
+        if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScript(browserKind, file, gif);
+        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables);
 
         return WriteScriptResult(result);
     }
 
+    public int ValidateScript(string file)
+    {
+        var result = scriptValidator.ValidateFile(file);
+        if (result.Success)
+        {
+            Console.WriteLine($"SCRIPT VALID actions={result.ActionCount}");
+            return 0;
+        }
+
+        Console.Error.WriteLine(result.Error);
+        return 1;
+    }
+
     public int RunScriptAction(BrowserKind browserKind, string scriptLine)
     {
-        if (!ValidateBrowserSelection(browserKind))
+        return RunScriptAction(browserKind, port: null, scriptLine);
+    }
+
+    public int RunScriptAction(BrowserKind browserKind, int? port, string scriptLine)
+    {
+        if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScriptAction(browserKind, scriptLine);
+        var result = browserControlService.RunScriptAction(browserKind, port, scriptLine);
 
         return WriteScriptResult(result);
     }
@@ -105,6 +202,17 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         return false;
     }
 
+    private static bool ValidatePort(int? port)
+    {
+        if (port is null || port is >= 1 and <= 65535)
+        {
+            return true;
+        }
+
+        Console.Error.WriteLine("--port must be between 1 and 65535.");
+        return false;
+    }
+
     private static int WriteScriptResult(ScriptRunResult result)
     {
         foreach (var line in result.StdoutLines)
@@ -112,11 +220,11 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
             Console.WriteLine(line);
         }
 
-        if (!result.Success && !string.IsNullOrWhiteSpace(result.Error))
+        if (!result.Success && !result.Skipped && !string.IsNullOrWhiteSpace(result.Error))
         {
             Console.Error.WriteLine(result.Error);
         }
 
-        return result.Success ? 0 : 1;
+        return result.Success || result.Skipped ? 0 : 1;
     }
 }

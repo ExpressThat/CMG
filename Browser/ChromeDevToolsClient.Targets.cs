@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -6,6 +7,8 @@ namespace CMG.Browser;
 
 public sealed partial class ChromeDevToolsClient
 {
+    private static readonly ConcurrentDictionary<string, string> ActiveTargets = new();
+
     private async Task<Uri?> TryFindPageWithSelector(string remoteDebuggingUrl, string selector)
     {
         var pageTargets = await GetPageWebSocketDebuggerUrls(remoteDebuggingUrl);
@@ -15,7 +18,7 @@ public sealed partial class ChromeDevToolsClient
             await using var session = await DevToolsSession.Connect(pageTarget);
             var response = await session.SendCommand("Runtime.evaluate", writer =>
             {
-                writer.WriteString("expression", $"Boolean(document.querySelector({ToJsonStringLiteral(selector)}))");
+                writer.WriteString("expression", $"Boolean({BrowserDomScripts.Query(selector)})");
                 writer.WriteBoolean("returnByValue", true);
             });
 
@@ -118,7 +121,7 @@ public sealed partial class ChromeDevToolsClient
             throw new ChromeDevToolsException("No Chrome page target was available through remote debugging.");
         }
 
-        return pageTargets;
+        return PrioritizeActiveTarget(remoteDebuggingUrl, pageTargets);
     }
 
     private static async Task<PageTarget> GetPageTargetAt(string remoteDebuggingUrl, int index)
@@ -131,4 +134,62 @@ public sealed partial class ChromeDevToolsClient
 
         return targets[index];
     }
+
+    private static IReadOnlyList<PageTarget> PrioritizeActiveTarget(string remoteDebuggingUrl, IReadOnlyList<PageTarget> targets)
+    {
+        var activeId = GetActiveTarget(remoteDebuggingUrl);
+        if (string.IsNullOrWhiteSpace(activeId))
+        {
+            return targets;
+        }
+
+        var active = targets.FirstOrDefault(target => target.Id == activeId);
+        return active is null
+            ? targets
+            : [active, .. targets.Where(target => target.Id != activeId)];
+    }
+
+    private static void SetActiveTarget(string remoteDebuggingUrl, string targetId)
+    {
+        ActiveTargets[Key(remoteDebuggingUrl)] = targetId;
+        BrowserPaths.EnsureAppDataDirectory();
+        File.WriteAllText(BrowserPaths.GetActiveTargetFile(Key(remoteDebuggingUrl)), targetId);
+    }
+
+    private static void ClearActiveTarget(string remoteDebuggingUrl, string targetId)
+    {
+        if (GetActiveTarget(remoteDebuggingUrl) == targetId)
+        {
+            ActiveTargets.TryRemove(Key(remoteDebuggingUrl), out _);
+            var file = BrowserPaths.GetActiveTargetFile(Key(remoteDebuggingUrl));
+            if (File.Exists(file))
+            {
+                File.Delete(file);
+            }
+        }
+    }
+
+    private static string? GetActiveTarget(string remoteDebuggingUrl)
+    {
+        if (ActiveTargets.TryGetValue(Key(remoteDebuggingUrl), out var activeId))
+        {
+            return activeId;
+        }
+
+        var file = BrowserPaths.GetActiveTargetFile(Key(remoteDebuggingUrl));
+        if (!File.Exists(file))
+        {
+            return null;
+        }
+
+        activeId = File.ReadAllText(file).Trim();
+        if (!string.IsNullOrWhiteSpace(activeId))
+        {
+            ActiveTargets[Key(remoteDebuggingUrl)] = activeId;
+        }
+
+        return activeId;
+    }
+
+    private static string Key(string remoteDebuggingUrl) => remoteDebuggingUrl.TrimEnd('/');
 }

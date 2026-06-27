@@ -1,0 +1,5 @@
+setContent "<!doctype html><title>Step Block</title><main><button id='open'>Open</button><p id='status'>Ready</p><script>document.querySelector('#open').addEventListener('click', () => document.querySelector('#status').textContent = 'Opened');</script></main>"
+step "Open panel" {
+  click "#open"
+  assertText "#status" "Opened"
+}

@@ -1,0 +1,9 @@
+# Demonstrates page-side WebSocket routing and waits.
+
+test "websocket route" {
+  routeWebSocket "/SOCKET" match=contains ignoreCase=true message="ready"
+  evaluate "window.__socket = new WebSocket('wss://example.com/socket')"
+  waitForWebSocket "wss://example.com/socket" match=exact timeout=5000
+  waitForWebSocketMessage "^ready$" match=regex timeout=5000
+  clearWebSocketRoutes
+}

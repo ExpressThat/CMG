@@ -1,0 +1,6 @@
+test "history wait" {
+  navigate "about:blank"
+  navigate "C:\Projects\CMG\index.html"
+  goBack waitUntil=commit timeout=5000
+  goForward waitUntil=domcontentloaded timeout=5000
+}

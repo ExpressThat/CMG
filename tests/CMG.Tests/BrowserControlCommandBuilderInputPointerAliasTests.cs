@@ -1,0 +1,84 @@
+using System.CommandLine;
+using CMG.Browser;
+using CMG.Commands;
+
+namespace CMG.Tests;
+
+public sealed class BrowserControlCommandBuilderInputPointerAliasTests
+{
+    [Theory]
+    [InlineData("mouse mouseMove center", "mouseMove \"center\"")]
+    [InlineData("mouse mouseDown --x 10 --y 20", "mouseDown x=\"10\" y=\"20\"")]
+    [InlineData("mouse mouseUp --selector #save --edge center", "mouseUp selector=\"#save\" edge=\"center\"")]
+    [InlineData("scroll scrollTo bottom", "scrollTo \"bottom\"")]
+    [InlineData("scroll scrollBy 0 250 --selector #panel", "scrollBy \"0\" \"250\" selector=\"#panel\"")]
+    [InlineData("scroll scrollBy --x 0 --y -80 --selector text=Panel", "scrollBy x=\"0\" y=\"-80\" selector=\"text=Panel\"")]
+    [InlineData("scroll by --x 12 --y 24", "scrollBy x=\"12\" y=\"24\"")]
+    [InlineData("clipboard setClipboard hello", "setClipboard \"hello\"")]
+    [InlineData("clipboard writeClipboard hello", "writeClipboard \"hello\"")]
+    [InlineData("clipboard readClipboard", "readClipboard")]
+    [InlineData("clipboard clearClipboard", "clearClipboard")]
+    [InlineData("dragTo #source #target", "dragTo \"#source\" \"#target\"")]
+    public void InputAliasCommands_MapToScriptActions(string commandTail, string expectedScript)
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse($"control input {commandTail}").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(BrowserKind.Chrome, handler.BrowserKind);
+        Assert.Equal(expectedScript, handler.ScriptLine);
+    }
+
+    [Fact]
+    public void InputClipboardGroup_DoesNotExposeBareSetCommand()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control input clipboard set hello").Invoke();
+
+        Assert.NotEqual(0, exitCode);
+        Assert.Null(handler.ScriptLine);
+    }
+
+    [Fact]
+    public void BrowserControlGroup_DoesNotExposeDslSetCommand()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("control set title hello").Invoke();
+
+        Assert.NotEqual(0, exitCode);
+        Assert.Null(handler.ScriptLine);
+    }
+
+    private static RootCommand BuildRoot(CapturingBrowserControlCommandHandler handler)
+    {
+        var chrome = new Option<bool>("--chrome");
+        var edge = new Option<bool>("--edge");
+        var firefox = new Option<bool>("--firefox");
+        var root = new RootCommand();
+        root.Options.Add(chrome);
+        root.Options.Add(edge);
+        root.Options.Add(firefox);
+        root.Subcommands.Add(new BrowserControlCommandBuilder(handler).Build(new BrowserSelectionOptions(chrome, edge, firefox)));
+        return root;
+    }
+
+    private sealed class CapturingBrowserControlCommandHandler : IBrowserControlCommandHandler
+    {
+        public BrowserKind BrowserKind { get; private set; }
+
+        public string? ScriptLine { get; private set; }
+
+        public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output) => 0;
+
+        public int RunScript(BrowserKind browserKind, string file, FileInfo? gif) => 0;
+
+        public int ValidateScript(string file) => 0;
+
+        public int RunScriptAction(BrowserKind browserKind, string scriptLine)
+        {
+            BrowserKind = browserKind;
+            ScriptLine = scriptLine;
+            return 0;
+        }
+    }
+}

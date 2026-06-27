@@ -7,4 +7,5 @@ activateTab index=0
 click "#openProfileDialog"
 waitForElement "#profileDialog[open]" timeout=5000
 press "Tab"
+keyboardShortcut "Control+Shift+P"
 click "#profileDialog button[value='close']"

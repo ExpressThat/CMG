@@ -1,0 +1,5 @@
+set page "C:\Projects\CMG\index.html"
+
+emulateMedia media=print colorScheme=dark reducedMotion=reduce forcedColors=active contrast=more
+navigate "${page}"
+caption "Media emulation applied"

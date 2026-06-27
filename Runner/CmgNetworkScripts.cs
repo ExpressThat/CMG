@@ -1,0 +1,238 @@
+namespace CMG.Runner;
+
+public static partial class CmgNetworkScripts
+{
+    public static string Route(CmgNode action)
+    {
+        var pattern = action.Arguments.Count > 0 ? action.Arguments[0] : string.Empty;
+        var status = action.Options.TryGetValue("status", out var statusValue) ? statusValue : "200";
+        var body = RouteBody(action);
+        var contentType = action.Options.TryGetValue("contentType", out var typeValue) ? typeValue : "text/plain";
+        var abort = IsAbortRoute(action) ? "true" : "false";
+        var error = action.Options.TryGetValue("error", out var errorValue) ? errorValue : "Request aborted by CMG route";
+        var method = action.Options.TryGetValue("method", out var methodValue) ? methodValue.ToUpperInvariant() : string.Empty;
+        var times = TryReadTimes(action, out var timesValue) ? timesValue.ToString() : "null";
+        var delay = action.Options.TryGetValue("delay", out var delayValue) ? delayValue : "0";
+        var match = NetworkMatchMode(action);
+        var ignoreCase = BoolLiteral(action.Options.GetValueOrDefault("ignoreCase"));
+        var headers = RouteHeaders(action, contentType);
+        return InstallPrelude() + $"window.__cmgRoutes.push({{ pattern: {Quote(pattern)}, match: {Quote(match)}, ignoreCase: {ignoreCase}, method: {Quote(method)}, times: {times}, delay: {delay}, status: {status}, body: {Quote(body)}, contentType: {Quote(contentType)}, headers: {headers}, abort: {abort}, error: {Quote(error)} }}); true";
+    }
+
+    public static string ClearRoutes() => "window.__cmgRoutes = []; true";
+
+    public static string ExportHar() => InstallPrelude() + "JSON.stringify({ log: { version: '1.2', creator: { name: 'CMG', version: '1' }, entries: window.__cmgResponses.map(r => ({ request: { method: r.method || 'GET', url: r.url }, response: { status: r.status, content: { mimeType: r.contentType || 'text/plain', text: r.body || '' } }, _cmgMocked: Boolean(r.mocked), _cmgType: r.type || 'fetch' })) } })";
+
+    public static string ReplayHar(string json) => InstallPrelude() + $$"""
+    (() => {
+      const har = JSON.parse({{Quote(json)}});
+      for (const entry of har.log?.entries || []) {
+        const url = entry.request?.url;
+        if (!url) continue;
+        window.__cmgRoutes.push({
+          pattern: url,
+          status: Number(entry.response?.status || 200),
+          body: entry.response?.content?.text || '',
+          contentType: entry.response?.content?.mimeType || 'text/plain'
+        });
+      }
+      return window.__cmgRoutes.length;
+    })()
+    """;
+
+    private static string InstallPrelude() =>
+        """
+        (() => {
+          window.__cmgRoutes = window.__cmgRoutes || [];
+          window.__cmgRequests = window.__cmgRequests || [];
+          window.__cmgResponses = window.__cmgResponses || [];
+          window.__cmgRequestFailures = window.__cmgRequestFailures || [];
+          window.__cmgDelay = ms => new Promise(resolve => setTimeout(resolve, Math.max(0, Number(ms) || 0)));
+          window.__cmgHeadersObject = headers => {
+            const result = {};
+            if (!headers) return result;
+            if (headers instanceof Headers) headers.forEach((value, key) => result[String(key).toLowerCase()] = String(value));
+            else if (Array.isArray(headers)) headers.forEach(([key, value]) => result[String(key).toLowerCase()] = String(value));
+            else Object.entries(headers).forEach(([key, value]) => result[String(key).toLowerCase()] = String(value));
+            return result;
+          };
+          window.__cmgParseRawHeaders = raw => {
+            const result = {};
+            String(raw || '').trim().split(/\r?\n/).filter(Boolean).forEach(line => {
+              const index = line.indexOf(':');
+              if (index > 0) result[line.slice(0, index).trim().toLowerCase()] = line.slice(index + 1).trim();
+            });
+            return result;
+          };
+          window.__cmgTakeRoute = (url, method) => {
+            const index = window.__cmgRoutes.findIndex(route =>
+              window.__cmgRouteUrlMatches(route, url) &&
+              (!route.method || route.method === String(method || 'GET').toUpperCase()));
+            if (index < 0) return null;
+            const route = window.__cmgRoutes[index];
+            if (Number.isFinite(route.times)) {
+              route.times -= 1;
+              if (route.times <= 0) window.__cmgRoutes.splice(index, 1);
+            }
+            return route;
+          };
+          window.__cmgRouteUrlMatches = (route, url) => {
+            const ignoreCase = Boolean(route.ignoreCase);
+            const actual = ignoreCase ? String(url || '').toLowerCase() : String(url || '');
+            const pattern = ignoreCase ? String(route.pattern || '').toLowerCase() : String(route.pattern || '');
+            if (route.match === 'exact') return actual === pattern;
+            if (route.match === 'regex') return new RegExp(String(route.pattern || ''), ignoreCase ? 'i' : '').test(String(url || ''));
+            return actual.includes(pattern);
+          };
+          if (!window.__cmgFetchPatched) {
+            window.__cmgFetchPatched = true;
+            const originalFetch = window.fetch.bind(window);
+            window.fetch = async (input, init) => {
+              const url = typeof input === 'string' ? input : input.url;
+              const method = init?.method || input?.method || 'GET';
+              const headers = window.__cmgHeadersObject(init?.headers || input?.headers);
+              window.__cmgRequests.push({ method, url, type: 'fetch', body: init?.body ? String(init.body) : '', headers });
+              const route = window.__cmgTakeRoute(url, method);
+              if (route) {
+                await window.__cmgDelay(route.delay);
+                if (route.abort) {
+                  window.__cmgRequestFailures.push({ method, url, type: 'fetch', mocked: true, error: route.error || 'Request aborted by CMG route', headers });
+                  throw new TypeError(route.error || 'Request aborted by CMG route');
+                }
+                const response = new Response(route.body, { status: route.status, headers: route.headers || { 'content-type': route.contentType } });
+                window.__cmgResponses.push({ method, url, status: route.status, mocked: true, body: route.body, contentType: route.contentType, headers: route.headers || { 'content-type': route.contentType } });
+                return response;
+              }
+              try {
+                const response = await originalFetch(input, init);
+                const body = await response.clone().text().catch(() => '');
+                window.__cmgResponses.push({ method, url, status: response.status, mocked: false, body, contentType: response.headers.get('content-type') || 'text/plain', headers: window.__cmgHeadersObject(response.headers) });
+                return response;
+              } catch (error) {
+                window.__cmgRequestFailures.push({ method, url, type: 'fetch', error: String(error?.message || error || 'Request failed'), headers });
+                throw error;
+              }
+            };
+          }
+          if (!window.__cmgXhrPatched) {
+            window.__cmgXhrPatched = true;
+            const OriginalXHR = window.XMLHttpRequest;
+            window.XMLHttpRequest = function() {
+              const xhr = new OriginalXHR();
+              let method = 'GET';
+              let url = '';
+              const requestHeaders = {};
+              const open = xhr.open.bind(xhr);
+              xhr.open = (...args) => {
+                method = String(args[0] || 'GET');
+                url = String(args[1] || '');
+                return open(...args);
+              };
+              xhr.setRequestHeader = (name, value) => {
+                requestHeaders[String(name).toLowerCase()] = String(value);
+                return OriginalXHR.prototype.setRequestHeader.call(xhr, name, value);
+              };
+              const send = xhr.send.bind(xhr);
+              xhr.send = body => {
+                window.__cmgRequests.push({ method, url, type: 'xhr', body: body ? String(body) : '', headers: requestHeaders });
+                const route = window.__cmgTakeRoute(url, method);
+                if (!route) {
+                  xhr.addEventListener('loadend', () => window.__cmgResponses.push({ method, url, status: xhr.status, mocked: false, type: 'xhr', body: xhr.responseText || '', contentType: xhr.getResponseHeader('content-type') || 'text/plain', headers: window.__cmgParseRawHeaders(xhr.getAllResponseHeaders()) }), { once: true });
+                  xhr.addEventListener('error', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Network error', headers: requestHeaders }), { once: true });
+                  xhr.addEventListener('abort', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Request aborted', headers: requestHeaders }), { once: true });
+                  xhr.addEventListener('timeout', () => window.__cmgRequestFailures.push({ method, url, type: 'xhr', error: 'Request timed out', headers: requestHeaders }), { once: true });
+                  return send(body);
+                }
+                if (route.abort) {
+                  Object.defineProperty(xhr, 'readyState', { configurable: true, get: () => 4 });
+                  Object.defineProperty(xhr, 'status', { configurable: true, get: () => 0 });
+                  setTimeout(() => {
+                    window.__cmgRequestFailures.push({ method, url, type: 'xhr', mocked: true, error: route.error || 'Request aborted by CMG route', headers: requestHeaders });
+                    xhr.onreadystatechange?.();
+                    xhr.onerror?.(new Event('error'));
+                    xhr.dispatchEvent(new Event('readystatechange'));
+                    xhr.dispatchEvent(new Event('error'));
+                    xhr.dispatchEvent(new Event('loadend'));
+                  }, Math.max(0, Number(route.delay) || 0));
+                  return;
+                }
+                Object.defineProperty(xhr, 'readyState', { configurable: true, get: () => 4 });
+                Object.defineProperty(xhr, 'status', { configurable: true, get: () => route.status });
+                Object.defineProperty(xhr, 'responseText', { configurable: true, get: () => route.body });
+                Object.defineProperty(xhr, 'response', { configurable: true, get: () => route.body });
+                setTimeout(() => {
+                  window.__cmgResponses.push({ method, url, status: route.status, mocked: true, type: 'xhr', body: route.body, contentType: route.contentType, headers: route.headers || { 'content-type': route.contentType } });
+                  xhr.onreadystatechange?.();
+                  xhr.onload?.();
+                  xhr.dispatchEvent(new Event('readystatechange'));
+                  xhr.dispatchEvent(new Event('load'));
+                  xhr.dispatchEvent(new Event('loadend'));
+                }, Math.max(0, Number(route.delay) || 0));
+              };
+              return xhr;
+            };
+          }
+        })();
+        """;
+
+    private static string Quote(string value) =>
+        $"'{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("'", "\\'", StringComparison.Ordinal)}'";
+
+    private static string EscapeMessage(string value) => value.Replace("'", "\\'", StringComparison.Ordinal);
+
+    private static bool IsAbortRoute(CmgNode action) =>
+        IsTrue(action.Options.GetValueOrDefault("abort")) ||
+        string.Equals(action.Options.GetValueOrDefault("action"), "abort", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsTrue(string? value) =>
+        string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+
+    private static bool TryReadTimes(CmgNode action, out int times)
+    {
+        times = 0;
+        return action.Options.TryGetValue("times", out var value) &&
+            int.TryParse(value, out times) &&
+            times > 0;
+    }
+
+    private static string RouteHeaders(CmgNode action, string contentType)
+    {
+        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["content-type"] = contentType
+        };
+        AddHeader(headers, action.Options.GetValueOrDefault("header"));
+        foreach (var header in (action.Options.GetValueOrDefault("headers") ?? string.Empty).Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            AddHeader(headers, header);
+        }
+
+        var name = action.Options.GetValueOrDefault("headerName");
+        var value = action.Options.GetValueOrDefault("headerValue");
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            headers[name.Trim().ToLowerInvariant()] = value ?? string.Empty;
+        }
+
+        return "{ " + string.Join(", ", headers.Select(header => $"{Quote(header.Key)}: {Quote(header.Value)}")) + " }";
+    }
+
+    private static void AddHeader(Dictionary<string, string> headers, string? header)
+    {
+        if (string.IsNullOrWhiteSpace(header)) return;
+        var index = header.IndexOf(':');
+        if (index <= 0) return;
+        headers[header[..index].Trim().ToLowerInvariant()] = header[(index + 1)..].Trim();
+    }
+
+    private static string RouteBody(CmgNode action)
+    {
+        var bodyFile = action.Options.GetValueOrDefault("bodyFile") ?? action.Options.GetValueOrDefault("file");
+        if (!string.IsNullOrWhiteSpace(bodyFile))
+        {
+            return File.ReadAllText(Path.GetFullPath(bodyFile));
+        }
+
+        return action.Options.TryGetValue("body", out var bodyValue) ? bodyValue : string.Empty;
+    }
+}

@@ -1,0 +1,4 @@
+emulate device="Pixel 7" locale=en-GB colorScheme=dark
+setContent "<!doctype html><title>Device Emulation</title><main><h1>Device Emulation</h1><p id='size'></p><script>document.querySelector('#size').textContent = innerWidth + 'x' + innerHeight + ' ' + navigator.userAgent;</script></main>"
+expectEval "innerWidth === 412 && innerHeight === 915 && navigator.userAgent.includes('Pixel 7')"
+caption "Pixel 7 preset applied"

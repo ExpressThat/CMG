@@ -10,13 +10,14 @@ public sealed partial class FirefoxBiDiClient : IBrowserAutomationClient
     private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(100);
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) =>
-        NonEmpty(Evaluate(remoteDebuggingUrl, $"document.querySelector({BrowserDomScripts.JsonString(selector)})?.outerHTML ?? null"), selector);
+        NonEmpty(Evaluate(remoteDebuggingUrl, $"(() => {{ const element = {BrowserDomScripts.Query(selector)}; return element?.outerHTML ?? null; }})()"), selector);
 
-    public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector) =>
+    public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector, ScreenshotOptions? options = null) =>
         Run(async () =>
         {
+            options ??= new();
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetPrimaryContext();
+            var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             await Evaluate(session, context.Id, BrowserDomScripts.ScrollIntoView(selector));
             await PromoteMessageBar(session, context.Id);
             var rect = await GetElementRect(session, context.Id, selector);
@@ -32,6 +33,6 @@ public sealed partial class FirefoxBiDiClient : IBrowserAutomationClient
                 writer.WriteEndObject();
             });
 
-            return DecodeScreenshot(response);
+            return ScreenshotImage.ConvertIfNeeded(DecodeScreenshot(response), options);
         });
 }

@@ -1,0 +1,239 @@
+using CMG.Runner;
+
+namespace CMG.Tests;
+
+public sealed partial class CmgActionLowererTests
+{
+    [Fact]
+    public void Lower_FillUsesVisualClearAndType()
+    {
+        var action = Node("fill", ["#name", "Ross"], []);
+        var lines = new CmgActionLowerer().Lower(action);
+
+        Assert.Equal(["clear \"#name\"", "type \"#name\" \"Ross\""], lines);
+    }
+
+    [Fact]
+    public void Lower_FillPreservesTypingOptions()
+    {
+        var action = Node("fill", ["#name", "Ross"], new Dictionary<string, string> { ["delay"] = "25" });
+        var lines = new CmgActionLowerer().Lower(action);
+
+        Assert.Equal(["clear \"#name\"", "type \"#name\" \"Ross\" delay=\"25\""], lines);
+    }
+
+    [Fact]
+    public void Lower_StepAddsCaptionBeforeChildren()
+    {
+        var action = Node("step", ["Open"], [Node("click", ["#open"], [])]);
+        var lines = new CmgActionLowerer().Lower(action);
+
+        Assert.Equal(3, lines.Count);
+        Assert.Equal("showMessageBar \"Open\"", lines[0]);
+        Assert.Contains("not actionable", lines[1]);
+        Assert.Equal("click \"#open\"", lines[2]);
+    }
+
+    [Fact]
+    public void Lower_GifBlockCanBeFlattenedWhenCommandGifIsActive()
+    {
+        var action = Node("gif", ["Only this"], [Node("click", ["#open"], [])]);
+        var lines = new CmgActionLowerer().Lower(action);
+
+        Assert.Equal(3, lines.Count);
+        Assert.Equal("showMessageBar \"Only this\"", lines[0]);
+        Assert.Contains("not actionable", lines[1]);
+        Assert.Equal("click \"#open\"", lines[2]);
+    }
+
+    [Fact]
+    public void LowerRecordingBlock_PreservesBlockForCommandGifSuppression()
+    {
+        var action = Node("recordVideo", ["Only this"], [Node("click", ["#open"], [])]);
+        var lines = new CmgActionLowerer().LowerRecordingBlock(action);
+
+        Assert.Equal("recordVideo \"Only this\" {", lines[0]);
+        Assert.Contains("not actionable", lines[1]);
+        Assert.Equal("click \"#open\"", lines[2]);
+        Assert.Equal("}", lines[3]);
+    }
+
+    [Theory]
+    [InlineData("recordVideo")]
+    [InlineData("screencast")]
+    public void Lower_ProviderRecordingBlocksCanBeFlattenedWhenCommandGifIsActive(string name)
+    {
+        var action = Node(name, ["Only this"], [Node("click", ["#open"], [])]);
+        var lines = new CmgActionLowerer().Lower(action);
+
+        Assert.Equal("showMessageBar \"Only this\"", lines[0]);
+        Assert.Equal("click \"#open\"", lines[2]);
+    }
+
+    [Fact]
+    public void Lower_TouchAndClipboardActionsPassThrough()
+    {
+        var lowerer = new CmgActionLowerer();
+
+        var tap = lowerer.Lower(Node("tap", ["#save"], []));
+        Assert.Equal(2, tap.Count);
+        Assert.Equal("tap \"#save\"", tap[1]);
+        Assert.Equal("setClipboard \"hello\"", Assert.Single(lowerer.Lower(Node("setClipboard", ["hello"], []))));
+        Assert.Equal("readClipboard", Assert.Single(lowerer.Lower(Node("readClipboard", [], []))));
+    }
+
+    [Fact]
+    public void Lower_UnsupportedActionFailsExplicitly()
+    {
+        var action = Node("notARealParityAction", ["/api/**"], []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(action));
+
+        Assert.Contains("Unsupported CMG action", line);
+    }
+
+    [Theory]
+    [InlineData("check")]
+    [InlineData("uncheck")]
+    [InlineData("focus")]
+    [InlineData("blur")]
+    [InlineData("selectText")]
+    [InlineData("dblclick")]
+    [InlineData("doubleClick")]
+    [InlineData("rightClick")]
+    [InlineData("contextClick")]
+    public void Lower_VisualElementActionsUsePageFacingCommands(string name)
+    {
+        var lines = new CmgActionLowerer().Lower(Node(name, ["#target"], []));
+
+        Assert.NotEmpty(lines);
+        Assert.All(lines, line => Assert.DoesNotContain("Unsupported CMG action", line));
+    }
+
+    [Fact]
+    public void Lower_StorageAndExpectationCommands()
+    {
+        var lowerer = new CmgActionLowerer();
+
+        Assert.Equal("localStorage \"set\" \"token\" \"abc\"", Assert.Single(lowerer.Lower(Node("localStorage", ["set", "token", "abc"], []))));
+        Assert.Equal("cookie", Assert.Single(lowerer.Lower(Node("cookie", [], []))));
+        Assert.Equal("expecturl \"checkout\"", Assert.Single(lowerer.Lower(Node("expectUrl", ["checkout"], []))));
+    }
+
+    [Fact]
+    public void Lower_WaitForUrlPollsUntilTimeout()
+    {
+        var action = Node("waitForUrl", ["checkout"], []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(action));
+
+        Assert.Equal("waitForUrl \"checkout\"", line);
+    }
+
+    [Theory]
+    [InlineData("expectValue", "Expected value")]
+    [InlineData("expectAttribute", "Expected attribute")]
+    [InlineData("expectChecked", "Expected checked")]
+    [InlineData("expectCount", "Expected ' + expected + ' elements")]
+    public void Lower_ElementExpectationsEmitBrowserAssertions(string name, string expected)
+    {
+        var args = name.Equals("expectAttribute", StringComparison.OrdinalIgnoreCase)
+            ? new[] { "#target", "aria-label", "Save" }
+            : new[] { "#target", "Save" };
+
+        var line = new CmgActionLowerer().Lower(Node(name, args, [])).Last();
+
+        Assert.StartsWith("evaluate", line);
+        Assert.Contains(expected, line);
+    }
+
+    [Fact]
+    public void Lower_ElementExpectationAcceptsLocatorOption()
+    {
+        var node = new CmgNode(1, "expectVisible", "expectVisible", [], new Dictionary<string, string> { ["text"] = "Save" }, []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(node));
+
+        Assert.Equal("expectVisible text=\"Save\"", line);
+    }
+
+    [Theory]
+    [InlineData("expectVisible", "expectVisible \"#target\"")]
+    [InlineData("expectHidden", "expectHidden \"#target\"")]
+    [InlineData("expectEnabled", "expectEnabled \"#target\"")]
+    [InlineData("expectDisabled", "expectDisabled \"#target\"")]
+    public void Lower_ElementStateExpectationsPassThrough(string name, string expected)
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node(name, ["#target"], [])));
+
+        Assert.Equal(expected, line);
+    }
+
+    [Fact]
+    public void Lower_SelectOptionPassesThrough()
+    {
+        var lines = new CmgActionLowerer().Lower(Node("selectOption", ["#plan", "pro"], []));
+
+        Assert.Equal(2, lines.Count);
+        Assert.Contains("not actionable", lines[0]);
+        Assert.Equal("selectOption \"#plan\" \"pro\"", lines[1]);
+    }
+
+    [Fact]
+    public void Lower_SelectOptionPreservesProviderTargetOptions()
+    {
+        var lines = new CmgActionLowerer().Lower(Node("selectOption", ["#plan"], new Dictionary<string, string> { ["optionLabel"] = "Pro" }));
+
+        Assert.Equal(2, lines.Count);
+        Assert.Equal("selectOption \"#plan\" optionLabel=\"Pro\"", lines[1]);
+    }
+
+    [Fact]
+    public void Lower_ExpectTextPreservesTimeoutOption()
+    {
+        var node = new CmgNode(1, "expectText", "expectText", ["#status", "Ready"], new Dictionary<string, string> { ["timeout"] = "500" }, []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(node));
+
+        Assert.Contains("timeout=\"500\"", line);
+    }
+
+    [Theory]
+    [InlineData("contains")]
+    [InlineData("notContains")]
+    public void Lower_BodyTextAssertionsPreserveOneArgumentFormForWithinScope(string name)
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node(name, ["Ready"], [])));
+
+        Assert.Equal($"{name} \"Ready\"", line);
+    }
+
+    [Fact]
+    public void Lower_EmulatePassesOptionsToScriptRunner()
+    {
+        var node = new CmgNode(1, "emulate", "emulate", [], new Dictionary<string, string> { ["width"] = "390", ["height"] = "844" }, []);
+        var line = Assert.Single(new CmgActionLowerer().Lower(node));
+
+        Assert.Equal("emulate width=\"390\" height=\"844\"", line);
+    }
+
+    [Fact]
+    public void Lower_DownloadUsesActionabilityBeforePointerClick()
+    {
+        var lines = new CmgActionLowerer().Lower(Node("download", ["#export"], []));
+
+        Assert.Equal(2, lines.Count);
+        Assert.Contains("not actionable", lines[0]);
+        Assert.Equal("download \"#export\"", lines[1]);
+    }
+
+    [Fact]
+    public void Lower_WaitForEventPassesThrough()
+    {
+        var line = Assert.Single(new CmgActionLowerer().Lower(Node("waitForEvent", ["dialog", "Saved"], [])));
+
+        Assert.Equal("waitForEvent \"dialog\" \"Saved\"", line);
+    }
+
+    private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyList<CmgNode> children) =>
+        new(1, kind, args.FirstOrDefault() ?? kind, args, new Dictionary<string, string>(), children);
+
+    private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyDictionary<string, string> options) =>
+        new(1, kind, kind, args, options, []);
+}

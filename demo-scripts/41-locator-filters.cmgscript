@@ -1,0 +1,57 @@
+setContent "<main><section class='scope'><button class='cmd primary' onclick='result.textContent=\"first\"'>First</button><button class='cmd secondary' onclick='result.textContent=\"second\"'>Second <span class='badge'>New</span></button></section><button class='cmd outside' onclick='result.textContent=\"outside\"'>Outside</button><button class='cmd hidden' style='display:none'>Hidden</button><output id='result'>none</output></main>"
+
+click "textExact=First"
+expectText "#result" "first"
+
+click "role=button|Second"
+expectText "#result" "second"
+
+click "textRegex=^First$"
+expectText "#result" "first"
+
+click "roleRegex=button|Second"
+expectText "#result" "second"
+
+click "nth=.cmd|1"
+expectText "#result" "second"
+
+click "first=.cmd"
+expectText "#result" "first"
+
+click "hasText=.cmd|Second"
+expectText "#result" "second"
+
+click "has=.cmd|.badge"
+expectText "#result" "second"
+
+click "hasNot=.cmd|.badge"
+expectText "#result" "first"
+
+click "hasNotText=.cmd|Hidden"
+expectText "#result" "first"
+
+click "visible=.cmd"
+
+click "or=.missing|.secondary"
+expectText "#result" "second"
+
+click "and=.cmd|.primary"
+expectText "#result" "first"
+
+click "strict=.secondary"
+expectText "#result" "second"
+
+click "inside=.scope|.primary"
+expectText "#result" "first"
+
+click "closest=.badge|.secondary"
+expectText "#result" "second"
+
+click "parent=.badge|.secondary"
+expectText "#result" "second"
+
+click "next=.primary|.secondary"
+expectText "#result" "second"
+
+click "previous=.secondary|.primary"
+expectText "#result" "first"

@@ -1,0 +1,4 @@
+setContent "<!doctype html><title>Press Delay</title><main><input id='name' value='CMG'><p id='status'>Ready</p></main>"
+focus "#name"
+caption "Hold Control+A"
+press "Control+A" delay=25

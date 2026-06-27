@@ -1,0 +1,5 @@
+setContent "<main><h1>Checkout</h1><output id='status'>Saved</output><script>window.appReady = true;</script></main>"
+
+expectEval "window.appReady === true"
+assertEval "document.querySelector('#status').textContent" equals=Saved
+expectExpression "document.body.innerText" contains=Checkout

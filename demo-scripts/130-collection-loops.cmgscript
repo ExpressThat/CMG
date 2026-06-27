@@ -1,0 +1,13 @@
+setContent "<main><ul><li>Ada</li><li>Grace</li></ul></main>"
+
+set names {
+  allTextContents "li"
+}
+
+foreachJson name "${names}" {
+  caption "JSON item ${index}: ${name}"
+}
+
+foreachList mode "smoke, visual, report" {
+  caption "List item ${index}: ${mode}"
+}

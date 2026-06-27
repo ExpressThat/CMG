@@ -1,0 +1,10 @@
+navigate "C:\Projects\CMG\index.html"
+waitForElement "h1" timeout=5000
+textContent "h1"
+set titleText {
+  innerText "h1"
+}
+showMessageBar "${titleText}"
+getAttribute "#openProfileDialog" "id"
+computedStyle "#openProfileDialog" "display"
+property "#openProfileDialog" "dataset.command"

@@ -1,0 +1,33 @@
+macro parent {
+  set token "parent"
+
+  macro readParent {
+    return "${token}"
+  }
+
+  macro child {
+    set beforeShadow {
+      return "${token}"
+    }
+    set token "child"
+    return "${beforeShadow}-${token}"
+  }
+
+  set childResult {
+    call child
+  }
+
+  set topResult {
+    call readParent
+  }
+
+  return "${childResult}-${token}-${topResult}"
+}
+
+test "macro scoping" {
+  set result {
+    call parent
+  }
+
+  showMessageBar "${result}"
+}

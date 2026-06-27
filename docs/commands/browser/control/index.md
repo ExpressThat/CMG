@@ -4,49 +4,64 @@ Browser interaction and page control command group.
 
 ```powershell
 cmg browser control [command] [options]
+cmg browser --port <port> control [command] [options]
 ```
 
 ## Behavior
 
 - Contains commands that interact with the active page in the selected browser. Chrome and Edge use Chrome DevTools Protocol; Firefox uses WebDriver BiDi.
 - Run [`browser launch`](../launch.md) before using control commands. Include the same top-level browser option on launch and control commands when using `--edge` or `--firefox`.
+- Use `cmg browser --port <port> control ...` to target a non-default browser instance launched with `cmg browser --port <port> launch`.
+- The scripting `set` action is intentionally not exposed as a CLI command because CLI invocations do not share DSL variable scope. Use `set` inside `.cmgscript` files and run them with [`script`](script.md) or `cmg run`.
 - Running `browser control` without a subcommand exits with `1`.
 
 ## Subcommands
 
-- [`getElement`](getElement.md): Return HTML or a screenshot for a selected element.
 - [`script`](script.md): Run a `.cmgscript` browser automation script.
-- [`navigate`](navigate.md): Navigate the primary page target.
-- [`waitForElement`](waitForElement.md): Wait until an element exists.
-- [`click`](click.md): Click an element.
-- [`type`](type.md): Type text into an element.
-- [`clear`](clear.md): Clear an input-like element.
-- [`press`](press.md): Press a keyboard key.
-- [`hover`](hover.md): Hover an element.
-- [`scrollIntoView`](scrollIntoView.md): Scroll an element into view.
-- [`select`](select.md): Set a select-like element value.
-- [`showMessageBar`](showMessageBar.md): Inject or update a fixed message bar at the top of the page.
-- [`delay`](delay.md): Pause for a duration.
-- [`html`](html.md): Print an element's outer HTML.
-- [`screenshot`](screenshot.md): Capture an element screenshot.
-- [`screenshotPage`](screenshotPage.md): Capture a full viewport screenshot.
-- [`assertText`](assertText.md): Assert that an element contains text.
-- [`evaluate`](evaluate.md): Evaluate JavaScript in the primary page.
-- [`setViewport`](setViewport.md): Set viewport dimensions.
-- [`dragAndDrop`](dragAndDrop.md): Drag one element onto another.
-- [`listTabs`](listTabs.md): List available page targets.
-- [`activateTab`](activateTab.md): Activate a tab by index.
-- [`closeTab`](closeTab.md): Close a tab by index.
-- [`set`](set.md): Run the script variable action once.
+- [`validateScript`](validateScript.md): Validate a `.cmgscript` browser automation script without running it.
+- [`navigation`](navigation/index.md): Navigation and page state commands.
+- [`wait`](wait/index.md): Page synchronization wait commands.
+- [`input`](input/index.md): Pointer, keyboard, and form input commands.
+- [`tabs`](tabs/index.md): Tab and popup target commands.
+- [`capture`](capture/index.md): Element and page capture commands.
+- [`page`](page/index.md): Page evaluation, viewport, and utility commands.
+- [`assertions`](assertions/index.md): Page and element assertion commands.
+- [`storage`](storage/index.md): Storage and persisted browser state commands.
+- [`network`](network/index.md): Network routing, waits, HAR, and environment commands.
+- [`events`](events/index.md): Downloads, dialogs, console, page-error, and generic event waits.
+- [`context`](context/index.md): Browser context, emulation, permission, and environment commands.
+- [`frames`](frames/index.md): Same-origin iframe interaction commands.
+- [`workers`](workers/index.md): Worker inspection, evaluation, and interception commands.
+- [`coverage`](coverage/index.md): JavaScript and CSS coverage commands.
+- [`clock`](clock/index.md): Deterministic page-side time commands.
+- [`accessibility`](accessibility/index.md): Accessibility snapshot and assertion commands.
 
 ## Examples
 
 ```powershell
 cmg browser control --help
+cmg browser --port 9333 control page evaluate "document.title"
 cmg --edge browser control --help
 cmg --firefox browser control --help
-cmg browser control getElement "h1" --html
+cmg browser control capture getElement "h1" --html
+cmg browser control validateScript --file flow.cmgscript
 cmg browser control script --file flow.cmgscript
-cmg browser control click "#openProfileDialog"
-cmg browser control screenshot "#profileDialog" --output profile-dialog.png
+cmg browser control script --file flow.cmgscript --trace artifacts\flow.trace.json --timeout 10000
+cmg browser control navigation title
+cmg browser control navigation waitForLoadState complete
+cmg browser control wait function "window.appReady" --timeout 5000
+cmg browser control input click "#openProfileDialog"
+cmg browser control tabs list
+cmg browser control capture screenshot "#profileDialog" --output profile-dialog.png
+cmg browser control page evaluate "document.title"
+cmg browser control assertions assertText "h1" "Ready"
+cmg browser control storage local set token abc
+cmg browser control network waitForResponse "/api/profile" --status 200
+cmg browser control events dialogs behavior accept --prompt-text "yes"
+cmg browser control context emulate --width 390 --height 844 --mobile --touch
+cmg browser control frames fill "#checkoutFrame" "#email" "agent@example.com"
+cmg browser control workers list
+cmg browser control coverage start --js true --css true
+cmg browser control clock install --now 1700000000000
+cmg browser control accessibility expect --role button --name Save
 ```

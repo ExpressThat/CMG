@@ -1,0 +1,10 @@
+test "generic expect supports values and actions" {
+  setContent "<main><h1>CMG Generic Expect</h1><output id='status'>ready</output></main>"
+
+  set status {
+    textContent "#status"
+  }
+
+  expect (${status} == "ready")
+  expect evaluate "document.title" contains "CMG"
+}

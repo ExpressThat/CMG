@@ -4,19 +4,35 @@ Scripts can record an animated GIF with:
 
 ```powershell
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
+cmg run flow.cmgscript --gif demo-output\runner-gifs
 ```
 
 ## What Gets Captured
 
 - CMG captures the visible page viewport.
 - A frame is captured after visual actions. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
-- Click, type, clear, hover, select, and drag actions move the virtual pointer to the target selector when possible. User-like movement actions do not scroll automatically; add `scrollIntoView` steps when the pointer should move to content outside the current viewport.
-- Every GIF pointer movement dispatches browser movement and hover events while it moves. This includes automatic movement before `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`, not only explicit drag movement.
-- Click actions show a pointer movement and click pulse.
+- Navigation waits such as `waitForNetworkIdle` are logged and traced but do not move the virtual pointer or add pointer motion frames.
+- Environment actions such as `emulateMedia` are also non-visual by themselves; later page changes and visual actions are recorded normally with the same virtual pointer.
+- Explicit `screenshot` and `screenshotPage` actions can write PNG or JPEG artifacts with `type=` and `quality=`. They can apply temporary artifact-only CSS with `style=` or `stylePath=`, artifact-only masks with `mask=` and `maskColor=`, disabled artifact animations with `animations=disabled`, and hidden artifact carets with `caret=hide`. `screenshotPage` can also write clipped artifacts with `clipX=`, `clipY=`, `clipWidth=`, and `clipHeight=`. GIF recorder frames always use CMG's internal PNG capture path so virtual pointer compositing and frame encoding stay consistent.
+- Visual assertions can use `fullPage=true` and `mask=` for comparison artifacts. Masking changes only the captured assertion image; selector assertions still move the virtual pointer before the comparison frame, and page-level assertions still do not move it.
+- Screenshot artifact masks, animation disabling, and caret hiding do not change GIF frames. If the viewer should see a redaction, frozen animation, or highlight in the GIF itself, change the page with `evaluate`, `highlight`, `caption`, or normal page actions before recording that frame.
+- Click, type, clear, hover, select, wheel, and drag actions move the virtual pointer to the target selector when possible. User-like movement actions do not scroll automatically; add `scrollIntoView`, `scrollTo`, `scrollBy`, or `wheel` steps when the pointer should move to content outside the current viewport.
+- Pointer actions that accept element offsets, such as `click "<selector>" x=8 y=12` and `hover "<selector>" x=8 y=12`, move the virtual pointer to the same element-relative point that receives the browser event.
+- `type`, `pressSequentially`, and `fill` use progressive typing during GIF capture so typed characters can produce frames. Add `delay=<milliseconds>` to control the per-character pace; omit it for the default visual typing delay.
+- Rich locator filters such as `nth=`, `has=`, `hasNot=`, `hasText=`, `hasNotText=`, `visible=`, `or=`, `and=`, `strict=`, `inside=`, `closest=`, `parent=`, `next=`, `previous=`, `shadow=`, and `shadowText=` resolve to a temporary element marker before pointer movement. The GIF pointer moves to that resolved element, including scoped, traversed, composed, and open shadow-root elements, so filtered locators keep pointer events, hover state, drag ghosts, screenshots, and captions aligned with the browser action.
+- Low-level `mouseMove`, `mouseDown`, and `mouseUp` actions also move the virtual pointer in GIF mode and dispatch page-facing pointer/mouse events.
+- Low-level keyboard actions such as `press`, `keyboardShortcut`, `shortcut`, `hotkey`, `keyDown`, `keyUp`, and `insertText` do not move the pointer, but their output and failures are recorded. Use `step` or `caption` when a GIF should explain held modifier keys, `press delay=`, or inserted text.
+- Every GIF pointer movement dispatches browser movement and hover events while it moves. This includes automatic movement before `click`, `tap`, `touchTap`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`, not only explicit drag movement.
+- Click and tap actions show a pointer movement and click pulse.
 - Type actions move to the input, click/focus it, and capture frames as characters appear.
+- `wheel` moves the pointer when given a selector, alias, or coordinates, dispatches a page `WheelEvent`, and captures the scrolled viewport. `scrollTo` and `scrollBy` scroll the window or selected element and capture the changed viewport without moving the pointer.
 - Drag-and-drop actions move from the source selector to the target selector while keeping the page drag lifecycle active, so pages can show their own native drag preview when one is available.
+- Simple `dragAndDrop` and `dragTo` source/target offsets move the virtual pointer and drag ghost through the same element-relative points that receive page drag events.
 - During a block drag, CMG dispatches DOM `pointerdown`/`mousedown` at drag start, held `pointermove`/`mousemove` while moving or delaying, and `pointerup`/`mouseup` at drop. The Chrome/Edge pointer also moves through CDP. This lets page drag state and edge-autoscroll logic react without forcing Chrome into native drag mode.
 - Screenshot actions still scroll the selected element into view before capture.
+- Pointer actions such as `click`, `dblclick`, `doubleClick`, `rightClick`, `contextClick`, `tap`, `touchTap`, `type`, `pressSequentially`, `fill`, `clear`, `hover`, `highlight`, `select`, `selectOption`, `check`, `uncheck`, `focus`, `blur`, `selectText`, `wheel`, `uploadFiles`, `setInputFiles`, `selectFile`, `expectScreenshot`, `toHaveScreenshot`, `dragAndDrop`, and `dragTo` move the virtual pointer before acting so recorded GIFs show the same target the browser receives.
+- File, fixture, init-script, runtime tag injection, explicit event dispatch, keyboard shortcut, PDF, API, explicit wait, navigation wait, clipboard, dialog, browser environment, named-device emulation, network environment, network mock, network wait, WebSocket, worker, coverage, tracing, console, page-error, clock, browser context, accessibility, element getters such as `count`, `boundingBox`, and `allTextContents`, evaluated assertion, text assertion, explicit `fail`, element-state assertion, and storage actions such as `localStorage`, `sessionStorage`, and `cookie` with cookie attributes do not move the virtual pointer. Wrap them in `step`, `caption`, or `gif` blocks when their result should be visible to a GIF viewer.
+- Structural actions such as `import`, `macro`, `call`, `return`, `within`, `frame`, `frameLocator`, `if`, `elseif`, `else`, `switch`, `case`, `default`, `for`, `repeat`, `while`, `until`, `doWhile`, `doUntil`, `retry`, `toPass`, `foreach`, `foreachSelector`, `break`, `continue`, `try`, `catch`, and `finally` do not move the virtual pointer by themselves. Pointer-aware actions inside those blocks still use the same virtual pointer movement, pointer events, hover behavior, drag ghosts, and captions as top-level actions.
 - Delay actions capture a hold frame.
 
 ## Virtual Pointer
@@ -87,18 +103,21 @@ On failure, CMG still writes a partial GIF when at least one frame was captured,
 
 ## Timing
 
-V1 uses balanced default timing:
+CMG uses balanced default timing:
 
 - about 10 frames per second
 - smooth pointer movement between targets
 - short holds after actions
 - a visible click pulse for click and drag/drop actions
 
-Timing is not configurable in v1.
+Timing is intentionally automatic for now.
 
 ## Notes
 
 - GIF files can become large for long scripts.
 - Recording can make scripts run slower because screenshots are captured after each action.
-- GIF recording is supported only on `browser control script`.
+- GIF recording is supported by `browser control script --gif`, `cmg run --gif`, and `gif "name" { ... }` blocks inside direct browser-control scripts or `cmg run` scripts.
+- `cmg run --gif` prefixes runner GIF filenames with the selected `--project` name, so matrix jobs can write Chrome, Firefox, and Edge artifacts into the same directory without overwriting each other.
+- `recordVideo "name" { ... }` and `screencast "name" { ... }` are provider-style aliases for CMG GIF blocks. They write animated GIF files, not MP4/WebM files.
+- Command-level `--gif` records the whole direct script or test and suppresses nested `gif` block files. Suppressed blocks write `GIF_BLOCK_SUPPRESSED <line>` to stdout.
 - `moveMouse` requires `--gif`; scripts without recording do not create or move a virtual mouse.

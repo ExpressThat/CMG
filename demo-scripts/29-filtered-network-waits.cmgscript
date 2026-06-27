@@ -1,0 +1,6 @@
+navigate "C:\Projects\CMG\index.html"
+intercept "/api/profile" method=POST status=201 body="created"
+evaluate "fetch('/api/profile', { method: 'POST', headers: { Authorization: 'Bearer demo' } }).then(response => response.text())"
+waitForRequest "/api/profile" method=POST header="Authorization: Bearer"
+waitForResponse "/api/profile" method=POST status=201 contains=created mocked=true timeout=5000
+waitForResponse "/api/profile" header="Content-Type: text/plain" timeout=5000

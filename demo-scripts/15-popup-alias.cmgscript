@@ -1,0 +1,8 @@
+# Demonstrates provider-style popup waiting.
+
+setContent "<button id='open'>Open popup</button><script>document.querySelector('#open').addEventListener('click', () => window.open('about:blank'));</script>"
+click "#open"
+waitForPopup count=2 timeout=5000
+activateTab index=1
+closeTab index=1
+activateTab index=0

@@ -1,0 +1,5 @@
+setContent "<main><h1>CMG Soft Expect</h1><output id='status'>ready</output></main>"
+
+softExpect (1 > 2) message="First soft check failed but the script continues"
+caption "The script is still running after a soft assertion"
+softExpect textContent "#status" == "ready"

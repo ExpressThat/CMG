@@ -1,0 +1,7 @@
+set page "C:\Projects\CMG\index.html"
+navigate "${page}"
+captureConsole
+evaluate "console.info('settings saved'); 'done'"
+waitForConsole "^settings saved$" match=regex ignoreCase=true level=info timeout=500
+expectNoConsole level=error timeout=50
+toHaveNoConsole "deprecated" match=exact level=warn timeout=50

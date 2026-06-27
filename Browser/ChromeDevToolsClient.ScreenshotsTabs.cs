@@ -6,8 +6,14 @@ namespace CMG.Browser;
 
 public sealed partial class ChromeDevToolsClient
 {
-    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true)
+    public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false, ScreenshotOptions? options = null)
     {
+        options ??= new(FullPage: fullPage);
+        if (fullPage && !options.FullPage)
+        {
+            options = options with { FullPage = true };
+        }
+
         return Run(async () =>
         {
             await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
@@ -16,7 +22,9 @@ public sealed partial class ChromeDevToolsClient
                 await PromoteMessageBar(session);
             }
 
-            var screenshot = await session.SendCommand("Page.captureScreenshot", writer => writer.WriteString("format", "png"));
+            var screenshot = options.FullPage
+                ? await CaptureFullPageScreenshot(session, options)
+                : await session.SendCommand("Page.captureScreenshot", writer => WriteScreenshotOptions(writer, options));
 
             if (!TryReadString(screenshot, "result", "data", out var data) || string.IsNullOrWhiteSpace(data))
             {
@@ -24,6 +32,33 @@ public sealed partial class ChromeDevToolsClient
             }
 
             return Convert.FromBase64String(data);
+        });
+    }
+
+    private static async Task<JsonElement> CaptureFullPageScreenshot(DevToolsSession session, ScreenshotOptions options)
+    {
+        var metrics = await session.SendCommand("Page.getLayoutMetrics");
+        if (!TryReadElement(metrics, ["result", "contentSize"], out var size) ||
+            !TryReadDouble(size, "width", out var width) ||
+            !TryReadDouble(size, "height", out var height))
+        {
+            throw new ChromeDevToolsException("Chrome did not return full-page layout metrics.");
+        }
+
+        return await session.SendCommand("Page.captureScreenshot", writer =>
+        {
+            WriteScreenshotOptions(writer, options);
+            writer.WriteBoolean("captureBeyondViewport", true);
+            if (options.Clip is null)
+            {
+                writer.WriteStartObject("clip");
+                writer.WriteNumber("x", 0);
+                writer.WriteNumber("y", 0);
+                writer.WriteNumber("width", Math.Max(1, width));
+                writer.WriteNumber("height", Math.Max(1, height));
+                writer.WriteNumber("scale", 1);
+                writer.WriteEndObject();
+            }
         });
     }
 
@@ -77,6 +112,26 @@ public sealed partial class ChromeDevToolsClient
         });
     }
 
+    public void OpenTab(string remoteDebuggingUrl, string target)
+    {
+        Run(async () =>
+        {
+            using var httpClient = new HttpClient { Timeout = CommandTimeout };
+            var response = await httpClient.PutAsync(
+                $"{remoteDebuggingUrl.TrimEnd('/')}/json/new?{Uri.EscapeDataString(target)}",
+                content: null);
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            using var document = JsonDocument.Parse(json);
+            if (TryReadString(document.RootElement, "id", out var id) && !string.IsNullOrWhiteSpace(id))
+            {
+                SetActiveTarget(remoteDebuggingUrl, id);
+            }
+
+            return true;
+        });
+    }
+
     public void ActivateTab(string remoteDebuggingUrl, int index)
     {
         Run(async () =>
@@ -84,6 +139,7 @@ public sealed partial class ChromeDevToolsClient
             var target = await GetPageTargetAt(remoteDebuggingUrl, index);
             using var httpClient = new HttpClient { Timeout = CommandTimeout };
             await httpClient.GetStringAsync($"{remoteDebuggingUrl.TrimEnd('/')}/json/activate/{target.Id}");
+            SetActiveTarget(remoteDebuggingUrl, target.Id);
 
             return true;
         });
@@ -96,6 +152,7 @@ public sealed partial class ChromeDevToolsClient
             var target = await GetPageTargetAt(remoteDebuggingUrl, index);
             using var httpClient = new HttpClient { Timeout = CommandTimeout };
             await httpClient.GetStringAsync($"{remoteDebuggingUrl.TrimEnd('/')}/json/close/{target.Id}");
+            ClearActiveTarget(remoteDebuggingUrl, target.Id);
 
             return true;
         });

@@ -1,0 +1,8 @@
+test "focused selection" only=true tag=selection {
+  setContent "<main><button id='run'>Run</button></main>"
+  click "#run"
+}
+
+test "skipped selection" only=true skip=true reason="Demonstrates TEST SKIP output" tag=selection {
+  click "#does-not-run"
+}

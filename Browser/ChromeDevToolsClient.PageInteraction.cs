@@ -30,11 +30,23 @@ public sealed partial class ChromeDevToolsClient
             {
                 writer.WriteString("expression", expression);
                 writer.WriteBoolean("returnByValue", true);
+                writer.WriteBoolean("awaitPromise", true);
             });
+            if (response.TryGetProperty("exceptionDetails", out var exception))
+            {
+                throw new ChromeDevToolsException(ReadEvaluationException(exception));
+            }
 
             if (!TryReadElement(response, ["result", "result"], out var result))
             {
                 return string.Empty;
+            }
+
+            if (result.TryGetProperty("subtype", out var subtype) &&
+                subtype.GetString() is "error" &&
+                result.TryGetProperty("description", out var error))
+            {
+                throw new ChromeDevToolsException(error.GetString() ?? "JavaScript evaluation failed.");
             }
 
             if (result.TryGetProperty("value", out var value))
@@ -46,18 +58,47 @@ public sealed partial class ChromeDevToolsClient
         });
     }
 
-    public void SetViewport(string remoteDebuggingUrl, int width, int height)
+    private static string ReadEvaluationException(JsonElement exception)
+    {
+        if (exception.TryGetProperty("exception", out var error) &&
+            error.TryGetProperty("description", out var description))
+        {
+            return description.GetString() ?? "JavaScript evaluation failed.";
+        }
+
+        return exception.TryGetProperty("text", out var text)
+            ? text.GetString() ?? "JavaScript evaluation failed."
+            : "JavaScript evaluation failed.";
+    }
+
+    public void SetViewport(string remoteDebuggingUrl, ViewportOptions options)
     {
         Run(async () =>
         {
             await using var session = await OpenPrimaryPageSession(remoteDebuggingUrl);
             await session.SendCommand("Emulation.setDeviceMetricsOverride", writer =>
             {
-                writer.WriteNumber("width", width);
-                writer.WriteNumber("height", height);
-                writer.WriteNumber("deviceScaleFactor", 1);
-                writer.WriteBoolean("mobile", false);
+                writer.WriteNumber("width", options.Width);
+                writer.WriteNumber("height", options.Height);
+                writer.WriteNumber("deviceScaleFactor", options.DeviceScaleFactor);
+                writer.WriteBoolean("mobile", options.IsMobile);
             });
+            await session.SendCommand("Emulation.setTouchEmulationEnabled", writer =>
+            {
+                writer.WriteBoolean("enabled", options.HasTouch);
+                if (options.HasTouch)
+                {
+                    writer.WriteNumber("maxTouchPoints", 1);
+                }
+            });
+            if (options.HasTouch || options.IsMobile)
+            {
+                await session.SendCommand("Runtime.evaluate", writer =>
+                {
+                    writer.WriteString("expression", "Object.defineProperty(navigator, 'maxTouchPoints', { configurable: true, get: () => 1 }); window.ontouchstart = window.ontouchstart || null; true");
+                    writer.WriteBoolean("returnByValue", true);
+                });
+            }
 
             return true;
         });

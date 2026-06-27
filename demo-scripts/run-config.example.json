@@ -1,0 +1,39 @@
+{
+  "trace": "../demo-output/traces",
+  "reportJson": "../demo-output/run-config-report.json",
+  "reportHtml": "../demo-output/run-config-report.html",
+  "grep": "config",
+  "tag": "smoke",
+  "retries": 1,
+  "maxFailures": 2,
+  "repeatEach": 1,
+  "shard": "1/1",
+  "timeout": 10000,
+  "navigationTimeout": 15000,
+  "assertionTimeout": 5000,
+  "projects": [
+    {
+      "name": "chrome-smoke",
+      "browser": "chrome",
+      "baseUrl": "https://example.test/chrome/",
+      "tag": "smoke",
+      "variables": {
+        "browserName": "chrome"
+      }
+    },
+    {
+      "name": "firefox-smoke",
+      "browser": "firefox",
+      "baseUrl": "https://example.test/firefox/",
+      "tag": "smoke",
+      "variables": {
+        "browserName": "firefox"
+      }
+    }
+  ],
+  "variables": {
+    "tenant": "demo",
+    "mode": "config",
+    "browserName": "default"
+  }
+}
