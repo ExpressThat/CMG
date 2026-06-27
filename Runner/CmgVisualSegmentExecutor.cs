@@ -142,7 +142,9 @@ public sealed partial class CmgVisualSegmentExecutor
                 continue;
             }
 
-            var lines = lowerer.Lower(action);
+            var lines = suppressGifBlocks && IsRecordingBlock(action.Kind)
+                ? lowerer.LowerRecordingBlock(action)
+                : lowerer.Lower(action);
             pending.AddRange(lines);
             if (!IsRecordingBlock(action.Kind))
             {

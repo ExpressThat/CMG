@@ -46,6 +46,18 @@ public sealed partial class CmgActionLowererTests
         Assert.Equal("click \"#open\"", lines[2]);
     }
 
+    [Fact]
+    public void LowerRecordingBlock_PreservesBlockForCommandGifSuppression()
+    {
+        var action = Node("recordVideo", ["Only this"], [Node("click", ["#open"], [])]);
+        var lines = new CmgActionLowerer().LowerRecordingBlock(action);
+
+        Assert.Equal("recordVideo \"Only this\" {", lines[0]);
+        Assert.Contains("not actionable", lines[1]);
+        Assert.Equal("click \"#open\"", lines[2]);
+        Assert.Equal("}", lines[3]);
+    }
+
     [Theory]
     [InlineData("recordVideo")]
     [InlineData("screencast")]

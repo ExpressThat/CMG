@@ -94,6 +94,7 @@ The first E2E slice covers:
 - Navigation aliases and page state commands, including `goto`, `visit`, history back/forward, reload, URL/title waits and assertions, page content reads, `setContent`, runtime text reads, input, assertions, screenshots, element HTML, and failure reasons.
 - Page utility aliases for viewport sizing, captions/message bars, temporary highlights, and explicit delays.
 - Direct script execution with GIF and trace output.
+- GIF block actions for direct `gif`, provider-style `recordVideo`/`screencast` aliases, and command-level GIF suppression in direct scripts and `cmg run`.
 - Script trace actions for partial trace files, command-level trace suppression, and failure-time partial trace output.
 - Dialog handling, variables, macros, logic, `set` capture, and block `return`.
 - Advanced script control flow for `for`, `foreach`, `foreachJson`, `foreachSelector`, `while`, `until`, `doWhile`, `doUntil`, `break`, `continue`, `retry`, `toPass`, and scoped timeout blocks.
