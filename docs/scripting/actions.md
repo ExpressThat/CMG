@@ -1771,9 +1771,9 @@ recording pointerDuration=300 clickPulse=dot holdAfterAction=500 {
   click "#save"
 }
 
-withRecording pointerSpeed=slow {
+withRecording pointerSpeed=slow pointerTheme=ring pointerColor="#dc2626" {
   gif "focused evidence" {
-    click "#pay"
+    click "#pay" pointerTheme=hand pointerColor="#16a34a"
   }
 }
 ```
@@ -1790,6 +1790,10 @@ Options:
 - `pointerEasing`: Default easing: `linear`, `ease-in`, `ease-out`, `ease-in-out`, or `spring`.
 - `pointerPath`: Default pointer route: `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
 - `dragPath`: Default route while the pointer is held during drag movement.
+- `pointerTheme`: Default pointer theme: `arrow`, `hand`, `dot`, `ring`, `branded`, or `touch`.
+- `pointerColor`: Default pointer CSS color. Use one CSS color value, not a declaration.
+- `pointerSize`: Default pointer size in CSS pixels from `8` to `96`, or `auto`.
+- `pointerShadow`: Default pointer shadow: `none`, `light`, `medium`, or `strong`.
 - `pressedPointer`: Default held-pointer visual compression during recorded drags. Defaults to `true`.
 - `dragTrail`: Default held-pointer trail line during recorded drags. Defaults to `false`.
 - `dragBreadcrumbs`: Default held-pointer breadcrumb dots during recorded drags. Defaults to `false`.
@@ -1830,6 +1834,10 @@ Options:
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
 - `pointerPath`: Optional default pointer route: `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
 - `dragPath`: Optional default route while the pointer is held during drag movement.
+- `pointerTheme`: Optional default pointer theme: `arrow`, `hand`, `dot`, `ring`, `branded`, or `touch`.
+- `pointerColor`: Optional default pointer CSS color.
+- `pointerSize`: Optional default pointer size in CSS pixels from `8` to `96`, or `auto`.
+- `pointerShadow`: Optional pointer shadow: `none`, `light`, `medium`, or `strong`.
 - `pressedPointer`: Optional held-pointer visual compression default for recorded drags.
 - `dragTrail`: Optional held-pointer trail line default for recorded drags.
 - `dragBreadcrumbs`: Optional held-pointer breadcrumb dots default for recorded drags.

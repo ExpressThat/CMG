@@ -149,7 +149,7 @@ public sealed partial class ScriptGifRecorder
         }
 
         devToolsClient.PromoteMessageBar(remoteDebuggingUrl);
-        devToolsClient.MoveDomCursor(remoteDebuggingUrl, pointer.Position, pulseStyle, cursorPressed, cursorTrail, cursorBreadcrumb, cursorTouch);
+        devToolsClient.MoveDomCursor(remoteDebuggingUrl, pointer.Position, pulseStyle, cursorPressed, cursorTrail, cursorBreadcrumb, cursorVisual);
         var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar: false);
         frameSink.AddFrame(screenshot, delayCentiseconds);
     }

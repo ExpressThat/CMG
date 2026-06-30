@@ -24,7 +24,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
     private bool cursorPressed;
     private bool cursorTrail;
     private bool cursorBreadcrumb;
-    private bool cursorTouch;
+    private PointerVisualOptions cursorVisual = PointerVisualOptions.Default;
 
     public ScriptGifRecorder(
         IBrowserAutomationClient devToolsClient,

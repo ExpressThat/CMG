@@ -19,7 +19,7 @@ public sealed partial class BrowserScriptRunner
         var gifPath = GifBlockPath(action);
         var recorder = commandRecorder ?? new ScriptGifRecorder(
             automationClient,
-            new ScriptRecordingOptions(gifPath, GifBlockQuality(action), GifBlockMotion(action), GifBlockPulse(action),
+            new ScriptRecordingOptions(gifPath, GifBlockQuality(action), GifBlockMotion(action), GifBlockVisual(action), GifBlockPulse(action),
                 GifBlockHold(action), GifBlockFailureHold(action), GifBlockPreClickHold(action), GifBlockPostClickHold(action),
                 GifBlockNavigationHold(action), GifBlockAssertionHold(action), GifBlockTimeline(action, gifPath), GifBlockFrameDelay(action)));
         var output = new List<string>();
@@ -95,6 +95,9 @@ public sealed partial class BrowserScriptRunner
 
     private static ScriptPointerMotionOptions GifBlockMotion(BrowserScriptAction action) =>
         ScriptPointerMotionOptions.Default.WithAction(action).Validate(action.Name);
+
+    private static PointerVisualOptions GifBlockVisual(BrowserScriptAction action) =>
+        PointerVisualOptions.FromOptions(action.Options, action.Name);
 
     private static ClickPulseStyle GifBlockPulse(BrowserScriptAction action)
     {

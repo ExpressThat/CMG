@@ -1,0 +1,16 @@
+# Demonstrates GIF pointer visual themes, colors, sizes, and shadows.
+
+navigate "about:blank"
+setContent "<main style='font:16px system-ui;padding:32px;display:grid;gap:16px;max-width:620px'><h1 style='font-size:24px;margin:0'>Pointer style evidence</h1><button id='ring' style='padding:12px 18px'>Ring default</button><button id='hand' style='padding:12px 18px'>Hand override</button><button id='dot' style='padding:12px 18px'>Dot override</button><button id='touch' style='padding:12px 18px'>Touch override</button><p id='status' style='min-height:24px'>Ready</p></main>"
+evaluate "(() => { document.querySelectorAll('button').forEach(button => button.addEventListener('click', () => document.querySelector('#status').textContent = button.textContent + ' clicked')); return true; })()"
+
+gif "pointer styles" output="demo-output/pointer-styles.gif" pointerTheme=ring pointerColor="#dc2626" pointerSize=44 pointerShadow=strong pointerDuration=260 clickPulse=ripple {
+  click "#ring"
+  assertText "#status" "Ring default clicked"
+  click "#hand" pointerTheme=hand pointerColor="#16a34a" pointerSize=38 pointerShadow=light
+  assertText "#status" "Hand override clicked"
+  click "#dot" pointerTheme=dot pointerColor="#7c3aed" pointerSize=32 pointerShadow=none
+  assertText "#status" "Dot override clicked"
+  tap "#touch" pointerTheme=touch pointerColor="#0891b2" pointerSize=42 pointerShadow=medium
+  assertText "#status" "Touch override clicked"
+}

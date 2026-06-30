@@ -1,3 +1,4 @@
+using CMG.Browser;
 using CMG.Browser.Scripting;
 using CMG.Browser.Scripting.Recording;
 
@@ -20,7 +21,7 @@ public sealed class ScriptGifRecorderTouchPointerTests
 
         recorder.BeforeAction(new BrowserScriptAction(1, actionName, actionName, ["#target"], new Dictionary<string, string>(), []));
 
-        Assert.Contains(client.CursorStates, state => state.Touch);
+        Assert.Contains(client.CursorStates, state => state.Visual?.Theme is PointerTheme.Touch);
     }
 
     [Fact]
@@ -36,6 +37,6 @@ public sealed class ScriptGifRecorderTouchPointerTests
 
         recorder.BeforeAction(new BrowserScriptAction(1, "click", "click", ["#target"], new Dictionary<string, string>(), []));
 
-        Assert.DoesNotContain(client.CursorStates, state => state.Touch);
+        Assert.DoesNotContain(client.CursorStates, state => state.Visual?.Theme is PointerTheme.Touch);
     }
 }

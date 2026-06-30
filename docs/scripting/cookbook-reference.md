@@ -439,6 +439,25 @@ Run the complete demo:
 dotnet run -- browser control script --file demo-scripts\155-touch-pointer-visibility.cmgscript --gif demo-output\touch-pointer-visibility.gif
 ```
 
+## Pointer Visual Styles
+
+Use pointer style options when the default arrow is not the clearest evidence. Blocks can set defaults, and child actions can override those defaults for one interaction.
+
+```text
+gif "pointer styles" pointerTheme=ring pointerColor="#dc2626" pointerSize=44 pointerShadow=strong {
+  click "#save"
+  click "#continue" pointerTheme=hand pointerColor="#16a34a" pointerSize=38
+  tap "#touch" pointerTheme=touch pointerColor="#0891b2"
+}
+```
+
+The same defaults are available for whole-run recordings:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\156-gif-pointer-styles.cmgscript --gif demo-output\pointer-styles-whole-run.gif --pointer-theme branded --pointer-color "#2563eb" --pointer-size 40 --pointer-shadow strong
+dotnet run -- run tests\flows --gif demo-output\runner-gifs --pointer-theme ring --pointer-color "#dc2626"
+```
+
 ## GIF Quality Presets
 
 Use `--gif-quality` for whole-script or whole-test recordings, and `quality=` on script-level `gif`, `recordVideo`, and `screencast` blocks. The default is `highest`, which favors color fidelity for visual evidence.

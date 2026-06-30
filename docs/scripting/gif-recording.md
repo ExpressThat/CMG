@@ -6,6 +6,7 @@ Scripts can record an animated GIF with:
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-quality highest
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-easing ease-in-out
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-timeline demo-output\timelines
 cmg run flow.cmgscript --gif demo-output\runner-gifs
 cmg run flow.cmgscript --gif demo-output\runner-gifs --gif-timeline demo-output\timelines
@@ -46,6 +47,7 @@ GIF recording uses one pointer:
 
 - A lightweight DOM pointer is injected into the page while the script runs, so the live browser visibly moves.
 - The pointer is styled as a standard arrow pointer, with a transparent popover surface and no default popover box.
+- Pointer visuals can be changed with `pointerTheme=`, `pointerColor=`, `pointerSize=`, and `pointerShadow=` on `recording`, `gif`, `recordVideo`, `screencast`, and pointer-aware child actions. Command-level `--pointer-theme`, `--pointer-color`, `--pointer-size`, and `--pointer-shadow` set whole-run defaults.
 - The pointer uses the browser top layer through a manual popover when available, so dialogs and high `z-index` page elements do not cover it.
 - CMG re-promotes the pointer in the top layer before frame capture, so newly opened dialogs do not cover an already existing pointer.
 - The GIF captures this same injected pointer from the browser screenshot. CMG does not draw a second overlay pointer onto GIF frames.
@@ -59,7 +61,7 @@ Use pointer choreography options when a recording should be slower, faster, or m
 ```text
 gif "checkout evidence" pointerDuration=650 pointerEasing=ease-in-out {
   click "#plan-pro"
-  click "#continue" pointerDuration=250
+  click "#continue" pointerDuration=250 pointerTheme=hand pointerColor="#16a34a"
 }
 ```
 
@@ -70,6 +72,10 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
 - `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Pointer route between targets. Defaults to `direct`.
 - `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Drag route while the pointer is held. Defaults to `pointerPath` when omitted.
+- `pointerTheme=<arrow|hand|dot|ring|branded|touch>`: Virtual pointer visual theme. `tap` and `touchTap` use `touch` automatically when the inherited theme is the default arrow.
+- `pointerColor=<css-color>`: Pointer color. Use a single CSS color value, not a declaration.
+- `pointerSize=<auto|8..96>`: Pointer size in CSS pixels. `auto` uses the theme's designed size.
+- `pointerShadow=<none|light|medium|strong>`: Pointer drop shadow strength. Defaults to `medium`.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
 - `preClickHold=<milliseconds>`: Hold after pointer movement and before click/tap dispatch. Defaults to `0`.
@@ -103,6 +109,10 @@ Supported `recording` / `withRecording` defaults:
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
 - `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Pointer route between targets.
 - `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Drag route while the pointer is held.
+- `pointerTheme=<arrow|hand|dot|ring|branded|touch>`: Default pointer visual theme.
+- `pointerColor=<css-color>`: Default pointer color.
+- `pointerSize=<auto|8..96>`: Default pointer size in CSS pixels.
+- `pointerShadow=<none|light|medium|strong>`: Default pointer shadow.
 - `pressedPointer=<true|false>`: Whether the pointer visually compresses while a recorded drag is active. Defaults to `true`.
 - `dragTrail=<true|false>`: Draw a trailing line behind held-pointer drag movement. Defaults to `false`.
 - `dragBreadcrumbs=<true|false>`: Add dot breadcrumbs along held-pointer drag movement. Defaults to `false`.
@@ -163,13 +173,14 @@ Command-level defaults are available for whole-run recordings:
 
 ```powershell
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-speed slow --pointer-easing spring
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-theme branded --pointer-color "#2563eb" --pointer-size 40 --pointer-shadow strong
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --click-pulse ripple
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-pre-click-hold 120 --pointer-post-click-hold 450
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-hold-on-failure 1800
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-fps 20
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-frame-delay 80
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-timeline demo-output\timelines
-cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --click-pulse dot --gif-hold-after-action 700 --gif-hold-on-failure 1800
+cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --pointer-theme ring --pointer-color "#dc2626" --click-pulse dot --gif-hold-after-action 700 --gif-hold-on-failure 1800
 cmg run tests\flows --gif demo-output\runner-gifs --gif-fps 20
 cmg run tests\flows --gif demo-output\runner-gifs --gif-frame-delay 80
 cmg run tests\flows --gif demo-output\runner-gifs --gif-timeline demo-output\timelines

@@ -102,6 +102,7 @@ public sealed class RunCommandBuilderProjectTests
             bool autoLaunchHeadless = false,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
+            PointerVisualOptions? pointerVisual = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,

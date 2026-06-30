@@ -31,6 +31,10 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
+- `--pointer-theme <arrow|hand|dot|ring|branded|touch>`: Default virtual pointer theme for command-level `--gif` recordings.
+- `--pointer-color <css-color>`: Default virtual pointer color for command-level `--gif` recordings. Pass one CSS color value, not a CSS declaration.
+- `--pointer-size <8..96>`: Default virtual pointer size in CSS pixels for command-level `--gif` recordings.
+- `--pointer-shadow <none|light|medium|strong>`: Default virtual pointer shadow strength for command-level `--gif` recordings.
 - `--click-pulse <ring|ripple|dot|crosshair|none>`: Default click/tap/drop pulse style for command-level `--gif` recordings. Defaults to `ring`.
 - `--gif-hold-after-action <milliseconds>`: Default post-action hold for command-level `--gif` recordings. Defaults to `350`; use `0` to suppress automatic post-action holds.
 - `--pointer-pre-click-hold <milliseconds>`: Default hold after pointer movement and before click/tap dispatch in command-level `--gif` recordings. Defaults to `0`.
@@ -114,7 +118,7 @@ GIF recording is optional.
 
 - With `--gif` or `-gif`, CMG records the whole execution of each test.
 - `--gif-quality` defaults to `highest`, using CMG's most color-faithful palette matching and dithering. Use `high`, `medium`, or `low` to trade color fidelity for smaller/faster GIF artifacts.
-- `--pointer-duration`, `--pointer-speed`, and `--pointer-easing` set whole-test virtual pointer defaults when `--gif` is active.
+- `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--pointer-theme`, `--pointer-color`, `--pointer-size`, and `--pointer-shadow` set whole-test virtual pointer defaults when `--gif` is active.
 - `--click-pulse` sets the whole-test click/tap/drop pulse style when `--gif` is active.
 - `--gif-hold-after-action` sets the whole-test post-action hold duration when `--gif` is active.
 - `--pointer-pre-click-hold` and `--pointer-post-click-hold` set whole-test click/tap settle and post-pulse hold durations when `--gif` is active.
@@ -152,6 +156,7 @@ cmg run demo-scripts\20-runner-flow.cmgscript
 cmg run tests\flows --gif artifacts\gifs
 cmg run tests\flows --gif artifacts\gifs --gif-quality highest
 cmg run tests\flows --gif artifacts\gifs --pointer-duration 600 --pointer-easing spring
+cmg run tests\flows --gif artifacts\gifs --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44 --pointer-shadow strong
 cmg run tests\flows --gif artifacts\gifs --click-pulse ripple --pointer-pre-click-hold 120 --pointer-post-click-hold 450 --gif-hold-on-failure 1800
 cmg run tests\flows --gif artifacts\gifs --gif-timeline artifacts\timelines
 cmg run checkout.cmgscript --report-json artifacts\checkout.json --report-html artifacts\checkout.html

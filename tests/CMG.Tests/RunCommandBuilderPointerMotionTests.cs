@@ -32,6 +32,20 @@ public sealed class RunCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void RunCommand_MapsPointerVisualOptions()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "run flows --gif artifacts --pointer-theme hand --pointer-color #16a34a --pointer-size 40 --pointer-shadow light").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(PointerTheme.Hand, handler.PointerVisual?.Theme);
+        Assert.Equal("#16a34a", handler.PointerVisual?.Color);
+        Assert.Equal(40, handler.PointerVisual?.SizePixels);
+        Assert.Equal(PointerShadow.Light, handler.PointerVisual?.Shadow);
+    }
+
+    [Fact]
     public void RunCommand_MapsGifHoldAfterActionOption()
     {
         var handler = new CapturingHandler();
@@ -111,6 +125,7 @@ public sealed class RunCommandBuilderPointerMotionTests
     private sealed class CapturingHandler : ICmgRunCommandHandler
     {
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
+        public PointerVisualOptions? PointerVisual { get; private set; }
         public ClickPulseStyle ClickPulse { get; private set; }
         public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
         public int HoldOnFailureMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds;
@@ -147,6 +162,7 @@ public sealed class RunCommandBuilderPointerMotionTests
             bool autoLaunchHeadless = false,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
+            PointerVisualOptions? pointerVisual = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
@@ -161,6 +177,7 @@ public sealed class RunCommandBuilderPointerMotionTests
             int? gifMaxDurationMilliseconds = null)
         {
             PointerMotion = pointerMotion;
+            PointerVisual = pointerVisual;
             ClickPulse = clickPulse;
             HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             HoldOnFailureMilliseconds = holdOnFailureMilliseconds;

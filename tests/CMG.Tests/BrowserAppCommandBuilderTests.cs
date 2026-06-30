@@ -182,6 +182,7 @@ public sealed class BrowserAppCommandBuilderTests
             IReadOnlyDictionary<string, string> variables,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
+            PointerVisualOptions? pointerVisual = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,

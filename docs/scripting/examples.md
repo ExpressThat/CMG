@@ -14,6 +14,7 @@ For the full catalogue of advanced examples, see the [cookbook reference](cookbo
 | Tune GIF quality | [Visual Evidence](#visual-evidence) | `demo-scripts\148-gif-quality.cmgscript` |
 | Choreograph GIF pointer movement | [Visual Evidence](#visual-evidence) | `demo-scripts\149-gif-pointer-choreography.cmgscript` |
 | Show touch pointer and hide/show controls | [Visual Evidence](#visual-evidence) | `demo-scripts\155-touch-pointer-visibility.cmgscript` |
+| Style the virtual pointer for evidence | [Visual Evidence](#visual-evidence) | `demo-scripts\156-gif-pointer-styles.cmgscript` |
 | Reuse script logic | [Variables And Macros](#variables-and-macros) | `demo-scripts\30-control-flow-macros.cmgscript` |
 | Handle failures clearly | [Failure Feedback](#failure-feedback) | `demo-scripts\52-explicit-fail.cmgscript` |
 | Tune one slow section | [Scoped Timeouts](#scoped-timeouts) | `demo-scripts\134-scoped-timeouts.cmgscript` |
@@ -137,6 +138,8 @@ cmg browser control script --file demo-scripts\155-touch-pointer-visibility.cmgs
 ```
 
 Recording blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `clickPulse=`, `pressedPointer=`, `dragTrail=`, `dragBreadcrumbs=`, `preClickHold=`, `postClickHold=`, `holdAfterAction=`, `holdAfterNavigation=`, `holdAfterAssertion=`, `holdOnFailure=`, `fps=`, `frameDelay=`, and `timeline=` as defaults. Use `recording { ... }` or `withRecording { ... }` when several actions or nested recording blocks should share the same defaults without starting a recording by themselves. Use `pauseGif <milliseconds>` for recording-only holds, `recordCheckpoint "name"` for named JSON timeline markers, and `showPointer` / `hidePointer` when a GIF needs a pointer-visible or unobstructed frame. These recording-only actions skip without injecting the virtual pointer when no GIF recording is active. If a block has child actions, such as `dragAndDrop { ... }`, the parent options are scoped defaults and each child action can override them locally. Use `--gif-timeline` or block-level `timeline=true` when reports or agents need JSON timing metadata beside the GIF.
+
+Pointer visuals can be styled with `pointerTheme=`, `pointerColor=`, `pointerSize=`, and `pointerShadow=` on `recording`, `gif`, `recordVideo`, `screencast`, and individual pointer-aware actions. Use this when a GIF needs a ring pointer for review, a branded pointer for demos, or a touch pointer for tap flows. Command-level `--pointer-theme`, `--pointer-color`, `--pointer-size`, and `--pointer-shadow` set whole-run defaults for `--gif` recordings.
 
 For stable screenshot evidence, mask volatile regions only in the artifact. The GIF still shows the real page and pointer choreography:
 

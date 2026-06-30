@@ -116,8 +116,11 @@ public sealed partial class ScriptGifRecorder
         cursorPressed = dragging && BoolOption(action, "pressedPointer", true);
         cursorTrail = dragging && BoolOption(action, "dragTrail", false);
         cursorBreadcrumb = dragging && BoolOption(action, "dragBreadcrumbs", false);
-        cursorTouch = action?.Name.Equals("tap", StringComparison.OrdinalIgnoreCase) is true ||
+        var touch = action?.Name.Equals("tap", StringComparison.OrdinalIgnoreCase) is true ||
             action?.Name.Equals("touchTap", StringComparison.OrdinalIgnoreCase) is true;
+        cursorVisual = action is null
+            ? options.EffectivePointerVisual
+            : options.EffectivePointerVisual.WithAction(action, touch);
     }
 
     private static bool BoolOption(BrowserScriptAction? action, string name, bool fallback)

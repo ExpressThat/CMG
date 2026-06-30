@@ -33,6 +33,20 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void ScriptCommand_MapsPointerVisualOptions()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --pointer-theme ring --pointer-color #dc2626 --pointer-size 44 --pointer-shadow strong").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(PointerTheme.Ring, handler.PointerVisual?.Theme);
+        Assert.Equal("#dc2626", handler.PointerVisual?.Color);
+        Assert.Equal(44, handler.PointerVisual?.SizePixels);
+        Assert.Equal(PointerShadow.Strong, handler.PointerVisual?.Shadow);
+    }
+
+    [Fact]
     public void ScriptCommand_MapsGifHoldAfterActionOption()
     {
         var handler = new CapturingHandler();
@@ -129,6 +143,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     {
         public string? File { get; private set; }
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
+        public PointerVisualOptions? PointerVisual { get; private set; }
         public ClickPulseStyle ClickPulse { get; private set; }
         public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
         public int HoldOnFailureMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds;
@@ -154,6 +169,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             IReadOnlyDictionary<string, string> variables,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
+            PointerVisualOptions? pointerVisual = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
@@ -166,6 +182,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
         {
             File = file;
             PointerMotion = pointerMotion;
+            PointerVisual = pointerVisual;
             ClickPulse = clickPulse;
             HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             HoldOnFailureMilliseconds = holdOnFailureMilliseconds;

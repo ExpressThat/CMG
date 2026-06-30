@@ -62,6 +62,7 @@ public sealed record CmgRunOptions(
     bool AutoLaunchHeadless = false,
     GifQuality GifQuality = GifQuality.Highest,
     ScriptPointerMotionOptions? PointerMotion = null,
+    PointerVisualOptions? PointerVisual = null,
     ClickPulseStyle ClickPulse = ClickPulseStyle.Ring,
     int HoldAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
     int HoldOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,

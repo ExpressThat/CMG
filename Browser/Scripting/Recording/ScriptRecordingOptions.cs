@@ -4,6 +4,7 @@ public sealed record ScriptRecordingOptions(
     string OutputPath,
     GifQuality Quality = GifQuality.Highest,
     ScriptPointerMotionOptions? PointerMotion = null,
+    PointerVisualOptions? PointerVisual = null,
     ClickPulseStyle ClickPulse = ClickPulseStyle.Ring,
     int HoldAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
     int HoldOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
@@ -25,6 +26,8 @@ public sealed record ScriptRecordingOptions(
     public const int MovementFrameCount = 8;
 
     public ScriptPointerMotionOptions EffectivePointerMotion => PointerMotion ?? ScriptPointerMotionOptions.Default;
+
+    public PointerVisualOptions EffectivePointerVisual => PointerVisual ?? PointerVisualOptions.Default;
 
     public int FrameDelayCentiseconds => Math.Max(1, (FrameDelayMilliseconds + 9) / 10);
 }

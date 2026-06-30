@@ -2,18 +2,14 @@ using System.CommandLine;
 using CMG.Browser;
 using CMG.Browser.Scripting.Recording;
 using CMG.Runner;
-
 namespace CMG.Commands;
-
 public sealed partial class RunCommandBuilder
 {
     private readonly ICmgRunCommandHandler handler;
-
     public RunCommandBuilder(ICmgRunCommandHandler handler)
     {
         this.handler = handler;
     }
-
     public Command Build(BrowserSelectionOptions browserOptions)
     {
         var pathArgument = new Argument<string>("path") { Description = "A CMG script file or folder containing .cmgscript files." };
@@ -29,6 +25,7 @@ public sealed partial class RunCommandBuilder
         var pointerDurationOption = new Option<int?>("--pointer-duration") { Description = "Default virtual pointer movement duration in milliseconds for --gif recordings." };
         var pointerSpeedOption = new Option<string?>("--pointer-speed") { Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x." };
         var pointerEasingOption = new Option<string?>("--pointer-easing") { Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring." };
+        var pointerVisualOptions = BuildPointerVisualOptions();
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Click pulse style for --gif: ring, ripple, dot, crosshair, or none." };
         var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
         var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
@@ -84,6 +81,7 @@ public sealed partial class RunCommandBuilder
             pointerDurationOption,
             pointerSpeedOption,
             pointerEasingOption,
+            pointerVisualOptions.Theme, pointerVisualOptions.Color, pointerVisualOptions.Size, pointerVisualOptions.Shadow,
             clickPulseOption,
             holdAfterActionOption,
             holdOnFailureOption,
@@ -132,8 +130,7 @@ public sealed partial class RunCommandBuilder
                 return 1;
             }
 
-            var variableValues = (parseResult.GetValue(variableOption) ?? [])
-                .Concat(parseResult.GetValue(envOption) ?? []);
+            var variableValues = (parseResult.GetValue(variableOption) ?? []).Concat(parseResult.GetValue(envOption) ?? []);
             if (!VariableOptionParser.TryParse(variableValues, out var variables, out var error))
             {
                 Console.Error.WriteLine(error);
@@ -154,6 +151,11 @@ public sealed partial class RunCommandBuilder
                 out var motionError))
             {
                 Console.Error.WriteLine(motionError);
+                return 1;
+            }
+            if (!TryParsePointerVisual(parseResult, pointerVisualOptions, out var pointerVisual, out var visualError))
+            {
+                Console.Error.WriteLine(visualError);
                 return 1;
             }
             if (!GifTimingOptionParser.TryParseHoldAfterAction(parseResult.GetValue(holdAfterActionOption), out var holdAfterAction, out var holdError))
@@ -202,8 +204,7 @@ public sealed partial class RunCommandBuilder
                 return 1;
             }
 
-            return
-            handler.Run(
+            return handler.Run(
                 projectBrowser ?? CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 parseResult.GetValue(pathArgument) ?? string.Empty,
                 DirectoryValue(parseResult, gifOption, config.Gif),
@@ -229,6 +230,7 @@ public sealed partial class RunCommandBuilder
                 parseResult.GetValue(headlessOption),
                 gifQuality,
                 pointerMotion,
+                pointerVisual,
                 clickPulse,
                 holdAfterAction,
                 holdOnFailure,
@@ -245,5 +247,4 @@ public sealed partial class RunCommandBuilder
 
         return command;
     }
-
 }

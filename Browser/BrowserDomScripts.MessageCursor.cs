@@ -63,9 +63,10 @@ public static partial class BrowserDomScripts
         bool pressed = false,
         bool trail = false,
         bool breadcrumb = false,
-        bool touch = false) =>
+        PointerVisualOptions? visual = null) =>
         $$"""
         (() => {
+          const mode = {{JsonString(ModeFor(visual))}};
           const promote = element => {
             if (typeof element.showPopover === 'function') {
               if (element.matches(':popover-open')) element.hidePopover();
@@ -96,14 +97,14 @@ public static partial class BrowserDomScripts
             cursor.innerHTML = '<svg width="26" height="34" viewBox="0 0 26 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 2L22 19L13.2 20.1L9.2 31L3 2Z" fill="#fff" stroke="#111" stroke-width="2" stroke-linejoin="round"/><path d="M13.2 20.1L18.6 29.4" stroke="#111" stroke-width="2.5" stroke-linecap="round"/></svg>';
             document.documentElement.appendChild(cursor);
           }
-          if (cursor.dataset.cmgPointerMode !== '{{(touch ? "touch" : "arrow")}}') {
-            cursor.dataset.cmgPointerMode = '{{(touch ? "touch" : "arrow")}}';
-            cursor.innerHTML = '{{(touch ? TouchCursorSvg() : ArrowCursorSvg())}}';
+          if (cursor.dataset.cmgPointerMode !== mode) {
+            cursor.dataset.cmgPointerMode = mode;
+            cursor.innerHTML = {{JsonString(CursorSvg(visual))}};
           }
           cursor.style.left = '{{Invariant(point.X)}}px';
           cursor.style.top = '{{Invariant(point.Y)}}px';
-          cursor.style.transform = '{{(touch ? "translate(-50%, -50%)" : pressed ? "translate(-3px, -3px) scale(.88)" : "translate(-3px, -3px)")}}';
-          cursor.style.filter = '{{(pressed ? "drop-shadow(0 1px 2px rgba(0,0,0,.48)) saturate(1.25)" : "drop-shadow(0 2px 3px rgba(0,0,0,.4))")}}';
+          cursor.style.transform = '{{CursorTransform(visual, pressed)}}';
+          cursor.style.filter = '{{CursorFilter(visual, pressed)}}';
           {{PulseScript(point, pulseStyle)}}
           {{TrailScript(point, trail)}}
           {{BreadcrumbScript(point, breadcrumb)}}
@@ -120,12 +121,6 @@ public static partial class BrowserDomScripts
 
     public static string ClearPointerEvidence() =>
         "(() => { document.getElementById('__cmg_cursor_trail')?.remove(); document.querySelectorAll('[data-cmg-cursor-breadcrumb]').forEach(node => node.remove()); return true; })()";
-
-    private static string ArrowCursorSvg() =>
-        "<svg width=\"26\" height=\"34\" viewBox=\"0 0 26 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M3 2L22 19L13.2 20.1L9.2 31L3 2Z\" fill=\"#fff\" stroke=\"#111\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M13.2 20.1L18.6 29.4\" stroke=\"#111\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>";
-
-    private static string TouchCursorSvg() =>
-        "<svg width=\"34\" height=\"34\" viewBox=\"0 0 34 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><circle cx=\"17\" cy=\"17\" r=\"11\" fill=\"rgba(37,99,235,.18)\" stroke=\"#2563eb\" stroke-width=\"3\"/><circle cx=\"17\" cy=\"17\" r=\"4\" fill=\"#2563eb\"/></svg>";
 
     private static string PulseScript(ElementPoint point, ClickPulseStyle? pulseStyle)
     {

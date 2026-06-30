@@ -3,7 +3,7 @@ using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Browser;
 
-public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
+public sealed partial class BrowserControlCommandHandler : IBrowserControlCommandHandler
 {
     private readonly IBrowserControlService browserControlService;
     private readonly BrowserScriptValidator scriptValidator;
@@ -95,6 +95,7 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
+        PointerVisualOptions? pointerVisual = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
         int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
@@ -103,7 +104,7 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         string? gifTimelinePath = null,
         int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
     {
-        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
+        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
     }
 
     public int RunScript(
@@ -117,6 +118,7 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
+        PointerVisualOptions? pointerVisual = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
         int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
@@ -130,7 +132,7 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
             return 1;
         }
 
-        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
+        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
 
         return WriteScriptResult(result);
     }
@@ -146,6 +148,7 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
+        PointerVisualOptions? pointerVisual = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
         int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
@@ -159,7 +162,7 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
             return 1;
         }
 
-        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
+        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
 
         return WriteScriptResult(result);
     }
@@ -211,40 +214,4 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         return WriteScriptResult(result);
     }
 
-    private static bool ValidateBrowserSelection(BrowserKind browserKind)
-    {
-        if (browserKind is not BrowserKind.InvalidSelection)
-        {
-            return true;
-        }
-
-        Console.Error.WriteLine("Use only one browser option: --chrome, --edge, or --firefox.");
-        return false;
-    }
-
-    private static bool ValidatePort(int? port)
-    {
-        if (port is null || port is >= 1 and <= 65535)
-        {
-            return true;
-        }
-
-        Console.Error.WriteLine("--port must be between 1 and 65535.");
-        return false;
-    }
-
-    private static int WriteScriptResult(ScriptRunResult result)
-    {
-        foreach (var line in result.StdoutLines)
-        {
-            Console.WriteLine(line);
-        }
-
-        if (!result.Success && !result.Skipped && !string.IsNullOrWhiteSpace(result.Error))
-        {
-            Console.Error.WriteLine(result.Error);
-        }
-
-        return result.Success || result.Skipped ? 0 : 1;
-    }
 }

@@ -57,9 +57,9 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public bool LastCursorPressed { get; private set; }
     public bool LastCursorTrail { get; private set; }
     public bool LastCursorBreadcrumb { get; private set; }
-    public bool LastCursorTouch { get; private set; }
+    public PointerVisualOptions? LastCursorVisual { get; private set; }
     public bool RemoveDomCursorCalled { get; private set; }
-    public List<(bool Pressed, bool Trail, bool Breadcrumb, bool Touch)> CursorStates { get; } = [];
+    public List<(bool Pressed, bool Trail, bool Breadcrumb, PointerVisualOptions? Visual)> CursorStates { get; } = [];
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector, ScreenshotOptions? options = null)
@@ -172,15 +172,15 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         return ElementBoxes.Count > 0 ? ElementBoxes.Dequeue() : new(0, 0, 1, 1);
     }
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) => new(0, 0);
-    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point, ClickPulseStyle? pulseStyle = null, bool pressed = false, bool trail = false, bool breadcrumb = false, bool touch = false)
+    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point, ClickPulseStyle? pulseStyle = null, bool pressed = false, bool trail = false, bool breadcrumb = false, PointerVisualOptions? visual = null)
     {
         LastCursorPulseStyle = pulseStyle;
         CursorPulseStyles.Add(pulseStyle);
         LastCursorPressed = pressed;
         LastCursorTrail = trail;
         LastCursorBreadcrumb = breadcrumb;
-        LastCursorTouch = touch;
-        CursorStates.Add((pressed, trail, breadcrumb, touch));
+        LastCursorVisual = visual;
+        CursorStates.Add((pressed, trail, breadcrumb, visual));
     }
     public void RemoveDomCursor(string remoteDebuggingUrl) => RemoveDomCursorCalled = true;
     public IReadOnlyList<ChromePageTab> ListTabs(string remoteDebuggingUrl) =>

@@ -101,6 +101,32 @@ public sealed partial class CmgVisualSegmentExecutor
         return false;
     }
 
+    private static bool TryGifVisualFor(
+        CmgNode action,
+        PointerVisualOptions? defaults,
+        out PointerVisualOptions visual,
+        out string? error)
+    {
+        visual = defaults ?? PointerVisualOptions.Default;
+        error = null;
+        try
+        {
+            visual = visual.WithAction(new CMG.Browser.Scripting.BrowserScriptAction(
+                action.LineNumber,
+                action.Kind,
+                action.Kind,
+                action.Arguments,
+                action.Options,
+                []), touch: false);
+            return true;
+        }
+        catch (CMG.Browser.Scripting.ScriptExecutionException exception)
+        {
+            error = exception.Message;
+            return false;
+        }
+    }
+
     private static bool TryGifHoldFor(CmgNode action, int defaults, out int hold, out string? error)
     {
         return TryGifDurationFor(action, "holdAfterAction", "gif option holdAfterAction=", defaults, out hold, out error);
