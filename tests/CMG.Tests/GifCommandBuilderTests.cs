@@ -83,6 +83,67 @@ public sealed class GifCommandBuilderTests
     }
 
     [Fact]
+    public void Compare_PrintsMetadataDeltas()
+    {
+        var before = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}-before.gif");
+        var after = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}-after.gif");
+        using var beforeSink = new GifFrameSink();
+        beforeSink.AddFrame(Png(Color.Red), 10);
+        beforeSink.Save(before);
+        using var afterSink = new GifFrameSink();
+        afterSink.AddFrame(Png(Color.Red), 10);
+        afterSink.AddFrame(Png(Color.Blue), 25);
+        afterSink.Save(after);
+        var output = new StringWriter();
+        var original = Console.Out;
+        try
+        {
+            Console.SetOut(output);
+            var exitCode = BuildRoot().Parse(["gif", "compare", before, after]).Invoke();
+
+            Assert.Equal(0, exitCode);
+            var line = output.ToString();
+            Assert.Contains("GIF_COMPARE", line, StringComparison.Ordinal);
+            Assert.Contains("framesDelta=1", line, StringComparison.Ordinal);
+            Assert.Contains("durationMsDelta=250", line, StringComparison.Ordinal);
+            Assert.Contains("sameDimensions=true", line, StringComparison.Ordinal);
+            Assert.Contains("paletteColorsBefore=1", line, StringComparison.Ordinal);
+            Assert.Contains("paletteColorsAfter=2", line, StringComparison.Ordinal);
+        }
+        finally
+        {
+            Console.SetOut(original);
+            File.Delete(before);
+            File.Delete(after);
+        }
+    }
+
+    [Fact]
+    public void Compare_MissingFile_ReturnsFailure()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var sink = new GifFrameSink();
+        sink.AddFrame(Png(Color.Red), 10);
+        sink.Save(path);
+        var error = new StringWriter();
+        var original = Console.Error;
+        try
+        {
+            Console.SetError(error);
+            var exitCode = BuildRoot().Parse(["gif", "compare", "missing.gif", path]).Invoke();
+
+            Assert.Equal(1, exitCode);
+            Assert.Contains("GIF before file", error.ToString(), StringComparison.Ordinal);
+            Assert.Contains("was not found", error.ToString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            Console.SetError(original);
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
     public void Presets_PrintsPresetFamilies()
     {
         var output = new StringWriter();

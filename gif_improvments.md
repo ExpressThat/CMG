@@ -361,7 +361,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add per-step capture cost metrics.
 - Implemented: add a `cmg gif inspect <file>` command for frame count, palette color pressure, duration, dimensions, transparency, repeat metadata, and size.
 - Add a `cmg gif optimize <file>` command.
-- Add a `cmg gif compare <before> <after>` command.
+- Implemented: add a `cmg gif compare <before> <after>` command for frame, duration, dimension, palette, transparency, repeat, and size deltas.
 
 ## Debugging And Diagnostics
 

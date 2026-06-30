@@ -9,6 +9,7 @@ cmg gif [command] [arguments] [options]
 ## Subcommands
 
 - [`inspect`](inspect.md): Inspect GIF frame, timing, palette, dimension, and size metadata.
+- [`compare`](compare.md): Compare two GIF artifacts by metadata.
 - [`presets`](presets.md): List GIF quality, pointer, pulse, and timing presets.
 
 ## Behavior

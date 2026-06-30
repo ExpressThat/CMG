@@ -9,6 +9,7 @@ public sealed class GifCommandBuilder
     {
         var command = new Command("gif", "GIF artifact inspection and utility commands.");
         command.Subcommands.Add(BuildInspectCommand());
+        command.Subcommands.Add(BuildCompareCommand());
         command.Subcommands.Add(BuildPresetsCommand());
         return command;
     }
@@ -40,6 +41,57 @@ public sealed class GifCommandBuilder
         return command;
     }
 
+    private static Command BuildCompareCommand()
+    {
+        var before = new Argument<FileInfo>("before") { Description = "Baseline GIF file." };
+        var after = new Argument<FileInfo>("after") { Description = "Comparison GIF file." };
+        var command = new Command("compare", "Compare two GIF artifacts by metadata.") { before, after };
+        command.SetAction(parseResult =>
+        {
+            var beforeFile = parseResult.GetValue(before);
+            var afterFile = parseResult.GetValue(after);
+            if (!TryInspect(beforeFile, "before", out var beforeGif) ||
+                !TryInspect(afterFile, "after", out var afterGif))
+            {
+                return 1;
+            }
+
+            Console.WriteLine(CompareLine(beforeGif, afterGif));
+            return 0;
+        });
+        return command;
+    }
+
+    private static bool TryInspect(FileInfo? file, string label, out GifInspection inspection)
+    {
+        inspection = default!;
+        if (file is null || !file.Exists)
+        {
+            Console.Error.WriteLine($"GIF {label} file '{file?.FullName ?? string.Empty}' was not found.");
+            return false;
+        }
+
+        try
+        {
+            inspection = GifInspector.Inspect(file);
+            return true;
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"Could not inspect GIF {label} file '{file.FullName}'. {exception.Message}");
+            return false;
+        }
+    }
+
+    private static string CompareLine(GifInspection before, GifInspection after) =>
+        $"GIF_COMPARE before={Quote(before.Path)} after={Quote(after.Path)} " +
+        $"framesDelta={after.FrameCount - before.FrameCount} durationMsDelta={after.DurationMilliseconds - before.DurationMilliseconds} " +
+        $"sizeBytesDelta={after.SizeBytes - before.SizeBytes} widthDelta={after.Width - before.Width} heightDelta={after.Height - before.Height} " +
+        $"sameDimensions={(before.Width == after.Width && before.Height == after.Height).ToString().ToLowerInvariant()} " +
+        $"paletteBefore={before.Palette} paletteAfter={after.Palette} paletteColorsBefore={before.PaletteColors} paletteColorsAfter={after.PaletteColors} " +
+        $"transparentBefore={before.Transparent.ToString().ToLowerInvariant()} transparentAfter={after.Transparent.ToString().ToLowerInvariant()} " +
+        $"repeatBefore={before.RepeatCount} repeatAfter={after.RepeatCount}";
+
     private static Command BuildPresetsCommand()
     {
         var command = new Command("presets", "List GIF quality, pointer, pulse, and timing presets.");
@@ -54,4 +106,7 @@ public sealed class GifCommandBuilder
         });
         return command;
     }
+
+    private static string Quote(string value) =>
+        $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
 }
