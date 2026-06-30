@@ -14,7 +14,15 @@ CLI flags should exist only when they make sense as whole-run defaults, CI contr
 - If a CLI option exists, there should usually be an equivalent or more expressive DSL form.
 - `gif`, `recordVideo`, and `screencast` aliases should share every recording option unless a future output format makes a distinction necessary.
 
-Some improvements should become defaults when they make the recorded evidence clearer without requiring extra user intent. Defaults should favor showing what actually happened in a human-readable way, while still letting scripts override or disable the behavior. For example, clicks should visibly pulse by default because the GIF should prove a click happened; `clickPulse=none` or a future scoped default can opt out when a pulse would be distracting.
+Some improvements should become defaults when they make the recorded evidence clearer without requiring extra user intent. Defaults should favor showing what actually happened in a human-readable way, while still letting scripts override or disable the behavior. For example, clicks should visibly pulse by default because the GIF should prove a click happened; `clickPulse=none` or a scoped default can opt out when a pulse would be distracting.
+
+Default-first guidance:
+
+- Prefer defaults for evidence features that nearly every recording benefits from, such as visible click indication, readable pointer movement, enough post-action hold time to see state changes, and failure-state holds.
+- Prefer options for features that change intent, privacy, output size, or visual style, such as masking, cropping, captions, pointer speed, palette tuning, or artifact retention.
+- If a feature becomes a default, it still needs a DSL override and, when useful for whole-run behavior, a CLI override.
+- Default behavior must be documented as part of the feature, including how to disable it. For example: `clickPulse=ring` by default, `clickPulse=none` to suppress click evidence in a specific block or action.
+- Defaults should be conservative and evidence-oriented: they should reveal automation intent without inventing actions, hiding failures, or making the GIF feel decorative.
 
 Preferred examples:
 
