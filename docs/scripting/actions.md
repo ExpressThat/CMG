@@ -201,7 +201,7 @@ Options:
 - `modifiers`: Optional comma- or plus-separated modifiers: `Alt`, `Control`, `Meta`, and `Shift`.
 - `x` / `y`: Optional offsets inside the target element. Defaults to the element center. GIF recordings move the virtual pointer to the same offset.
 - `holdAfterAction`: Optional post-action GIF hold duration in milliseconds. Use `0` to suppress the hold for this click.
-- `clickPulse`: Optional GIF pulse style: `ring`, `ripple`, `dot`, `crosshair`, or `none`.
+- `clickPulse`: Optional GIF pulse style: `ring`, `ripple`, `dot`, `crosshair`, or `none`. Without an override, right-clicks use `crosshair`, middle-clicks use `dot`, and left clicks use the scoped default.
 
 Example:
 
@@ -1875,11 +1875,14 @@ dblclick "#canvas" modifiers=Control+Shift x=8 y=12
 
 Moves to the element with the visual hover path, then dispatches the page-facing mouse event. `doubleClick` is an alias for `dblclick`; `contextClick` is an alias for `rightClick`. With `x=`, `y=`, or `modifiers=`, CMG dispatches the event at the configured element-relative point with the requested modifier flags. In GIF recordings, the virtual pointer moves to the same element-relative point before the event is dispatched.
 
+GIF recordings capture two pulse frames for `dblclick` / `doubleClick`, and `rightClick` / `contextClick` default to the crosshair pulse unless `clickPulse=` overrides the style.
+
 Options:
 
 - `modifiers`: Optional comma- or plus-separated modifiers: `Alt`, `Control`, `Meta`, and `Shift`.
 - `x`: Optional X offset inside the element.
 - `y`: Optional Y offset inside the element.
+- `clickPulse`: Optional GIF pulse style override: `ring`, `ripple`, `dot`, `crosshair`, or `none`.
 
 Output:
 

@@ -53,8 +53,7 @@ public sealed partial class CmgActionLowerer
             "focus" => ElementScript(action, "element.focus({ preventScroll: true }); return true;"),
             "blur" => ElementScript(action, "element.blur(); return true;"),
             "selecttext" => ElementScript(action, "element.focus({ preventScroll: true }); element.select?.(); return true;"),
-            "dblclick" or "doubleclick" => LowerMouseEvent(action, "dblclick", button: 0),
-            "rightclick" or "contextclick" => LowerMouseEvent(action, "contextmenu", button: 2),
+            "dblclick" or "doubleclick" or "rightclick" or "contextclick" => LowerSelectorCommand(action.Kind, action),
             "tap" or "touchtap" => LowerSelectorCommand(action.Kind, action),
             "reload" or "goback" or "goforward" or "waitforurl" or "waitfortitle" or
             "waitforloadstate" or "waitfornetworkidle" or "networkidle" or "waitfornavigation" =>
@@ -194,21 +193,6 @@ public sealed partial class CmgActionLowerer
             .. resolved.PrefixLines,
             CmgActionabilityScripts.WaitForActionable(resolved.Selector, action),
             ToLine("evaluate", [$"(() => {{ const element = {BrowserDomScripts.Query(resolved.Selector)}; if (!element) throw new Error('No element matched selector {resolved.Selector}'); {body} }})()"])
-        ];
-    }
-
-    private static IReadOnlyList<string> LowerMouseEvent(CmgNode action, string eventName, int button)
-    {
-        action = NormalizeLocatorOption(action);
-        var resolved = action.Arguments.Count > 0 ? CmgLocator.Resolve(action.Arguments[0], action.LineNumber) : new CmgResolvedLocator(string.Empty, []);
-        var selector = resolved.Selector;
-        var buttons = button == 2 ? 2 : 1;
-        var expression = $"(() => {{ const element = {BrowserDomScripts.Query(selector)}; if (!element) throw new Error('No element matched selector {selector}'); const rect = element.getBoundingClientRect(); const options = {{ bubbles: true, cancelable: true, button: {button}, buttons: {buttons}, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }}; element.dispatchEvent(new MouseEvent('{eventName}', options)); return true; }})()";
-        return [
-            .. resolved.PrefixLines,
-            CmgActionabilityScripts.WaitForActionable(selector, action),
-            ToLine("hover", [selector]),
-            ToLine("evaluate", [expression])
         ];
     }
 

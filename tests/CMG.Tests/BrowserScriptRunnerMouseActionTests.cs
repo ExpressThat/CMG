@@ -51,6 +51,8 @@ public sealed class BrowserScriptRunnerMouseActionTests
         Assert.True(result.Success);
         Assert.Equal("[data-cmg-locator-id=\"__cmg_locator_1\"]", client.LastHoveredSelector);
         Assert.Contains($"MouseEvent('{eventName}'", client.LastExpression);
+        Assert.Contains("PointerCtor('pointerdown'", client.LastExpression);
+        Assert.Contains("MouseEvent('mouseup'", client.LastExpression);
         Assert.Contains($"button: {button}", client.LastExpression);
         Assert.Contains($"buttons: {buttons}", client.LastExpression);
         Assert.Contains(result.StdoutLines, line => line.StartsWith($"MOUSE_EVENT 001 {eventName}", StringComparison.Ordinal));
@@ -65,6 +67,8 @@ public sealed class BrowserScriptRunnerMouseActionTests
         Assert.True(result.Success, result.Error);
         Assert.Equal("#save", client.LastHoveredSelector);
         Assert.Contains("MouseEvent('contextmenu'", client.LastExpression);
+        Assert.Contains("PointerCtor('pointerdown'", client.LastExpression);
+        Assert.Contains("MouseEvent('mouseup'", client.LastExpression);
         Assert.Contains("button: 2", client.LastExpression);
         Assert.Contains("buttons: 2", client.LastExpression);
         Assert.Contains("ctrlKey: true", client.LastExpression);

@@ -172,12 +172,14 @@ cmg run tests\flows --gif demo-output\runner-gifs --gif-max-size 2MB
 cmg run tests\flows --gif demo-output\runner-gifs --gif-max-duration 10s
 ```
 
-CMG also enables evidence-focused defaults when they make the GIF easier to understand. Click and tap actions show a visible pulse by default so the recording proves that an activation happened. Use `clickPulse=` when a script needs a different pulse style or needs to suppress the pulse for one action.
+CMG also enables evidence-focused defaults when they make the GIF easier to understand. Click and tap actions show a visible pulse by default so the recording proves that an activation happened. Right-clicks default to a crosshair pulse, middle-clicks default to a dot pulse, and double-clicks capture two pulse frames so the GIF shows both activations. Use `clickPulse=` when a script needs a different pulse style or needs to suppress the pulse for one action.
 
 ```text
 gif "click evidence" clickPulse=ripple {
   click "#save"
-  rightClick "#menu" clickPulse=crosshair
+  rightClick "#menu"
+  click "#tab" button=middle
+  doubleClick "#open"
   click "#quiet" clickPulse=none
 }
 ```

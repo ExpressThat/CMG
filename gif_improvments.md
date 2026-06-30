@@ -176,8 +176,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add `preDragHold=<ms>`, `dragHold=<ms>`, and `postDropHold=<ms>` on `dragAndDrop`.
 - Implemented: add `holdAfterMove=<ms>` on `moveMouse` for demonstrations where the pointer should settle before the next action.
 - Add click pulse style options: ring, ripple, dot, crosshair, or none. CLI: `--click-pulse <style>`. Default should be `ring` so clicks are visible evidence unless a script disables it with `clickPulse=none`.
-- Add right-click and middle-click distinct visual pulses.
-- Add double-click pulse choreography that clearly shows two clicks.
+- Implemented: add right-click and middle-click distinct visual pulses.
+- Implemented: add double-click pulse choreography that clearly shows two clicks.
 - Add drag trail rendering for long drags.
 - Add optional drag path breadcrumb dots.
 - Add a visible hold state for `mouseDown`.

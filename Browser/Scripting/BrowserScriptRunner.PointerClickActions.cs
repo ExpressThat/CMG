@@ -47,15 +47,19 @@ public sealed partial class BrowserScriptRunner
 
     private static string BuildMouseEventExpression(string selector, string eventName, MouseClickVariantSpec spec)
     {
+        var sequence = eventName == "dblclick"
+            ? "for (let i = 1; i <= 2; i++) { element.dispatchEvent(new PointerCtor('pointerdown', { ...options, detail: i })); element.dispatchEvent(new MouseEvent('mousedown', { ...options, detail: i })); element.dispatchEvent(new PointerCtor('pointerup', { ...options, buttons: 0, detail: i })); element.dispatchEvent(new MouseEvent('mouseup', { ...options, buttons: 0, detail: i })); element.dispatchEvent(new MouseEvent('click', { ...options, buttons: 0, detail: i })); } element.dispatchEvent(new MouseEvent('dblclick', { ...options, buttons: 0, detail: 2 })); "
+            : "element.dispatchEvent(new PointerCtor('pointerdown', options)); element.dispatchEvent(new MouseEvent('mousedown', options)); element.dispatchEvent(new PointerCtor('pointerup', { ...options, buttons: 0 })); element.dispatchEvent(new MouseEvent('mouseup', { ...options, buttons: 0 })); element.dispatchEvent(new MouseEvent('contextmenu', { ...options, buttons: 0 })); ";
         return "(() => { "
             + $"const element = {CMG.Browser.BrowserDomScripts.Query(selector)}; "
             + $"if (!element) throw new Error('No element matched selector {selector}'); "
             + "const rect = element.getBoundingClientRect(); "
+            + "const PointerCtor = window.PointerEvent || MouseEvent; "
             + $"const clientX = rect.left + {spec.XExpression}; const clientY = rect.top + {spec.YExpression}; "
-            + "const options = { bubbles: true, cancelable: true, "
+            + "const options = { bubbles: true, cancelable: true, composed: true, "
             + $"button: {spec.Button}, buttons: {spec.Buttons}, "
             + $"clientX, clientY, {spec.ModifiersInit} }}; "
-            + $"element.dispatchEvent(new MouseEvent('{eventName}', options)); "
+            + sequence
             + "return true; })()";
     }
 

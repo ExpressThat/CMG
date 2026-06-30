@@ -1,8 +1,11 @@
-# Demonstrates provider-style double-click and context-click pointer actions with offsets.
+# Demonstrates provider-style click variants with GIF pulse choreography.
 
-setContent "<button id='target'>Click target</button><output id='result'>none</output><script>const target = document.querySelector('#target'); const result = document.querySelector('#result'); target.addEventListener('dblclick', () => result.textContent = 'double'); target.addEventListener('contextmenu', event => { event.preventDefault(); result.textContent = 'right'; });</script>"
+setContent "<button id='target'>Click target</button><output id='result'>none</output>"
+evaluate "(() => { const target = document.querySelector('#target'); const result = document.querySelector('#result'); target.addEventListener('dblclick', () => result.textContent = 'double'); target.addEventListener('contextmenu', event => { event.preventDefault(); result.textContent = 'right'; }); target.addEventListener('auxclick', event => { event.preventDefault(); result.textContent = 'middle'; }); return true; })()"
 waitForElement "#target"
 doubleClick "#target" modifiers=Shift x=8 y=8
 assertText "#result" "double"
 contextClick "#target" modifiers=Control x=12 y=8
 assertText "#result" "right"
+click "#target" button=middle x=16 y=8
+assertText "#result" "middle"

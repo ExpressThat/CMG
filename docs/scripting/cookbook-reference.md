@@ -1085,15 +1085,18 @@ This direct-script example is available as `demo-scripts/110-drag-offsets.cmgscr
 ## Pointer Click Variants
 
 ```text
-setContent "<button id='target'>Click target</button><output id='result'>none</output><script>const target = document.querySelector('#target'); const result = document.querySelector('#result'); target.addEventListener('dblclick', () => result.textContent = 'double'); target.addEventListener('contextmenu', event => { event.preventDefault(); result.textContent = 'right'; });</script>"
+setContent "<button id='target'>Click target</button><output id='result'>none</output>"
+evaluate "(() => { const target = document.querySelector('#target'); const result = document.querySelector('#result'); target.addEventListener('dblclick', () => result.textContent = 'double'); target.addEventListener('contextmenu', event => { event.preventDefault(); result.textContent = 'right'; }); target.addEventListener('auxclick', event => { event.preventDefault(); result.textContent = 'middle'; }); return true; })()"
 waitForElement "#target"
 doubleClick "#target" modifiers=Shift x=8 y=8
 assertText "#result" "double"
 contextClick "#target" modifiers=Control x=12 y=8
 assertText "#result" "right"
+click "#target" button=middle x=16 y=8
+assertText "#result" "middle"
 ```
 
-This example is available as `demo-scripts/14-pointer-click-variants.cmgscript`. The structured runner form is available as `demo-scripts/114-pointer-click-variants-runner.cmgscript`.
+This example is available as `demo-scripts/14-pointer-click-variants.cmgscript`. In GIF recordings, double-click shows two pulse frames, context-click uses a crosshair pulse by default, and middle-click uses a dot pulse by default. The structured runner form is available as `demo-scripts/114-pointer-click-variants-runner.cmgscript`.
 
 ## Environment Emulation
 

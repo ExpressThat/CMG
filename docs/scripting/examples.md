@@ -113,6 +113,12 @@ For drag evidence, run:
 cmg browser control script --file demo-scripts\07-complex-drag-flow.cmgscript --gif demo-output\complex-drag.gif
 ```
 
+For click evidence, run:
+
+```powershell
+cmg browser control script --file demo-scripts\14-pointer-click-variants.cmgscript --gif demo-output\click-variants.gif
+```
+
 To compare GIF encoder presets and the block aliases, run:
 
 ```powershell

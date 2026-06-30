@@ -114,6 +114,16 @@ public sealed partial class ScriptGifRecorder
         CaptureFrame(FrameDelayCentisecondsFor(action), PulseStyleFor(action));
     }
 
+    private void CaptureClickPulseFrames(BrowserScriptAction action)
+    {
+        var pulseStyle = PulseStyleFor(action);
+        var pulseCount = PulseCountFor(action);
+        for (var index = 0; index < pulseCount; index++)
+        {
+            CaptureFrame(FrameDelayCentisecondsFor(action), pulseStyle);
+        }
+    }
+
     private void CaptureFrame(int delayCentiseconds, ClickPulseStyle? pulseStyle = null)
     {
         if (remoteDebuggingUrl is null)
@@ -137,7 +147,34 @@ public sealed partial class ScriptGifRecorder
                 : throw new ScriptExecutionException($"{action.Name} option clickPulse= must be one of: {ClickPulseStyleParser.Values}.");
         }
 
+        if (action is not null)
+        {
+            var actionName = action.Name.ToLowerInvariant();
+            if (actionName is "rightclick" or "contextclick" ||
+                action.Options.GetValueOrDefault("button")?.Equals("right", StringComparison.OrdinalIgnoreCase) is true)
+            {
+                return ClickPulseStyle.Crosshair;
+            }
+
+            if (action.Options.GetValueOrDefault("button")?.Equals("middle", StringComparison.OrdinalIgnoreCase) is true)
+            {
+                return ClickPulseStyle.Dot;
+            }
+        }
+
         return options.ClickPulse;
+    }
+
+    private static int PulseCountFor(BrowserScriptAction action)
+    {
+        var name = action.Name.ToLowerInvariant();
+        if (name is "dblclick" or "doubleclick")
+        {
+            return 2;
+        }
+
+        var countText = action.Options.GetValueOrDefault("clickCount") ?? action.Options.GetValueOrDefault("count");
+        return int.TryParse(countText, out var count) && count > 1 ? Math.Min(count, 4) : 1;
     }
 
     private int FrameDelayMillisecondsFor(BrowserScriptAction? action) =>

@@ -147,7 +147,7 @@ dotnet run -- --firefox browser close
 - `09-drag-autoscroll.cmgscript`: Demonstrates `moveMouse "bottom"` inside a GIF drag block.
 - `10-css-hover-states.cmgscript`: Demonstrates real CSS `:hover` states during GIF pointer movement.
 - `13-rich-locators.cmgscript`: Demonstrates direct browser-control text and label locators.
-- `14-pointer-click-variants.cmgscript`: Demonstrates `doubleClick` and `contextClick` with pointer movement, modifiers, and offsets.
+- `14-pointer-click-variants.cmgscript`: Demonstrates `doubleClick`, `contextClick`, and middle-click with pointer movement, modifiers, offsets, and GIF pulse choreography.
 - `15-popup-alias.cmgscript`: Demonstrates `waitForPopup` as a popup-named tab wait.
 - `16-generic-event-waits.cmgscript`: Demonstrates provider-style `waitForEvent` aliases.
 - `17-http-credentials.cmgscript`: Demonstrates page-side HTTP credential automation for fetch/XHR.
@@ -250,7 +250,7 @@ dotnet run -- --firefox browser close
 - `111-drag-offsets-runner.cmgscript`: Demonstrates source and target offsets for simple drag in the structured runner DSL.
 - `112-direct-step-block.cmgscript`: Demonstrates shared `step` caption blocks in a direct script.
 - `113-runner-step-block.cmgscript`: Demonstrates shared `step` caption blocks in the structured runner DSL.
-- `114-pointer-click-variants-runner.cmgscript`: Demonstrates optioned double-click and context-click dispatch in the structured runner DSL.
+- `114-pointer-click-variants-runner.cmgscript`: Demonstrates optioned double-click, context-click, and middle-click dispatch in the structured runner DSL.
 - `115-default-timeouts.cmgscript`: Demonstrates script-level default timeout policy in a direct script.
 - `116-default-timeouts-runner.cmgscript`: Demonstrates script-level default timeout policy in the structured runner DSL.
 - `117-slow-runner.cmgscript`: Demonstrates provider-style `test.slow`, `describe.slow`, and inherited slow timeout policy.
