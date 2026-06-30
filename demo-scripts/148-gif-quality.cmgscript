@@ -1,0 +1,18 @@
+navigate "index.html"
+waitForElement "#openProfileDialog"
+
+gif "quality-highest" quality=highest {
+  caption "Highest quality GIF palette"
+  click "#openProfileDialog"
+  waitForElement "#profileDialog[open]"
+}
+
+recordVideo "quality-high" quality=high {
+  fill "#profileName" "CMG GIF Quality"
+  click "#saveProfile"
+}
+
+screencast "quality-medium" quality=medium {
+  hover "#openProfileDialog"
+  caption "Aliases still write GIF artifacts"
+}

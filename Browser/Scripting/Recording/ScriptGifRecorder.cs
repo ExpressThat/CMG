@@ -17,7 +17,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
     private readonly IBrowserAutomationClient devToolsClient;
     private readonly ScriptRecordingOptions options;
-    private readonly GifFrameSink frameSink = new();
+    private readonly GifFrameSink frameSink;
     private readonly VirtualPointer pointer = new();
     private string? remoteDebuggingUrl;
 
@@ -27,6 +27,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
     {
         this.devToolsClient = devToolsClient;
         this.options = options;
+        frameSink = new GifFrameSink(options.Quality);
     }
 
     public string OutputPath => Path.GetFullPath(options.OutputPath);

@@ -1,4 +1,5 @@
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Browser;
 
@@ -92,9 +93,10 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         FileInfo? trace,
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
-        IReadOnlyDictionary<string, string> variables)
+        IReadOnlyDictionary<string, string> variables,
+        GifQuality gifQuality = GifQuality.Highest)
     {
-        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables);
+        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality);
     }
 
     public int RunScript(
@@ -105,14 +107,15 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         FileInfo? trace,
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
-        IReadOnlyDictionary<string, string> variables)
+        IReadOnlyDictionary<string, string> variables,
+        GifQuality gifQuality = GifQuality.Highest)
     {
         if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables);
+        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality);
 
         return WriteScriptResult(result);
     }
@@ -125,14 +128,15 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         FileInfo? trace,
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
-        IReadOnlyDictionary<string, string> variables)
+        IReadOnlyDictionary<string, string> variables,
+        GifQuality gifQuality = GifQuality.Highest)
     {
         if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables);
+        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality);
 
         return WriteScriptResult(result);
     }

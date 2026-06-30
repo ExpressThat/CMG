@@ -10,6 +10,7 @@ cmg browser control script --inline "<script>"
 cmg browser --port <port> control script --file <path>
 cmg browser control script --file -
 cmg browser control script --file <path> --gif <path>
+cmg browser control script --file <path> --gif <path> --gif-quality highest
 cmg browser control script --file <path> --trace <path>
 cmg browser control script --file <path> --timeout 10000 --assertion-timeout 5000
 cmg browser control script --file <path> --base-url https://example.test/app/
@@ -25,6 +26,7 @@ cmg --firefox browser control script --file <path>
 - `--file -`: Read script text from stdin.
 - `--inline <script>`: Run inline `.cmgscript` text. Specify exactly one of `--file` or `--inline`.
 - `--gif <path>`: Optional output path for an animated GIF recording of the script run.
+- `--gif-quality <highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. Defaults to `highest`.
 - `--trace <path>`: Optional output path for a CMG script trace JSON file. The trace includes step names, line numbers, stdout lines, and failure reasons.
 - `--timeout <milliseconds>`: Default timeout for timeout-capable waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions that do not set `timeout=`.
 - `--navigation-timeout <milliseconds>`: Default timeout for navigation actions and navigation waits.
@@ -56,6 +58,7 @@ cmg --firefox browser control script --file <path>
 ## GIF Behavior
 
 - When `--gif` is provided, captures the visible page viewport after visual actions and writes an animated GIF.
+- GIF quality defaults to `highest`, which uses CMG's most color-faithful palette matching and dithering. Use `high`, `medium`, or `low` only when smaller/faster GIF artifacts matter more than color fidelity.
 - The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
 - Script-level `gif "name" { ... }`, `recordVideo "name" { ... }`, and `screencast "name" { ... }` blocks record only the wrapped actions when `--gif` is not provided.
 - When `--gif` is provided, the whole script is recorded and nested block recordings are suppressed.
@@ -129,6 +132,7 @@ Run a script with initial variables:
 ```powershell
 cmg browser control script --file demo-scripts\139-cli-variables.cmgscript --var user=Ada
 cmg browser control script --file demo-scripts\141-base-url.cmgscript --base-url https://example.test/app/
+cmg browser control script --file demo-scripts\148-gif-quality.cmgscript --gif demo-output\quality.gif --gif-quality highest
 cmg browser control script --inline "listConsole level=error"
 ```
 

@@ -1671,12 +1671,16 @@ Adds a visible caption before running the wrapped actions. This works in direct 
 ### `gif`, `recordVideo`, And `screencast`
 
 ```text
-gif "open-dialog" {
+gif "open-dialog" quality=highest {
   click "#open"
 }
 
-recordVideo "checkout" {
+recordVideo "checkout" quality=high {
   click "#pay"
+}
+
+screencast "compact" quality=medium {
+  click "#open"
 }
 ```
 
@@ -1686,6 +1690,7 @@ Records only the wrapped actions when direct `browser control script` or `cmg ru
 Options:
 
 - `output`: Optional GIF path for direct browser-control scripts. Without `output`, CMG writes `<name>.gif` in the current directory.
+- `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
 
 Output:
 

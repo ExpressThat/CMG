@@ -46,7 +46,7 @@ public sealed class BrowserScriptRunnerGifBlockTests
         var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
 
         var result = Runner().RunText($$"""
-        {{action}} "block" output="{{Slash(path)}}" {
+        {{action}} "block" output="{{Slash(path)}}" quality=high {
           showMessageBar "Inside block"
         }
         """, "debug", new FakeAutomationClient());
@@ -54,6 +54,19 @@ public sealed class BrowserScriptRunnerGifBlockTests
         Assert.True(result.Success);
         Assert.True(File.Exists(path));
         Assert.Contains(result.StdoutLines, line => line.Contains($"GIF {Path.GetFullPath(path)}", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_GifBlockRejectsInvalidQuality()
+    {
+        var result = Runner().RunText("""
+        gif "block" quality=crunchy {
+          showMessageBar "Inside block"
+        }
+        """, "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("gif quality must be one of", result.Error, StringComparison.Ordinal);
     }
 
     private static string Slash(string path) => path.Replace('\\', '/');

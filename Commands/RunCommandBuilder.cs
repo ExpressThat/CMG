@@ -1,5 +1,6 @@
 using System.CommandLine;
 using CMG.Browser;
+using CMG.Browser.Scripting.Recording;
 using CMG.Runner;
 
 namespace CMG.Commands;
@@ -32,6 +33,11 @@ public sealed partial class RunCommandBuilder
             Description = "Write per-test GIF recordings to this directory."
         };
         gifOption.Aliases.Add("-gif");
+        var gifQualityOption = new Option<string>("--gif-quality")
+        {
+            Description = "GIF quality for --gif recordings: highest, high, medium, or low.",
+            DefaultValueFactory = _ => "highest"
+        };
         var jsonOption = new Option<FileInfo?>("--report-json")
         {
             Description = "Write a JSON test report to this file."
@@ -121,6 +127,7 @@ public sealed partial class RunCommandBuilder
             configOption,
             projectOption,
             gifOption,
+            gifQualityOption,
             jsonOption,
             htmlOption,
             junitOption,
@@ -163,6 +170,11 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(error);
                 return 1;
             }
+            if (!GifQualityParser.TryParse(parseResult.GetValue(gifQualityOption), out var gifQuality))
+            {
+                Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}.");
+                return 1;
+            }
             variables = MergeVariables(MergeVariables(config.Variables, project?.Variables), variables);
             var projectBrowser = BrowserKindFor(project?.Browser);
             if (projectBrowser is BrowserKind.InvalidSelection)
@@ -195,7 +207,8 @@ public sealed partial class RunCommandBuilder
                 project?.Name ?? string.Empty,
                 parseResult.GetValue(browserPortOption),
                 parseResult.GetValue(autoLaunchOption),
-                parseResult.GetValue(headlessOption));
+                parseResult.GetValue(headlessOption),
+                gifQuality);
         });
 
         return command;

@@ -1,5 +1,6 @@
 using System.CommandLine;
 using CMG.Browser;
+using CMG.Browser.Scripting.Recording;
 using CMG.Commands;
 using CMG.Runner;
 
@@ -98,7 +99,8 @@ public sealed class RunCommandBuilderProjectTests
             string projectName = "",
             int? browserPort = null,
             bool autoLaunch = false,
-            bool autoLaunchHeadless = false)
+            bool autoLaunchHeadless = false,
+            GifQuality gifQuality = GifQuality.Highest)
         {
             BrowserKind = browserKind;
             Path = path;

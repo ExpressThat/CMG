@@ -1,5 +1,6 @@
 using System.CommandLine;
 using CMG.Browser;
+using CMG.Browser.Scripting.Recording;
 using CMG.Commands;
 using CMG.Runner;
 
@@ -91,6 +92,7 @@ public sealed class CommandHelpRoutingTests
             string projectName = "",
             int? browserPort = null,
             bool autoLaunch = false,
-            bool autoLaunchHeadless = false) => throw new InvalidOperationException();
+            bool autoLaunchHeadless = false,
+            GifQuality gifQuality = GifQuality.Highest) => throw new InvalidOperationException();
     }
 }

@@ -1,3 +1,5 @@
+using CMG.Browser.Scripting.Recording;
+
 namespace CMG.Runner;
 
 public sealed partial class CmgVisualSegmentExecutor
@@ -30,5 +32,23 @@ public sealed partial class CmgVisualSegmentExecutor
 
         var name = Path.GetFileNameWithoutExtension(path.Name);
         return new FileInfo(Path.Combine(path.DirectoryName ?? string.Empty, $"{name}-attempt-{attempt}.gif"));
+    }
+
+    private static bool TryGifQualityFor(CmgNode action, out GifQuality quality, out string? error)
+    {
+        quality = GifQuality.Highest;
+        error = null;
+        if (!action.Options.TryGetValue("quality", out var value))
+        {
+            return true;
+        }
+
+        if (GifQualityParser.TryParse(value, out quality))
+        {
+            return true;
+        }
+
+        error = $"gif quality must be one of: {GifQualityParser.Values}.";
+        return false;
     }
 }

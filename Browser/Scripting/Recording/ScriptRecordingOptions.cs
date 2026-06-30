@@ -1,6 +1,6 @@
 namespace CMG.Browser.Scripting.Recording;
 
-public sealed record ScriptRecordingOptions(string OutputPath)
+public sealed record ScriptRecordingOptions(string OutputPath, GifQuality Quality = GifQuality.Highest)
 {
     public const int FrameDelayCentiseconds = 10;
 

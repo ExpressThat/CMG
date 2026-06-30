@@ -4,7 +4,9 @@ Scripts can record an animated GIF with:
 
 ```powershell
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-quality highest
 cmg run flow.cmgscript --gif demo-output\runner-gifs
+cmg run flow.cmgscript --gif demo-output\runner-gifs --gif-quality highest
 ```
 
 ## What Gets Captured
@@ -100,6 +102,40 @@ GIF C:\Projects\CMG\demo-output\flow.gif
 ```
 
 On failure, CMG still writes a partial GIF when at least one frame was captured, then exits with code `1`.
+
+## Quality
+
+GIF quality controls palette generation and dithering. It does not change the browser screenshot source, virtual pointer, pointer events, drag ghosts, captions, timing, or which frames are captured.
+
+- `highest`: Default. Uses CMG's most color-faithful palette matching and dithering for visual evidence.
+- `high`: Still uses a full 256-color palette with slightly lighter dithering.
+- `medium`: Uses a smaller palette and faster matching for smaller artifacts.
+- `low`: Uses a much smaller palette with no dithering for the smallest/fastest artifacts.
+
+Use command-level quality for whole-run recordings:
+
+```powershell
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-quality highest
+cmg run flow.cmgscript --gif demo-output\runner-gifs --gif-quality high
+```
+
+Use block-level `quality=` for script-level recording blocks and aliases:
+
+```text
+gif "checkout" quality=highest {
+  click "#checkout"
+}
+
+recordVideo "hover-state" quality=high {
+  hover "#menu"
+}
+
+screencast "compact" quality=medium {
+  click "#open"
+}
+```
+
+When command-level `--gif` is active, nested `gif`, `recordVideo`, and `screencast` block files are still suppressed and the command-level `--gif-quality` applies to the whole recording.
 
 ## Timing
 

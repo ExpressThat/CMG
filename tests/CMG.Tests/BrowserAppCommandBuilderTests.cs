@@ -1,6 +1,7 @@
 using System.CommandLine;
 using CMG.Browser;
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 using CMG.Commands;
 
 namespace CMG.Tests;
@@ -178,7 +179,8 @@ public sealed class BrowserAppCommandBuilderTests
             FileInfo? trace,
             ScriptTimeoutOptions? timeouts,
             string? baseUrl,
-            IReadOnlyDictionary<string, string> variables)
+            IReadOnlyDictionary<string, string> variables,
+            GifQuality gifQuality = GifQuality.Highest)
         {
             Port = port;
             return 0;

@@ -1,4 +1,5 @@
 using CMG.Browser;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Runner;
 
@@ -27,7 +28,8 @@ public interface ICmgRunCommandHandler
         string projectName = "",
         int? browserPort = null,
         bool autoLaunch = false,
-        bool autoLaunchHeadless = false);
+        bool autoLaunchHeadless = false,
+        GifQuality gifQuality = GifQuality.Highest);
 }
 
 public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
@@ -62,7 +64,8 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         string projectName = "",
         int? browserPort = null,
         bool autoLaunch = false,
-        bool autoLaunchHeadless = false)
+        bool autoLaunchHeadless = false,
+        GifQuality gifQuality = GifQuality.Highest)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
@@ -105,7 +108,8 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             projectName,
             browserPort,
             autoLaunch,
-            autoLaunchHeadless));
+            autoLaunchHeadless,
+            gifQuality));
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);

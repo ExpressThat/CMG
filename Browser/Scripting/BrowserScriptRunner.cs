@@ -10,7 +10,6 @@ public sealed partial class BrowserScriptRunner
     {
         this.parser = parser;
     }
-
     public ScriptRunResult Run(
         string file,
         string remoteDebuggingUrl,
@@ -19,14 +18,16 @@ public sealed partial class BrowserScriptRunner
         FileInfo? trace = null,
         ScriptTimeoutOptions? timeouts = null,
         string? baseUrl = null,
-        IReadOnlyDictionary<string, string>? variables = null)
+        IReadOnlyDictionary<string, string>? variables = null,
+        GifQuality gifQuality = GifQuality.Highest)
     {
         var readResult = ReadScript(file);
         if (!readResult.Success)
         {
             return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
         }
-        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables);
+
+        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality);
     }
 
     public ScriptRunResult RunText(
@@ -37,9 +38,10 @@ public sealed partial class BrowserScriptRunner
         FileInfo? trace = null,
         ScriptTimeoutOptions? timeouts = null,
         string? baseUrl = null,
-        IReadOnlyDictionary<string, string>? variables = null)
+        IReadOnlyDictionary<string, string>? variables = null,
+        GifQuality gifQuality = GifQuality.Highest)
     {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables);
+        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality);
     }
 
     private ScriptRunResult RunParsedScript(
@@ -50,7 +52,8 @@ public sealed partial class BrowserScriptRunner
         FileInfo? trace,
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
-        IReadOnlyDictionary<string, string>? variables)
+        IReadOnlyDictionary<string, string>? variables,
+        GifQuality gifQuality)
     {
         var importResult = ScriptImportExpander.Expand(script, Directory.GetCurrentDirectory());
         if (!importResult.Success)
@@ -91,7 +94,7 @@ public sealed partial class BrowserScriptRunner
         var output = new List<string>();
         using var recorder = gif is null
             ? null
-            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName));
+            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality));
 
         recorder?.Start(remoteDebuggingUrl);
 
@@ -168,7 +171,7 @@ public sealed partial class BrowserScriptRunner
 
     private static IReadOnlyList<BrowserScriptAction> CollectBranches(IReadOnlyList<BrowserScriptAction> actions, ref int index)
     {
-        var branches = new List<BrowserScriptAction> { actions[index] };
+            var branches = new List<BrowserScriptAction> { actions[index] };
         while (index + 1 < actions.Count && IsConditionalBranch(actions[index + 1].Name))
         {
             branches.Add(actions[++index]);
@@ -237,14 +240,4 @@ public sealed partial class BrowserScriptRunner
         }
     }
 
-    private static bool ShouldExpandBeforeDispatch(string name) =>
-        !name.Equals("if", StringComparison.OrdinalIgnoreCase) &&
-        !name.Equals("elseif", StringComparison.OrdinalIgnoreCase) &&
-        !name.Equals("while", StringComparison.OrdinalIgnoreCase) &&
-        !name.Equals("until", StringComparison.OrdinalIgnoreCase) &&
-        !name.Equals("doWhile", StringComparison.OrdinalIgnoreCase) &&
-        !name.Equals("doUntil", StringComparison.OrdinalIgnoreCase);
-
-    private static readonly IReadOnlyDictionary<string, string> EmptyVariables =
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 }

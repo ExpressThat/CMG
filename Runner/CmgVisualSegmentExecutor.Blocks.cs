@@ -1,5 +1,6 @@
 using CMG.Browser;
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Runner;
 
@@ -11,6 +12,7 @@ public sealed partial class CmgVisualSegmentExecutor
         FileInfo? gif,
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
+        GifQuality gifQuality,
         List<string> output,
         List<CmgStepResult> steps,
         out string? error)
@@ -19,7 +21,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var pendingLineMap = new Dictionary<int, int>();
         foreach (var action in actions)
         {
-            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, pending, pendingLineMap, output, steps, out error))
+            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pending, pendingLineMap, output, steps, out error))
             {
                 if (error is not null)
                 {
@@ -32,7 +34,7 @@ public sealed partial class CmgVisualSegmentExecutor
             AddPending(pending, pendingLineMap, action, lowerer.Lower(action));
         }
 
-        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl);
+        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality);
         return AppendResult(final.Result, final.LineMap, output, steps, actions.LastOrDefault(), gif, out error);
     }
 
@@ -42,6 +44,7 @@ public sealed partial class CmgVisualSegmentExecutor
         FileInfo? gif,
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
+        GifQuality gifQuality,
         List<string> pending,
         Dictionary<int, int> pendingLineMap,
         List<string> output,
@@ -54,7 +57,7 @@ public sealed partial class CmgVisualSegmentExecutor
             return false;
         }
 
-        var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl);
+        var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality);
         if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif, out error))
         {
             return true;

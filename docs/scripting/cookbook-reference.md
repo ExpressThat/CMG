@@ -416,6 +416,27 @@ Run it with GIF recording:
 dotnet run -- browser control script --file demo-scripts\10-css-hover-states.cmgscript --gif demo-output\css-hover-states.gif
 ```
 
+## GIF Quality Presets
+
+Use `--gif-quality` for whole-script or whole-test recordings, and `quality=` on script-level `gif`, `recordVideo`, and `screencast` blocks. The default is `highest`, which favors color fidelity for visual evidence.
+
+```text
+gif "quality-highest" quality=highest {
+  caption "Highest quality GIF palette"
+  click "#openProfileDialog"
+}
+
+recordVideo "quality-high" quality=high {
+  fill "#profileName" "CMG GIF Quality"
+}
+
+screencast "quality-medium" quality=medium {
+  hover "#openProfileDialog"
+}
+```
+
+This example is available as `demo-scripts/148-gif-quality.cmgscript`.
+
 ## Fixtures And Files
 
 ```text

@@ -1,4 +1,5 @@
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Browser;
 
@@ -25,7 +26,8 @@ public interface IBrowserControlService
         FileInfo? trace,
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
-        IReadOnlyDictionary<string, string> variables) =>
+        IReadOnlyDictionary<string, string> variables,
+        GifQuality gifQuality = GifQuality.Highest) =>
         RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables);
 
     ScriptRunResult RunScript(
@@ -51,6 +53,6 @@ public interface IBrowserControlService
         FileInfo? trace,
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
-        IReadOnlyDictionary<string, string> variables);
+        IReadOnlyDictionary<string, string> variables,
+        GifQuality gifQuality = GifQuality.Highest);
 }
-

@@ -2,12 +2,19 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
 namespace CMG.Browser.Scripting.Recording;
 
 public sealed class GifFrameSink : IDisposable
 {
     private readonly List<Image<Rgba32>> frames = [];
+    private readonly GifQuality quality;
+
+    public GifFrameSink(GifQuality quality = GifQuality.Highest)
+    {
+        this.quality = quality;
+    }
 
     public void AddFrame(byte[] pngBytes, int delayCentiseconds)
     {
@@ -41,8 +48,46 @@ public sealed class GifFrameSink : IDisposable
             gif.Frames.AddFrame(normalized.Frames.RootFrame);
         }
 
-        gif.SaveAsGif(fullPath);
+        gif.SaveAsGif(fullPath, CreateEncoder(quality));
     }
+
+    internal static GifEncoder CreateEncoder(GifQuality quality = GifQuality.Highest) => new()
+    {
+        ColorTableMode = quality is GifQuality.Low ? GifColorTableMode.Local : GifColorTableMode.Global,
+        Quantizer = CreateQuantizer(quality)
+    };
+
+    private static IQuantizer CreateQuantizer(GifQuality quality) =>
+        quality switch
+        {
+            GifQuality.Low => new OctreeQuantizer(new QuantizerOptions
+            {
+                ColorMatchingMode = ColorMatchingMode.Coarse,
+                Dither = null,
+                MaxColors = 64
+            }),
+            GifQuality.Medium => new WuQuantizer(new QuantizerOptions
+            {
+                ColorMatchingMode = ColorMatchingMode.Hybrid,
+                Dither = KnownDitherings.Bayer4x4,
+                DitherScale = 0.35f,
+                MaxColors = 128
+            }),
+            GifQuality.High => new WuQuantizer(new QuantizerOptions
+            {
+                ColorMatchingMode = ColorMatchingMode.Exact,
+                Dither = KnownDitherings.FloydSteinberg,
+                DitherScale = 0.5f,
+                MaxColors = 256
+            }),
+            _ => new WuQuantizer(new QuantizerOptions
+            {
+                ColorMatchingMode = ColorMatchingMode.Exact,
+                Dither = KnownDitherings.FloydSteinberg,
+                DitherScale = 0.75f,
+                MaxColors = 256
+            })
+        };
 
     private static Image<Rgba32> NormalizeFrame(Image<Rgba32> frame, int width, int height)
     {

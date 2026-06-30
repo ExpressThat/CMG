@@ -1,5 +1,6 @@
 using System.CommandLine;
 using CMG.Browser;
+using CMG.Browser.Scripting.Recording;
 using CMG.Commands;
 using CMG.Runner;
 
@@ -25,6 +26,27 @@ public sealed class RunCommandBuilderTests
         Assert.True(handler.AutoLaunchHeadless);
         Assert.Equal("Ada", handler.Variables["user"]);
         Assert.Equal("demo", handler.Variables["mode"]);
+        Assert.Equal(GifQuality.Highest, handler.GifQuality);
+    }
+
+    [Fact]
+    public void RunCommand_MapsGifQuality()
+    {
+        var handler = new CapturingRunCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --gif-quality low").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(GifQuality.Low, handler.GifQuality);
+    }
+
+    [Fact]
+    public void RunCommand_RejectsInvalidGifQuality()
+    {
+        var handler = new CapturingRunCommandHandler();
+        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --gif-quality crunchy").Invoke();
+
+        Assert.Equal(1, exitCode);
+        Assert.Null(handler.Path);
     }
 
     [Fact]
@@ -121,45 +143,27 @@ public sealed class RunCommandBuilderTests
     private sealed class CapturingRunCommandHandler : ICmgRunCommandHandler
     {
         public string? Path { get; private set; }
-
         public BrowserKind BrowserKind { get; private set; }
-
         public int? Timeout { get; private set; }
-
         public int? NavigationTimeout { get; private set; }
-
         public int? AssertionTimeout { get; private set; }
-
         public string? BaseUrl { get; private set; }
-
         public IReadOnlyDictionary<string, string> Variables { get; private set; } =
             new Dictionary<string, string>();
-
         public DirectoryInfo? Artifacts { get; private set; }
-
         public FileInfo? JsonReport { get; private set; }
-
         public DirectoryInfo? TraceDirectory { get; private set; }
-
         public string? Grep { get; private set; }
-
         public string? Tag { get; private set; }
-
         public int Retries { get; private set; }
-
         public int MaxFailures { get; private set; }
-
         public int RepeatEach { get; private set; }
-
         public string? Shard { get; private set; }
-
         public string ProjectName { get; private set; } = string.Empty;
-
         public int? BrowserPort { get; private set; }
-
         public bool AutoLaunch { get; private set; }
-
         public bool AutoLaunchHeadless { get; private set; }
+        public GifQuality GifQuality { get; private set; } = GifQuality.Highest;
 
         public int Run(
             BrowserKind browserKind,
@@ -184,7 +188,8 @@ public sealed class RunCommandBuilderTests
             string projectName = "",
             int? browserPort = null,
             bool autoLaunch = false,
-            bool autoLaunchHeadless = false)
+            bool autoLaunchHeadless = false,
+            GifQuality gifQuality = GifQuality.Highest)
         {
             BrowserKind = browserKind;
             Path = path;
@@ -206,6 +211,7 @@ public sealed class RunCommandBuilderTests
             BrowserPort = browserPort;
             AutoLaunch = autoLaunch;
             AutoLaunchHeadless = autoLaunchHeadless;
+            GifQuality = gifQuality;
             return 0;
         }
     }

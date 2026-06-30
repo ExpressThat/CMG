@@ -1,6 +1,7 @@
 using System.CommandLine;
 using CMG.Browser;
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 using CMG.Commands;
 
 namespace CMG.Tests;
@@ -27,6 +28,7 @@ public sealed class BrowserControlCommandBuilderScriptTests
         Assert.Equal(0, exitCode);
         Assert.Equal("flow.cmgscript", handler.File);
         Assert.Equal("C:\\temp\\flow.gif", handler.Gif?.FullName);
+        Assert.Equal(GifQuality.Highest, handler.GifQuality);
         Assert.Equal("C:\\temp\\flow.trace.json", handler.Trace?.FullName);
         Assert.Equal(new ScriptTimeoutOptions(700, 800, 900), handler.Timeouts);
         Assert.Equal("https://example.test/app/", handler.BaseUrl);
@@ -40,6 +42,28 @@ public sealed class BrowserControlCommandBuilderScriptTests
         var handler = new CapturingBrowserControlCommandHandler();
         var exitCode = BuildRoot(handler).Parse(
             "control script --file flow.cmgscript --var broken").Invoke();
+
+        Assert.Equal(1, exitCode);
+        Assert.Null(handler.File);
+    }
+
+    [Fact]
+    public void ScriptCommand_MapsGifQuality()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --gif-quality medium").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(GifQuality.Medium, handler.GifQuality);
+    }
+
+    [Fact]
+    public void ScriptCommand_RejectsInvalidGifQuality()
+    {
+        var handler = new CapturingBrowserControlCommandHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --gif-quality crunchy").Invoke();
 
         Assert.Equal(1, exitCode);
         Assert.Null(handler.File);
@@ -107,6 +131,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
 
         public ScriptTimeoutOptions? Timeouts { get; private set; }
 
+        public GifQuality GifQuality { get; private set; } = GifQuality.Highest;
+
         public string? BaseUrl { get; private set; }
 
         public IReadOnlyDictionary<string, string> Variables { get; private set; } =
@@ -143,13 +169,27 @@ public sealed class BrowserControlCommandBuilderScriptTests
             FileInfo? trace,
             ScriptTimeoutOptions? timeouts,
             string? baseUrl,
-            IReadOnlyDictionary<string, string> variables)
+            IReadOnlyDictionary<string, string> variables,
+            GifQuality gifQuality = GifQuality.Highest)
         {
             RunScript(browserKind, file, gif, trace, timeouts);
             BaseUrl = baseUrl;
             Variables = variables;
+            GifQuality = gifQuality;
             return 0;
         }
+
+        public int RunScript(
+            BrowserKind browserKind,
+            int? port,
+            string file,
+            FileInfo? gif,
+            FileInfo? trace,
+            ScriptTimeoutOptions? timeouts,
+            string? baseUrl,
+            IReadOnlyDictionary<string, string> variables,
+            GifQuality gifQuality = GifQuality.Highest) =>
+            RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables, gifQuality);
 
         public int RunScriptAction(BrowserKind browserKind, string scriptLine)
         {
@@ -165,7 +205,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
             FileInfo? trace,
             ScriptTimeoutOptions? timeouts,
             string? baseUrl,
-            IReadOnlyDictionary<string, string> variables)
+            IReadOnlyDictionary<string, string> variables,
+            GifQuality gifQuality = GifQuality.Highest)
         {
             InlineScript = script;
             Gif = gif;
@@ -173,6 +214,7 @@ public sealed class BrowserControlCommandBuilderScriptTests
             Timeouts = timeouts;
             BaseUrl = baseUrl;
             Variables = variables;
+            GifQuality = gifQuality;
             return 0;
         }
 

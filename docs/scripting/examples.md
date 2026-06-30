@@ -11,6 +11,7 @@ For the full catalogue of advanced examples, see the [cookbook reference](cookbo
 | Make a first GIF | [First GIF](#first-gif) | `demo-scripts\01-dialog-flow.cmgscript` |
 | Write a first test | [First Test](#first-test) | `demo-scripts\20-runner-flow.cmgscript` |
 | Show pointer behavior | [Visual Evidence](#visual-evidence) | `demo-scripts\10-css-hover-states.cmgscript` |
+| Tune GIF quality | [Visual Evidence](#visual-evidence) | `demo-scripts\148-gif-quality.cmgscript` |
 | Reuse script logic | [Variables And Macros](#variables-and-macros) | `demo-scripts\30-control-flow-macros.cmgscript` |
 | Handle failures clearly | [Failure Feedback](#failure-feedback) | `demo-scripts\52-explicit-fail.cmgscript` |
 | Tune one slow section | [Scoped Timeouts](#scoped-timeouts) | `demo-scripts\134-scoped-timeouts.cmgscript` |
@@ -45,7 +46,7 @@ type "#profileName" "CMG quick start"
 Record it:
 
 ```powershell
-cmg browser control script --file first-gif.cmgscript --gif demo-output\first-gif.gif
+cmg browser control script --file first-gif.cmgscript --gif demo-output\first-gif.gif --gif-quality highest
 ```
 
 The recording shows CMG's virtual pointer, real page pointer events, hover states, typed text, captions, and any captured frames before a failure.
@@ -102,7 +103,7 @@ step "Show the hover card" {
 Run the complete hover demo:
 
 ```powershell
-cmg browser control script --file demo-scripts\10-css-hover-states.cmgscript --gif demo-output\css-hover-states.gif
+cmg browser control script --file demo-scripts\10-css-hover-states.cmgscript --gif demo-output\css-hover-states.gif --gif-quality highest
 ```
 
 For drag evidence, run:
@@ -110,6 +111,14 @@ For drag evidence, run:
 ```powershell
 cmg browser control script --file demo-scripts\07-complex-drag-flow.cmgscript --gif demo-output\complex-drag.gif
 ```
+
+To compare GIF encoder presets and the block aliases, run:
+
+```powershell
+cmg browser control script --file demo-scripts\148-gif-quality.cmgscript
+```
+
+The `gif`, `recordVideo`, and `screencast` blocks all use the same CMG recorder. `quality=highest` is the default and gives the most color-faithful palette; `high`, `medium`, and `low` trade fidelity for smaller/faster artifacts.
 
 For stable screenshot evidence, mask volatile regions only in the artifact. The GIF still shows the real page and pointer choreography:
 

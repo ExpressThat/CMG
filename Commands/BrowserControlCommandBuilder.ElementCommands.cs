@@ -1,6 +1,7 @@
 using System.CommandLine;
 using CMG.Browser;
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Commands;
 
@@ -65,6 +66,11 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Write an animated GIF recording of the script to this path."
         };
+        var gifQualityOption = new Option<string>("--gif-quality")
+        {
+            Description = "GIF quality: highest, high, medium, or low.",
+            DefaultValueFactory = _ => "highest"
+        };
         var traceOption = new Option<FileInfo?>("--trace")
         {
             Description = "Write a CMG script trace JSON file for the run."
@@ -99,6 +105,7 @@ public sealed partial class BrowserControlCommandBuilder
             fileOption,
             inlineOption,
             gifOption,
+            gifQualityOption,
             traceOption,
             timeoutOption,
             navigationTimeoutOption,
@@ -118,6 +125,12 @@ public sealed partial class BrowserControlCommandBuilder
             }
 
             var gif = parseResult.GetValue(gifOption);
+            if (!GifQualityParser.TryParse(parseResult.GetValue(gifQualityOption), out var gifQuality))
+            {
+                Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}.");
+                return 1;
+            }
+
             var trace = parseResult.GetValue(traceOption);
             var timeouts = new ScriptTimeoutOptions(
                 parseResult.GetValue(timeoutOption),
@@ -134,8 +147,8 @@ public sealed partial class BrowserControlCommandBuilder
             var browserKind = CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions);
             var port = CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions);
             return inline is null
-                ? browserControlCommandHandler.RunScript(browserKind, port, file, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables)
-                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables);
+                ? browserControlCommandHandler.RunScript(browserKind, port, file, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality)
+                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality);
         });
 
         return command;

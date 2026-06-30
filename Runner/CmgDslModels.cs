@@ -1,4 +1,5 @@
 using CMG.Browser;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Runner;
 
@@ -58,7 +59,8 @@ public sealed record CmgRunOptions(
     string ProjectName = "",
     int? BrowserPort = null,
     bool AutoLaunch = false,
-    bool AutoLaunchHeadless = false);
+    bool AutoLaunchHeadless = false,
+    GifQuality GifQuality = GifQuality.Highest);
 
 public sealed partial record CmgRunResult(
     bool Success,
