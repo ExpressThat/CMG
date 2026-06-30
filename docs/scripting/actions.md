@@ -232,7 +232,7 @@ Output:
 - `TAP <line> <selector>` for selector targets.
 - `TAP <line> <x>,<y>` for coordinate targets.
 
-In GIF recordings, `tap` and `touchTap` move the virtual pointer to the target, dispatch page-facing movement and hover events, then show a click pulse for the tap.
+In GIF recordings, `tap` and `touchTap` use CMG's touch pointer ring instead of the arrow pointer, dispatch page-facing movement and hover events, then show a click pulse for the tap.
 
 ## `type`
 
@@ -571,6 +571,22 @@ Output:
 
 - `GIF_CHECKPOINT <line> name="<name>" status=recorded` when a GIF recorder is active.
 - `GIF_CHECKPOINT <line> status=skipped reason=no-active-recording` when the script or test is running without command-level `--gif` and outside any `gif`, `recordVideo`, or `screencast` block.
+
+## `showPointer` And `hidePointer`
+
+```text
+showPointer
+hidePointer
+```
+
+Captures a recording-only pointer visibility frame. `showPointer` captures the current virtual pointer position; `hidePointer` removes the virtual pointer and captures the page without it. Use these when a GIF needs to briefly reveal unobstructed page state or reintroduce the pointer before the next visual action.
+
+Without an active recorder, both actions skip before applying recording-only arguments, variables, scoped selectors, options, or child bodies. They do not create or move the virtual pointer outside command-level `--gif` or an active `gif`, `recordVideo`, or `screencast` block.
+
+Output:
+
+- `GIF_SHOW_POINTER <line> status=captured` or `GIF_HIDE_POINTER <line> status=captured` when a GIF recorder is active.
+- `GIF_SHOW_POINTER <line> status=skipped reason=no-active-recording` or `GIF_HIDE_POINTER <line> status=skipped reason=no-active-recording` when no GIF recorder is active.
 
 ## `html`
 
@@ -1041,6 +1057,7 @@ Allowed child actions:
 - `moveMouse "<alias>"`, `moveMouse x=<pixels> y=<pixels>`, or `moveMouse selector="<selector>" edge=<edge> inset=<pixels>`: Move the active drag pointer to a viewport-relative position or inside an element edge. Skips with `GIF_MOVE_MOUSE ... status=skipped` when no GIF recorder is active.
 - `pauseGif <milliseconds>`: Add a recording-only drag hold. Skips with `GIF_PAUSE ... status=skipped` when no GIF recorder is active.
 - `recordCheckpoint "<name>"`: Add a timeline marker without adding a frame. Skips with `GIF_CHECKPOINT ... status=skipped` when no GIF recorder is active.
+- `showPointer` / `hidePointer`: Capture a pointer-visible or pointer-hidden drag frame. Skips with `GIF_SHOW_POINTER ... status=skipped` or `GIF_HIDE_POINTER ... status=skipped` when no GIF recorder is active.
 - `scrollIntoView "<selector>"`: Scroll an element into view before continuing.
 - `waitForElement "<selector>" timeout=5000`: Wait for an element before continuing.
 - `drop "<selector>"`: Finish the drag on the target selector. Required exactly once.
@@ -1066,7 +1083,7 @@ Rules:
 - With `--gif`, block drag bodies also dispatch DOM `pointerdown`/`mousedown`, held `pointermove`/`mousemove`, and `pointerup`/`mouseup` so page drag state and edge-autoscroll code can react while `moveMouse "bottom"` and `delay` run.
 - `pointerPath=` controls ordinary pointer movement into the drag body. `dragPath=` controls held-pointer movement during the drag and can be set on the parent `dragAndDrop` block or an individual `drop` child.
 - During recorded drags, the virtual pointer visually compresses by default to show the held state. Use `pressedPointer=false` to disable it. Use `dragTrail=true` or `dragBreadcrumbs=true` on the drag block or individual drag children when long drags need path evidence.
-- Without `--gif` or an active `gif` block, block-drag choreography-only children skip: `delay` reports `GIF_DRAG_DELAY ... status=skipped`, `hover` reports `GIF_DRAG_HOVER ... status=skipped`, `moveMouse` reports `GIF_MOVE_MOUSE ... status=skipped`, `pauseGif` reports `GIF_PAUSE ... status=skipped`, and `recordCheckpoint` reports `GIF_CHECKPOINT ... status=skipped`. Setup children such as `scrollIntoView` and `waitForElement` still run before CMG performs the fallback native `dragAndDrop`.
+- Without `--gif` or an active `gif` block, block-drag choreography-only children skip: `delay` reports `GIF_DRAG_DELAY ... status=skipped`, `hover` reports `GIF_DRAG_HOVER ... status=skipped`, `moveMouse` reports `GIF_MOVE_MOUSE ... status=skipped`, `pauseGif` reports `GIF_PAUSE ... status=skipped`, `recordCheckpoint` reports `GIF_CHECKPOINT ... status=skipped`, `showPointer` reports `GIF_SHOW_POINTER ... status=skipped`, and `hidePointer` reports `GIF_HIDE_POINTER ... status=skipped`. Setup children such as `scrollIntoView` and `waitForElement` still run before CMG performs the fallback native `dragAndDrop`.
 - CMG creates the `DataTransfer` object for synthetic drag events but does not force `effectAllowed`, `dropEffect`, or payload values. The page's own `dragstart` handler remains responsible for setting drag data and allowed operations; CMG preserves those page-set values through the recorded drag.
 - If the page does not call `DataTransfer.setDragImage()`, CMG shows a default-preview bridge during the active drag so the live browser and GIF still show a browser-style default drag preview.
 

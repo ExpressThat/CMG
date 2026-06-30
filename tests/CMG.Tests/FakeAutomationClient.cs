@@ -57,7 +57,9 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public bool LastCursorPressed { get; private set; }
     public bool LastCursorTrail { get; private set; }
     public bool LastCursorBreadcrumb { get; private set; }
-    public List<(bool Pressed, bool Trail, bool Breadcrumb)> CursorStates { get; } = [];
+    public bool LastCursorTouch { get; private set; }
+    public bool RemoveDomCursorCalled { get; private set; }
+    public List<(bool Pressed, bool Trail, bool Breadcrumb, bool Touch)> CursorStates { get; } = [];
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector, ScreenshotOptions? options = null)
@@ -170,16 +172,17 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         return ElementBoxes.Count > 0 ? ElementBoxes.Dequeue() : new(0, 0, 1, 1);
     }
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) => new(0, 0);
-    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point, ClickPulseStyle? pulseStyle = null, bool pressed = false, bool trail = false, bool breadcrumb = false)
+    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point, ClickPulseStyle? pulseStyle = null, bool pressed = false, bool trail = false, bool breadcrumb = false, bool touch = false)
     {
         LastCursorPulseStyle = pulseStyle;
         CursorPulseStyles.Add(pulseStyle);
         LastCursorPressed = pressed;
         LastCursorTrail = trail;
         LastCursorBreadcrumb = breadcrumb;
-        CursorStates.Add((pressed, trail, breadcrumb));
+        LastCursorTouch = touch;
+        CursorStates.Add((pressed, trail, breadcrumb, touch));
     }
-    public void RemoveDomCursor(string remoteDebuggingUrl) { }
+    public void RemoveDomCursor(string remoteDebuggingUrl) => RemoveDomCursorCalled = true;
     public IReadOnlyList<ChromePageTab> ListTabs(string remoteDebuggingUrl) =>
         TabResponses.Count > 0 ? TabResponses.Dequeue() : [];
     public void OpenTab(string remoteDebuggingUrl, string target) => LastOpenedTab = target;

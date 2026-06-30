@@ -13,6 +13,10 @@ public sealed class BrowserScriptRunnerDragGifSkipTests
             dragAndDrop "#source" {
               pauseGif ${missing}
               recordCheckpoint
+              showPointer "${missing}"
+              hidePointer {
+                click "#ignored"
+              }
               drop "#target"
             }
             """, "debug", client);
@@ -22,6 +26,8 @@ public sealed class BrowserScriptRunnerDragGifSkipTests
         Assert.Equal("#target", client.LastDragTarget);
         Assert.Contains(result.StdoutLines, line => line.Contains("GIF_PAUSE 002 status=skipped reason=no-active-recording", StringComparison.Ordinal));
         Assert.Contains(result.StdoutLines, line => line.Contains("GIF_CHECKPOINT 003 status=skipped reason=no-active-recording", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_SHOW_POINTER 004 status=skipped reason=no-active-recording", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_HIDE_POINTER 005 status=skipped reason=no-active-recording", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -34,6 +40,8 @@ public sealed class BrowserScriptRunnerDragGifSkipTests
               dragAndDrop "#source" pointerDuration=0 {
                 pauseGif 100
                 recordCheckpoint "before drop"
+                showPointer
+                hidePointer
                 drop "#target"
               }
             }
@@ -43,6 +51,8 @@ public sealed class BrowserScriptRunnerDragGifSkipTests
         Assert.True(client.PageScreenshotCount > 0);
         Assert.Contains(result.StdoutLines, line => line.Contains("GIF_PAUSE 003 milliseconds=100 status=captured", StringComparison.Ordinal));
         Assert.Contains(result.StdoutLines, line => line.Contains("GIF_CHECKPOINT 004 name=\"before drop\" status=recorded", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_SHOW_POINTER 005 status=captured", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_HIDE_POINTER 006 status=captured", StringComparison.Ordinal));
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

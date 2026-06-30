@@ -1,0 +1,15 @@
+# Demonstrates touch pointer styling plus recording-only pointer visibility controls.
+navigate "about:blank"
+setContent "<main style=\"font:16px system-ui;padding:32px;display:grid;gap:16px;max-width:520px\"><h1 style=\"font-size:24px;margin:0\">Touch pointer evidence</h1><button id=\"tap\" style=\"padding:12px 18px\">Tap target</button><button id=\"touch\" style=\"padding:12px 18px\">Touch target</button><p id=\"status\" style=\"min-height:24px\">Ready</p></main>"
+evaluate "(() => { document.querySelector('#tap').addEventListener('click', () => document.querySelector('#status').textContent = 'Tap target activated'); document.querySelector('#touch').addEventListener('click', () => document.querySelector('#status').textContent = 'Touch target activated'); return true; })()"
+
+gif "touch pointer visibility" pointerDuration=250 clickPulse=ripple {
+  showPointer
+  tap "#tap"
+  assertText "#status" "Tap target activated"
+  hidePointer
+  pauseGif 450
+  showPointer
+  touchTap "#touch"
+  assertText "#status" "Touch target activated"
+}

@@ -158,6 +158,8 @@ public sealed partial class BrowserScriptRunner
             "movemouse" => true,
             "pausegif" => true,
             "recordcheckpoint" => true,
+            "showpointer" => true,
+            "hidepointer" => true,
             "scrollintoview" => true,
             "waitforelement" => true,
             _ => throw new ScriptExecutionException($"Action '{action.Name}' is not supported inside block dragAndDrop.")
@@ -173,6 +175,7 @@ public sealed partial class BrowserScriptRunner
             "movemouse" => ExecuteMoveMouse(action, recorder: null, dragging: true),
             "pausegif" => ExecutePauseGif(action, recorder: null),
             "recordcheckpoint" => ExecuteRecordCheckpoint(action, recorder: null),
+            "showpointer" or "hidepointer" => ExecutePointerVisibilityAction(action, recorder: null),
             "scrollintoview" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             _ => throw new ScriptExecutionException($"Action '{action.Name}' is not supported inside block dragAndDrop.")
@@ -188,6 +191,7 @@ public sealed partial class BrowserScriptRunner
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: true),
             "pausegif" => ExecutePauseGif(action, recorder),
             "recordcheckpoint" => ExecuteRecordCheckpoint(action, recorder),
+            "showpointer" or "hidepointer" => ExecutePointerVisibilityAction(action, recorder),
             "scrollintoview" => ExecuteRecordedDragHover(action, recorder),
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
             _ => throw new ScriptExecutionException($"Action '{action.Name}' is not supported inside block dragAndDrop.")

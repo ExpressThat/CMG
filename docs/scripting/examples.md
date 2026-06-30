@@ -13,6 +13,7 @@ For the full catalogue of advanced examples, see the [cookbook reference](cookbo
 | Show pointer behavior | [Visual Evidence](#visual-evidence) | `demo-scripts\10-css-hover-states.cmgscript` |
 | Tune GIF quality | [Visual Evidence](#visual-evidence) | `demo-scripts\148-gif-quality.cmgscript` |
 | Choreograph GIF pointer movement | [Visual Evidence](#visual-evidence) | `demo-scripts\149-gif-pointer-choreography.cmgscript` |
+| Show touch pointer and hide/show controls | [Visual Evidence](#visual-evidence) | `demo-scripts\155-touch-pointer-visibility.cmgscript` |
 | Reuse script logic | [Variables And Macros](#variables-and-macros) | `demo-scripts\30-control-flow-macros.cmgscript` |
 | Handle failures clearly | [Failure Feedback](#failure-feedback) | `demo-scripts\52-explicit-fail.cmgscript` |
 | Tune one slow section | [Scoped Timeouts](#scoped-timeouts) | `demo-scripts\134-scoped-timeouts.cmgscript` |
@@ -132,9 +133,10 @@ To choreograph pointer timing and drag evidence, run:
 ```powershell
 cmg browser control script --file demo-scripts\149-gif-pointer-choreography.cmgscript --gif demo-output\pointer-choreography.gif --pointer-duration 500 --gif-hold-after-action 700
 cmg browser control script --file demo-scripts\150-gif-failure-hold.cmgscript --gif demo-output\failure-hold.gif --gif-hold-on-failure 1800 --gif-timeline demo-output\timelines
+cmg browser control script --file demo-scripts\155-touch-pointer-visibility.cmgscript --gif demo-output\touch-pointer-visibility.gif
 ```
 
-Recording blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `clickPulse=`, `pressedPointer=`, `dragTrail=`, `dragBreadcrumbs=`, `preClickHold=`, `postClickHold=`, `holdAfterAction=`, `holdAfterNavigation=`, `holdAfterAssertion=`, `holdOnFailure=`, `fps=`, `frameDelay=`, and `timeline=` as defaults. Use `recording { ... }` or `withRecording { ... }` when several actions or nested recording blocks should share the same defaults without starting a recording by themselves. Use `pauseGif <milliseconds>` for recording-only holds that make the artifact easier to read without sleeping the browser, and `recordCheckpoint "name"` for named JSON timeline markers. If a block has child actions, such as `dragAndDrop { ... }`, the parent options are scoped defaults and each child action can override them locally. Use `--gif-timeline` or block-level `timeline=true` when reports or agents need JSON timing metadata beside the GIF.
+Recording blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `clickPulse=`, `pressedPointer=`, `dragTrail=`, `dragBreadcrumbs=`, `preClickHold=`, `postClickHold=`, `holdAfterAction=`, `holdAfterNavigation=`, `holdAfterAssertion=`, `holdOnFailure=`, `fps=`, `frameDelay=`, and `timeline=` as defaults. Use `recording { ... }` or `withRecording { ... }` when several actions or nested recording blocks should share the same defaults without starting a recording by themselves. Use `pauseGif <milliseconds>` for recording-only holds, `recordCheckpoint "name"` for named JSON timeline markers, and `showPointer` / `hidePointer` when a GIF needs a pointer-visible or unobstructed frame. These recording-only actions skip without injecting the virtual pointer when no GIF recording is active. If a block has child actions, such as `dragAndDrop { ... }`, the parent options are scoped defaults and each child action can override them locally. Use `--gif-timeline` or block-level `timeline=true` when reports or agents need JSON timing metadata beside the GIF.
 
 For stable screenshot evidence, mask volatile regions only in the artifact. The GIF still shows the real page and pointer choreography:
 

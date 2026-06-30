@@ -239,13 +239,17 @@ Line 4: readClipboard failed. Expected 0 arguments but got 1.
 
 `setClipboard` and `writeClipboard` require exactly one text argument. `readClipboard` and `clearClipboard` do not accept arguments.
 
-## `moveMouse` Without Active Recording
+## Recording-Only Action Without Active Recording
 
 ```text
 GIF_MOVE_MOUSE 003 status=skipped reason=no-active-recording
+GIF_PAUSE 004 status=skipped reason=no-active-recording
+GIF_CHECKPOINT 005 status=skipped reason=no-active-recording
+GIF_SHOW_POINTER 006 status=skipped reason=no-active-recording
+GIF_HIDE_POINTER 007 status=skipped reason=no-active-recording
 ```
 
-`moveMouse` is a recording-only timeline action. When command-level `--gif` is not active and the action is outside a `gif`, `recordVideo`, or `screencast` block, CMG skips it instead of injecting a virtual pointer. This is not a failure.
+`moveMouse`, `pauseGif`, `recordCheckpoint`, `showPointer`, and `hidePointer` are recording-only actions. When command-level `--gif` is not active and the action is outside a `gif`, `recordVideo`, or `screencast` block, CMG skips it instead of injecting a virtual pointer or writing timeline metadata. This is not a failure. In that skipped state, recording-only arguments, variables, scoped selectors, options, and child bodies are ignored because there is no active recording to apply them to.
 
 ## Invalid `moveMouse` Target
 

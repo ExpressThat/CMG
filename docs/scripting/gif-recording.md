@@ -28,7 +28,7 @@ cmg run flow.cmgscript --gif demo-output\runner-gifs --gif-quality highest
 - Low-level `mouseMove`, `mouseDown`, and `mouseUp` actions also move the virtual pointer in GIF mode and dispatch page-facing pointer/mouse events.
 - Low-level keyboard actions such as `press`, `keyboardShortcut`, `shortcut`, `hotkey`, `keyDown`, `keyUp`, and `insertText` do not move the pointer, but their output and failures are recorded. Use `step` or `caption` when a GIF should explain held modifier keys, `press delay=`, or inserted text.
 - Every GIF pointer movement dispatches browser movement and hover events while it moves. This includes automatic movement before `click`, `tap`, `touchTap`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`, not only explicit drag movement.
-- Click and tap actions show a pointer movement and click pulse.
+- Click actions show a pointer movement and click pulse. `tap` and `touchTap` use CMG's touch pointer ring so touch-style flows read differently from mouse clicks.
 - Type actions move to the input, click/focus it, and capture frames as characters appear.
 - `wheel` moves the pointer when given a selector, alias, or coordinates, dispatches a page `WheelEvent`, and captures the scrolled viewport. `scrollTo` and `scrollBy` scroll the window or selected element and capture the changed viewport without moving the pointer.
 - Drag-and-drop actions move from the source selector to the target selector while keeping the page drag lifecycle active, so pages can show their own native drag preview when one is available.
@@ -205,7 +205,9 @@ Recording-only actions capture frames only when GIF recording is active. Without
 - `pauseGif <milliseconds>` reports `GIF_PAUSE <line> status=skipped reason=no-active-recording`.
 - `moveMouse ...` reports `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording`.
 - `recordCheckpoint "<name>"` reports `GIF_CHECKPOINT <line> status=skipped reason=no-active-recording`.
-- Inside block `dragAndDrop`, choreography-only children also skip without an active recorder: `delay` reports `GIF_DRAG_DELAY <line> status=skipped reason=no-active-recording`, `hover` reports `GIF_DRAG_HOVER <line> status=skipped reason=no-active-recording`, `moveMouse` keeps the normal `GIF_MOVE_MOUSE` skipped line, `pauseGif` keeps the normal `GIF_PAUSE` skipped line, and `recordCheckpoint` keeps the normal `GIF_CHECKPOINT` skipped line. Prep children such as `scrollIntoView` and `waitForElement` still run before the fallback native drag.
+- `showPointer` reports `GIF_SHOW_POINTER <line> status=skipped reason=no-active-recording`.
+- `hidePointer` reports `GIF_HIDE_POINTER <line> status=skipped reason=no-active-recording`.
+- Inside block `dragAndDrop`, choreography-only children also skip without an active recorder: `delay` reports `GIF_DRAG_DELAY <line> status=skipped reason=no-active-recording`, `hover` reports `GIF_DRAG_HOVER <line> status=skipped reason=no-active-recording`, `moveMouse` keeps the normal `GIF_MOVE_MOUSE` skipped line, `pauseGif` keeps the normal `GIF_PAUSE` skipped line, `recordCheckpoint` keeps the normal `GIF_CHECKPOINT` skipped line, `showPointer` keeps the normal `GIF_SHOW_POINTER` skipped line, and `hidePointer` keeps the normal `GIF_HIDE_POINTER` skipped line. Prep children such as `scrollIntoView` and `waitForElement` still run before the fallback native drag.
 
 Use `recordCheckpoint "<name>"` to add a named marker to timeline JSON without adding a frame:
 
@@ -214,6 +216,18 @@ gif "checkout evidence" timeline=true {
   recordCheckpoint "before payment"
   click "#pay"
   recordCheckpoint "after payment"
+}
+```
+
+Use `showPointer` and `hidePointer` to capture pointer visibility changes without changing page state:
+
+```text
+gif "unobstructed state" {
+  click "#open"
+  hidePointer
+  pauseGif 600
+  showPointer
+  click "#close"
 }
 ```
 
@@ -370,5 +384,5 @@ Timing is automatic by default. Use pointer choreography options when a GIF need
 - `cmg run --gif` prefixes runner GIF filenames with the selected `--project` name, so matrix jobs can write Chrome, Firefox, and Edge artifacts into the same directory without overwriting each other.
 - `recordVideo "name" { ... }` and `screencast "name" { ... }` are provider-style aliases for CMG GIF blocks. They write animated GIF files, not MP4/WebM files.
 - Command-level `--gif` records the whole direct script or test and suppresses nested `gif` block files. Suppressed blocks write `GIF_BLOCK_SUPPRESSED <line>` to stdout.
-- GIF-only timeline actions such as `moveMouse`, `pauseGif`, and `recordCheckpoint` skip when no recording is active; scripts without recording do not create or move a virtual mouse.
+- GIF-only timeline and pointer-visibility actions such as `moveMouse`, `pauseGif`, `recordCheckpoint`, `showPointer`, and `hidePointer` skip when no recording is active; scripts without recording do not create or move a virtual mouse.
 - Failed GIF recordings hold the final visible state for `holdOnFailure` / `--gif-hold-on-failure` milliseconds before the partial GIF is written.

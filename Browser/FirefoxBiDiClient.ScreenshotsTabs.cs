@@ -49,8 +49,8 @@ public sealed partial class FirefoxBiDiClient
             return new ElementBox(rect.X, rect.Y, rect.Width, rect.Height);
         });
 
-    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point, ClickPulseStyle? pulseStyle = null, bool pressed = false, bool trail = false, bool breadcrumb = false) =>
-        Evaluate(remoteDebuggingUrl, BrowserDomScripts.MoveDomCursor(point, pulseStyle, pressed, trail, breadcrumb));
+    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point, ClickPulseStyle? pulseStyle = null, bool pressed = false, bool trail = false, bool breadcrumb = false, bool touch = false) =>
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.MoveDomCursor(point, pulseStyle, pressed, trail, breadcrumb, touch));
 
     public void RemoveDomCursor(string remoteDebuggingUrl) =>
         Evaluate(remoteDebuggingUrl, BrowserDomScripts.RemoveDomCursor());

@@ -16,7 +16,7 @@ This page is the full pattern catalogue. If you are learning CMG for the first t
 | Goal | Start With |
 | --- | --- |
 | Basic browser control | [Dialog Flow](#dialog-flow), [Validate Text](#validate-text), [Variables](#variables) |
-| Visual demos | [Page Message Bar](#page-message-bar), [Drag Pointer Movement](#drag-pointer-movement), [CSS Hover States](#css-hover-states) |
+| Visual demos | [Page Message Bar](#page-message-bar), [Drag Pointer Movement](#drag-pointer-movement), [CSS Hover States](#css-hover-states), [Touch Pointer And Visibility](#touch-pointer-and-visibility) |
 | Runner tests | [Runner DSL](#runner-dsl), [Runner Reports](#runner-reports), [Filtering, Sharding, And Retries](#filtering-sharding-and-retries) |
 | Advanced automation | [Network Mocking](#network-mocking), [Browser Environment](#browser-environment), [Worker Interception](#worker-interception), [Storage State](#storage-state) |
 | Provider-style features | [Provider Navigation Aliases](#provider-navigation-aliases), [Provider Aliases](#provider-aliases), [Direct Rich Locators](#direct-rich-locators) |
@@ -414,6 +414,29 @@ Run it with GIF recording:
 
 ```powershell
 dotnet run -- browser control script --file demo-scripts\10-css-hover-states.cmgscript --gif demo-output\css-hover-states.gif
+```
+
+## Touch Pointer And Visibility
+
+Use `tap` and `touchTap` when the evidence should read as touch input. In GIF recordings these actions use a touch pointer ring instead of the arrow pointer. Use `hidePointer` to capture an unobstructed frame, then `showPointer` before the next pointer-led action.
+
+```text
+gif "touch pointer visibility" {
+  showPointer
+  tap "#tap"
+  hidePointer
+  pauseGif 450
+  showPointer
+  touchTap "#touch"
+}
+```
+
+When no GIF recorder is active, `showPointer`, `hidePointer`, `pauseGif`, `recordCheckpoint`, and `moveMouse` skip with `status=skipped reason=no-active-recording` instead of injecting the virtual pointer.
+
+Run the complete demo:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\155-touch-pointer-visibility.cmgscript --gif demo-output\touch-pointer-visibility.gif
 ```
 
 ## GIF Quality Presets

@@ -21,7 +21,7 @@ After that, use the learning groups below before treating the full script list a
 | Need | Demos |
 | --- | --- |
 | Browser-control basics | `01-dialog-flow.cmgscript`, `02-validation-flow.cmgscript`, `05-variables-and-evaluate.cmgscript`, `141-base-url.cmgscript` |
-| Visual evidence | `07-complex-drag-flow.cmgscript`, `08-gif-move-mouse.cmgscript`, `09-drag-autoscroll.cmgscript`, `10-css-hover-states.cmgscript`, `148-gif-quality.cmgscript`, `149-gif-pointer-choreography.cmgscript`, `150-gif-failure-hold.cmgscript`, `151-gif-timeline.cmgscript`, `152-runner-gif-report-metadata.cmgscript`, `153-recording-scope.cmgscript`, `154-runner-recording-scope.cmgscript` |
+| Visual evidence | `07-complex-drag-flow.cmgscript`, `08-gif-move-mouse.cmgscript`, `09-drag-autoscroll.cmgscript`, `10-css-hover-states.cmgscript`, `148-gif-quality.cmgscript`, `149-gif-pointer-choreography.cmgscript`, `150-gif-failure-hold.cmgscript`, `151-gif-timeline.cmgscript`, `152-runner-gif-report-metadata.cmgscript`, `153-recording-scope.cmgscript`, `154-runner-recording-scope.cmgscript`, `155-touch-pointer-visibility.cmgscript` |
 | Structured tests | `20-runner-flow.cmgscript`, `36-runner-selection.cmgscript`, `38-before-after-all.cmgscript` |
 | Control flow and reuse | `30-control-flow-macros.cmgscript`, `32-loop-control.cmgscript`, `33-try-catch-finally.cmgscript`, `34-macro-scoping.cmgscript` |
 | Assertions and failure feedback | `52-explicit-fail.cmgscript`, `126-generic-expect.cmgscript`, `128-soft-expect.cmgscript`, `132-runtime-skip.cmgscript` |
@@ -104,6 +104,7 @@ dotnet run -- browser control script --file demo-scripts\150-gif-failure-hold.cm
 dotnet run -- browser control script --file demo-scripts\151-gif-timeline.cmgscript
 dotnet run -- browser control script --file demo-scripts\153-recording-scope.cmgscript
 dotnet run -- run demo-scripts\154-runner-recording-scope.cmgscript --gif demo-output\runner-gifs
+dotnet run -- browser control script --file demo-scripts\155-touch-pointer-visibility.cmgscript --gif demo-output\touch-pointer-visibility.gif
 dotnet run -- gif inspect demo-output\timeline-evidence.gif
 dotnet run -- gif compare demo-output\timeline-evidence.gif demo-output\pointer-choreography.gif
 dotnet run -- gif storyboard demo-output\timeline-evidence.gif --output demo-output\timeline-storyboard.png --columns 4 --max-frames 12
@@ -291,6 +292,7 @@ dotnet run -- --firefox browser close
 - `152-runner-gif-report-metadata.cmgscript`: Demonstrates runner JSON `gifMetadata` entries, HTML GIF previews, and JUnit GIF artifact properties for command-level GIF artifacts.
 - `153-recording-scope.cmgscript`: Demonstrates `recording { ... }` scoped GIF defaults, `frameDelay=`, and nested `fps=` inherited by a GIF block.
 - `154-runner-recording-scope.cmgscript`: Demonstrates `recording { ... }` scoped GIF defaults during a command-level runner recording.
+- `155-touch-pointer-visibility.cmgscript`: Demonstrates touch pointer styling plus `showPointer` and `hidePointer` recording-only actions.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

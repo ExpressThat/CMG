@@ -182,7 +182,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add optional drag path breadcrumb dots.
 - Add a visible hold state for `mouseDown`.
 - Implemented: add a pressed pointer state while dragging.
-- Add touch pointer styling for `tap` and `touchTap`.
+- Implemented: add touch pointer styling for `tap` and `touchTap`.
 - Add keyboard focus pulse when actions do not move the pointer.
 - Add pointer target callout lines for tiny elements.
 - Add automatic pointer zoom/callout for elements smaller than a threshold.
@@ -290,7 +290,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add `gif.onFailure "name" { ... }` to record only diagnostic sections when a flow fails.
 - Add `gif.snapshot "name"` to capture a short still/hold frame sequence.
 - Add `annotateTarget "#save" "Primary action"` action.
-- Add `showPointer` and `hidePointer` actions.
+- Implemented: add `showPointer` and `hidePointer` recording-only actions that skip when no recorder is active, including inside block `dragAndDrop` choreography.
 - Add `pointerStyle` action to change pointer appearance mid-script.
 - Add `highlightTarget` action that coordinates highlight and pointer move.
 - Add `showKeystrokes` block for keyboard-heavy flows.

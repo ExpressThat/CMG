@@ -81,6 +81,23 @@ public sealed partial class ScriptGifRecorder
         CaptureHoldFrame(options.HoldOnFailureMilliseconds);
     }
 
+    public void ShowPointer(BrowserScriptAction action)
+    {
+        CaptureFrame(FrameDelayCentisecondsFor(action));
+    }
+
+    public void HidePointer(BrowserScriptAction action)
+    {
+        if (remoteDebuggingUrl is null)
+        {
+            return;
+        }
+
+        devToolsClient.RemoveDomCursor(remoteDebuggingUrl);
+        var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar: true);
+        frameSink.AddFrame(screenshot, FrameDelayCentisecondsFor(action));
+    }
+
     private void CaptureHoldFrame(int milliseconds)
     {
         if (milliseconds <= 0)
@@ -132,7 +149,7 @@ public sealed partial class ScriptGifRecorder
         }
 
         devToolsClient.PromoteMessageBar(remoteDebuggingUrl);
-        devToolsClient.MoveDomCursor(remoteDebuggingUrl, pointer.Position, pulseStyle, cursorPressed, cursorTrail, cursorBreadcrumb);
+        devToolsClient.MoveDomCursor(remoteDebuggingUrl, pointer.Position, pulseStyle, cursorPressed, cursorTrail, cursorBreadcrumb, cursorTouch);
         var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar: false);
         frameSink.AddFrame(screenshot, delayCentiseconds);
     }

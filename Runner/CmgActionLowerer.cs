@@ -102,7 +102,7 @@ public sealed partial class CmgActionLowerer
             "set" => LowerSet(action),
             "evaluate" or "expecteval" or "asserteval" or "expectexpression" or "assertexpression" or
             "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or
-            "dispatchevent" or "movemouse" or "mousemove" or "mousedown" or "mouseup" or
+            "dispatchevent" or "movemouse" or "showpointer" or "hidepointer" or "mousemove" or "mousedown" or "mouseup" or
             "scrollto" or "scrollby" or "wheel" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or
             "recordcheckpoint" or "fail" or "skip" or "expect" or "assert" or "softexpect" or "softassert" or "expect.soft" or "assert.soft" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
