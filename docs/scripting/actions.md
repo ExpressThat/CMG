@@ -1761,6 +1761,10 @@ Options:
 - `pointerEasing`: Default easing: `linear`, `ease-in`, `ease-out`, `ease-in-out`, or `spring`.
 - `clickPulse` / `pulse`: Default click/tap/drop pulse style: `ring`, `ripple`, `dot`, `crosshair`, or `none`.
 - `holdAfterAction`: Default post-action hold in milliseconds.
+- `preClickHold`: Default hold before click/tap dispatch after pointer movement.
+- `postClickHold`: Default hold after click/tap pulse frames.
+- `holdAfterNavigation`: Default hold after navigation actions and waits.
+- `holdAfterAssertion`: Default hold after assertion actions.
 - `holdOnFailure`: Default final failure-state hold for nested recording blocks.
 - `fps`: Default GIF frame rate from `1` to `100`.
 - `frameDelay`: Default GIF frame delay in milliseconds from `10` to `10000`. Overrides `fps`.
@@ -1790,6 +1794,10 @@ Options:
 - `output`: Optional GIF path for direct browser-control scripts. Without `output`, CMG writes `<name>.gif` in the current directory.
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
 - `holdAfterAction`: Optional default post-action hold in milliseconds for child actions. Defaults to `350`; child actions can override it locally with their own `holdAfterAction=`.
+- `preClickHold`: Optional default hold before click/tap dispatch after pointer movement. Defaults to `0`.
+- `postClickHold`: Optional default hold after click/tap pulse frames. Defaults to `350`.
+- `holdAfterNavigation`: Optional default hold after navigation actions and waits. Defaults to `350`.
+- `holdAfterAssertion`: Optional default hold after assertion actions. Defaults to `350`.
 - `holdOnFailure`: Optional final failure-state hold in milliseconds. Defaults to `1200`; use `0` to suppress the extra failure hold.
 - `fps`: Optional frame rate from `1` to `100`. Defaults to `10`.
 - `frameDelay`: Optional frame delay in milliseconds from `10` to `10000`. Overrides `fps`.

@@ -70,6 +70,10 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
+- `preClickHold=<milliseconds>`: Hold after pointer movement and before click/tap dispatch. Defaults to `0`.
+- `postClickHold=<milliseconds>`: Hold after click/tap pulse frames. Defaults to `350`. Action-level `holdAfterAction=` remains a general fallback when `postClickHold=` is not set.
+- `holdAfterNavigation=<milliseconds>`: Hold after navigation actions and navigation waits. Defaults to `350`.
+- `holdAfterAssertion=<milliseconds>`: Hold after assertion actions. Defaults to `350`.
 - `holdOnFailure=<milliseconds>`: Extra final-state hold captured only when the recording fails. Defaults to `1200`; use `0` to suppress the failure hold.
 - `fps=<1..100>`: Frame rate for this recording block. Defaults to `10`.
 - `frameDelay=<milliseconds>`: Frame delay for this recording block. Must be `10..10000`; overrides `fps=`.
@@ -96,6 +100,10 @@ Supported `recording` / `withRecording` defaults:
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
 - `clickPulse=<ring|ripple|dot|crosshair|none>` or `pulse=<...>`: Click/tap/drop pulse style.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration.
+- `preClickHold=<milliseconds>`: Hold before click/tap dispatch after pointer movement.
+- `postClickHold=<milliseconds>`: Hold after click/tap pulse frames.
+- `holdAfterNavigation=<milliseconds>`: Hold after navigation actions and waits.
+- `holdAfterAssertion=<milliseconds>`: Hold after assertion actions.
 - `holdOnFailure=<milliseconds>`: Final failure-state hold for nested recording blocks.
 - `fps=<1..100>`: Frame rate for movement, pulse, and ordinary captured frames. Higher values create smoother but larger GIFs.
 - `frameDelay=<milliseconds>`: Frame delay for movement, pulse, and ordinary captured frames. Must be `10..10000`; overrides `fps=`.
@@ -137,7 +145,7 @@ Command-level defaults are available for whole-run recordings:
 ```powershell
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-speed slow --pointer-easing spring
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --click-pulse ripple
-cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-hold-after-action 700
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-pre-click-hold 120 --pointer-post-click-hold 450
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-hold-on-failure 1800
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-fps 20
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-frame-delay 80
@@ -270,7 +278,7 @@ The JSON sidecar contains:
 - `frameCount`, `durationMilliseconds`, `width`, `height`
 - `frameDelaysMilliseconds`
 - `checkpoints`: named markers with `name`, `lineNumber`, `frameIndex`, and `timeMilliseconds`
-- `timing.pointerDurationMilliseconds`, `timing.pointerSpeed`, `timing.pointerEasing`, `timing.clickPulse`, `timing.holdAfterActionMilliseconds`, `timing.holdOnFailureMilliseconds`
+- `timing.pointerDurationMilliseconds`, `timing.pointerSpeed`, `timing.pointerEasing`, `timing.clickPulse`, `timing.holdAfterActionMilliseconds`, `timing.preClickHoldMilliseconds`, `timing.postClickHoldMilliseconds`, `timing.holdAfterNavigationMilliseconds`, `timing.holdAfterAssertionMilliseconds`, `timing.holdOnFailureMilliseconds`
 
 Use this file when reports, CI artifacts, or agent feedback need machine-readable timing without parsing the GIF binary. JSON run reports also include a `gifMetadata` array for recorded artifacts. Each entry contains the GIF path, quality preset when CMG knows it, frame count, duration, approximate FPS, dimensions, file size, palette color pressure, transparency, and repeat metadata. HTML run reports show recorded GIF artifacts as inline thumbnail previews with links to the original files. JUnit reports add `cmg.gif.path` properties for recorded artifacts; failed tests with an inspectable GIF also include `cmg.gif.failureFrameIndex`, currently the final frame index after the failure-state hold.
 

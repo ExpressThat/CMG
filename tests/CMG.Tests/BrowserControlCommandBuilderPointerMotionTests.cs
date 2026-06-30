@@ -55,6 +55,20 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void ScriptCommand_MapsSpecificGifHoldOptions()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --pointer-pre-click-hold 100 --pointer-post-click-hold 200 --gif-hold-after-navigation 300 --gif-hold-after-assertion 400").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(100, handler.PreClickHoldMilliseconds);
+        Assert.Equal(200, handler.PostClickHoldMilliseconds);
+        Assert.Equal(300, handler.HoldAfterNavigationMilliseconds);
+        Assert.Equal(400, handler.HoldAfterAssertionMilliseconds);
+    }
+
+    [Fact]
     public void ScriptCommand_MapsGifTimelineOption()
     {
         var handler = new CapturingHandler();
@@ -118,6 +132,10 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
         public ClickPulseStyle ClickPulse { get; private set; }
         public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
         public int HoldOnFailureMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds;
+        public int PreClickHoldMilliseconds { get; private set; }
+        public int PostClickHoldMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
+        public int HoldAfterNavigationMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
+        public int HoldAfterAssertionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
         public string? GifTimelinePath { get; private set; }
         public int FrameDelayMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultFrameDelayMilliseconds;
         public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output) => 0;
@@ -139,6 +157,10 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
+            int preClickHoldMilliseconds = 0,
+            int postClickHoldMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+            int holdAfterNavigationMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+            int holdAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             string? gifTimelinePath = null,
             int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
         {
@@ -147,6 +169,10 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             ClickPulse = clickPulse;
             HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             HoldOnFailureMilliseconds = holdOnFailureMilliseconds;
+            PreClickHoldMilliseconds = preClickHoldMilliseconds;
+            PostClickHoldMilliseconds = postClickHoldMilliseconds;
+            HoldAfterNavigationMilliseconds = holdAfterNavigationMilliseconds;
+            HoldAfterAssertionMilliseconds = holdAfterAssertionMilliseconds;
             GifTimelinePath = gifTimelinePath;
             FrameDelayMilliseconds = frameDelayMilliseconds;
             return 0;

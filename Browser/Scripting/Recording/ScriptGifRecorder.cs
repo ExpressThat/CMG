@@ -57,6 +57,11 @@ public sealed partial class ScriptGifRecorder : IDisposable
             {
                 MoveToSelector(action);
             }
+
+            if (IsClickAction(name))
+            {
+                CapturePreClickHoldFrame(action);
+            }
         }
         else if ((name is "draganddrop" or "dragto") && action.Arguments.Count >= 2)
         {
@@ -65,6 +70,10 @@ public sealed partial class ScriptGifRecorder : IDisposable
         else if (name is "frameclick" or "frametype" or "framefill" or "framehover" && action.Arguments.Count >= 2)
         {
             MoveToFrameSelector(action);
+            if (IsClickAction(name))
+            {
+                CapturePreClickHoldFrame(action);
+            }
         }
     }
 
@@ -80,7 +89,19 @@ public sealed partial class ScriptGifRecorder : IDisposable
         if (name is "click" or "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "tap" or "touchtap" or "download" or "frameclick")
         {
             CapturePulseFrame(action);
-            CaptureHoldFrame(action);
+            CapturePostClickHoldFrame(action);
+            return;
+        }
+
+        if (IsNavigationAction(name))
+        {
+            CaptureNavigationHoldFrame(action);
+            return;
+        }
+
+        if (IsAssertionAction(name))
+        {
+            CaptureAssertionHoldFrame(action);
             return;
         }
 
@@ -115,4 +136,20 @@ public sealed partial class ScriptGifRecorder : IDisposable
             frameSink.FrameCount,
             frameSink.DurationMilliseconds));
     }
+
+    private static bool IsClickAction(string name) =>
+        name is "click" or "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "tap" or "touchtap" or "download" or "frameclick";
+
+    private static bool IsNavigationAction(string name) =>
+        name is "navigate" or "goto" or "visit" or "reload" or "goback" or "goforward" or
+            "waitforurl" or "waitfortitle" or "expecturl" or "expecttitle" or "tohaveurl" or "tohavetitle" or
+            "waitforloadstate" or "waitfornetworkidle" or "networkidle" or "waitfornavigation";
+
+    private static bool IsAssertionAction(string name) =>
+        name.StartsWith("expect", StringComparison.Ordinal) ||
+        name.StartsWith("assert", StringComparison.Ordinal) ||
+        name.StartsWith("tohave", StringComparison.Ordinal) ||
+        name.StartsWith("tobe", StringComparison.Ordinal) ||
+        name.StartsWith("tonot", StringComparison.Ordinal) ||
+        name is "contains" or "notcontains" or "unchecked";
 }

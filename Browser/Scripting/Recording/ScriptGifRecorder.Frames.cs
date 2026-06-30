@@ -30,6 +30,34 @@ public sealed partial class ScriptGifRecorder
         CaptureHoldFrame(ParseHoldMilliseconds(action, value, optionName));
     }
 
+    private void CapturePreClickHoldFrame(BrowserScriptAction action)
+    {
+        CaptureHoldFrame(HoldMillisecondsFor(action, "preClickHold", options.PreClickHoldMilliseconds));
+    }
+
+    private void CapturePostClickHoldFrame(BrowserScriptAction action)
+    {
+        if (action.Options.TryGetValue("postClickHold", out var value))
+        {
+            CaptureHoldFrame(ParseHoldMilliseconds(action, value, "postClickHold"));
+            return;
+        }
+
+        CaptureHoldFrame(action.Options.ContainsKey("holdAfterAction")
+            ? HoldMillisecondsFor(action, "holdAfterAction", options.PostClickHoldMilliseconds)
+            : options.PostClickHoldMilliseconds);
+    }
+
+    private void CaptureNavigationHoldFrame(BrowserScriptAction action)
+    {
+        CaptureHoldFrame(HoldMillisecondsFor(action, "holdAfterNavigation", options.HoldAfterNavigationMilliseconds));
+    }
+
+    private void CaptureAssertionHoldFrame(BrowserScriptAction action)
+    {
+        CaptureHoldFrame(HoldMillisecondsFor(action, "holdAfterAssertion", options.HoldAfterAssertionMilliseconds));
+    }
+
     public void Pause(BrowserScriptAction action)
     {
         if (action.Arguments.Count is not 1)
@@ -57,6 +85,16 @@ public sealed partial class ScriptGifRecorder
 
     private static int ParseHoldMilliseconds(BrowserScriptAction action, string value, string optionName) =>
         ScriptPointerMotionOptions.ParseDuration(value, $"{action.Name} option {optionName}=");
+
+    private static int HoldMillisecondsFor(BrowserScriptAction action, string optionName, int fallback)
+    {
+        if (!action.Options.TryGetValue(optionName, out var value))
+        {
+            return fallback;
+        }
+
+        return ParseHoldMilliseconds(action, value, optionName);
+    }
 
     private void CapturePulseFrame()
     {

@@ -12,6 +12,26 @@ internal static class GifTimingOptionParser
         return TryParse(value, CMG.Browser.Scripting.Recording.ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds, "--gif-hold-on-failure", out milliseconds, out error);
     }
 
+    public static bool TryParsePreClickHold(int? value, out int milliseconds, out string? error)
+    {
+        return TryParse(value, 0, "--pointer-pre-click-hold", out milliseconds, out error);
+    }
+
+    public static bool TryParsePostClickHold(int? value, out int milliseconds, out string? error)
+    {
+        return TryParse(value, CMG.Browser.Scripting.Recording.ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds, "--pointer-post-click-hold", out milliseconds, out error);
+    }
+
+    public static bool TryParseHoldAfterNavigation(int? value, out int milliseconds, out string? error)
+    {
+        return TryParse(value, CMG.Browser.Scripting.Recording.ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds, "--gif-hold-after-navigation", out milliseconds, out error);
+    }
+
+    public static bool TryParseHoldAfterAssertion(int? value, out int milliseconds, out string? error)
+    {
+        return TryParse(value, CMG.Browser.Scripting.Recording.ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds, "--gif-hold-after-assertion", out milliseconds, out error);
+    }
+
     private static bool TryParse(int? value, int defaultValue, string optionName, out int milliseconds, out string? error)
     {
         milliseconds = defaultValue;

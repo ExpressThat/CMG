@@ -33,6 +33,10 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
 - `--click-pulse <ring|ripple|dot|crosshair|none>`: Default click/tap/drop pulse style for command-level `--gif` recordings. Defaults to `ring`.
 - `--gif-hold-after-action <milliseconds>`: Default post-action hold for command-level `--gif` recordings. Defaults to `350`; use `0` to suppress automatic post-action holds.
+- `--pointer-pre-click-hold <milliseconds>`: Default hold after pointer movement and before click/tap dispatch in command-level `--gif` recordings. Defaults to `0`.
+- `--pointer-post-click-hold <milliseconds>`: Default hold after click/tap pulse frames in command-level `--gif` recordings. Defaults to `350`.
+- `--gif-hold-after-navigation <milliseconds>`: Default hold after navigation actions and navigation waits in command-level `--gif` recordings. Defaults to `350`.
+- `--gif-hold-after-assertion <milliseconds>`: Default hold after assertion actions in command-level `--gif` recordings. Defaults to `350`.
 - `--gif-hold-on-failure <milliseconds>`: Final failure-state hold for command-level `--gif` recordings. Defaults to `1200`; use `0` to suppress the extra failure hold.
 - `--gif-fps <1..100>`: Frame rate for command-level `--gif` recordings. Defaults to `10` FPS.
 - `--gif-frame-delay <milliseconds>`: Frame delay for command-level `--gif` recordings. Must be `10..10000`; overrides `--gif-fps`.
@@ -113,6 +117,8 @@ GIF recording is optional.
 - `--pointer-duration`, `--pointer-speed`, and `--pointer-easing` set whole-test virtual pointer defaults when `--gif` is active.
 - `--click-pulse` sets the whole-test click/tap/drop pulse style when `--gif` is active.
 - `--gif-hold-after-action` sets the whole-test post-action hold duration when `--gif` is active.
+- `--pointer-pre-click-hold` and `--pointer-post-click-hold` set whole-test click/tap settle and post-pulse hold durations when `--gif` is active.
+- `--gif-hold-after-navigation` and `--gif-hold-after-assertion` set whole-test navigation and assertion hold durations when `--gif` is active.
 - `--gif-hold-on-failure` captures one extra final-state hold frame before writing a failed test GIF.
 - `--gif-fps` sets the whole-test frame rate when `--gif` is active.
 - `--gif-frame-delay` sets the whole-test frame delay and overrides `--gif-fps`.
@@ -146,7 +152,7 @@ cmg run demo-scripts\20-runner-flow.cmgscript
 cmg run tests\flows --gif artifacts\gifs
 cmg run tests\flows --gif artifacts\gifs --gif-quality highest
 cmg run tests\flows --gif artifacts\gifs --pointer-duration 600 --pointer-easing spring
-cmg run tests\flows --gif artifacts\gifs --click-pulse ripple --gif-hold-after-action 700 --gif-hold-on-failure 1800
+cmg run tests\flows --gif artifacts\gifs --click-pulse ripple --pointer-pre-click-hold 120 --pointer-post-click-hold 450 --gif-hold-on-failure 1800
 cmg run tests\flows --gif artifacts\gifs --gif-timeline artifacts\timelines
 cmg run checkout.cmgscript --report-json artifacts\checkout.json --report-html artifacts\checkout.html
 cmg run checkout.cmgscript --trace artifacts\traces

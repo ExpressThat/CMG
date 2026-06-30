@@ -207,7 +207,10 @@ public sealed partial class BrowserScriptRunner
     private static bool IsDragRecordingOption(string key) =>
         key is "pointerDuration" or "pointerSpeed" or "pointerEasing" or
             "sourcePointerDuration" or "targetPointerDuration" or "dragEasing" or
-            "preDragHold" or "dragHold" or "postDropHold";
+            "preDragHold" or "dragHold" or "postDropHold" or
+            "quality" or "clickPulse" or "pulse" or "holdAfterAction" or "holdOnFailure" or
+            "preClickHold" or "postClickHold" or "holdAfterNavigation" or "holdAfterAssertion" or
+            "fps" or "frameDelay" or "timeline";
 
     private static BrowserScriptAction MergeDragChildOptions(BrowserScriptAction parent, BrowserScriptAction child)
     {

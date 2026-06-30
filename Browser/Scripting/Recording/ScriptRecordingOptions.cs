@@ -7,6 +7,10 @@ public sealed record ScriptRecordingOptions(
     ClickPulseStyle ClickPulse = ClickPulseStyle.Ring,
     int HoldAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
     int HoldOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
+    int PreClickHoldMilliseconds = 0,
+    int PostClickHoldMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+    int HoldAfterNavigationMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+    int HoldAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
     string? TimelinePath = null,
     int FrameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
 {

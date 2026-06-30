@@ -71,6 +71,10 @@ public sealed partial class BrowserScriptRunner
         "pulse",
         "holdAfterAction",
         "holdOnFailure",
+        "preClickHold",
+        "postClickHold",
+        "holdAfterNavigation",
+        "holdAfterAssertion",
         "timeline",
         "fps",
         "frameDelay"

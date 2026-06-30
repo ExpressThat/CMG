@@ -49,6 +49,24 @@ public sealed class BrowserScriptRunnerDragOptionTests
     }
 
     [Fact]
+    public void RunText_BlockDragAcceptsInheritedRecordingDefaults()
+    {
+        var client = new FakeAutomationClient();
+        using var gif = new TempGifFile();
+        var result = Runner().RunText($$"""
+        gif "drag" output="{{gif.File.FullName.Replace("\\", "/")}}" clickPulse=ripple preClickHold=100 holdAfterAssertion=200 {
+          dragAndDrop "#source" pointerDuration=400 {
+            drop "#target"
+          }
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(ClickPulseStyle.Ripple, client.CursorPulseStyles);
+    }
+
+
+    [Fact]
     public void RunText_UnrecordedBlockDragSkipsGifChoreography()
     {
         var client = new FakeAutomationClient();

@@ -172,7 +172,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>` on recording blocks and pointer-aware actions.
 - Add `dragPath=<direct|arc|manhattan|custom>` on `dragAndDrop`.
 - Add auto pathing that avoids covering the target text or button label.
-- Add `preClickHold=<ms>` and `postClickHold=<ms>` at recording-block and action level. CLI: `--pointer-pre-click-hold <ms>` and `--pointer-post-click-hold <ms>`.
+- Implemented: add `preClickHold=<ms>` and `postClickHold=<ms>` at recording-block and action level. CLI: `--pointer-pre-click-hold <ms>` and `--pointer-post-click-hold <ms>`.
 - Add `preDragHold=<ms>`, `dragHold=<ms>`, and `postDropHold=<ms>` on `dragAndDrop`.
 - Add `holdAfterMove=<ms>` on `moveMouse` for demonstrations where the pointer should settle before the next action.
 - Add click pulse style options: ring, ripple, dot, crosshair, or none. CLI: `--click-pulse <style>`. Default should be `ring` so clicks are visible evidence unless a script disables it with `clickPulse=none`.
@@ -225,8 +225,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add `frameDelay=<ms>` for advanced timing. CLI: `--gif-frame-delay <ms>`. Explicit `frameDelay` overrides `fps`.
 - Implemented: `holdAfterAction=<ms>` as a block/action default and CLI `--gif-hold-after-action <ms>` for whole-run recordings.
 - Implemented: `pauseGif <ms>` as a recording-only hold action that captures a timed GIF frame when recording is active and skips without injecting the virtual pointer when no GIF recorder is active.
-- Add `holdAfterNavigation=<ms>`. CLI: `--gif-hold-after-navigation <ms>`.
-- Add `holdAfterAssertion=<ms>`. CLI: `--gif-hold-after-assertion <ms>`.
+- Implemented: add `holdAfterNavigation=<ms>`. CLI: `--gif-hold-after-navigation <ms>`.
+- Implemented: add `holdAfterAssertion=<ms>`. CLI: `--gif-hold-after-assertion <ms>`.
 - Implemented: `holdOnFailure=<ms>` so final failure state is readable. CLI: `--gif-hold-on-failure <ms>`.
 - Add `intro "<text>"` or `recording intro="..." { ... }` to add a title card. CLI: `--gif-intro <text>`.
 - Add `outro "<text>"` or `recording outro="..." { ... }` to add a final summary card. CLI: `--gif-outro <text>`.

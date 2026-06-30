@@ -111,6 +111,26 @@ public sealed partial class CmgVisualSegmentExecutor
         return TryGifDurationFor(action, "holdOnFailure", "gif option holdOnFailure=", defaults, out hold, out error);
     }
 
+    private static bool TryGifPreClickHoldFor(CmgNode action, int defaults, out int hold, out string? error)
+    {
+        return TryGifDurationFor(action, "preClickHold", "gif option preClickHold=", defaults, out hold, out error);
+    }
+
+    private static bool TryGifPostClickHoldFor(CmgNode action, int defaults, out int hold, out string? error)
+    {
+        return TryGifDurationFor(action, "postClickHold", "gif option postClickHold=", defaults, out hold, out error);
+    }
+
+    private static bool TryGifNavigationHoldFor(CmgNode action, int defaults, out int hold, out string? error)
+    {
+        return TryGifDurationFor(action, "holdAfterNavigation", "gif option holdAfterNavigation=", defaults, out hold, out error);
+    }
+
+    private static bool TryGifAssertionHoldFor(CmgNode action, int defaults, out int hold, out string? error)
+    {
+        return TryGifDurationFor(action, "holdAfterAssertion", "gif option holdAfterAssertion=", defaults, out hold, out error);
+    }
+
     private static bool TryGifTimelineFor(CmgNode action, FileInfo? gif, CmgRunOptions options, out string? timeline, out string? error)
     {
         error = null;

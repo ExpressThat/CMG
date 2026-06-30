@@ -19,7 +19,9 @@ public sealed partial class BrowserScriptRunner
         var gifPath = GifBlockPath(action);
         var recorder = commandRecorder ?? new ScriptGifRecorder(
             automationClient,
-            new ScriptRecordingOptions(gifPath, GifBlockQuality(action), GifBlockMotion(action), GifBlockPulse(action), GifBlockHold(action), GifBlockFailureHold(action), GifBlockTimeline(action, gifPath), GifBlockFrameDelay(action)));
+            new ScriptRecordingOptions(gifPath, GifBlockQuality(action), GifBlockMotion(action), GifBlockPulse(action),
+                GifBlockHold(action), GifBlockFailureHold(action), GifBlockPreClickHold(action), GifBlockPostClickHold(action),
+                GifBlockNavigationHold(action), GifBlockAssertionHold(action), GifBlockTimeline(action, gifPath), GifBlockFrameDelay(action)));
         var output = new List<string>();
         var failed = false;
         if (commandRecorder is null)
@@ -124,6 +126,28 @@ public sealed partial class BrowserScriptRunner
         }
 
         return ScriptPointerMotionOptions.ParseDuration(value, "gif option holdOnFailure=");
+    }
+
+    private static int GifBlockPreClickHold(BrowserScriptAction action) =>
+        GifBlockDuration(action, "preClickHold", 0);
+
+    private static int GifBlockPostClickHold(BrowserScriptAction action) =>
+        GifBlockDuration(action, "postClickHold", ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds);
+
+    private static int GifBlockNavigationHold(BrowserScriptAction action) =>
+        GifBlockDuration(action, "holdAfterNavigation", ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds);
+
+    private static int GifBlockAssertionHold(BrowserScriptAction action) =>
+        GifBlockDuration(action, "holdAfterAssertion", ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds);
+
+    private static int GifBlockDuration(BrowserScriptAction action, string option, int fallback)
+    {
+        if (!action.Options.TryGetValue(option, out var value))
+        {
+            return fallback;
+        }
+
+        return ScriptPointerMotionOptions.ParseDuration(value, $"gif option {option}=");
     }
 
     private static string? GifBlockTimeline(BrowserScriptAction action, string gifPath)

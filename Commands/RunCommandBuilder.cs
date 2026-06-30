@@ -32,6 +32,10 @@ public sealed partial class RunCommandBuilder
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Click pulse style for --gif: ring, ripple, dot, crosshair, or none." };
         var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
         var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
+        var preClickHoldOption = new Option<int?>("--pointer-pre-click-hold") { Description = "Default hold before click/tap events in --gif recordings." };
+        var postClickHoldOption = new Option<int?>("--pointer-post-click-hold") { Description = "Default hold after click/tap pulses in --gif recordings." };
+        var holdAfterNavigationOption = new Option<int?>("--gif-hold-after-navigation") { Description = "Default hold after navigation actions in --gif recordings." };
+        var holdAfterAssertionOption = new Option<int?>("--gif-hold-after-assertion") { Description = "Default hold after assertion actions in --gif recordings." };
         var gifFpsOption = new Option<int?>("--gif-fps") { Description = "GIF frame rate for --gif recordings. Must be between 1 and 100." };
         var gifFrameDelayOption = new Option<int?>("--gif-frame-delay") { Description = "GIF frame delay in milliseconds. Overrides --gif-fps." };
         var gifTimelineOption = new Option<string?>("--gif-timeline") { Description = "Write GIF timeline JSON files to this file or directory." };
@@ -83,6 +87,10 @@ public sealed partial class RunCommandBuilder
             clickPulseOption,
             holdAfterActionOption,
             holdOnFailureOption,
+            preClickHoldOption,
+            postClickHoldOption,
+            holdAfterNavigationOption,
+            holdAfterAssertionOption,
             gifFpsOption,
             gifFrameDelayOption,
             gifTimelineOption,
@@ -158,6 +166,14 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(holdError);
                 return 1;
             }
+            if (!GifTimingOptionParser.TryParsePreClickHold(parseResult.GetValue(preClickHoldOption), out var preClickHold, out holdError) ||
+                !GifTimingOptionParser.TryParsePostClickHold(parseResult.GetValue(postClickHoldOption), out var postClickHold, out holdError) ||
+                !GifTimingOptionParser.TryParseHoldAfterNavigation(parseResult.GetValue(holdAfterNavigationOption), out var holdAfterNavigation, out holdError) ||
+                !GifTimingOptionParser.TryParseHoldAfterAssertion(parseResult.GetValue(holdAfterAssertionOption), out var holdAfterAssertion, out holdError))
+            {
+                Console.Error.WriteLine(holdError);
+                return 1;
+            }
             if (!GifFrameTimingOptionParser.TryParse(parseResult.GetValue(gifFpsOption), parseResult.GetValue(gifFrameDelayOption), out var frameDelay, out var frameError))
             {
                 Console.Error.WriteLine(frameError);
@@ -216,6 +232,10 @@ public sealed partial class RunCommandBuilder
                 clickPulse,
                 holdAfterAction,
                 holdOnFailure,
+                preClickHold,
+                postClickHold,
+                holdAfterNavigation,
+                holdAfterAssertion,
                 parseResult.GetValue(gifTimelineOption),
                 frameDelay,
                 gifWarnSizeBytes,

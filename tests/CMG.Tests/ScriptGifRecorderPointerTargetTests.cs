@@ -105,6 +105,50 @@ public sealed class ScriptGifRecorderPointerTargetTests
     }
 
     [Fact]
+    public void BeforeAction_ClickPreHoldCapturesSettleFrame()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        var motion = new ScriptPointerMotionOptions(PointerDurationMilliseconds: 0);
+        using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(path, PointerMotion: motion, PreClickHoldMilliseconds: 500));
+        recorder.Start("debug");
+
+        recorder.BeforeAction(new BrowserScriptAction(1, "click", "click", ["#save"], new Dictionary<string, string>(), []));
+
+        Assert.Equal(2, client.PageScreenshotCount);
+    }
+
+    [Fact]
+    public void AfterAction_ClickPostHoldUsesSpecificDefault()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(path, PostClickHoldMilliseconds: 0));
+        recorder.Start("debug");
+
+        recorder.AfterAction(new BrowserScriptAction(1, "click", "click", ["#save"], new Dictionary<string, string>(), []));
+
+        Assert.Equal(1, client.PageScreenshotCount);
+    }
+
+    [Fact]
+    public void AfterAction_NavigationAndAssertionUseSpecificHolds()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(
+            path,
+            HoldAfterNavigationMilliseconds: 0,
+            HoldAfterAssertionMilliseconds: 0));
+        recorder.Start("debug");
+
+        recorder.AfterAction(new BrowserScriptAction(1, "navigate", "navigate", ["/"], new Dictionary<string, string>(), []));
+        recorder.AfterAction(new BrowserScriptAction(2, "expectText", "expectText", ["#status", "Ready"], new Dictionary<string, string>(), []));
+
+        Assert.Equal(0, client.PageScreenshotCount);
+    }
+
+    [Fact]
     public void PauseGif_CapturesOneRecordingFrame()
     {
         var client = new FakeAutomationClient();

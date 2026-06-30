@@ -49,7 +49,7 @@ public sealed partial class CmgVisualSegmentExecutor
         {
             if (IsRecordingBlock(action.Kind) && !suppressGifBlocks)
             {
-                var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options.GifQuality, options.PointerMotion, options.ClickPulse, options.HoldAfterActionMilliseconds, options.HoldOnFailureMilliseconds, gifTimelinePath: null, options.FrameDelayMilliseconds);
+                var flush = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options);
                 if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps, gifQualities);
@@ -66,6 +66,10 @@ public sealed partial class CmgVisualSegmentExecutor
                     !TryGifPulseFor(action, options.ClickPulse, out var blockPulse, out error) ||
                     !TryGifHoldFor(action, options.HoldAfterActionMilliseconds, out var blockHold, out error) ||
                     !TryGifFailureHoldFor(action, options.HoldOnFailureMilliseconds, out var blockFailureHold, out error) ||
+                    !TryGifPreClickHoldFor(action, options.PreClickHoldMilliseconds, out var blockPreClickHold, out error) ||
+                    !TryGifPostClickHoldFor(action, options.PostClickHoldMilliseconds, out var blockPostClickHold, out error) ||
+                    !TryGifNavigationHoldFor(action, options.HoldAfterNavigationMilliseconds, out var blockNavigationHold, out error) ||
+                    !TryGifAssertionHoldFor(action, options.HoldAfterAssertionMilliseconds, out var blockAssertionHold, out error) ||
                     !TryGifTimelineFor(action, gif, options, out var blockTimeline, out error) ||
                     !TryGifFrameDelayFor(action, options.FrameDelayMilliseconds, out var blockFrameDelay, out error))
                 {
@@ -77,7 +81,7 @@ public sealed partial class CmgVisualSegmentExecutor
                     gifQualities[gif.FullName] = FormatQuality(blockQuality);
                 }
 
-                if (!RunActions(action.Children, remoteDebuggingUrl, gif, timeouts, baseUrl, blockQuality, blockMotion, blockPulse, blockHold, blockFailureHold, blockTimeline, output, steps, out error, blockFrameDelay))
+                if (!RunActions(action.Children, remoteDebuggingUrl, gif, timeouts, baseUrl, blockQuality, blockMotion, blockPulse, blockHold, blockFailureHold, blockPreClickHold, blockPostClickHold, blockNavigationHold, blockAssertionHold, blockTimeline, output, steps, out error, blockFrameDelay))
                 {
                     return Fail(test, output, error, gifs, steps, gifQualities);
                 }
@@ -87,7 +91,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options.GifQuality, options.PointerMotion, options.ClickPulse, options.HoldAfterActionMilliseconds, options.HoldOnFailureMilliseconds, gifTimelinePath: null, options.FrameDelayMilliseconds);
+                var flush = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options);
                 if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps, gifQualities);
@@ -106,7 +110,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("storageState", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options.GifQuality, options.PointerMotion, options.ClickPulse, options.HoldAfterActionMilliseconds, options.HoldOnFailureMilliseconds, gifTimelinePath: null, options.FrameDelayMilliseconds);
+                var flush = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options);
                 if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps, gifQualities);
@@ -125,7 +129,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("expectScreenshot", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options.GifQuality, options.PointerMotion, options.ClickPulse, options.HoldAfterActionMilliseconds, options.HoldOnFailureMilliseconds, gifTimelinePath: null, options.FrameDelayMilliseconds);
+                var flush = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options);
                 if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps, gifQualities);
@@ -144,7 +148,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
             if (action.Kind.Equals("uploadFiles", StringComparison.OrdinalIgnoreCase))
             {
-                var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options.GifQuality, options.PointerMotion, options.ClickPulse, options.HoldAfterActionMilliseconds, options.HoldOnFailureMilliseconds, gifTimelinePath: null, options.FrameDelayMilliseconds);
+                var flush = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options);
                 if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
                     return Fail(test, output, error, gifs, steps, gifQualities);
@@ -173,7 +177,7 @@ public sealed partial class CmgVisualSegmentExecutor
             gifQualities[commandGif.FullName] = FormatQuality(options.GifQuality);
         }
 
-        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, commandGif, timeouts, baseUrl, options.GifQuality, options.PointerMotion, options.ClickPulse, options.HoldAfterActionMilliseconds, options.HoldOnFailureMilliseconds, GifTimelineFor(commandGif, options.GifTimelinePath), options.FrameDelayMilliseconds);
+        var final = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, commandGif, timeouts, baseUrl, options, GifTimelineFor(commandGif, options.GifTimelinePath));
         if (!AppendResult(final.Result, final.LineMap, output, steps, test.Actions.LastOrDefault(), commandGif, out var finalError))
         {
             return Fail(test, output, finalError, gifs, steps, gifQualities);
@@ -201,6 +205,20 @@ public sealed partial class CmgVisualSegmentExecutor
 
         return result.Success;
     }
+
+    private CmgScriptBatchRun FlushPending(
+        List<string> pending,
+        Dictionary<int, int> pendingLineMap,
+        string remoteDebuggingUrl,
+        FileInfo? gif,
+        ScriptTimeoutOptions? timeouts,
+        string? baseUrl,
+        CmgRunOptions options,
+        string? gifTimelinePath = null) =>
+        RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, options.GifQuality, options.PointerMotion,
+            options.ClickPulse, options.HoldAfterActionMilliseconds, options.HoldOnFailureMilliseconds,
+            options.PreClickHoldMilliseconds, options.PostClickHoldMilliseconds, options.HoldAfterNavigationMilliseconds,
+            options.HoldAfterAssertionMilliseconds, gifTimelinePath, options.FrameDelayMilliseconds);
 
     private static CmgTestResult Fail(
         CmgTestCase test,

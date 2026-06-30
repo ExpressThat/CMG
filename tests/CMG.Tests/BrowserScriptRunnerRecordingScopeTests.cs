@@ -136,6 +136,39 @@ public sealed class BrowserScriptRunnerRecordingScopeTests
     }
 
     [Fact]
+    public void RecordingScope_AppliesClickAndNavigationHolds()
+    {
+        var client = new FakeAutomationClient();
+        var gif = TempGif();
+
+        var result = Runner().RunText("""
+            recording pointerDuration=0 preClickHold=200 postClickHold=0 holdAfterNavigation=0 {
+              click "#save"
+              reload
+            }
+            """, "debug", client, gif);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(4, client.PageScreenshotCount);
+    }
+
+    [Fact]
+    public void RecordingScope_ActionHoldOverridesScopedDefault()
+    {
+        var client = new FakeAutomationClient();
+        var gif = TempGif();
+
+        var result = Runner().RunText("""
+            recording pointerDuration=0 preClickHold=500 postClickHold=500 {
+              click "#save" preClickHold=0 postClickHold=0
+            }
+            """, "debug", client, gif);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(3, client.PageScreenshotCount);
+    }
+
+    [Fact]
     public void RecordingScope_RejectsUnknownDefaults()
     {
         var result = Runner().RunText("""
