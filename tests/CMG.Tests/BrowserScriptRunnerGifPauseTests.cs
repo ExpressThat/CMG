@@ -48,6 +48,20 @@ public sealed class BrowserScriptRunnerGifPauseTests
         Assert.Contains(result.StdoutLines, line => line.Contains("GIF_MOVE_MOUSE 001 status=skipped reason=no-active-recording", StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("moveMouse \"${missing}\"", "GIF_MOVE_MOUSE")]
+    [InlineData("pauseGif ${missing}", "GIF_PAUSE")]
+    [InlineData("recordCheckpoint \"${missing}\"", "GIF_CHECKPOINT")]
+    public void RecordingOnlyActions_WithoutRecorder_SkipBeforeVariableExpansion(string script, string outputLabel)
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText(script, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(0, client.PageScreenshotCount);
+        Assert.Contains(result.StdoutLines, line => line.Contains($"{outputLabel} 001 status=skipped reason=no-active-recording", StringComparison.Ordinal));
+    }
+
     [Fact]
     public void MoveMouse_InsideGifBlock_RejectsBlockBody()
     {

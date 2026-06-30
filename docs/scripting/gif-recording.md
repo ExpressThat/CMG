@@ -115,6 +115,7 @@ cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gi
 cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --click-pulse dot --gif-hold-after-action 700 --gif-hold-on-failure 1800
 cmg run tests\flows --gif demo-output\runner-gifs --gif-timeline demo-output\timelines
 cmg run tests\flows --gif demo-output\runner-gifs --gif-warn-size 500KB
+cmg run tests\flows --gif demo-output\runner-gifs --gif-max-size 2MB
 cmg run tests\flows --gif demo-output\runner-gifs --gif-max-duration 10s
 ```
 
@@ -138,7 +139,7 @@ gif "checkout evidence" holdAfterAction=600 {
 }
 ```
 
-Recording-only actions capture frames only when GIF recording is active. Without `--gif` or an active `gif` / `recordVideo` / `screencast` block, they are no-ops and report a skipped status. They do not create or move the virtual pointer outside GIF recording, and recording-only arguments or child bodies are ignored because no recording exists to apply them to. Inside an active recording, the same actions validate their normal arguments and reject unsupported block bodies.
+Recording-only actions capture frames only when GIF recording is active. Without `--gif` or an active `gif` / `recordVideo` / `screencast` block, they are no-ops and report a skipped status. They do not create or move the virtual pointer outside GIF recording, and recording-only arguments, variables, scoped selectors, options, or child bodies are ignored because no recording exists to apply them to. Inside an active recording, the same actions validate their normal arguments and reject unsupported block bodies.
 
 - `pauseGif <milliseconds>` reports `GIF_PAUSE <line> status=skipped reason=no-active-recording`.
 - `moveMouse ...` reports `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording`.
@@ -167,7 +168,7 @@ When the wrapped block, direct script, or test fails, CMG captures one extra fin
 
 ## `moveMouse`
 
-`moveMouse` is a script-only recording action. It has no one-off CLI equivalent. When no GIF recorder is active, it skips with `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording` instead of creating or moving the virtual pointer.
+`moveMouse` is a script-only recording action. It has no one-off CLI equivalent. When no GIF recorder is active, it skips with `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording` instead of creating or moving the virtual pointer. Skipped `moveMouse` actions do not expand variables or validate recording-only targeting options.
 
 ```text
 moveMouse "center"
@@ -247,6 +248,8 @@ Use `cmg gif storyboard <file> --output <png>` when a reviewer or agent needs a 
 Use `cmg gif optimize <file> --output <gif>` to coalesce consecutive duplicate frames in an existing artifact while preserving duration. It emits `GIF_OPTIMIZE input="<gif>" output="<gif>" framesBefore=<count> framesAfter=<count> duplicateFramesRemoved=<count> durationMs=<milliseconds> sizeBeforeBytes=<bytes> sizeAfterBytes=<bytes>`.
 
 Use `cmg run --gif-warn-size <size>` when CI or agents should flag unexpectedly large visual artifacts. The runner emits `GIF_WARN_SIZE test="<name>" path="<gif>" sizeBytes=<bytes> thresholdBytes=<bytes>` after the relevant test result line, and the warning does not fail the run.
+
+Use `cmg run --gif-max-size <size>` when CI should fail visual evidence that is too large to upload or review. The runner emits `GIF_MAX_SIZE test="<name>" path="<gif>" sizeBytes=<bytes> thresholdBytes=<bytes>`, marks that test failed, writes the reason into reports, and exits `1`.
 
 Use `cmg run --gif-max-duration <duration>` when CI should fail visual evidence that is too long to review. Durations accept plain milliseconds or `ms`, `s`, and `m` suffixes. The runner emits `GIF_MAX_DURATION test="<name>" path="<gif>" durationMs=<milliseconds> thresholdMs=<milliseconds>`, marks that test failed, writes the reason into reports, and exits `1`.
 

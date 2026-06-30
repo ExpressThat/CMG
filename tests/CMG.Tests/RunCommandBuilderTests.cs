@@ -196,6 +196,7 @@ public sealed class RunCommandBuilderTests
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
             string? gifTimelinePath = null,
             long? gifWarnSizeBytes = null,
+            long? gifMaxSizeBytes = null,
             int? gifMaxDurationMilliseconds = null)
         {
             BrowserKind = browserKind;

@@ -29,6 +29,26 @@ public sealed class RunCommandBuilderGifSizeTests
     }
 
     [Fact]
+    public void RunCommand_MapsGifMaxSize()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --gif-max-size 500KB").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(500 * 1024, handler.GifMaxSizeBytes);
+    }
+
+    [Fact]
+    public void RunCommand_RejectsInvalidGifMaxSize()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --gif-max-size huge").Invoke();
+
+        Assert.Equal(1, exitCode);
+        Assert.Null(handler.Path);
+    }
+
+    [Fact]
     public void RunCommand_MapsGifMaxDuration()
     {
         var handler = new CapturingHandler();
@@ -61,6 +81,7 @@ public sealed class RunCommandBuilderGifSizeTests
     {
         public string? Path { get; private set; }
         public long? GifWarnSizeBytes { get; private set; }
+        public long? GifMaxSizeBytes { get; private set; }
         public int? GifMaxDurationMilliseconds { get; private set; }
 
         public int Run(
@@ -94,10 +115,12 @@ public sealed class RunCommandBuilderGifSizeTests
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
             string? gifTimelinePath = null,
             long? gifWarnSizeBytes = null,
+            long? gifMaxSizeBytes = null,
             int? gifMaxDurationMilliseconds = null)
         {
             Path = path;
             GifWarnSizeBytes = gifWarnSizeBytes;
+            GifMaxSizeBytes = gifMaxSizeBytes;
             GifMaxDurationMilliseconds = gifMaxDurationMilliseconds;
             return 0;
         }

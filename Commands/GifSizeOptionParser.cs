@@ -2,7 +2,7 @@ namespace CMG.Commands;
 
 public static class GifSizeOptionParser
 {
-    public static bool TryParse(string? value, out long? bytes, out string? error)
+    public static bool TryParse(string? value, out long? bytes, out string? error, string optionName = "--gif-warn-size")
     {
         bytes = null;
         error = null;
@@ -15,7 +15,7 @@ public static class GifSizeOptionParser
         var suffixStart = text.TakeWhile(character => char.IsDigit(character)).Count();
         if (suffixStart is 0 || !long.TryParse(text[..suffixStart], out var number) || number < 0)
         {
-            error = "--gif-warn-size must be a non-negative size such as 500KB, 2MB, or 1048576.";
+            error = $"{optionName} must be a non-negative size such as 500KB, 2MB, or 1048576.";
             return false;
         }
 
@@ -30,7 +30,7 @@ public static class GifSizeOptionParser
         };
         if (multiplier is 0 || number > long.MaxValue / multiplier)
         {
-            error = "--gif-warn-size must use bytes, KB, MB, or GB.";
+            error = $"{optionName} must use bytes, KB, MB, or GB.";
             return false;
         }
 

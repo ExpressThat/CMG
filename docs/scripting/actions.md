@@ -361,7 +361,7 @@ moveMouse x=100 y=200
 moveMouse selector=".content-area" edge=bottom inset=16
 ```
 
-Moves the GIF virtual pointer to a viewport-relative position. `moveMouse` is script-only and has no one-off CLI `browser control moveMouse` command. Without command-level `--gif` and outside an active `gif`, `recordVideo`, or `screencast` block, it is skipped and does not create or move the virtual pointer. In that skipped state, recorder-only arguments or child bodies are ignored; inside an active recording, unsupported block bodies and invalid movement options fail clearly.
+Moves the GIF virtual pointer to a viewport-relative position. `moveMouse` is script-only and has no one-off CLI `browser control moveMouse` command. Without command-level `--gif` and outside an active `gif`, `recordVideo`, or `screencast` block, it is skipped and does not create or move the virtual pointer. In that skipped state, recorder-only arguments, variables, scoped selectors, options, or child bodies are ignored; inside an active recording, unsupported block bodies and invalid movement options fail clearly.
 
 Coordinates are CSS pixels relative to the visible viewport. Alias targets use a small inset so the pointer remains inside the viewport.
 
@@ -548,7 +548,7 @@ Pauses execution for the specified number of milliseconds.
 pauseGif 1000
 ```
 
-Adds a recording-only hold frame for the specified number of milliseconds. `pauseGif` does not sleep the browser, does not change page state, and does not create or move the virtual pointer unless GIF recording is active. Without an active recorder it skips before applying recording-only arguments.
+Adds a recording-only hold frame for the specified number of milliseconds. `pauseGif` does not sleep the browser, does not change page state, and does not create or move the virtual pointer unless GIF recording is active. Without an active recorder it skips before applying recording-only arguments, variables, scoped selectors, options, or child bodies.
 
 Output:
 
@@ -563,7 +563,7 @@ recordCheckpoint "after login"
 
 Adds a named marker to the active GIF timeline JSON without capturing a frame or changing page state. Use it before or after important visual transitions when CI reports or agents need a stable bookmark in the sidecar metadata.
 
-`recordCheckpoint` is metadata-only. It does not create or move the virtual pointer, and it is skipped when no GIF recorder is active. Without an active recorder it skips before applying recording-only arguments.
+`recordCheckpoint` is metadata-only. It does not create or move the virtual pointer, and it is skipped when no GIF recorder is active. Without an active recorder it skips before applying recording-only arguments, variables, scoped selectors, options, or child bodies.
 
 Output:
 

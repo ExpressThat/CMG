@@ -19,33 +19,22 @@ public sealed partial class RunCommandBuilder
         var pathArgument = new Argument<string>("path") { Description = "A CMG script file or folder containing .cmgscript files." };
         var configOption = new Option<FileInfo?>("--config") { Description = "JSON run config file. CLI options override config values." };
         var projectOption = new Option<string?>("--project") { Description = "Named project from the run config." };
-        var gifOption = new Option<DirectoryInfo?>("--gif")
-        {
-            Description = "Write per-test GIF recordings to this directory."
-        };
+        var gifOption = new Option<DirectoryInfo?>("--gif") { Description = "Write per-test GIF recordings to this directory." };
         gifOption.Aliases.Add("-gif");
         var gifQualityOption = new Option<string>("--gif-quality")
         {
             Description = "GIF quality for --gif recordings: highest, high, medium, or low.",
             DefaultValueFactory = _ => "highest"
         };
-        var pointerDurationOption = new Option<int?>("--pointer-duration")
-        {
-            Description = "Default virtual pointer movement duration in milliseconds for --gif recordings."
-        };
-        var pointerSpeedOption = new Option<string?>("--pointer-speed")
-        {
-            Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x."
-        };
-        var pointerEasingOption = new Option<string?>("--pointer-easing")
-        {
-            Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring."
-        };
+        var pointerDurationOption = new Option<int?>("--pointer-duration") { Description = "Default virtual pointer movement duration in milliseconds for --gif recordings." };
+        var pointerSpeedOption = new Option<string?>("--pointer-speed") { Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x." };
+        var pointerEasingOption = new Option<string?>("--pointer-easing") { Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring." };
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Click pulse style for --gif: ring, ripple, dot, crosshair, or none." };
         var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
         var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
         var gifTimelineOption = new Option<string?>("--gif-timeline") { Description = "Write GIF timeline JSON files to this file or directory." };
         var gifWarnSizeOption = new Option<string?>("--gif-warn-size") { Description = "Warn when a recorded GIF exceeds this size, for example 500KB or 2MB." };
+        var gifMaxSizeOption = new Option<string?>("--gif-max-size") { Description = "Fail a test when a recorded GIF exceeds this size, for example 500KB or 2MB." };
         var gifMaxDurationOption = new Option<string?>("--gif-max-duration") { Description = "Fail a test when a recorded GIF exceeds this duration, for example 2500ms, 10s, or 1m." };
         var jsonOption = new Option<FileInfo?>("--report-json") { Description = "Write a JSON test report to this file." };
         var htmlOption = new Option<FileInfo?>("--report-html") { Description = "Write an HTML test report to this file." };
@@ -68,42 +57,15 @@ public sealed partial class RunCommandBuilder
             Description = "Run each selected test this many times.",
             DefaultValueFactory = _ => 1
         };
-        var listOption = new Option<bool>("--list")
-        {
-            Description = "List selected tests without connecting to a browser."
-        };
-        var shardOption = new Option<string?>("--shard")
-        {
-            Description = "Run one shard as index/count, for example 1/3."
-        };
-        var timeoutOption = new Option<int?>("--timeout")
-        {
-            Description = "Default timeout in milliseconds for timeout-capable actions."
-        };
-        var navigationTimeoutOption = new Option<int?>("--navigation-timeout")
-        {
-            Description = "Default timeout in milliseconds for navigation actions."
-        };
-        var assertionTimeoutOption = new Option<int?>("--assertion-timeout")
-        {
-            Description = "Default timeout in milliseconds for assertion actions."
-        };
-        var baseUrlOption = new Option<string?>("--base-url")
-        {
-            Description = "Base URL used to resolve relative navigation targets."
-        };
-        var browserPortOption = new Option<int?>("--browser-port")
-        {
-            Description = "Remote debugging port for the browser instance used by this run."
-        };
-        var autoLaunchOption = new Option<bool>("--auto-launch")
-        {
-            Description = "Launch the selected browser automatically when no CMG-controlled browser is running."
-        };
-        var headlessOption = new Option<bool>("--headless")
-        {
-            Description = "Launch the browser in headless mode when --auto-launch starts a browser."
-        };
+        var listOption = new Option<bool>("--list") { Description = "List selected tests without connecting to a browser." };
+        var shardOption = new Option<string?>("--shard") { Description = "Run one shard as index/count, for example 1/3." };
+        var timeoutOption = new Option<int?>("--timeout") { Description = "Default timeout in milliseconds for timeout-capable actions." };
+        var navigationTimeoutOption = new Option<int?>("--navigation-timeout") { Description = "Default timeout in milliseconds for navigation actions." };
+        var assertionTimeoutOption = new Option<int?>("--assertion-timeout") { Description = "Default timeout in milliseconds for assertion actions." };
+        var baseUrlOption = new Option<string?>("--base-url") { Description = "Base URL used to resolve relative navigation targets." };
+        var browserPortOption = new Option<int?>("--browser-port") { Description = "Remote debugging port for the browser instance used by this run." };
+        var autoLaunchOption = new Option<bool>("--auto-launch") { Description = "Launch the selected browser automatically when no CMG-controlled browser is running." };
+        var headlessOption = new Option<bool>("--headless") { Description = "Launch the browser in headless mode when --auto-launch starts a browser." };
         var variableOption = new Option<string[]>("--var") { Description = "Initial runner variable as name=value. Can be repeated." };
         var envOption = new Option<string[]>("--env") { Description = "Alias for --var, useful for CI or agent-provided values." };
         var command = new Command("run", "Run CMG DSL tests with visual artifacts.")
@@ -121,6 +83,7 @@ public sealed partial class RunCommandBuilder
             holdOnFailureOption,
             gifTimelineOption,
             gifWarnSizeOption,
+            gifMaxSizeOption,
             gifMaxDurationOption,
             jsonOption,
             htmlOption,
@@ -196,6 +159,11 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(sizeError);
                 return 1;
             }
+            if (!GifSizeOptionParser.TryParse(parseResult.GetValue(gifMaxSizeOption), out var gifMaxSizeBytes, out sizeError, "--gif-max-size"))
+            {
+                Console.Error.WriteLine(sizeError);
+                return 1;
+            }
             if (!GifDurationOptionParser.TryParse(parseResult.GetValue(gifMaxDurationOption), out var gifMaxDurationMilliseconds, out var durationError))
             {
                 Console.Error.WriteLine(durationError);
@@ -241,6 +209,7 @@ public sealed partial class RunCommandBuilder
                 holdOnFailure,
                 parseResult.GetValue(gifTimelineOption),
                 gifWarnSizeBytes,
+                gifMaxSizeBytes,
                 gifMaxDurationMilliseconds);
         });
 

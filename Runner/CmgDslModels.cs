@@ -67,6 +67,7 @@ public sealed record CmgRunOptions(
     int HoldOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
     string? GifTimelinePath = null,
     long? GifWarnSizeBytes = null,
+    long? GifMaxSizeBytes = null,
     int? GifMaxDurationMilliseconds = null);
 
 public sealed partial record CmgRunResult(

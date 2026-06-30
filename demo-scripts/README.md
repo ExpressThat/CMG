@@ -113,10 +113,10 @@ Run the structured runner demo with reports:
 
 ```powershell
 dotnet run -- run demo-scripts\20-runner-flow.cmgscript --gif demo-output\runner-gifs --report-json demo-output\runner.json --report-html demo-output\runner.html
-dotnet run -- run demo-scripts\152-runner-gif-report-metadata.cmgscript --gif demo-output\runner-gifs --gif-timeline demo-output\timelines --gif-warn-size 500KB --gif-max-duration 10s --report-json demo-output\runner-gif-metadata.json --report-html demo-output\runner-gif-metadata.html --report-junit demo-output\runner-gif-metadata.xml
+dotnet run -- run demo-scripts\152-runner-gif-report-metadata.cmgscript --gif demo-output\runner-gifs --gif-timeline demo-output\timelines --gif-warn-size 500KB --gif-max-size 2MB --gif-max-duration 10s --report-json demo-output\runner-gif-metadata.json --report-html demo-output\runner-gif-metadata.html --report-junit demo-output\runner-gif-metadata.xml
 ```
 
-The second command can also emit `GIF_WARN_PALETTE` when the recorded page uses enough colors to put pressure on GIF palette fidelity, and can fail with `GIF_MAX_DURATION` if a GIF exceeds the configured review budget.
+The second command can also emit `GIF_WARN_PALETTE` when the recorded page uses enough colors to put pressure on GIF palette fidelity, and can fail with `GIF_MAX_SIZE` or `GIF_MAX_DURATION` if a GIF exceeds the configured review budget.
 
 Record the whole runner demo test as a GIF:
 

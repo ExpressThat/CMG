@@ -101,6 +101,7 @@ public sealed class CommandHelpRoutingTests
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
             string? gifTimelinePath = null,
             long? gifWarnSizeBytes = null,
+            long? gifMaxSizeBytes = null,
             int? gifMaxDurationMilliseconds = null) => throw new InvalidOperationException();
     }
 }

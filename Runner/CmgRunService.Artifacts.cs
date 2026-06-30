@@ -139,9 +139,44 @@ public sealed partial class CmgRunService
             return (test, output);
         }
 
-        var reason = string.Join(' ', reasons);
+        var reason = MergeError(test.Error, string.Join(' ', reasons));
         return (test with { Success = false, Error = reason }, output);
     }
+
+    internal static (CmgTestResult Result, IReadOnlyList<string> Output) ApplyGifSizeGuard(CmgTestResult test, CmgRunOptions options)
+    {
+        if (options.GifMaxSizeBytes is not long threshold)
+        {
+            return (test, []);
+        }
+
+        var output = new List<string>();
+        var reasons = new List<string>();
+        foreach (var path in GifPaths(test.GifPath))
+        {
+            var file = new FileInfo(path);
+            if (!file.Exists || file.Length <= threshold)
+            {
+                continue;
+            }
+
+            output.Add(
+                $"GIF_MAX_SIZE test={Quote(test.Name)} path={Quote(file.FullName)} " +
+                $"sizeBytes={file.Length} thresholdBytes={threshold}");
+            reasons.Add($"GIF '{file.FullName}' size {file.Length} bytes exceeded max {threshold} bytes.");
+        }
+
+        if (reasons.Count is 0)
+        {
+            return (test, output);
+        }
+
+        var reason = MergeError(test.Error, string.Join(' ', reasons));
+        return (test with { Success = false, Error = reason }, output);
+    }
+
+    private static string MergeError(string? existing, string addition) =>
+        string.IsNullOrWhiteSpace(existing) ? addition : $"{existing} {addition}";
 
     private static bool HasPalettePressure(GifInspection metadata)
     {

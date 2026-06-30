@@ -196,10 +196,9 @@ public sealed partial class BrowserScriptRunner
         var action = sourceAction;
         try
         {
-            action = ShouldExpandBeforeDispatch(sourceAction.Name) ? ExpandVariables(sourceAction, context) : sourceAction;
-            action = ApplySelectorScope(action, context);
-            action = ApplyFrameScope(action, context);
-            action = ApplyTimeoutDefaults(action, context);
+            action = ShouldSkipRecordingOnlyAction(sourceAction, recorder)
+                ? sourceAction
+                : PrepareActionForDispatch(sourceAction, context);
             recorder?.BeforeAction(action);
             var sequence = context.NextSequence();
             var stepOutput = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
@@ -224,4 +223,14 @@ public sealed partial class BrowserScriptRunner
         }
     }
 
+    private static bool ShouldSkipRecordingOnlyAction(BrowserScriptAction action, ScriptGifRecorder? recorder) =>
+        recorder is null && IsRecordingOnlyAction(action.Name);
+
+    private BrowserScriptAction PrepareActionForDispatch(BrowserScriptAction action, ScriptExecutionContext context)
+    {
+        var prepared = ShouldExpandBeforeDispatch(action.Name) ? ExpandVariables(action, context) : action;
+        prepared = ApplySelectorScope(prepared, context);
+        prepared = ApplyFrameScope(prepared, context);
+        return ApplyTimeoutDefaults(prepared, context);
+    }
 }
