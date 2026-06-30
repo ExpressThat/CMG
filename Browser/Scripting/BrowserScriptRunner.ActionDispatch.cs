@@ -14,6 +14,7 @@ public sealed partial class BrowserScriptRunner
         if (action.Children.Count > 0 &&
             !string.Equals(action.Name, "dragAndDrop", StringComparison.OrdinalIgnoreCase) &&
             !IsRecordingBlock(action.Name) &&
+            !IsRecordingOnlyAction(action.Name) &&
             !string.Equals(action.Name, "set", StringComparison.OrdinalIgnoreCase) &&
             !IsControlAction(action.Name))
         {
@@ -164,4 +165,9 @@ public sealed partial class BrowserScriptRunner
             _ => throw new ScriptExecutionException($"Unknown action '{action.Name}'.")
         };
     }
+
+    private static bool IsRecordingOnlyAction(string name) =>
+        name.Equals("moveMouse", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("pauseGif", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("recordCheckpoint", StringComparison.OrdinalIgnoreCase);
 }

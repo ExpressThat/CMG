@@ -361,7 +361,7 @@ moveMouse x=100 y=200
 moveMouse selector=".content-area" edge=bottom inset=16
 ```
 
-Moves the GIF virtual pointer to a viewport-relative position. `moveMouse` is script-only and has no one-off CLI `browser control moveMouse` command. Without command-level `--gif` and outside an active `gif`, `recordVideo`, or `screencast` block, it is skipped and does not create or move the virtual pointer.
+Moves the GIF virtual pointer to a viewport-relative position. `moveMouse` is script-only and has no one-off CLI `browser control moveMouse` command. Without command-level `--gif` and outside an active `gif`, `recordVideo`, or `screencast` block, it is skipped and does not create or move the virtual pointer. In that skipped state, recorder-only arguments or child bodies are ignored; inside an active recording, unsupported block bodies and invalid movement options fail clearly.
 
 Coordinates are CSS pixels relative to the visible viewport. Alias targets use a small inset so the pointer remains inside the viewport.
 

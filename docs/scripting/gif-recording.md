@@ -137,7 +137,7 @@ gif "checkout evidence" holdAfterAction=600 {
 }
 ```
 
-Recording-only actions capture frames only when GIF recording is active. Without `--gif` or an active `gif` / `recordVideo` / `screencast` block, they are no-ops and report a skipped status. They do not create or move the virtual pointer outside GIF recording, and recording-only arguments are ignored because no recording exists to apply them to.
+Recording-only actions capture frames only when GIF recording is active. Without `--gif` or an active `gif` / `recordVideo` / `screencast` block, they are no-ops and report a skipped status. They do not create or move the virtual pointer outside GIF recording, and recording-only arguments or child bodies are ignored because no recording exists to apply them to. Inside an active recording, the same actions validate their normal arguments and reject unsupported block bodies.
 
 - `pauseGif <milliseconds>` reports `GIF_PAUSE <line> status=skipped reason=no-active-recording`.
 - `moveMouse ...` reports `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording`.
@@ -166,7 +166,7 @@ When the wrapped block, direct script, or test fails, CMG captures one extra fin
 
 ## `moveMouse`
 
-`moveMouse` is a script-only action for GIF runs. It has no one-off CLI equivalent. When no GIF recorder is active, it skips with `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording`.
+`moveMouse` is a script-only recording action. It has no one-off CLI equivalent. When no GIF recorder is active, it skips with `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording` instead of creating or moving the virtual pointer.
 
 ```text
 moveMouse "center"

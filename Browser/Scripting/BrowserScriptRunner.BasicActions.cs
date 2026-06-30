@@ -169,6 +169,11 @@ public sealed partial class BrowserScriptRunner
             return [$"GIF_PAUSE {action.LineNumber:000} status=skipped reason=no-active-recording"];
         }
 
+        if (action.Children.Count > 0)
+        {
+            throw new ScriptExecutionException("pauseGif does not accept a block body.");
+        }
+
         RequireArgumentCount(action, 1, 1);
         var milliseconds = ParsePositiveInt(action.Arguments[0], "pauseGif");
         recorder.Pause(action);
@@ -180,6 +185,11 @@ public sealed partial class BrowserScriptRunner
         if (recorder is null)
         {
             return [$"GIF_CHECKPOINT {action.LineNumber:000} status=skipped reason=no-active-recording"];
+        }
+
+        if (action.Children.Count > 0)
+        {
+            throw new ScriptExecutionException("recordCheckpoint does not accept a block body.");
         }
 
         RequireArgumentCount(action, 1, 1);
