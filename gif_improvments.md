@@ -307,7 +307,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add config-file support for GIF quality, pointer speed, FPS, and crop settings.
 - Add project-level GIF settings for cross-browser matrices.
 - Implemented: add GIF metadata to JSON reports: quality, approximate FPS, frame count, duration, dimensions, palette details, transparency, repeat metadata, and file size.
-- Add GIF thumbnail previews in HTML reports.
+- Implemented: add GIF thumbnail previews in HTML reports with artifact links.
 - Add failure frame thumbnail in HTML reports.
 - Add step-to-frame mapping in JSON reports.
 - Add report links that jump to the frame where a step started.

@@ -111,7 +111,7 @@ Run the structured runner demo with reports:
 
 ```powershell
 dotnet run -- run demo-scripts\20-runner-flow.cmgscript --gif demo-output\runner-gifs --report-json demo-output\runner.json --report-html demo-output\runner.html
-dotnet run -- run demo-scripts\152-runner-gif-report-metadata.cmgscript --gif demo-output\runner-gifs --gif-timeline demo-output\timelines --gif-warn-size 500KB --report-json demo-output\runner-gif-metadata.json
+dotnet run -- run demo-scripts\152-runner-gif-report-metadata.cmgscript --gif demo-output\runner-gifs --gif-timeline demo-output\timelines --gif-warn-size 500KB --report-json demo-output\runner-gif-metadata.json --report-html demo-output\runner-gif-metadata.html
 ```
 
 Record the whole runner demo test as a GIF:
@@ -282,7 +282,7 @@ dotnet run -- --firefox browser close
 - `149-gif-pointer-choreography.cmgscript`: Demonstrates GIF pointer duration, speed, easing, click pulses, parent block defaults, and child drag overrides.
 - `150-gif-failure-hold.cmgscript`: Demonstrates final failure-state holds in partial GIF artifacts.
 - `151-gif-timeline.cmgscript`: Demonstrates block-level GIF timeline metadata with `timeline=true`.
-- `152-runner-gif-report-metadata.cmgscript`: Demonstrates runner JSON `gifMetadata` entries for command-level GIF artifacts.
+- `152-runner-gif-report-metadata.cmgscript`: Demonstrates runner JSON `gifMetadata` entries and HTML GIF previews for command-level GIF artifacts.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

@@ -9,7 +9,7 @@ public static class CmgHtmlReportWriter
     {
         var builder = new StringBuilder();
         builder.AppendLine("<!doctype html><html><head><meta charset=\"utf-8\"><title>CMG Report</title>");
-        builder.AppendLine("<style>body{font:14px system-ui;margin:24px} .pass{color:#047857}.fail{color:#b91c1c} table{border-collapse:collapse;width:100%;margin-top:12px} th,td{border-bottom:1px solid #e5e7eb;padding:6px;text-align:left;vertical-align:top} code,pre{background:#f3f4f6;padding:2px 4px} pre{padding:8px;overflow:auto;white-space:pre-wrap}</style>");
+        builder.AppendLine("<style>body{font:14px system-ui;margin:24px} .pass{color:#047857}.fail{color:#b91c1c} table{border-collapse:collapse;width:100%;margin-top:12px} th,td{border-bottom:1px solid #e5e7eb;padding:6px;text-align:left;vertical-align:top} code,pre{background:#f3f4f6;padding:2px 4px} pre{padding:8px;overflow:auto;white-space:pre-wrap}.gif-previews{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0}.gif-preview{margin:0}.gif-preview img{display:block;max-width:360px;max-height:240px;border:1px solid #e5e7eb}.gif-preview figcaption{font-size:12px;color:#4b5563;max-width:360px;overflow-wrap:anywhere}</style>");
         builder.AppendLine("</head><body><h1>CMG Report</h1>");
         foreach (var test in tests)
         {
@@ -25,10 +25,7 @@ public static class CmgHtmlReportWriter
                 builder.AppendLine($"<p>{Encode(test.Error)}</p>");
             }
 
-            if (!string.IsNullOrWhiteSpace(test.GifPath))
-            {
-                builder.AppendLine($"<p>GIF: {Encode(test.GifPath)}</p>");
-            }
+            WriteGifPreviews(builder, test);
 
             if (test.Annotations.Count > 0)
             {
@@ -77,6 +74,47 @@ public static class CmgHtmlReportWriter
     }
 
     private static string Encode(string value) => WebUtility.HtmlEncode(value);
+
+    private static void WriteGifPreviews(StringBuilder builder, CmgTestResult test)
+    {
+        var paths = GifPaths(test.GifPath).ToArray();
+        if (paths.Length is 0)
+        {
+            return;
+        }
+
+        builder.AppendLine("<div class=\"gif-previews\">");
+        foreach (var path in paths)
+        {
+            var source = Encode(GifSource(path));
+            var label = Encode(path);
+            var alt = Encode($"GIF preview for {test.Name}");
+            builder.AppendLine("<figure class=\"gif-preview\">");
+            builder.AppendLine($"<a href=\"{source}\"><img src=\"{source}\" alt=\"{alt}\"></a>");
+            builder.AppendLine($"<figcaption>GIF: {label}</figcaption>");
+            builder.AppendLine("</figure>");
+        }
+
+        builder.AppendLine("</div>");
+    }
+
+    private static IEnumerable<string> GifPaths(string? gifPath)
+    {
+        if (string.IsNullOrWhiteSpace(gifPath))
+        {
+            yield break;
+        }
+
+        foreach (var path in gifPath.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            yield return path;
+        }
+    }
+
+    private static string GifSource(string path) =>
+        Path.IsPathRooted(path)
+            ? new Uri(Path.GetFullPath(path)).AbsoluteUri
+            : path.Replace('\\', '/');
 
     private static string Status(CmgTestResult test) =>
         string.IsNullOrWhiteSpace(test.Status) ? test.Success ? "pass" : "fail" : test.Status;
