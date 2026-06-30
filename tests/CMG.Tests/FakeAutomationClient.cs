@@ -52,6 +52,8 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public bool LastFullPageScreenshot { get; private set; }
     public int MouseMoveCount { get; private set; }
     public int PageScreenshotCount { get; private set; }
+    public ClickPulseStyle? LastCursorPulseStyle { get; private set; }
+    public List<ClickPulseStyle?> CursorPulseStyles { get; } = [];
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector, ScreenshotOptions? options = null)
@@ -164,7 +166,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         return ElementBoxes.Count > 0 ? ElementBoxes.Dequeue() : new(0, 0, 1, 1);
     }
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) => new(0, 0);
-    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point) { }
+    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point, ClickPulseStyle? pulseStyle = null)
+    {
+        LastCursorPulseStyle = pulseStyle;
+        CursorPulseStyles.Add(pulseStyle);
+    }
     public void RemoveDomCursor(string remoteDebuggingUrl) { }
     public IReadOnlyList<ChromePageTab> ListTabs(string remoteDebuggingUrl) =>
         TabResponses.Count > 0 ? TabResponses.Dequeue() : [];

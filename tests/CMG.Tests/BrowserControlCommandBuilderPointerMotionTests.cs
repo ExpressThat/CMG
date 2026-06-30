@@ -22,6 +22,17 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void ScriptCommand_MapsClickPulseOption()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --click-pulse crosshair").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(ClickPulseStyle.Crosshair, handler.ClickPulse);
+    }
+
+    [Fact]
     public void ScriptCommand_RejectsInvalidPointerEasing()
     {
         var handler = new CapturingHandler();
@@ -49,6 +60,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     {
         public string? File { get; private set; }
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
+        public ClickPulseStyle ClickPulse { get; private set; }
         public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output) => 0;
         public int RunScript(BrowserKind browserKind, string file, FileInfo? gif) => 0;
         public int RunScriptAction(BrowserKind browserKind, string scriptLine) => 0;
@@ -64,10 +76,12 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             GifQuality gifQuality = GifQuality.Highest,
-            ScriptPointerMotionOptions? pointerMotion = null)
+            ScriptPointerMotionOptions? pointerMotion = null,
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
         {
             File = file;
             PointerMotion = pointerMotion;
+            ClickPulse = clickPulse;
             return 0;
         }
     }

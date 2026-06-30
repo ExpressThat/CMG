@@ -1,3 +1,4 @@
+using CMG.Browser;
 using CMG.Browser.Scripting;
 using CMG.Browser.Scripting.Recording;
 
@@ -9,10 +10,13 @@ internal static class GifMotionOptionParser
         int? pointerDuration,
         string? pointerSpeed,
         string? pointerEasing,
+        string? clickPulse,
         out ScriptPointerMotionOptions motion,
+        out ClickPulseStyle pulse,
         out string? error)
     {
         motion = ScriptPointerMotionOptions.Default;
+        pulse = ClickPulseStyle.Ring;
         error = null;
         try
         {
@@ -31,6 +35,13 @@ internal static class GifMotionOptionParser
             }
 
             motion = new ScriptPointerMotionOptions(pointerDuration, pointerSpeed, easing).Validate("--pointer-speed");
+            if (!string.IsNullOrWhiteSpace(clickPulse) &&
+                !ClickPulseStyleParser.TryParse(clickPulse, out pulse))
+            {
+                error = $"--click-pulse must be one of: {ClickPulseStyleParser.Values}.";
+                return false;
+            }
+
             return true;
         }
         catch (ScriptExecutionException exception)

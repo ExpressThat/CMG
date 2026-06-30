@@ -57,9 +57,15 @@ public static partial class BrowserDomScripts
     public static string PromoteMessageBar() =>
         "(() => { const bar = document.getElementById('__cmg_message_bar'); if (!bar || typeof bar.showPopover !== 'function') return true; if (bar.matches(':popover-open')) bar.hidePopover(); bar.showPopover(); return true; })()";
 
-    public static string MoveDomCursor(ElementPoint point) =>
+    public static string MoveDomCursor(ElementPoint point, ClickPulseStyle? pulseStyle = null) =>
         $$"""
         (() => {
+          const promote = element => {
+            if (typeof element.showPopover === 'function') {
+              if (element.matches(':popover-open')) element.hidePopover();
+              element.showPopover();
+            }
+          };
           let cursor = document.getElementById('__cmg_virtual_cursor');
           if (!cursor) {
             cursor = document.createElement('div');
@@ -86,10 +92,8 @@ public static partial class BrowserDomScripts
           }
           cursor.style.left = '{{Invariant(point.X)}}px';
           cursor.style.top = '{{Invariant(point.Y)}}px';
-          if (typeof cursor.showPopover === 'function') {
-            if (cursor.matches(':popover-open')) cursor.hidePopover();
-            cursor.showPopover();
-          }
+          {{PulseScript(point, pulseStyle)}}
+          promote(cursor);
           return true;
         })()
         """;
@@ -99,4 +103,50 @@ public static partial class BrowserDomScripts
 
     public static string RemoveDefaultDragGhost() =>
         "(() => { const ghost = document.getElementById('__cmg_default_drag_ghost'); if (ghost?.matches?.(':popover-open')) ghost.hidePopover(); ghost?.remove(); return true; })()";
+
+    private static string PulseScript(ElementPoint point, ClickPulseStyle? pulseStyle)
+    {
+        if (pulseStyle is null)
+        {
+            return string.Empty;
+        }
+
+        return pulseStyle is ClickPulseStyle.None
+            ? "document.getElementById('__cmg_cursor_pulse')?.remove();"
+            : $$"""
+              let pulse = document.getElementById('__cmg_cursor_pulse');
+              if (!pulse) {
+                pulse = document.createElement('div');
+                pulse.id = '__cmg_cursor_pulse';
+                pulse.setAttribute('popover', 'manual');
+                pulse.style.all = 'initial';
+                pulse.style.position = 'fixed';
+                pulse.style.margin = '0';
+                pulse.style.padding = '0';
+                pulse.style.border = '0';
+                pulse.style.background = 'transparent';
+                pulse.style.pointerEvents = 'none';
+                pulse.style.zIndex = '2147483646';
+                pulse.style.overflow = 'visible';
+                document.documentElement.appendChild(pulse);
+              }
+              pulse.style.left = '{{Invariant(point.X)}}px';
+              pulse.style.top = '{{Invariant(point.Y)}}px';
+              {{PulseStyleScript(pulseStyle.Value)}}
+              promote(pulse);
+              """;
+    }
+
+    private static string PulseStyleScript(ClickPulseStyle style) =>
+        style switch
+        {
+            ClickPulseStyle.Dot =>
+                "pulse.style.width='14px';pulse.style.height='14px';pulse.style.transform='translate(-50%,-50%)';pulse.style.borderRadius='999px';pulse.style.background='#2563eb';pulse.style.boxShadow='0 0 0 4px rgba(37,99,235,.18)';pulse.innerHTML='';",
+            ClickPulseStyle.Crosshair =>
+                "pulse.style.width='38px';pulse.style.height='38px';pulse.style.transform='translate(-50%,-50%)';pulse.style.borderRadius='999px';pulse.style.background='transparent';pulse.style.boxShadow='none';pulse.innerHTML='<svg width=\"38\" height=\"38\" viewBox=\"0 0 38 38\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><circle cx=\"19\" cy=\"19\" r=\"12\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><path d=\"M19 2v10M19 26v10M2 19h10M26 19h10\" stroke=\"#dc2626\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>';",
+            ClickPulseStyle.Ripple =>
+                "pulse.style.width='46px';pulse.style.height='46px';pulse.style.transform='translate(-50%,-50%)';pulse.style.borderRadius='999px';pulse.style.background='rgba(37,99,235,.10)';pulse.style.boxShadow='0 0 0 2px rgba(37,99,235,.85),0 0 0 10px rgba(37,99,235,.18)';pulse.innerHTML='';",
+            _ =>
+                "pulse.style.width='34px';pulse.style.height='34px';pulse.style.transform='translate(-50%,-50%)';pulse.style.borderRadius='999px';pulse.style.background='transparent';pulse.style.boxShadow='0 0 0 3px #2563eb,0 0 0 7px rgba(37,99,235,.18)';pulse.innerHTML='';"
+        };
 }

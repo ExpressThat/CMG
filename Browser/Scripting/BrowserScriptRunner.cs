@@ -20,7 +20,8 @@ public sealed partial class BrowserScriptRunner
         string? baseUrl = null,
         IReadOnlyDictionary<string, string>? variables = null,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null)
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
     {
         var readResult = ReadScript(file);
         if (!readResult.Success)
@@ -28,7 +29,7 @@ public sealed partial class BrowserScriptRunner
             return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
         }
 
-        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
+        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
     }
 
     public ScriptRunResult RunText(
@@ -41,9 +42,10 @@ public sealed partial class BrowserScriptRunner
         string? baseUrl = null,
         IReadOnlyDictionary<string, string>? variables = null,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null)
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
     {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
+        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
     }
 
     private ScriptRunResult RunParsedScript(
@@ -56,7 +58,8 @@ public sealed partial class BrowserScriptRunner
         string? baseUrl,
         IReadOnlyDictionary<string, string>? variables,
         GifQuality gifQuality,
-        ScriptPointerMotionOptions? pointerMotion)
+        ScriptPointerMotionOptions? pointerMotion,
+        ClickPulseStyle clickPulse)
     {
         var importResult = ScriptImportExpander.Expand(script, Directory.GetCurrentDirectory());
         if (!importResult.Success)
@@ -97,7 +100,7 @@ public sealed partial class BrowserScriptRunner
         var output = new List<string>();
         using var recorder = gif is null
             ? null
-            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality, pointerMotion));
+            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality, pointerMotion, clickPulse));
 
         recorder?.Start(remoteDebuggingUrl);
 

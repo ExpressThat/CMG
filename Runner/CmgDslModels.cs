@@ -61,7 +61,8 @@ public sealed record CmgRunOptions(
     bool AutoLaunch = false,
     bool AutoLaunchHeadless = false,
     GifQuality GifQuality = GifQuality.Highest,
-    ScriptPointerMotionOptions? PointerMotion = null);
+    ScriptPointerMotionOptions? PointerMotion = null,
+    ClickPulseStyle ClickPulse = ClickPulseStyle.Ring);
 
 public sealed partial record CmgRunResult(
     bool Success,

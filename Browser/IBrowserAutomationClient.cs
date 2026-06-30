@@ -79,7 +79,7 @@ public interface IBrowserAutomationClient
 
     ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector);
 
-    void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point);
+    void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point, ClickPulseStyle? pulseStyle = null);
 
     void RemoveDomCursor(string remoteDebuggingUrl);
 

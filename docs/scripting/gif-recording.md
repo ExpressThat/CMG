@@ -66,6 +66,7 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerDuration=<milliseconds>`: Movement duration between pointer targets. Must be zero or greater.
 - `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
+- `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 
 The same options can be set on pointer-aware child actions. A block's options are defaults for everything inside that block, and child actions can override them for only that action.
 
@@ -102,7 +103,18 @@ Command-level defaults are available for whole-run recordings:
 
 ```powershell
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-speed slow --pointer-easing spring
-cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --click-pulse ripple
+cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --click-pulse dot
+```
+
+CMG also enables evidence-focused defaults when they make the GIF easier to understand. Click and tap actions show a visible pulse by default so the recording proves that an activation happened. Use `clickPulse=` when a script needs a different pulse style or needs to suppress the pulse for one action.
+
+```text
+gif "click evidence" clickPulse=ripple {
+  click "#save"
+  rightClick "#menu" clickPulse=crosshair
+  click "#quiet" clickPulse=none
+}
 ```
 
 ## `moveMouse`

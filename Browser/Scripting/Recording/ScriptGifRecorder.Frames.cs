@@ -21,10 +21,15 @@ public sealed partial class ScriptGifRecorder
 
     private void CapturePulseFrame()
     {
-        CaptureFrame(ScriptRecordingOptions.FrameDelayCentiseconds, pulse: true);
+        CapturePulseFrame(null);
     }
 
-    private void CaptureFrame(int delayCentiseconds, bool pulse = false)
+    private void CapturePulseFrame(BrowserScriptAction? action)
+    {
+        CaptureFrame(ScriptRecordingOptions.FrameDelayCentiseconds, PulseStyleFor(action));
+    }
+
+    private void CaptureFrame(int delayCentiseconds, ClickPulseStyle? pulseStyle = null)
     {
         if (remoteDebuggingUrl is null)
         {
@@ -32,9 +37,22 @@ public sealed partial class ScriptGifRecorder
         }
 
         devToolsClient.PromoteMessageBar(remoteDebuggingUrl);
-        devToolsClient.MoveDomCursor(remoteDebuggingUrl, pointer.Position);
+        devToolsClient.MoveDomCursor(remoteDebuggingUrl, pointer.Position, pulseStyle);
         var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar: false);
         frameSink.AddFrame(screenshot, delayCentiseconds);
+    }
+
+    private ClickPulseStyle PulseStyleFor(BrowserScriptAction? action)
+    {
+        if (action?.Options.TryGetValue("clickPulse", out var value) is true ||
+            action?.Options.TryGetValue("pulse", out value) is true)
+        {
+            return ClickPulseStyleParser.TryParse(value, out var style)
+                ? style
+                : throw new ScriptExecutionException($"{action.Name} option clickPulse= must be one of: {ClickPulseStyleParser.Values}.");
+        }
+
+        return options.ClickPulse;
     }
 
     private void TryRemoveDomCursor()

@@ -273,7 +273,7 @@ dotnet run -- --firefox browser close
 - `146-screenshot-deterministic-runner.cmgscript`: Demonstrates artifact-only animation and caret stabilization in the structured runner DSL.
 - `147-run-config.cmgscript`: Demonstrates `cmg run --config` defaults with variables, selection, project matrices, reports, traces, and retries.
 - `148-gif-quality.cmgscript`: Demonstrates GIF quality presets on recording blocks and aliases.
-- `149-gif-pointer-choreography.cmgscript`: Demonstrates GIF pointer duration, speed, easing, parent block defaults, and child drag overrides.
+- `149-gif-pointer-choreography.cmgscript`: Demonstrates GIF pointer duration, speed, easing, click pulses, parent block defaults, and child drag overrides.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

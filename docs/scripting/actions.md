@@ -389,6 +389,7 @@ Options:
 - `pointerEasing`: Optional GIF pointer movement easing. Supports `linear`, `ease-in`, `ease-out`, `ease-in-out`, and `spring`.
 - `easing`: Alias for `pointerEasing`.
 - `pointerSpeed`: Optional GIF pointer speed. Supports `slow`, `normal`, `fast`, `instant`, or a multiplier such as `1.5x`.
+- `clickPulse`: Optional GIF pulse style for click/tap/drop actions. Supports `ring`, `ripple`, `dot`, `crosshair`, or `none`.
 
 Examples:
 
@@ -977,6 +978,7 @@ Simple drag options:
 - `preDragHold`: Optional hold in milliseconds before starting the page drag.
 - `dragHold`: Optional hold in milliseconds while the drag is active before dropping.
 - `postDropHold`: Optional hold in milliseconds after the drop pulse.
+- `clickPulse`: Optional GIF drop pulse style. Supports `ring`, `ripple`, `dot`, `crosshair`, or `none`.
 
 Simple drag-and-drop does not scroll automatically. The source and target points must both already be inside the current viewport. Use `scrollIntoView` and, when needed, a large enough viewport before dragging. In GIF recordings, the virtual pointer, page drag lifecycle, and default drag ghost use the same source and target points.
 
@@ -1004,7 +1006,7 @@ Child recording options:
 
 - `hover` and `moveMouse` can set `pointerDuration=`, `pointerSpeed=`, and `pointerEasing=`.
 - `moveMouse` can also use `duration=` and `easing=` aliases.
-- `drop` can set `dropPointerDuration=` and `postDropHold=`.
+- `drop` can set `dropPointerDuration=`, `postDropHold=`, and `clickPulse=`.
 
 Rules:
 
@@ -1033,7 +1035,7 @@ dragAndDrop "[data-command='browser launch']" {
 dragAndDrop ".todo-card" pointerDuration=1200 dragHold=250 {
   hover ".lane" pointerDuration=700
   moveMouse selector=".board" edge=bottom duration=300 easing=linear
-  drop ".done-column" dropPointerDuration=450 postDropHold=800
+  drop ".done-column" dropPointerDuration=450 postDropHold=800 clickPulse=ripple
 }
 ```
 

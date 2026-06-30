@@ -90,9 +90,9 @@ public sealed partial class ChromeDevToolsClient
         });
     }
 
-    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point)
+    public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point, ClickPulseStyle? pulseStyle = null)
     {
-        Evaluate(remoteDebuggingUrl, BrowserDomScripts.MoveDomCursor(point));
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.MoveDomCursor(point, pulseStyle));
     }
 
     public void RemoveDomCursor(string remoteDebuggingUrl)

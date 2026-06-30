@@ -28,7 +28,8 @@ public interface IBrowserControlService
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null) =>
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring) =>
         RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables);
 
     ScriptRunResult RunScript(
@@ -56,5 +57,6 @@ public interface IBrowserControlService
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null);
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring);
 }

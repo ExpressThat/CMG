@@ -21,6 +21,16 @@ public sealed class RunCommandBuilderPointerMotionTests
         Assert.Equal(ScriptPointerEasing.Spring, handler.PointerMotion?.PointerEasing);
     }
 
+    [Fact]
+    public void RunCommand_MapsClickPulseOption()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --click-pulse dot").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(ClickPulseStyle.Dot, handler.ClickPulse);
+    }
+
     private static RootCommand BuildRoot(CapturingHandler handler)
     {
         var chrome = new Option<bool>("--chrome");
@@ -37,6 +47,7 @@ public sealed class RunCommandBuilderPointerMotionTests
     private sealed class CapturingHandler : ICmgRunCommandHandler
     {
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
+        public ClickPulseStyle ClickPulse { get; private set; }
 
         public int Run(
             BrowserKind browserKind,
@@ -63,9 +74,11 @@ public sealed class RunCommandBuilderPointerMotionTests
             bool autoLaunch = false,
             bool autoLaunchHeadless = false,
             GifQuality gifQuality = GifQuality.Highest,
-            ScriptPointerMotionOptions? pointerMotion = null)
+            ScriptPointerMotionOptions? pointerMotion = null,
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
         {
             PointerMotion = pointerMotion;
+            ClickPulse = clickPulse;
             return 0;
         }
     }

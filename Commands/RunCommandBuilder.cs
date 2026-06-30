@@ -50,6 +50,7 @@ public sealed partial class RunCommandBuilder
         {
             Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring."
         };
+        var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Click pulse style for --gif: ring, ripple, dot, crosshair, or none." };
         var jsonOption = new Option<FileInfo?>("--report-json")
         {
             Description = "Write a JSON test report to this file."
@@ -143,6 +144,7 @@ public sealed partial class RunCommandBuilder
             pointerDurationOption,
             pointerSpeedOption,
             pointerEasingOption,
+            clickPulseOption,
             jsonOption,
             htmlOption,
             junitOption,
@@ -194,7 +196,9 @@ public sealed partial class RunCommandBuilder
                 parseResult.GetValue(pointerDurationOption),
                 parseResult.GetValue(pointerSpeedOption),
                 parseResult.GetValue(pointerEasingOption),
+                parseResult.GetValue(clickPulseOption),
                 out var pointerMotion,
+                out var clickPulse,
                 out var motionError))
             {
                 Console.Error.WriteLine(motionError);
@@ -234,7 +238,8 @@ public sealed partial class RunCommandBuilder
                 parseResult.GetValue(autoLaunchOption),
                 parseResult.GetValue(headlessOption),
                 gifQuality,
-                pointerMotion);
+                pointerMotion,
+                clickPulse);
         });
 
         return command;

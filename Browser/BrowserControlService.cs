@@ -82,9 +82,10 @@ public sealed class BrowserControlService : IBrowserControlService
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null)
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
     {
-        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
+        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
     }
 
     public ScriptRunResult RunScript(
@@ -97,7 +98,8 @@ public sealed class BrowserControlService : IBrowserControlService
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null)
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
     {
         if (file is not "-" && !File.Exists(file))
         {
@@ -112,7 +114,7 @@ public sealed class BrowserControlService : IBrowserControlService
 
         try
         {
-            return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
+            return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
         }
         catch (System.Net.Http.HttpRequestException exception)
         {
@@ -153,7 +155,8 @@ public sealed class BrowserControlService : IBrowserControlService
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null)
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
     {
         var state = stateStore.Load(browserKind, port);
         if (state is null)
@@ -163,7 +166,7 @@ public sealed class BrowserControlService : IBrowserControlService
 
         try
         {
-            return scriptRunner.RunText(script, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
+            return scriptRunner.RunText(script, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
         }
         catch (System.Net.Http.HttpRequestException exception)
         {

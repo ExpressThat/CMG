@@ -3,7 +3,8 @@ namespace CMG.Browser.Scripting.Recording;
 public sealed record ScriptRecordingOptions(
     string OutputPath,
     GifQuality Quality = GifQuality.Highest,
-    ScriptPointerMotionOptions? PointerMotion = null)
+    ScriptPointerMotionOptions? PointerMotion = null,
+    ClickPulseStyle ClickPulse = ClickPulseStyle.Ring)
 {
     public const int FrameDelayCentiseconds = 10;
 

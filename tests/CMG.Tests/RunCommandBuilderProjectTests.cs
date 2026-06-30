@@ -101,7 +101,8 @@ public sealed class RunCommandBuilderProjectTests
             bool autoLaunch = false,
             bool autoLaunchHeadless = false,
             GifQuality gifQuality = GifQuality.Highest,
-            ScriptPointerMotionOptions? pointerMotion = null)
+            ScriptPointerMotionOptions? pointerMotion = null,
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
         {
             BrowserKind = browserKind;
             Path = path;

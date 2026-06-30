@@ -19,7 +19,7 @@ public sealed partial class ScriptGifRecorder
         MoveDragToSelector(targetSelector, action, "targetPointerDuration", "dragEasing");
         CaptureHoldFrame(action, "dragHold");
         devToolsClient.EndPageDrag(remoteDebuggingUrl, pointer.Position);
-        CapturePulseFrame();
+        CapturePulseFrame(action);
         CaptureHoldFrame(action, "postDropHold");
     }
 
@@ -38,7 +38,7 @@ public sealed partial class ScriptGifRecorder
         MovePointerTo(end, dragging: true, action, "targetPointerDuration", "dragEasing");
         CaptureHoldFrame(action, "dragHold");
         devToolsClient.EndPageDrag(remoteDebuggingUrl, pointer.Position);
-        CapturePulseFrame();
+        CapturePulseFrame(action);
         CaptureHoldFrame(action, "postDropHold");
     }
 

@@ -95,9 +95,10 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null)
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
     {
-        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
+        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
     }
 
     public int RunScript(
@@ -110,14 +111,15 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null)
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
     {
         if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
+        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
 
         return WriteScriptResult(result);
     }
@@ -132,14 +134,15 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null)
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
     {
         if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
+        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
 
         return WriteScriptResult(result);
     }

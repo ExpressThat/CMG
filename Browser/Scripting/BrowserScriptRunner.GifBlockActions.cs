@@ -18,7 +18,7 @@ public sealed partial class BrowserScriptRunner
 
         var recorder = commandRecorder ?? new ScriptGifRecorder(
             automationClient,
-            new ScriptRecordingOptions(GifBlockPath(action), GifBlockQuality(action), GifBlockMotion(action)));
+            new ScriptRecordingOptions(GifBlockPath(action), GifBlockQuality(action), GifBlockMotion(action), GifBlockPulse(action)));
         var output = new List<string>();
         if (commandRecorder is null)
         {
@@ -79,6 +79,18 @@ public sealed partial class BrowserScriptRunner
 
     private static ScriptPointerMotionOptions GifBlockMotion(BrowserScriptAction action) =>
         ScriptPointerMotionOptions.Default.WithAction(action).Validate(action.Name);
+
+    private static ClickPulseStyle GifBlockPulse(BrowserScriptAction action)
+    {
+        if (!action.Options.TryGetValue("clickPulse", out var value))
+        {
+            return ClickPulseStyle.Ring;
+        }
+
+        return ClickPulseStyleParser.TryParse(value, out var style)
+            ? style
+            : throw new ScriptExecutionException($"gif option clickPulse= must be one of: {ClickPulseStyleParser.Values}.");
+    }
 
     private static string SafeFileName(string value)
     {

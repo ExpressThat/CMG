@@ -1,3 +1,4 @@
+using CMG.Browser;
 using CMG.Browser.Scripting.Recording;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
@@ -31,6 +32,18 @@ public sealed class GifFrameSinkTests
     {
         Assert.True(GifQualityParser.TryParse(value, out var quality));
         Assert.Equal(expected, quality);
+    }
+
+    [Theory]
+    [InlineData("ring", ClickPulseStyle.Ring)]
+    [InlineData("ripple", ClickPulseStyle.Ripple)]
+    [InlineData("dot", ClickPulseStyle.Dot)]
+    [InlineData("crosshair", ClickPulseStyle.Crosshair)]
+    [InlineData("none", ClickPulseStyle.None)]
+    public void TryParse_AcceptsClickPulseStyles(string value, ClickPulseStyle expected)
+    {
+        Assert.True(ClickPulseStyleParser.TryParse(value, out var style));
+        Assert.Equal(expected, style);
     }
 
     [Fact]

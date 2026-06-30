@@ -181,7 +181,8 @@ public sealed class BrowserAppCommandBuilderTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             GifQuality gifQuality = GifQuality.Highest,
-            ScriptPointerMotionOptions? pointerMotion = null)
+            ScriptPointerMotionOptions? pointerMotion = null,
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
         {
             Port = port;
             return 0;

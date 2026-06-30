@@ -173,7 +173,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             GifQuality gifQuality = GifQuality.Highest,
-            ScriptPointerMotionOptions? pointerMotion = null)
+            ScriptPointerMotionOptions? pointerMotion = null,
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
         {
             RunScript(browserKind, file, gif, trace, timeouts);
             BaseUrl = baseUrl;
@@ -193,7 +194,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             GifQuality gifQuality = GifQuality.Highest,
-            ScriptPointerMotionOptions? pointerMotion = null) =>
+            ScriptPointerMotionOptions? pointerMotion = null,
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring) =>
             RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
 
         public int RunScriptAction(BrowserKind browserKind, string scriptLine)
@@ -212,7 +214,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
             GifQuality gifQuality = GifQuality.Highest,
-            ScriptPointerMotionOptions? pointerMotion = null)
+            ScriptPointerMotionOptions? pointerMotion = null,
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
         {
             InlineScript = script;
             Gif = gif;

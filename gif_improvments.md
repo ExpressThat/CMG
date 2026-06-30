@@ -14,6 +14,8 @@ CLI flags should exist only when they make sense as whole-run defaults, CI contr
 - If a CLI option exists, there should usually be an equivalent or more expressive DSL form.
 - `gif`, `recordVideo`, and `screencast` aliases should share every recording option unless a future output format makes a distinction necessary.
 
+Some improvements should become defaults when they make the recorded evidence clearer without requiring extra user intent. Defaults should favor showing what actually happened in a human-readable way, while still letting scripts override or disable the behavior. For example, clicks should visibly pulse by default because the GIF should prove a click happened; `clickPulse=none` or a future scoped default can opt out when a pulse would be distracting.
+
 Preferred examples:
 
 ```text
@@ -107,6 +109,7 @@ Use this table when designing each feature:
 | Quality/format/codec | yes | yes | yes | yes | rarely | no |
 | Pointer speed/duration/easing | yes | yes | yes | yes | yes | yes |
 | Holds and pauses | yes | yes | yes | yes | yes | yes |
+| Evidence defaults such as click pulse | yes | yes | yes | yes | yes | yes |
 | Caption style/position/template | yes | yes | yes | yes | yes | yes |
 | Crop/scale/viewport | yes | yes | yes | yes | rarely | no |
 | Redaction/masking | yes | yes | yes | yes | yes | sometimes |
@@ -164,7 +167,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add `preClickHold=<ms>` and `postClickHold=<ms>` at recording-block and action level. CLI: `--pointer-pre-click-hold <ms>` and `--pointer-post-click-hold <ms>`.
 - Add `preDragHold=<ms>`, `dragHold=<ms>`, and `postDropHold=<ms>` on `dragAndDrop`.
 - Add `holdAfterMove=<ms>` on `moveMouse` for demonstrations where the pointer should settle before the next action.
-- Add click pulse style options: ring, ripple, dot, crosshair, or none. CLI: `--click-pulse <style>`.
+- Add click pulse style options: ring, ripple, dot, crosshair, or none. CLI: `--click-pulse <style>`. Default should be `ring` so clicks are visible evidence unless a script disables it with `clickPulse=none`.
 - Add right-click and middle-click distinct visual pulses.
 - Add double-click pulse choreography that clearly shows two clicks.
 - Add drag trail rendering for long drags.

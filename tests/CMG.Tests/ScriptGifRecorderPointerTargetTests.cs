@@ -54,4 +54,37 @@ public sealed class ScriptGifRecorderPointerTargetTests
 
         Assert.Equal(2, client.MouseMoveCount);
     }
+
+    [Fact]
+    public void AfterAction_UsesConfiguredClickPulse()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new ScriptGifRecorder(
+            client,
+            new ScriptRecordingOptions(path, ClickPulse: ClickPulseStyle.Ripple));
+        recorder.Start("debug");
+
+        recorder.AfterAction(new BrowserScriptAction(1, "click", "click", ["#save"], new Dictionary<string, string>(), []));
+
+        Assert.Contains(ClickPulseStyle.Ripple, client.CursorPulseStyles);
+    }
+
+    [Fact]
+    public void AfterAction_ActionClickPulseOverridesRecordingDefault()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new ScriptGifRecorder(
+            client,
+            new ScriptRecordingOptions(path, ClickPulse: ClickPulseStyle.Ring));
+        recorder.Start("debug");
+
+        recorder.AfterAction(new BrowserScriptAction(1, "click", "click", ["#save"], new Dictionary<string, string>
+        {
+            ["clickPulse"] = "dot"
+        }, []));
+
+        Assert.Contains(ClickPulseStyle.Dot, client.CursorPulseStyles);
+    }
 }

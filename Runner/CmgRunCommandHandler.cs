@@ -30,7 +30,8 @@ public interface ICmgRunCommandHandler
         bool autoLaunch = false,
         bool autoLaunchHeadless = false,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null);
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring);
 }
 
 public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
@@ -67,7 +68,8 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         bool autoLaunch = false,
         bool autoLaunchHeadless = false,
         GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null)
+        ScriptPointerMotionOptions? pointerMotion = null,
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
@@ -112,7 +114,8 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             autoLaunch,
             autoLaunchHeadless,
             gifQuality,
-            pointerMotion));
+            pointerMotion,
+            clickPulse));
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);

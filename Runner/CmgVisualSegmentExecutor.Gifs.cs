@@ -1,3 +1,4 @@
+using CMG.Browser;
 using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Runner;
@@ -76,5 +77,27 @@ public sealed partial class CmgVisualSegmentExecutor
             error = exception.Message;
             return false;
         }
+    }
+
+    private static bool TryGifPulseFor(
+        CmgNode action,
+        ClickPulseStyle defaults,
+        out ClickPulseStyle pulse,
+        out string? error)
+    {
+        pulse = defaults;
+        error = null;
+        if (!action.Options.TryGetValue("clickPulse", out var value))
+        {
+            return true;
+        }
+
+        if (ClickPulseStyleParser.TryParse(value, out pulse))
+        {
+            return true;
+        }
+
+        error = $"gif clickPulse must be one of: {ClickPulseStyleParser.Values}.";
+        return false;
     }
 }

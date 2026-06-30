@@ -127,7 +127,7 @@ To choreograph pointer timing and drag evidence, run:
 cmg browser control script --file demo-scripts\149-gif-pointer-choreography.cmgscript --gif demo-output\pointer-choreography.gif --pointer-duration 500
 ```
 
-Recording blocks can set `pointerDuration=`, `pointerSpeed=`, and `pointerEasing=` as defaults. If a block has child actions, such as `dragAndDrop { ... }`, the parent options are scoped defaults and each child action can override them locally.
+Recording blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, and `clickPulse=` as defaults. If a block has child actions, such as `dragAndDrop { ... }`, the parent options are scoped defaults and each child action can override them locally.
 
 For stable screenshot evidence, mask volatile regions only in the artifact. The GIF still shows the real page and pointer choreography:
 
