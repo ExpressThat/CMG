@@ -65,6 +65,24 @@ public sealed class BrowserScriptRunnerDragOptionTests
         Assert.Contains(ClickPulseStyle.Ripple, client.CursorPulseStyles);
     }
 
+    [Fact]
+    public void RunText_BlockDragMoveMouseUsesInheritedHoldAfterMove()
+    {
+        var client = new FakeAutomationClient();
+        using var gif = new TempGifFile();
+        var result = Runner().RunText($$"""
+        gif "drag" output="{{gif.File.FullName.Replace("\\", "/")}}" pointerDuration=0 holdAfterMove=500 {
+          dragAndDrop "#source" pointerDuration=0 {
+            moveMouse "bottom"
+            drop "#target"
+          }
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.True(client.PageScreenshotCount >= 6);
+    }
+
 
     [Fact]
     public void RunText_UnrecordedBlockDragSkipsGifChoreography()

@@ -72,6 +72,7 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
 - `preClickHold=<milliseconds>`: Hold after pointer movement and before click/tap dispatch. Defaults to `0`.
 - `postClickHold=<milliseconds>`: Hold after click/tap pulse frames. Defaults to `350`. Action-level `holdAfterAction=` remains a general fallback when `postClickHold=` is not set.
+- `holdAfterMove=<milliseconds>`: Default hold after recorded `moveMouse` actions. Child `moveMouse` actions can override it locally.
 - `holdAfterNavigation=<milliseconds>`: Hold after navigation actions and navigation waits. Defaults to `350`.
 - `holdAfterAssertion=<milliseconds>`: Hold after assertion actions. Defaults to `350`.
 - `holdOnFailure=<milliseconds>`: Extra final-state hold captured only when the recording fails. Defaults to `1200`; use `0` to suppress the failure hold.
@@ -102,6 +103,7 @@ Supported `recording` / `withRecording` defaults:
 - `holdAfterAction=<milliseconds>`: Post-action hold duration.
 - `preClickHold=<milliseconds>`: Hold before click/tap dispatch after pointer movement.
 - `postClickHold=<milliseconds>`: Hold after click/tap pulse frames.
+- `holdAfterMove=<milliseconds>`: Hold after recorded `moveMouse` movement.
 - `holdAfterNavigation=<milliseconds>`: Hold after navigation actions and waits.
 - `holdAfterAssertion=<milliseconds>`: Hold after assertion actions.
 - `holdOnFailure=<milliseconds>`: Final failure-state hold for nested recording blocks.
@@ -127,6 +129,12 @@ For block actions with child actions, the parent block is a scoped override and 
 
 ```text
 moveMouse selector=".board" edge=bottom duration=300 easing=linear
+```
+
+Add `holdAfterMove=<milliseconds>` when a recorded `moveMouse` should visibly settle before the next step:
+
+```text
+moveMouse selector=".board" edge=bottom duration=300 holdAfterMove=600
 ```
 
 `dragAndDrop` supports drag-specific choreography:

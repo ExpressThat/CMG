@@ -393,13 +393,14 @@ Options:
 - `pointerSpeed`: Optional GIF pointer speed. Supports `slow`, `normal`, `fast`, `instant`, or a multiplier such as `1.5x`.
 - `clickPulse`: Optional GIF pulse style for click/tap/drop actions. Supports `ring`, `ripple`, `dot`, `crosshair`, or `none`.
 - `holdAfterAction`: Optional post-action GIF hold duration in milliseconds. Use `0` to suppress the hold for this action.
+- `holdAfterMove`: Optional GIF-only hold duration after the pointer finishes this `moveMouse` movement. Use it when the pointer should visibly settle before the next action.
 
 Examples:
 
 ```text
 moveMouse "center"
 moveMouse x=240 y=320
-moveMouse selector=".content-area" edge=bottom inset=24
+moveMouse selector=".content-area" edge=bottom inset=24 holdAfterMove=500
 ```
 
 Output:
@@ -1042,6 +1043,7 @@ Child recording options:
 
 - `hover` and `moveMouse` can set `pointerDuration=`, `pointerSpeed=`, and `pointerEasing=`.
 - `moveMouse` can also use `duration=` and `easing=` aliases.
+- `moveMouse` can set `holdAfterMove=` to keep the held pointer visibly settled after that movement.
 - `drop` can set `dropPointerDuration=`, `postDropHold=`, and `clickPulse=`.
 
 Rules:
@@ -1763,6 +1765,7 @@ Options:
 - `holdAfterAction`: Default post-action hold in milliseconds.
 - `preClickHold`: Default hold before click/tap dispatch after pointer movement.
 - `postClickHold`: Default hold after click/tap pulse frames.
+- `holdAfterMove`: Default hold after recorded `moveMouse` actions.
 - `holdAfterNavigation`: Default hold after navigation actions and waits.
 - `holdAfterAssertion`: Default hold after assertion actions.
 - `holdOnFailure`: Default final failure-state hold for nested recording blocks.
@@ -1796,6 +1799,7 @@ Options:
 - `holdAfterAction`: Optional default post-action hold in milliseconds for child actions. Defaults to `350`; child actions can override it locally with their own `holdAfterAction=`.
 - `preClickHold`: Optional default hold before click/tap dispatch after pointer movement. Defaults to `0`.
 - `postClickHold`: Optional default hold after click/tap pulse frames. Defaults to `350`.
+- `holdAfterMove`: Optional default hold after recorded `moveMouse` actions. Child `moveMouse` actions can override it locally.
 - `holdAfterNavigation`: Optional default hold after navigation actions and waits. Defaults to `350`.
 - `holdAfterAssertion`: Optional default hold after assertion actions. Defaults to `350`.
 - `holdOnFailure`: Optional final failure-state hold in milliseconds. Defaults to `1200`; use `0` to suppress the extra failure hold.

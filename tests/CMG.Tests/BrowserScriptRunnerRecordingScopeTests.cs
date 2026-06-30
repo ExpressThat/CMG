@@ -169,6 +169,22 @@ public sealed class BrowserScriptRunnerRecordingScopeTests
     }
 
     [Fact]
+    public void RecordingScope_AppliesHoldAfterMoveToMoveMouse()
+    {
+        var client = new FakeAutomationClient();
+        var gif = TempGif();
+
+        var result = Runner().RunText("""
+            recording pointerDuration=0 holdAfterMove=500 {
+              moveMouse "center"
+            }
+            """, "debug", client, gif);
+
+        Assert.True(result.Success, result.Error);
+        Assert.True(client.PageScreenshotCount >= 2);
+    }
+
+    [Fact]
     public void RecordingScope_RejectsUnknownDefaults()
     {
         var result = Runner().RunText("""

@@ -3,14 +3,14 @@
 navigate "about:blank"
 setContent "<style>html,body{margin:0;background:#ffffff;color:#111827}button{background:#ffffff;color:#111827;border:1px solid #94a3b8;border-radius:4px}</style><main style='font-family:system-ui;padding:24px'><h1>Pointer choreography</h1><section id='plans' style='display:flex;gap:16px;margin:20px 0'><button id='starter' style='padding:14px 18px'>Starter</button><button id='pro' style='padding:14px 18px'>Pro</button><button id='confirm' style='padding:14px 18px'>Confirm</button></section><section id='board' style='display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:560px'><div id='todo' style='min-height:120px;border:2px solid #94a3b8;padding:16px'><div id='card' draggable='true' style='padding:14px;background:#e0f2fe;border:1px solid #0284c7;color:#111827'>Ticket A</div></div><div id='done' style='min-height:120px;border:2px solid #16a34a;padding:16px'>Done</div></section><p id='status'>Ready</p></main><script>document.querySelectorAll('button').forEach(button => button.addEventListener('click', () => document.querySelector('#status').textContent = button.textContent + ' clicked')); const card = document.querySelector('#card'); const done = document.querySelector('#done'); card.addEventListener('dragstart', event => event.dataTransfer.setData('text/plain', 'Ticket A')); done.addEventListener('dragover', event => event.preventDefault()); done.addEventListener('drop', event => { event.preventDefault(); done.appendChild(card); document.querySelector('#status').textContent = 'Dropped'; });</script>"
 
-gif "pointer choreography" pointerDuration=650 pointerEasing=ease-in-out clickPulse=ripple preClickHold=140 postClickHold=520 holdAfterNavigation=300 holdAfterAssertion=500 holdAfterAction=600 {
+gif "pointer choreography" pointerDuration=650 pointerEasing=ease-in-out clickPulse=ripple preClickHold=140 postClickHold=520 holdAfterMove=450 holdAfterNavigation=300 holdAfterAssertion=500 holdAfterAction=600 {
   click "#starter" pointerSpeed=fast
   click "#pro" pointerDuration=250 preClickHold=0 postClickHold=250 clickPulse=dot
   pauseGif 900
 
   dragAndDrop "#card" pointerDuration=1200 dragEasing=spring dragHold=250 postDropHold=700 {
     hover "#todo" pointerDuration=400
-    moveMouse selector="#board" edge=bottom duration=300 easing=linear
+    moveMouse selector="#board" edge=bottom duration=300 easing=linear holdAfterMove=700
     drop "#done" dropPointerDuration=450 clickPulse=crosshair
   }
 

@@ -174,7 +174,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add auto pathing that avoids covering the target text or button label.
 - Implemented: add `preClickHold=<ms>` and `postClickHold=<ms>` at recording-block and action level. CLI: `--pointer-pre-click-hold <ms>` and `--pointer-post-click-hold <ms>`.
 - Add `preDragHold=<ms>`, `dragHold=<ms>`, and `postDropHold=<ms>` on `dragAndDrop`.
-- Add `holdAfterMove=<ms>` on `moveMouse` for demonstrations where the pointer should settle before the next action.
+- Implemented: add `holdAfterMove=<ms>` on `moveMouse` for demonstrations where the pointer should settle before the next action.
 - Add click pulse style options: ring, ripple, dot, crosshair, or none. CLI: `--click-pulse <style>`. Default should be `ring` so clicks are visible evidence unless a script disables it with `clickPulse=none`.
 - Add right-click and middle-click distinct visual pulses.
 - Add double-click pulse choreography that clearly shows two clicks.

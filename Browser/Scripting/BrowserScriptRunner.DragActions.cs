@@ -208,7 +208,7 @@ public sealed partial class BrowserScriptRunner
         key is "pointerDuration" or "pointerSpeed" or "pointerEasing" or
             "sourcePointerDuration" or "targetPointerDuration" or "dragEasing" or
             "preDragHold" or "dragHold" or "postDropHold" or
-            "quality" or "clickPulse" or "pulse" or "holdAfterAction" or "holdOnFailure" or
+            "quality" or "clickPulse" or "pulse" or "holdAfterAction" or "holdOnFailure" or "holdAfterMove" or
             "preClickHold" or "postClickHold" or "holdAfterNavigation" or "holdAfterAssertion" or
             "fps" or "frameDelay" or "timeline";
 

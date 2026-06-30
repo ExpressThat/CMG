@@ -66,6 +66,7 @@ public sealed partial class ScriptGifRecorder
         }
 
         MovePointerTo(ResolveMoveMouseTarget(action), dragging, action, "duration", "easing");
+        CaptureOptionalHoldFrame(action, "holdAfterMove");
     }
 
     private static IReadOnlyDictionary<string, string> SourceMoveOptions(BrowserScriptAction action)

@@ -56,6 +56,23 @@ public sealed class ScriptGifRecorderPointerTargetTests
     }
 
     [Fact]
+    public void MoveMouse_HoldAfterMoveCapturesSettleFrame()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        var motion = new ScriptPointerMotionOptions(PointerDurationMilliseconds: 0);
+        using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(path, PointerMotion: motion));
+        recorder.Start("debug");
+
+        recorder.MoveMouse(new BrowserScriptAction(1, "moveMouse", "moveMouse", ["center"], new Dictionary<string, string>
+        {
+            ["holdAfterMove"] = "500"
+        }, []), dragging: false);
+
+        Assert.Equal(2, client.PageScreenshotCount);
+    }
+
+    [Fact]
     public void AfterAction_UsesConfiguredClickPulse()
     {
         var client = new FakeAutomationClient();

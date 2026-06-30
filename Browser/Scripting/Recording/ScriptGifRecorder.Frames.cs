@@ -30,6 +30,14 @@ public sealed partial class ScriptGifRecorder
         CaptureHoldFrame(ParseHoldMilliseconds(action, value, optionName));
     }
 
+    private void CaptureOptionalHoldFrame(BrowserScriptAction action, string optionName)
+    {
+        if (action.Options.TryGetValue(optionName, out var value))
+        {
+            CaptureHoldFrame(ParseHoldMilliseconds(action, value, optionName));
+        }
+    }
+
     private void CapturePreClickHoldFrame(BrowserScriptAction action)
     {
         CaptureHoldFrame(HoldMillisecondsFor(action, "preClickHold", options.PreClickHoldMilliseconds));
