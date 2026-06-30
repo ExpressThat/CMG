@@ -31,6 +31,16 @@ public sealed class RunCommandBuilderPointerMotionTests
         Assert.Equal(ClickPulseStyle.Dot, handler.ClickPulse);
     }
 
+    [Fact]
+    public void RunCommand_MapsGifHoldAfterActionOption()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --gif-hold-after-action 750").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(750, handler.HoldAfterActionMilliseconds);
+    }
+
     private static RootCommand BuildRoot(CapturingHandler handler)
     {
         var chrome = new Option<bool>("--chrome");
@@ -48,6 +58,7 @@ public sealed class RunCommandBuilderPointerMotionTests
     {
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
         public ClickPulseStyle ClickPulse { get; private set; }
+        public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
 
         public int Run(
             BrowserKind browserKind,
@@ -75,10 +86,12 @@ public sealed class RunCommandBuilderPointerMotionTests
             bool autoLaunchHeadless = false,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
-            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
         {
             PointerMotion = pointerMotion;
             ClickPulse = clickPulse;
+            HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             return 0;
         }
     }

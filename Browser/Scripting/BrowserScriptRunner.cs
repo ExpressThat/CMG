@@ -21,7 +21,8 @@ public sealed partial class BrowserScriptRunner
         IReadOnlyDictionary<string, string>? variables = null,
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
-        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
     {
         var readResult = ReadScript(file);
         if (!readResult.Success)
@@ -29,7 +30,7 @@ public sealed partial class BrowserScriptRunner
             return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
         }
 
-        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
+        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
     }
 
     public ScriptRunResult RunText(
@@ -43,9 +44,10 @@ public sealed partial class BrowserScriptRunner
         IReadOnlyDictionary<string, string>? variables = null,
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
-        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
     {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
+        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
     }
 
     private ScriptRunResult RunParsedScript(
@@ -59,7 +61,8 @@ public sealed partial class BrowserScriptRunner
         IReadOnlyDictionary<string, string>? variables,
         GifQuality gifQuality,
         ScriptPointerMotionOptions? pointerMotion,
-        ClickPulseStyle clickPulse)
+        ClickPulseStyle clickPulse,
+        int holdAfterActionMilliseconds)
     {
         var importResult = ScriptImportExpander.Expand(script, Directory.GetCurrentDirectory());
         if (!importResult.Success)
@@ -100,7 +103,7 @@ public sealed partial class BrowserScriptRunner
         var output = new List<string>();
         using var recorder = gif is null
             ? null
-            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality, pointerMotion, clickPulse));
+            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds));
 
         recorder?.Start(remoteDebuggingUrl);
 
@@ -175,40 +178,6 @@ public sealed partial class BrowserScriptRunner
         }
     }
 
-    private static IReadOnlyList<BrowserScriptAction> CollectBranches(IReadOnlyList<BrowserScriptAction> actions, ref int index)
-    {
-            var branches = new List<BrowserScriptAction> { actions[index] };
-        while (index + 1 < actions.Count && IsConditionalBranch(actions[index + 1].Name))
-        {
-            branches.Add(actions[++index]);
-        }
-
-        return branches;
-    }
-
-    private static bool IsConditionalBranch(string name) =>
-        name.Equals("elseif", StringComparison.OrdinalIgnoreCase) ||
-        name.Equals("else", StringComparison.OrdinalIgnoreCase);
-
-    private static IReadOnlyList<BrowserScriptAction> CollectTryBranches(IReadOnlyList<BrowserScriptAction> actions, ref int index)
-    {
-        var branches = new List<BrowserScriptAction> { actions[index] };
-        while (index + 1 < actions.Count && IsTryBranch(actions[index + 1].Name))
-        {
-            branches.Add(actions[++index]);
-        }
-
-        return branches;
-    }
-
-    private static bool IsTryBranch(string name) =>
-        name.Equals("catch", StringComparison.OrdinalIgnoreCase) ||
-        name.Equals("finally", StringComparison.OrdinalIgnoreCase);
-
-    private static bool IsSwitchBranch(string name) =>
-        name.Equals("case", StringComparison.OrdinalIgnoreCase) ||
-        name.Equals("default", StringComparison.OrdinalIgnoreCase);
-
     private void ExecuteOneAction(
         string remoteDebuggingUrl,
         IBrowserAutomationClient automationClient,
@@ -228,7 +197,10 @@ public sealed partial class BrowserScriptRunner
             recorder?.BeforeAction(action);
             var sequence = context.NextSequence();
             var stepOutput = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
-            recorder?.AfterAction(action);
+            if (ShouldCaptureAfterAction(action))
+            {
+                recorder?.AfterAction(action);
+            }
             var stepLines = new List<string> { FormatStepLine("PASS", sequence, action, context, FormatActionForLog(action)) };
             stepLines.AddRange(FormatPayloadLines(stepOutput, sequence, action, context));
             output.AddRange(stepLines);

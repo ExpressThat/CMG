@@ -165,6 +165,7 @@ public sealed class RunCommandBuilderTests
         public bool AutoLaunchHeadless { get; private set; }
         public GifQuality GifQuality { get; private set; } = GifQuality.Highest;
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
+        public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
 
         public int Run(
             BrowserKind browserKind,
@@ -192,7 +193,8 @@ public sealed class RunCommandBuilderTests
             bool autoLaunchHeadless = false,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
-            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
         {
             BrowserKind = browserKind;
             Path = path;
@@ -216,6 +218,7 @@ public sealed class RunCommandBuilderTests
             AutoLaunchHeadless = autoLaunchHeadless;
             GifQuality = gifQuality;
             PointerMotion = pointerMotion;
+            HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             return 0;
         }
     }

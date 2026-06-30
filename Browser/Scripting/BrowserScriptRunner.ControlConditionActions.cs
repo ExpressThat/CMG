@@ -120,7 +120,10 @@ public sealed partial class BrowserScriptRunner
     {
         recorder?.BeforeAction(action);
         var output = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
-        recorder?.AfterAction(action);
+        if (ShouldCaptureAfterAction(action))
+        {
+            recorder?.AfterAction(action);
+        }
         return output;
     }
 

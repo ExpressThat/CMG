@@ -135,6 +135,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
 
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
 
+        public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
+
         public string? BaseUrl { get; private set; }
 
         public IReadOnlyDictionary<string, string> Variables { get; private set; } =
@@ -174,13 +176,15 @@ public sealed class BrowserControlCommandBuilderScriptTests
             IReadOnlyDictionary<string, string> variables,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
-            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
         {
             RunScript(browserKind, file, gif, trace, timeouts);
             BaseUrl = baseUrl;
             Variables = variables;
             GifQuality = gifQuality;
             PointerMotion = pointerMotion;
+            HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             return 0;
         }
 
@@ -195,8 +199,9 @@ public sealed class BrowserControlCommandBuilderScriptTests
             IReadOnlyDictionary<string, string> variables,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
-            ClickPulseStyle clickPulse = ClickPulseStyle.Ring) =>
-            RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds) =>
+            RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
 
         public int RunScriptAction(BrowserKind browserKind, string scriptLine)
         {
@@ -215,7 +220,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
             IReadOnlyDictionary<string, string> variables,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
-            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
         {
             InlineScript = script;
             Gif = gif;
@@ -225,6 +231,7 @@ public sealed class BrowserControlCommandBuilderScriptTests
             Variables = variables;
             GifQuality = gifQuality;
             PointerMotion = pointerMotion;
+            HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             return 0;
         }
 

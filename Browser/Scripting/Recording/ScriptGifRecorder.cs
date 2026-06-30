@@ -77,7 +77,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
         if (name is "click" or "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "tap" or "touchtap" or "download" or "frameclick")
         {
             CapturePulseFrame(action);
-            CaptureHoldFrame();
+            CaptureHoldFrame(action);
             return;
         }
 
@@ -86,7 +86,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
             return;
         }
 
-        CaptureHoldFrame();
+        CaptureHoldFrame(action);
     }
 
     public void CaptureTypingFrame()

@@ -95,6 +95,7 @@ public sealed class CommandHelpRoutingTests
             bool autoLaunchHeadless = false,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
-            ClickPulseStyle clickPulse = ClickPulseStyle.Ring) => throw new InvalidOperationException();
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds) => throw new InvalidOperationException();
     }
 }

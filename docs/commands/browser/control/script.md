@@ -13,6 +13,7 @@ cmg browser control script --file <path> --gif <path>
 cmg browser control script --file <path> --gif <path> --gif-quality highest
 cmg browser control script --file <path> --gif <path> --pointer-duration 600 --pointer-easing ease-in-out
 cmg browser control script --file <path> --gif <path> --click-pulse ripple
+cmg browser control script --file <path> --gif <path> --gif-hold-after-action 700
 cmg browser control script --file <path> --trace <path>
 cmg browser control script --file <path> --timeout 10000 --assertion-timeout 5000
 cmg browser control script --file <path> --base-url https://example.test/app/
@@ -33,6 +34,7 @@ cmg --firefox browser control script --file <path>
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
 - `--click-pulse <ring|ripple|dot|crosshair|none>`: Default click/tap/drop pulse style for command-level `--gif` recordings. Defaults to `ring`.
+- `--gif-hold-after-action <milliseconds>`: Default post-action hold for command-level `--gif` recordings. Defaults to `350`; use `0` to suppress automatic post-action holds.
 - `--trace <path>`: Optional output path for a CMG script trace JSON file. The trace includes step names, line numbers, stdout lines, and failure reasons.
 - `--timeout <milliseconds>`: Default timeout for timeout-capable waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions that do not set `timeout=`.
 - `--navigation-timeout <milliseconds>`: Default timeout for navigation actions and navigation waits.
@@ -69,8 +71,9 @@ cmg --firefox browser control script --file <path>
 - Script-level `gif "name" { ... }`, `recordVideo "name" { ... }`, and `screencast "name" { ... }` blocks record only the wrapped actions when `--gif` is not provided.
 - When `--gif` is provided, the whole script is recorded and nested block recordings are suppressed.
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
+- Without `--gif` or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif` are skipped instead of creating pointer frames.
 - Pointer-aware actions resolve rich locators to the same target used by browser dispatch, so pointer movement, pointer events, hover state, drag ghosts, screenshots, and captions stay aligned.
-- Whole-run pointer defaults from `--pointer-duration`, `--pointer-speed`, and `--pointer-easing` apply when `--gif` is active. DSL `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, and `pointerEasing=` as scoped defaults for child actions; child actions can override those options locally.
+- Whole-run pointer and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, and `--gif-hold-after-action` apply when `--gif` is active. DSL `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, and `holdAfterAction=` as scoped defaults for child actions; child actions can override those options locally.
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.
 
 ## Trace Behavior
@@ -94,6 +97,7 @@ SCREENSHOT 006 C:\Projects\CMG\profile-dialog.png
 PASS 007 line=7 action=evaluate document.title
 EVALUATE 007 CMG Browser Control Test Page
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
+GIF_PAUSE 008 milliseconds=800 status=captured
 TRACE C:\Projects\CMG\demo-output\dialog-flow.trace.json
 SKIP 007 Feature flag disabled
 ```
@@ -140,7 +144,7 @@ Run a script with initial variables:
 cmg browser control script --file demo-scripts\139-cli-variables.cmgscript --var user=Ada
 cmg browser control script --file demo-scripts\141-base-url.cmgscript --base-url https://example.test/app/
 cmg browser control script --file demo-scripts\148-gif-quality.cmgscript --gif demo-output\quality.gif --gif-quality highest
-cmg browser control script --file demo-scripts\149-gif-pointer-choreography.cmgscript --gif demo-output\pointer-choreography.gif --pointer-duration 500
+cmg browser control script --file demo-scripts\149-gif-pointer-choreography.cmgscript --gif demo-output\pointer-choreography.gif --pointer-duration 500 --gif-hold-after-action 700
 cmg browser control script --inline "listConsole level=error"
 ```
 

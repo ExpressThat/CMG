@@ -67,6 +67,7 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
+- `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
 
 The same options can be set on pointer-aware child actions. A block's options are defaults for everything inside that block, and child actions can override them for only that action.
 
@@ -104,7 +105,8 @@ Command-level defaults are available for whole-run recordings:
 ```powershell
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-speed slow --pointer-easing spring
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --click-pulse ripple
-cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --click-pulse dot
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-hold-after-action 700
+cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --click-pulse dot --gif-hold-after-action 700
 ```
 
 CMG also enables evidence-focused defaults when they make the GIF easier to understand. Click and tap actions show a visible pulse by default so the recording proves that an activation happened. Use `clickPulse=` when a script needs a different pulse style or needs to suppress the pulse for one action.
@@ -116,6 +118,18 @@ gif "click evidence" clickPulse=ripple {
   click "#quiet" clickPulse=none
 }
 ```
+
+Use `pauseGif <milliseconds>` to add a recording-only hold without sleeping the browser or changing page state:
+
+```text
+gif "checkout evidence" holdAfterAction=600 {
+  click "#pay"
+  pauseGif 1200
+  expectText "#status" "Paid"
+}
+```
+
+`pauseGif` captures a timed frame only when GIF recording is active. Without `--gif` or an active `gif` / `recordVideo` / `screencast` block, it is a no-op and reports `GIF_PAUSE <line> milliseconds=<value> status=skipped`. It does not create or move the virtual pointer outside GIF recording.
 
 ## `moveMouse`
 

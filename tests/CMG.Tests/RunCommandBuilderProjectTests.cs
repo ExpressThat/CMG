@@ -102,7 +102,8 @@ public sealed class RunCommandBuilderProjectTests
             bool autoLaunchHeadless = false,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
-            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
         {
             BrowserKind = browserKind;
             Path = path;

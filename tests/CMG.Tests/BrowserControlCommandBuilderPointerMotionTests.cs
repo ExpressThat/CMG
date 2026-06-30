@@ -33,6 +33,17 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void ScriptCommand_MapsGifHoldAfterActionOption()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --gif-hold-after-action 900").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(900, handler.HoldAfterActionMilliseconds);
+    }
+
+    [Fact]
     public void ScriptCommand_RejectsInvalidPointerEasing()
     {
         var handler = new CapturingHandler();
@@ -61,6 +72,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
         public string? File { get; private set; }
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
         public ClickPulseStyle ClickPulse { get; private set; }
+        public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
         public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output) => 0;
         public int RunScript(BrowserKind browserKind, string file, FileInfo? gif) => 0;
         public int RunScriptAction(BrowserKind browserKind, string scriptLine) => 0;
@@ -77,11 +89,13 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             IReadOnlyDictionary<string, string> variables,
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
-            ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
+            ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
         {
             File = file;
             PointerMotion = pointerMotion;
             ClickPulse = clickPulse;
+            HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             return 0;
         }
     }

@@ -55,6 +55,7 @@ public sealed partial class BrowserScriptRunner
             "setdefaulttimeout" or "setdefaultnavigationtimeout" or "setdefaultassertiontimeout" or "setdefaultexpecttimeout" =>
                 ExecuteTimeoutDefaultAction(action, context),
             "delay" => ExecuteDelay(action),
+            "pausegif" => ExecutePauseGif(action, recorder),
             "html" => ExecuteHtml(remoteDebuggingUrl, automationClient, action),
             "textcontent" or "innertext" or "inputvalue" or "getattribute" or "computedstyle" or "property" or
             "count" or "locatorcount" or "boundingbox" or "alltextcontents" or "allinnertexts" =>

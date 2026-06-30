@@ -100,4 +100,25 @@ public sealed partial class CmgVisualSegmentExecutor
         error = $"gif clickPulse must be one of: {ClickPulseStyleParser.Values}.";
         return false;
     }
+
+    private static bool TryGifHoldFor(CmgNode action, int defaults, out int hold, out string? error)
+    {
+        hold = defaults;
+        error = null;
+        if (!action.Options.TryGetValue("holdAfterAction", out var value))
+        {
+            return true;
+        }
+
+        try
+        {
+            hold = ScriptPointerMotionOptions.ParseDuration(value, "gif option holdAfterAction=");
+            return true;
+        }
+        catch (CMG.Browser.Scripting.ScriptExecutionException exception)
+        {
+            error = exception.Message;
+            return false;
+        }
+    }
 }

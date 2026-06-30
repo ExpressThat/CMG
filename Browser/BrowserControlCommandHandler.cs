@@ -96,9 +96,10 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
-        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
     {
-        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
+        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
     }
 
     public int RunScript(
@@ -112,14 +113,15 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
-        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
     {
         if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
+        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
 
         return WriteScriptResult(result);
     }
@@ -135,14 +137,15 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         IReadOnlyDictionary<string, string> variables,
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
-        ClickPulseStyle clickPulse = ClickPulseStyle.Ring)
+        ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
     {
         if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse);
+        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
 
         return WriteScriptResult(result);
     }

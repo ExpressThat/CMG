@@ -87,6 +87,10 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Default click pulse style for --gif recordings: ring, ripple, dot, crosshair, or none."
         };
+        var holdAfterActionOption = new Option<int?>("--gif-hold-after-action")
+        {
+            Description = "Default post-action hold in milliseconds for --gif recordings."
+        };
         var traceOption = new Option<FileInfo?>("--trace")
         {
             Description = "Write a CMG script trace JSON file for the run."
@@ -126,6 +130,7 @@ public sealed partial class BrowserControlCommandBuilder
             pointerSpeedOption,
             pointerEasingOption,
             clickPulseOption,
+            holdAfterActionOption,
             traceOption,
             timeoutOption,
             navigationTimeoutOption,
@@ -162,6 +167,11 @@ public sealed partial class BrowserControlCommandBuilder
                 Console.Error.WriteLine(motionError);
                 return 1;
             }
+            if (!GifTimingOptionParser.TryParseHoldAfterAction(parseResult.GetValue(holdAfterActionOption), out var holdAfterAction, out var holdError))
+            {
+                Console.Error.WriteLine(holdError);
+                return 1;
+            }
 
             var trace = parseResult.GetValue(traceOption);
             var timeouts = new ScriptTimeoutOptions(
@@ -179,8 +189,8 @@ public sealed partial class BrowserControlCommandBuilder
             var browserKind = CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions);
             var port = CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions);
             return inline is null
-                ? browserControlCommandHandler.RunScript(browserKind, port, file, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse)
-                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse);
+                ? browserControlCommandHandler.RunScript(browserKind, port, file, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse, holdAfterAction)
+                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse, holdAfterAction);
         });
 
         return command;

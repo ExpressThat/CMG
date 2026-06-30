@@ -5,7 +5,18 @@ public sealed partial class ScriptGifRecorder
 {
     private void CaptureHoldFrame()
     {
-        CaptureFrame(ScriptRecordingOptions.HoldFrameDelayCentiseconds);
+        CaptureHoldFrame(options.HoldAfterActionMilliseconds);
+    }
+
+    private void CaptureHoldFrame(BrowserScriptAction action)
+    {
+        if (!action.Options.TryGetValue("holdAfterAction", out var value))
+        {
+            CaptureHoldFrame();
+            return;
+        }
+
+        CaptureHoldFrame(ParseHoldMilliseconds(action, value, "holdAfterAction"));
     }
 
     private void CaptureHoldFrame(BrowserScriptAction action, string optionName)
@@ -16,8 +27,31 @@ public sealed partial class ScriptGifRecorder
             return;
         }
 
-        CaptureFrame(Math.Max(1, ScriptPointerMotionOptions.ParseDuration(value, $"{action.Name} option {optionName}=") / 10));
+        CaptureHoldFrame(ParseHoldMilliseconds(action, value, optionName));
     }
+
+    public void Pause(BrowserScriptAction action)
+    {
+        if (action.Arguments.Count is not 1)
+        {
+            throw new ScriptExecutionException("pauseGif requires milliseconds.");
+        }
+
+        CaptureHoldFrame(ParseHoldMilliseconds(action, action.Arguments[0], "milliseconds"));
+    }
+
+    private void CaptureHoldFrame(int milliseconds)
+    {
+        if (milliseconds <= 0)
+        {
+            return;
+        }
+
+        CaptureFrame(Math.Max(1, (milliseconds + 9) / 10));
+    }
+
+    private static int ParseHoldMilliseconds(BrowserScriptAction action, string value, string optionName) =>
+        ScriptPointerMotionOptions.ParseDuration(value, $"{action.Name} option {optionName}=");
 
     private void CapturePulseFrame()
     {

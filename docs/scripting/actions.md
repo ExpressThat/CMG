@@ -200,6 +200,8 @@ Options:
 - `delay`: Optional milliseconds between repeated clicks. Must be zero or greater.
 - `modifiers`: Optional comma- or plus-separated modifiers: `Alt`, `Control`, `Meta`, and `Shift`.
 - `x` / `y`: Optional offsets inside the target element. Defaults to the element center. GIF recordings move the virtual pointer to the same offset.
+- `holdAfterAction`: Optional post-action GIF hold duration in milliseconds. Use `0` to suppress the hold for this click.
+- `clickPulse`: Optional GIF pulse style: `ring`, `ripple`, `dot`, `crosshair`, or `none`.
 
 Example:
 
@@ -390,6 +392,7 @@ Options:
 - `easing`: Alias for `pointerEasing`.
 - `pointerSpeed`: Optional GIF pointer speed. Supports `slow`, `normal`, `fast`, `instant`, or a multiplier such as `1.5x`.
 - `clickPulse`: Optional GIF pulse style for click/tap/drop actions. Supports `ring`, `ripple`, `dot`, `crosshair`, or `none`.
+- `holdAfterAction`: Optional post-action GIF hold duration in milliseconds. Use `0` to suppress the hold for this action.
 
 Examples:
 
@@ -533,6 +536,19 @@ delay 1000
 ```
 
 Pauses execution for the specified number of milliseconds.
+
+## `pauseGif`
+
+```text
+pauseGif 1000
+```
+
+Adds a recording-only hold frame for the specified number of milliseconds. `pauseGif` does not sleep the browser, does not change page state, and does not create or move the virtual pointer unless GIF recording is active.
+
+Output:
+
+- `GIF_PAUSE <line> milliseconds=<value> status=captured` when a GIF recorder is active.
+- `GIF_PAUSE <line> milliseconds=<value> status=skipped` when the script or test is running without command-level `--gif` and outside any `gif`, `recordVideo`, or `screencast` block.
 
 ## `html`
 
@@ -1721,6 +1737,7 @@ Options:
 
 - `output`: Optional GIF path for direct browser-control scripts. Without `output`, CMG writes `<name>.gif` in the current directory.
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
+- `holdAfterAction`: Optional default post-action hold in milliseconds for child actions. Defaults to `350`; child actions can override it locally with their own `holdAfterAction=`.
 
 Output:
 

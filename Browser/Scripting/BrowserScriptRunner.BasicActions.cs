@@ -162,6 +162,15 @@ public sealed partial class BrowserScriptRunner
         return [];
     }
 
+    private static IReadOnlyList<string> ExecutePauseGif(BrowserScriptAction action, ScriptGifRecorder? recorder)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var milliseconds = ParsePositiveInt(action.Arguments[0], "pauseGif");
+        recorder?.Pause(action);
+        var status = recorder is null ? "skipped" : "captured";
+        return [$"GIF_PAUSE {action.LineNumber:000} milliseconds={milliseconds} status={status}"];
+    }
+
     private static IReadOnlyList<string> ExecuteFail(BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, int.MaxValue);

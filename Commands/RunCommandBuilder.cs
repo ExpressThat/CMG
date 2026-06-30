@@ -20,14 +20,8 @@ public sealed partial class RunCommandBuilder
         {
             Description = "A CMG script file or folder containing .cmgscript files."
         };
-        var configOption = new Option<FileInfo?>("--config")
-        {
-            Description = "JSON run config file. CLI options override config values."
-        };
-        var projectOption = new Option<string?>("--project")
-        {
-            Description = "Named project from the run config."
-        };
+        var configOption = new Option<FileInfo?>("--config") { Description = "JSON run config file. CLI options override config values." };
+        var projectOption = new Option<string?>("--project") { Description = "Named project from the run config." };
         var gifOption = new Option<DirectoryInfo?>("--gif")
         {
             Description = "Write per-test GIF recordings to this directory."
@@ -51,30 +45,13 @@ public sealed partial class RunCommandBuilder
             Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring."
         };
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Click pulse style for --gif: ring, ripple, dot, crosshair, or none." };
-        var jsonOption = new Option<FileInfo?>("--report-json")
-        {
-            Description = "Write a JSON test report to this file."
-        };
-        var htmlOption = new Option<FileInfo?>("--report-html")
-        {
-            Description = "Write an HTML test report to this file."
-        };
-        var junitOption = new Option<FileInfo?>("--report-junit")
-        {
-            Description = "Write a JUnit XML test report to this file."
-        };
-        var traceOption = new Option<DirectoryInfo?>("--trace")
-        {
-            Description = "Write per-test trace JSON files to this directory."
-        };
-        var grepOption = new Option<string?>("--grep")
-        {
-            Description = "Run tests whose names contain this text."
-        };
-        var tagOption = new Option<string?>("--tag")
-        {
-            Description = "Run tests with a matching tag option."
-        };
+        var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
+        var jsonOption = new Option<FileInfo?>("--report-json") { Description = "Write a JSON test report to this file." };
+        var htmlOption = new Option<FileInfo?>("--report-html") { Description = "Write an HTML test report to this file." };
+        var junitOption = new Option<FileInfo?>("--report-junit") { Description = "Write a JUnit XML test report to this file." };
+        var traceOption = new Option<DirectoryInfo?>("--trace") { Description = "Write per-test trace JSON files to this directory." };
+        var grepOption = new Option<string?>("--grep") { Description = "Run tests whose names contain this text." };
+        var tagOption = new Option<string?>("--tag") { Description = "Run tests with a matching tag option." };
         var retriesOption = new Option<int>("--retries")
         {
             Description = "Retry failed tests this many times.",
@@ -145,6 +122,7 @@ public sealed partial class RunCommandBuilder
             pointerSpeedOption,
             pointerEasingOption,
             clickPulseOption,
+            holdAfterActionOption,
             jsonOption,
             htmlOption,
             junitOption,
@@ -204,6 +182,11 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(motionError);
                 return 1;
             }
+            if (!GifTimingOptionParser.TryParseHoldAfterAction(parseResult.GetValue(holdAfterActionOption), out var holdAfterAction, out var holdError))
+            {
+                Console.Error.WriteLine(holdError);
+                return 1;
+            }
             variables = MergeVariables(MergeVariables(config.Variables, project?.Variables), variables);
             var projectBrowser = BrowserKindFor(project?.Browser);
             if (projectBrowser is BrowserKind.InvalidSelection)
@@ -239,7 +222,8 @@ public sealed partial class RunCommandBuilder
                 parseResult.GetValue(headlessOption),
                 gifQuality,
                 pointerMotion,
-                clickPulse);
+                clickPulse,
+                holdAfterAction);
         });
 
         return command;

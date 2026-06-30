@@ -87,4 +87,33 @@ public sealed class ScriptGifRecorderPointerTargetTests
 
         Assert.Contains(ClickPulseStyle.Dot, client.CursorPulseStyles);
     }
+
+    [Fact]
+    public void AfterAction_ActionHoldZeroSkipsPostActionHold()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(path));
+        recorder.Start("debug");
+
+        recorder.AfterAction(new BrowserScriptAction(1, "click", "click", ["#save"], new Dictionary<string, string>
+        {
+            ["holdAfterAction"] = "0"
+        }, []));
+
+        Assert.Equal(1, client.PageScreenshotCount);
+    }
+
+    [Fact]
+    public void PauseGif_CapturesOneRecordingFrame()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(path));
+        recorder.Start("debug");
+
+        recorder.Pause(new BrowserScriptAction(1, "pauseGif", "pauseGif", ["500"], new Dictionary<string, string>(), []));
+
+        Assert.Equal(1, client.PageScreenshotCount);
+    }
 }

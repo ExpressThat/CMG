@@ -1,0 +1,34 @@
+using CMG.Browser.Scripting;
+
+namespace CMG.Tests;
+
+public sealed class BrowserScriptRunnerGifPauseTests
+{
+    [Fact]
+    public void PauseGif_WithoutRecorder_DoesNotCapturePointerFrame()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("pauseGif 500", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(0, client.PageScreenshotCount);
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_PAUSE 001 milliseconds=500 status=skipped", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void PauseGif_InsideGifBlock_CapturesOnlyPauseFrame()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif").Replace("\\", "/");
+        var result = Runner().RunText($$"""
+            gif "pause" output="{{path}}" {
+              pauseGif 500
+            }
+            """, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(1, client.PageScreenshotCount);
+    }
+
+    private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
+}
