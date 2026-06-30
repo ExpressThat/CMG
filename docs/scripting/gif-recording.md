@@ -75,6 +75,30 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 
 The same options can be set on pointer-aware child actions. A block's options are defaults for everything inside that block, and child actions can override them for only that action.
 
+Use `recording { ... }` or `withRecording { ... }` to set scoped recording defaults without starting a recording by itself. The scope inherits through macros, loops, `try` / `catch` / `finally`, `within`, frame blocks, nested `gif` / `recordVideo` / `screencast` blocks, and command-level `--gif` runs. It still follows CMG's virtual pointer rule: without `--gif` or a nested recording block, no virtual pointer is injected and recording-only actions skip.
+
+```text
+recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfterAction=500 {
+  gif "checkout evidence" {
+    click "#plan-pro"
+    click "#continue" pointerDuration=700 clickPulse=ripple
+  }
+}
+```
+
+Supported `recording` / `withRecording` defaults:
+
+- `quality=<highest|high|medium|low>`: Default for nested recording blocks that create their own artifact.
+- `pointerDuration=<milliseconds>`: Movement duration between pointer targets.
+- `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
+- `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
+- `clickPulse=<ring|ripple|dot|crosshair|none>` or `pulse=<...>`: Click/tap/drop pulse style.
+- `holdAfterAction=<milliseconds>`: Post-action hold duration.
+- `holdOnFailure=<milliseconds>`: Final failure-state hold for nested recording blocks.
+- `timeline=<true|false|file|directory>`: Default timeline behavior for nested recording blocks.
+
+Action and nested block options override the surrounding `recording` defaults for that child only.
+
 ```text
 gif "board evidence" pointerDuration=500 pointerEasing=ease-in-out {
   dragAndDrop ".todo-card" pointerDuration=1200 dragHold=250 {

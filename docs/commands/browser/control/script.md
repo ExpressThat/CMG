@@ -59,7 +59,7 @@ cmg --firefox browser control script --file <path>
 - Writes validation, parse, browser, and action errors to stderr.
 - Supports line-level `import "path"` statements. Relative imports resolve from the script file's directory.
 - Supports the shared CMG action surface documented in the [action index](../../../scripting/action-index.md) and [action reference](../../../scripting/actions.md).
-- Supports control flow, scoped variables, `set` block capture, macros, loops, `try`/`catch`/`finally`, `within`, frame blocks, `step`, and `gif` blocks.
+- Supports control flow, scoped variables, `set` block capture, macros, loops, `try`/`catch`/`finally`, `within`, frame blocks, `step`, `recording` / `withRecording` scoped defaults, and `gif` blocks.
 - Relative navigation targets are resolved against `--base-url` before the browser is asked to navigate.
 - Initial `--var` and `--env` values are available as `${name}` before the first action, macro call, condition, or `set` block runs.
 - `set` is a script action for scoped variables and command-result capture. It is intentionally not a CLI command because it only has meaning inside a script scope.
@@ -77,7 +77,7 @@ cmg --firefox browser control script --file <path>
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
 - Without `--gif` or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif`, `moveMouse`, and `recordCheckpoint` are skipped instead of creating pointer frames or timeline entries.
 - Pointer-aware actions resolve rich locators to the same target used by browser dispatch, so pointer movement, pointer events, hover state, drag ghosts, screenshots, and captions stay aligned.
-- Whole-run pointer and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--gif-hold-after-action`, and `--gif-hold-on-failure` apply when `--gif` is active. DSL `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `holdAfterAction=`, and `holdOnFailure=` as scoped defaults for child actions; child actions can override action options locally.
+- Whole-run pointer and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--gif-hold-after-action`, and `--gif-hold-on-failure` apply when `--gif` is active. DSL `recording` / `withRecording`, `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `clickPulse=`, `holdAfterAction=`, and `holdOnFailure=` as scoped defaults for child actions; child actions can override action options locally.
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.
 - On failure, command-level GIF recording captures one extra final-state hold frame before writing the partial GIF unless `--gif-hold-on-failure 0` is used.
 - `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, and recorder timing settings.

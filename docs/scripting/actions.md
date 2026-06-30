@@ -1734,6 +1734,35 @@ step "Open dialog" {
 
 Adds a visible caption before running the wrapped actions. This works in direct browser-control scripts and `cmg run`, including nested blocks, macros, imports, `try`/`catch`, loops, `gif` blocks, and scoped selectors. In GIF mode, the caption appears in the recording before the wrapped visual actions run. If a child action fails, the failure keeps the child's line number and action name so agent callers can see the precise cause.
 
+### `recording` And `withRecording`
+
+```text
+recording pointerDuration=300 clickPulse=dot holdAfterAction=500 {
+  click "#save"
+}
+
+withRecording pointerSpeed=slow {
+  gif "focused evidence" {
+    click "#pay"
+  }
+}
+```
+
+Sets scoped GIF recording defaults without starting a recording by itself. The virtual pointer is still injected only when command-level `--gif` is active or a nested `gif`, `recordVideo`, or `screencast` block creates a recording. Without an active recorder, recording-only actions inside the scope still skip with their normal `GIF_* ... reason=no-active-recording` lines.
+
+The scope inherits through nested macros, loops, `try` / `catch` / `finally`, `within`, frame blocks, and nested recording blocks. Child action options override the scoped defaults locally.
+
+Options:
+
+- `quality`: Default quality for nested recording blocks that create their own artifact.
+- `pointerDuration`: Default pointer movement duration in milliseconds.
+- `pointerSpeed`: Default pointer speed: `slow`, `normal`, `fast`, `instant`, or a multiplier such as `1.5x`.
+- `pointerEasing`: Default easing: `linear`, `ease-in`, `ease-out`, `ease-in-out`, or `spring`.
+- `clickPulse` / `pulse`: Default click/tap/drop pulse style: `ring`, `ripple`, `dot`, `crosshair`, or `none`.
+- `holdAfterAction`: Default post-action hold in milliseconds.
+- `holdOnFailure`: Default final failure-state hold for nested recording blocks.
+- `timeline`: Default timeline JSON sidecar behavior for nested recording blocks.
+
 ### `gif`, `recordVideo`, And `screencast`
 
 ```text

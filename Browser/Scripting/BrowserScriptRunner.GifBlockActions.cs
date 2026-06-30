@@ -35,11 +35,12 @@ public sealed partial class BrowserScriptRunner
         {
             foreach (var child in action.Children)
             {
-                recorder.BeforeAction(child);
-                var lines = ExecuteAction(remoteDebuggingUrl, automationClient, child, context, recorder);
-                if (ShouldCaptureAfterAction(child))
+                var prepared = PrepareActionForDispatch(child, context);
+                recorder.BeforeAction(prepared);
+                var lines = ExecuteAction(remoteDebuggingUrl, automationClient, prepared, context, recorder);
+                if (ShouldCaptureAfterAction(prepared))
                 {
-                    recorder.AfterAction(child);
+                    recorder.AfterAction(prepared);
                 }
                 output.AddRange(lines);
             }

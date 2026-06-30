@@ -62,4 +62,20 @@ public sealed class CmgActionLowererControlTests
 
         Assert.Equal(expected, line);
     }
+
+    [Theory]
+    [InlineData("recording")]
+    [InlineData("withRecording")]
+    public void Lower_RecordingBlocksPreserveChildrenAndOptions(string name)
+    {
+        var node = new CmgNode(1, name, name, [], new Dictionary<string, string> { ["pointerDuration"] = "200" }, [
+            new CmgNode(2, "hover", "hover", ["#save"], new Dictionary<string, string>(), [])
+        ]);
+
+        var lines = new CmgActionLowerer().Lower(node);
+
+        Assert.Equal($"{name} pointerDuration=\"200\" {{", lines[0]);
+        Assert.Equal("hover \"#save\"", lines[^2]);
+        Assert.Equal("}", lines[^1]);
+    }
 }

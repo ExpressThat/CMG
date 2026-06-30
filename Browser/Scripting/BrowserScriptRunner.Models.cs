@@ -37,6 +37,7 @@ internal sealed class ScriptExecutionContext
     private readonly List<string> selectorScopes = [];
     private readonly List<string> frameScopes = [];
     private readonly List<string> contextScopes = [];
+    private readonly List<IReadOnlyDictionary<string, string>> recordingDefaultScopes = [];
 
     public Dictionary<string, ScriptMacro> Macros { get; } = new(StringComparer.OrdinalIgnoreCase);
 
@@ -61,6 +62,28 @@ internal sealed class ScriptExecutionContext
     public string? CurrentFrameScope => frameScopes.Count is 0 ? null : frameScopes[^1];
 
     public string CurrentContext => contextScopes.Count is 0 ? string.Empty : string.Join(" > ", contextScopes);
+
+    public IReadOnlyDictionary<string, string> CurrentRecordingDefaults
+    {
+        get
+        {
+            if (recordingDefaultScopes.Count is 0)
+            {
+                return EmptyRecordingDefaults;
+            }
+
+            var merged = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var scope in recordingDefaultScopes)
+            {
+                foreach (var option in scope)
+                {
+                    merged[option.Key] = option.Value;
+                }
+            }
+
+            return merged;
+        }
+    }
 
     public int NextSequence() => ++StepSequence;
 
@@ -154,6 +177,22 @@ internal sealed class ScriptExecutionContext
             contextScopes.RemoveAt(contextScopes.Count - 1);
         }
     }
+
+    public void PushRecordingDefaults(IReadOnlyDictionary<string, string> options, Action body)
+    {
+        recordingDefaultScopes.Add(options);
+        try
+        {
+            body();
+        }
+        finally
+        {
+            recordingDefaultScopes.RemoveAt(recordingDefaultScopes.Count - 1);
+        }
+    }
+
+    private static readonly IReadOnlyDictionary<string, string> EmptyRecordingDefaults =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 }
 
 internal sealed record ScriptMacro(BrowserScriptAction Action, int DefinitionScopeIndex);
@@ -171,46 +210,5 @@ internal sealed record ScriptReadResult(bool Success, string? Script, string? Er
 {
     public static ScriptReadResult Ok(string script) => new(true, script, null);
 
-    public static ScriptReadResult Fail(string error) => new(false, null, error);
-}
-
-public sealed class ScriptExecutionException : Exception
-{
-    public ScriptExecutionException(string message)
-        : base(message)
-    {
-    }
-}
-
-internal sealed class ScriptActionFailedException : Exception
-{
-    public ScriptActionFailedException(string message)
-        : base(message)
-    {
-    }
-}
-
-internal sealed class LoopControlException : Exception
-{
-    public LoopControlException(string kind)
-        : base(kind)
-    {
-        Kind = kind;
-    }
-
-    public string Kind { get; }
-}
-
-internal sealed class ScriptSkipException : Exception
-{
-    public ScriptSkipException(int lineNumber, string reason)
-        : base(reason)
-    {
-        LineNumber = lineNumber;
-        Reason = reason;
-    }
-
-    public int LineNumber { get; }
-
-    public string Reason { get; }
+public static ScriptReadResult Fail(string error) => new(false, null, error);
 }

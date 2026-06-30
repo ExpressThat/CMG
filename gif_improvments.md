@@ -272,10 +272,10 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 ## Script And DSL Controls
 
 - Add recording options to `gif`, `recordVideo`, and `screencast`: `quality=`, `fps=`, `pointerSpeed=`, `captionStyle=`, `crop=`, `scale=`.
-- Add `recording { ... }` block for shared recording settings and make it inherit through nested macros, loops, `try/catch`, `within`, and frame scopes.
+- Implemented: add `recording { ... }` block for shared recording settings and make it inherit through nested macros, loops, `try/catch`, `within`, frame scopes, nested recording blocks, and command-level `--gif` action choreography.
 - Add `setRecording quality=highest pointerSpeed=normal` action.
-- Add scoped recording settings that restore after the block.
-- Add `withRecording quality=highest pointerDuration=500 { ... }` as a readable alias if `recording { ... }` feels too much like it must record by itself.
+- Implemented: add scoped recording settings that restore after the block.
+- Implemented: add `withRecording quality=highest pointerDuration=500 { ... }` as a readable alias if `recording { ... }` feels too much like it must record by itself.
 - Add `recordingDefaults { ... }` or config-level defaults for teams that want every script in a folder to share a house style.
 - Add action-level recording overrides consistently:
   - `click "#save" pointerDuration=250 clickPulse=ripple`

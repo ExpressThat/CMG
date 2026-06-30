@@ -231,6 +231,7 @@ public sealed partial class BrowserScriptRunner
         var prepared = ShouldExpandBeforeDispatch(action.Name) ? ExpandVariables(action, context) : action;
         prepared = ApplySelectorScope(prepared, context);
         prepared = ApplyFrameScope(prepared, context);
+        prepared = ApplyRecordingDefaults(prepared, context);
         return ApplyTimeoutDefaults(prepared, context);
     }
 }

@@ -1,0 +1,10 @@
+test "runner recording scope" {
+  navigate "about:blank"
+  setContent "<main style='font-family:system-ui;padding:24px'><h1>Runner recording scope</h1><button id='save' style='padding:14px 18px'>Save</button><p id='status'>Ready</p></main><script>document.querySelector('#save').addEventListener('click',()=>document.querySelector('#status').textContent='Saved');</script>"
+
+  recording pointerDuration=300 clickPulse=dot holdAfterAction=500 {
+    caption "Scoped defaults apply to command-level GIF recording"
+    click "#save"
+    expectText "#status" "Saved"
+  }
+}

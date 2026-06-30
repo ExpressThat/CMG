@@ -31,6 +31,10 @@ public sealed partial class BrowserScriptRunner
             case "framelocator":
                 ExecuteFrameBlock(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
+            case "recording":
+            case "withrecording":
+                ExecuteRecordingScope(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
             case "if":
                 ExecuteIf(remoteDebuggingUrl, automationClient, [action], context, recorder, output);
                 return output;
@@ -109,6 +113,8 @@ public sealed partial class BrowserScriptRunner
         name.Equals("within", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("frame", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("frameLocator", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("recording", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("withRecording", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("if", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("elseif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("else", StringComparison.OrdinalIgnoreCase) ||
