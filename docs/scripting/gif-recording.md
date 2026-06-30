@@ -241,6 +241,8 @@ Use this file when reports, CI artifacts, or agent feedback need machine-readabl
 
 Use `cmg gif inspect <file>` when an agent needs to inspect an existing GIF artifact without rerunning the browser flow. It reports frame count, duration, dimensions, file size, transparency, repeat metadata, and palette color pressure as a parseable `GIF_INSPECT` line.
 
+Use `cmg gif storyboard <file> --output <png>` when a reviewer or agent needs a still-image overview of a GIF. It samples frames into a PNG contact sheet and emits `GIF_STORYBOARD input="<gif>" output="<png>" frames=<exported>/<total> columns=<count> width=<pixels> height=<pixels>`.
+
 Use `cmg run --gif-warn-size <size>` when CI or agents should flag unexpectedly large visual artifacts. The runner emits `GIF_WARN_SIZE test="<name>" path="<gif>" sizeBytes=<bytes> thresholdBytes=<bytes>` after the relevant test result line, and the warning does not fail the run.
 
 Palette pressure diagnostics are automatic for runner GIF artifacts. When a recorded GIF uses at least 240 decoded colors, or the inspector reaches the `>256` color cap, the runner emits `GIF_WARN_PALETTE test="<name>" path="<gif>" paletteColors=<count-or->256> thresholdColors=240 palette=<mode>`. This warning does not fail the run; it tells agents and CI that the GIF may show color loss or visible dithering and may need quality, crop, or future format tuning.

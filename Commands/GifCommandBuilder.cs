@@ -10,6 +10,7 @@ public sealed class GifCommandBuilder
         var command = new Command("gif", "GIF artifact inspection and utility commands.");
         command.Subcommands.Add(BuildInspectCommand());
         command.Subcommands.Add(BuildCompareCommand());
+        command.Subcommands.Add(BuildStoryboardCommand());
         command.Subcommands.Add(BuildPresetsCommand());
         return command;
     }
@@ -91,6 +92,48 @@ public sealed class GifCommandBuilder
         $"paletteBefore={before.Palette} paletteAfter={after.Palette} paletteColorsBefore={before.PaletteColors} paletteColorsAfter={after.PaletteColors} " +
         $"transparentBefore={before.Transparent.ToString().ToLowerInvariant()} transparentAfter={after.Transparent.ToString().ToLowerInvariant()} " +
         $"repeatBefore={before.RepeatCount} repeatAfter={after.RepeatCount}";
+
+    private static Command BuildStoryboardCommand()
+    {
+        var file = new Argument<FileInfo>("file") { Description = "GIF file to export as a storyboard contact sheet." };
+        var output = new Option<FileInfo?>("--output") { Description = "PNG output path for the storyboard contact sheet." };
+        var columns = new Option<int>("--columns") { Description = "Number of frame columns in the contact sheet. Default is 4." };
+        columns.DefaultValueFactory = _ => 4;
+        var maxFrames = new Option<int?>("--max-frames") { Description = "Maximum number of frames to sample into the storyboard." };
+        var command = new Command("storyboard", "Export GIF frames to a PNG contact sheet.") { file, output, columns, maxFrames };
+        command.SetAction(parseResult =>
+        {
+            var input = parseResult.GetValue(file);
+            var outputFile = parseResult.GetValue(output);
+            if (input is null || !input.Exists)
+            {
+                Console.Error.WriteLine($"GIF file '{input?.FullName ?? string.Empty}' was not found.");
+                return 1;
+            }
+
+            if (outputFile is null)
+            {
+                Console.Error.WriteLine("gif storyboard requires --output <png>.");
+                return 1;
+            }
+
+            try
+            {
+                Console.WriteLine(GifStoryboardExporter.Export(
+                    input,
+                    outputFile,
+                    parseResult.GetValue(columns),
+                    parseResult.GetValue(maxFrames)).Format());
+                return 0;
+            }
+            catch (Exception exception)
+            {
+                Console.Error.WriteLine($"Could not export GIF storyboard '{input.FullName}'. {exception.Message}");
+                return 1;
+            }
+        });
+        return command;
+    }
 
     private static Command BuildPresetsCommand()
     {

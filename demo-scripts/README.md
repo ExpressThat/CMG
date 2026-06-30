@@ -104,6 +104,7 @@ dotnet run -- browser control script --file demo-scripts\150-gif-failure-hold.cm
 dotnet run -- browser control script --file demo-scripts\151-gif-timeline.cmgscript
 dotnet run -- gif inspect demo-output\timeline-evidence.gif
 dotnet run -- gif compare demo-output\timeline-evidence.gif demo-output\pointer-choreography.gif
+dotnet run -- gif storyboard demo-output\timeline-evidence.gif --output demo-output\timeline-storyboard.png --columns 4 --max-frames 12
 dotnet run -- gif presets
 ```
 

@@ -244,7 +244,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add automatic long-wait compression while preserving a visible timer.
 - Add visual progress bar for long waits.
 - Add frame bookmarks for steps and failures.
-- Add a GIF storyboard export as a contact sheet PNG.
+- Implemented: add `cmg gif storyboard <file> --output <png>` to export GIF frames as a contact sheet PNG.
 - Add timeline preview in HTML reports.
 
 ## Viewport, Layout, And Framing
