@@ -67,6 +67,8 @@ public sealed partial class BrowserScriptRunner
         "pointerDuration",
         "pointerSpeed",
         "pointerEasing",
+        "pointerPath",
+        "dragPath",
         "clickPulse",
         "pulse",
         "holdAfterAction",

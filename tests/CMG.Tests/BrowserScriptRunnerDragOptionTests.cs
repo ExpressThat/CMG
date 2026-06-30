@@ -83,6 +83,24 @@ public sealed class BrowserScriptRunnerDragOptionTests
         Assert.True(client.PageScreenshotCount >= 6);
     }
 
+    [Fact]
+    public void RunText_BlockDragAcceptsDragPathOptions()
+    {
+        var client = new FakeAutomationClient();
+        using var gif = new TempGifFile();
+        var result = Runner().RunText($$"""
+        gif "drag" output="{{gif.File.FullName.Replace("\\", "/")}}" pointerPath=arc {
+          dragAndDrop "#source" dragPath=manhattan pointerDuration=400 {
+            moveMouse "bottom" pointerPath=direct
+            drop "#target" dragPath=arc
+          }
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.True(client.MouseMoveCount > 0);
+    }
+
 
     [Fact]
     public void RunText_UnrecordedBlockDragSkipsGifChoreography()

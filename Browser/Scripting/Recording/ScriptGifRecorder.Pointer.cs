@@ -97,7 +97,8 @@ public sealed partial class ScriptGifRecorder
         var frameDelay = FrameDelayMillisecondsFor(action);
         var frameDelayCentiseconds = Math.Max(1, (frameDelay + 9) / 10);
         var motion = MotionFor(action, durationOption, easingOption);
-        foreach (var point in pointer.MoveTo(target, motion.FrameCount(action?.Name ?? "recording", frameDelay), motion.PointerEasing))
+        var path = PathFor(action, dragging);
+        foreach (var point in pointer.MoveTo(target, motion.FrameCount(action?.Name ?? "recording", frameDelay), motion.PointerEasing, path))
         {
             devToolsClient.MoveMouse(remoteDebuggingUrl, point, dragging ? 1 : 0);
             if (dragging)
@@ -127,4 +128,26 @@ public sealed partial class ScriptGifRecorder
 
         return easingOption is null ? motion : motion.WithEasingOption(action, easingOption);
     }
+
+    private static ScriptPointerPath PathFor(BrowserScriptAction? action, bool dragging)
+    {
+        if (action is null)
+        {
+            return ScriptPointerPath.Direct;
+        }
+
+        if (dragging && action.Options.TryGetValue("dragPath", out var dragPath))
+        {
+            return ParsePath(action, dragPath, "dragPath");
+        }
+
+        return action.Options.TryGetValue("pointerPath", out var pointerPath)
+            ? ParsePath(action, pointerPath, "pointerPath")
+            : ScriptPointerPath.Direct;
+    }
+
+    private static ScriptPointerPath ParsePath(BrowserScriptAction action, string value, string optionName) =>
+        ScriptPointerPathParser.TryParse(value, out var path)
+            ? path
+            : throw new ScriptExecutionException($"{action.Name} option {optionName}= must be one of: {ScriptPointerPathParser.Values}.");
 }

@@ -206,6 +206,7 @@ public sealed partial class BrowserScriptRunner
 
     private static bool IsDragRecordingOption(string key) =>
         key is "pointerDuration" or "pointerSpeed" or "pointerEasing" or
+            "pointerPath" or "dragPath" or
             "sourcePointerDuration" or "targetPointerDuration" or "dragEasing" or
             "preDragHold" or "dragHold" or "postDropHold" or
             "quality" or "clickPulse" or "pulse" or "holdAfterAction" or "holdOnFailure" or "holdAfterMove" or

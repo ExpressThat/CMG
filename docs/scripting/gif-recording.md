@@ -68,6 +68,8 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerDuration=<milliseconds>`: Movement duration between pointer targets. Must be zero or greater.
 - `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
+- `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Pointer route between targets. Defaults to `direct`.
+- `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Drag route while the pointer is held. Defaults to `pointerPath` when omitted.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
 - `preClickHold=<milliseconds>`: Hold after pointer movement and before click/tap dispatch. Defaults to `0`.
@@ -99,6 +101,8 @@ Supported `recording` / `withRecording` defaults:
 - `pointerDuration=<milliseconds>`: Movement duration between pointer targets.
 - `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
+- `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Pointer route between targets.
+- `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Drag route while the pointer is held.
 - `clickPulse=<ring|ripple|dot|crosshair|none>` or `pulse=<...>`: Click/tap/drop pulse style.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration.
 - `preClickHold=<milliseconds>`: Hold before click/tap dispatch after pointer movement.
@@ -114,11 +118,11 @@ Supported `recording` / `withRecording` defaults:
 Action and nested block options override the surrounding `recording` defaults for that child only.
 
 ```text
-gif "board evidence" pointerDuration=500 pointerEasing=ease-in-out {
-  dragAndDrop ".todo-card" pointerDuration=1200 dragHold=250 {
+gif "board evidence" pointerDuration=500 pointerEasing=ease-in-out pointerPath=arc {
+  dragAndDrop ".todo-card" pointerDuration=1200 dragPath=manhattan dragHold=250 {
     hover ".lane" pointerDuration=700
-    moveMouse selector=".board" edge=bottom pointerDuration=300
-    drop ".done-column" dropPointerDuration=450 postDropHold=800
+    moveMouse selector=".board" edge=bottom pointerDuration=300 pointerPath=direct
+    drop ".done-column" dropPointerDuration=450 dragPath=arc postDropHold=800
   }
 }
 ```
@@ -128,7 +132,7 @@ For block actions with child actions, the parent block is a scoped override and 
 `moveMouse` also accepts `duration=<milliseconds>` and `easing=<mode>` aliases:
 
 ```text
-moveMouse selector=".board" edge=bottom duration=300 easing=linear
+moveMouse selector=".board" edge=bottom duration=300 easing=linear pointerPath=manhattan
 ```
 
 Add `holdAfterMove=<milliseconds>` when a recorded `moveMouse` should visibly settle before the next step:
@@ -143,10 +147,11 @@ moveMouse selector=".board" edge=bottom duration=300 holdAfterMove=600
 - `sourcePointerDuration=<milliseconds>`: Move-to-source duration before dragging.
 - `targetPointerDuration=<milliseconds>`: Drag travel duration to the target.
 - `dragEasing=<mode>`: Easing for drag travel.
+- `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Route for held-pointer drag travel.
 - `preDragHold=<milliseconds>`: Hold before starting the page drag.
 - `dragHold=<milliseconds>`: Hold while the drag is active before dropping.
 - `postDropHold=<milliseconds>`: Hold after the drop pulse.
-- Child `drop` actions can use `dropPointerDuration=<milliseconds>` and `postDropHold=<milliseconds>`.
+- Child `drop` actions can use `dropPointerDuration=<milliseconds>`, `dragPath=<...>`, and `postDropHold=<milliseconds>`.
 
 Command-level defaults are available for whole-run recordings:
 

@@ -73,6 +73,23 @@ public sealed class ScriptGifRecorderPointerTargetTests
     }
 
     [Fact]
+    public void BeforeAction_InvalidPointerPathFailsClearly()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(path));
+        recorder.Start("debug");
+
+        var error = Assert.Throws<ScriptExecutionException>(() =>
+            recorder.BeforeAction(new BrowserScriptAction(1, "hover", "hover", ["#save"], new Dictionary<string, string>
+            {
+                ["pointerPath"] = "wobble"
+            }, [])));
+
+        Assert.Contains("pointerPath= must be one of", error.Message);
+    }
+
+    [Fact]
     public void AfterAction_UsesConfiguredClickPulse()
     {
         var client = new FakeAutomationClient();

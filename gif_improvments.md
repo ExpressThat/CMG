@@ -168,9 +168,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add per-action pointer speed overrides, for example `click "#save" pointerSpeed=fast`.
 - Add `moveMouse duration=<ms>` and `moveMouse easing=<mode>`.
 - Add `moveMouse pointerDuration=<ms>` as an alias for `duration=<ms>` so pointer settings stay consistent across actions.
-- Add pointer path styles: direct line, curved arc, Manhattan path, or avoid-center.
-- Add `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>` on recording blocks and pointer-aware actions.
-- Add `dragPath=<direct|arc|manhattan|custom>` on `dragAndDrop`.
+- Implemented: add pointer path styles: direct line, curved arc, Manhattan path, avoid-target, and avoid-center.
+- Implemented: add `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>` on recording blocks and pointer-aware actions.
+- Implemented: add `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>` on `dragAndDrop`.
 - Add auto pathing that avoids covering the target text or button label.
 - Implemented: add `preClickHold=<ms>` and `postClickHold=<ms>` at recording-block and action level. CLI: `--pointer-pre-click-hold <ms>` and `--pointer-post-click-hold <ms>`.
 - Add `preDragHold=<ms>`, `dragHold=<ms>`, and `postDropHold=<ms>` on `dragAndDrop`.

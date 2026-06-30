@@ -185,6 +185,22 @@ public sealed class BrowserScriptRunnerRecordingScopeTests
     }
 
     [Fact]
+    public void RecordingScope_AppliesPointerPathToChildActions()
+    {
+        var client = new FakeAutomationClient();
+        var gif = TempGif();
+
+        var result = Runner().RunText("""
+            recording pointerDuration=400 pointerPath=manhattan {
+              hover "#save"
+            }
+            """, "debug", client, gif);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(4, client.MouseMoveCount);
+    }
+
+    [Fact]
     public void RecordingScope_RejectsUnknownDefaults()
     {
         var result = Runner().RunText("""

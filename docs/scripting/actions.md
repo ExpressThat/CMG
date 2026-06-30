@@ -391,6 +391,7 @@ Options:
 - `pointerEasing`: Optional GIF pointer movement easing. Supports `linear`, `ease-in`, `ease-out`, `ease-in-out`, and `spring`.
 - `easing`: Alias for `pointerEasing`.
 - `pointerSpeed`: Optional GIF pointer speed. Supports `slow`, `normal`, `fast`, `instant`, or a multiplier such as `1.5x`.
+- `pointerPath`: Optional GIF pointer route. Supports `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
 - `clickPulse`: Optional GIF pulse style for click/tap/drop actions. Supports `ring`, `ripple`, `dot`, `crosshair`, or `none`.
 - `holdAfterAction`: Optional post-action GIF hold duration in milliseconds. Use `0` to suppress the hold for this action.
 - `holdAfterMove`: Optional GIF-only hold duration after the pointer finishes this `moveMouse` movement. Use it when the pointer should visibly settle before the next action.
@@ -400,7 +401,7 @@ Examples:
 ```text
 moveMouse "center"
 moveMouse x=240 y=320
-moveMouse selector=".content-area" edge=bottom inset=24 holdAfterMove=500
+moveMouse selector=".content-area" edge=bottom inset=24 pointerPath=manhattan holdAfterMove=500
 ```
 
 Output:
@@ -1043,8 +1044,9 @@ Child recording options:
 
 - `hover` and `moveMouse` can set `pointerDuration=`, `pointerSpeed=`, and `pointerEasing=`.
 - `moveMouse` can also use `duration=` and `easing=` aliases.
+- `hover` and `moveMouse` can set `pointerPath=direct|arc|manhattan|avoid-target|avoid-center`.
 - `moveMouse` can set `holdAfterMove=` to keep the held pointer visibly settled after that movement.
-- `drop` can set `dropPointerDuration=`, `postDropHold=`, and `clickPulse=`.
+- `drop` can set `dropPointerDuration=`, `dragPath=`, `postDropHold=`, and `clickPulse=`.
 
 Rules:
 
@@ -1056,6 +1058,7 @@ Rules:
 - With `--gif`, CMG keeps the drag lifecycle active while the body runs so page-owned drag ghosts can stay visible.
 - With `--gif`, every automatic pointer movement dispatches browser movement and hover events, including movement before `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`.
 - With `--gif`, block drag bodies also dispatch DOM `pointerdown`/`mousedown`, held `pointermove`/`mousemove`, and `pointerup`/`mouseup` so page drag state and edge-autoscroll code can react while `moveMouse "bottom"` and `delay` run.
+- `pointerPath=` controls ordinary pointer movement into the drag body. `dragPath=` controls held-pointer movement during the drag and can be set on the parent `dragAndDrop` block or an individual `drop` child.
 - Without `--gif` or an active `gif` block, block-drag choreography-only children skip: `delay` reports `GIF_DRAG_DELAY ... status=skipped`, `hover` reports `GIF_DRAG_HOVER ... status=skipped`, and `moveMouse` reports `GIF_MOVE_MOUSE ... status=skipped`. Setup children such as `scrollIntoView` and `waitForElement` still run before CMG performs the fallback native `dragAndDrop`.
 - CMG creates the `DataTransfer` object for synthetic drag events but does not force `effectAllowed`, `dropEffect`, or payload values. The page's own `dragstart` handler remains responsible for setting drag data and allowed operations; CMG preserves those page-set values through the recorded drag.
 - If the page does not call `DataTransfer.setDragImage()`, CMG shows a default-preview bridge during the active drag so the live browser and GIF still show a browser-style default drag preview.
@@ -1761,6 +1764,8 @@ Options:
 - `pointerDuration`: Default pointer movement duration in milliseconds.
 - `pointerSpeed`: Default pointer speed: `slow`, `normal`, `fast`, `instant`, or a multiplier such as `1.5x`.
 - `pointerEasing`: Default easing: `linear`, `ease-in`, `ease-out`, `ease-in-out`, or `spring`.
+- `pointerPath`: Default pointer route: `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
+- `dragPath`: Default route while the pointer is held during drag movement.
 - `clickPulse` / `pulse`: Default click/tap/drop pulse style: `ring`, `ripple`, `dot`, `crosshair`, or `none`.
 - `holdAfterAction`: Default post-action hold in milliseconds.
 - `preClickHold`: Default hold before click/tap dispatch after pointer movement.
@@ -1796,6 +1801,8 @@ Options:
 
 - `output`: Optional GIF path for direct browser-control scripts. Without `output`, CMG writes `<name>.gif` in the current directory.
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
+- `pointerPath`: Optional default pointer route: `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
+- `dragPath`: Optional default route while the pointer is held during drag movement.
 - `holdAfterAction`: Optional default post-action hold in milliseconds for child actions. Defaults to `350`; child actions can override it locally with their own `holdAfterAction=`.
 - `preClickHold`: Optional default hold before click/tap dispatch after pointer movement. Defaults to `0`.
 - `postClickHold`: Optional default hold after click/tap pulse frames. Defaults to `350`.
