@@ -6,10 +6,7 @@ namespace CMG.Commands;
 public sealed partial class RunCommandBuilder
 {
     private readonly ICmgRunCommandHandler handler;
-    public RunCommandBuilder(ICmgRunCommandHandler handler)
-    {
-        this.handler = handler;
-    }
+    public RunCommandBuilder(ICmgRunCommandHandler handler) => this.handler = handler;
     public Command Build(BrowserSelectionOptions browserOptions)
     {
         var pathArgument = new Argument<string>("path") { Description = "A CMG script file or folder containing .cmgscript files." };
@@ -26,6 +23,7 @@ public sealed partial class RunCommandBuilder
         var pointerSpeedOption = new Option<string?>("--pointer-speed") { Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x." };
         var pointerEasingOption = new Option<string?>("--pointer-easing") { Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring." };
         var pointerVisualOptions = BuildPointerVisualOptions();
+        var showPointerOption = new Option<string?>("--show-pointer") { Description = $"Default virtual pointer visibility for --gif recordings: {PointerVisibilityOptions.Values}." };
         var captionOptions = BuildCaptionOptions();
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Click pulse style for --gif: ring, ripple, dot, crosshair, or none." };
         var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
@@ -41,8 +39,7 @@ public sealed partial class RunCommandBuilder
         var gifMaxSizeOption = new Option<string?>("--gif-max-size") { Description = "Fail a test when a recorded GIF exceeds this size, for example 500KB or 2MB." };
         var gifMaxDurationOption = new Option<string?>("--gif-max-duration") { Description = "Fail a test when a recorded GIF exceeds this duration, for example 2500ms, 10s, or 1m." };
         var jsonOption = new Option<FileInfo?>("--report-json") { Description = "Write a JSON test report to this file." };
-        var htmlOption = new Option<FileInfo?>("--report-html") { Description = "Write an HTML test report to this file." };
-        var junitOption = new Option<FileInfo?>("--report-junit") { Description = "Write a JUnit XML test report to this file." };
+        var htmlOption = new Option<FileInfo?>("--report-html") { Description = "Write an HTML test report to this file." }; var junitOption = new Option<FileInfo?>("--report-junit") { Description = "Write a JUnit XML test report to this file." };
         var traceOption = new Option<DirectoryInfo?>("--trace") { Description = "Write per-test trace JSON files to this directory." };
         var grepOption = new Option<string?>("--grep") { Description = "Run tests whose names contain this text." };
         var tagOption = new Option<string?>("--tag") { Description = "Run tests with a matching tag option." };
@@ -64,12 +61,10 @@ public sealed partial class RunCommandBuilder
         var listOption = new Option<bool>("--list") { Description = "List selected tests without connecting to a browser." };
         var shardOption = new Option<string?>("--shard") { Description = "Run one shard as index/count, for example 1/3." };
         var timeoutOption = new Option<int?>("--timeout") { Description = "Default timeout in milliseconds for timeout-capable actions." };
-        var navigationTimeoutOption = new Option<int?>("--navigation-timeout") { Description = "Default timeout in milliseconds for navigation actions." };
-        var assertionTimeoutOption = new Option<int?>("--assertion-timeout") { Description = "Default timeout in milliseconds for assertion actions." };
+        var navigationTimeoutOption = new Option<int?>("--navigation-timeout") { Description = "Default timeout in milliseconds for navigation actions." }; var assertionTimeoutOption = new Option<int?>("--assertion-timeout") { Description = "Default timeout in milliseconds for assertion actions." };
         var baseUrlOption = new Option<string?>("--base-url") { Description = "Base URL used to resolve relative navigation targets." };
         var browserPortOption = new Option<int?>("--browser-port") { Description = "Remote debugging port for the browser instance used by this run." };
-        var autoLaunchOption = new Option<bool>("--auto-launch") { Description = "Launch the selected browser automatically when no CMG-controlled browser is running." };
-        var headlessOption = new Option<bool>("--headless") { Description = "Launch the browser in headless mode when --auto-launch starts a browser." };
+        var autoLaunchOption = new Option<bool>("--auto-launch") { Description = "Launch the selected browser automatically when no CMG-controlled browser is running." }; var headlessOption = new Option<bool>("--headless") { Description = "Launch the browser in headless mode when --auto-launch starts a browser." };
         var variableOption = new Option<string[]>("--var") { Description = "Initial runner variable as name=value. Can be repeated." };
         var envOption = new Option<string[]>("--env") { Description = "Alias for --var, useful for CI or agent-provided values." };
         var command = new Command("run", "Run CMG DSL tests with visual artifacts.")
@@ -83,6 +78,7 @@ public sealed partial class RunCommandBuilder
             pointerSpeedOption,
             pointerEasingOption,
             pointerVisualOptions.Theme, pointerVisualOptions.Color, pointerVisualOptions.Size, pointerVisualOptions.Shadow,
+            showPointerOption,
             captionOptions.Style, captionOptions.Position, captionOptions.Severity,
             clickPulseOption,
             holdAfterActionOption,
@@ -125,7 +121,6 @@ public sealed partial class RunCommandBuilder
             { Console.Error.WriteLine(configError); return 1; }
             if (!TrySelectProject(parseResult.GetValue(projectOption), config, out var project, out var projectError))
             { Console.Error.WriteLine(projectError); return 1; }
-
             var variableValues = (parseResult.GetValue(variableOption) ?? []).Concat(parseResult.GetValue(envOption) ?? []);
             if (!VariableOptionParser.TryParse(variableValues, out var variables, out var error))
             { Console.Error.WriteLine(error); return 1; }
@@ -149,6 +144,11 @@ public sealed partial class RunCommandBuilder
             if (!TryParsePointerVisual(parseResult, pointerVisualOptions, out var pointerVisual, out var visualError))
             {
                 Console.Error.WriteLine(visualError);
+                return 1;
+            }
+            if (!PointerVisibilityOptions.TryParse(parseResult.GetValue(showPointerOption), out var showPointer, out var showPointerError))
+            {
+                Console.Error.WriteLine(showPointerError);
                 return 1;
             }
             if (!TryParseCaption(parseResult, captionOptions, out var caption, out var captionError))
@@ -229,6 +229,7 @@ public sealed partial class RunCommandBuilder
                 gifQuality,
                 pointerMotion,
                 pointerVisual,
+                showPointer,
                 caption,
                 clickPulse,
                 holdAfterAction,

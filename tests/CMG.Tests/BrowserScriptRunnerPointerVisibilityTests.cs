@@ -1,3 +1,4 @@
+using CMG.Browser;
 using CMG.Browser.Scripting;
 
 namespace CMG.Tests;
@@ -45,6 +46,36 @@ public sealed class BrowserScriptRunnerPointerVisibilityTests
         Assert.Equal(1, client.PageScreenshotCount);
         Assert.True(client.RemoveDomCursorCalled);
         Assert.Contains(result.StdoutLines, line => line.Contains("GIF_HIDE_POINTER 001 status=captured", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_CommandShowPointerFalseSuppressesPointerFrames()
+    {
+        var client = new FakeAutomationClient();
+        using var gif = new TempGifFile();
+
+        var result = Runner().RunText("hover \"#save\"", "debug", client, gif.File, showPointer: PointerVisibility.Hidden);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Empty(client.CursorStates);
+        Assert.True(client.RemoveDomCursorCalled);
+    }
+
+    [Fact]
+    public void RunText_RecordingScopeShowPointerFalseCanBeOverridden()
+    {
+        var client = new FakeAutomationClient();
+        using var gif = new TempGifFile();
+
+        var result = Runner().RunText("""
+            recording showPointer=false {
+              hover "#hidden"
+              hover "#visible" showPointer=true
+            }
+            """, "debug", client, gif.File);
+
+        Assert.True(result.Success, result.Error);
+        Assert.NotEmpty(client.CursorStates);
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

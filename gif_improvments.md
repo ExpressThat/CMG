@@ -190,7 +190,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add pointer color and size options. CLI: `--pointer-color <color>` and `--pointer-size <pixels>`.
 - Implemented: add pointer shadow strength options for dark/light pages. CLI: `--pointer-shadow <none|light|medium|strong>`.
 - Add automatic pointer contrast against the current page background.
-- Add `showPointer=<true|false|auto>` for recording blocks and wait actions. CLI: `--show-pointer <true|false|auto>`.
+- Implemented: add `showPointer=<true|false|auto>` for recording scopes, recording blocks, and pointer-aware action overrides. CLI: `--show-pointer <true|false|auto>`.
 - Add pointer idle animations for long waits so the GIF does not look frozen.
 - Add pointer teleport markers for `instant` speed so jumps remain understandable.
 

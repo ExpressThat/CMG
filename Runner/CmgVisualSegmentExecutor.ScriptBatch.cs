@@ -17,6 +17,7 @@ public sealed partial class CmgVisualSegmentExecutor
         CMG.Browser.Scripting.Recording.GifQuality gifQuality,
         CMG.Browser.Scripting.Recording.ScriptPointerMotionOptions? pointerMotion,
         CMG.Browser.PointerVisualOptions? pointerVisual,
+        CMG.Browser.PointerVisibility showPointer,
         CMG.Browser.BrowserCaptionOptions? captionOptions,
         CMG.Browser.ClickPulseStyle clickPulse,
         int holdAfterActionMilliseconds,
@@ -37,7 +38,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var map = new Dictionary<int, int>(lineMap);
         lines.Clear();
         lineMap.Clear();
-        return new CmgScriptBatchRun(MapScriptResult(scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts, baseUrl, gifQuality: gifQuality, pointerMotion: pointerMotion, pointerVisual: pointerVisual, captionOptions: captionOptions, clickPulse: clickPulse, holdAfterActionMilliseconds: holdAfterActionMilliseconds, holdOnFailureMilliseconds: holdOnFailureMilliseconds, preClickHoldMilliseconds: preClickHoldMilliseconds, postClickHoldMilliseconds: postClickHoldMilliseconds, holdAfterNavigationMilliseconds: holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds: holdAfterAssertionMilliseconds, gifTimelinePath: gifTimelinePath, frameDelayMilliseconds: frameDelayMilliseconds), map), map);
+        return new CmgScriptBatchRun(MapScriptResult(scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts, baseUrl, gifQuality: gifQuality, pointerMotion: pointerMotion, pointerVisual: pointerVisual, showPointer: showPointer, captionOptions: captionOptions, clickPulse: clickPulse, holdAfterActionMilliseconds: holdAfterActionMilliseconds, holdOnFailureMilliseconds: holdOnFailureMilliseconds, preClickHoldMilliseconds: preClickHoldMilliseconds, postClickHoldMilliseconds: postClickHoldMilliseconds, holdAfterNavigationMilliseconds: holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds: holdAfterAssertionMilliseconds, gifTimelinePath: gifTimelinePath, frameDelayMilliseconds: frameDelayMilliseconds), map), map);
     }
 
     private static ScriptRunResult MapScriptResult(ScriptRunResult result, IReadOnlyDictionary<int, int> lineMap)

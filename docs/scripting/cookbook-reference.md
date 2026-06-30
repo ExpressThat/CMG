@@ -458,6 +458,27 @@ dotnet run -- browser control script --file demo-scripts\156-gif-pointer-styles.
 dotnet run -- run tests\flows --gif demo-output\runner-gifs --pointer-theme ring --pointer-color "#dc2626"
 ```
 
+## Pointer Visibility Defaults
+
+Use `showPointer=false` when the recording should prove page state without the DOM pointer covering the UI. A child action can opt the pointer back in with `showPointer=true` when the interaction itself needs to be visible.
+
+```text
+recording showPointer=false {
+  gif "clean state" {
+    caption "This section hides the pointer"
+    click "#refresh"
+    click "#export" showPointer=true pointerTheme=ring
+  }
+}
+```
+
+Whole-run recordings can hide the pointer by default:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\158-gif-pointer-visibility.cmgscript --gif demo-output\pointer-hidden-whole-run.gif --show-pointer false
+dotnet run -- run tests\flows --gif demo-output\runner-gifs --show-pointer false
+```
+
 ## Caption Styles
 
 Use caption style options when the recording needs to read as a teaching demo, QA evidence, or bug report. Recording scopes set defaults; individual captions and steps can override them.

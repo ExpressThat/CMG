@@ -47,6 +47,17 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void ScriptCommand_MapsShowPointerOption()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --show-pointer false").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(PointerVisibility.Hidden, handler.ShowPointer);
+    }
+
+    [Fact]
     public void ScriptCommand_MapsCaptionOptions()
     {
         var handler = new CapturingHandler();
@@ -157,6 +168,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
         public string? File { get; private set; }
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
         public PointerVisualOptions? PointerVisual { get; private set; }
+        public PointerVisibility ShowPointer { get; private set; } = PointerVisibility.Auto;
         public BrowserCaptionOptions? CaptionOptions { get; private set; }
         public ClickPulseStyle ClickPulse { get; private set; }
         public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
@@ -184,6 +196,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
             PointerVisualOptions? pointerVisual = null,
+            PointerVisibility showPointer = PointerVisibility.Auto,
             BrowserCaptionOptions? captionOptions = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
@@ -198,6 +211,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             File = file;
             PointerMotion = pointerMotion;
             PointerVisual = pointerVisual;
+            ShowPointer = showPointer;
             CaptionOptions = captionOptions;
             ClickPulse = clickPulse;
             HoldAfterActionMilliseconds = holdAfterActionMilliseconds;

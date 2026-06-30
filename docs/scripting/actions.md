@@ -1803,6 +1803,7 @@ Options:
 - `pointerColor`: Default pointer CSS color. Use one CSS color value, not a declaration.
 - `pointerSize`: Default pointer size in CSS pixels from `8` to `96`, or `auto`.
 - `pointerShadow`: Default pointer shadow: `none`, `light`, `medium`, or `strong`.
+- `showPointer`: Default pointer visibility for captured frames: `true`, `false`, or `auto`. Defaults to `auto`, which currently shows the pointer for pointer-aware evidence frames.
 - `captionStyle`: Default caption style: `subtle`, `teaching`, `qa`, `bug-report`, or `compact`.
 - `captionPosition`: Default caption position: `top`, `bottom`, `left`, `right`, or `auto`.
 - `captionSeverity`: Default caption severity: `info`, `success`, `warning`, or `error`.
@@ -1850,6 +1851,7 @@ Options:
 - `pointerColor`: Optional default pointer CSS color.
 - `pointerSize`: Optional default pointer size in CSS pixels from `8` to `96`, or `auto`.
 - `pointerShadow`: Optional pointer shadow: `none`, `light`, `medium`, or `strong`.
+- `showPointer`: Optional pointer visibility default for child frames: `true`, `false`, or `auto`.
 - `captionStyle`: Optional caption style default for child `caption`, `showMessageBar`, and `step` captions.
 - `captionPosition`: Optional caption position default for child captions.
 - `captionSeverity`: Optional caption severity default for child captions.

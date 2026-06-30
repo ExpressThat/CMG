@@ -56,6 +56,37 @@ public sealed class ScriptGifRecorderPointerTargetTests
     }
 
     [Fact]
+    public void BeforeAction_HiddenPointerSuppressesDomCursor()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(path, ShowPointer: PointerVisibility.Hidden));
+        recorder.Start("debug");
+
+        recorder.BeforeAction(new BrowserScriptAction(1, "hover", "hover", ["#save"], new Dictionary<string, string>(), []));
+
+        Assert.Empty(client.CursorStates);
+        Assert.True(client.RemoveDomCursorCalled);
+        Assert.Equal(ScriptRecordingOptions.MovementFrameCount, client.PageScreenshotCount);
+    }
+
+    [Fact]
+    public void BeforeAction_ActionShowPointerOverridesHiddenDefault()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(path, ShowPointer: PointerVisibility.Hidden));
+        recorder.Start("debug");
+
+        recorder.BeforeAction(new BrowserScriptAction(1, "hover", "hover", ["#save"], new Dictionary<string, string>
+        {
+            ["showPointer"] = "true"
+        }, []));
+
+        Assert.NotEmpty(client.CursorStates);
+    }
+
+    [Fact]
     public void MoveMouse_HoldAfterMoveCapturesSettleFrame()
     {
         var client = new FakeAutomationClient();

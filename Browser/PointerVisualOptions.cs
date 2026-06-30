@@ -20,6 +20,13 @@ public enum PointerShadow
     Strong
 }
 
+public enum PointerVisibility
+{
+    Auto,
+    Visible,
+    Hidden
+}
+
 public sealed record PointerVisualOptions(
     PointerTheme Theme = PointerTheme.Arrow,
     string? Color = null,

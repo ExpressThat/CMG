@@ -19,6 +19,7 @@ public sealed partial class BrowserScriptRunner
         GifQuality gifQuality,
         ScriptPointerMotionOptions? pointerMotion,
         PointerVisualOptions? pointerVisual,
+        PointerVisibility showPointer,
         BrowserCaptionOptions? captionOptions,
         ClickPulseStyle clickPulse,
         int holdAfterActionMilliseconds,
@@ -64,6 +65,13 @@ public sealed partial class BrowserScriptRunner
         {
             context.SetVariable(variable.Key, variable.Value);
         }
+        if (showPointer is not PointerVisibility.Auto)
+        {
+            context.AddRecordingDefaults(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["showPointer"] = showPointer is PointerVisibility.Visible ? "true" : "false"
+            });
+        }
         if (captionOptions is not null)
         {
             context.AddRecordingDefaults(captionOptions.ToRecordingDefaults());
@@ -71,7 +79,7 @@ public sealed partial class BrowserScriptRunner
         var output = new List<string>();
         using var recorder = gif is null
             ? null
-            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality, pointerMotion, pointerVisual, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, GifTimelinePath.Resolve(gif.FullName, gifTimelinePath), frameDelayMilliseconds));
+            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality, pointerMotion, pointerVisual, showPointer, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, GifTimelinePath.Resolve(gif.FullName, gifTimelinePath), frameDelayMilliseconds));
 
         recorder?.Start(remoteDebuggingUrl);
 

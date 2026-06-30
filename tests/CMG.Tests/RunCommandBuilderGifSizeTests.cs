@@ -111,6 +111,7 @@ public sealed class RunCommandBuilderGifSizeTests
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
             PointerVisualOptions? pointerVisual = null,
+            PointerVisibility showPointer = PointerVisibility.Auto,
             BrowserCaptionOptions? captionOptions = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,

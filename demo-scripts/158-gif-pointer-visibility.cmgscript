@@ -1,0 +1,16 @@
+navigate "about:blank"
+setContent "<main style='font:16px system-ui;padding:32px;display:grid;gap:16px;max-width:560px'><h1 style='font-size:24px;margin:0'>Pointer visibility evidence</h1><button id='refresh' style='padding:12px 18px'>Refresh data</button><button id='export' style='padding:12px 18px'>Export</button><p id='status' style='min-height:24px'>Ready</p></main>"
+evaluate "(() => { document.querySelector('#refresh').addEventListener('click', () => document.querySelector('#status').textContent = 'Data refreshed'); document.querySelector('#export').addEventListener('click', () => document.querySelector('#status').textContent = 'Export started'); return true; })()"
+
+recording showPointer=false captionStyle=qa captionPosition=bottom {
+  gif "pointer visibility" output="demo-output/pointer-visibility.gif" {
+    caption "Clean page-state frames hide the virtual pointer"
+    click "#refresh"
+    assertText "#status" "Data refreshed"
+
+    caption "This action opts the pointer back in"
+    click "#export" showPointer=true pointerTheme=ring pointerColor="#2563eb"
+    assertText "#status" "Export started" showPointer=true
+    pauseGif 500
+  }
+}

@@ -64,6 +64,7 @@ public sealed partial class CmgVisualSegmentExecutor
                 if (!TryGifQualityFor(action, out var blockQuality, out error) ||
                     !TryGifMotionFor(action, options.PointerMotion, out var blockMotion, out error) ||
                     !TryGifVisualFor(action, options.PointerVisual, out var blockVisual, out error) ||
+                    !TryGifPointerVisibilityFor(action, options.ShowPointer, out var blockShowPointer, out error) ||
                     !TryGifCaptionFor(action, options.CaptionOptions, out var blockCaption, out error) ||
                     !TryGifPulseFor(action, options.ClickPulse, out var blockPulse, out error) ||
                     !TryGifHoldFor(action, options.HoldAfterActionMilliseconds, out var blockHold, out error) ||
@@ -83,7 +84,7 @@ public sealed partial class CmgVisualSegmentExecutor
                     gifQualities[gif.FullName] = FormatQuality(blockQuality);
                 }
 
-                if (!RunActions(action.Children, remoteDebuggingUrl, gif, timeouts, baseUrl, blockQuality, blockMotion, blockVisual, blockCaption, blockPulse, blockHold, blockFailureHold, blockPreClickHold, blockPostClickHold, blockNavigationHold, blockAssertionHold, blockTimeline, output, steps, out error, blockFrameDelay))
+                if (!RunActions(action.Children, remoteDebuggingUrl, gif, timeouts, baseUrl, blockQuality, blockMotion, blockVisual, blockShowPointer, blockCaption, blockPulse, blockHold, blockFailureHold, blockPreClickHold, blockPostClickHold, blockNavigationHold, blockAssertionHold, blockTimeline, output, steps, out error, blockFrameDelay))
                 {
                     return Fail(test, output, error, gifs, steps, gifQualities);
                 }
@@ -218,7 +219,7 @@ public sealed partial class CmgVisualSegmentExecutor
         CmgRunOptions options,
         string? gifTimelinePath = null) =>
         RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, options.GifQuality, options.PointerMotion,
-            options.PointerVisual, options.CaptionOptions, options.ClickPulse, options.HoldAfterActionMilliseconds, options.HoldOnFailureMilliseconds,
+            options.PointerVisual, options.ShowPointer, options.CaptionOptions, options.ClickPulse, options.HoldAfterActionMilliseconds, options.HoldOnFailureMilliseconds,
             options.PreClickHoldMilliseconds, options.PostClickHoldMilliseconds, options.HoldAfterNavigationMilliseconds,
             options.HoldAfterAssertionMilliseconds, gifTimelinePath, options.FrameDelayMilliseconds);
 

@@ -83,7 +83,7 @@ public sealed partial class ScriptGifRecorder
 
     public void ShowPointer(BrowserScriptAction action)
     {
-        CaptureFrame(FrameDelayCentisecondsFor(action));
+        CaptureFrame(FrameDelayCentisecondsFor(action), forcePointer: true);
     }
 
     public void HidePointer(BrowserScriptAction action)
@@ -128,7 +128,7 @@ public sealed partial class ScriptGifRecorder
 
     private void CapturePulseFrame(BrowserScriptAction? action)
     {
-        CaptureFrame(FrameDelayCentisecondsFor(action), PulseStyleFor(action));
+        CaptureFrame(FrameDelayCentisecondsFor(action), PulseStyleFor(action), action);
     }
 
     private void CaptureClickPulseFrames(BrowserScriptAction action)
@@ -137,11 +137,15 @@ public sealed partial class ScriptGifRecorder
         var pulseCount = PulseCountFor(action);
         for (var index = 0; index < pulseCount; index++)
         {
-            CaptureFrame(FrameDelayCentisecondsFor(action), pulseStyle);
+            CaptureFrame(FrameDelayCentisecondsFor(action), pulseStyle, action);
         }
     }
 
-    private void CaptureFrame(int delayCentiseconds, ClickPulseStyle? pulseStyle = null)
+    private void CaptureFrame(
+        int delayCentiseconds,
+        ClickPulseStyle? pulseStyle = null,
+        BrowserScriptAction? action = null,
+        bool forcePointer = false)
     {
         if (remoteDebuggingUrl is null)
         {
@@ -149,9 +153,28 @@ public sealed partial class ScriptGifRecorder
         }
 
         devToolsClient.PromoteMessageBar(remoteDebuggingUrl);
-        devToolsClient.MoveDomCursor(remoteDebuggingUrl, pointer.Position, pulseStyle, cursorPressed, cursorTrail, cursorBreadcrumb, cursorVisual);
+        if (forcePointer || ShouldShowPointer(action))
+        {
+            devToolsClient.MoveDomCursor(remoteDebuggingUrl, pointer.Position, pulseStyle, cursorPressed, cursorTrail, cursorBreadcrumb, cursorVisual);
+        }
+        else
+        {
+            devToolsClient.RemoveDomCursor(remoteDebuggingUrl);
+        }
+
         var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar: false);
         frameSink.AddFrame(screenshot, delayCentiseconds);
+    }
+
+    private bool ShouldShowPointer(BrowserScriptAction? action)
+    {
+        var visibility = options.ShowPointer;
+        if (action?.Options.TryGetValue("showPointer", out var value) is true)
+        {
+            visibility = PointerVisibilityOptions.Parse(value, $"{action.Name} option");
+        }
+
+        return visibility is not PointerVisibility.Hidden;
     }
 
     private ClickPulseStyle PulseStyleFor(BrowserScriptAction? action)

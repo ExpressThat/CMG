@@ -7,6 +7,7 @@ cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-quality highest
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-easing ease-in-out
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --show-pointer false
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --caption-style qa --caption-position bottom
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-timeline demo-output\timelines
 cmg run flow.cmgscript --gif demo-output\runner-gifs
@@ -48,7 +49,7 @@ GIF recording uses one pointer:
 
 - A lightweight DOM pointer is injected into the page while the script runs, so the live browser visibly moves.
 - The pointer is styled as a standard arrow pointer, with a transparent popover surface and no default popover box.
-- Pointer visuals can be changed with `pointerTheme=`, `pointerColor=`, `pointerSize=`, and `pointerShadow=` on `recording`, `gif`, `recordVideo`, `screencast`, and pointer-aware child actions. Command-level `--pointer-theme`, `--pointer-color`, `--pointer-size`, and `--pointer-shadow` set whole-run defaults.
+- Pointer visuals can be changed with `pointerTheme=`, `pointerColor=`, `pointerSize=`, `pointerShadow=`, and `showPointer=` on `recording`, `gif`, `recordVideo`, `screencast`, and pointer-aware child actions. Command-level `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, and `--show-pointer` set whole-run defaults.
 - The pointer uses the browser top layer through a manual popover when available, so dialogs and high `z-index` page elements do not cover it.
 - CMG re-promotes the pointer in the top layer before frame capture, so newly opened dialogs do not cover an already existing pointer.
 - The GIF captures this same injected pointer from the browser screenshot. CMG does not draw a second overlay pointer onto GIF frames.
@@ -77,6 +78,7 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerColor=<css-color>`: Pointer color. Use a single CSS color value, not a declaration.
 - `pointerSize=<auto|8..96>`: Pointer size in CSS pixels. `auto` uses the theme's designed size.
 - `pointerShadow=<none|light|medium|strong>`: Pointer drop shadow strength. Defaults to `medium`.
+- `showPointer=<true|false|auto>`: Pointer visibility for captured frames. Defaults to `auto`, which currently shows the pointer for pointer-aware evidence frames. Use `false` for clean page-state frames; child actions can override with `showPointer=true`.
 - `captionStyle=<subtle|teaching|qa|bug-report|compact>`: Caption style default for child captions and step title bars.
 - `captionPosition=<top|bottom|left|right|auto>`: Caption placement default.
 - `captionSeverity=<info|success|warning|error>`: Caption color intent default.
@@ -117,6 +119,7 @@ Supported `recording` / `withRecording` defaults:
 - `pointerColor=<css-color>`: Default pointer color.
 - `pointerSize=<auto|8..96>`: Default pointer size in CSS pixels.
 - `pointerShadow=<none|light|medium|strong>`: Default pointer shadow.
+- `showPointer=<true|false|auto>`: Default pointer visibility for captured frames.
 - `captionStyle=<subtle|teaching|qa|bug-report|compact>`: Default caption style.
 - `captionPosition=<top|bottom|left|right|auto>`: Default caption position.
 - `captionSeverity=<info|success|warning|error>`: Default caption severity.

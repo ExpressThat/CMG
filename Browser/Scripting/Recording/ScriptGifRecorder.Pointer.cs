@@ -107,7 +107,7 @@ public sealed partial class ScriptGifRecorder
                 devToolsClient.MovePageDrag(remoteDebuggingUrl, point);
             }
 
-            CaptureFrame(frameDelayCentiseconds);
+            CaptureFrame(frameDelayCentiseconds, action: action);
         }
     }
 

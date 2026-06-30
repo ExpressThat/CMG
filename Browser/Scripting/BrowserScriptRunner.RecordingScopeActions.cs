@@ -71,6 +71,7 @@ public sealed partial class BrowserScriptRunner
         "pointerColor",
         "pointerSize",
         "pointerShadow",
+        "showPointer",
         "captionStyle",
         "captionPosition",
         "captionSeverity",

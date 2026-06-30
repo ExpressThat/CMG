@@ -35,6 +35,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--pointer-color <css-color>`: Default virtual pointer color for command-level `--gif` recordings. Pass one CSS color value, not a CSS declaration.
 - `--pointer-size <8..96>`: Default virtual pointer size in CSS pixels for command-level `--gif` recordings.
 - `--pointer-shadow <none|light|medium|strong>`: Default virtual pointer shadow strength for command-level `--gif` recordings.
+- `--show-pointer <true|false|auto>`: Default virtual pointer visibility for command-level `--gif` recordings. Defaults to `auto`, which currently shows the pointer for pointer-aware frames. Use `false` to capture frames without the DOM pointer; DSL blocks and child actions can override with `showPointer=`.
 - `--caption-style <subtle|teaching|qa|bug-report|compact>`: Default caption style for command-level `--gif` recordings.
 - `--caption-position <top|bottom|left|right|auto>`: Default caption position for command-level `--gif` recordings.
 - `--caption-severity <info|success|warning|error>`: Default caption severity color for command-level `--gif` recordings.
@@ -121,7 +122,7 @@ GIF recording is optional.
 
 - With `--gif` or `-gif`, CMG records the whole execution of each test.
 - `--gif-quality` defaults to `highest`, using CMG's most color-faithful palette matching and dithering. Use `high`, `medium`, or `low` to trade color fidelity for smaller/faster GIF artifacts.
-- `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--pointer-theme`, `--pointer-color`, `--pointer-size`, and `--pointer-shadow` set whole-test virtual pointer defaults when `--gif` is active.
+- `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, and `--show-pointer` set whole-test virtual pointer defaults when `--gif` is active.
 - `--caption-style`, `--caption-position`, and `--caption-severity` set whole-test caption defaults for `caption`, `showMessageBar`, `step`, and flattened `gif` / `recordVideo` / `screencast` block captions.
 - `--click-pulse` sets the whole-test click/tap/drop pulse style when `--gif` is active.
 - `--gif-hold-after-action` sets the whole-test post-action hold duration when `--gif` is active.
@@ -161,6 +162,7 @@ cmg run tests\flows --gif artifacts\gifs
 cmg run tests\flows --gif artifacts\gifs --gif-quality highest
 cmg run tests\flows --gif artifacts\gifs --pointer-duration 600 --pointer-easing spring
 cmg run tests\flows --gif artifacts\gifs --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44 --pointer-shadow strong
+cmg run tests\flows --gif artifacts\gifs --show-pointer false
 cmg run tests\flows --gif artifacts\gifs --caption-style qa --caption-position bottom --caption-severity success
 cmg run tests\flows --gif artifacts\gifs --click-pulse ripple --pointer-pre-click-hold 120 --pointer-post-click-hold 450 --gif-hold-on-failure 1800
 cmg run tests\flows --gif artifacts\gifs --gif-timeline artifacts\timelines

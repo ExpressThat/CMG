@@ -5,6 +5,7 @@ public sealed record ScriptRecordingOptions(
     GifQuality Quality = GifQuality.Highest,
     ScriptPointerMotionOptions? PointerMotion = null,
     PointerVisualOptions? PointerVisual = null,
+    PointerVisibility ShowPointer = PointerVisibility.Auto,
     ClickPulseStyle ClickPulse = ClickPulseStyle.Ring,
     int HoldAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
     int HoldOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
