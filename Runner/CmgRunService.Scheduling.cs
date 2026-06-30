@@ -15,6 +15,7 @@ public sealed partial class CmgRunService
             tests.Add(result);
             output.Add(TestOutput(StatusWord(result), result.Name, options));
             output.AddRange(GifSizeWarnings(result, options));
+            output.AddRange(GifPaletteWarnings(result));
             if (!ContinueAfterFailureLimit(options, tests, output))
             {
                 return false;

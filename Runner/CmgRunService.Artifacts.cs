@@ -1,7 +1,11 @@
+using CMG.Browser.Scripting.Recording;
+
 namespace CMG.Runner;
 
 public sealed partial class CmgRunService
 {
+    private const int GifPaletteWarningThreshold = 240;
+
     internal static IReadOnlyList<string> ResolveFiles(string path)
     {
         if (File.Exists(path))
@@ -63,6 +67,46 @@ public sealed partial class CmgRunService
         }
 
         return warnings;
+    }
+
+    internal static IReadOnlyList<string> GifPaletteWarnings(CmgTestResult test)
+    {
+        var warnings = new List<string>();
+        foreach (var path in GifPaths(test.GifPath))
+        {
+            var file = new FileInfo(path);
+            if (!file.Exists)
+            {
+                continue;
+            }
+
+            try
+            {
+                var metadata = GifInspector.Inspect(file);
+                if (HasPalettePressure(metadata))
+                {
+                    warnings.Add(
+                        $"GIF_WARN_PALETTE test={Quote(test.Name)} path={Quote(file.FullName)} " +
+                        $"paletteColors={metadata.PaletteColors} thresholdColors={GifPaletteWarningThreshold} palette={metadata.Palette}");
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        return warnings;
+    }
+
+    private static bool HasPalettePressure(GifInspection metadata)
+    {
+        if (metadata.PaletteColors.StartsWith('>'))
+        {
+            return true;
+        }
+
+        return int.TryParse(metadata.PaletteColors, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var colors) &&
+            colors >= GifPaletteWarningThreshold;
     }
 
     private static IEnumerable<string> GifPaths(string? gifPath) =>

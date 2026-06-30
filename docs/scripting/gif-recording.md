@@ -243,6 +243,8 @@ Use `cmg gif inspect <file>` when an agent needs to inspect an existing GIF arti
 
 Use `cmg run --gif-warn-size <size>` when CI or agents should flag unexpectedly large visual artifacts. The runner emits `GIF_WARN_SIZE test="<name>" path="<gif>" sizeBytes=<bytes> thresholdBytes=<bytes>` after the relevant test result line, and the warning does not fail the run.
 
+Palette pressure diagnostics are automatic for runner GIF artifacts. When a recorded GIF uses at least 240 decoded colors, or the inspector reaches the `>256` color cap, the runner emits `GIF_WARN_PALETTE test="<name>" path="<gif>" paletteColors=<count-or->256> thresholdColors=240 palette=<mode>`. This warning does not fail the run; it tells agents and CI that the GIF may show color loss or visible dithering and may need quality, crop, or future format tuning.
+
 ## Quality
 
 GIF quality controls palette generation and dithering. It does not change the browser screenshot source, virtual pointer, pointer events, drag ghosts, captions, timing, or which frames are captured.

@@ -135,7 +135,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add `dither=<none|floyd-steinberg|bayer|atkinson|sierra>` for explicit palette control. CLI: `--gif-dither <mode>` for whole-run defaults.
 - Add `palette=<global|local|adaptive>` for users who need stable colors across frames or better per-frame color. CLI: `--gif-palette <mode>`.
 - Add `colors=<2..256>` for advanced file-size tuning. CLI: `--gif-colors <count>`.
-- Add automatic palette diagnostics that warn when a page has too many colors for a good GIF.
+- Implemented: add automatic runner palette diagnostics that emit `GIF_WARN_PALETTE` when recorded artifacts approach the GIF color limit.
 - Add DSL `format=<gif|apng|webp|mp4>` on recording blocks while keeping GIF as the default visual-evidence format.
 - Add CLI `--record-format <gif|apng|webp|mp4>` only for whole-run output defaults.
 - Add APNG output for lossless color when users do not need old GIF compatibility.
