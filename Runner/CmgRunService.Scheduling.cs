@@ -11,9 +11,11 @@ public sealed partial class CmgRunService
     {
         foreach (var test in selectedTests)
         {
-            var result = RunScheduledTest(test, remoteDebuggingUrl, options);
+            var rawResult = RunScheduledTest(test, remoteDebuggingUrl, options);
+            var (result, guardOutput) = ApplyGifDurationGuard(rawResult, options);
             tests.Add(result);
             output.Add(TestOutput(StatusWord(result), result.Name, options));
+            output.AddRange(guardOutput);
             output.AddRange(GifSizeWarnings(result, options));
             output.AddRange(GifPaletteWarnings(result));
             if (!ContinueAfterFailureLimit(options, tests, output))

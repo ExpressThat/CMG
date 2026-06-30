@@ -115,6 +115,7 @@ cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gi
 cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --click-pulse dot --gif-hold-after-action 700 --gif-hold-on-failure 1800
 cmg run tests\flows --gif demo-output\runner-gifs --gif-timeline demo-output\timelines
 cmg run tests\flows --gif demo-output\runner-gifs --gif-warn-size 500KB
+cmg run tests\flows --gif demo-output\runner-gifs --gif-max-duration 10s
 ```
 
 CMG also enables evidence-focused defaults when they make the GIF easier to understand. Click and tap actions show a visible pulse by default so the recording proves that an activation happened. Use `clickPulse=` when a script needs a different pulse style or needs to suppress the pulse for one action.
@@ -246,6 +247,8 @@ Use `cmg gif storyboard <file> --output <png>` when a reviewer or agent needs a 
 Use `cmg gif optimize <file> --output <gif>` to coalesce consecutive duplicate frames in an existing artifact while preserving duration. It emits `GIF_OPTIMIZE input="<gif>" output="<gif>" framesBefore=<count> framesAfter=<count> duplicateFramesRemoved=<count> durationMs=<milliseconds> sizeBeforeBytes=<bytes> sizeAfterBytes=<bytes>`.
 
 Use `cmg run --gif-warn-size <size>` when CI or agents should flag unexpectedly large visual artifacts. The runner emits `GIF_WARN_SIZE test="<name>" path="<gif>" sizeBytes=<bytes> thresholdBytes=<bytes>` after the relevant test result line, and the warning does not fail the run.
+
+Use `cmg run --gif-max-duration <duration>` when CI should fail visual evidence that is too long to review. Durations accept plain milliseconds or `ms`, `s`, and `m` suffixes. The runner emits `GIF_MAX_DURATION test="<name>" path="<gif>" durationMs=<milliseconds> thresholdMs=<milliseconds>`, marks that test failed, writes the reason into reports, and exits `1`.
 
 Palette pressure diagnostics are automatic for runner GIF artifacts. When a recorded GIF uses at least 240 decoded colors, or the inspector reaches the `>256` color cap, the runner emits `GIF_WARN_PALETTE test="<name>" path="<gif>" paletteColors=<count-or->256> thresholdColors=240 palette=<mode>`. This warning does not fail the run; it tells agents and CI that the GIF may show color loss or visible dithering and may need quality, crop, or future format tuning.
 

@@ -133,9 +133,7 @@ public sealed class RunCommandBuilderTests
         var edge = new Option<bool>("--edge");
         var firefox = new Option<bool>("--firefox");
         var root = new RootCommand();
-        root.Options.Add(chrome);
-        root.Options.Add(edge);
-        root.Options.Add(firefox);
+        root.Options.Add(chrome); root.Options.Add(edge); root.Options.Add(firefox);
         root.Subcommands.Add(new RunCommandBuilder(handler).Build(new BrowserSelectionOptions(chrome, edge, firefox)));
         return root;
     }
@@ -148,8 +146,7 @@ public sealed class RunCommandBuilderTests
         public int? NavigationTimeout { get; private set; }
         public int? AssertionTimeout { get; private set; }
         public string? BaseUrl { get; private set; }
-        public IReadOnlyDictionary<string, string> Variables { get; private set; } =
-            new Dictionary<string, string>();
+        public IReadOnlyDictionary<string, string> Variables { get; private set; } = new Dictionary<string, string>();
         public DirectoryInfo? Artifacts { get; private set; }
         public FileInfo? JsonReport { get; private set; }
         public DirectoryInfo? TraceDirectory { get; private set; }
@@ -197,7 +194,9 @@ public sealed class RunCommandBuilderTests
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-            string? gifTimelinePath = null, long? gifWarnSizeBytes = null)
+            string? gifTimelinePath = null,
+            long? gifWarnSizeBytes = null,
+            int? gifMaxDurationMilliseconds = null)
         {
             BrowserKind = browserKind;
             Path = path;

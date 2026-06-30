@@ -98,6 +98,51 @@ public sealed partial class CmgRunService
         return warnings;
     }
 
+    internal static (CmgTestResult Result, IReadOnlyList<string> Output) ApplyGifDurationGuard(CmgTestResult test, CmgRunOptions options)
+    {
+        if (options.GifMaxDurationMilliseconds is not int threshold)
+        {
+            return (test, []);
+        }
+
+        var output = new List<string>();
+        var reasons = new List<string>();
+        foreach (var path in GifPaths(test.GifPath))
+        {
+            var file = new FileInfo(path);
+            if (!file.Exists)
+            {
+                continue;
+            }
+
+            try
+            {
+                var metadata = GifInspector.Inspect(file);
+                if (metadata.DurationMilliseconds <= threshold)
+                {
+                    continue;
+                }
+
+                output.Add(
+                    $"GIF_MAX_DURATION test={Quote(test.Name)} path={Quote(file.FullName)} " +
+                    $"durationMs={metadata.DurationMilliseconds} thresholdMs={threshold}");
+                reasons.Add($"GIF '{file.FullName}' duration {metadata.DurationMilliseconds}ms exceeded max {threshold}ms.");
+            }
+            catch (Exception exception)
+            {
+                output.Add($"GIF_MAX_DURATION_INSPECT_FAILED test={Quote(test.Name)} path={Quote(file.FullName)} reason={Quote(exception.Message)}");
+            }
+        }
+
+        if (reasons.Count is 0)
+        {
+            return (test, output);
+        }
+
+        var reason = string.Join(' ', reasons);
+        return (test with { Success = false, Error = reason }, output);
+    }
+
     private static bool HasPalettePressure(GifInspection metadata)
     {
         if (metadata.PaletteColors.StartsWith('>'))

@@ -28,6 +28,26 @@ public sealed class RunCommandBuilderGifSizeTests
         Assert.Null(handler.Path);
     }
 
+    [Fact]
+    public void RunCommand_MapsGifMaxDuration()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --gif-max-duration 2s").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(2000, handler.GifMaxDurationMilliseconds);
+    }
+
+    [Fact]
+    public void RunCommand_RejectsInvalidGifMaxDuration()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --gif-max-duration forever").Invoke();
+
+        Assert.Equal(1, exitCode);
+        Assert.Null(handler.Path);
+    }
+
     private static RootCommand BuildRoot(CapturingHandler handler)
     {
         var chrome = new Option<bool>("--chrome");
@@ -41,6 +61,7 @@ public sealed class RunCommandBuilderGifSizeTests
     {
         public string? Path { get; private set; }
         public long? GifWarnSizeBytes { get; private set; }
+        public int? GifMaxDurationMilliseconds { get; private set; }
 
         public int Run(
             BrowserKind browserKind,
@@ -72,10 +93,12 @@ public sealed class RunCommandBuilderGifSizeTests
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
             string? gifTimelinePath = null,
-            long? gifWarnSizeBytes = null)
+            long? gifWarnSizeBytes = null,
+            int? gifMaxDurationMilliseconds = null)
         {
             Path = path;
             GifWarnSizeBytes = gifWarnSizeBytes;
+            GifMaxDurationMilliseconds = gifMaxDurationMilliseconds;
             return 0;
         }
     }

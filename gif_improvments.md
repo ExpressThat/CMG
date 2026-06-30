@@ -351,7 +351,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add configurable frame sampling for long recordings.
 - Add parallel frame preprocessing before final encode.
 - Add memory usage diagnostics for long GIFs.
-- Add max duration guard with a clear failure reason. CLI: `--gif-max-duration <duration>`.
+- Implemented: add max duration guard with clear failure reason. CLI: `--gif-max-duration <duration>` emits `GIF_MAX_DURATION`, fails the test, and writes the reason into reports.
 - Add max file size guard with a clear warning or failure. CLI: `--gif-max-size <size>`.
 - Add automatic downscale when file size exceeds a threshold.
 - Add automatic quality fallback when file size exceeds a threshold.

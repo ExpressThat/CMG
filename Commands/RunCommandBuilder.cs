@@ -16,10 +16,7 @@ public sealed partial class RunCommandBuilder
 
     public Command Build(BrowserSelectionOptions browserOptions)
     {
-        var pathArgument = new Argument<string>("path")
-        {
-            Description = "A CMG script file or folder containing .cmgscript files."
-        };
+        var pathArgument = new Argument<string>("path") { Description = "A CMG script file or folder containing .cmgscript files." };
         var configOption = new Option<FileInfo?>("--config") { Description = "JSON run config file. CLI options override config values." };
         var projectOption = new Option<string?>("--project") { Description = "Named project from the run config." };
         var gifOption = new Option<DirectoryInfo?>("--gif")
@@ -49,6 +46,7 @@ public sealed partial class RunCommandBuilder
         var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
         var gifTimelineOption = new Option<string?>("--gif-timeline") { Description = "Write GIF timeline JSON files to this file or directory." };
         var gifWarnSizeOption = new Option<string?>("--gif-warn-size") { Description = "Warn when a recorded GIF exceeds this size, for example 500KB or 2MB." };
+        var gifMaxDurationOption = new Option<string?>("--gif-max-duration") { Description = "Fail a test when a recorded GIF exceeds this duration, for example 2500ms, 10s, or 1m." };
         var jsonOption = new Option<FileInfo?>("--report-json") { Description = "Write a JSON test report to this file." };
         var htmlOption = new Option<FileInfo?>("--report-html") { Description = "Write an HTML test report to this file." };
         var junitOption = new Option<FileInfo?>("--report-junit") { Description = "Write a JUnit XML test report to this file." };
@@ -123,6 +121,7 @@ public sealed partial class RunCommandBuilder
             holdOnFailureOption,
             gifTimelineOption,
             gifWarnSizeOption,
+            gifMaxDurationOption,
             jsonOption,
             htmlOption,
             junitOption,
@@ -197,6 +196,11 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(sizeError);
                 return 1;
             }
+            if (!GifDurationOptionParser.TryParse(parseResult.GetValue(gifMaxDurationOption), out var gifMaxDurationMilliseconds, out var durationError))
+            {
+                Console.Error.WriteLine(durationError);
+                return 1;
+            }
             variables = MergeVariables(MergeVariables(config.Variables, project?.Variables), variables);
             var projectBrowser = BrowserKindFor(project?.Browser);
             if (projectBrowser is BrowserKind.InvalidSelection)
@@ -236,7 +240,8 @@ public sealed partial class RunCommandBuilder
                 holdAfterAction,
                 holdOnFailure,
                 parseResult.GetValue(gifTimelineOption),
-                gifWarnSizeBytes);
+                gifWarnSizeBytes,
+                gifMaxDurationMilliseconds);
         });
 
         return command;

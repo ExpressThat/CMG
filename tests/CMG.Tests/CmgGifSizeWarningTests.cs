@@ -80,7 +80,33 @@ public sealed class CmgGifSizeWarningTests
         }
     }
 
-    private static CmgRunOptions Options(long? threshold) =>
+    [Fact]
+    public void GifDurationGuard_FailsResultWhenArtifactExceedsThreshold()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var sink = new GifFrameSink();
+        sink.AddFrame(SolidPng(Color.Red), 100);
+        sink.AddFrame(SolidPng(Color.Blue), 100);
+        sink.Save(path);
+        try
+        {
+            var test = new CmgTestResult("checkout", "flow.cmgscript", true, [], null, path, []);
+            var (result, output) = CmgRunService.ApplyGifDurationGuard(test, Options(threshold: null, maxDuration: 1500));
+
+            Assert.False(result.Success);
+            Assert.Contains("exceeded max 1500ms", result.Error);
+            var line = Assert.Single(output);
+            Assert.Contains("GIF_MAX_DURATION", line, StringComparison.Ordinal);
+            Assert.Contains("durationMs=2000", line, StringComparison.Ordinal);
+            Assert.Contains("thresholdMs=1500", line, StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    private static CmgRunOptions Options(long? threshold, int? maxDuration = null) =>
         new(
             BrowserKind.Chrome,
             null,
@@ -101,7 +127,8 @@ public sealed class CmgGifSizeWarningTests
             null,
             null,
             new Dictionary<string, string>(),
-            GifWarnSizeBytes: threshold);
+            GifWarnSizeBytes: threshold,
+            GifMaxDurationMilliseconds: maxDuration);
 
     private static byte[] GradientPng()
     {
