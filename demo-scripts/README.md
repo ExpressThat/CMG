@@ -142,7 +142,7 @@ dotnet run -- --firefox browser close
 - `04-capture-elements.cmgscript`: Captures HTML, element screenshots, and a full page screenshot.
 - `05-variables-and-evaluate.cmgscript`: Demonstrates variables, assertions, JavaScript evaluation, and viewport sizing.
 - `06-tabs-and-keys.cmgscript`: Demonstrates tab listing, tab activation, keyboard input, shortcut chords, and dialog dismissal.
-- `07-complex-drag-flow.cmgscript`: Demonstrates block `dragAndDrop` with delay, hover, and drop steps.
+- `07-complex-drag-flow.cmgscript`: Demonstrates block `dragAndDrop` with delay, hover, recording-only checkpoint/pause hints, and drop steps.
 - `08-gif-move-mouse.cmgscript`: Demonstrates recording-only `moveMouse` and visible pointer movement.
 - `09-drag-autoscroll.cmgscript`: Demonstrates `moveMouse "bottom"` inside a GIF drag block.
 - `10-css-hover-states.cmgscript`: Demonstrates real CSS `:hover` states during GIF pointer movement.

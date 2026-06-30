@@ -5,8 +5,10 @@ waitForElement "#dropQueue" timeout=5000
 scrollIntoView "#dragdrop"
 
 dragAndDrop "[data-command='browser launch']" {
+  recordCheckpoint "drag started"
   delay 200
   hover "#dropQueue"
+  pauseGif 150
   delay 200
   drop "#dropQueue"
 }
