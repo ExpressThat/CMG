@@ -171,6 +171,16 @@ public sealed partial class BrowserScriptRunner
         return [$"GIF_PAUSE {action.LineNumber:000} milliseconds={milliseconds} status={status}"];
     }
 
+    private static IReadOnlyList<string> ExecuteRecordCheckpoint(BrowserScriptAction action, ScriptGifRecorder? recorder)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var name = action.Arguments[0];
+        recorder?.RecordCheckpoint(action, name);
+        var status = recorder is null ? "skipped" : "recorded";
+        var reason = recorder is null ? " reason=no-active-recording" : string.Empty;
+        return [$"GIF_CHECKPOINT {action.LineNumber:000} name={QuoteField(name)} status={status}{reason}"];
+    }
+
     private static IReadOnlyList<string> ExecuteFail(BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, int.MaxValue);

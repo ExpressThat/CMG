@@ -4,7 +4,12 @@ namespace CMG.Browser.Scripting.Recording;
 
 public static class GifTimelineWriter
 {
-    public static string Write(string path, string gifPath, ScriptRecordingOptions options, GifFrameSink sink)
+    public static string Write(
+        string path,
+        string gifPath,
+        ScriptRecordingOptions options,
+        GifFrameSink sink,
+        IReadOnlyList<GifTimelineCheckpoint>? checkpoints = null)
     {
         var fullPath = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(fullPath);
@@ -16,11 +21,16 @@ public static class GifTimelineWriter
         var gif = new FileInfo(gifPath);
         using var stream = File.Create(fullPath);
         using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
-        WritePayload(writer, gif, options, sink);
+        WritePayload(writer, gif, options, sink, checkpoints ?? []);
         return fullPath;
     }
 
-    private static void WritePayload(Utf8JsonWriter writer, FileInfo gif, ScriptRecordingOptions options, GifFrameSink sink)
+    private static void WritePayload(
+        Utf8JsonWriter writer,
+        FileInfo gif,
+        ScriptRecordingOptions options,
+        GifFrameSink sink,
+        IReadOnlyList<GifTimelineCheckpoint> checkpoints)
     {
         writer.WriteStartObject();
         writer.WriteNumber("version", 1);
@@ -39,8 +49,25 @@ public static class GifTimelineWriter
             writer.WriteNumberValue(delay);
         }
         writer.WriteEndArray();
+        WriteCheckpoints(writer, checkpoints);
         WriteTiming(writer, options);
         writer.WriteEndObject();
+    }
+
+    private static void WriteCheckpoints(Utf8JsonWriter writer, IReadOnlyList<GifTimelineCheckpoint> checkpoints)
+    {
+        writer.WritePropertyName("checkpoints");
+        writer.WriteStartArray();
+        foreach (var checkpoint in checkpoints)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("name", checkpoint.Name);
+            writer.WriteNumber("lineNumber", checkpoint.LineNumber);
+            writer.WriteNumber("frameIndex", checkpoint.FrameIndex);
+            writer.WriteNumber("timeMilliseconds", checkpoint.TimeMilliseconds);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
     }
 
     private static void WriteTiming(Utf8JsonWriter writer, ScriptRecordingOptions options)

@@ -140,6 +140,17 @@ Recording-only actions capture frames only when GIF recording is active. Without
 
 - `pauseGif <milliseconds>` reports `GIF_PAUSE <line> milliseconds=<value> status=skipped`.
 - `moveMouse ...` reports `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording`.
+- `recordCheckpoint "<name>"` reports `GIF_CHECKPOINT <line> name="<name>" status=skipped reason=no-active-recording`.
+
+Use `recordCheckpoint "<name>"` to add a named marker to timeline JSON without adding a frame:
+
+```text
+gif "checkout evidence" timeline=true {
+  recordCheckpoint "before payment"
+  click "#pay"
+  recordCheckpoint "after payment"
+}
+```
 
 Failure holds make failed artifacts easier to inspect:
 
@@ -222,6 +233,7 @@ The JSON sidecar contains:
 - `version`, `createdAtUtc`, `gifPath`, `fileSizeBytes`, `quality`
 - `frameCount`, `durationMilliseconds`, `width`, `height`
 - `frameDelaysMilliseconds`
+- `checkpoints`: named markers with `name`, `lineNumber`, `frameIndex`, and `timeMilliseconds`
 - `timing.pointerDurationMilliseconds`, `timing.pointerSpeed`, `timing.pointerEasing`, `timing.clickPulse`, `timing.holdAfterActionMilliseconds`, `timing.holdOnFailureMilliseconds`
 
 Use this file when reports, CI artifacts, or agent feedback need machine-readable timing without parsing the GIF binary.
@@ -279,5 +291,5 @@ Timing is automatic by default. Use pointer choreography options when a GIF need
 - `cmg run --gif` prefixes runner GIF filenames with the selected `--project` name, so matrix jobs can write Chrome, Firefox, and Edge artifacts into the same directory without overwriting each other.
 - `recordVideo "name" { ... }` and `screencast "name" { ... }` are provider-style aliases for CMG GIF blocks. They write animated GIF files, not MP4/WebM files.
 - Command-level `--gif` records the whole direct script or test and suppresses nested `gif` block files. Suppressed blocks write `GIF_BLOCK_SUPPRESSED <line>` to stdout.
-- GIF-only timeline actions such as `moveMouse` and `pauseGif` skip when no recording is active; scripts without recording do not create or move a virtual mouse.
+- GIF-only timeline actions such as `moveMouse`, `pauseGif`, and `recordCheckpoint` skip when no recording is active; scripts without recording do not create or move a virtual mouse.
 - Failed GIF recordings hold the final visible state for `holdOnFailure` / `--gif-hold-on-failure` milliseconds before the partial GIF is written.

@@ -555,6 +555,21 @@ Output:
 - `GIF_PAUSE <line> milliseconds=<value> status=captured` when a GIF recorder is active.
 - `GIF_PAUSE <line> milliseconds=<value> status=skipped` when the script or test is running without command-level `--gif` and outside any `gif`, `recordVideo`, or `screencast` block.
 
+## `recordCheckpoint`
+
+```text
+recordCheckpoint "after login"
+```
+
+Adds a named marker to the active GIF timeline JSON without capturing a frame or changing page state. Use it before or after important visual transitions when CI reports or agents need a stable bookmark in the sidecar metadata.
+
+`recordCheckpoint` is metadata-only. It does not create or move the virtual pointer, and it is skipped when no GIF recorder is active.
+
+Output:
+
+- `GIF_CHECKPOINT <line> name="<name>" status=recorded` when a GIF recorder is active.
+- `GIF_CHECKPOINT <line> name="<name>" status=skipped reason=no-active-recording` when the script or test is running without command-level `--gif` and outside any `gif`, `recordVideo`, or `screencast` block.
+
 ## `html`
 
 ```text

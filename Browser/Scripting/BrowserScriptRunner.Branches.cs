@@ -37,5 +37,6 @@ public sealed partial class BrowserScriptRunner
         name.Equals("default", StringComparison.OrdinalIgnoreCase);
 
     private static bool ShouldCaptureAfterAction(BrowserScriptAction action) =>
-        !action.Name.Equals("pauseGif", StringComparison.OrdinalIgnoreCase);
+        !action.Name.Equals("pauseGif", StringComparison.OrdinalIgnoreCase) &&
+        !action.Name.Equals("recordCheckpoint", StringComparison.OrdinalIgnoreCase);
 }

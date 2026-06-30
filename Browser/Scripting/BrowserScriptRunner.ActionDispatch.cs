@@ -56,6 +56,7 @@ public sealed partial class BrowserScriptRunner
                 ExecuteTimeoutDefaultAction(action, context),
             "delay" => ExecuteDelay(action),
             "pausegif" => ExecutePauseGif(action, recorder),
+            "recordcheckpoint" => ExecuteRecordCheckpoint(action, recorder),
             "html" => ExecuteHtml(remoteDebuggingUrl, automationClient, action),
             "textcontent" or "innertext" or "inputvalue" or "getattribute" or "computedstyle" or "property" or
             "count" or "locatorcount" or "boundingbox" or "alltextcontents" or "allinnertexts" =>

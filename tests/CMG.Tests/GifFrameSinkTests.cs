@@ -92,7 +92,8 @@ public sealed class GifFrameSinkTests
             timelinePath,
             gifPath,
             new ScriptRecordingOptions(gifPath, HoldOnFailureMilliseconds: 1500),
-            sink);
+            sink,
+            [new GifTimelineCheckpoint("after click", 7, 1, 100)]);
 
         using var json = JsonDocument.Parse(File.ReadAllText(written));
         var root = json.RootElement;
@@ -100,6 +101,11 @@ public sealed class GifFrameSinkTests
         Assert.Equal(350, root.GetProperty("durationMilliseconds").GetInt32());
         Assert.Equal(1500, root.GetProperty("timing").GetProperty("holdOnFailureMilliseconds").GetInt32());
         Assert.Equal([100, 250], root.GetProperty("frameDelaysMilliseconds").EnumerateArray().Select(value => value.GetInt32()).ToArray());
+        var checkpoint = Assert.Single(root.GetProperty("checkpoints").EnumerateArray());
+        Assert.Equal("after click", checkpoint.GetProperty("name").GetString());
+        Assert.Equal(7, checkpoint.GetProperty("lineNumber").GetInt32());
+        Assert.Equal(1, checkpoint.GetProperty("frameIndex").GetInt32());
+        Assert.Equal(100, checkpoint.GetProperty("timeMilliseconds").GetInt32());
         directory.Delete(recursive: true);
     }
 

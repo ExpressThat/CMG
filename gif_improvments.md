@@ -236,7 +236,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add `speedUpGif { ... }` block for long setup sections.
 - Add `slowDownGif { ... }` block for important interactions.
 - Add `hideFromGif { ... }` block for sensitive or boring actions.
-- Add `recordCheckpoint "name"` markers that show in reports and timelines.
+- Implemented: `recordCheckpoint "name"` markers emit parseable step output and write frame/time bookmarks into GIF timeline JSON when recording is active.
 - Implemented: add timeline metadata JSON beside each GIF. CLI: `--gif-timeline <file|directory>`; DSL blocks support `timeline=<true|false|file|directory>`.
 - Add an editor command to trim start/end frames after recording.
 - Add an editor command to remove duplicate frames.

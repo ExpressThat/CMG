@@ -18,6 +18,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
     private readonly IBrowserAutomationClient devToolsClient;
     private readonly ScriptRecordingOptions options;
     private readonly GifFrameSink frameSink;
+    private readonly List<GifTimelineCheckpoint> checkpoints = [];
     private readonly VirtualPointer pointer = new();
     private string? remoteDebuggingUrl;
 
@@ -31,6 +32,8 @@ public sealed partial class ScriptGifRecorder : IDisposable
     }
 
     public string OutputPath => Path.GetFullPath(options.OutputPath);
+
+    public IReadOnlyList<GifTimelineCheckpoint> Checkpoints => checkpoints;
 
     public void Start(string remoteDebuggingUrl)
     {
@@ -97,5 +100,19 @@ public sealed partial class ScriptGifRecorder : IDisposable
     public void CaptureClickPulse()
     {
         CapturePulseFrame();
+    }
+
+    public void RecordCheckpoint(BrowserScriptAction action, string name)
+    {
+        if (remoteDebuggingUrl is null)
+        {
+            return;
+        }
+
+        checkpoints.Add(new GifTimelineCheckpoint(
+            name,
+            action.LineNumber,
+            frameSink.FrameCount,
+            frameSink.DurationMilliseconds));
     }
 }

@@ -59,5 +59,33 @@ public sealed class BrowserScriptRunnerGifPauseTests
         Assert.Equal(1, client.PageScreenshotCount);
     }
 
+    [Fact]
+    public void RecordCheckpoint_WithoutRecorder_SkipsWithoutPointerFrame()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("recordCheckpoint \"after setup\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(0, client.PageScreenshotCount);
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_CHECKPOINT 001 name=\"after setup\" status=skipped reason=no-active-recording", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RecordCheckpoint_InsideGifBlock_DoesNotCaptureFrame()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif").Replace("\\", "/");
+        var result = Runner().RunText($$"""
+            gif "checkpoint" output="{{path}}" {
+              recordCheckpoint "ready"
+              pauseGif 200
+            }
+            """, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(1, client.PageScreenshotCount);
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_CHECKPOINT 002 name=\"ready\" status=recorded", StringComparison.Ordinal));
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
 }
