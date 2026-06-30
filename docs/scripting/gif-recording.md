@@ -129,11 +129,14 @@ gif "checkout evidence" holdAfterAction=600 {
 }
 ```
 
-`pauseGif` captures a timed frame only when GIF recording is active. Without `--gif` or an active `gif` / `recordVideo` / `screencast` block, it is a no-op and reports `GIF_PAUSE <line> milliseconds=<value> status=skipped`. It does not create or move the virtual pointer outside GIF recording.
+Recording-only actions capture frames only when GIF recording is active. Without `--gif` or an active `gif` / `recordVideo` / `screencast` block, they are no-ops and report a skipped status. They do not create or move the virtual pointer outside GIF recording.
+
+- `pauseGif <milliseconds>` reports `GIF_PAUSE <line> milliseconds=<value> status=skipped`.
+- `moveMouse ...` reports `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording`.
 
 ## `moveMouse`
 
-`moveMouse` is a script-only action for GIF runs. It has no one-off CLI equivalent.
+`moveMouse` is a script-only action for GIF runs. It has no one-off CLI equivalent. When no GIF recorder is active, it skips with `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording`.
 
 ```text
 moveMouse "center"
@@ -238,4 +241,4 @@ Timing is automatic by default. Use pointer choreography options when a GIF need
 - `cmg run --gif` prefixes runner GIF filenames with the selected `--project` name, so matrix jobs can write Chrome, Firefox, and Edge artifacts into the same directory without overwriting each other.
 - `recordVideo "name" { ... }` and `screencast "name" { ... }` are provider-style aliases for CMG GIF blocks. They write animated GIF files, not MP4/WebM files.
 - Command-level `--gif` records the whole direct script or test and suppresses nested `gif` block files. Suppressed blocks write `GIF_BLOCK_SUPPRESSED <line>` to stdout.
-- `moveMouse` requires `--gif`; scripts without recording do not create or move a virtual mouse.
+- GIF-only timeline actions such as `moveMouse` and `pauseGif` skip when no recording is active; scripts without recording do not create or move a virtual mouse.

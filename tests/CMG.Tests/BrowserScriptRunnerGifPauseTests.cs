@@ -5,6 +5,35 @@ namespace CMG.Tests;
 public sealed class BrowserScriptRunnerGifPauseTests
 {
     [Fact]
+    public void MoveMouse_WithoutRecorder_SkipsWithoutPointerFrame()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("moveMouse \"center\"", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(0, client.PageScreenshotCount);
+        Assert.Equal(0, client.MouseMoveCount);
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_MOVE_MOUSE 001 status=skipped reason=no-active-recording", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void MoveMouse_InsideUnrecordedDragBlock_SkipsAndStillRunsNativeDrag()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("""
+            dragAndDrop "#source" {
+              moveMouse "bottom"
+              drop "#target"
+            }
+            """, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_MOVE_MOUSE 002 status=skipped reason=no-active-recording", StringComparison.Ordinal));
+        Assert.Equal("#source", client.LastDragSource);
+        Assert.Equal("#target", client.LastDragTarget);
+    }
+
+    [Fact]
     public void PauseGif_WithoutRecorder_DoesNotCapturePointerFrame()
     {
         var client = new FakeAutomationClient();

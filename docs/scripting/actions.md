@@ -361,7 +361,7 @@ moveMouse x=100 y=200
 moveMouse selector=".content-area" edge=bottom inset=16
 ```
 
-Moves the GIF virtual pointer to a viewport-relative position. `moveMouse` is script-only and requires `browser control script --gif <path>`; there is no one-off CLI `browser control moveMouse` command. Without `--gif`, the action fails.
+Moves the GIF virtual pointer to a viewport-relative position. `moveMouse` is script-only and has no one-off CLI `browser control moveMouse` command. Without command-level `--gif` and outside an active `gif`, `recordVideo`, or `screencast` block, it is skipped and does not create or move the virtual pointer.
 
 Coordinates are CSS pixels relative to the visible viewport. Alias targets use a small inset so the pointer remains inside the viewport.
 
@@ -401,6 +401,11 @@ moveMouse "center"
 moveMouse x=240 y=320
 moveMouse selector=".content-area" edge=bottom inset=24
 ```
+
+Output:
+
+- No payload line when a GIF recorder is active and the movement is captured.
+- `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording` when no GIF recorder is active.
 
 Inside a GIF `dragAndDrop` block, `moveMouse` moves the held pointer and keeps drag movement events active. This is useful for page edge-autoscroll behavior:
 
@@ -1013,7 +1018,7 @@ Allowed child actions:
 
 - `delay <milliseconds>`: Pause while the drag is active. With `--gif`, frames are captured during the hold.
 - `hover "<selector>"`: Move the active drag pointer to another element.
-- `moveMouse "<alias>"`, `moveMouse x=<pixels> y=<pixels>`, or `moveMouse selector="<selector>" edge=<edge> inset=<pixels>`: Move the active drag pointer to a viewport-relative position or inside an element edge. Requires `--gif`.
+- `moveMouse "<alias>"`, `moveMouse x=<pixels> y=<pixels>`, or `moveMouse selector="<selector>" edge=<edge> inset=<pixels>`: Move the active drag pointer to a viewport-relative position or inside an element edge. Skips with `GIF_MOVE_MOUSE ... status=skipped` when no GIF recorder is active.
 - `scrollIntoView "<selector>"`: Scroll an element into view before continuing.
 - `waitForElement "<selector>" timeout=5000`: Wait for an element before continuing.
 - `drop "<selector>"`: Finish the drag on the target selector. Required exactly once.

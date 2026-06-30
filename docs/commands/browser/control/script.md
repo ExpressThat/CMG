@@ -71,7 +71,7 @@ cmg --firefox browser control script --file <path>
 - Script-level `gif "name" { ... }`, `recordVideo "name" { ... }`, and `screencast "name" { ... }` blocks record only the wrapped actions when `--gif` is not provided.
 - When `--gif` is provided, the whole script is recorded and nested block recordings are suppressed.
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
-- Without `--gif` or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif` are skipped instead of creating pointer frames.
+- Without `--gif` or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif` and `moveMouse` are skipped instead of creating pointer frames.
 - Pointer-aware actions resolve rich locators to the same target used by browser dispatch, so pointer movement, pointer events, hover state, drag ghosts, screenshots, and captions stay aligned.
 - Whole-run pointer and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, and `--gif-hold-after-action` apply when `--gif` is active. DSL `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, and `holdAfterAction=` as scoped defaults for child actions; child actions can override those options locally.
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.

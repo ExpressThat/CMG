@@ -333,7 +333,7 @@ dotnet run -- browser control script --file demo-scripts\07-complex-drag-flow.cm
 
 ## Drag Pointer Movement
 
-Use `moveMouse` during GIF recording to move a dragged item to a viewport-relative point. The pointer movement and delay dispatch browser mouse, pointer, drag, and dragover events.
+Use `moveMouse` during GIF recording to move a dragged item to a viewport-relative point. The pointer movement and delay dispatch browser mouse, pointer, drag, and dragover events. Without an active GIF recorder, `moveMouse` skips instead of injecting a virtual pointer.
 
 ```text
 navigate "C:\Projects\CMG\index.html"

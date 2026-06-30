@@ -78,7 +78,7 @@ Record the complex drag demo as a GIF:
 dotnet run -- browser control script --file demo-scripts\07-complex-drag-flow.cmgscript --gif demo-output\complex-drag.gif
 ```
 
-Record the GIF-only `moveMouse` demo:
+Record the recording-only `moveMouse` demo:
 
 ```powershell
 dotnet run -- browser control script --file demo-scripts\08-gif-move-mouse.cmgscript --gif demo-output\gif-move-mouse.gif
@@ -131,7 +131,7 @@ dotnet run -- --firefox browser close
 - `05-variables-and-evaluate.cmgscript`: Demonstrates variables, assertions, JavaScript evaluation, and viewport sizing.
 - `06-tabs-and-keys.cmgscript`: Demonstrates tab listing, tab activation, keyboard input, shortcut chords, and dialog dismissal.
 - `07-complex-drag-flow.cmgscript`: Demonstrates block `dragAndDrop` with delay, hover, and drop steps.
-- `08-gif-move-mouse.cmgscript`: Demonstrates GIF-only `moveMouse` and visible pointer movement.
+- `08-gif-move-mouse.cmgscript`: Demonstrates recording-only `moveMouse` and visible pointer movement.
 - `09-drag-autoscroll.cmgscript`: Demonstrates `moveMouse "bottom"` inside a GIF drag block.
 - `10-css-hover-states.cmgscript`: Demonstrates real CSS `:hover` states during GIF pointer movement.
 - `13-rich-locators.cmgscript`: Demonstrates direct browser-control text and label locators.

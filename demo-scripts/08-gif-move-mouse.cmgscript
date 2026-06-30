@@ -1,4 +1,4 @@
-# Demonstrates GIF-only moveMouse.
+# Demonstrates recording-only moveMouse.
 # Run with:
 # dotnet run -- browser control script --file demo-scripts\08-gif-move-mouse.cmgscript --gif demo-output\gif-move-mouse.gif
 

@@ -157,7 +157,7 @@ public sealed partial class BrowserScriptRunner
     {
         if (recorder is null)
         {
-            throw new ScriptExecutionException("moveMouse requires script GIF recording. Run the script with --gif <path>.");
+            return [$"GIF_MOVE_MOUSE {action.LineNumber:000} status=skipped reason=no-active-recording"];
         }
 
         if (action.Children.Count > 0)

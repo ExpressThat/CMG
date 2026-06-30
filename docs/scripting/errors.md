@@ -239,13 +239,13 @@ Line 4: readClipboard failed. Expected 0 arguments but got 1.
 
 `setClipboard` and `writeClipboard` require exactly one text argument. `readClipboard` and `clearClipboard` do not accept arguments.
 
-## `moveMouse` Without GIF
+## `moveMouse` Without Active Recording
 
 ```text
-Line 3: moveMouse failed. moveMouse requires script GIF recording. Run the script with --gif <path>.
+GIF_MOVE_MOUSE 003 status=skipped reason=no-active-recording
 ```
 
-`moveMouse` exists only for `browser control script --gif` runs. It is not available as a one-off CLI command and does not run in non-GIF scripts.
+`moveMouse` is a recording-only timeline action. When command-level `--gif` is not active and the action is outside a `gif`, `recordVideo`, or `screencast` block, CMG skips it instead of injecting a virtual pointer. This is not a failure.
 
 ## Invalid `moveMouse` Target
 
