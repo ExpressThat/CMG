@@ -82,6 +82,30 @@ public sealed class GifCommandBuilderTests
         }
     }
 
+    [Fact]
+    public void Presets_PrintsPresetFamilies()
+    {
+        var output = new StringWriter();
+        var original = Console.Out;
+        try
+        {
+            Console.SetOut(output);
+            var exitCode = BuildRoot().Parse(["gif", "presets"]).Invoke();
+
+            Assert.Equal(0, exitCode);
+            var text = output.ToString();
+            Assert.Contains("GIF_PRESETS quality=highest,high,medium,low defaultQuality=highest", text, StringComparison.Ordinal);
+            Assert.Contains("pointerSpeed=slow,normal,fast,instant,multiplier", text, StringComparison.Ordinal);
+            Assert.Contains("pointerEasing=linear,ease-in,ease-out,ease-in-out,spring", text, StringComparison.Ordinal);
+            Assert.Contains("clickPulse=ring,ripple,dot,crosshair,none defaultClickPulse=ring", text, StringComparison.Ordinal);
+            Assert.Contains("defaultHoldAfterActionMs=350", text, StringComparison.Ordinal);
+        }
+        finally
+        {
+            Console.SetOut(original);
+        }
+    }
+
     private static RootCommand BuildRoot()
     {
         var root = new RootCommand();

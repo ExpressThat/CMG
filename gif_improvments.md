@@ -415,7 +415,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 - Add `previewRecordingSettings` validation/action support to print effective DSL recording settings.
 - Add `cmg browser control script --preview-gif-settings` only as a convenience wrapper over the same analysis.
-- Add `cmg gif presets` to list quality and pointer presets.
+- Implemented: add `cmg gif presets` to list quality, pointer speed, pointer easing, click pulse, and timing presets.
 - Add docs with side-by-side examples of quality presets.
 - Add generated sample GIFs to docs for visual comparison.
 - Add a quick-start command specifically for first GIF creation.

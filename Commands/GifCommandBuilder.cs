@@ -9,6 +9,7 @@ public sealed class GifCommandBuilder
     {
         var command = new Command("gif", "GIF artifact inspection and utility commands.");
         command.Subcommands.Add(BuildInspectCommand());
+        command.Subcommands.Add(BuildPresetsCommand());
         return command;
     }
 
@@ -35,6 +36,21 @@ public sealed class GifCommandBuilder
                 Console.Error.WriteLine($"Could not inspect GIF '{input.FullName}'. {exception.Message}");
                 return 1;
             }
+        });
+        return command;
+    }
+
+    private static Command BuildPresetsCommand()
+    {
+        var command = new Command("presets", "List GIF quality, pointer, pulse, and timing presets.");
+        command.SetAction(_ =>
+        {
+            Console.WriteLine("GIF_PRESETS quality=highest,high,medium,low defaultQuality=highest");
+            Console.WriteLine("GIF_PRESETS pointerSpeed=slow,normal,fast,instant,multiplier defaultPointerSpeed=normal multiplierExample=1.5x");
+            Console.WriteLine("GIF_PRESETS pointerEasing=linear,ease-in,ease-out,ease-in-out,spring defaultPointerEasing=ease-in-out");
+            Console.WriteLine("GIF_PRESETS clickPulse=ring,ripple,dot,crosshair,none defaultClickPulse=ring");
+            Console.WriteLine($"GIF_PRESETS timing defaultHoldAfterActionMs={ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds} defaultHoldOnFailureMs={ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds}");
+            return 0;
         });
         return command;
     }

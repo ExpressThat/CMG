@@ -103,6 +103,7 @@ dotnet run -- browser control script --file demo-scripts\149-gif-pointer-choreog
 dotnet run -- browser control script --file demo-scripts\150-gif-failure-hold.cmgscript --gif demo-output\failure-hold.gif --gif-hold-on-failure 1800 --gif-timeline demo-output\timelines
 dotnet run -- browser control script --file demo-scripts\151-gif-timeline.cmgscript
 dotnet run -- gif inspect demo-output\timeline-evidence.gif
+dotnet run -- gif presets
 ```
 
 Run the structured runner demo with reports:
