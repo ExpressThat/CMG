@@ -65,7 +65,8 @@ public sealed record CmgRunOptions(
     ClickPulseStyle ClickPulse = ClickPulseStyle.Ring,
     int HoldAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
     int HoldOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-    string? GifTimelinePath = null);
+    string? GifTimelinePath = null,
+    long? GifWarnSizeBytes = null);
 
 public sealed partial record CmgRunResult(
     bool Success,

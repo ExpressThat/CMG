@@ -99,6 +99,7 @@ public sealed class CommandHelpRoutingTests
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-            string? gifTimelinePath = null) => throw new InvalidOperationException();
+            string? gifTimelinePath = null,
+            long? gifWarnSizeBytes = null) => throw new InvalidOperationException();
     }
 }

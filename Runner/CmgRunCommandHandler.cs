@@ -34,7 +34,8 @@ public interface ICmgRunCommandHandler
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
         int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-        string? gifTimelinePath = null);
+        string? gifTimelinePath = null,
+        long? gifWarnSizeBytes = null);
 }
 
 public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
@@ -75,7 +76,8 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
         int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-        string? gifTimelinePath = null)
+        string? gifTimelinePath = null,
+        long? gifWarnSizeBytes = null)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
@@ -124,7 +126,8 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             clickPulse,
             holdAfterActionMilliseconds,
             holdOnFailureMilliseconds,
-            gifTimelinePath));
+            gifTimelinePath,
+            gifWarnSizeBytes));
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);

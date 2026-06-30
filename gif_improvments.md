@@ -313,7 +313,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add report links that jump to the frame where a step started.
 - Add report links that jump to the failure frame.
 - Add JUnit properties for GIF path and failure frame index.
-- Add artifact size warnings in runner output. CLI: `--gif-warn-size <size>`.
+- Implemented: add artifact size warnings in runner output. CLI: `--gif-warn-size <size>` emits `GIF_WARN_SIZE` for recorded GIFs over the threshold.
 - Add runner declaration `gif=onFailure` to record or keep GIFs only for failing tests. CLI: `--gif-on-failure`.
 - Add runner declaration `gif=onRetry` to keep GIFs for failed attempts only. CLI: `--gif-on-retry`.
 - Add runner declaration `gifSampleRate=` for huge suites. CLI: `--gif-sample-rate <n>`.

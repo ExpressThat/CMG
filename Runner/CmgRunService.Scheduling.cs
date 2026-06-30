@@ -14,6 +14,7 @@ public sealed partial class CmgRunService
             var result = RunScheduledTest(test, remoteDebuggingUrl, options);
             tests.Add(result);
             output.Add(TestOutput(StatusWord(result), result.Name, options));
+            output.AddRange(GifSizeWarnings(result, options));
             if (!ContinueAfterFailureLimit(options, tests, output))
             {
                 return false;

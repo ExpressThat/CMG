@@ -48,6 +48,7 @@ public sealed partial class RunCommandBuilder
         var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
         var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
         var gifTimelineOption = new Option<string?>("--gif-timeline") { Description = "Write GIF timeline JSON files to this file or directory." };
+        var gifWarnSizeOption = new Option<string?>("--gif-warn-size") { Description = "Warn when a recorded GIF exceeds this size, for example 500KB or 2MB." };
         var jsonOption = new Option<FileInfo?>("--report-json") { Description = "Write a JSON test report to this file." };
         var htmlOption = new Option<FileInfo?>("--report-html") { Description = "Write an HTML test report to this file." };
         var junitOption = new Option<FileInfo?>("--report-junit") { Description = "Write a JUnit XML test report to this file." };
@@ -105,14 +106,8 @@ public sealed partial class RunCommandBuilder
         {
             Description = "Launch the browser in headless mode when --auto-launch starts a browser."
         };
-        var variableOption = new Option<string[]>("--var")
-        {
-            Description = "Initial runner variable as name=value. Can be repeated."
-        };
-        var envOption = new Option<string[]>("--env")
-        {
-            Description = "Alias for --var, useful for CI or agent-provided values."
-        };
+        var variableOption = new Option<string[]>("--var") { Description = "Initial runner variable as name=value. Can be repeated." };
+        var envOption = new Option<string[]>("--env") { Description = "Alias for --var, useful for CI or agent-provided values." };
         var command = new Command("run", "Run CMG DSL tests with visual artifacts.")
         {
             pathArgument,
@@ -127,6 +122,7 @@ public sealed partial class RunCommandBuilder
             holdAfterActionOption,
             holdOnFailureOption,
             gifTimelineOption,
+            gifWarnSizeOption,
             jsonOption,
             htmlOption,
             junitOption,
@@ -196,6 +192,11 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(holdError);
                 return 1;
             }
+            if (!GifSizeOptionParser.TryParse(parseResult.GetValue(gifWarnSizeOption), out var gifWarnSizeBytes, out var sizeError))
+            {
+                Console.Error.WriteLine(sizeError);
+                return 1;
+            }
             variables = MergeVariables(MergeVariables(config.Variables, project?.Variables), variables);
             var projectBrowser = BrowserKindFor(project?.Browser);
             if (projectBrowser is BrowserKind.InvalidSelection)
@@ -234,7 +235,8 @@ public sealed partial class RunCommandBuilder
                 clickPulse,
                 holdAfterAction,
                 holdOnFailure,
-                parseResult.GetValue(gifTimelineOption));
+                parseResult.GetValue(gifTimelineOption),
+                gifWarnSizeBytes);
         });
 
         return command;

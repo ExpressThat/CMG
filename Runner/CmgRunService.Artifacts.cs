@@ -45,6 +45,34 @@ public sealed partial class CmgRunService
         File.WriteAllText(report.FullName, content);
     }
 
+    internal static IReadOnlyList<string> GifSizeWarnings(CmgTestResult test, CmgRunOptions options)
+    {
+        if (options.GifWarnSizeBytes is not long threshold)
+        {
+            return [];
+        }
+
+        var warnings = new List<string>();
+        foreach (var path in GifPaths(test.GifPath))
+        {
+            var file = new FileInfo(path);
+            if (file.Exists && file.Length > threshold)
+            {
+                warnings.Add($"GIF_WARN_SIZE test={Quote(test.Name)} path={Quote(file.FullName)} sizeBytes={file.Length} thresholdBytes={threshold}");
+            }
+        }
+
+        return warnings;
+    }
+
+    private static IEnumerable<string> GifPaths(string? gifPath) =>
+        string.IsNullOrWhiteSpace(gifPath)
+            ? []
+            : gifPath.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    private static string Quote(string value) =>
+        $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
+
     internal static string SafeName(string name) =>
         string.Concat(name.Select(character => char.IsLetterOrDigit(character) ? character : '-'));
 }

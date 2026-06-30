@@ -111,7 +111,8 @@ public sealed class RunCommandBuilderPointerMotionTests
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-            string? gifTimelinePath = null)
+            string? gifTimelinePath = null,
+            long? gifWarnSizeBytes = null)
         {
             PointerMotion = pointerMotion;
             ClickPulse = clickPulse;

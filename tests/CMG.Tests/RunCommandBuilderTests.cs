@@ -197,7 +197,7 @@ public sealed class RunCommandBuilderTests
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-            string? gifTimelinePath = null)
+            string? gifTimelinePath = null, long? gifWarnSizeBytes = null)
         {
             BrowserKind = browserKind;
             Path = path;

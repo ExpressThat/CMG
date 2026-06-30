@@ -114,6 +114,7 @@ cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gi
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-timeline demo-output\timelines
 cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --click-pulse dot --gif-hold-after-action 700 --gif-hold-on-failure 1800
 cmg run tests\flows --gif demo-output\runner-gifs --gif-timeline demo-output\timelines
+cmg run tests\flows --gif demo-output\runner-gifs --gif-warn-size 500KB
 ```
 
 CMG also enables evidence-focused defaults when they make the GIF easier to understand. Click and tap actions show a visible pulse by default so the recording proves that an activation happened. Use `clickPulse=` when a script needs a different pulse style or needs to suppress the pulse for one action.
@@ -239,6 +240,8 @@ The JSON sidecar contains:
 Use this file when reports, CI artifacts, or agent feedback need machine-readable timing without parsing the GIF binary. JSON run reports also include a `gifMetadata` array for recorded artifacts. Each entry contains the GIF path, quality preset when CMG knows it, frame count, duration, approximate FPS, dimensions, file size, palette color pressure, transparency, and repeat metadata.
 
 Use `cmg gif inspect <file>` when an agent needs to inspect an existing GIF artifact without rerunning the browser flow. It reports frame count, duration, dimensions, file size, transparency, repeat metadata, and palette color pressure as a parseable `GIF_INSPECT` line.
+
+Use `cmg run --gif-warn-size <size>` when CI or agents should flag unexpectedly large visual artifacts. The runner emits `GIF_WARN_SIZE test="<name>" path="<gif>" sizeBytes=<bytes> thresholdBytes=<bytes>` after the relevant test result line, and the warning does not fail the run.
 
 ## Quality
 

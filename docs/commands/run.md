@@ -35,6 +35,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-hold-after-action <milliseconds>`: Default post-action hold for command-level `--gif` recordings. Defaults to `350`; use `0` to suppress automatic post-action holds.
 - `--gif-hold-on-failure <milliseconds>`: Final failure-state hold for command-level `--gif` recordings. Defaults to `1200`; use `0` to suppress the extra failure hold.
 - `--gif-timeline <file-or-directory>`: Optional JSON timeline sidecar for GIF recordings. With `cmg run --gif`, pass a directory so each test writes `<gif-name>.timeline.json`.
+- `--gif-warn-size <size>`: Emit a stdout warning when a recorded GIF exceeds this size. Accepts bytes or `KB`, `MB`, and `GB` suffixes, for example `500KB`.
 - `--config <file>`: JSON run config file. CLI options override config values.
 - `--project <name>`: Named project from the run config. Project values override global config values, and CLI options override both.
 - `--report-json <file>`: Write a JSON test report.
@@ -69,11 +70,12 @@ Stdout prints one parseable line per test:
 TEST PASS <name>
 TEST FAIL <name>
 TEST SKIP <name>
+GIF_WARN_SIZE test="<name>" path="<gif-path>" sizeBytes=<bytes> thresholdBytes=<bytes>
 RUN STOP maxFailures=<count>
 TEST LIST <run|skip> <name>
 ```
 
-Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
+Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `GIF_WARN_SIZE` lines are emitted only when `--gif-warn-size` is set and a recorded GIF exists above the threshold; they do not change the run exit code. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
 Parameterized tests print and report their expanded names, for example `TEST LIST run opens profile`. Project runs include the project name in brackets, for example `TEST LIST run [firefox-smoke] checkout`.
 
 When a step fails, stderr also includes:
@@ -106,6 +108,7 @@ GIF recording is optional.
 - `--gif-hold-after-action` sets the whole-test post-action hold duration when `--gif` is active.
 - `--gif-hold-on-failure` captures one extra final-state hold frame before writing a failed test GIF.
 - `--gif-timeline` writes metadata JSON sidecars and emits `GIF_TIMELINE <path>` in the per-test output after each GIF is saved.
+- `--gif-warn-size` emits `GIF_WARN_SIZE` stdout lines for command-level and block-level GIF files whose final size exceeds the threshold.
 - When command-level GIF recording is active, script-level `gif { ... }`, `recordVideo { ... }`, and `screencast { ... }` blocks do not create nested recordings; their actions are flattened into the whole-test GIF.
 - Without command-level GIF recording, script-level `gif "name" { ... }`, `recordVideo "name" { ... }`, or `screencast "name" { ... }` records only the wrapped block.
 - Without command-level GIF recording or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif`, `moveMouse`, and `recordCheckpoint` are skipped and do not create pointer frames or timeline entries.

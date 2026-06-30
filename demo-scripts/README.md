@@ -111,7 +111,7 @@ Run the structured runner demo with reports:
 
 ```powershell
 dotnet run -- run demo-scripts\20-runner-flow.cmgscript --gif demo-output\runner-gifs --report-json demo-output\runner.json --report-html demo-output\runner.html
-dotnet run -- run demo-scripts\152-runner-gif-report-metadata.cmgscript --gif demo-output\runner-gifs --gif-timeline demo-output\timelines --report-json demo-output\runner-gif-metadata.json
+dotnet run -- run demo-scripts\152-runner-gif-report-metadata.cmgscript --gif demo-output\runner-gifs --gif-timeline demo-output\timelines --gif-warn-size 500KB --report-json demo-output\runner-gif-metadata.json
 ```
 
 Record the whole runner demo test as a GIF:
