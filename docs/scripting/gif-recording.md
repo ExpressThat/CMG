@@ -176,6 +176,7 @@ Recording-only actions capture frames only when GIF recording is active. Without
 - `pauseGif <milliseconds>` reports `GIF_PAUSE <line> status=skipped reason=no-active-recording`.
 - `moveMouse ...` reports `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording`.
 - `recordCheckpoint "<name>"` reports `GIF_CHECKPOINT <line> status=skipped reason=no-active-recording`.
+- Inside block `dragAndDrop`, choreography-only children also skip without an active recorder: `delay` reports `GIF_DRAG_DELAY <line> status=skipped reason=no-active-recording`, `hover` reports `GIF_DRAG_HOVER <line> status=skipped reason=no-active-recording`, and `moveMouse` keeps the normal `GIF_MOVE_MOUSE` skipped line. Prep children such as `scrollIntoView` and `waitForElement` still run before the fallback native drag.
 
 Use `recordCheckpoint "<name>"` to add a named marker to timeline JSON without adding a frame:
 

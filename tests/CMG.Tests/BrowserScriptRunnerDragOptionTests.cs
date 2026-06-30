@@ -49,6 +49,46 @@ public sealed class BrowserScriptRunnerDragOptionTests
     }
 
     [Fact]
+    public void RunText_UnrecordedBlockDragSkipsGifChoreography()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("""
+        dragAndDrop "#source" {
+          delay 200
+          hover "#mid"
+          moveMouse "bottom"
+          drop "#target"
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("#source", client.LastDragSource);
+        Assert.Equal("#target", client.LastDragTarget);
+        Assert.Equal(string.Empty, client.LastHoveredSelector);
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_DRAG_DELAY 002 status=skipped reason=no-active-recording", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_DRAG_HOVER 003 status=skipped reason=no-active-recording", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_MOVE_MOUSE 004 status=skipped reason=no-active-recording", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RunText_UnrecordedBlockDragStillRunsPrepActions()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("""
+        dragAndDrop "#source" {
+          waitForElement "#ready"
+          scrollIntoView "#target"
+          drop "#target"
+        }
+        """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("#ready", client.LastWaitSelector);
+        Assert.Equal("#source", client.LastDragSource);
+        Assert.Equal("#target", client.LastDragTarget);
+    }
+
+    [Fact]
     public void RunText_BlockDragRejectsUnknownOptions()
     {
         using var gif = new TempGifFile();

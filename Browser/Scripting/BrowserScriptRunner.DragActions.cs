@@ -120,12 +120,13 @@ public sealed partial class BrowserScriptRunner
         {
             foreach (var child in action.Children)
             {
-                if (string.Equals(child.Name, "drop", StringComparison.OrdinalIgnoreCase))
+                var childName = child.Name.ToLowerInvariant();
+                if (childName is "drop")
                 {
                     break;
                 }
 
-                output.AddRange(ExecuteDragBlockStep(remoteDebuggingUrl, automationClient, child));
+                output.AddRange(ExecuteUnrecordedDragBlockStep(remoteDebuggingUrl, automationClient, child));
             }
 
             automationClient.DragAndDrop(remoteDebuggingUrl, sourceSelector, dropAction.Arguments[0]);
@@ -161,12 +162,12 @@ public sealed partial class BrowserScriptRunner
         };
     }
 
-    private static IReadOnlyList<string> ExecuteDragBlockStep(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
+    private static IReadOnlyList<string> ExecuteUnrecordedDragBlockStep(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         return action.Name.ToLowerInvariant() switch
         {
-            "delay" => ExecuteDelay(action),
-            "hover" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.Hover(remoteDebuggingUrl, selector)),
+            "delay" => [$"GIF_DRAG_DELAY {action.LineNumber:000} status=skipped reason=no-active-recording"],
+            "hover" => [$"GIF_DRAG_HOVER {action.LineNumber:000} status=skipped reason=no-active-recording"],
             "movemouse" => ExecuteMoveMouse(action, recorder: null, dragging: true),
             "scrollintoview" => ExecuteSelectorAction(remoteDebuggingUrl, automationClient, action, selector => automationClient.ScrollElementIntoView(remoteDebuggingUrl, selector)),
             "waitforelement" => ExecuteWaitForElement(remoteDebuggingUrl, automationClient, action),
