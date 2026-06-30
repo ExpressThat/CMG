@@ -30,7 +30,8 @@ public interface IBrowserControlService
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds) =>
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+        int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds) =>
         RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables);
 
     ScriptRunResult RunScript(
@@ -60,5 +61,6 @@ public interface IBrowserControlService
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds);
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+        int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds);
 }

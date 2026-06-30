@@ -103,16 +103,26 @@ public sealed partial class CmgVisualSegmentExecutor
 
     private static bool TryGifHoldFor(CmgNode action, int defaults, out int hold, out string? error)
     {
+        return TryGifDurationFor(action, "holdAfterAction", "gif option holdAfterAction=", defaults, out hold, out error);
+    }
+
+    private static bool TryGifFailureHoldFor(CmgNode action, int defaults, out int hold, out string? error)
+    {
+        return TryGifDurationFor(action, "holdOnFailure", "gif option holdOnFailure=", defaults, out hold, out error);
+    }
+
+    private static bool TryGifDurationFor(CmgNode action, string option, string source, int defaults, out int hold, out string? error)
+    {
         hold = defaults;
         error = null;
-        if (!action.Options.TryGetValue("holdAfterAction", out var value))
+        if (!action.Options.TryGetValue(option, out var value))
         {
             return true;
         }
 
         try
         {
-            hold = ScriptPointerMotionOptions.ParseDuration(value, "gif option holdAfterAction=");
+            hold = ScriptPointerMotionOptions.ParseDuration(value, source);
             return true;
         }
         catch (CMG.Browser.Scripting.ScriptExecutionException exception)

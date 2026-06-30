@@ -97,9 +97,10 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+        int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds)
     {
-        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
+        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds);
     }
 
     public int RunScript(
@@ -114,14 +115,15 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+        int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds)
     {
         if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
+        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds);
 
         return WriteScriptResult(result);
     }
@@ -138,14 +140,15 @@ public sealed class BrowserControlCommandHandler : IBrowserControlCommandHandler
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+        int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds)
     {
         if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
+        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds);
 
         return WriteScriptResult(result);
     }

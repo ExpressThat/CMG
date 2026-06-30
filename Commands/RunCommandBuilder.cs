@@ -46,6 +46,7 @@ public sealed partial class RunCommandBuilder
         };
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Click pulse style for --gif: ring, ripple, dot, crosshair, or none." };
         var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
+        var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
         var jsonOption = new Option<FileInfo?>("--report-json") { Description = "Write a JSON test report to this file." };
         var htmlOption = new Option<FileInfo?>("--report-html") { Description = "Write an HTML test report to this file." };
         var junitOption = new Option<FileInfo?>("--report-junit") { Description = "Write a JUnit XML test report to this file." };
@@ -123,6 +124,7 @@ public sealed partial class RunCommandBuilder
             pointerEasingOption,
             clickPulseOption,
             holdAfterActionOption,
+            holdOnFailureOption,
             jsonOption,
             htmlOption,
             junitOption,
@@ -187,6 +189,11 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(holdError);
                 return 1;
             }
+            if (!GifTimingOptionParser.TryParseHoldOnFailure(parseResult.GetValue(holdOnFailureOption), out var holdOnFailure, out holdError))
+            {
+                Console.Error.WriteLine(holdError);
+                return 1;
+            }
             variables = MergeVariables(MergeVariables(config.Variables, project?.Variables), variables);
             var projectBrowser = BrowserKindFor(project?.Browser);
             if (projectBrowser is BrowserKind.InvalidSelection)
@@ -223,7 +230,8 @@ public sealed partial class RunCommandBuilder
                 gifQuality,
                 pointerMotion,
                 clickPulse,
-                holdAfterAction);
+                holdAfterAction,
+                holdOnFailure);
         });
 
         return command;

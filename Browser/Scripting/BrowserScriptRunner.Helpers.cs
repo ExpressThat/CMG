@@ -163,11 +163,16 @@ public sealed partial class BrowserScriptRunner
         return value.Contains(' ', StringComparison.Ordinal) ? $"\"{value}\"" : value;
     }
 
-    private static void FinishRecording(ScriptGifRecorder? recorder, List<string> output)
+    private static void FinishRecording(ScriptGifRecorder? recorder, List<string> output, bool failure = false)
     {
         if (recorder is null)
         {
             return;
+        }
+
+        if (failure)
+        {
+            recorder.CaptureFailureHold();
         }
 
         recorder.Finish();

@@ -68,6 +68,7 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
+- `holdOnFailure=<milliseconds>`: Extra final-state hold captured only when the recording fails. Defaults to `1200`; use `0` to suppress the failure hold.
 
 The same options can be set on pointer-aware child actions. A block's options are defaults for everything inside that block, and child actions can override them for only that action.
 
@@ -106,7 +107,8 @@ Command-level defaults are available for whole-run recordings:
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-speed slow --pointer-easing spring
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --click-pulse ripple
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-hold-after-action 700
-cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --click-pulse dot --gif-hold-after-action 700
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-hold-on-failure 1800
+cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --click-pulse dot --gif-hold-after-action 700 --gif-hold-on-failure 1800
 ```
 
 CMG also enables evidence-focused defaults when they make the GIF easier to understand. Click and tap actions show a visible pulse by default so the recording proves that an activation happened. Use `clickPulse=` when a script needs a different pulse style or needs to suppress the pulse for one action.
@@ -133,6 +135,17 @@ Recording-only actions capture frames only when GIF recording is active. Without
 
 - `pauseGif <milliseconds>` reports `GIF_PAUSE <line> milliseconds=<value> status=skipped`.
 - `moveMouse ...` reports `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording`.
+
+Failure holds make failed artifacts easier to inspect:
+
+```text
+gif "failure evidence" holdOnFailure=1800 {
+  click "#save"
+  expectText "#status" "Saved"
+}
+```
+
+When the wrapped block, direct script, or test fails, CMG captures one extra final-state frame before writing the partial GIF. This only happens when a GIF recorder is active; non-GIF runs do not inject the virtual pointer or capture failure frames.
 
 ## `moveMouse`
 
@@ -242,3 +255,4 @@ Timing is automatic by default. Use pointer choreography options when a GIF need
 - `recordVideo "name" { ... }` and `screencast "name" { ... }` are provider-style aliases for CMG GIF blocks. They write animated GIF files, not MP4/WebM files.
 - Command-level `--gif` records the whole direct script or test and suppresses nested `gif` block files. Suppressed blocks write `GIF_BLOCK_SUPPRESSED <line>` to stdout.
 - GIF-only timeline actions such as `moveMouse` and `pauseGif` skip when no recording is active; scripts without recording do not create or move a virtual mouse.
+- Failed GIF recordings hold the final visible state for `holdOnFailure` / `--gif-hold-on-failure` milliseconds before the partial GIF is written.

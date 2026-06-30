@@ -30,7 +30,8 @@ public interface IBrowserControlCommandHandler
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds) =>
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+        int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds) =>
         RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables);
 
     int RunInlineScript(
@@ -45,7 +46,8 @@ public interface IBrowserControlCommandHandler
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds) => 0;
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+        int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds) => 0;
 
     int RunScript(
         BrowserKind browserKind,

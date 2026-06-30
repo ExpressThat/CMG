@@ -103,7 +103,8 @@ public sealed class RunCommandBuilderProjectTests
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+            int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds)
         {
             BrowserKind = browserKind;
             Path = path;

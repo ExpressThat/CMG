@@ -16,6 +16,7 @@ public sealed partial class CmgVisualSegmentExecutor
         ScriptPointerMotionOptions? pointerMotion,
         ClickPulseStyle clickPulse,
         int holdAfterActionMilliseconds,
+        int holdOnFailureMilliseconds,
         List<string> output,
         List<CmgStepResult> steps,
         out string? error)
@@ -24,7 +25,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var pendingLineMap = new Dictionary<int, int>();
         foreach (var action in actions)
         {
-            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, pending, pendingLineMap, output, steps, out error))
+            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, pending, pendingLineMap, output, steps, out error))
             {
                 if (error is not null)
                 {
@@ -37,7 +38,7 @@ public sealed partial class CmgVisualSegmentExecutor
             AddPending(pending, pendingLineMap, action, lowerer.Lower(action));
         }
 
-        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
+        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds);
         return AppendResult(final.Result, final.LineMap, output, steps, actions.LastOrDefault(), gif, out error);
     }
 
@@ -51,6 +52,7 @@ public sealed partial class CmgVisualSegmentExecutor
         ScriptPointerMotionOptions? pointerMotion,
         ClickPulseStyle clickPulse,
         int holdAfterActionMilliseconds,
+        int holdOnFailureMilliseconds,
         List<string> pending,
         Dictionary<int, int> pendingLineMap,
         List<string> output,
@@ -63,7 +65,7 @@ public sealed partial class CmgVisualSegmentExecutor
             return false;
         }
 
-        var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
+        var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds);
         if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif, out error))
         {
             return true;

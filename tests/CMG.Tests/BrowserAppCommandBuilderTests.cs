@@ -183,7 +183,8 @@ public sealed class BrowserAppCommandBuilderTests
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+            int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds)
         {
             Port = port;
             return 0;

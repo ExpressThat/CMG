@@ -17,7 +17,8 @@ public sealed partial class CmgVisualSegmentExecutor
         CMG.Browser.Scripting.Recording.GifQuality gifQuality,
         CMG.Browser.Scripting.Recording.ScriptPointerMotionOptions? pointerMotion,
         CMG.Browser.ClickPulseStyle clickPulse,
-        int holdAfterActionMilliseconds)
+        int holdAfterActionMilliseconds,
+        int holdOnFailureMilliseconds)
     {
         if (lines.Count is 0)
         {
@@ -28,7 +29,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var map = new Dictionary<int, int>(lineMap);
         lines.Clear();
         lineMap.Clear();
-        return new CmgScriptBatchRun(MapScriptResult(scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts, baseUrl, gifQuality: gifQuality, pointerMotion: pointerMotion, clickPulse: clickPulse, holdAfterActionMilliseconds: holdAfterActionMilliseconds), map), map);
+        return new CmgScriptBatchRun(MapScriptResult(scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts, baseUrl, gifQuality: gifQuality, pointerMotion: pointerMotion, clickPulse: clickPulse, holdAfterActionMilliseconds: holdAfterActionMilliseconds, holdOnFailureMilliseconds: holdOnFailureMilliseconds), map), map);
     }
 
     private static ScriptRunResult MapScriptResult(ScriptRunResult result, IReadOnlyDictionary<int, int> lineMap)

@@ -96,6 +96,7 @@ public sealed class CommandHelpRoutingTests
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds) => throw new InvalidOperationException();
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+            int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds) => throw new InvalidOperationException();
     }
 }

@@ -1743,11 +1743,14 @@ Options:
 - `output`: Optional GIF path for direct browser-control scripts. Without `output`, CMG writes `<name>.gif` in the current directory.
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
 - `holdAfterAction`: Optional default post-action hold in milliseconds for child actions. Defaults to `350`; child actions can override it locally with their own `holdAfterAction=`.
+- `holdOnFailure`: Optional final failure-state hold in milliseconds. Defaults to `1200`; use `0` to suppress the extra failure hold.
 
 Output:
 
 - `GIF <path>` when a script-level block writes its own recording.
 - `GIF_BLOCK_SUPPRESSED <line>` when command-level `--gif` is active and the block is included in the full recording instead.
+
+If the block fails while recording, CMG captures one extra final-state frame before writing the partial GIF. Non-GIF runs do not create a virtual pointer or capture failure frames.
 
 ## Runner Convenience Actions
 

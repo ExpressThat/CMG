@@ -227,7 +227,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `pauseGif <ms>` as a recording-only hold action that captures a timed GIF frame when recording is active and skips without injecting the virtual pointer when no GIF recorder is active.
 - Add `holdAfterNavigation=<ms>`. CLI: `--gif-hold-after-navigation <ms>`.
 - Add `holdAfterAssertion=<ms>`. CLI: `--gif-hold-after-assertion <ms>`.
-- Add `holdOnFailure=<ms>` so final failure state is readable. CLI: `--gif-hold-on-failure <ms>`.
+- Implemented: `holdOnFailure=<ms>` so final failure state is readable. CLI: `--gif-hold-on-failure <ms>`.
 - Add `intro "<text>"` or `recording intro="..." { ... }` to add a title card. CLI: `--gif-intro <text>`.
 - Add `outro "<text>"` or `recording outro="..." { ... }` to add a final summary card. CLI: `--gif-outro <text>`.
 - Add automatic pass/fail outro cards for test runs.

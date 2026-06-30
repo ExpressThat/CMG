@@ -22,7 +22,8 @@ public sealed partial class BrowserScriptRunner
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+        int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds)
     {
         var readResult = ReadScript(file);
         if (!readResult.Success)
@@ -30,7 +31,7 @@ public sealed partial class BrowserScriptRunner
             return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
         }
 
-        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
+        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds);
     }
 
     public ScriptRunResult RunText(
@@ -45,9 +46,10 @@ public sealed partial class BrowserScriptRunner
         GifQuality gifQuality = GifQuality.Highest,
         ScriptPointerMotionOptions? pointerMotion = null,
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
+        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+        int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds)
     {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds);
+        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds);
     }
 
     private ScriptRunResult RunParsedScript(
@@ -62,7 +64,8 @@ public sealed partial class BrowserScriptRunner
         GifQuality gifQuality,
         ScriptPointerMotionOptions? pointerMotion,
         ClickPulseStyle clickPulse,
-        int holdAfterActionMilliseconds)
+        int holdAfterActionMilliseconds,
+        int holdOnFailureMilliseconds)
     {
         var importResult = ScriptImportExpander.Expand(script, Directory.GetCurrentDirectory());
         if (!importResult.Success)
@@ -103,7 +106,7 @@ public sealed partial class BrowserScriptRunner
         var output = new List<string>();
         using var recorder = gif is null
             ? null
-            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds));
+            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds));
 
         recorder?.Start(remoteDebuggingUrl);
 
@@ -113,20 +116,20 @@ public sealed partial class BrowserScriptRunner
             if (context.SoftFailures.Count > 0)
             {
                 var error = $"Soft assertion failure(s): {string.Join(" | ", context.SoftFailures)}";
-                FinishRecording(recorder, output);
+                FinishRecording(recorder, output, failure: true);
                 FinishTrace(context, success: false, error, output);
                 return ScriptRunResult.Fail(error, output, context.StepRecords);
             }
         }
         catch (ScriptActionFailedException exception)
         {
-            FinishRecording(recorder, output);
+            FinishRecording(recorder, output, failure: true);
             FinishTrace(context, success: false, exception.Message, output);
             return ScriptRunResult.Fail(exception.Message, output, context.StepRecords);
         }
         catch (LoopControlException exception)
         {
-            FinishRecording(recorder, output);
+            FinishRecording(recorder, output, failure: true);
             FinishTrace(context, success: false, $"{exception.Kind} must be inside a loop.", output);
             return ScriptRunResult.Fail($"{exception.Kind} must be inside a loop.", output, context.StepRecords);
         }

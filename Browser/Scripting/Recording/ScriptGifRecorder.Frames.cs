@@ -40,6 +40,11 @@ public sealed partial class ScriptGifRecorder
         CaptureHoldFrame(ParseHoldMilliseconds(action, action.Arguments[0], "milliseconds"));
     }
 
+    public void CaptureFailureHold()
+    {
+        CaptureHoldFrame(options.HoldOnFailureMilliseconds);
+    }
+
     private void CaptureHoldFrame(int milliseconds)
     {
         if (milliseconds <= 0)

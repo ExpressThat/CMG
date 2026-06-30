@@ -18,8 +18,9 @@ public sealed partial class BrowserScriptRunner
 
         var recorder = commandRecorder ?? new ScriptGifRecorder(
             automationClient,
-            new ScriptRecordingOptions(GifBlockPath(action), GifBlockQuality(action), GifBlockMotion(action), GifBlockPulse(action), GifBlockHold(action)));
+            new ScriptRecordingOptions(GifBlockPath(action), GifBlockQuality(action), GifBlockMotion(action), GifBlockPulse(action), GifBlockHold(action), GifBlockFailureHold(action)));
         var output = new List<string>();
+        var failed = false;
         if (commandRecorder is null)
         {
             recorder.Start(remoteDebuggingUrl);
@@ -42,11 +43,16 @@ public sealed partial class BrowserScriptRunner
                 output.AddRange(lines);
             }
         }
+        catch
+        {
+            failed = true;
+            throw;
+        }
         finally
         {
             if (commandRecorder is null)
             {
-                FinishRecording(recorder, output);
+                FinishRecording(recorder, output, failed);
                 recorder.Dispose();
             }
         }
@@ -103,6 +109,16 @@ public sealed partial class BrowserScriptRunner
         }
 
         return ScriptPointerMotionOptions.ParseDuration(value, "gif option holdAfterAction=");
+    }
+
+    private static int GifBlockFailureHold(BrowserScriptAction action)
+    {
+        if (!action.Options.TryGetValue("holdOnFailure", out var value))
+        {
+            return ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds;
+        }
+
+        return ScriptPointerMotionOptions.ParseDuration(value, "gif option holdOnFailure=");
     }
 
     private static string SafeFileName(string value)

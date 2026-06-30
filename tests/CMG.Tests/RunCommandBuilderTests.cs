@@ -166,6 +166,7 @@ public sealed class RunCommandBuilderTests
         public GifQuality GifQuality { get; private set; } = GifQuality.Highest;
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
         public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
+        public int HoldOnFailureMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds;
 
         public int Run(
             BrowserKind browserKind,
@@ -194,7 +195,8 @@ public sealed class RunCommandBuilderTests
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds)
+            int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
+            int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds)
         {
             BrowserKind = browserKind;
             Path = path;
@@ -219,6 +221,7 @@ public sealed class RunCommandBuilderTests
             GifQuality = gifQuality;
             PointerMotion = pointerMotion;
             HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
+            HoldOnFailureMilliseconds = holdOnFailureMilliseconds;
             return 0;
         }
     }

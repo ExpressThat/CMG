@@ -116,4 +116,19 @@ public sealed class ScriptGifRecorderPointerTargetTests
 
         Assert.Equal(1, client.PageScreenshotCount);
     }
+
+    [Fact]
+    public void CaptureFailureHold_CapturesConfiguredFrame()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new ScriptGifRecorder(
+            client,
+            new ScriptRecordingOptions(path, HoldOnFailureMilliseconds: 900));
+        recorder.Start("debug");
+
+        recorder.CaptureFailureHold();
+
+        Assert.Equal(1, client.PageScreenshotCount);
+    }
 }

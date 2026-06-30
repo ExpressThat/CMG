@@ -1,0 +1,8 @@
+# Demonstrates GIF failure-state hold.
+# Run with:
+# dotnet run -- browser control script --file demo-scripts\150-gif-failure-hold.cmgscript --gif demo-output\failure-hold.gif --gif-hold-on-failure 1800
+
+navigate "about:blank"
+setContent "<main style='font-family:system-ui;padding:32px'><h1>Failure evidence</h1><button id='save' style='padding:12px 16px'>Save</button><p id='status'>Ready</p></main><script>document.querySelector('#save').addEventListener('click',()=>document.querySelector('#status').textContent='Saved');</script>"
+click "#save"
+expectText "#status" "Never saved"
