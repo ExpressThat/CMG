@@ -34,6 +34,7 @@ public sealed class CommandHelpRoutingTests
         root.Subcommands.Add(new RunCommandBuilder(new ThrowingRunCommandHandler()).Build(browserOptions));
         root.Subcommands.Add(new ApiCommandBuilder(new CmgApiRequestRunner()).Build());
         root.Subcommands.Add(new FilesCommandBuilder().Build());
+        root.Subcommands.Add(new GifCommandBuilder().Build());
         return root;
     }
 

@@ -238,6 +238,8 @@ The JSON sidecar contains:
 
 Use this file when reports, CI artifacts, or agent feedback need machine-readable timing without parsing the GIF binary.
 
+Use `cmg gif inspect <file>` when an agent needs to inspect an existing GIF artifact without rerunning the browser flow. It reports frame count, duration, dimensions, file size, transparency, repeat metadata, and palette color pressure as a parseable `GIF_INSPECT` line.
+
 ## Quality
 
 GIF quality controls palette generation and dithering. It does not change the browser screenshot source, virtual pointer, pointer events, drag ghosts, captions, timing, or which frames are captured.

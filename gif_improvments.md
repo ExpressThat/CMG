@@ -359,7 +359,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add recording cache cleanup policy.
 - Add artifact retention settings for CI. CLI: `--gif-retention <all|failed|none|days:n>`.
 - Add per-step capture cost metrics.
-- Add a `cmg gif inspect <file>` command for frame count, palette, duration, dimensions, and size.
+- Implemented: add a `cmg gif inspect <file>` command for frame count, palette color pressure, duration, dimensions, transparency, repeat metadata, and size.
 - Add a `cmg gif optimize <file>` command.
 - Add a `cmg gif compare <before> <after>` command.
 

@@ -1,0 +1,99 @@
+using System.CommandLine;
+using CMG.Browser.Scripting.Recording;
+using CMG.Commands;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+
+namespace CMG.Tests;
+
+public sealed class GifCommandBuilderTests
+{
+    [Fact]
+    public void Inspect_PrintsGifMetadata()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var sink = new GifFrameSink();
+        sink.AddFrame(Png(Color.Red), 10);
+        sink.AddFrame(Png(Color.Blue), 25);
+        sink.Save(path);
+
+        var output = new StringWriter();
+        var original = Console.Out;
+        try
+        {
+            Console.SetOut(output);
+            var exitCode = BuildRoot().Parse(["gif", "inspect", path]).Invoke();
+
+            Assert.Equal(0, exitCode);
+            var line = output.ToString();
+            Assert.Contains("GIF_INSPECT", line, StringComparison.Ordinal);
+            Assert.Contains("frames=2", line, StringComparison.Ordinal);
+            Assert.Contains("durationMs=350", line, StringComparison.Ordinal);
+            Assert.Contains("width=8 height=8", line, StringComparison.Ordinal);
+            Assert.Contains("sizeBytes=", line, StringComparison.Ordinal);
+            Assert.Contains("palette=", line, StringComparison.Ordinal);
+            Assert.Contains("paletteColors=2", line, StringComparison.Ordinal);
+        }
+        finally
+        {
+            Console.SetOut(original);
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public void Inspect_MissingFile_ReturnsFailure()
+    {
+        var error = new StringWriter();
+        var original = Console.Error;
+        try
+        {
+            Console.SetError(error);
+            var exitCode = BuildRoot().Parse(["gif", "inspect", "missing.gif"]).Invoke();
+
+            Assert.Equal(1, exitCode);
+            Assert.Contains("was not found", error.ToString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            Console.SetError(original);
+        }
+    }
+
+    [Fact]
+    public void Inspect_NonGif_ReturnsFailure()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.png");
+        File.WriteAllBytes(path, Png(Color.Green));
+        var error = new StringWriter();
+        var original = Console.Error;
+        try
+        {
+            Console.SetError(error);
+            var exitCode = BuildRoot().Parse(["gif", "inspect", path]).Invoke();
+
+            Assert.Equal(1, exitCode);
+            Assert.Contains("Expected a GIF image", error.ToString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            Console.SetError(original);
+            File.Delete(path);
+        }
+    }
+
+    private static RootCommand BuildRoot()
+    {
+        var root = new RootCommand();
+        root.Subcommands.Add(new GifCommandBuilder().Build());
+        return root;
+    }
+
+    private static byte[] Png(Color color)
+    {
+        using var image = new Image<Rgba32>(8, 8, color);
+        using var stream = new MemoryStream();
+        image.SaveAsPng(stream);
+        return stream.ToArray();
+    }
+}
