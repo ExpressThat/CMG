@@ -41,7 +41,18 @@ public sealed class BrowserScriptRunnerGifPauseTests
 
         Assert.True(result.Success);
         Assert.Equal(0, client.PageScreenshotCount);
-        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_PAUSE 001 milliseconds=500 status=skipped", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_PAUSE 001 status=skipped reason=no-active-recording", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void PauseGif_WithoutRecorder_SkipsBeforeArgumentValidation()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("pauseGif nope", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(0, client.PageScreenshotCount);
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_PAUSE 001 status=skipped reason=no-active-recording", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -67,7 +78,18 @@ public sealed class BrowserScriptRunnerGifPauseTests
 
         Assert.True(result.Success);
         Assert.Equal(0, client.PageScreenshotCount);
-        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_CHECKPOINT 001 name=\"after setup\" status=skipped reason=no-active-recording", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_CHECKPOINT 001 status=skipped reason=no-active-recording", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RecordCheckpoint_WithoutRecorder_SkipsBeforeArgumentValidation()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("recordCheckpoint", "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(0, client.PageScreenshotCount);
+        Assert.Contains(result.StdoutLines, line => line.Contains("GIF_CHECKPOINT 001 status=skipped reason=no-active-recording", StringComparison.Ordinal));
     }
 
     [Fact]

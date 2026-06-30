@@ -164,21 +164,28 @@ public sealed partial class BrowserScriptRunner
 
     private static IReadOnlyList<string> ExecutePauseGif(BrowserScriptAction action, ScriptGifRecorder? recorder)
     {
+        if (recorder is null)
+        {
+            return [$"GIF_PAUSE {action.LineNumber:000} status=skipped reason=no-active-recording"];
+        }
+
         RequireArgumentCount(action, 1, 1);
         var milliseconds = ParsePositiveInt(action.Arguments[0], "pauseGif");
-        recorder?.Pause(action);
-        var status = recorder is null ? "skipped" : "captured";
-        return [$"GIF_PAUSE {action.LineNumber:000} milliseconds={milliseconds} status={status}"];
+        recorder.Pause(action);
+        return [$"GIF_PAUSE {action.LineNumber:000} milliseconds={milliseconds} status=captured"];
     }
 
     private static IReadOnlyList<string> ExecuteRecordCheckpoint(BrowserScriptAction action, ScriptGifRecorder? recorder)
     {
+        if (recorder is null)
+        {
+            return [$"GIF_CHECKPOINT {action.LineNumber:000} status=skipped reason=no-active-recording"];
+        }
+
         RequireArgumentCount(action, 1, 1);
         var name = action.Arguments[0];
-        recorder?.RecordCheckpoint(action, name);
-        var status = recorder is null ? "skipped" : "recorded";
-        var reason = recorder is null ? " reason=no-active-recording" : string.Empty;
-        return [$"GIF_CHECKPOINT {action.LineNumber:000} name={QuoteField(name)} status={status}{reason}"];
+        recorder.RecordCheckpoint(action, name);
+        return [$"GIF_CHECKPOINT {action.LineNumber:000} name={QuoteField(name)} status=recorded"];
     }
 
     private static IReadOnlyList<string> ExecuteFail(BrowserScriptAction action)

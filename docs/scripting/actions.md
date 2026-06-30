@@ -548,12 +548,12 @@ Pauses execution for the specified number of milliseconds.
 pauseGif 1000
 ```
 
-Adds a recording-only hold frame for the specified number of milliseconds. `pauseGif` does not sleep the browser, does not change page state, and does not create or move the virtual pointer unless GIF recording is active.
+Adds a recording-only hold frame for the specified number of milliseconds. `pauseGif` does not sleep the browser, does not change page state, and does not create or move the virtual pointer unless GIF recording is active. Without an active recorder it skips before applying recording-only arguments.
 
 Output:
 
 - `GIF_PAUSE <line> milliseconds=<value> status=captured` when a GIF recorder is active.
-- `GIF_PAUSE <line> milliseconds=<value> status=skipped` when the script or test is running without command-level `--gif` and outside any `gif`, `recordVideo`, or `screencast` block.
+- `GIF_PAUSE <line> status=skipped reason=no-active-recording` when the script or test is running without command-level `--gif` and outside any `gif`, `recordVideo`, or `screencast` block.
 
 ## `recordCheckpoint`
 
@@ -563,12 +563,12 @@ recordCheckpoint "after login"
 
 Adds a named marker to the active GIF timeline JSON without capturing a frame or changing page state. Use it before or after important visual transitions when CI reports or agents need a stable bookmark in the sidecar metadata.
 
-`recordCheckpoint` is metadata-only. It does not create or move the virtual pointer, and it is skipped when no GIF recorder is active.
+`recordCheckpoint` is metadata-only. It does not create or move the virtual pointer, and it is skipped when no GIF recorder is active. Without an active recorder it skips before applying recording-only arguments.
 
 Output:
 
 - `GIF_CHECKPOINT <line> name="<name>" status=recorded` when a GIF recorder is active.
-- `GIF_CHECKPOINT <line> name="<name>" status=skipped reason=no-active-recording` when the script or test is running without command-level `--gif` and outside any `gif`, `recordVideo`, or `screencast` block.
+- `GIF_CHECKPOINT <line> status=skipped reason=no-active-recording` when the script or test is running without command-level `--gif` and outside any `gif`, `recordVideo`, or `screencast` block.
 
 ## `html`
 

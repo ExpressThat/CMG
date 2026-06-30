@@ -136,11 +136,11 @@ gif "checkout evidence" holdAfterAction=600 {
 }
 ```
 
-Recording-only actions capture frames only when GIF recording is active. Without `--gif` or an active `gif` / `recordVideo` / `screencast` block, they are no-ops and report a skipped status. They do not create or move the virtual pointer outside GIF recording.
+Recording-only actions capture frames only when GIF recording is active. Without `--gif` or an active `gif` / `recordVideo` / `screencast` block, they are no-ops and report a skipped status. They do not create or move the virtual pointer outside GIF recording, and recording-only arguments are ignored because no recording exists to apply them to.
 
-- `pauseGif <milliseconds>` reports `GIF_PAUSE <line> milliseconds=<value> status=skipped`.
+- `pauseGif <milliseconds>` reports `GIF_PAUSE <line> status=skipped reason=no-active-recording`.
 - `moveMouse ...` reports `GIF_MOVE_MOUSE <line> status=skipped reason=no-active-recording`.
-- `recordCheckpoint "<name>"` reports `GIF_CHECKPOINT <line> name="<name>" status=skipped reason=no-active-recording`.
+- `recordCheckpoint "<name>"` reports `GIF_CHECKPOINT <line> status=skipped reason=no-active-recording`.
 
 Use `recordCheckpoint "<name>"` to add a named marker to timeline JSON without adding a frame:
 
