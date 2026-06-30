@@ -239,7 +239,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `recordCheckpoint "name"` markers emit parseable step output and write frame/time bookmarks into GIF timeline JSON when recording is active.
 - Implemented: add timeline metadata JSON beside each GIF. CLI: `--gif-timeline <file|directory>`; DSL blocks support `timeline=<true|false|file|directory>`.
 - Add an editor command to trim start/end frames after recording.
-- Add an editor command to remove duplicate frames.
+- Implemented: add `cmg gif optimize <file> --output <gif>` to remove consecutive duplicate frames while preserving duration.
 - Add automatic duplicate-frame coalescing.
 - Add automatic long-wait compression while preserving a visible timer.
 - Add visual progress bar for long waits.
@@ -360,7 +360,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add artifact retention settings for CI. CLI: `--gif-retention <all|failed|none|days:n>`.
 - Add per-step capture cost metrics.
 - Implemented: add a `cmg gif inspect <file>` command for frame count, palette color pressure, duration, dimensions, transparency, repeat metadata, and size.
-- Add a `cmg gif optimize <file>` command.
+- Implemented: add a `cmg gif optimize <file> --output <gif>` command for duplicate-frame coalescing.
 - Implemented: add a `cmg gif compare <before> <after>` command for frame, duration, dimension, palette, transparency, repeat, and size deltas.
 
 ## Debugging And Diagnostics

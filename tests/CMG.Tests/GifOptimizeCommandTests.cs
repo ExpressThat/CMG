@@ -7,31 +7,33 @@ using SixLabors.ImageSharp.PixelFormats;
 namespace CMG.Tests;
 
 [Collection(ConsoleCommandTestCollection.Name)]
-public sealed class GifStoryboardCommandTests
+public sealed class GifOptimizeCommandTests
 {
     [Fact]
-    public void Storyboard_ExportsContactSheet()
+    public void Optimize_RemovesConsecutiveDuplicateFramesAndPreservesDuration()
     {
         var input = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
-        var output = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.png");
+        var output = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}-optimized.gif");
         using var sink = new GifFrameSink();
         sink.AddFrame(Png(Color.Red), 10);
+        sink.AddFrame(Png(Color.Red), 10);
         sink.AddFrame(Png(Color.Blue), 10);
-        sink.AddFrame(Png(Color.Green), 10);
+        sink.AddFrame(Png(Color.Blue), 10);
         sink.Save(input);
         var writer = new StringWriter();
         var original = Console.Out;
         try
         {
             Console.SetOut(writer);
-            var exitCode = BuildRoot().Parse(["gif", "storyboard", input, "--output", output, "--columns", "2"]).Invoke();
+            var exitCode = BuildRoot().Parse(["gif", "optimize", input, "--output", output]).Invoke();
 
             Assert.Equal(0, exitCode);
-            Assert.Contains("GIF_STORYBOARD", writer.ToString(), StringComparison.Ordinal);
-            Assert.Contains("frames=3/3", writer.ToString(), StringComparison.Ordinal);
-            using var storyboard = Image.Load<Rgba32>(output);
-            Assert.Equal(16, storyboard.Width);
-            Assert.Equal(16, storyboard.Height);
+            var text = writer.ToString();
+            Assert.Contains("GIF_OPTIMIZE", text, StringComparison.Ordinal);
+            Assert.Contains("framesBefore=4", text, StringComparison.Ordinal);
+            Assert.Contains("framesAfter=2", text, StringComparison.Ordinal);
+            Assert.Contains("duplicateFramesRemoved=2", text, StringComparison.Ordinal);
+            Assert.Equal(400, GifInspector.Inspect(new FileInfo(output)).DurationMilliseconds);
         }
         finally
         {
@@ -42,7 +44,7 @@ public sealed class GifStoryboardCommandTests
     }
 
     [Fact]
-    public void Storyboard_RequiresOutput()
+    public void Optimize_RequiresOutput()
     {
         var input = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
         using var sink = new GifFrameSink();
@@ -53,7 +55,7 @@ public sealed class GifStoryboardCommandTests
         try
         {
             Console.SetError(error);
-            var exitCode = BuildRoot().Parse(["gif", "storyboard", input]).Invoke();
+            var exitCode = BuildRoot().Parse(["gif", "optimize", input]).Invoke();
 
             Assert.Equal(1, exitCode);
             Assert.Contains("requires --output", error.ToString(), StringComparison.Ordinal);
@@ -62,32 +64,6 @@ public sealed class GifStoryboardCommandTests
         {
             Console.SetError(original);
             File.Delete(input);
-        }
-    }
-
-    [Fact]
-    public void Storyboard_RejectsInvalidColumns()
-    {
-        var input = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
-        var output = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.png");
-        using var sink = new GifFrameSink();
-        sink.AddFrame(Png(Color.Red), 10);
-        sink.Save(input);
-        var error = new StringWriter();
-        var original = Console.Error;
-        try
-        {
-            Console.SetError(error);
-            var exitCode = BuildRoot().Parse(["gif", "storyboard", input, "--output", output, "--columns", "0"]).Invoke();
-
-            Assert.Equal(1, exitCode);
-            Assert.Contains("columns must be at least 1", error.ToString(), StringComparison.Ordinal);
-        }
-        finally
-        {
-            Console.SetError(original);
-            File.Delete(input);
-            File.Delete(output);
         }
     }
 

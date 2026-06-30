@@ -11,6 +11,7 @@ public sealed class GifCommandBuilder
         command.Subcommands.Add(BuildInspectCommand());
         command.Subcommands.Add(BuildCompareCommand());
         command.Subcommands.Add(BuildStoryboardCommand());
+        command.Subcommands.Add(BuildOptimizeCommand());
         command.Subcommands.Add(BuildPresetsCommand());
         return command;
     }
@@ -129,6 +130,41 @@ public sealed class GifCommandBuilder
             catch (Exception exception)
             {
                 Console.Error.WriteLine($"Could not export GIF storyboard '{input.FullName}'. {exception.Message}");
+                return 1;
+            }
+        });
+        return command;
+    }
+
+    private static Command BuildOptimizeCommand()
+    {
+        var file = new Argument<FileInfo>("file") { Description = "GIF file to optimize." };
+        var output = new Option<FileInfo?>("--output") { Description = "Optimized GIF output path." };
+        var command = new Command("optimize", "Optimize a GIF by coalescing consecutive duplicate frames.") { file, output };
+        command.SetAction(parseResult =>
+        {
+            var input = parseResult.GetValue(file);
+            var outputFile = parseResult.GetValue(output);
+            if (input is null || !input.Exists)
+            {
+                Console.Error.WriteLine($"GIF file '{input?.FullName ?? string.Empty}' was not found.");
+                return 1;
+            }
+
+            if (outputFile is null)
+            {
+                Console.Error.WriteLine("gif optimize requires --output <gif>.");
+                return 1;
+            }
+
+            try
+            {
+                Console.WriteLine(GifOptimizer.RemoveDuplicateFrames(input, outputFile).Format());
+                return 0;
+            }
+            catch (Exception exception)
+            {
+                Console.Error.WriteLine($"Could not optimize GIF '{input.FullName}'. {exception.Message}");
                 return 1;
             }
         });

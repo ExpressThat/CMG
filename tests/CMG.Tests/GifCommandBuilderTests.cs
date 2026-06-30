@@ -6,6 +6,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace CMG.Tests;
 
+[Collection(ConsoleCommandTestCollection.Name)]
 public sealed class GifCommandBuilderTests
 {
     [Fact]
