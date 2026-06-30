@@ -21,6 +21,9 @@ public sealed partial class ScriptGifRecorder : IDisposable
     private readonly List<GifTimelineCheckpoint> checkpoints = [];
     private readonly VirtualPointer pointer = new();
     private string? remoteDebuggingUrl;
+    private bool cursorPressed;
+    private bool cursorTrail;
+    private bool cursorBreadcrumb;
 
     public ScriptGifRecorder(
         IBrowserAutomationClient devToolsClient,

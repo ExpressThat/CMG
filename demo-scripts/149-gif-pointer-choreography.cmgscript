@@ -8,10 +8,10 @@ gif "pointer choreography" pointerDuration=650 pointerEasing=ease-in-out pointer
   click "#pro" pointerDuration=250 preClickHold=0 postClickHold=250 clickPulse=dot
   pauseGif 900
 
-  dragAndDrop "#card" pointerDuration=1200 dragEasing=spring dragPath=manhattan dragHold=250 postDropHold=700 {
+  dragAndDrop "#card" pointerDuration=1200 dragEasing=spring dragPath=manhattan dragTrail=true dragHold=250 postDropHold=700 {
     hover "#todo" pointerDuration=400
-    moveMouse selector="#board" edge=bottom duration=300 easing=linear pointerPath=direct holdAfterMove=700
-    drop "#done" dropPointerDuration=450 dragPath=arc clickPulse=crosshair
+    moveMouse selector="#board" edge=bottom duration=300 easing=linear pointerPath=direct dragBreadcrumbs=true holdAfterMove=700
+    drop "#done" dropPointerDuration=450 dragPath=arc dragTrail=false clickPulse=crosshair
   }
 
   expectText "#status" "Dropped" holdAfterAssertion=250

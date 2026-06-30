@@ -14,6 +14,7 @@ public sealed partial class ScriptGifRecorder
         MoveToSelector(action with { Options = SourceMoveOptions(action) });
         CaptureHoldFrame(action, "preDragHold");
         devToolsClient.BeginPageDrag(remoteDebuggingUrl, sourceSelector, pointer.Position);
+        SetCursorState(action, dragging: true);
     }
 
     public void DragHover(BrowserScriptAction action)
@@ -26,13 +27,14 @@ public sealed partial class ScriptGifRecorder
         MoveDragToSelector(action.Arguments[0], action);
     }
 
-    public void DragDelay(int milliseconds)
+    public void DragDelay(BrowserScriptAction action, int milliseconds)
     {
         if (remoteDebuggingUrl is null)
         {
             return;
         }
 
+        SetCursorState(action, dragging: true);
         var frameDelayMilliseconds = options.FrameDelayMilliseconds;
         var frameCount = Math.Max(1, milliseconds / Math.Max(1, frameDelayMilliseconds));
 
@@ -54,6 +56,7 @@ public sealed partial class ScriptGifRecorder
         MoveDragToSelector(action.Arguments[0], action, "dropPointerDuration");
         CaptureHoldFrame(action, "dragHold");
         devToolsClient.EndPageDrag(remoteDebuggingUrl, pointer.Position);
+        SetCursorState(action, dragging: false);
         CapturePulseFrame(action);
         CaptureHoldFrame(action, "postDropHold");
     }

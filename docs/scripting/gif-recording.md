@@ -103,6 +103,9 @@ Supported `recording` / `withRecording` defaults:
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
 - `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Pointer route between targets.
 - `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Drag route while the pointer is held.
+- `pressedPointer=<true|false>`: Whether the pointer visually compresses while a recorded drag is active. Defaults to `true`.
+- `dragTrail=<true|false>`: Draw a trailing line behind held-pointer drag movement. Defaults to `false`.
+- `dragBreadcrumbs=<true|false>`: Add dot breadcrumbs along held-pointer drag movement. Defaults to `false`.
 - `clickPulse=<ring|ripple|dot|crosshair|none>` or `pulse=<...>`: Click/tap/drop pulse style.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration.
 - `preClickHold=<milliseconds>`: Hold before click/tap dispatch after pointer movement.
@@ -119,9 +122,9 @@ Action and nested block options override the surrounding `recording` defaults fo
 
 ```text
 gif "board evidence" pointerDuration=500 pointerEasing=ease-in-out pointerPath=arc {
-  dragAndDrop ".todo-card" pointerDuration=1200 dragPath=manhattan dragHold=250 {
+  dragAndDrop ".todo-card" pointerDuration=1200 dragPath=manhattan dragTrail=true dragHold=250 {
     hover ".lane" pointerDuration=700
-    moveMouse selector=".board" edge=bottom pointerDuration=300 pointerPath=direct
+    moveMouse selector=".board" edge=bottom pointerDuration=300 pointerPath=direct dragBreadcrumbs=true
     drop ".done-column" dropPointerDuration=450 dragPath=arc postDropHold=800
   }
 }
@@ -148,10 +151,13 @@ moveMouse selector=".board" edge=bottom duration=300 holdAfterMove=600
 - `targetPointerDuration=<milliseconds>`: Drag travel duration to the target.
 - `dragEasing=<mode>`: Easing for drag travel.
 - `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Route for held-pointer drag travel.
+- `pressedPointer=<true|false>`: Keep the virtual pointer visually pressed while the drag is active. Defaults to `true`.
+- `dragTrail=<true|false>`: Draw a line behind held-pointer drag movement.
+- `dragBreadcrumbs=<true|false>`: Drop small dots along held-pointer drag movement.
 - `preDragHold=<milliseconds>`: Hold before starting the page drag.
 - `dragHold=<milliseconds>`: Hold while the drag is active before dropping.
 - `postDropHold=<milliseconds>`: Hold after the drop pulse.
-- Child `drop` actions can use `dropPointerDuration=<milliseconds>`, `dragPath=<...>`, and `postDropHold=<milliseconds>`.
+- Child `hover`, `moveMouse`, `delay`, and `drop` actions can override `pressedPointer=`, `dragTrail=`, and `dragBreadcrumbs=`. Child `drop` actions can also use `dropPointerDuration=<milliseconds>`, `dragPath=<...>`, and `postDropHold=<milliseconds>`.
 
 Command-level defaults are available for whole-run recordings:
 

@@ -98,6 +98,7 @@ public sealed partial class ScriptGifRecorder
         var frameDelayCentiseconds = Math.Max(1, (frameDelay + 9) / 10);
         var motion = MotionFor(action, durationOption, easingOption);
         var path = PathFor(action, dragging);
+        SetCursorState(action, dragging);
         foreach (var point in pointer.MoveTo(target, motion.FrameCount(action?.Name ?? "recording", frameDelay), motion.PointerEasing, path))
         {
             devToolsClient.MoveMouse(remoteDebuggingUrl, point, dragging ? 1 : 0);
@@ -106,9 +107,30 @@ public sealed partial class ScriptGifRecorder
                 devToolsClient.MovePageDrag(remoteDebuggingUrl, point);
             }
 
-            devToolsClient.MoveDomCursor(remoteDebuggingUrl, point);
             CaptureFrame(frameDelayCentiseconds);
         }
+    }
+
+    private void SetCursorState(BrowserScriptAction? action, bool dragging)
+    {
+        cursorPressed = dragging && BoolOption(action, "pressedPointer", true);
+        cursorTrail = dragging && BoolOption(action, "dragTrail", false);
+        cursorBreadcrumb = dragging && BoolOption(action, "dragBreadcrumbs", false);
+    }
+
+    private static bool BoolOption(BrowserScriptAction? action, string name, bool fallback)
+    {
+        if (action?.Options.TryGetValue(name, out var value) is not true)
+        {
+            return fallback;
+        }
+
+        return value.Trim().ToLowerInvariant() switch
+        {
+            "true" or "yes" or "on" or "1" => true,
+            "false" or "no" or "off" or "0" => false,
+            _ => throw new ScriptExecutionException($"{action.Name} option {name}= must be true or false.")
+        };
     }
 
     private ScriptPointerMotionOptions MotionFor(BrowserScriptAction? action, string? durationOption, string? easingOption)

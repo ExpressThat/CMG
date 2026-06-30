@@ -57,7 +57,12 @@ public static partial class BrowserDomScripts
     public static string PromoteMessageBar() =>
         "(() => { const bar = document.getElementById('__cmg_message_bar'); if (!bar || typeof bar.showPopover !== 'function') return true; if (bar.matches(':popover-open')) bar.hidePopover(); bar.showPopover(); return true; })()";
 
-    public static string MoveDomCursor(ElementPoint point, ClickPulseStyle? pulseStyle = null) =>
+    public static string MoveDomCursor(
+        ElementPoint point,
+        ClickPulseStyle? pulseStyle = null,
+        bool pressed = false,
+        bool trail = false,
+        bool breadcrumb = false) =>
         $$"""
         (() => {
           const promote = element => {
@@ -92,17 +97,24 @@ public static partial class BrowserDomScripts
           }
           cursor.style.left = '{{Invariant(point.X)}}px';
           cursor.style.top = '{{Invariant(point.Y)}}px';
+          cursor.style.transform = '{{(pressed ? "translate(-3px, -3px) scale(.88)" : "translate(-3px, -3px)")}}';
+          cursor.style.filter = '{{(pressed ? "drop-shadow(0 1px 2px rgba(0,0,0,.48)) saturate(1.25)" : "drop-shadow(0 2px 3px rgba(0,0,0,.4))")}}';
           {{PulseScript(point, pulseStyle)}}
+          {{TrailScript(point, trail)}}
+          {{BreadcrumbScript(point, breadcrumb)}}
           promote(cursor);
           return true;
         })()
         """;
 
     public static string RemoveDomCursor() =>
-        "(() => { const cursor = document.getElementById('__cmg_virtual_cursor'); if (cursor?.matches?.(':popover-open')) cursor.hidePopover(); cursor?.remove(); return true; })()";
+        "(() => { const cursor = document.getElementById('__cmg_virtual_cursor'); if (cursor?.matches?.(':popover-open')) cursor.hidePopover(); cursor?.remove(); document.getElementById('__cmg_cursor_trail')?.remove(); document.querySelectorAll('[data-cmg-cursor-breadcrumb]').forEach(node => node.remove()); return true; })()";
 
     public static string RemoveDefaultDragGhost() =>
         "(() => { const ghost = document.getElementById('__cmg_default_drag_ghost'); if (ghost?.matches?.(':popover-open')) ghost.hidePopover(); ghost?.remove(); return true; })()";
+
+    public static string ClearPointerEvidence() =>
+        "(() => { document.getElementById('__cmg_cursor_trail')?.remove(); document.querySelectorAll('[data-cmg-cursor-breadcrumb]').forEach(node => node.remove()); return true; })()";
 
     private static string PulseScript(ElementPoint point, ClickPulseStyle? pulseStyle)
     {
@@ -149,4 +161,39 @@ public static partial class BrowserDomScripts
             _ =>
                 "pulse.style.width='34px';pulse.style.height='34px';pulse.style.transform='translate(-50%,-50%)';pulse.style.borderRadius='999px';pulse.style.background='transparent';pulse.style.boxShadow='0 0 0 3px #2563eb,0 0 0 7px rgba(37,99,235,.18)';pulse.innerHTML='';"
         };
+
+    private static string TrailScript(ElementPoint point, bool enabled) =>
+        enabled
+            ? $$"""
+              let trail = document.getElementById('__cmg_cursor_trail');
+              if (!trail) {
+                trail = document.createElement('div');
+                trail.id = '__cmg_cursor_trail';
+                trail.setAttribute('popover', 'manual');
+                trail.style.cssText = 'all:initial;position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483645;overflow:visible;';
+                trail.innerHTML = '<svg width="100%" height="100%" style="position:fixed;left:0;top:0;overflow:visible" aria-hidden="true"><polyline id="__cmg_cursor_trail_line" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".48"/></svg>';
+                document.documentElement.appendChild(trail);
+              }
+              const line = document.getElementById('__cmg_cursor_trail_line');
+              const next = '{{Invariant(point.X)}},{{Invariant(point.Y)}}';
+              const points = (line.getAttribute('points') || '').trim().split(/\s+/).filter(Boolean);
+              points.push(next);
+              line.setAttribute('points', points.slice(-42).join(' '));
+              promote(trail);
+              """
+            : "document.getElementById('__cmg_cursor_trail')?.remove();";
+
+    private static string BreadcrumbScript(ElementPoint point, bool enabled) =>
+        enabled
+            ? $$"""
+              const crumb = document.createElement('div');
+              crumb.setAttribute('data-cmg-cursor-breadcrumb', 'true');
+              crumb.setAttribute('popover', 'manual');
+              crumb.style.cssText = 'all:initial;position:fixed;left:{{Invariant(point.X)}}px;top:{{Invariant(point.Y)}}px;width:7px;height:7px;transform:translate(-50%,-50%);border-radius:999px;background:#2563eb;box-shadow:0 0 0 2px rgba(255,255,255,.85);pointer-events:none;z-index:2147483645;';
+              document.documentElement.appendChild(crumb);
+              promote(crumb);
+              const crumbs = Array.from(document.querySelectorAll('[data-cmg-cursor-breadcrumb]'));
+              crumbs.slice(0, Math.max(0, crumbs.length - 28)).forEach(node => node.remove());
+              """
+            : "document.querySelectorAll('[data-cmg-cursor-breadcrumb]').forEach(node => node.remove());";
 }

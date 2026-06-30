@@ -178,10 +178,10 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add click pulse style options: ring, ripple, dot, crosshair, or none. CLI: `--click-pulse <style>`. Default should be `ring` so clicks are visible evidence unless a script disables it with `clickPulse=none`.
 - Implemented: add right-click and middle-click distinct visual pulses.
 - Implemented: add double-click pulse choreography that clearly shows two clicks.
-- Add drag trail rendering for long drags.
-- Add optional drag path breadcrumb dots.
+- Implemented: add drag trail rendering for long drags.
+- Implemented: add optional drag path breadcrumb dots.
 - Add a visible hold state for `mouseDown`.
-- Add a pressed pointer state while dragging.
+- Implemented: add a pressed pointer state while dragging.
 - Add touch pointer styling for `tap` and `touchTap`.
 - Add keyboard focus pulse when actions do not move the pointer.
 - Add pointer target callout lines for tiny elements.

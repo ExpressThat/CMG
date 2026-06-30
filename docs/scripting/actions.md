@@ -1013,6 +1013,9 @@ Simple drag options:
 - `pointerSpeed`: Optional GIF pointer speed. Supports `slow`, `normal`, `fast`, `instant`, or a multiplier such as `1.5x`.
 - `pointerEasing`: Optional GIF pointer easing for pointer movement.
 - `dragEasing`: Optional GIF easing for drag travel.
+- `pressedPointer`: Optional GIF drag visual state. Defaults to `true` while recorded drag is active; set `false` to keep the normal pointer shape.
+- `dragTrail`: Optional GIF drag trail line. Defaults to `false`.
+- `dragBreadcrumbs`: Optional GIF breadcrumb dots for held-pointer drag movement. Defaults to `false`.
 - `preDragHold`: Optional hold in milliseconds before starting the page drag.
 - `dragHold`: Optional hold in milliseconds while the drag is active before dropping.
 - `postDropHold`: Optional hold in milliseconds after the drop pulse.
@@ -1047,6 +1050,7 @@ Child recording options:
 - `hover` and `moveMouse` can set `pointerDuration=`, `pointerSpeed=`, and `pointerEasing=`.
 - `moveMouse` can also use `duration=` and `easing=` aliases.
 - `hover` and `moveMouse` can set `pointerPath=direct|arc|manhattan|avoid-target|avoid-center`.
+- `hover`, `moveMouse`, `delay`, and `drop` can set `pressedPointer=`, `dragTrail=`, and `dragBreadcrumbs=`.
 - `moveMouse` can set `holdAfterMove=` to keep the held pointer visibly settled after that movement.
 - `drop` can set `dropPointerDuration=`, `dragPath=`, `postDropHold=`, and `clickPulse=`.
 
@@ -1061,6 +1065,7 @@ Rules:
 - With `--gif`, every automatic pointer movement dispatches browser movement and hover events, including movement before `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`.
 - With `--gif`, block drag bodies also dispatch DOM `pointerdown`/`mousedown`, held `pointermove`/`mousemove`, and `pointerup`/`mouseup` so page drag state and edge-autoscroll code can react while `moveMouse "bottom"` and `delay` run.
 - `pointerPath=` controls ordinary pointer movement into the drag body. `dragPath=` controls held-pointer movement during the drag and can be set on the parent `dragAndDrop` block or an individual `drop` child.
+- During recorded drags, the virtual pointer visually compresses by default to show the held state. Use `pressedPointer=false` to disable it. Use `dragTrail=true` or `dragBreadcrumbs=true` on the drag block or individual drag children when long drags need path evidence.
 - Without `--gif` or an active `gif` block, block-drag choreography-only children skip: `delay` reports `GIF_DRAG_DELAY ... status=skipped`, `hover` reports `GIF_DRAG_HOVER ... status=skipped`, `moveMouse` reports `GIF_MOVE_MOUSE ... status=skipped`, `pauseGif` reports `GIF_PAUSE ... status=skipped`, and `recordCheckpoint` reports `GIF_CHECKPOINT ... status=skipped`. Setup children such as `scrollIntoView` and `waitForElement` still run before CMG performs the fallback native `dragAndDrop`.
 - CMG creates the `DataTransfer` object for synthetic drag events but does not force `effectAllowed`, `dropEffect`, or payload values. The page's own `dragstart` handler remains responsible for setting drag data and allowed operations; CMG preserves those page-set values through the recorded drag.
 - If the page does not call `DataTransfer.setDragImage()`, CMG shows a default-preview bridge during the active drag so the live browser and GIF still show a browser-style default drag preview.
@@ -1076,9 +1081,9 @@ dragAndDrop "[data-command='browser launch']" {
   drop "#dropQueue"
 }
 
-dragAndDrop ".todo-card" pointerDuration=1200 dragHold=250 {
+dragAndDrop ".todo-card" pointerDuration=1200 dragTrail=true dragHold=250 {
   hover ".lane" pointerDuration=700
-  moveMouse selector=".board" edge=bottom duration=300 easing=linear
+  moveMouse selector=".board" edge=bottom duration=300 easing=linear dragBreadcrumbs=true
   drop ".done-column" dropPointerDuration=450 postDropHold=800 clickPulse=ripple
 }
 ```
@@ -1768,6 +1773,9 @@ Options:
 - `pointerEasing`: Default easing: `linear`, `ease-in`, `ease-out`, `ease-in-out`, or `spring`.
 - `pointerPath`: Default pointer route: `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
 - `dragPath`: Default route while the pointer is held during drag movement.
+- `pressedPointer`: Default held-pointer visual compression during recorded drags. Defaults to `true`.
+- `dragTrail`: Default held-pointer trail line during recorded drags. Defaults to `false`.
+- `dragBreadcrumbs`: Default held-pointer breadcrumb dots during recorded drags. Defaults to `false`.
 - `clickPulse` / `pulse`: Default click/tap/drop pulse style: `ring`, `ripple`, `dot`, `crosshair`, or `none`.
 - `holdAfterAction`: Default post-action hold in milliseconds.
 - `preClickHold`: Default hold before click/tap dispatch after pointer movement.
@@ -1805,6 +1813,9 @@ Options:
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
 - `pointerPath`: Optional default pointer route: `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
 - `dragPath`: Optional default route while the pointer is held during drag movement.
+- `pressedPointer`: Optional held-pointer visual compression default for recorded drags.
+- `dragTrail`: Optional held-pointer trail line default for recorded drags.
+- `dragBreadcrumbs`: Optional held-pointer breadcrumb dots default for recorded drags.
 - `holdAfterAction`: Optional default post-action hold in milliseconds for child actions. Defaults to `350`; child actions can override it locally with their own `holdAfterAction=`.
 - `preClickHold`: Optional default hold before click/tap dispatch after pointer movement. Defaults to `0`.
 - `postClickHold`: Optional default hold after click/tap pulse frames. Defaults to `350`.

@@ -285,7 +285,7 @@ dotnet run -- --firefox browser close
 - `146-screenshot-deterministic-runner.cmgscript`: Demonstrates artifact-only animation and caret stabilization in the structured runner DSL.
 - `147-run-config.cmgscript`: Demonstrates `cmg run --config` defaults with variables, selection, project matrices, reports, traces, and retries.
 - `148-gif-quality.cmgscript`: Demonstrates GIF quality presets on recording blocks and aliases.
-- `149-gif-pointer-choreography.cmgscript`: Demonstrates GIF pointer duration, speed, easing, path styles, click pulses, move/click/navigation/assertion holds, parent block defaults, and child drag overrides.
+- `149-gif-pointer-choreography.cmgscript`: Demonstrates GIF pointer duration, speed, easing, path styles, drag pressed/trail/breadcrumb evidence, click pulses, move/click/navigation/assertion holds, parent block defaults, and child drag overrides.
 - `150-gif-failure-hold.cmgscript`: Demonstrates final failure-state holds in partial GIF artifacts.
 - `151-gif-timeline.cmgscript`: Demonstrates block-level GIF timeline metadata with `timeline=true`.
 - `152-runner-gif-report-metadata.cmgscript`: Demonstrates runner JSON `gifMetadata` entries, HTML GIF previews, and JUnit GIF artifact properties for command-level GIF artifacts.
