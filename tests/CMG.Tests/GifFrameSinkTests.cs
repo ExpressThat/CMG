@@ -1,5 +1,6 @@
 using CMG.Browser;
 using CMG.Browser.Scripting.Recording;
+using System.Text.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.PixelFormats;
@@ -74,6 +75,41 @@ public sealed class GifFrameSinkTests
             Assert.Equal(GifDisposalMethod.RestoreToBackground, metadata.DisposalMethod);
         }
         File.Delete(path);
+    }
+
+    [Fact]
+    public void WriteTimeline_CapturesGifMetadata()
+    {
+        var directory = Directory.CreateTempSubdirectory("cmg-gif-timeline-");
+        var gifPath = Path.Combine(directory.FullName, "flow.gif");
+        var timelinePath = Path.Combine(directory.FullName, "flow.timeline.json");
+        using var sink = new GifFrameSink();
+        sink.AddFrame(Png(Color.White), 10);
+        sink.AddFrame(Png(Color.Black), 25);
+        sink.Save(gifPath);
+
+        var written = GifTimelineWriter.Write(
+            timelinePath,
+            gifPath,
+            new ScriptRecordingOptions(gifPath, HoldOnFailureMilliseconds: 1500),
+            sink);
+
+        using var json = JsonDocument.Parse(File.ReadAllText(written));
+        var root = json.RootElement;
+        Assert.Equal(2, root.GetProperty("frameCount").GetInt32());
+        Assert.Equal(350, root.GetProperty("durationMilliseconds").GetInt32());
+        Assert.Equal(1500, root.GetProperty("timing").GetProperty("holdOnFailureMilliseconds").GetInt32());
+        Assert.Equal([100, 250], root.GetProperty("frameDelaysMilliseconds").EnumerateArray().Select(value => value.GetInt32()).ToArray());
+        directory.Delete(recursive: true);
+    }
+
+    [Theory]
+    [InlineData("false")]
+    [InlineData("off")]
+    [InlineData("none")]
+    public void ResolveTimeline_DisabledValuesSkip(string value)
+    {
+        Assert.Null(GifTimelinePath.Resolve("flow.gif", value));
     }
 
     private static byte[] Png(Color color)

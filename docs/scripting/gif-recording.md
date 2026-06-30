@@ -6,7 +6,9 @@ Scripts can record an animated GIF with:
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-quality highest
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-easing ease-in-out
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-timeline demo-output\timelines
 cmg run flow.cmgscript --gif demo-output\runner-gifs
+cmg run flow.cmgscript --gif demo-output\runner-gifs --gif-timeline demo-output\timelines
 cmg run flow.cmgscript --gif demo-output\runner-gifs --gif-quality highest
 ```
 
@@ -69,6 +71,7 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
 - `holdOnFailure=<milliseconds>`: Extra final-state hold captured only when the recording fails. Defaults to `1200`; use `0` to suppress the failure hold.
+- `timeline=<true|false|file|directory>`: Optional timeline JSON sidecar for this recording block. `true` writes `<gif-name>.timeline.json` next to the GIF; a directory writes the same filename inside that directory; a `.json` path writes that exact file.
 
 The same options can be set on pointer-aware child actions. A block's options are defaults for everything inside that block, and child actions can override them for only that action.
 
@@ -108,7 +111,9 @@ cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --po
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --click-pulse ripple
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-hold-after-action 700
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-hold-on-failure 1800
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-timeline demo-output\timelines
 cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --click-pulse dot --gif-hold-after-action 700 --gif-hold-on-failure 1800
+cmg run tests\flows --gif demo-output\runner-gifs --gif-timeline demo-output\timelines
 ```
 
 CMG also enables evidence-focused defaults when they make the GIF easier to understand. Click and tap actions show a visible pulse by default so the recording proves that an activation happened. Use `clickPulse=` when a script needs a different pulse style or needs to suppress the pulse for one action.
@@ -197,9 +202,29 @@ On success, stdout includes:
 
 ```text
 GIF C:\Projects\CMG\demo-output\flow.gif
+GIF_TIMELINE C:\Projects\CMG\demo-output\flow.timeline.json
 ```
 
 On failure, CMG still writes a partial GIF when at least one frame was captured, then exits with code `1`.
+
+## Timeline Metadata
+
+Timeline metadata is optional and is written only when a recording is active.
+
+- Direct scripts use `--gif-timeline <file-or-directory>` with command-level `--gif`.
+- Runner tests use `cmg run --gif <directory> --gif-timeline <directory>`.
+- Recording blocks use `timeline=true`, `timeline=false`, `timeline="artifacts/timelines"`, or `timeline="artifacts/flow.timeline.json"`.
+
+When command-level `--gif` is active, nested `gif`, `recordVideo`, and `screencast` blocks are suppressed, including their block-level `timeline=` files. The command-level recorder writes one whole-run timeline instead.
+
+The JSON sidecar contains:
+
+- `version`, `createdAtUtc`, `gifPath`, `fileSizeBytes`, `quality`
+- `frameCount`, `durationMilliseconds`, `width`, `height`
+- `frameDelaysMilliseconds`
+- `timing.pointerDurationMilliseconds`, `timing.pointerSpeed`, `timing.pointerEasing`, `timing.clickPulse`, `timing.holdAfterActionMilliseconds`, `timing.holdOnFailureMilliseconds`
+
+Use this file when reports, CI artifacts, or agent feedback need machine-readable timing without parsing the GIF binary.
 
 ## Quality
 

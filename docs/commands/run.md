@@ -34,6 +34,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--click-pulse <ring|ripple|dot|crosshair|none>`: Default click/tap/drop pulse style for command-level `--gif` recordings. Defaults to `ring`.
 - `--gif-hold-after-action <milliseconds>`: Default post-action hold for command-level `--gif` recordings. Defaults to `350`; use `0` to suppress automatic post-action holds.
 - `--gif-hold-on-failure <milliseconds>`: Final failure-state hold for command-level `--gif` recordings. Defaults to `1200`; use `0` to suppress the extra failure hold.
+- `--gif-timeline <file-or-directory>`: Optional JSON timeline sidecar for GIF recordings. With `cmg run --gif`, pass a directory so each test writes `<gif-name>.timeline.json`.
 - `--config <file>`: JSON run config file. CLI options override config values.
 - `--project <name>`: Named project from the run config. Project values override global config values, and CLI options override both.
 - `--report-json <file>`: Write a JSON test report.
@@ -104,6 +105,7 @@ GIF recording is optional.
 - `--click-pulse` sets the whole-test click/tap/drop pulse style when `--gif` is active.
 - `--gif-hold-after-action` sets the whole-test post-action hold duration when `--gif` is active.
 - `--gif-hold-on-failure` captures one extra final-state hold frame before writing a failed test GIF.
+- `--gif-timeline` writes metadata JSON sidecars and emits `GIF_TIMELINE <path>` in the per-test output after each GIF is saved.
 - When command-level GIF recording is active, script-level `gif { ... }`, `recordVideo { ... }`, and `screencast { ... }` blocks do not create nested recordings; their actions are flattened into the whole-test GIF.
 - Without command-level GIF recording, script-level `gif "name" { ... }`, `recordVideo "name" { ... }`, or `screencast "name" { ... }` records only the wrapped block.
 - Without command-level GIF recording or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif` and `moveMouse` are skipped and do not create pointer frames.
@@ -130,6 +132,7 @@ cmg run tests\flows --gif artifacts\gifs
 cmg run tests\flows --gif artifacts\gifs --gif-quality highest
 cmg run tests\flows --gif artifacts\gifs --pointer-duration 600 --pointer-easing spring
 cmg run tests\flows --gif artifacts\gifs --click-pulse ripple --gif-hold-after-action 700 --gif-hold-on-failure 1800
+cmg run tests\flows --gif artifacts\gifs --gif-timeline artifacts\timelines
 cmg run checkout.cmgscript --report-json artifacts\checkout.json --report-html artifacts\checkout.html
 cmg run checkout.cmgscript --trace artifacts\traces
 cmg run tests\flows --grep checkout --tag smoke --retries 2 --shard 1/3

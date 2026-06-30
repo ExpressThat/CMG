@@ -1726,7 +1726,7 @@ gif "open-dialog" quality=highest {
   click "#open"
 }
 
-recordVideo "checkout" quality=high {
+recordVideo "checkout" quality=high timeline=true {
   click "#pay"
 }
 
@@ -1744,13 +1744,15 @@ Options:
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
 - `holdAfterAction`: Optional default post-action hold in milliseconds for child actions. Defaults to `350`; child actions can override it locally with their own `holdAfterAction=`.
 - `holdOnFailure`: Optional final failure-state hold in milliseconds. Defaults to `1200`; use `0` to suppress the extra failure hold.
+- `timeline`: Optional timeline JSON sidecar. Use `true` to write next to the GIF, `false` / `off` / `none` to disable, a directory to write `<gif-name>.timeline.json` inside it, or a `.json` path to write that exact file.
 
 Output:
 
 - `GIF <path>` when a script-level block writes its own recording.
+- `GIF_TIMELINE <path>` when the recording also writes timeline metadata.
 - `GIF_BLOCK_SUPPRESSED <line>` when command-level `--gif` is active and the block is included in the full recording instead.
 
-If the block fails while recording, CMG captures one extra final-state frame before writing the partial GIF. Non-GIF runs do not create a virtual pointer or capture failure frames.
+If the block fails while recording, CMG captures one extra final-state frame before writing the partial GIF. Non-GIF runs do not create a virtual pointer, timeline file, or failure frames.
 
 ## Runner Convenience Actions
 

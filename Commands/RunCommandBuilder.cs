@@ -47,6 +47,7 @@ public sealed partial class RunCommandBuilder
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Click pulse style for --gif: ring, ripple, dot, crosshair, or none." };
         var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
         var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
+        var gifTimelineOption = new Option<string?>("--gif-timeline") { Description = "Write GIF timeline JSON files to this file or directory." };
         var jsonOption = new Option<FileInfo?>("--report-json") { Description = "Write a JSON test report to this file." };
         var htmlOption = new Option<FileInfo?>("--report-html") { Description = "Write an HTML test report to this file." };
         var junitOption = new Option<FileInfo?>("--report-junit") { Description = "Write a JUnit XML test report to this file." };
@@ -125,6 +126,7 @@ public sealed partial class RunCommandBuilder
             clickPulseOption,
             holdAfterActionOption,
             holdOnFailureOption,
+            gifTimelineOption,
             jsonOption,
             htmlOption,
             junitOption,
@@ -231,7 +233,8 @@ public sealed partial class RunCommandBuilder
                 pointerMotion,
                 clickPulse,
                 holdAfterAction,
-                holdOnFailure);
+                holdOnFailure,
+                parseResult.GetValue(gifTimelineOption));
         });
 
         return command;

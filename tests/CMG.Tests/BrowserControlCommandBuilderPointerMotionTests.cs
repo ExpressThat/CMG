@@ -55,6 +55,17 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void ScriptCommand_MapsGifTimelineOption()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --gif-timeline C:\\temp\\flow.timeline.json").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("C:\\temp\\flow.timeline.json", handler.GifTimelinePath);
+    }
+
+    [Fact]
     public void ScriptCommand_RejectsInvalidPointerEasing()
     {
         var handler = new CapturingHandler();
@@ -85,6 +96,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
         public ClickPulseStyle ClickPulse { get; private set; }
         public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
         public int HoldOnFailureMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds;
+        public string? GifTimelinePath { get; private set; }
         public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output) => 0;
         public int RunScript(BrowserKind browserKind, string file, FileInfo? gif) => 0;
         public int RunScriptAction(BrowserKind browserKind, string scriptLine) => 0;
@@ -103,13 +115,15 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             ScriptPointerMotionOptions? pointerMotion = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
-            int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds)
+            int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
+            string? gifTimelinePath = null)
         {
             File = file;
             PointerMotion = pointerMotion;
             ClickPulse = clickPulse;
             HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             HoldOnFailureMilliseconds = holdOnFailureMilliseconds;
+            GifTimelinePath = gifTimelinePath;
             return 0;
         }
     }

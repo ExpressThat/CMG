@@ -83,6 +83,7 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Final failure-state hold in milliseconds for --gif recordings."
         };
+        var gifTimelineOption = new Option<string?>("--gif-timeline") { Description = "Write GIF timeline JSON to a file or directory." };
         var traceOption = new Option<FileInfo?>("--trace")
         {
             Description = "Write a CMG script trace JSON file for the run."
@@ -124,6 +125,7 @@ public sealed partial class BrowserControlCommandBuilder
             clickPulseOption,
             holdAfterActionOption,
             holdOnFailureOption,
+            gifTimelineOption,
             traceOption,
             timeoutOption,
             navigationTimeoutOption,
@@ -186,9 +188,10 @@ public sealed partial class BrowserControlCommandBuilder
 
             var browserKind = CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions);
             var port = CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions);
+            var timeline = parseResult.GetValue(gifTimelineOption);
             return inline is null
-                ? browserControlCommandHandler.RunScript(browserKind, port, file, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse, holdAfterAction, holdOnFailure)
-                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse, holdAfterAction, holdOnFailure);
+                ? browserControlCommandHandler.RunScript(browserKind, port, file, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse, holdAfterAction, holdOnFailure, timeline)
+                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse, holdAfterAction, holdOnFailure, timeline);
         });
 
         return command;

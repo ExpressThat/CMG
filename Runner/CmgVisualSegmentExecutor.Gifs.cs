@@ -111,6 +111,16 @@ public sealed partial class CmgVisualSegmentExecutor
         return TryGifDurationFor(action, "holdOnFailure", "gif option holdOnFailure=", defaults, out hold, out error);
     }
 
+    private static bool TryGifTimelineFor(CmgNode action, FileInfo? gif, CmgRunOptions options, out string? timeline, out string? error)
+    {
+        error = null;
+        timeline = GifTimelineFor(gif, action.Options.GetValueOrDefault("timeline") ?? options.GifTimelinePath);
+        return true;
+    }
+
+    private static string? GifTimelineFor(FileInfo? gif, string? requestedPath) =>
+        gif is null ? null : GifTimelinePath.Resolve(gif.FullName, requestedPath);
+
     private static bool TryGifDurationFor(CmgNode action, string option, string source, int defaults, out int hold, out string? error)
     {
         hold = defaults;

@@ -1,0 +1,10 @@
+# Demonstrates block-level GIF timeline metadata.
+setContent "<main><h1>Timeline evidence</h1><button id='save'>Save</button><p id='status'>Draft</p></main>"
+
+gif "timeline-evidence" output="demo-output/timeline-evidence.gif" timeline=true pointerDuration=300 {
+  caption "Timeline sidecar"
+  click "#save"
+  evaluate "document.querySelector('#status').textContent = 'Saved'"
+  pauseGif 500
+  expectText "#status" "Saved"
+}

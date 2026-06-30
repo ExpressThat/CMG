@@ -125,10 +125,10 @@ To choreograph pointer timing and drag evidence, run:
 
 ```powershell
 cmg browser control script --file demo-scripts\149-gif-pointer-choreography.cmgscript --gif demo-output\pointer-choreography.gif --pointer-duration 500 --gif-hold-after-action 700
-cmg browser control script --file demo-scripts\150-gif-failure-hold.cmgscript --gif demo-output\failure-hold.gif --gif-hold-on-failure 1800
+cmg browser control script --file demo-scripts\150-gif-failure-hold.cmgscript --gif demo-output\failure-hold.gif --gif-hold-on-failure 1800 --gif-timeline demo-output\timelines
 ```
 
-Recording blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `clickPulse=`, `holdAfterAction=`, and `holdOnFailure=` as defaults. Use `pauseGif <milliseconds>` for recording-only holds that make the artifact easier to read without sleeping the browser. If a block has child actions, such as `dragAndDrop { ... }`, the parent options are scoped defaults and each child action can override them locally.
+Recording blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `clickPulse=`, `holdAfterAction=`, `holdOnFailure=`, and `timeline=` as defaults. Use `pauseGif <milliseconds>` for recording-only holds that make the artifact easier to read without sleeping the browser. If a block has child actions, such as `dragAndDrop { ... }`, the parent options are scoped defaults and each child action can override them locally. Use `--gif-timeline` or block-level `timeline=true` when reports or agents need JSON timing metadata beside the GIF.
 
 For stable screenshot evidence, mask volatile regions only in the artifact. The GIF still shows the real page and pointer choreography:
 

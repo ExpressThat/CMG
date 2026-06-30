@@ -6,7 +6,8 @@ public sealed record ScriptRecordingOptions(
     ScriptPointerMotionOptions? PointerMotion = null,
     ClickPulseStyle ClickPulse = ClickPulseStyle.Ring,
     int HoldAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
-    int HoldOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds)
+    int HoldOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
+    string? TimelinePath = null)
 {
     public const int FrameDelayCentiseconds = 10;
 

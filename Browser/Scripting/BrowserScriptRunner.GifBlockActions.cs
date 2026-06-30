@@ -16,9 +16,10 @@ public sealed partial class BrowserScriptRunner
             throw new ScriptExecutionException("gif requires a block body.");
         }
 
+        var gifPath = GifBlockPath(action);
         var recorder = commandRecorder ?? new ScriptGifRecorder(
             automationClient,
-            new ScriptRecordingOptions(GifBlockPath(action), GifBlockQuality(action), GifBlockMotion(action), GifBlockPulse(action), GifBlockHold(action), GifBlockFailureHold(action)));
+            new ScriptRecordingOptions(gifPath, GifBlockQuality(action), GifBlockMotion(action), GifBlockPulse(action), GifBlockHold(action), GifBlockFailureHold(action), GifBlockTimeline(action, gifPath)));
         var output = new List<string>();
         var failed = false;
         if (commandRecorder is null)
@@ -119,6 +120,16 @@ public sealed partial class BrowserScriptRunner
         }
 
         return ScriptPointerMotionOptions.ParseDuration(value, "gif option holdOnFailure=");
+    }
+
+    private static string? GifBlockTimeline(BrowserScriptAction action, string gifPath)
+    {
+        if (!action.Options.TryGetValue("timeline", out var value))
+        {
+            return null;
+        }
+
+        return GifTimelinePath.Resolve(gifPath, value);
     }
 
     private static string SafeFileName(string value)

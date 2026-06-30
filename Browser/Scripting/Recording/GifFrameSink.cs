@@ -23,6 +23,19 @@ public sealed class GifFrameSink : IDisposable
         frames.Add(image);
     }
 
+    public int FrameCount => frames.Count;
+
+    public int Width => frames.Count is 0 ? 0 : frames.Max(frame => frame.Width);
+
+    public int Height => frames.Count is 0 ? 0 : frames.Max(frame => frame.Height);
+
+    public int DurationMilliseconds => FrameDelaysCentiseconds.Sum() * 10;
+
+    public IReadOnlyList<int> FrameDelaysMilliseconds => FrameDelaysCentiseconds.Select(delay => delay * 10).ToArray();
+
+    private IEnumerable<int> FrameDelaysCentiseconds =>
+        frames.Select(frame => frame.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay);
+
     public void Save(string path)
     {
         if (frames.Count is 0)

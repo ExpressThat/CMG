@@ -177,6 +177,10 @@ public sealed partial class BrowserScriptRunner
 
         recorder.Finish();
         output.Add($"GIF {recorder.OutputPath}");
+        if (!string.IsNullOrWhiteSpace(recorder.TimelinePath))
+        {
+            output.Add($"GIF_TIMELINE {recorder.TimelinePath}");
+        }
     }
 
     private static void FinishTrace(ScriptExecutionContext context, bool success, string? error, List<string> output)
