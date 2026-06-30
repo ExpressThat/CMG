@@ -8,6 +8,17 @@ public sealed partial class ScriptGifRecorder
         CaptureFrame(ScriptRecordingOptions.HoldFrameDelayCentiseconds);
     }
 
+    private void CaptureHoldFrame(BrowserScriptAction action, string optionName)
+    {
+        if (!action.Options.TryGetValue(optionName, out var value))
+        {
+            CaptureHoldFrame();
+            return;
+        }
+
+        CaptureFrame(Math.Max(1, ScriptPointerMotionOptions.ParseDuration(value, $"{action.Name} option {optionName}=") / 10));
+    }
+
     private void CapturePulseFrame()
     {
         CaptureFrame(ScriptRecordingOptions.FrameDelayCentiseconds, pulse: true);

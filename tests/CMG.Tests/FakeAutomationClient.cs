@@ -50,6 +50,8 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string LastInsertedText { get; private set; } = string.Empty;
     public List<string> KeyEvents { get; } = [];
     public bool LastFullPageScreenshot { get; private set; }
+    public int MouseMoveCount { get; private set; }
+    public int PageScreenshotCount { get; private set; }
 
     public string GetElementHtml(string remoteDebuggingUrl, string selector) => string.Empty;
     public byte[] GetElementScreenshot(string remoteDebuggingUrl, string selector, ScreenshotOptions? options = null)
@@ -134,11 +136,16 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public void MovePageDrag(string remoteDebuggingUrl, ElementPoint point) => LastMoveDragPoint = point;
     public void EndPageDrag(string remoteDebuggingUrl, ElementPoint point) => LastEndDragPoint = point;
     public void RemoveDefaultDragGhost(string remoteDebuggingUrl) { }
-    public void MoveMouse(string remoteDebuggingUrl, ElementPoint point, int buttons) => LastMouseMove = point;
+    public void MoveMouse(string remoteDebuggingUrl, ElementPoint point, int buttons)
+    {
+        LastMouseMove = point;
+        MouseMoveCount++;
+    }
     public void MouseDown(string remoteDebuggingUrl, ElementPoint point) => LastMouseDown = point;
     public void MouseUp(string remoteDebuggingUrl, ElementPoint point) => LastMouseUp = point;
     public byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false, ScreenshotOptions? options = null)
     {
+        PageScreenshotCount++;
         LastPageScreenshotOptions = options ?? new(FullPage: fullPage);
         LastFullPageScreenshot = LastPageScreenshotOptions.FullPage;
         using var image = new Image<Rgba32>(1, 1, Color.White);

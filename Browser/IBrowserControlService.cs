@@ -27,7 +27,8 @@ public interface IBrowserControlService
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
-        GifQuality gifQuality = GifQuality.Highest) =>
+        GifQuality gifQuality = GifQuality.Highest,
+        ScriptPointerMotionOptions? pointerMotion = null) =>
         RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables);
 
     ScriptRunResult RunScript(
@@ -54,5 +55,6 @@ public interface IBrowserControlService
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
-        GifQuality gifQuality = GifQuality.Highest);
+        GifQuality gifQuality = GifQuality.Highest,
+        ScriptPointerMotionOptions? pointerMotion = null);
 }

@@ -164,6 +164,7 @@ public sealed class RunCommandBuilderTests
         public bool AutoLaunch { get; private set; }
         public bool AutoLaunchHeadless { get; private set; }
         public GifQuality GifQuality { get; private set; } = GifQuality.Highest;
+        public ScriptPointerMotionOptions? PointerMotion { get; private set; }
 
         public int Run(
             BrowserKind browserKind,
@@ -189,7 +190,8 @@ public sealed class RunCommandBuilderTests
             int? browserPort = null,
             bool autoLaunch = false,
             bool autoLaunchHeadless = false,
-            GifQuality gifQuality = GifQuality.Highest)
+            GifQuality gifQuality = GifQuality.Highest,
+            ScriptPointerMotionOptions? pointerMotion = null)
         {
             BrowserKind = browserKind;
             Path = path;
@@ -212,6 +214,7 @@ public sealed class RunCommandBuilderTests
             AutoLaunch = autoLaunch;
             AutoLaunchHeadless = autoLaunchHeadless;
             GifQuality = gifQuality;
+            PointerMotion = pointerMotion;
             return 0;
         }
     }

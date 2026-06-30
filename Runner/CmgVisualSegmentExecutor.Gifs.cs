@@ -51,4 +51,30 @@ public sealed partial class CmgVisualSegmentExecutor
         error = $"gif quality must be one of: {GifQualityParser.Values}.";
         return false;
     }
+
+    private static bool TryGifMotionFor(
+        CmgNode action,
+        ScriptPointerMotionOptions? defaults,
+        out ScriptPointerMotionOptions motion,
+        out string? error)
+    {
+        motion = defaults ?? ScriptPointerMotionOptions.Default;
+        error = null;
+        try
+        {
+            motion = motion.WithAction(new CMG.Browser.Scripting.BrowserScriptAction(
+                action.LineNumber,
+                action.Kind,
+                action.Kind,
+                action.Arguments,
+                action.Options,
+                []));
+            return true;
+        }
+        catch (CMG.Browser.Scripting.ScriptExecutionException exception)
+        {
+            error = exception.Message;
+            return false;
+        }
+    }
 }

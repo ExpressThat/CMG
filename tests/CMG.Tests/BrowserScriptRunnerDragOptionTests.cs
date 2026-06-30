@@ -1,5 +1,6 @@
 using CMG.Browser;
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Tests;
 
@@ -31,5 +32,48 @@ public sealed class BrowserScriptRunnerDragOptionTests
         Assert.Contains("sourceX= must be zero or greater", result.Error);
     }
 
+    [Fact]
+    public void RunText_BlockDragAcceptsParentAndChildRecordingOptions()
+    {
+        var client = new FakeAutomationClient();
+        using var gif = new TempGifFile();
+        var result = Runner().RunText("""
+        dragAndDrop "#source" pointerDuration=400 {
+          hover "#mid" pointerDuration=200
+          drop "#target" dropPointerDuration=300
+        }
+        """, "debug", client, gif.File);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(13, client.MouseMoveCount);
+    }
+
+    [Fact]
+    public void RunText_BlockDragRejectsUnknownOptions()
+    {
+        using var gif = new TempGifFile();
+        var result = Runner().RunText("""
+        dragAndDrop "#source" nope=true {
+          drop "#target"
+        }
+        """, "debug", new FakeAutomationClient(), gif.File);
+
+        Assert.False(result.Success);
+        Assert.Contains("accepts only recording choreography options", result.Error);
+    }
+
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());
+
+    private sealed class TempGifFile : IDisposable
+    {
+        public FileInfo File { get; } = new(Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif"));
+
+        public void Dispose()
+        {
+            if (File.Exists)
+            {
+                File.Delete();
+            }
+        }
+    }
 }

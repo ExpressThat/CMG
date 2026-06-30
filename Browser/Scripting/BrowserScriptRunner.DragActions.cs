@@ -20,7 +20,7 @@ public sealed partial class BrowserScriptRunner
 
         if (recorder is not null)
         {
-            recorder.RecordDragAndDrop(action.Arguments[0], action.Arguments[1]);
+            recorder.RecordDragAndDrop(action);
 
             return [];
         }
@@ -79,9 +79,9 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> ExecuteDragAndDropBlock(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action, ScriptGifRecorder? recorder)
     {
         RequireArgumentCount(action, 1, 1);
-        if (action.Options.Count > 0)
+        if (action.Options.Keys.Any(key => !IsDragRecordingOption(key)))
         {
-            throw new ScriptExecutionException("Block dragAndDrop does not accept options.");
+            throw new ScriptExecutionException("Block dragAndDrop accepts only recording choreography options.");
         }
 
         var sourceSelector = action.Arguments[0];
@@ -132,17 +132,17 @@ public sealed partial class BrowserScriptRunner
             return output;
         }
 
-        recorder.BeginDrag(sourceSelector);
+        recorder.BeginDrag(action);
         foreach (var child in action.Children)
         {
             var childName = child.Name.ToLowerInvariant();
             if (childName is "drop")
             {
-                recorder.DropDrag(child.Arguments[0]);
+                recorder.DropDrag(MergeDragChildOptions(action, child));
                 return output;
             }
 
-            output.AddRange(ExecuteDragBlockRecordedStep(remoteDebuggingUrl, automationClient, child, recorder));
+            output.AddRange(ExecuteDragBlockRecordedStep(remoteDebuggingUrl, automationClient, MergeDragChildOptions(action, child), recorder));
         }
 
         return output;
@@ -199,7 +199,28 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> ExecuteRecordedDragHover(BrowserScriptAction action, ScriptGifRecorder recorder)
     {
         RequireArgumentCount(action, 1, 1);
-        recorder.DragHover(action.Arguments[0]);
+        recorder.DragHover(action);
         return [];
+    }
+
+    private static bool IsDragRecordingOption(string key) =>
+        key is "pointerDuration" or "pointerSpeed" or "pointerEasing" or
+            "sourcePointerDuration" or "targetPointerDuration" or "dragEasing" or
+            "preDragHold" or "dragHold" or "postDropHold";
+
+    private static BrowserScriptAction MergeDragChildOptions(BrowserScriptAction parent, BrowserScriptAction child)
+    {
+        if (parent.Options.Count is 0)
+        {
+            return child;
+        }
+
+        var options = new Dictionary<string, string>(parent.Options, StringComparer.OrdinalIgnoreCase);
+        foreach (var option in child.Options)
+        {
+            options[option.Key] = option.Value;
+        }
+
+        return child with { Options = options };
     }
 }

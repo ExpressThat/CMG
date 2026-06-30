@@ -3,26 +3,27 @@ namespace CMG.Browser.Scripting.Recording;
 
 public sealed partial class ScriptGifRecorder
 {
-    public void BeginDrag(string sourceSelector)
+    public void BeginDrag(BrowserScriptAction action)
     {
         if (remoteDebuggingUrl is null)
         {
             return;
         }
 
-        MoveToSelector(sourceSelector);
-        CaptureHoldFrame();
+        var sourceSelector = action.Arguments[0];
+        MoveToSelector(action with { Options = SourceMoveOptions(action) });
+        CaptureHoldFrame(action, "preDragHold");
         devToolsClient.BeginPageDrag(remoteDebuggingUrl, sourceSelector, pointer.Position);
     }
 
-    public void DragHover(string selector)
+    public void DragHover(BrowserScriptAction action)
     {
         if (remoteDebuggingUrl is null)
         {
             return;
         }
 
-        MoveDragToSelector(selector);
+        MoveDragToSelector(action.Arguments[0], action);
     }
 
     public void DragDelay(int milliseconds)
@@ -43,17 +44,18 @@ public sealed partial class ScriptGifRecorder
         }
     }
 
-    public void DropDrag(string targetSelector)
+    public void DropDrag(BrowserScriptAction action)
     {
         if (remoteDebuggingUrl is null)
         {
             return;
         }
 
-        MoveDragToSelector(targetSelector);
+        MoveDragToSelector(action.Arguments[0], action, "dropPointerDuration");
+        CaptureHoldFrame(action, "dragHold");
         devToolsClient.EndPageDrag(remoteDebuggingUrl, pointer.Position);
         CapturePulseFrame();
-        CaptureHoldFrame();
+        CaptureHoldFrame(action, "postDropHold");
     }
 
     public void MoveMouse(BrowserScriptAction action, bool dragging)
@@ -63,6 +65,24 @@ public sealed partial class ScriptGifRecorder
             return;
         }
 
-        MovePointerTo(ResolveMoveMouseTarget(action), dragging);
+        MovePointerTo(ResolveMoveMouseTarget(action), dragging, action, "duration", "easing");
+    }
+
+    private static IReadOnlyDictionary<string, string> SourceMoveOptions(BrowserScriptAction action)
+    {
+        var options = new Dictionary<string, string>(action.Options, StringComparer.OrdinalIgnoreCase);
+        options.Remove("pointerDuration");
+        options.Remove("targetPointerDuration");
+        options.Remove("dropPointerDuration");
+        options.Remove("dragEasing");
+        options.Remove("dragHold");
+        options.Remove("postDropHold");
+        if (!action.Options.TryGetValue("sourcePointerDuration", out var duration))
+        {
+            return options;
+        }
+
+        options["pointerDuration"] = duration;
+        return options;
     }
 }

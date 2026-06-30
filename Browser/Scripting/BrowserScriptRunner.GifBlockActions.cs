@@ -16,7 +16,9 @@ public sealed partial class BrowserScriptRunner
             throw new ScriptExecutionException("gif requires a block body.");
         }
 
-        var recorder = commandRecorder ?? new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(GifBlockPath(action), GifBlockQuality(action)));
+        var recorder = commandRecorder ?? new ScriptGifRecorder(
+            automationClient,
+            new ScriptRecordingOptions(GifBlockPath(action), GifBlockQuality(action), GifBlockMotion(action)));
         var output = new List<string>();
         if (commandRecorder is null)
         {
@@ -74,6 +76,9 @@ public sealed partial class BrowserScriptRunner
 
         throw new ScriptExecutionException($"gif quality must be one of: {GifQualityParser.Values}.");
     }
+
+    private static ScriptPointerMotionOptions GifBlockMotion(BrowserScriptAction action) =>
+        ScriptPointerMotionOptions.Default.WithAction(action).Validate(action.Name);
 
     private static string SafeFileName(string value)
     {

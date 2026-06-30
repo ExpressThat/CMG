@@ -19,7 +19,7 @@ public sealed class GifFrameSink : IDisposable
     public void AddFrame(byte[] pngBytes, int delayCentiseconds)
     {
         var image = Image.Load<Rgba32>(pngBytes);
-        image.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay = delayCentiseconds;
+        SetFrameMetadata(image.Frames.RootFrame.Metadata.GetGifMetadata(), delayCentiseconds);
         frames.Add(image);
     }
 
@@ -93,15 +93,27 @@ public sealed class GifFrameSink : IDisposable
     {
         if (frame.Width == width && frame.Height == height)
         {
-            return frame.Clone();
+            var clone = frame.Clone();
+            SetFrameMetadata(
+                clone.Frames.RootFrame.Metadata.GetGifMetadata(),
+                frame.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay);
+            return clone;
         }
 
         var normalized = new Image<Rgba32>(width, height, Color.White);
         normalized.Mutate(context => context.DrawImage(frame, new Point(0, 0), 1f));
-        normalized.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay =
-            frame.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay;
+        SetFrameMetadata(
+            normalized.Frames.RootFrame.Metadata.GetGifMetadata(),
+            frame.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay);
 
         return normalized;
+    }
+
+    private static void SetFrameMetadata(GifFrameMetadata metadata, int delayCentiseconds)
+    {
+        metadata.FrameDelay = delayCentiseconds;
+        metadata.HasTransparency = false;
+        metadata.DisposalMethod = GifDisposalMethod.RestoreToBackground;
     }
 
     public void Dispose()

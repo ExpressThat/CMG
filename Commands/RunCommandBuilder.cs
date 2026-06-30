@@ -38,6 +38,18 @@ public sealed partial class RunCommandBuilder
             Description = "GIF quality for --gif recordings: highest, high, medium, or low.",
             DefaultValueFactory = _ => "highest"
         };
+        var pointerDurationOption = new Option<int?>("--pointer-duration")
+        {
+            Description = "Default virtual pointer movement duration in milliseconds for --gif recordings."
+        };
+        var pointerSpeedOption = new Option<string?>("--pointer-speed")
+        {
+            Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x."
+        };
+        var pointerEasingOption = new Option<string?>("--pointer-easing")
+        {
+            Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring."
+        };
         var jsonOption = new Option<FileInfo?>("--report-json")
         {
             Description = "Write a JSON test report to this file."
@@ -128,6 +140,9 @@ public sealed partial class RunCommandBuilder
             projectOption,
             gifOption,
             gifQualityOption,
+            pointerDurationOption,
+            pointerSpeedOption,
+            pointerEasingOption,
             jsonOption,
             htmlOption,
             junitOption,
@@ -175,6 +190,16 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}.");
                 return 1;
             }
+            if (!GifMotionOptionParser.TryParse(
+                parseResult.GetValue(pointerDurationOption),
+                parseResult.GetValue(pointerSpeedOption),
+                parseResult.GetValue(pointerEasingOption),
+                out var pointerMotion,
+                out var motionError))
+            {
+                Console.Error.WriteLine(motionError);
+                return 1;
+            }
             variables = MergeVariables(MergeVariables(config.Variables, project?.Variables), variables);
             var projectBrowser = BrowserKindFor(project?.Browser);
             if (projectBrowser is BrowserKind.InvalidSelection)
@@ -208,7 +233,8 @@ public sealed partial class RunCommandBuilder
                 parseResult.GetValue(browserPortOption),
                 parseResult.GetValue(autoLaunchOption),
                 parseResult.GetValue(headlessOption),
-                gifQuality);
+                gifQuality,
+                pointerMotion);
         });
 
         return command;

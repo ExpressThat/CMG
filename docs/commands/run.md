@@ -28,6 +28,9 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
 - `--gif-quality <highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. Defaults to `highest`.
+- `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
+- `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
+- `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
 - `--config <file>`: JSON run config file. CLI options override config values.
 - `--project <name>`: Named project from the run config. Project values override global config values, and CLI options override both.
 - `--report-json <file>`: Write a JSON test report.
@@ -94,6 +97,7 @@ GIF recording is optional.
 
 - With `--gif` or `-gif`, CMG records the whole execution of each test.
 - `--gif-quality` defaults to `highest`, using CMG's most color-faithful palette matching and dithering. Use `high`, `medium`, or `low` to trade color fidelity for smaller/faster GIF artifacts.
+- `--pointer-duration`, `--pointer-speed`, and `--pointer-easing` set whole-test virtual pointer defaults when `--gif` is active.
 - When command-level GIF recording is active, script-level `gif { ... }`, `recordVideo { ... }`, and `screencast { ... }` blocks do not create nested recordings; their actions are flattened into the whole-test GIF.
 - Without command-level GIF recording, script-level `gif "name" { ... }`, `recordVideo "name" { ... }`, or `screencast "name" { ... }` records only the wrapped block.
 - If `--max-failures` stops the run, GIFs and reports include only tests that actually ran before the stop.
@@ -117,6 +121,7 @@ cmg browser launch
 cmg run demo-scripts\20-runner-flow.cmgscript
 cmg run tests\flows --gif artifacts\gifs
 cmg run tests\flows --gif artifacts\gifs --gif-quality highest
+cmg run tests\flows --gif artifacts\gifs --pointer-duration 600 --pointer-easing spring
 cmg run checkout.cmgscript --report-json artifacts\checkout.json --report-html artifacts\checkout.html
 cmg run checkout.cmgscript --trace artifacts\traces
 cmg run tests\flows --grep checkout --tag smoke --retries 2 --shard 1/3

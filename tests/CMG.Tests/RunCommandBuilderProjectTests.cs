@@ -100,7 +100,8 @@ public sealed class RunCommandBuilderProjectTests
             int? browserPort = null,
             bool autoLaunch = false,
             bool autoLaunchHeadless = false,
-            GifQuality gifQuality = GifQuality.Highest)
+            GifQuality gifQuality = GifQuality.Highest,
+            ScriptPointerMotionOptions? pointerMotion = null)
         {
             BrowserKind = browserKind;
             Path = path;

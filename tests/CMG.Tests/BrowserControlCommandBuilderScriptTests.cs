@@ -133,6 +133,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
 
         public GifQuality GifQuality { get; private set; } = GifQuality.Highest;
 
+        public ScriptPointerMotionOptions? PointerMotion { get; private set; }
+
         public string? BaseUrl { get; private set; }
 
         public IReadOnlyDictionary<string, string> Variables { get; private set; } =
@@ -170,12 +172,14 @@ public sealed class BrowserControlCommandBuilderScriptTests
             ScriptTimeoutOptions? timeouts,
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
-            GifQuality gifQuality = GifQuality.Highest)
+            GifQuality gifQuality = GifQuality.Highest,
+            ScriptPointerMotionOptions? pointerMotion = null)
         {
             RunScript(browserKind, file, gif, trace, timeouts);
             BaseUrl = baseUrl;
             Variables = variables;
             GifQuality = gifQuality;
+            PointerMotion = pointerMotion;
             return 0;
         }
 
@@ -188,8 +192,9 @@ public sealed class BrowserControlCommandBuilderScriptTests
             ScriptTimeoutOptions? timeouts,
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
-            GifQuality gifQuality = GifQuality.Highest) =>
-            RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables, gifQuality);
+            GifQuality gifQuality = GifQuality.Highest,
+            ScriptPointerMotionOptions? pointerMotion = null) =>
+            RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
 
         public int RunScriptAction(BrowserKind browserKind, string scriptLine)
         {
@@ -206,7 +211,8 @@ public sealed class BrowserControlCommandBuilderScriptTests
             ScriptTimeoutOptions? timeouts,
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
-            GifQuality gifQuality = GifQuality.Highest)
+            GifQuality gifQuality = GifQuality.Highest,
+            ScriptPointerMotionOptions? pointerMotion = null)
         {
             InlineScript = script;
             Gif = gif;
@@ -215,6 +221,7 @@ public sealed class BrowserControlCommandBuilderScriptTests
             BaseUrl = baseUrl;
             Variables = variables;
             GifQuality = gifQuality;
+            PointerMotion = pointerMotion;
             return 0;
         }
 

@@ -384,6 +384,11 @@ Options:
 - `selector`: Optional selector for element-edge targeting. Use with `edge=`.
 - `edge`: Required for element-edge targeting. Supports `top`, `bottom`, `left`, `right`, `center`, `topLeft`, `topRight`, `bottomLeft`, and `bottomRight`.
 - `inset`: Optional element-edge inset in CSS pixels. Default is `16`.
+- `pointerDuration`: Optional GIF pointer movement duration in milliseconds. Overrides any parent recording block default for this move.
+- `duration`: Alias for `pointerDuration`.
+- `pointerEasing`: Optional GIF pointer movement easing. Supports `linear`, `ease-in`, `ease-out`, `ease-in-out`, and `spring`.
+- `easing`: Alias for `pointerEasing`.
+- `pointerSpeed`: Optional GIF pointer speed. Supports `slow`, `normal`, `fast`, `instant`, or a multiplier such as `1.5x`.
 
 Examples:
 
@@ -963,6 +968,15 @@ Simple drag options:
 
 - `sourceX` / `sourceY`: Optional element-relative drag start offsets. Defaults to the source center.
 - `targetX` / `targetY`: Optional element-relative drop offsets. Defaults to the target center.
+- `pointerDuration`: Optional GIF drag travel duration in milliseconds. For `dragAndDrop`, this controls movement while dragging and does not change the initial move to the source.
+- `sourcePointerDuration`: Optional GIF duration for the initial move to the source.
+- `targetPointerDuration`: Optional GIF duration for the drag movement to the target.
+- `pointerSpeed`: Optional GIF pointer speed. Supports `slow`, `normal`, `fast`, `instant`, or a multiplier such as `1.5x`.
+- `pointerEasing`: Optional GIF pointer easing for pointer movement.
+- `dragEasing`: Optional GIF easing for drag travel.
+- `preDragHold`: Optional hold in milliseconds before starting the page drag.
+- `dragHold`: Optional hold in milliseconds while the drag is active before dropping.
+- `postDropHold`: Optional hold in milliseconds after the drop pulse.
 
 Simple drag-and-drop does not scroll automatically. The source and target points must both already be inside the current viewport. Use `scrollIntoView` and, when needed, a large enough viewport before dragging. In GIF recordings, the virtual pointer, page drag lifecycle, and default drag ghost use the same source and target points.
 
@@ -975,6 +989,8 @@ dragTo "[data-command='browser launch']" "#dropQueue" sourceX=8 sourceY=8 target
 
 The block form is the complex drag sequence. It has no inline target selector; the target is provided by the required `drop` child action.
 
+Block `dragAndDrop` accepts the same GIF choreography options as scoped defaults for its child actions. Child actions inside the block can specify their own values to override the parent for that child only.
+
 Allowed child actions:
 
 - `delay <milliseconds>`: Pause while the drag is active. With `--gif`, frames are captured during the hold.
@@ -983,6 +999,12 @@ Allowed child actions:
 - `scrollIntoView "<selector>"`: Scroll an element into view before continuing.
 - `waitForElement "<selector>" timeout=5000`: Wait for an element before continuing.
 - `drop "<selector>"`: Finish the drag on the target selector. Required exactly once.
+
+Child recording options:
+
+- `hover` and `moveMouse` can set `pointerDuration=`, `pointerSpeed=`, and `pointerEasing=`.
+- `moveMouse` can also use `duration=` and `easing=` aliases.
+- `drop` can set `dropPointerDuration=` and `postDropHold=`.
 
 Rules:
 
@@ -1006,6 +1028,12 @@ dragAndDrop "[data-command='browser launch']" {
   delay 200
   hover "#dropQueue"
   drop "#dropQueue"
+}
+
+dragAndDrop ".todo-card" pointerDuration=1200 dragHold=250 {
+  hover ".lane" pointerDuration=700
+  moveMouse selector=".board" edge=bottom duration=300 easing=linear
+  drop ".done-column" dropPointerDuration=450 postDropHold=800
 }
 ```
 

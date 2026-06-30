@@ -11,6 +11,7 @@ cmg browser --port <port> control script --file <path>
 cmg browser control script --file -
 cmg browser control script --file <path> --gif <path>
 cmg browser control script --file <path> --gif <path> --gif-quality highest
+cmg browser control script --file <path> --gif <path> --pointer-duration 600 --pointer-easing ease-in-out
 cmg browser control script --file <path> --trace <path>
 cmg browser control script --file <path> --timeout 10000 --assertion-timeout 5000
 cmg browser control script --file <path> --base-url https://example.test/app/
@@ -27,6 +28,9 @@ cmg --firefox browser control script --file <path>
 - `--inline <script>`: Run inline `.cmgscript` text. Specify exactly one of `--file` or `--inline`.
 - `--gif <path>`: Optional output path for an animated GIF recording of the script run.
 - `--gif-quality <highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. Defaults to `highest`.
+- `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
+- `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
+- `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
 - `--trace <path>`: Optional output path for a CMG script trace JSON file. The trace includes step names, line numbers, stdout lines, and failure reasons.
 - `--timeout <milliseconds>`: Default timeout for timeout-capable waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions that do not set `timeout=`.
 - `--navigation-timeout <milliseconds>`: Default timeout for navigation actions and navigation waits.
@@ -64,6 +68,7 @@ cmg --firefox browser control script --file <path>
 - When `--gif` is provided, the whole script is recorded and nested block recordings are suppressed.
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
 - Pointer-aware actions resolve rich locators to the same target used by browser dispatch, so pointer movement, pointer events, hover state, drag ghosts, screenshots, and captions stay aligned.
+- Whole-run pointer defaults from `--pointer-duration`, `--pointer-speed`, and `--pointer-easing` apply when `--gif` is active. DSL `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, and `pointerEasing=` as scoped defaults for child actions; child actions can override those options locally.
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.
 
 ## Trace Behavior
@@ -133,6 +138,7 @@ Run a script with initial variables:
 cmg browser control script --file demo-scripts\139-cli-variables.cmgscript --var user=Ada
 cmg browser control script --file demo-scripts\141-base-url.cmgscript --base-url https://example.test/app/
 cmg browser control script --file demo-scripts\148-gif-quality.cmgscript --gif demo-output\quality.gif --gif-quality highest
+cmg browser control script --file demo-scripts\149-gif-pointer-choreography.cmgscript --gif demo-output\pointer-choreography.gif --pointer-duration 500
 cmg browser control script --inline "listConsole level=error"
 ```
 

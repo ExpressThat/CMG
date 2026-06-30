@@ -180,7 +180,8 @@ public sealed class BrowserAppCommandBuilderTests
             ScriptTimeoutOptions? timeouts,
             string? baseUrl,
             IReadOnlyDictionary<string, string> variables,
-            GifQuality gifQuality = GifQuality.Highest)
+            GifQuality gifQuality = GifQuality.Highest,
+            ScriptPointerMotionOptions? pointerMotion = null)
         {
             Port = port;
             return 0;

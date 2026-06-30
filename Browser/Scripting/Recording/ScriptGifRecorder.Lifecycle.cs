@@ -3,21 +3,24 @@ namespace CMG.Browser.Scripting.Recording;
 
 public sealed partial class ScriptGifRecorder
 {
-    public void RecordDragAndDrop(string sourceSelector, string targetSelector)
+    public void RecordDragAndDrop(BrowserScriptAction action)
     {
         if (remoteDebuggingUrl is null)
         {
             return;
         }
 
-        MoveToSelector(sourceSelector);
-        CaptureHoldFrame();
+        var sourceSelector = action.Arguments[0];
+        var targetSelector = action.Arguments[1];
+        MoveToSelector(action with { Options = SourceMoveOptions(action) });
+        CaptureHoldFrame(action, "preDragHold");
 
         devToolsClient.BeginPageDrag(remoteDebuggingUrl, sourceSelector, pointer.Position);
-        MoveDragToSelector(targetSelector);
+        MoveDragToSelector(targetSelector, action, "targetPointerDuration", "dragEasing");
+        CaptureHoldFrame(action, "dragHold");
         devToolsClient.EndPageDrag(remoteDebuggingUrl, pointer.Position);
         CapturePulseFrame();
-        CaptureHoldFrame();
+        CaptureHoldFrame(action, "postDropHold");
     }
 
     public void RecordDragAndDrop(BrowserScriptAction action, ElementPoint start, ElementPoint end)
@@ -28,14 +31,15 @@ public sealed partial class ScriptGifRecorder
         }
 
         var sourceSelector = action.Arguments[0];
-        MovePointerTo(start, dragging: false);
-        CaptureHoldFrame();
+        MovePointerTo(start, dragging: false, action with { Options = SourceMoveOptions(action) });
+        CaptureHoldFrame(action, "preDragHold");
 
         devToolsClient.BeginPageDrag(remoteDebuggingUrl, sourceSelector, pointer.Position);
-        MovePointerTo(end, dragging: true);
+        MovePointerTo(end, dragging: true, action, "targetPointerDuration", "dragEasing");
+        CaptureHoldFrame(action, "dragHold");
         devToolsClient.EndPageDrag(remoteDebuggingUrl, pointer.Position);
         CapturePulseFrame();
-        CaptureHoldFrame();
+        CaptureHoldFrame(action, "postDropHold");
     }
 
     public void Finish()

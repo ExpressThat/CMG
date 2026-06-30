@@ -71,6 +71,18 @@ public sealed partial class BrowserControlCommandBuilder
             Description = "GIF quality: highest, high, medium, or low.",
             DefaultValueFactory = _ => "highest"
         };
+        var pointerDurationOption = new Option<int?>("--pointer-duration")
+        {
+            Description = "Default virtual pointer movement duration in milliseconds for --gif recordings."
+        };
+        var pointerSpeedOption = new Option<string?>("--pointer-speed")
+        {
+            Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x."
+        };
+        var pointerEasingOption = new Option<string?>("--pointer-easing")
+        {
+            Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring."
+        };
         var traceOption = new Option<FileInfo?>("--trace")
         {
             Description = "Write a CMG script trace JSON file for the run."
@@ -106,6 +118,9 @@ public sealed partial class BrowserControlCommandBuilder
             inlineOption,
             gifOption,
             gifQualityOption,
+            pointerDurationOption,
+            pointerSpeedOption,
+            pointerEasingOption,
             traceOption,
             timeoutOption,
             navigationTimeoutOption,
@@ -130,6 +145,16 @@ public sealed partial class BrowserControlCommandBuilder
                 Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}.");
                 return 1;
             }
+            if (!GifMotionOptionParser.TryParse(
+                parseResult.GetValue(pointerDurationOption),
+                parseResult.GetValue(pointerSpeedOption),
+                parseResult.GetValue(pointerEasingOption),
+                out var pointerMotion,
+                out var motionError))
+            {
+                Console.Error.WriteLine(motionError);
+                return 1;
+            }
 
             var trace = parseResult.GetValue(traceOption);
             var timeouts = new ScriptTimeoutOptions(
@@ -147,8 +172,8 @@ public sealed partial class BrowserControlCommandBuilder
             var browserKind = CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions);
             var port = CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions);
             return inline is null
-                ? browserControlCommandHandler.RunScript(browserKind, port, file, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality)
-                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality);
+                ? browserControlCommandHandler.RunScript(browserKind, port, file, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion)
+                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion);
         });
 
         return command;

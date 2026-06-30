@@ -12,6 +12,7 @@ For the full catalogue of advanced examples, see the [cookbook reference](cookbo
 | Write a first test | [First Test](#first-test) | `demo-scripts\20-runner-flow.cmgscript` |
 | Show pointer behavior | [Visual Evidence](#visual-evidence) | `demo-scripts\10-css-hover-states.cmgscript` |
 | Tune GIF quality | [Visual Evidence](#visual-evidence) | `demo-scripts\148-gif-quality.cmgscript` |
+| Choreograph GIF pointer movement | [Visual Evidence](#visual-evidence) | `demo-scripts\149-gif-pointer-choreography.cmgscript` |
 | Reuse script logic | [Variables And Macros](#variables-and-macros) | `demo-scripts\30-control-flow-macros.cmgscript` |
 | Handle failures clearly | [Failure Feedback](#failure-feedback) | `demo-scripts\52-explicit-fail.cmgscript` |
 | Tune one slow section | [Scoped Timeouts](#scoped-timeouts) | `demo-scripts\134-scoped-timeouts.cmgscript` |
@@ -119,6 +120,14 @@ cmg browser control script --file demo-scripts\148-gif-quality.cmgscript
 ```
 
 The `gif`, `recordVideo`, and `screencast` blocks all use the same CMG recorder. `quality=highest` is the default and gives the most color-faithful palette; `high`, `medium`, and `low` trade fidelity for smaller/faster artifacts.
+
+To choreograph pointer timing and drag evidence, run:
+
+```powershell
+cmg browser control script --file demo-scripts\149-gif-pointer-choreography.cmgscript --gif demo-output\pointer-choreography.gif --pointer-duration 500
+```
+
+Recording blocks can set `pointerDuration=`, `pointerSpeed=`, and `pointerEasing=` as defaults. If a block has child actions, such as `dragAndDrop { ... }`, the parent options are scoped defaults and each child action can override them locally.
 
 For stable screenshot evidence, mask volatile regions only in the artifact. The GIF still shows the real page and pointer choreography:
 

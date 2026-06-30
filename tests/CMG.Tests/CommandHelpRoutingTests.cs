@@ -93,6 +93,7 @@ public sealed class CommandHelpRoutingTests
             int? browserPort = null,
             bool autoLaunch = false,
             bool autoLaunchHeadless = false,
-            GifQuality gifQuality = GifQuality.Highest) => throw new InvalidOperationException();
+            GifQuality gifQuality = GifQuality.Highest,
+            ScriptPointerMotionOptions? pointerMotion = null) => throw new InvalidOperationException();
     }
 }

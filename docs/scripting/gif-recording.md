@@ -5,6 +5,7 @@ Scripts can record an animated GIF with:
 ```powershell
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-quality highest
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-easing ease-in-out
 cmg run flow.cmgscript --gif demo-output\runner-gifs
 cmg run flow.cmgscript --gif demo-output\runner-gifs --gif-quality highest
 ```
@@ -48,6 +49,61 @@ GIF recording uses one pointer:
 - The GIF captures this same injected pointer from the browser screenshot. CMG does not draw a second overlay pointer onto GIF frames.
 
 CMG removes the DOM cursor when recording ends.
+
+## Pointer Choreography
+
+Use pointer choreography options when a recording should be slower, faster, or more deliberately staged than the defaults:
+
+```text
+gif "checkout evidence" pointerDuration=650 pointerEasing=ease-in-out {
+  click "#plan-pro"
+  click "#continue" pointerDuration=250
+}
+```
+
+Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blocks:
+
+- `pointerDuration=<milliseconds>`: Movement duration between pointer targets. Must be zero or greater.
+- `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
+- `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
+
+The same options can be set on pointer-aware child actions. A block's options are defaults for everything inside that block, and child actions can override them for only that action.
+
+```text
+gif "board evidence" pointerDuration=500 pointerEasing=ease-in-out {
+  dragAndDrop ".todo-card" pointerDuration=1200 dragHold=250 {
+    hover ".lane" pointerDuration=700
+    moveMouse selector=".board" edge=bottom pointerDuration=300
+    drop ".done-column" dropPointerDuration=450 postDropHold=800
+  }
+}
+```
+
+For block actions with child actions, the parent block is a scoped override and its children can still specify their own options. In the example above, the `gif` block sets the broad default, the `dragAndDrop` block overrides drag choreography for its body, and `hover`, `moveMouse`, and `drop` override individual movements.
+
+`moveMouse` also accepts `duration=<milliseconds>` and `easing=<mode>` aliases:
+
+```text
+moveMouse selector=".board" edge=bottom duration=300 easing=linear
+```
+
+`dragAndDrop` supports drag-specific choreography:
+
+- `pointerDuration=<milliseconds>`: Drag travel duration.
+- `sourcePointerDuration=<milliseconds>`: Move-to-source duration before dragging.
+- `targetPointerDuration=<milliseconds>`: Drag travel duration to the target.
+- `dragEasing=<mode>`: Easing for drag travel.
+- `preDragHold=<milliseconds>`: Hold before starting the page drag.
+- `dragHold=<milliseconds>`: Hold while the drag is active before dropping.
+- `postDropHold=<milliseconds>`: Hold after the drop pulse.
+- Child `drop` actions can use `dropPointerDuration=<milliseconds>` and `postDropHold=<milliseconds>`.
+
+Command-level defaults are available for whole-run recordings:
+
+```powershell
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-speed slow --pointer-easing spring
+cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out
+```
 
 ## `moveMouse`
 
@@ -142,11 +198,11 @@ When command-level `--gif` is active, nested `gif`, `recordVideo`, and `screenca
 CMG uses balanced default timing:
 
 - about 10 frames per second
-- smooth pointer movement between targets
+- smooth pointer movement between targets, configurable with `pointerDuration=`, `pointerSpeed=`, and `pointerEasing=`
 - short holds after actions
 - a visible click pulse for click and drag/drop actions
 
-Timing is intentionally automatic for now.
+Timing is automatic by default. Use pointer choreography options when a GIF needs slower evidence movement, instant jumps, or action-specific drag timing.
 
 ## Notes
 

@@ -60,7 +60,8 @@ public sealed record CmgRunOptions(
     int? BrowserPort = null,
     bool AutoLaunch = false,
     bool AutoLaunchHeadless = false,
-    GifQuality GifQuality = GifQuality.Highest);
+    GifQuality GifQuality = GifQuality.Highest,
+    ScriptPointerMotionOptions? PointerMotion = null);
 
 public sealed partial record CmgRunResult(
     bool Success,

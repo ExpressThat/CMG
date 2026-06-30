@@ -23,4 +23,35 @@ public sealed class ScriptGifRecorderPointerTargetTests
 
         Assert.Equal(new ElementPoint(14, 28), client.LastMouseMove);
     }
+
+    [Fact]
+    public void BeforeAction_UsesPointerDurationForFrameCount()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(path));
+        recorder.Start("debug");
+
+        recorder.BeforeAction(new BrowserScriptAction(1, "hover", "hover", ["#save"], new Dictionary<string, string>
+        {
+            ["pointerDuration"] = "300"
+        }, []));
+
+        Assert.Equal(3, client.MouseMoveCount);
+        Assert.Equal(3, client.PageScreenshotCount);
+    }
+
+    [Fact]
+    public void BeforeAction_UsesGifBlockPointerDefaults()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        var motion = new ScriptPointerMotionOptions(PointerDurationMilliseconds: 200);
+        using var recorder = new ScriptGifRecorder(client, new ScriptRecordingOptions(path, PointerMotion: motion));
+        recorder.Start("debug");
+
+        recorder.BeforeAction(new BrowserScriptAction(1, "hover", "hover", ["#save"], new Dictionary<string, string>(), []));
+
+        Assert.Equal(2, client.MouseMoveCount);
+    }
 }

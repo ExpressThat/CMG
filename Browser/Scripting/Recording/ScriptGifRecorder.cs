@@ -55,13 +55,13 @@ public sealed partial class ScriptGifRecorder : IDisposable
                 MoveToSelector(action);
             }
         }
-        else if (name is "draganddrop" or "dragto" && action.Arguments.Count >= 2)
+        else if ((name is "draganddrop" or "dragto") && action.Arguments.Count >= 2)
         {
             MoveToSelector(action);
         }
         else if (name is "frameclick" or "frametype" or "framefill" or "framehover" && action.Arguments.Count >= 2)
         {
-            MoveToFrameSelector(action.Arguments[0], action.Arguments[1]);
+            MoveToFrameSelector(action);
         }
     }
 

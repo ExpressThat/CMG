@@ -79,6 +79,26 @@ gif "kanban drag" pointerDuration=500 {
 
 Here `gif pointerDuration=500` controls ordinary pointer moves inside the block, while `dragAndDrop pointerDuration=1200` controls the drag travel itself. Child actions inside the drag body can still override their own movement.
 
+For any block action that has child actions, the parent block's recording options are scoped defaults for everything inside the block. A child action can specify the same option to override the parent for that child only. This applies to top-level recording blocks such as `gif { ... }` and complex action blocks such as `dragAndDrop { ... }`.
+
+Example:
+
+```text
+gif "board evidence" pointerDuration=500 pointerEasing=ease-in-out {
+  dragAndDrop ".todo-card" pointerDuration=1200 dragHold=250 {
+    hover ".lane" pointerDuration=700
+    moveMouse selector=".board" edge=bottom pointerDuration=300
+    drop ".done-column" dropPointerDuration=450 postDropHold=800
+  }
+}
+```
+
+In that example:
+
+- The `gif` block sets defaults for all recorded child actions.
+- The `dragAndDrop` block overrides drag choreography defaults for its body.
+- `hover`, `moveMouse`, and `drop` can each override the parent block defaults for their own movement and holds.
+
 Use this table when designing each feature:
 
 | Setting Type | Project / Config | CLI Whole Run | `recording {}` Scope | `gif` / `recordVideo` / `screencast` Block | Action Override | Complex Child Override |

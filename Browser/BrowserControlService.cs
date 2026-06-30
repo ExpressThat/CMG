@@ -81,9 +81,10 @@ public sealed class BrowserControlService : IBrowserControlService
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
-        GifQuality gifQuality = GifQuality.Highest)
+        GifQuality gifQuality = GifQuality.Highest,
+        ScriptPointerMotionOptions? pointerMotion = null)
     {
-        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality);
+        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
     }
 
     public ScriptRunResult RunScript(
@@ -95,7 +96,8 @@ public sealed class BrowserControlService : IBrowserControlService
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
-        GifQuality gifQuality = GifQuality.Highest)
+        GifQuality gifQuality = GifQuality.Highest,
+        ScriptPointerMotionOptions? pointerMotion = null)
     {
         if (file is not "-" && !File.Exists(file))
         {
@@ -110,7 +112,7 @@ public sealed class BrowserControlService : IBrowserControlService
 
         try
         {
-            return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality);
+            return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
         }
         catch (System.Net.Http.HttpRequestException exception)
         {
@@ -150,7 +152,8 @@ public sealed class BrowserControlService : IBrowserControlService
         ScriptTimeoutOptions? timeouts,
         string? baseUrl,
         IReadOnlyDictionary<string, string> variables,
-        GifQuality gifQuality = GifQuality.Highest)
+        GifQuality gifQuality = GifQuality.Highest,
+        ScriptPointerMotionOptions? pointerMotion = null)
     {
         var state = stateStore.Load(browserKind, port);
         if (state is null)
@@ -160,7 +163,7 @@ public sealed class BrowserControlService : IBrowserControlService
 
         try
         {
-            return scriptRunner.RunText(script, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality);
+            return scriptRunner.RunText(script, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion);
         }
         catch (System.Net.Http.HttpRequestException exception)
         {

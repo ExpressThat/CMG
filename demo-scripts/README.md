@@ -21,7 +21,7 @@ After that, use the learning groups below before treating the full script list a
 | Need | Demos |
 | --- | --- |
 | Browser-control basics | `01-dialog-flow.cmgscript`, `02-validation-flow.cmgscript`, `05-variables-and-evaluate.cmgscript`, `141-base-url.cmgscript` |
-| Visual evidence | `07-complex-drag-flow.cmgscript`, `08-gif-move-mouse.cmgscript`, `09-drag-autoscroll.cmgscript`, `10-css-hover-states.cmgscript` |
+| Visual evidence | `07-complex-drag-flow.cmgscript`, `08-gif-move-mouse.cmgscript`, `09-drag-autoscroll.cmgscript`, `10-css-hover-states.cmgscript`, `148-gif-quality.cmgscript`, `149-gif-pointer-choreography.cmgscript` |
 | Structured tests | `20-runner-flow.cmgscript`, `36-runner-selection.cmgscript`, `38-before-after-all.cmgscript` |
 | Control flow and reuse | `30-control-flow-macros.cmgscript`, `32-loop-control.cmgscript`, `33-try-catch-finally.cmgscript`, `34-macro-scoping.cmgscript` |
 | Assertions and failure feedback | `52-explicit-fail.cmgscript`, `126-generic-expect.cmgscript`, `128-soft-expect.cmgscript`, `132-runtime-skip.cmgscript` |
@@ -94,6 +94,12 @@ Record the CSS hover demo as a GIF:
 
 ```powershell
 dotnet run -- browser control script --file demo-scripts\10-css-hover-states.cmgscript --gif demo-output\css-hover-states.gif
+```
+
+Record the pointer choreography demo:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\149-gif-pointer-choreography.cmgscript --gif demo-output\pointer-choreography.gif --pointer-duration 500
 ```
 
 Run the structured runner demo with reports:
@@ -266,6 +272,8 @@ dotnet run -- --firefox browser close
 - `145-screenshot-deterministic.cmgscript`: Demonstrates artifact-only animation and caret stabilization in a direct script.
 - `146-screenshot-deterministic-runner.cmgscript`: Demonstrates artifact-only animation and caret stabilization in the structured runner DSL.
 - `147-run-config.cmgscript`: Demonstrates `cmg run --config` defaults with variables, selection, project matrices, reports, traces, and retries.
+- `148-gif-quality.cmgscript`: Demonstrates GIF quality presets on recording blocks and aliases.
+- `149-gif-pointer-choreography.cmgscript`: Demonstrates GIF pointer duration, speed, easing, parent block defaults, and child drag overrides.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.
