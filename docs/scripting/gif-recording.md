@@ -7,6 +7,7 @@ cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-quality highest
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-easing ease-in-out
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --caption-style qa --caption-position bottom
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-timeline demo-output\timelines
 cmg run flow.cmgscript --gif demo-output\runner-gifs
 cmg run flow.cmgscript --gif demo-output\runner-gifs --gif-timeline demo-output\timelines
@@ -76,6 +77,9 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerColor=<css-color>`: Pointer color. Use a single CSS color value, not a declaration.
 - `pointerSize=<auto|8..96>`: Pointer size in CSS pixels. `auto` uses the theme's designed size.
 - `pointerShadow=<none|light|medium|strong>`: Pointer drop shadow strength. Defaults to `medium`.
+- `captionStyle=<subtle|teaching|qa|bug-report|compact>`: Caption style default for child captions and step title bars.
+- `captionPosition=<top|bottom|left|right|auto>`: Caption placement default.
+- `captionSeverity=<info|success|warning|error>`: Caption color intent default.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
 - `preClickHold=<milliseconds>`: Hold after pointer movement and before click/tap dispatch. Defaults to `0`.
@@ -113,6 +117,9 @@ Supported `recording` / `withRecording` defaults:
 - `pointerColor=<css-color>`: Default pointer color.
 - `pointerSize=<auto|8..96>`: Default pointer size in CSS pixels.
 - `pointerShadow=<none|light|medium|strong>`: Default pointer shadow.
+- `captionStyle=<subtle|teaching|qa|bug-report|compact>`: Default caption style.
+- `captionPosition=<top|bottom|left|right|auto>`: Default caption position.
+- `captionSeverity=<info|success|warning|error>`: Default caption severity.
 - `pressedPointer=<true|false>`: Whether the pointer visually compresses while a recorded drag is active. Defaults to `true`.
 - `dragTrail=<true|false>`: Draw a trailing line behind held-pointer drag movement. Defaults to `false`.
 - `dragBreadcrumbs=<true|false>`: Add dot breadcrumbs along held-pointer drag movement. Defaults to `false`.
@@ -174,13 +181,14 @@ Command-level defaults are available for whole-run recordings:
 ```powershell
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-duration 600 --pointer-speed slow --pointer-easing spring
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-theme branded --pointer-color "#2563eb" --pointer-size 40 --pointer-shadow strong
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --caption-style teaching --caption-position bottom --caption-severity warning
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --click-pulse ripple
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --pointer-pre-click-hold 120 --pointer-post-click-hold 450
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-hold-on-failure 1800
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-fps 20
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-frame-delay 80
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-timeline demo-output\timelines
-cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --pointer-theme ring --pointer-color "#dc2626" --click-pulse dot --gif-hold-after-action 700 --gif-hold-on-failure 1800
+cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --pointer-theme ring --pointer-color "#dc2626" --caption-style qa --caption-position bottom --click-pulse dot --gif-hold-after-action 700 --gif-hold-on-failure 1800
 cmg run tests\flows --gif demo-output\runner-gifs --gif-fps 20
 cmg run tests\flows --gif demo-output\runner-gifs --gif-frame-delay 80
 cmg run tests\flows --gif demo-output\runner-gifs --gif-timeline demo-output\timelines

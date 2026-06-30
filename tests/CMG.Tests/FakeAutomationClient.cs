@@ -20,6 +20,8 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string LastClearedSelector { get; private set; } = string.Empty;
     public string LastSelectedSelector { get; private set; } = string.Empty;
     public string LastSelectedValue { get; private set; } = string.Empty;
+    public string LastMessageBar { get; private set; } = string.Empty;
+    public BrowserCaptionOptions? LastCaptionOptions { get; private set; }
     public string LastElementTextSelector { get; private set; } = string.Empty;
     public string LastElementBoxSelector { get; private set; } = string.Empty;
     public ViewportSize? LastViewport { get; private set; }
@@ -106,7 +108,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         LastSelectedSelector = selector;
         LastSelectedValue = value;
     }
-    public void ShowMessageBar(string remoteDebuggingUrl, string message) { }
+    public void ShowMessageBar(string remoteDebuggingUrl, string message, BrowserCaptionOptions? options = null)
+    {
+        LastMessageBar = message;
+        LastCaptionOptions = options;
+    }
     public void PromoteMessageBar(string remoteDebuggingUrl) { }
     public string GetElementText(string remoteDebuggingUrl, string selector)
     {

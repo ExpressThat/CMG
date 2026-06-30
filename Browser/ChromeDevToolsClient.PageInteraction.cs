@@ -6,9 +6,9 @@ namespace CMG.Browser;
 
 public sealed partial class ChromeDevToolsClient
 {
-    public void ShowMessageBar(string remoteDebuggingUrl, string message)
+    public void ShowMessageBar(string remoteDebuggingUrl, string message, BrowserCaptionOptions? options = null)
     {
-        Evaluate(remoteDebuggingUrl, BrowserDomScripts.ShowMessageBar(message));
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.ShowMessageBar(message, options));
     }
 
     public void PromoteMessageBar(string remoteDebuggingUrl)

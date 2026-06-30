@@ -24,6 +24,9 @@ public sealed partial class BrowserControlCommandBuilder
         var pointerColorOption = new Option<string?>("--pointer-color") { Description = "Default virtual pointer CSS color for --gif recordings." };
         var pointerSizeOption = new Option<int?>("--pointer-size") { Description = "Default virtual pointer size in CSS pixels for --gif recordings. Valid range is 8 to 96." };
         var pointerShadowOption = new Option<string?>("--pointer-shadow") { Description = $"Default virtual pointer shadow for --gif recordings: {PointerVisualOptions.ShadowValues}." };
+        var captionStyleOption = new Option<string?>("--caption-style") { Description = $"Default caption style for --gif recordings: {BrowserCaptionOptions.StyleValues}." };
+        var captionPositionOption = new Option<string?>("--caption-position") { Description = $"Default caption position for --gif recordings: {BrowserCaptionOptions.PositionValues}." };
+        var captionSeverityOption = new Option<string?>("--caption-severity") { Description = $"Default caption severity color for --gif recordings: {BrowserCaptionOptions.SeverityValues}." };
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Default click pulse style for --gif recordings: ring, ripple, dot, crosshair, or none." };
         var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
         var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
@@ -47,6 +50,7 @@ public sealed partial class BrowserControlCommandBuilder
         {
             fileOption, inlineOption, gifOption, gifQualityOption, pointerDurationOption, pointerSpeedOption,
             pointerEasingOption, pointerThemeOption, pointerColorOption, pointerSizeOption, pointerShadowOption,
+            captionStyleOption, captionPositionOption, captionSeverityOption,
             clickPulseOption, holdAfterActionOption, holdOnFailureOption, preClickHoldOption, postClickHoldOption,
             holdAfterNavigationOption, holdAfterAssertionOption, gifFpsOption, gifFrameDelayOption, gifTimelineOption,
             traceOption, timeoutOption, navigationTimeoutOption, assertionTimeoutOption, baseUrlOption, variableOption, envOption
@@ -80,15 +84,15 @@ public sealed partial class BrowserControlCommandBuilder
             var browserKind = CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions);
             var port = CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions);
             return inline is null
-                ? browserControlCommandHandler.RunScript(browserKind, port, file, options.Gif, options.Trace, timeouts, parseResult.GetValue(baseUrlOption), variables, options.Quality, options.Motion, options.Visual, options.Pulse, options.HoldAfterAction, options.HoldOnFailure, options.PreClickHold, options.PostClickHold, options.HoldAfterNavigation, options.HoldAfterAssertion, options.Timeline, options.FrameDelay)
-                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, options.Gif, options.Trace, timeouts, parseResult.GetValue(baseUrlOption), variables, options.Quality, options.Motion, options.Visual, options.Pulse, options.HoldAfterAction, options.HoldOnFailure, options.PreClickHold, options.PostClickHold, options.HoldAfterNavigation, options.HoldAfterAssertion, options.Timeline, options.FrameDelay);
+                ? browserControlCommandHandler.RunScript(browserKind, port, file, options.Gif, options.Trace, timeouts, parseResult.GetValue(baseUrlOption), variables, options.Quality, options.Motion, options.Visual, options.Caption, options.Pulse, options.HoldAfterAction, options.HoldOnFailure, options.PreClickHold, options.PostClickHold, options.HoldAfterNavigation, options.HoldAfterAssertion, options.Timeline, options.FrameDelay)
+                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, options.Gif, options.Trace, timeouts, parseResult.GetValue(baseUrlOption), variables, options.Quality, options.Motion, options.Visual, options.Caption, options.Pulse, options.HoldAfterAction, options.HoldOnFailure, options.PreClickHold, options.PostClickHold, options.HoldAfterNavigation, options.HoldAfterAssertion, options.Timeline, options.FrameDelay);
         });
 
         return command;
 
         bool TryParseGifScriptOptions(ParseResult parseResult, out GifScriptCommandOptions options)
         {
-            options = new GifScriptCommandOptions(parseResult.GetValue(gifOption), parseResult.GetValue(traceOption), GifQuality.Highest, null, null, ClickPulseStyle.Ring, 0, 0, 0, 0, 0, 0, parseResult.GetValue(gifTimelineOption), 0);
+            options = new GifScriptCommandOptions(parseResult.GetValue(gifOption), parseResult.GetValue(traceOption), GifQuality.Highest, null, null, null, ClickPulseStyle.Ring, 0, 0, 0, 0, 0, 0, parseResult.GetValue(gifTimelineOption), 0);
             if (!GifQualityParser.TryParse(parseResult.GetValue(gifQualityOption), out var gifQuality))
             {
                 Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}.");
@@ -104,6 +108,11 @@ public sealed partial class BrowserControlCommandBuilder
                 Console.Error.WriteLine(visualError);
                 return false;
             }
+            if (!GifCaptionOptionParser.TryParse(parseResult.GetValue(captionStyleOption), parseResult.GetValue(captionPositionOption), parseResult.GetValue(captionSeverityOption), out var captionOptions, out var captionError))
+            {
+                Console.Error.WriteLine(captionError);
+                return false;
+            }
             if (!TryParseGifHolds(parseResult, out var holds))
             {
                 return false;
@@ -114,7 +123,7 @@ public sealed partial class BrowserControlCommandBuilder
                 return false;
             }
 
-            options = new GifScriptCommandOptions(parseResult.GetValue(gifOption), parseResult.GetValue(traceOption), gifQuality, pointerMotion, pointerVisual, clickPulse, holds.HoldAfterAction, holds.HoldOnFailure, holds.PreClickHold, holds.PostClickHold, holds.HoldAfterNavigation, holds.HoldAfterAssertion, parseResult.GetValue(gifTimelineOption), frameDelay);
+            options = new GifScriptCommandOptions(parseResult.GetValue(gifOption), parseResult.GetValue(traceOption), gifQuality, pointerMotion, pointerVisual, captionOptions, clickPulse, holds.HoldAfterAction, holds.HoldOnFailure, holds.PreClickHold, holds.PostClickHold, holds.HoldAfterNavigation, holds.HoldAfterAssertion, parseResult.GetValue(gifTimelineOption), frameDelay);
             return true;
         }
 
@@ -143,6 +152,7 @@ public sealed partial class BrowserControlCommandBuilder
         GifQuality Quality,
         ScriptPointerMotionOptions? Motion,
         PointerVisualOptions? Visual,
+        BrowserCaptionOptions? Caption,
         ClickPulseStyle Pulse,
         int HoldAfterAction,
         int HoldOnFailure,

@@ -151,7 +151,7 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> ExecuteShowMessageBar(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
-        automationClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0]);
+        automationClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0], BrowserCaptionOptions.FromOptions(action.Options, action.Name));
         return [];
     }
 

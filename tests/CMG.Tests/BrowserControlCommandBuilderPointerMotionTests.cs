@@ -47,6 +47,19 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void ScriptCommand_MapsCaptionOptions()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --caption-style qa --caption-position bottom --caption-severity success").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(CaptionStyle.Qa, handler.CaptionOptions?.Style);
+        Assert.Equal(CaptionPosition.Bottom, handler.CaptionOptions?.Position);
+        Assert.Equal(CaptionSeverity.Success, handler.CaptionOptions?.Severity);
+    }
+
+    [Fact]
     public void ScriptCommand_MapsGifHoldAfterActionOption()
     {
         var handler = new CapturingHandler();
@@ -144,6 +157,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
         public string? File { get; private set; }
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
         public PointerVisualOptions? PointerVisual { get; private set; }
+        public BrowserCaptionOptions? CaptionOptions { get; private set; }
         public ClickPulseStyle ClickPulse { get; private set; }
         public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
         public int HoldOnFailureMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds;
@@ -170,6 +184,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
             PointerVisualOptions? pointerVisual = null,
+            BrowserCaptionOptions? captionOptions = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
@@ -183,6 +198,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             File = file;
             PointerMotion = pointerMotion;
             PointerVisual = pointerVisual;
+            CaptionOptions = captionOptions;
             ClickPulse = clickPulse;
             HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             HoldOnFailureMilliseconds = holdOnFailureMilliseconds;

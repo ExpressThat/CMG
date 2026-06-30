@@ -17,7 +17,7 @@ public sealed partial class CmgActionLowerer
             "withtimeout" or "withdefaulttimeout" or "withnavigationtimeout" or "withassertiontimeout" or "withexpecttimeout" or
             "try" or "catch" or "finally" or "switch" or "case" or "default" => LowerControlBlock(action),
             "call" or "break" or "continue" or "drop" => [ToLine(action.Kind, action.Arguments, action.Options)],
-            "caption" => [ToLine("showMessageBar", action.Arguments)],
+            "caption" => [ToLine("showMessageBar", action.Arguments, action.Options)],
             "fill" => LowerFill(action),
             "assertvisible" => LowerSelectorCommand("waitForElement", action),
             "wait" => LowerWait(action),
@@ -119,7 +119,7 @@ public sealed partial class CmgActionLowerer
     private IReadOnlyList<string> LowerStep(CmgNode action)
     {
         var caption = action.Arguments.Count > 0 ? action.Arguments[0] : $"Step at line {action.LineNumber}";
-        return [ToLine("showMessageBar", [caption]), .. action.Children.SelectMany(Lower)];
+        return [ToLine("showMessageBar", [caption], action.Options), .. action.Children.SelectMany(Lower)];
     }
 
     private IReadOnlyList<string> LowerDragAndDropBlock(CmgNode action) =>

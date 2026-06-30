@@ -237,4 +237,5 @@ public sealed partial class CmgActionLowererTests
 
     private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyDictionary<string, string> options) =>
         new(1, kind, kind, args, options, []);
+
 }

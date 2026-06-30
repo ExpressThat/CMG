@@ -46,6 +46,19 @@ public sealed class RunCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void RunCommand_MapsCaptionOptions()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "run flows --gif artifacts --caption-style teaching --caption-position right --caption-severity warning").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(CaptionStyle.Teaching, handler.CaptionOptions?.Style);
+        Assert.Equal(CaptionPosition.Right, handler.CaptionOptions?.Position);
+        Assert.Equal(CaptionSeverity.Warning, handler.CaptionOptions?.Severity);
+    }
+
+    [Fact]
     public void RunCommand_MapsGifHoldAfterActionOption()
     {
         var handler = new CapturingHandler();
@@ -126,6 +139,7 @@ public sealed class RunCommandBuilderPointerMotionTests
     {
         public ScriptPointerMotionOptions? PointerMotion { get; private set; }
         public PointerVisualOptions? PointerVisual { get; private set; }
+        public BrowserCaptionOptions? CaptionOptions { get; private set; }
         public ClickPulseStyle ClickPulse { get; private set; }
         public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
         public int HoldOnFailureMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds;
@@ -163,6 +177,7 @@ public sealed class RunCommandBuilderPointerMotionTests
             GifQuality gifQuality = GifQuality.Highest,
             ScriptPointerMotionOptions? pointerMotion = null,
             PointerVisualOptions? pointerVisual = null,
+            BrowserCaptionOptions? captionOptions = null,
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
@@ -178,6 +193,7 @@ public sealed class RunCommandBuilderPointerMotionTests
         {
             PointerMotion = pointerMotion;
             PointerVisual = pointerVisual;
+            CaptionOptions = captionOptions;
             ClickPulse = clickPulse;
             HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             HoldOnFailureMilliseconds = holdOnFailureMilliseconds;

@@ -141,6 +141,8 @@ Recording blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, 
 
 Pointer visuals can be styled with `pointerTheme=`, `pointerColor=`, `pointerSize=`, and `pointerShadow=` on `recording`, `gif`, `recordVideo`, `screencast`, and individual pointer-aware actions. Use this when a GIF needs a ring pointer for review, a branded pointer for demos, or a touch pointer for tap flows. Command-level `--pointer-theme`, `--pointer-color`, `--pointer-size`, and `--pointer-shadow` set whole-run defaults for `--gif` recordings.
 
+Caption visuals can be styled with `captionStyle=`, `captionPosition=`, and `captionSeverity=` on recording scopes, recording blocks, `caption`, `showMessageBar`, and `step`. Use `qa` or `bug-report` styles for evidence review, `teaching` for onboarding demos, and `compact` when the caption should stay out of the way.
+
 For stable screenshot evidence, mask volatile regions only in the artifact. The GIF still shows the real page and pointer choreography:
 
 ```text

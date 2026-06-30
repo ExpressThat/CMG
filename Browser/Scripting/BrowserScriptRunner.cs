@@ -7,62 +7,6 @@ public sealed partial class BrowserScriptRunner
     private readonly BrowserScriptParser parser;
 
     public BrowserScriptRunner(BrowserScriptParser parser) => this.parser = parser;
-    public ScriptRunResult Run(
-        string file,
-        string remoteDebuggingUrl,
-        IBrowserAutomationClient automationClient,
-        FileInfo? gif,
-        FileInfo? trace = null,
-        ScriptTimeoutOptions? timeouts = null,
-        string? baseUrl = null,
-        IReadOnlyDictionary<string, string>? variables = null,
-        GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null,
-        PointerVisualOptions? pointerVisual = null,
-        ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
-        int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-        int preClickHoldMilliseconds = 0,
-        int postClickHoldMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
-        int holdAfterNavigationMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
-        int holdAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
-        string? gifTimelinePath = null,
-        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
-    {
-        var readResult = ReadScript(file);
-        if (!readResult.Success)
-        {
-            return ScriptRunResult.Fail(readResult.Error ?? "Could not read script.");
-        }
-
-        return RunParsedScript(readResult.Script ?? string.Empty, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
-    }
-
-    public ScriptRunResult RunText(
-        string script,
-        string remoteDebuggingUrl,
-        IBrowserAutomationClient automationClient,
-        FileInfo? gif = null,
-        FileInfo? trace = null,
-        ScriptTimeoutOptions? timeouts = null,
-        string? baseUrl = null,
-        IReadOnlyDictionary<string, string>? variables = null,
-        GifQuality gifQuality = GifQuality.Highest,
-        ScriptPointerMotionOptions? pointerMotion = null,
-        PointerVisualOptions? pointerVisual = null,
-        ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
-        int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
-        int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-        int preClickHoldMilliseconds = 0,
-        int postClickHoldMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
-        int holdAfterNavigationMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
-        int holdAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
-        string? gifTimelinePath = null,
-        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
-    {
-        return RunParsedScript(script, remoteDebuggingUrl, automationClient, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
-    }
-
     private ScriptRunResult RunParsedScript(
         string script,
         string remoteDebuggingUrl,
@@ -75,6 +19,7 @@ public sealed partial class BrowserScriptRunner
         GifQuality gifQuality,
         ScriptPointerMotionOptions? pointerMotion,
         PointerVisualOptions? pointerVisual,
+        BrowserCaptionOptions? captionOptions,
         ClickPulseStyle clickPulse,
         int holdAfterActionMilliseconds,
         int holdOnFailureMilliseconds,
@@ -118,6 +63,10 @@ public sealed partial class BrowserScriptRunner
         foreach (var variable in variables ?? EmptyVariables)
         {
             context.SetVariable(variable.Key, variable.Value);
+        }
+        if (captionOptions is not null)
+        {
+            context.AddRecordingDefaults(captionOptions.ToRecordingDefaults());
         }
         var output = new List<string>();
         using var recorder = gif is null

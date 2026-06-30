@@ -5,9 +5,10 @@ namespace CMG.Browser;
 
 public static partial class BrowserDomScripts
 {
-    public static string ShowMessageBar(string message) =>
+    public static string ShowMessageBar(string message, BrowserCaptionOptions? options = null) =>
         $$"""
         (() => {
+          const styleText = {{JsonString(CaptionStyleText(options))}};
           const promote = element => {
             if (typeof element.showPopover === 'function') {
               if (element.matches(':popover-open')) element.hidePopover();
@@ -48,6 +49,8 @@ public static partial class BrowserDomScripts
             bar.appendChild(text);
             document.documentElement.appendChild(bar);
           }
+          bar.setAttribute('data-cmg-caption-mode', {{JsonString(CaptionMode(options))}});
+          bar.style.cssText = styleText;
           document.getElementById('__cmg_message_bar_text').textContent = {{JsonString(message)}};
           promote(bar);
           return true;

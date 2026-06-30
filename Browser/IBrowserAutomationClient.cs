@@ -32,7 +32,7 @@ public interface IBrowserAutomationClient
 
     void Select(string remoteDebuggingUrl, string selector, string value);
 
-    void ShowMessageBar(string remoteDebuggingUrl, string message);
+    void ShowMessageBar(string remoteDebuggingUrl, string message, BrowserCaptionOptions? options = null);
 
     void PromoteMessageBar(string remoteDebuggingUrl);
 

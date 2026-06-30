@@ -13,6 +13,7 @@ cmg browser control script --file <path> --gif <path>
 cmg browser control script --file <path> --gif <path> --gif-quality highest
 cmg browser control script --file <path> --gif <path> --pointer-duration 600 --pointer-easing ease-in-out
 cmg browser control script --file <path> --gif <path> --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44 --pointer-shadow strong
+cmg browser control script --file <path> --gif <path> --caption-style qa --caption-position bottom --caption-severity success
 cmg browser control script --file <path> --gif <path> --click-pulse ripple
 cmg browser control script --file <path> --gif <path> --gif-hold-after-action 700
 cmg browser control script --file <path> --gif <path> --pointer-pre-click-hold 120 --pointer-post-click-hold 450
@@ -44,6 +45,9 @@ cmg --firefox browser control script --file <path>
 - `--pointer-color <css-color>`: Default virtual pointer color for command-level `--gif` recordings. Pass one CSS color value, not a CSS declaration.
 - `--pointer-size <8..96>`: Default virtual pointer size in CSS pixels for command-level `--gif` recordings.
 - `--pointer-shadow <none|light|medium|strong>`: Default virtual pointer shadow strength for command-level `--gif` recordings.
+- `--caption-style <subtle|teaching|qa|bug-report|compact>`: Default caption style for command-level `--gif` recordings.
+- `--caption-position <top|bottom|left|right|auto>`: Default caption position for command-level `--gif` recordings.
+- `--caption-severity <info|success|warning|error>`: Default caption severity color for command-level `--gif` recordings.
 - `--click-pulse <ring|ripple|dot|crosshair|none>`: Default click/tap/drop pulse style for command-level `--gif` recordings. Defaults to `ring`.
 - `--gif-hold-after-action <milliseconds>`: Default post-action hold for command-level `--gif` recordings. Defaults to `350`; use `0` to suppress automatic post-action holds.
 - `--pointer-pre-click-hold <milliseconds>`: Default hold after pointer movement and before click/tap dispatch in command-level `--gif` recordings. Defaults to `0`.
@@ -92,7 +96,7 @@ cmg --firefox browser control script --file <path>
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
 - Without `--gif` or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif`, `moveMouse`, `recordCheckpoint`, `showPointer`, and `hidePointer` are skipped instead of creating pointer frames or timeline entries.
 - Pointer-aware actions resolve rich locators to the same target used by browser dispatch, so pointer movement, pointer events, hover state, drag ghosts, screenshots, and captions stay aligned.
-- Whole-run pointer and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, `--pointer-pre-click-hold`, `--pointer-post-click-hold`, `--gif-hold-after-action`, `--gif-hold-after-navigation`, `--gif-hold-after-assertion`, `--gif-hold-on-failure`, `--gif-fps`, and `--gif-frame-delay` apply when `--gif` is active. DSL `recording` / `withRecording`, `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `pointerTheme=`, `pointerColor=`, `pointerSize=`, `pointerShadow=`, `clickPulse=`, `preClickHold=`, `postClickHold=`, `holdAfterAction=`, `holdAfterNavigation=`, `holdAfterAssertion=`, `holdOnFailure=`, `fps=`, and `frameDelay=` as scoped defaults for child actions; child actions can override action options locally.
+- Whole-run pointer, caption, and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, `--caption-style`, `--caption-position`, `--caption-severity`, `--pointer-pre-click-hold`, `--pointer-post-click-hold`, `--gif-hold-after-action`, `--gif-hold-after-navigation`, `--gif-hold-after-assertion`, `--gif-hold-on-failure`, `--gif-fps`, and `--gif-frame-delay` apply when `--gif` is active. DSL `recording` / `withRecording`, `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `pointerTheme=`, `pointerColor=`, `pointerSize=`, `pointerShadow=`, `captionStyle=`, `captionPosition=`, `captionSeverity=`, `clickPulse=`, `preClickHold=`, `postClickHold=`, `holdAfterAction=`, `holdAfterNavigation=`, `holdAfterAssertion=`, `holdOnFailure=`, `fps=`, and `frameDelay=` as scoped defaults for child actions; child actions can override action options locally.
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.
 - On failure, command-level GIF recording captures one extra final-state hold frame before writing the partial GIF unless `--gif-hold-on-failure 0` is used.
 - `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, and recorder timing settings.
@@ -168,6 +172,7 @@ cmg browser control script --file demo-scripts\141-base-url.cmgscript --base-url
 cmg browser control script --file demo-scripts\148-gif-quality.cmgscript --gif demo-output\quality.gif --gif-quality highest
 cmg browser control script --file demo-scripts\149-gif-pointer-choreography.cmgscript --gif demo-output\pointer-choreography.gif --pointer-duration 500 --pointer-pre-click-hold 120 --pointer-post-click-hold 450
 cmg browser control script --file demo-scripts\156-gif-pointer-styles.cmgscript --gif demo-output\pointer-styles-whole-run.gif --pointer-theme branded --pointer-color "#2563eb"
+cmg browser control script --file demo-scripts\157-gif-caption-styles.cmgscript --gif demo-output\caption-styles-whole-run.gif --caption-style bug-report --caption-position bottom
 cmg browser control script --file demo-scripts\150-gif-failure-hold.cmgscript --gif demo-output\failure-hold.gif --gif-hold-on-failure 1800 --gif-timeline demo-output\timelines
 cmg browser control script --inline "listConsole level=error"
 ```

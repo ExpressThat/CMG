@@ -127,6 +127,32 @@ public sealed partial class CmgVisualSegmentExecutor
         }
     }
 
+    private static bool TryGifCaptionFor(
+        CmgNode action,
+        BrowserCaptionOptions? defaults,
+        out BrowserCaptionOptions? caption,
+        out string? error)
+    {
+        caption = defaults;
+        error = null;
+        try
+        {
+            caption = (caption ?? BrowserCaptionOptions.Default).WithAction(new CMG.Browser.Scripting.BrowserScriptAction(
+                action.LineNumber,
+                action.Kind,
+                action.Kind,
+                action.Arguments,
+                action.Options,
+                []));
+            return true;
+        }
+        catch (CMG.Browser.Scripting.ScriptExecutionException exception)
+        {
+            error = exception.Message;
+            return false;
+        }
+    }
+
     private static bool TryGifHoldFor(CmgNode action, int defaults, out int hold, out string? error)
     {
         return TryGifDurationFor(action, "holdAfterAction", "gif option holdAfterAction=", defaults, out hold, out error);

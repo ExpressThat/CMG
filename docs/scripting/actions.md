@@ -513,7 +513,16 @@ Example:
 ```text
 showMessageBar "Opening the profile dialog"
 showMessageBar "Opening profile dialog\nWaiting for dialog content"
+caption "Assertion passed" captionStyle=qa captionPosition=bottom captionSeverity=success
 ```
+
+Options:
+
+- `captionStyle` / `style`: Optional caption preset: `subtle`, `teaching`, `qa`, `bug-report`, or `compact`.
+- `captionPosition` / `position`: Optional placement: `top`, `bottom`, `left`, `right`, or `auto`.
+- `captionSeverity` / `severity`: Optional color intent: `info`, `success`, `warning`, or `error`.
+
+`step "name" { ... }` accepts the same caption options for its leading caption. `recording`, `withRecording`, `gif`, `recordVideo`, and `screencast` can set `captionStyle=`, `captionPosition=`, and `captionSeverity=` as scoped defaults; the caption action can override them locally.
 
 ## `highlight`
 
@@ -1794,6 +1803,9 @@ Options:
 - `pointerColor`: Default pointer CSS color. Use one CSS color value, not a declaration.
 - `pointerSize`: Default pointer size in CSS pixels from `8` to `96`, or `auto`.
 - `pointerShadow`: Default pointer shadow: `none`, `light`, `medium`, or `strong`.
+- `captionStyle`: Default caption style: `subtle`, `teaching`, `qa`, `bug-report`, or `compact`.
+- `captionPosition`: Default caption position: `top`, `bottom`, `left`, `right`, or `auto`.
+- `captionSeverity`: Default caption severity: `info`, `success`, `warning`, or `error`.
 - `pressedPointer`: Default held-pointer visual compression during recorded drags. Defaults to `true`.
 - `dragTrail`: Default held-pointer trail line during recorded drags. Defaults to `false`.
 - `dragBreadcrumbs`: Default held-pointer breadcrumb dots during recorded drags. Defaults to `false`.
@@ -1838,6 +1850,9 @@ Options:
 - `pointerColor`: Optional default pointer CSS color.
 - `pointerSize`: Optional default pointer size in CSS pixels from `8` to `96`, or `auto`.
 - `pointerShadow`: Optional pointer shadow: `none`, `light`, `medium`, or `strong`.
+- `captionStyle`: Optional caption style default for child `caption`, `showMessageBar`, and `step` captions.
+- `captionPosition`: Optional caption position default for child captions.
+- `captionSeverity`: Optional caption severity default for child captions.
 - `pressedPointer`: Optional held-pointer visual compression default for recorded drags.
 - `dragTrail`: Optional held-pointer trail line default for recorded drags.
 - `dragBreadcrumbs`: Optional held-pointer breadcrumb dots default for recorded drags.

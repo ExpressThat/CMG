@@ -458,6 +458,28 @@ dotnet run -- browser control script --file demo-scripts\156-gif-pointer-styles.
 dotnet run -- run tests\flows --gif demo-output\runner-gifs --pointer-theme ring --pointer-color "#dc2626"
 ```
 
+## Caption Styles
+
+Use caption style options when the recording needs to read as a teaching demo, QA evidence, or bug report. Recording scopes set defaults; individual captions and steps can override them.
+
+```text
+recording captionStyle=qa captionPosition=bottom captionSeverity=success {
+  gif "checkout evidence" {
+    caption "Checkout loaded"
+    step "Pay" captionStyle=teaching captionPosition=top {
+      click "#pay"
+    }
+  }
+}
+```
+
+Whole-run recordings can use the same defaults:
+
+```powershell
+dotnet run -- browser control script --file demo-scripts\157-gif-caption-styles.cmgscript --gif demo-output\caption-styles-whole-run.gif --caption-style bug-report --caption-position bottom --caption-severity warning
+dotnet run -- run tests\flows --gif demo-output\runner-gifs --caption-style qa --caption-position bottom
+```
+
 ## GIF Quality Presets
 
 Use `--gif-quality` for whole-script or whole-test recordings, and `quality=` on script-level `gif`, `recordVideo`, and `screencast` blocks. The default is `highest`, which favors color fidelity for visual evidence.

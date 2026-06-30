@@ -26,6 +26,7 @@ public sealed partial class RunCommandBuilder
         var pointerSpeedOption = new Option<string?>("--pointer-speed") { Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x." };
         var pointerEasingOption = new Option<string?>("--pointer-easing") { Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring." };
         var pointerVisualOptions = BuildPointerVisualOptions();
+        var captionOptions = BuildCaptionOptions();
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Click pulse style for --gif: ring, ripple, dot, crosshair, or none." };
         var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
         var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
@@ -82,6 +83,7 @@ public sealed partial class RunCommandBuilder
             pointerSpeedOption,
             pointerEasingOption,
             pointerVisualOptions.Theme, pointerVisualOptions.Color, pointerVisualOptions.Size, pointerVisualOptions.Shadow,
+            captionOptions.Style, captionOptions.Position, captionOptions.Severity,
             clickPulseOption,
             holdAfterActionOption,
             holdOnFailureOption,
@@ -120,22 +122,13 @@ public sealed partial class RunCommandBuilder
         command.SetAction(parseResult =>
         {
             if (!RunConfigReader.TryRead(parseResult.GetValue(configOption), out var config, out var configError))
-            {
-                Console.Error.WriteLine(configError);
-                return 1;
-            }
+            { Console.Error.WriteLine(configError); return 1; }
             if (!TrySelectProject(parseResult.GetValue(projectOption), config, out var project, out var projectError))
-            {
-                Console.Error.WriteLine(projectError);
-                return 1;
-            }
+            { Console.Error.WriteLine(projectError); return 1; }
 
             var variableValues = (parseResult.GetValue(variableOption) ?? []).Concat(parseResult.GetValue(envOption) ?? []);
             if (!VariableOptionParser.TryParse(variableValues, out var variables, out var error))
-            {
-                Console.Error.WriteLine(error);
-                return 1;
-            }
+            { Console.Error.WriteLine(error); return 1; }
             if (!GifQualityParser.TryParse(parseResult.GetValue(gifQualityOption), out var gifQuality))
             {
                 Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}.");
@@ -156,6 +149,11 @@ public sealed partial class RunCommandBuilder
             if (!TryParsePointerVisual(parseResult, pointerVisualOptions, out var pointerVisual, out var visualError))
             {
                 Console.Error.WriteLine(visualError);
+                return 1;
+            }
+            if (!TryParseCaption(parseResult, captionOptions, out var caption, out var captionError))
+            {
+                Console.Error.WriteLine(captionError);
                 return 1;
             }
             if (!GifTimingOptionParser.TryParseHoldAfterAction(parseResult.GetValue(holdAfterActionOption), out var holdAfterAction, out var holdError))
@@ -231,6 +229,7 @@ public sealed partial class RunCommandBuilder
                 gifQuality,
                 pointerMotion,
                 pointerVisual,
+                caption,
                 clickPulse,
                 holdAfterAction,
                 holdOnFailure,

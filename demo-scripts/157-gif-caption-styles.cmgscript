@@ -1,0 +1,22 @@
+# Demonstrates GIF caption style, position, and severity defaults.
+
+navigate "about:blank"
+setContent "<main style='font:16px system-ui;padding:32px;display:grid;gap:16px;max-width:620px'><h1 style='font-size:24px;margin:0'>Caption style evidence</h1><button id='load' style='padding:12px 18px'>Load</button><button id='save' style='padding:12px 18px'>Save</button><button id='fail' style='padding:12px 18px'>Warn</button><p id='status' style='min-height:24px'>Ready</p></main>"
+evaluate "(() => { document.querySelector('#load').addEventListener('click', () => document.querySelector('#status').textContent = 'Loaded'); document.querySelector('#save').addEventListener('click', () => document.querySelector('#status').textContent = 'Saved'); document.querySelector('#fail').addEventListener('click', () => document.querySelector('#status').textContent = 'Needs review'); return true; })()"
+
+recording captionStyle=qa captionPosition=bottom captionSeverity=success pointerDuration=220 {
+  gif "caption styles" output="demo-output/caption-styles.gif" {
+    caption "QA evidence caption"
+    click "#load"
+    assertText "#status" "Loaded"
+    step "Teaching step caption" captionStyle=teaching captionPosition=top captionSeverity=info {
+      click "#save"
+      assertText "#status" "Saved"
+    }
+    caption "Bug report warning" captionStyle=bug-report captionPosition=right captionSeverity=warning
+    click "#fail"
+    assertText "#status" "Needs review"
+    caption "Compact final state" captionStyle=compact captionPosition=left captionSeverity=success
+    pauseGif 500
+  }
+}

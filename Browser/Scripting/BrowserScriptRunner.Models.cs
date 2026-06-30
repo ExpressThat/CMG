@@ -191,6 +191,9 @@ internal sealed class ScriptExecutionContext
         }
     }
 
+    public void AddRecordingDefaults(IReadOnlyDictionary<string, string> options) =>
+        recordingDefaultScopes.Add(options);
+
     private static readonly IReadOnlyDictionary<string, string> EmptyRecordingDefaults =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 }

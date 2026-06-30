@@ -103,8 +103,8 @@ public sealed partial class FirefoxBiDiClient
     public void Select(string remoteDebuggingUrl, string selector, string value) =>
         ExecuteVisibleElementScript(remoteDebuggingUrl, selector, $"element.value = {BrowserDomScripts.JsonString(value)}; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
 
-    public void ShowMessageBar(string remoteDebuggingUrl, string message) =>
-        Evaluate(remoteDebuggingUrl, BrowserDomScripts.ShowMessageBar(message));
+    public void ShowMessageBar(string remoteDebuggingUrl, string message, BrowserCaptionOptions? options = null) =>
+        Evaluate(remoteDebuggingUrl, BrowserDomScripts.ShowMessageBar(message, options));
 
     public void PromoteMessageBar(string remoteDebuggingUrl) =>
         Evaluate(remoteDebuggingUrl, BrowserDomScripts.PromoteMessageBar());

@@ -196,9 +196,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Captions And Narration
 
-- Add caption style presets: subtle, teaching, QA evidence, bug report, compact.
-- Add `captionStyle=<subtle|teaching|qa|bug-report|compact>` on recording blocks and captions. CLI: `--caption-style <style>`.
-- Add `captionPosition=<top|bottom|left|right|auto>` on recording blocks and captions. CLI: `--caption-position <position>`.
+- Implemented: add caption style presets: subtle, teaching, QA evidence, bug report, compact.
+- Implemented: add `captionStyle=<subtle|teaching|qa|bug-report|compact>` on recording blocks, `step`, and captions. CLI: `--caption-style <style>`.
+- Implemented: add `captionPosition=<top|bottom|left|right|auto>` on recording blocks, `step`, and captions. CLI: `--caption-position <position>`.
 - Add auto caption placement that avoids covering the active target.
 - Add `autoCaptions=true` in DSL recording scopes. CLI: `--auto-captions`.
 - Add `captionTemplate=` using variables like `{action}`, `{selector}`, `{step}`, `{assertion}`. CLI: `--caption-template <template>`.
@@ -212,7 +212,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add network captions for request waits and mocks.
 - Add dialog captions for alert/confirm/prompt handling.
 - Add console/page-error captions when captured events occur.
-- Add caption severity styles: info, success, warning, error.
+- Implemented: add caption severity styles: info, success, warning, error. CLI: `--caption-severity <severity>` for whole-run defaults.
 - Add caption localization hooks.
 - Add markdown-like caption formatting for bold/code snippets.
 - Add a `narrate "message" { ... }` alias for teaching-style recordings.
