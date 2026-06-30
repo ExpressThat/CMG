@@ -1,0 +1,7 @@
+# Demonstrates JSON report GIF metadata.
+test "gif metadata report" {
+  setContent "<main><h1>Report metadata</h1><button id='save'>Save</button><p id='status'>Draft</p></main>"
+  click "#save"
+  evaluate "document.querySelector('#status').textContent = 'Saved'"
+  expectText "#status" "Saved"
+}

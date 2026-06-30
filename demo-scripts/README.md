@@ -21,7 +21,7 @@ After that, use the learning groups below before treating the full script list a
 | Need | Demos |
 | --- | --- |
 | Browser-control basics | `01-dialog-flow.cmgscript`, `02-validation-flow.cmgscript`, `05-variables-and-evaluate.cmgscript`, `141-base-url.cmgscript` |
-| Visual evidence | `07-complex-drag-flow.cmgscript`, `08-gif-move-mouse.cmgscript`, `09-drag-autoscroll.cmgscript`, `10-css-hover-states.cmgscript`, `148-gif-quality.cmgscript`, `149-gif-pointer-choreography.cmgscript`, `150-gif-failure-hold.cmgscript`, `151-gif-timeline.cmgscript` |
+| Visual evidence | `07-complex-drag-flow.cmgscript`, `08-gif-move-mouse.cmgscript`, `09-drag-autoscroll.cmgscript`, `10-css-hover-states.cmgscript`, `148-gif-quality.cmgscript`, `149-gif-pointer-choreography.cmgscript`, `150-gif-failure-hold.cmgscript`, `151-gif-timeline.cmgscript`, `152-runner-gif-report-metadata.cmgscript` |
 | Structured tests | `20-runner-flow.cmgscript`, `36-runner-selection.cmgscript`, `38-before-after-all.cmgscript` |
 | Control flow and reuse | `30-control-flow-macros.cmgscript`, `32-loop-control.cmgscript`, `33-try-catch-finally.cmgscript`, `34-macro-scoping.cmgscript` |
 | Assertions and failure feedback | `52-explicit-fail.cmgscript`, `126-generic-expect.cmgscript`, `128-soft-expect.cmgscript`, `132-runtime-skip.cmgscript` |
@@ -108,7 +108,8 @@ dotnet run -- gif inspect demo-output\timeline-evidence.gif
 Run the structured runner demo with reports:
 
 ```powershell
-dotnet run -- run demo-scripts\20-runner-flow.cmgscript --report-json demo-output\runner.json --report-html demo-output\runner.html
+dotnet run -- run demo-scripts\20-runner-flow.cmgscript --gif demo-output\runner-gifs --report-json demo-output\runner.json --report-html demo-output\runner.html
+dotnet run -- run demo-scripts\152-runner-gif-report-metadata.cmgscript --gif demo-output\runner-gifs --gif-timeline demo-output\timelines --report-json demo-output\runner-gif-metadata.json
 ```
 
 Record the whole runner demo test as a GIF:
@@ -279,6 +280,7 @@ dotnet run -- --firefox browser close
 - `149-gif-pointer-choreography.cmgscript`: Demonstrates GIF pointer duration, speed, easing, click pulses, parent block defaults, and child drag overrides.
 - `150-gif-failure-hold.cmgscript`: Demonstrates final failure-state holds in partial GIF artifacts.
 - `151-gif-timeline.cmgscript`: Demonstrates block-level GIF timeline metadata with `timeline=true`.
+- `152-runner-gif-report-metadata.cmgscript`: Demonstrates runner JSON `gifMetadata` entries for command-level GIF artifacts.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

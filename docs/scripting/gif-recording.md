@@ -236,7 +236,7 @@ The JSON sidecar contains:
 - `checkpoints`: named markers with `name`, `lineNumber`, `frameIndex`, and `timeMilliseconds`
 - `timing.pointerDurationMilliseconds`, `timing.pointerSpeed`, `timing.pointerEasing`, `timing.clickPulse`, `timing.holdAfterActionMilliseconds`, `timing.holdOnFailureMilliseconds`
 
-Use this file when reports, CI artifacts, or agent feedback need machine-readable timing without parsing the GIF binary.
+Use this file when reports, CI artifacts, or agent feedback need machine-readable timing without parsing the GIF binary. JSON run reports also include a `gifMetadata` array for recorded artifacts. Each entry contains the GIF path, quality preset when CMG knows it, frame count, duration, approximate FPS, dimensions, file size, palette color pressure, transparency, and repeat metadata.
 
 Use `cmg gif inspect <file>` when an agent needs to inspect an existing GIF artifact without rerunning the browser flow. It reports frame count, duration, dimensions, file size, transparency, repeat metadata, and palette color pressure as a parseable `GIF_INSPECT` line.
 

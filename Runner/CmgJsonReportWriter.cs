@@ -20,6 +20,7 @@ public static partial class CmgJsonReportWriter
             writer.WriteBoolean("success", test.Success);
             writer.WriteString("error", test.Error);
             writer.WriteString("gifPath", test.GifPath);
+            WriteGifMetadata(writer, test);
             writer.WriteString("tags", test.Tags);
             writer.WriteStartArray("annotations");
             foreach (var annotation in test.Annotations)
