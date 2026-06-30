@@ -289,7 +289,7 @@ dotnet run -- --firefox browser close
 - `150-gif-failure-hold.cmgscript`: Demonstrates final failure-state holds in partial GIF artifacts.
 - `151-gif-timeline.cmgscript`: Demonstrates block-level GIF timeline metadata with `timeline=true`.
 - `152-runner-gif-report-metadata.cmgscript`: Demonstrates runner JSON `gifMetadata` entries, HTML GIF previews, and JUnit GIF artifact properties for command-level GIF artifacts.
-- `153-recording-scope.cmgscript`: Demonstrates `recording { ... }` scoped GIF defaults inherited by a nested GIF block.
+- `153-recording-scope.cmgscript`: Demonstrates `recording { ... }` scoped GIF defaults, `frameDelay=`, and nested `fps=` inherited by a GIF block.
 - `154-runner-recording-scope.cmgscript`: Demonstrates `recording { ... }` scoped GIF defaults during a command-level runner recording.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 

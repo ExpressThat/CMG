@@ -61,6 +61,26 @@ public sealed class RunCommandBuilderPointerMotionTests
         Assert.Equal("timelines", handler.GifTimelinePath);
     }
 
+    [Fact]
+    public void RunCommand_MapsGifFrameDelayOption()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --gif-fps 20 --gif-frame-delay 80").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(80, handler.FrameDelayMilliseconds);
+    }
+
+    [Fact]
+    public void RunCommand_MapsGifFpsOption()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --gif-fps 25").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(40, handler.FrameDelayMilliseconds);
+    }
+
     private static RootCommand BuildRoot(CapturingHandler handler)
     {
         var chrome = new Option<bool>("--chrome");
@@ -81,6 +101,7 @@ public sealed class RunCommandBuilderPointerMotionTests
         public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
         public int HoldOnFailureMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds;
         public string? GifTimelinePath { get; private set; }
+        public int FrameDelayMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultFrameDelayMilliseconds;
 
         public int Run(
             BrowserKind browserKind,
@@ -112,6 +133,7 @@ public sealed class RunCommandBuilderPointerMotionTests
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
             string? gifTimelinePath = null,
+            int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
             long? gifWarnSizeBytes = null,
             long? gifMaxSizeBytes = null,
             int? gifMaxDurationMilliseconds = null)
@@ -121,6 +143,7 @@ public sealed class RunCommandBuilderPointerMotionTests
             HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             HoldOnFailureMilliseconds = holdOnFailureMilliseconds;
             GifTimelinePath = gifTimelinePath;
+            FrameDelayMilliseconds = frameDelayMilliseconds;
             return 0;
         }
     }

@@ -87,6 +87,8 @@ public static class GifTimelineWriter
         writer.WriteString("clickPulse", options.ClickPulse.ToString().ToLowerInvariant());
         writer.WriteNumber("holdAfterActionMilliseconds", options.HoldAfterActionMilliseconds);
         writer.WriteNumber("holdOnFailureMilliseconds", options.HoldOnFailureMilliseconds);
+        writer.WriteNumber("frameDelayMilliseconds", options.FrameDelayMilliseconds);
+        writer.WriteNumber("fps", Math.Round(1000d / Math.Max(1, options.FrameDelayMilliseconds), 2));
         writer.WriteEndObject();
     }
 }

@@ -66,6 +66,28 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void ScriptCommand_MapsGifFrameDelayOption()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --gif-fps 20 --gif-frame-delay 80").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(80, handler.FrameDelayMilliseconds);
+    }
+
+    [Fact]
+    public void ScriptCommand_MapsGifFpsOption()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --gif-fps 20").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(50, handler.FrameDelayMilliseconds);
+    }
+
+    [Fact]
     public void ScriptCommand_RejectsInvalidPointerEasing()
     {
         var handler = new CapturingHandler();
@@ -97,6 +119,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
         public int HoldAfterActionMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds;
         public int HoldOnFailureMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds;
         public string? GifTimelinePath { get; private set; }
+        public int FrameDelayMilliseconds { get; private set; } = ScriptRecordingOptions.DefaultFrameDelayMilliseconds;
         public int GetElement(BrowserKind browserKind, string selector, bool html, bool screenshot, FileInfo? output) => 0;
         public int RunScript(BrowserKind browserKind, string file, FileInfo? gif) => 0;
         public int RunScriptAction(BrowserKind browserKind, string scriptLine) => 0;
@@ -116,7 +139,8 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-            string? gifTimelinePath = null)
+            string? gifTimelinePath = null,
+            int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
         {
             File = file;
             PointerMotion = pointerMotion;
@@ -124,6 +148,7 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
             HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             HoldOnFailureMilliseconds = holdOnFailureMilliseconds;
             GifTimelinePath = gifTimelinePath;
+            FrameDelayMilliseconds = frameDelayMilliseconds;
             return 0;
         }
     }

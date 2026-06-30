@@ -118,6 +118,22 @@ public sealed partial class CmgVisualSegmentExecutor
         return true;
     }
 
+    private static bool TryGifFrameDelayFor(CmgNode action, int defaults, out int frameDelay, out string? error)
+    {
+        frameDelay = defaults;
+        error = null;
+        try
+        {
+            frameDelay = ScriptFrameTimingOptions.FromOptions(action.Options, action.Kind, defaults);
+            return true;
+        }
+        catch (CMG.Browser.Scripting.ScriptExecutionException exception)
+        {
+            error = exception.Message;
+            return false;
+        }
+    }
+
     private static string? GifTimelineFor(FileInfo? gif, string? requestedPath) =>
         gif is null ? null : GifTimelinePath.Resolve(gif.FullName, requestedPath);
 

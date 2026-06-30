@@ -65,7 +65,7 @@ public sealed partial class ScriptGifRecorder
 
     private void CapturePulseFrame(BrowserScriptAction? action)
     {
-        CaptureFrame(ScriptRecordingOptions.FrameDelayCentiseconds, PulseStyleFor(action));
+        CaptureFrame(FrameDelayCentisecondsFor(action), PulseStyleFor(action));
     }
 
     private void CaptureFrame(int delayCentiseconds, ClickPulseStyle? pulseStyle = null)
@@ -93,6 +93,14 @@ public sealed partial class ScriptGifRecorder
 
         return options.ClickPulse;
     }
+
+    private int FrameDelayMillisecondsFor(BrowserScriptAction? action) =>
+        action is null
+            ? options.FrameDelayMilliseconds
+            : ScriptFrameTimingOptions.FromOptions(action.Options, action.Name, options.FrameDelayMilliseconds);
+
+    private int FrameDelayCentisecondsFor(BrowserScriptAction? action) =>
+        Math.Max(1, (FrameDelayMillisecondsFor(action) + 9) / 10);
 
     private void TryRemoveDomCursor()
     {

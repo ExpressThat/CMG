@@ -63,26 +63,13 @@ public sealed partial class BrowserControlCommandBuilder
             DefaultValueFactory = _ => "highest"
         };
         var pointerDurationOption = new Option<int?>("--pointer-duration") { Description = "Default virtual pointer movement duration in milliseconds for --gif recordings." };
-        var pointerSpeedOption = new Option<string?>("--pointer-speed")
-        {
-            Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x."
-        };
-        var pointerEasingOption = new Option<string?>("--pointer-easing")
-        {
-            Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring."
-        };
-        var clickPulseOption = new Option<string?>("--click-pulse")
-        {
-            Description = "Default click pulse style for --gif recordings: ring, ripple, dot, crosshair, or none."
-        };
-        var holdAfterActionOption = new Option<int?>("--gif-hold-after-action")
-        {
-            Description = "Default post-action hold in milliseconds for --gif recordings."
-        };
-        var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure")
-        {
-            Description = "Final failure-state hold in milliseconds for --gif recordings."
-        };
+        var pointerSpeedOption = new Option<string?>("--pointer-speed") { Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x." };
+        var pointerEasingOption = new Option<string?>("--pointer-easing") { Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring." };
+        var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Default click pulse style for --gif recordings: ring, ripple, dot, crosshair, or none." };
+        var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
+        var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
+        var gifFpsOption = new Option<int?>("--gif-fps") { Description = "GIF frame rate for --gif recordings. Must be between 1 and 100." };
+        var gifFrameDelayOption = new Option<int?>("--gif-frame-delay") { Description = "GIF frame delay in milliseconds. Overrides --gif-fps." };
         var gifTimelineOption = new Option<string?>("--gif-timeline") { Description = "Write GIF timeline JSON to a file or directory." };
         var traceOption = new Option<FileInfo?>("--trace")
         {
@@ -125,6 +112,8 @@ public sealed partial class BrowserControlCommandBuilder
             clickPulseOption,
             holdAfterActionOption,
             holdOnFailureOption,
+            gifFpsOption,
+            gifFrameDelayOption,
             gifTimelineOption,
             traceOption,
             timeoutOption,
@@ -172,6 +161,11 @@ public sealed partial class BrowserControlCommandBuilder
                 Console.Error.WriteLine(holdError);
                 return 1;
             }
+            if (!GifFrameTimingOptionParser.TryParse(parseResult.GetValue(gifFpsOption), parseResult.GetValue(gifFrameDelayOption), out var frameDelay, out var frameError))
+            {
+                Console.Error.WriteLine(frameError);
+                return 1;
+            }
 
             var trace = parseResult.GetValue(traceOption);
             var timeouts = new ScriptTimeoutOptions(
@@ -190,8 +184,8 @@ public sealed partial class BrowserControlCommandBuilder
             var port = CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions);
             var timeline = parseResult.GetValue(gifTimelineOption);
             return inline is null
-                ? browserControlCommandHandler.RunScript(browserKind, port, file, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse, holdAfterAction, holdOnFailure, timeline)
-                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse, holdAfterAction, holdOnFailure, timeline);
+                ? browserControlCommandHandler.RunScript(browserKind, port, file, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse, holdAfterAction, holdOnFailure, timeline, frameDelay)
+                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, gif, trace, timeouts, parseResult.GetValue(baseUrlOption), variables, gifQuality, pointerMotion, clickPulse, holdAfterAction, holdOnFailure, timeline, frameDelay);
         });
 
         return command;

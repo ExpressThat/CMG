@@ -221,8 +221,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Timeline And Editing Controls
 
-- Add `fps=<number>` on recording scopes for output frame rate. CLI: `--gif-fps <number>`.
-- Add `frameDelay=<ms>` for advanced timing. CLI: `--gif-frame-delay <ms>`.
+- Implemented: add `fps=<number>` on recording scopes for output frame rate. CLI: `--gif-fps <number>`.
+- Implemented: add `frameDelay=<ms>` for advanced timing. CLI: `--gif-frame-delay <ms>`. Explicit `frameDelay` overrides `fps`.
 - Implemented: `holdAfterAction=<ms>` as a block/action default and CLI `--gif-hold-after-action <ms>` for whole-run recordings.
 - Implemented: `pauseGif <ms>` as a recording-only hold action that captures a timed GIF frame when recording is active and skips without injecting the virtual pointer when no GIF recorder is active.
 - Add `holdAfterNavigation=<ms>`. CLI: `--gif-hold-after-navigation <ms>`.

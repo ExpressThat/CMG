@@ -3,8 +3,8 @@
 navigate "about:blank"
 setContent "<style>html,body{margin:0;background:#fff;color:#111827}button{border:1px solid #2563eb;background:#dbeafe;color:#111827;padding:14px 18px;border-radius:4px}</style><main style='font-family:system-ui;padding:24px'><h1>Scoped recording defaults</h1><button id='start'>Start</button><button id='finish'>Finish</button><p id='status'>Ready</p></main><script>document.querySelector('#start').addEventListener('click',()=>document.querySelector('#status').textContent='Started');document.querySelector('#finish').addEventListener('click',()=>document.querySelector('#status').textContent='Finished');</script>"
 
-recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfterAction=500 {
-  gif "recording scope" output="demo-output/recording-scope.gif" {
+recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfterAction=500 fps=12 {
+  gif "recording scope" output="demo-output/recording-scope.gif" frameDelay=80 timeline=true {
     click "#start"
     click "#finish" pointerDuration=700 clickPulse=ripple
     pauseGif 600

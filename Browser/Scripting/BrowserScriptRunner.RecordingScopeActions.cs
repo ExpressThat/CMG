@@ -17,7 +17,7 @@ public sealed partial class BrowserScriptRunner
         }
 
         ValidateRecordingOptions(action);
-        context.PushRecordingDefaults(action.Options, () =>
+        context.PushRecordingDefaults(RecordingDefaultsFrom(action.Options), () =>
             ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output));
     }
 
@@ -56,6 +56,11 @@ public sealed partial class BrowserScriptRunner
         }
     }
 
+    private static IReadOnlyDictionary<string, string> RecordingDefaultsFrom(IReadOnlyDictionary<string, string> options) =>
+        options
+            .Where(option => RecordingScopeOptions.Contains(option.Key))
+            .ToDictionary(option => option.Key, option => option.Value, StringComparer.OrdinalIgnoreCase);
+
     private static readonly HashSet<string> RecordingScopeOptions = new(StringComparer.OrdinalIgnoreCase)
     {
         "quality",
@@ -66,6 +71,8 @@ public sealed partial class BrowserScriptRunner
         "pulse",
         "holdAfterAction",
         "holdOnFailure",
-        "timeline"
+        "timeline",
+        "fps",
+        "frameDelay"
     };
 }

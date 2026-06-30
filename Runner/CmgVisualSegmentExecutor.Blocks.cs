@@ -20,13 +20,14 @@ public sealed partial class CmgVisualSegmentExecutor
         string? gifTimelinePath,
         List<string> output,
         List<CmgStepResult> steps,
-        out string? error)
+        out string? error,
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
     {
         var pending = new List<string>();
         var pendingLineMap = new Dictionary<int, int>();
         foreach (var action in actions)
         {
-            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, gifTimelinePath, pending, pendingLineMap, output, steps, out error))
+            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, gifTimelinePath, frameDelayMilliseconds, pending, pendingLineMap, output, steps, out error))
             {
                 if (error is not null)
                 {
@@ -39,7 +40,7 @@ public sealed partial class CmgVisualSegmentExecutor
             AddPending(pending, pendingLineMap, action, lowerer.Lower(action));
         }
 
-        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, gifTimelinePath);
+        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, gifTimelinePath, frameDelayMilliseconds);
         return AppendResult(final.Result, final.LineMap, output, steps, actions.LastOrDefault(), gif, out error);
     }
 
@@ -55,6 +56,7 @@ public sealed partial class CmgVisualSegmentExecutor
         int holdAfterActionMilliseconds,
         int holdOnFailureMilliseconds,
         string? gifTimelinePath,
+        int frameDelayMilliseconds,
         List<string> pending,
         Dictionary<int, int> pendingLineMap,
         List<string> output,
@@ -67,7 +69,7 @@ public sealed partial class CmgVisualSegmentExecutor
             return false;
         }
 
-        var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, gifTimelinePath);
+        var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, gifTimelinePath, frameDelayMilliseconds);
         if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif, out error))
         {
             return true;

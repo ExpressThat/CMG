@@ -1761,6 +1761,8 @@ Options:
 - `clickPulse` / `pulse`: Default click/tap/drop pulse style: `ring`, `ripple`, `dot`, `crosshair`, or `none`.
 - `holdAfterAction`: Default post-action hold in milliseconds.
 - `holdOnFailure`: Default final failure-state hold for nested recording blocks.
+- `fps`: Default GIF frame rate from `1` to `100`.
+- `frameDelay`: Default GIF frame delay in milliseconds from `10` to `10000`. Overrides `fps`.
 - `timeline`: Default timeline JSON sidecar behavior for nested recording blocks.
 
 ### `gif`, `recordVideo`, And `screencast`
@@ -1788,6 +1790,8 @@ Options:
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
 - `holdAfterAction`: Optional default post-action hold in milliseconds for child actions. Defaults to `350`; child actions can override it locally with their own `holdAfterAction=`.
 - `holdOnFailure`: Optional final failure-state hold in milliseconds. Defaults to `1200`; use `0` to suppress the extra failure hold.
+- `fps`: Optional frame rate from `1` to `100`. Defaults to `10`.
+- `frameDelay`: Optional frame delay in milliseconds from `10` to `10000`. Overrides `fps`.
 - `timeline`: Optional timeline JSON sidecar. Use `true` to write next to the GIF, `false` / `off` / `none` to disable, a directory to write `<gif-name>.timeline.json` inside it, or a `.json` path to write that exact file.
 
 Output:

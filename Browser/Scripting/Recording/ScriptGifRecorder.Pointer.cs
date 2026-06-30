@@ -94,8 +94,10 @@ public sealed partial class ScriptGifRecorder
             return;
         }
 
+        var frameDelay = FrameDelayMillisecondsFor(action);
+        var frameDelayCentiseconds = Math.Max(1, (frameDelay + 9) / 10);
         var motion = MotionFor(action, durationOption, easingOption);
-        foreach (var point in pointer.MoveTo(target, motion.FrameCount(action?.Name ?? "recording"), motion.PointerEasing))
+        foreach (var point in pointer.MoveTo(target, motion.FrameCount(action?.Name ?? "recording", frameDelay), motion.PointerEasing))
         {
             devToolsClient.MoveMouse(remoteDebuggingUrl, point, dragging ? 1 : 0);
             if (dragging)
@@ -104,7 +106,7 @@ public sealed partial class ScriptGifRecorder
             }
 
             devToolsClient.MoveDomCursor(remoteDebuggingUrl, point);
-            CaptureFrame(ScriptRecordingOptions.FrameDelayCentiseconds);
+            CaptureFrame(frameDelayCentiseconds);
         }
     }
 

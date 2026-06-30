@@ -35,6 +35,7 @@ public interface ICmgRunCommandHandler
         int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
         string? gifTimelinePath = null,
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
         long? gifWarnSizeBytes = null,
         long? gifMaxSizeBytes = null,
         int? gifMaxDurationMilliseconds = null);
@@ -79,6 +80,7 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
         string? gifTimelinePath = null,
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
         long? gifWarnSizeBytes = null,
         long? gifMaxSizeBytes = null,
         int? gifMaxDurationMilliseconds = null)
@@ -131,6 +133,7 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             holdAfterActionMilliseconds,
             holdOnFailureMilliseconds,
             gifTimelinePath,
+            frameDelayMilliseconds,
             gifWarnSizeBytes,
             gifMaxSizeBytes,
             gifMaxDurationMilliseconds));

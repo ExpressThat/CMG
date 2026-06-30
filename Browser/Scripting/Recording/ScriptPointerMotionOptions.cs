@@ -61,11 +61,10 @@ public sealed record ScriptPointerMotionOptions(
         return this;
     }
 
-    public int FrameCount(string source)
+    public int FrameCount(string source, int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
     {
-        var frameDelay = ScriptRecordingOptions.FrameDelayCentiseconds * 10;
         var duration = DurationMilliseconds(source);
-        return Math.Max(1, (int)Math.Ceiling(duration / (double)Math.Max(1, frameDelay)));
+        return Math.Max(1, (int)Math.Ceiling(duration / (double)Math.Max(1, frameDelayMilliseconds)));
     }
 
     public int DurationMilliseconds(string source)

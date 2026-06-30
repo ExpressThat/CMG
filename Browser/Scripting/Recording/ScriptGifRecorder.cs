@@ -94,7 +94,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
     public void CaptureTypingFrame()
     {
-        CaptureFrame(ScriptRecordingOptions.FrameDelayCentiseconds);
+        CaptureFrame(options.FrameDelayCentiseconds);
     }
 
     public void CaptureClickPulse()

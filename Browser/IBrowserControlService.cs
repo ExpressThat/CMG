@@ -32,7 +32,8 @@ public interface IBrowserControlService
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
         int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-        string? gifTimelinePath = null) =>
+        string? gifTimelinePath = null,
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds) =>
         RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables);
 
     ScriptRunResult RunScript(
@@ -64,5 +65,6 @@ public interface IBrowserControlService
         ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
         int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-        string? gifTimelinePath = null);
+        string? gifTimelinePath = null,
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds);
 }

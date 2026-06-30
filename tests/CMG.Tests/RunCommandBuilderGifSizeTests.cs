@@ -114,6 +114,7 @@ public sealed class RunCommandBuilderGifSizeTests
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
             string? gifTimelinePath = null,
+            int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
             long? gifWarnSizeBytes = null,
             long? gifMaxSizeBytes = null,
             int? gifMaxDurationMilliseconds = null)

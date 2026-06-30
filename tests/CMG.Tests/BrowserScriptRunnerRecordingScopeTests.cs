@@ -38,6 +38,72 @@ public sealed class BrowserScriptRunnerRecordingScopeTests
     }
 
     [Fact]
+    public void RecordingScope_FrameDelayControlsPointerFrameCount()
+    {
+        var client = new FakeAutomationClient();
+        var gif = TempGif();
+
+        var result = Runner().RunText("""
+            recording pointerDuration=400 frameDelay=200 {
+              hover "#save"
+            }
+            """, "debug", client, gif);
+
+        Assert.True(result.Success);
+        Assert.Equal(2, client.MouseMoveCount);
+    }
+
+    [Fact]
+    public void RecordingScope_FrameDelayOverridesFps()
+    {
+        var client = new FakeAutomationClient();
+        var gif = TempGif();
+
+        var result = Runner().RunText("""
+            recording pointerDuration=400 fps=20 frameDelay=200 {
+              hover "#save"
+            }
+            """, "debug", client, gif);
+
+        Assert.True(result.Success);
+        Assert.Equal(2, client.MouseMoveCount);
+    }
+
+    [Fact]
+    public void RecordingScope_FpsControlsPointerFrameCount()
+    {
+        var client = new FakeAutomationClient();
+        var gif = TempGif();
+
+        var result = Runner().RunText("""
+            recording pointerDuration=200 fps=20 {
+              hover "#save"
+            }
+            """, "debug", client, gif);
+
+        Assert.True(result.Success);
+        Assert.Equal(4, client.MouseMoveCount);
+    }
+
+    [Fact]
+    public void GifBlockFrameDelayOverridesRecordingScopeFps()
+    {
+        var client = new FakeAutomationClient();
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif").Replace("\\", "/");
+
+        var result = Runner().RunText($$"""
+            recording fps=20 {
+              gif "timing" output="{{path}}" frameDelay=200 {
+                hover "#save" pointerDuration=400
+              }
+            }
+            """, "debug", client);
+
+        Assert.True(result.Success);
+        Assert.Equal(2, client.MouseMoveCount);
+    }
+
+    [Fact]
     public void RecordingScope_DoesNotInjectPointerWithoutRecorder()
     {
         var client = new FakeAutomationClient();

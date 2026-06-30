@@ -33,14 +33,14 @@ public sealed partial class ScriptGifRecorder
             return;
         }
 
-        var frameDelayMilliseconds = ScriptRecordingOptions.FrameDelayCentiseconds * 10;
+        var frameDelayMilliseconds = options.FrameDelayMilliseconds;
         var frameCount = Math.Max(1, milliseconds / Math.Max(1, frameDelayMilliseconds));
 
         for (var index = 0; index < frameCount; index++)
         {
             devToolsClient.MoveMouse(remoteDebuggingUrl, pointer.Position, buttons: 1);
             devToolsClient.MovePageDrag(remoteDebuggingUrl, pointer.Position);
-            CaptureFrame(ScriptRecordingOptions.FrameDelayCentiseconds);
+            CaptureFrame(options.FrameDelayCentiseconds);
         }
     }
 

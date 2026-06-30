@@ -32,6 +32,8 @@ public sealed partial class RunCommandBuilder
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Click pulse style for --gif: ring, ripple, dot, crosshair, or none." };
         var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
         var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
+        var gifFpsOption = new Option<int?>("--gif-fps") { Description = "GIF frame rate for --gif recordings. Must be between 1 and 100." };
+        var gifFrameDelayOption = new Option<int?>("--gif-frame-delay") { Description = "GIF frame delay in milliseconds. Overrides --gif-fps." };
         var gifTimelineOption = new Option<string?>("--gif-timeline") { Description = "Write GIF timeline JSON files to this file or directory." };
         var gifWarnSizeOption = new Option<string?>("--gif-warn-size") { Description = "Warn when a recorded GIF exceeds this size, for example 500KB or 2MB." };
         var gifMaxSizeOption = new Option<string?>("--gif-max-size") { Description = "Fail a test when a recorded GIF exceeds this size, for example 500KB or 2MB." };
@@ -81,6 +83,8 @@ public sealed partial class RunCommandBuilder
             clickPulseOption,
             holdAfterActionOption,
             holdOnFailureOption,
+            gifFpsOption,
+            gifFrameDelayOption,
             gifTimelineOption,
             gifWarnSizeOption,
             gifMaxSizeOption,
@@ -154,6 +158,11 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(holdError);
                 return 1;
             }
+            if (!GifFrameTimingOptionParser.TryParse(parseResult.GetValue(gifFpsOption), parseResult.GetValue(gifFrameDelayOption), out var frameDelay, out var frameError))
+            {
+                Console.Error.WriteLine(frameError);
+                return 1;
+            }
             if (!GifSizeOptionParser.TryParse(parseResult.GetValue(gifWarnSizeOption), out var gifWarnSizeBytes, out var sizeError))
             {
                 Console.Error.WriteLine(sizeError);
@@ -208,6 +217,7 @@ public sealed partial class RunCommandBuilder
                 holdAfterAction,
                 holdOnFailure,
                 parseResult.GetValue(gifTimelineOption),
+                frameDelay,
                 gifWarnSizeBytes,
                 gifMaxSizeBytes,
                 gifMaxDurationMilliseconds);

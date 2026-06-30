@@ -34,6 +34,8 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--click-pulse <ring|ripple|dot|crosshair|none>`: Default click/tap/drop pulse style for command-level `--gif` recordings. Defaults to `ring`.
 - `--gif-hold-after-action <milliseconds>`: Default post-action hold for command-level `--gif` recordings. Defaults to `350`; use `0` to suppress automatic post-action holds.
 - `--gif-hold-on-failure <milliseconds>`: Final failure-state hold for command-level `--gif` recordings. Defaults to `1200`; use `0` to suppress the extra failure hold.
+- `--gif-fps <1..100>`: Frame rate for command-level `--gif` recordings. Defaults to `10` FPS.
+- `--gif-frame-delay <milliseconds>`: Frame delay for command-level `--gif` recordings. Must be `10..10000`; overrides `--gif-fps`.
 - `--gif-timeline <file-or-directory>`: Optional JSON timeline sidecar for GIF recordings. With `cmg run --gif`, pass a directory so each test writes `<gif-name>.timeline.json`.
 - `--gif-warn-size <size>`: Emit a stdout warning when a recorded GIF exceeds this size. Accepts bytes or `KB`, `MB`, and `GB` suffixes, for example `500KB`.
 - `--gif-max-size <size>`: Fail a test when a recorded GIF exceeds this size. Accepts bytes or `KB`, `MB`, and `GB` suffixes, for example `500KB`.
@@ -112,6 +114,8 @@ GIF recording is optional.
 - `--click-pulse` sets the whole-test click/tap/drop pulse style when `--gif` is active.
 - `--gif-hold-after-action` sets the whole-test post-action hold duration when `--gif` is active.
 - `--gif-hold-on-failure` captures one extra final-state hold frame before writing a failed test GIF.
+- `--gif-fps` sets the whole-test frame rate when `--gif` is active.
+- `--gif-frame-delay` sets the whole-test frame delay and overrides `--gif-fps`.
 - `--gif-timeline` writes metadata JSON sidecars and emits `GIF_TIMELINE <path>` in the per-test output after each GIF is saved.
 - `--gif-warn-size` emits `GIF_WARN_SIZE` stdout lines for command-level and block-level GIF files whose final size exceeds the threshold.
 - `--gif-max-size` emits `GIF_MAX_SIZE` stdout lines and fails tests whose recorded artifacts exceed the threshold.

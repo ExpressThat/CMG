@@ -185,7 +185,8 @@ public sealed class BrowserAppCommandBuilderTests
             ClickPulseStyle clickPulse = ClickPulseStyle.Ring,
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
-            string? gifTimelinePath = null)
+            string? gifTimelinePath = null,
+            int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
         {
             Port = port;
             return 0;

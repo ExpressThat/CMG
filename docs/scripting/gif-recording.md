@@ -71,6 +71,8 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
 - `holdOnFailure=<milliseconds>`: Extra final-state hold captured only when the recording fails. Defaults to `1200`; use `0` to suppress the failure hold.
+- `fps=<1..100>`: Frame rate for this recording block. Defaults to `10`.
+- `frameDelay=<milliseconds>`: Frame delay for this recording block. Must be `10..10000`; overrides `fps=`.
 - `timeline=<true|false|file|directory>`: Optional timeline JSON sidecar for this recording block. `true` writes `<gif-name>.timeline.json` next to the GIF; a directory writes the same filename inside that directory; a `.json` path writes that exact file.
 
 The same options can be set on pointer-aware child actions. A block's options are defaults for everything inside that block, and child actions can override them for only that action.
@@ -95,6 +97,8 @@ Supported `recording` / `withRecording` defaults:
 - `clickPulse=<ring|ripple|dot|crosshair|none>` or `pulse=<...>`: Click/tap/drop pulse style.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration.
 - `holdOnFailure=<milliseconds>`: Final failure-state hold for nested recording blocks.
+- `fps=<1..100>`: Frame rate for movement, pulse, and ordinary captured frames. Higher values create smoother but larger GIFs.
+- `frameDelay=<milliseconds>`: Frame delay for movement, pulse, and ordinary captured frames. Must be `10..10000`; overrides `fps=`.
 - `timeline=<true|false|file|directory>`: Default timeline behavior for nested recording blocks.
 
 Action and nested block options override the surrounding `recording` defaults for that child only.
@@ -135,8 +139,12 @@ cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --po
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --click-pulse ripple
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-hold-after-action 700
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-hold-on-failure 1800
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-fps 20
+cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-frame-delay 80
 cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gif-timeline demo-output\timelines
 cmg run tests\flows --gif demo-output\runner-gifs --pointer-duration 600 --pointer-easing ease-in-out --click-pulse dot --gif-hold-after-action 700 --gif-hold-on-failure 1800
+cmg run tests\flows --gif demo-output\runner-gifs --gif-fps 20
+cmg run tests\flows --gif demo-output\runner-gifs --gif-frame-delay 80
 cmg run tests\flows --gif demo-output\runner-gifs --gif-timeline demo-output\timelines
 cmg run tests\flows --gif demo-output\runner-gifs --gif-warn-size 500KB
 cmg run tests\flows --gif demo-output\runner-gifs --gif-max-size 2MB

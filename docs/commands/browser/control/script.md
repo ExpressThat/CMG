@@ -15,6 +15,8 @@ cmg browser control script --file <path> --gif <path> --pointer-duration 600 --p
 cmg browser control script --file <path> --gif <path> --click-pulse ripple
 cmg browser control script --file <path> --gif <path> --gif-hold-after-action 700
 cmg browser control script --file <path> --gif <path> --gif-hold-on-failure 1800
+cmg browser control script --file <path> --gif <path> --gif-fps 20
+cmg browser control script --file <path> --gif <path> --gif-frame-delay 80
 cmg browser control script --file <path> --gif <path> --gif-timeline <file-or-directory>
 cmg browser control script --file <path> --trace <path>
 cmg browser control script --file <path> --timeout 10000 --assertion-timeout 5000
@@ -38,6 +40,8 @@ cmg --firefox browser control script --file <path>
 - `--click-pulse <ring|ripple|dot|crosshair|none>`: Default click/tap/drop pulse style for command-level `--gif` recordings. Defaults to `ring`.
 - `--gif-hold-after-action <milliseconds>`: Default post-action hold for command-level `--gif` recordings. Defaults to `350`; use `0` to suppress automatic post-action holds.
 - `--gif-hold-on-failure <milliseconds>`: Final failure-state hold for command-level `--gif` recordings. Defaults to `1200`; use `0` to suppress the extra failure hold.
+- `--gif-fps <1..100>`: Frame rate for command-level `--gif` recordings. Defaults to `10` FPS.
+- `--gif-frame-delay <milliseconds>`: Frame delay for command-level `--gif` recordings. Must be `10..10000`; overrides `--gif-fps`.
 - `--gif-timeline <file-or-directory>`: Optional JSON metadata sidecar for command-level `--gif`. When a directory is provided, CMG writes `<gif-name>.timeline.json` inside it.
 - `--trace <path>`: Optional output path for a CMG script trace JSON file. The trace includes step names, line numbers, stdout lines, and failure reasons.
 - `--timeout <milliseconds>`: Default timeout for timeout-capable waits, event waits, downloads, network waits, worker waits, tab waits, API requests, and assertions that do not set `timeout=`.
@@ -77,7 +81,7 @@ cmg --firefox browser control script --file <path>
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
 - Without `--gif` or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif`, `moveMouse`, and `recordCheckpoint` are skipped instead of creating pointer frames or timeline entries.
 - Pointer-aware actions resolve rich locators to the same target used by browser dispatch, so pointer movement, pointer events, hover state, drag ghosts, screenshots, and captions stay aligned.
-- Whole-run pointer and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--gif-hold-after-action`, and `--gif-hold-on-failure` apply when `--gif` is active. DSL `recording` / `withRecording`, `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `clickPulse=`, `holdAfterAction=`, and `holdOnFailure=` as scoped defaults for child actions; child actions can override action options locally.
+- Whole-run pointer and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--gif-hold-after-action`, `--gif-hold-on-failure`, `--gif-fps`, and `--gif-frame-delay` apply when `--gif` is active. DSL `recording` / `withRecording`, `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `clickPulse=`, `holdAfterAction=`, `holdOnFailure=`, `fps=`, and `frameDelay=` as scoped defaults for child actions; child actions can override action options locally.
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.
 - On failure, command-level GIF recording captures one extra final-state hold frame before writing the partial GIF unless `--gif-hold-on-failure 0` is used.
 - `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, and recorder timing settings.

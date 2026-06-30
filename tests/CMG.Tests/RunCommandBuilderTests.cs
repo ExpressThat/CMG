@@ -195,6 +195,7 @@ public sealed class RunCommandBuilderTests
             int holdAfterActionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
             int holdOnFailureMilliseconds = ScriptRecordingOptions.DefaultHoldOnFailureMilliseconds,
             string? gifTimelinePath = null,
+            int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
             long? gifWarnSizeBytes = null,
             long? gifMaxSizeBytes = null,
             int? gifMaxDurationMilliseconds = null)
@@ -210,18 +211,9 @@ public sealed class RunCommandBuilderTests
             MaxFailures = maxFailures;
             RepeatEach = repeatEach;
             Shard = shard;
-            Timeout = timeout;
-            NavigationTimeout = navigationTimeout;
-            AssertionTimeout = assertionTimeout;
-            BaseUrl = baseUrl;
-            Variables = variables;
-            ProjectName = projectName;
-            BrowserPort = browserPort;
-            AutoLaunch = autoLaunch;
-            AutoLaunchHeadless = autoLaunchHeadless;
-            GifQuality = gifQuality;
-            PointerMotion = pointerMotion;
-            HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
+            Timeout = timeout; NavigationTimeout = navigationTimeout; AssertionTimeout = assertionTimeout; BaseUrl = baseUrl; Variables = variables;
+            ProjectName = projectName; BrowserPort = browserPort; AutoLaunch = autoLaunch; AutoLaunchHeadless = autoLaunchHeadless;
+            GifQuality = gifQuality; PointerMotion = pointerMotion; HoldAfterActionMilliseconds = holdAfterActionMilliseconds;
             HoldOnFailureMilliseconds = holdOnFailureMilliseconds;
             return 0;
         }

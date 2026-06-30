@@ -19,7 +19,7 @@ public sealed partial class BrowserScriptRunner
         var gifPath = GifBlockPath(action);
         var recorder = commandRecorder ?? new ScriptGifRecorder(
             automationClient,
-            new ScriptRecordingOptions(gifPath, GifBlockQuality(action), GifBlockMotion(action), GifBlockPulse(action), GifBlockHold(action), GifBlockFailureHold(action), GifBlockTimeline(action, gifPath)));
+            new ScriptRecordingOptions(gifPath, GifBlockQuality(action), GifBlockMotion(action), GifBlockPulse(action), GifBlockHold(action), GifBlockFailureHold(action), GifBlockTimeline(action, gifPath), GifBlockFrameDelay(action)));
         var output = new List<string>();
         var failed = false;
         if (commandRecorder is null)
@@ -33,17 +33,20 @@ public sealed partial class BrowserScriptRunner
 
         try
         {
-            foreach (var child in action.Children)
+            context.PushRecordingDefaults(RecordingDefaultsFrom(action.Options), () =>
             {
-                var prepared = PrepareActionForDispatch(child, context);
-                recorder.BeforeAction(prepared);
-                var lines = ExecuteAction(remoteDebuggingUrl, automationClient, prepared, context, recorder);
-                if (ShouldCaptureAfterAction(prepared))
+                foreach (var child in action.Children)
                 {
-                    recorder.AfterAction(prepared);
+                    var prepared = PrepareActionForDispatch(child, context);
+                    recorder.BeforeAction(prepared);
+                    var lines = ExecuteAction(remoteDebuggingUrl, automationClient, prepared, context, recorder);
+                    if (ShouldCaptureAfterAction(prepared))
+                    {
+                        recorder.AfterAction(prepared);
+                    }
+                    output.AddRange(lines);
                 }
-                output.AddRange(lines);
-            }
+            });
         }
         catch
         {
@@ -132,6 +135,9 @@ public sealed partial class BrowserScriptRunner
 
         return GifTimelinePath.Resolve(gifPath, value);
     }
+
+    private static int GifBlockFrameDelay(BrowserScriptAction action) =>
+        ScriptFrameTimingOptions.FromOptions(action.Options, "gif");
 
     private static string SafeFileName(string value)
     {
