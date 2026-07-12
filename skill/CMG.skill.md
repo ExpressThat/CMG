@@ -1,87 +1,120 @@
-# CMG Skill
+---
+name: cmg
+description: Use CMG to control real Chrome, Edge, or Firefox browsers; run deterministic direct scripts or structured browser tests; diagnose failures; and produce screenshots, reports, traces, and pointer-accurate GIF evidence. Trigger for browser automation, AI browser control, repeatable UI journeys, visual bug reproduction, and test execution through the CMG CLI or DSL.
+---
 
-CMG is a command-line browser control tool intended to be called by AI agents.
+# CMG
 
-## Agent Quick Contract
+CMG is a browser automation CLI built for AI agents. Use it for one-off browser actions, multi-step deterministic journeys, structured tests, and choreographed visual evidence.
 
-Use CMG when you need a real browser action, a repeatable browser script, a structured test run, or visual evidence such as screenshots, GIFs, traces, and reports.
+## Why It Is Token-Efficient
+
+CMG's execution model is token-efficient: send one compact `.cmgscript` and receive concise numbered results instead of repeatedly loading a large DOM or accessibility snapshot between individual actions. CMG executes already-decided steps locally without another model inference for each action.
+
+This claim applies to execution, not to loading every CMG reference into context. This file is intentionally a short router. Do not load the entire `references/` tree. Open only the linked leaf document needed for the current task.
+
+```text
+click "getByRole=button|Clone"
+fill "getByLabel=Repository URL" "https://github.com/example/repo.git"
+click "getByRole=button|Start"
+waitForText "#status" "Complete"
+screenshotPage output="result.png"
+```
+
+Run the journey once:
+
+```powershell
+cmg browser control script --file journey.cmgscript
+```
+
+## Quick Contract
 
 1. Start or select a browser.
-   - Chrome is the default: `cmg browser launch`.
-   - Use `cmg --edge browser launch` or `cmg --firefox browser launch` for other browsers.
-   - Use the same top-level browser option for launch, control, run, and close.
-2. Choose the smallest surface that fits the task.
-   - One action: `cmg browser control <group> <command> ...`.
-   - Multi-step direct automation: `cmg browser control script --file flow.cmgscript`.
-   - Generated script from stdin: `cmg browser control script --file -`.
-   - Structured tests, retries, reports, traces, sharding, or per-test GIFs: `cmg run <path>`.
-   - Add `--auto-launch` to `cmg run` when the runner should start the selected browser if it is not already running. Add `--headless` with `--auto-launch` for CI or background runs.
-3. Capture useful artifacts when the user needs evidence.
-   - Direct script GIF: `cmg browser control script --file flow.cmgscript --gif artifacts/flow.gif`.
-   - Runner GIFs: `cmg run tests --gif artifacts/gifs`.
-   - Runner reports/traces: `cmg run tests --report-json artifacts/report.json --trace artifacts/traces`.
-   - Browser diagnostics are armed automatically by `cmg browser launch`, `cmg browser app launch`, and `cmg browser app attach`.
-   - After risky UI actions, inspect captured browser fallout with `listPageErrors` and `listConsole level=error`, then gate with `expectNoPageError timeout=250` and `expectNoConsole level=error timeout=250`.
-   - `captureConsole` and `capturePageErrors` are deprecated compatibility aliases for ensuring capture is installed; they are usually unnecessary and do not clear existing entries.
-4. Parse results predictably.
-   - Exit code `0` means success; exit code `1` means failure.
-   - Treat stdout as parseable command output: `PASS 001 line=3 action=navigate ...`; nested macro/loop/step output adds `context="..."`.
-   - For runner reports, prefer JSON step fields (`sequence`, `lineNumber`, `context`, `action`) instead of parsing human output strings. JSON/HTML steps are public executed steps only; trace artifacts keep raw internals.
-   - Treat stderr as diagnostics, including failed step/test reasons.
-5. Use safe paths.
-   - Write artifacts under an explicit workspace folder such as `artifacts/` or `demo-output/`.
-   - Prefer relative paths in scripts and examples unless the user gave an absolute path.
-   - Use `--output` or `output=` for file artifacts; otherwise screenshot commands may print `data:image/png;base64,...`.
-6. Close the browser when finished: `cmg browser close`.
+   - Chrome: `cmg browser launch`
+   - Edge: `cmg --edge browser launch`
+   - Firefox: `cmg --firefox browser launch`
+   - Multiple instances: place `--port` after `browser`, for example `cmg browser --port 9333 launch`.
+2. Choose the smallest suitable surface.
+   - One action: `cmg browser control <group> <command> ...`
+   - Multi-step browser control: `cmg browser control script --file flow.cmgscript`
+   - Generated script through stdin: `cmg browser control script --file -`
+   - Structured tests, retries, reports, traces, sharding, or per-test GIFs: `cmg run <path>`
+3. Parse results predictably.
+   - Exit code `0`: success or an intentional skip.
+   - Exit code `1`: validation, browser, action, assertion, or runner failure.
+   - Stdout contains numbered `PASS`, action payload, artifact, and test-result lines.
+   - Stderr explains failures with the action, source line, context, and reason.
+4. Close browsers started for the task: `cmg browser close`.
 
-For extra detail in this generated skill file:
+Prefer file-backed scripts or `--file -` in PowerShell. Shell parsing makes nested quotes in `--inline` less reliable.
 
-- See `## Source: README.md` for the product overview and common workflows.
-- See `## Source: docs/quick-start.md` for the fastest launch, run, and artifact examples.
-- See `## Source: docs/commands.md` and `## Source: docs/commands/run.md` for exact CLI arguments, stdout/stderr, exit codes, and examples.
-- See `## Source: docs/scripting/index.md`, `## Source: docs/scripting/syntax.md`, and `## Source: docs/scripting/actions.md` for `.cmgscript` syntax and action behavior.
-- See `## Source: docs/scripting/gif-recording.md` for GIF and visual evidence rules.
-- See `## Source: demo-scripts/README.md` and the later demo script sources for runnable examples.
+## Choose A Workflow
 
-## How Agents Should Use CMG
+| Need | Command | Read only when needed |
+| --- | --- | --- |
+| First browser journey | `cmg browser control script --file flow.cmgscript` | [Quick start](references/docs/quick-start.md) |
+| Exact CLI command or option | `cmg <group> <command> --help` | [Command index](references/docs/commands.md) |
+| Script syntax, variables, logic, macros, loops | `.cmgscript` | [Syntax](references/docs/scripting/syntax.md) |
+| Find an action family | Script or runner DSL | [Action index](references/docs/scripting/action-index.md) |
+| Look up an exact DSL command | Script or runner DSL | [One file per command](references/docs/scripting/commands/index.md) |
+| Read shared action behavior | Script or runner DSL | [Action topic leaves](references/docs/scripting/action-topics/index.md) |
+| GIF recording and virtual pointer | `--gif` or `gif { ... }` | [GIF recording](references/docs/scripting/gif-recording.md) |
+| Structured tests and reports | `cmg run <path>` | [Run command](references/docs/commands/run.md) |
+| Failure diagnosis | stderr, report, or trace | [Errors](references/docs/scripting/errors.md) |
+| Maintainable scripts | `.cmgscript` | [Style guide](references/docs/scripting/style-guide.md) |
+| Runnable patterns | Demo files | [Demo index](references/demo-scripts/README.md) |
+| Product overview and positioning | None | [Product overview](references/README.md) |
+| Browse every packaged reference | None | [Reference tree](references/index.md) |
 
-- Start a controlled browser with `cmg browser launch` before page control commands.
-- Close the controlled browser with `cmg browser close` when finished.
-- Chrome is the default browser. `--chrome` is available but optional, `--edge` targets Microsoft Edge, and `--firefox` targets Firefox. Put the browser option before the command group, such as `cmg --edge browser launch` or `cmg --firefox browser control script --file flow.cmgscript`.
-- Use the same browser option for launch, control, and close commands within a flow. For example, an Edge flow should use `cmg --edge browser launch`, `cmg --edge browser control script --file flow.cmgscript`, and `cmg --edge browser close`.
-- Use `cmg browser control <action>` for one-off actions.
-- Use `cmg browser control script --file <path>` for multi-step flows.
-- Use `cmg browser control script --file -` to pipe a generated `.cmgscript` from stdin.
-- Use `cmg browser control script --inline "<script>"` for short generated scripts when quoting is practical.
-- Prefer scripts whenever doing more than one action on a page. A script gives the agent one parseable run, one exit code, deterministic ordering, and optional GIF recording.
-- Add `--gif <path>` to script runs when a visual recording is useful.
-- Treat stdout as parseable command output and stderr as failure diagnostics.
-- For browser-side failures after visual testing, prefer `listPageErrors` and `listConsole level=error` to inspect captured events. CMG captures only from launch/attach/arming time forward; it cannot recover earlier browser history.
-- Check exit code `0` for success and `1` for failures.
-- Prefer selectors that work in the browser, such as `#id`, `.class`, `[data-name='value']`, and combined CSS selectors.
-- For screenshots without `--output` or `output=`, expect `data:image/png;base64,...`.
-- For `getElement --screenshot`, the screenshot result is also a `data:image/png;base64,...` URL unless `--output` is used.
-- Use `waitForElement` before interacting with dynamic UI.
-- CMG automatically accepts browser JavaScript dialogs and leave-page prompts while connected to a page, including alerts, confirms, prompts, and unsaved-changes before-unload prompts.
-- User-like actions such as `click`, `type`, `clear`, `hover`, `select`, and `dragAndDrop` do not scroll automatically. Add explicit `scrollIntoView` steps before interacting with elements outside the current viewport. Screenshots are the exception and may scroll the selected element into view for capture.
-- Use `.cmgscript` block `dragAndDrop` when a drag needs intermediate `delay`, `hover`, or `waitForElement` steps.
-- In `--gif` scripts, all automatic virtual pointer movement dispatches browser mouse and pointer movement events, including movement before `click`, `type`, `clear`, `hover`, and `select`.
-- Use script-only `moveMouse "bottom"` plus `delay` inside a GIF `dragAndDrop` block when a page auto-scrolls while a dragged item is held near the viewport edge. For scrollable app containers, prefer `moveMouse selector=".content-area" edge=bottom inset=24`. CMG keeps page drag state active with pointer/mouse down, held move, and up events during block drags. `moveMouse` has no one-off CLI command; outside active GIF recording it skips with `GIF_MOVE_MOUSE ... status=skipped` and does not create a virtual pointer.
-- CMG does not force `DataTransfer.effectAllowed`, `dropEffect`, or payloads during synthetic drags. The page's own `dragstart` handler should set those values; CMG preserves the page-set values through later drag events.
-- In GIF drags, CMG uses one synthetic drag lifecycle and dispatches one `drop` event. CMG should not run a second native or fallback drop after the recorded drop completes.
-- Use `showMessageBar "message"` to place a visible centered caption bar near the top of the page while recording. It dynamically sizes to the message, supports multi-line captions, and appears above page dialogs.
-- During GIF drag recording, page-owned custom drag images take precedence. If the page does not call `DataTransfer.setDragImage()`, CMG shows a browser-default style preview bridge so the drag remains visible in the live browser and recorded GIF.
+For an unfamiliar command or option, search before opening a large reference: `rg -n "<command>|<option>" references/docs`. Then open only the matching leaf page.
 
-## Authentication Workflows
+## Scripts And Tests
 
-If a page requires user authentication, do not try to automate credentials unless the user explicitly asks for that and provides a safe method. Instead:
+Use direct scripts for agent-controlled browsing, investigation, demos, and focused journeys. Use `cmg run` for suites, hooks, filtering, retries, parallel workers, browser projects, reports, traces, sharding, and per-test artifacts.
 
-1. Launch the CMG-controlled browser.
-2. Navigate it to the page where the user needs to sign in.
-3. Tell the user to complete the login manually in that browser window.
-4. Wait for the user to confirm sign-in is complete.
-5. Continue with `waitForElement` and the rest of the page automation.
+Both script types share actions, rich locators, variables, logic, macros, loops, scoped recording defaults, GIF blocks, virtual pointer behavior, and failure diagnostics.
 
-## Release Contents
+```text
+navigate "https://example.test"
+waitForElement "getByRole=button|Continue"
+click "getByRole=button|Continue"
+expectVisible "#complete"
+```
 
-This skill file is generated during the release workflow from this source preamble, repository documentation, and demo scripts. Do not edit generated release copies by hand; update this file or the source docs instead.
+## Visual Evidence
+
+- Whole journey: `cmg browser control script --file flow.cmgscript --gif artifacts/flow.gif`
+- Focused section: `gif "checkout" { ... }`
+- Test GIFs: `cmg run tests --gif artifacts/gifs`
+- Whole-run `--gif` suppresses nested GIF files while retaining their actions in the whole recording.
+- Recording-only actions skip when no recording is active.
+- GIF movement uses CMG's live virtual pointer, browser pointer events, hover states, click pulses, drag ghosts, and captions.
+- A GIF click pulse is visual-only; it does not activate the target a second time.
+
+## Reliable Agent Usage
+
+- Prefer stable locators such as `getByRole=`, `getByLabel=`, and `getByTestId=`.
+- Quote rich locators containing spaces: `"getByLabel=Repository URL"`.
+- Use `waitForElement` or a state assertion for dynamically mounted UI.
+- `fill` and `type` support controlled inputs and reacquire rich-locator targets replaced during a framework render.
+- User-like actions do not auto-scroll. Add `scrollIntoView` when the target is outside the viewport.
+- Write binary artifacts with explicit `output=` paths to avoid base64 payloads on stdout.
+- Use `listPageErrors` and `listConsole level=error` after risky actions. Diagnostics are armed at launch or attach.
+- Browser dialogs are explicit. Configure `captureDialogs`, `setDialogBehavior`, `onDialog`, or `handleDialog` before the action that opens one; CMG does not silently remove or accept dialogs.
+- For authentication, let the user sign in manually unless they explicitly request credential automation and provide a safe method.
+
+## Reports And Artifacts
+
+```powershell
+cmg run tests `
+  --gif artifacts/gifs `
+  --report-json artifacts/report.json `
+  --report-html artifacts/report.html `
+  --trace artifacts/traces
+```
+
+For automation, prefer structured JSON report fields over parsing display text. Keep screenshots, GIFs, reports, and traces under an explicit workspace artifact directory.
+
+## Reference Loading Rule
+
+Start with this file and command `--help`. Open one reference leaf at a time. Follow the [reference tree](references/index.md) to reach every packaged Markdown file without scanning the directory. Use the generated action-topic leaves for scripting behavior; aliases that share semantics intentionally share one family page to avoid duplicated guidance and drift. Detailed CLI command pages remain one file per leaf command under `references/docs/commands/`, and runnable examples live under `references/demo-scripts/`.

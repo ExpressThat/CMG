@@ -29,6 +29,20 @@ CMG is not trying to be a clone of Cypress, Puppeteer, or Playwright. It gives y
 
 The useful difference is not "CMG has aliases like other tools." The useful difference is that CMG turns automation into evidence that a human can watch and an agent can reason about.
 
+## Token-Efficient Agent Execution
+
+CMG can execute a complete, already-decided browser journey from one compact script and return concise numbered step results. An agent does not need to request and ingest a full DOM or accessibility snapshot between every click, fill, wait, assertion, and screenshot, and CMG does not require another model inference to interpret each deterministic action.
+
+```text
+click "getByRole=button|Clone"
+fill "getByLabel=Repository URL" "https://github.com/example/repo.git"
+click "getByRole=button|Start"
+waitForText "#status" "Complete"
+screenshotPage output="result.png"
+```
+
+That is what CMG means by token-efficient: the execution protocol is compact. The installed agent skill follows the same principle. Its `SKILL.md` is a short routing guide, while full command documentation and demos are packaged as on-demand files under `references/` so an agent only loads the leaf page needed for the current task.
+
 ## Install And Run Locally
 
 From this repository:

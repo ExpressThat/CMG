@@ -1,0 +1,4 @@
+interface:
+  display_name: "CMG"
+  short_description: "Run browser automation with visual evidence"
+  default_prompt: "Use $cmg to automate this browser journey and capture concise, pointer-accurate evidence."
