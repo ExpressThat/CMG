@@ -1895,7 +1895,7 @@ Alias for `showMessageBar`.
 fill "#name" "CMG"
 ```
 
-Clears the field and types the value. In GIF mode this keeps the same visible pointer and progressive typing behavior as `clear` plus `type`. `fill` accepts the same typing options as `type`, including `delay=`. This action works in direct browser-control scripts and `cmg run`.
+Clears the field and types the value. Text inputs and textareas use the browser's native `value` setter followed by bubbling, composed `InputEvent` and `change` events, so React controlled inputs and other value-tracking frameworks receive the update. In GIF mode this keeps the same visible pointer and progressive typing behavior as `clear` plus `type`. Rich locators are live: if a controlled render replaces the element after a character, CMG resolves the locator again before the next mutation. `fill` accepts the same typing options as `type`, including `delay=`. This action works in direct browser-control scripts and `cmg run`.
 
 ### `check` And `uncheck`
 

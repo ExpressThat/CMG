@@ -56,7 +56,7 @@ public sealed partial class FirefoxBiDiClient
         ExecuteVisibleElementScript(
             remoteDebuggingUrl,
             selector,
-            $"element.focus({{ preventScroll: true }}); element.value = `${{element.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
+            ChromeDevToolsClient.BuildInputValueScript($"`${{element.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`", text));
 
     public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, int delayMilliseconds = 80, Action? afterCharacter = null)
     {
@@ -71,7 +71,7 @@ public sealed partial class FirefoxBiDiClient
     }
 
     public void Clear(string remoteDebuggingUrl, string selector) =>
-        ExecuteVisibleElementScript(remoteDebuggingUrl, selector, "element.focus({ preventScroll: true }); element.value = ''; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;");
+        ExecuteVisibleElementScript(remoteDebuggingUrl, selector, ChromeDevToolsClient.BuildInputValueScript("''", string.Empty));
 
     public void Press(string remoteDebuggingUrl, string key) =>
         Evaluate(

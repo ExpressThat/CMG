@@ -43,4 +43,14 @@ public sealed class BrowserFrameScriptsTests
         Assert.Contains("const ignoreCase = true;", script);
         Assert.Contains("matchesText(actual, expected, matchMode, ignoreCase)", script);
     }
+
+    [Fact]
+    public void Fill_UsesFrameNativeValueSetterAndInputEvent()
+    {
+        var script = BrowserFrameScripts.Fill("#frame", "#name", "CMG");
+
+        Assert.Contains("Object.getOwnPropertyDescriptor(prototype, 'value')?.set", script);
+        Assert.Contains("new view.InputEvent('input'", script);
+        Assert.Contains("setInput(element, \"CMG\", \"CMG\")", script);
+    }
 }

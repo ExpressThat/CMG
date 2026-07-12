@@ -1,0 +1,12 @@
+# Exercises a controlled field that replaces its DOM node after every input event.
+
+navigate "about:blank"
+setContent "<main style='font:16px system-ui;padding:32px'><label for='name'>Display name</label><input id='name'><button id='save'>Save</button><p id='state'>value= clicks=0</p></main><script>let value='';let clicks=0;const state=document.querySelector('#state');const render=()=>{const old=document.querySelector('#name');const next=old.cloneNode();next.value=value;next.addEventListener('input',event=>{value=event.target.value;render()});old.replaceWith(next);state.textContent='value='+value+' clicks='+clicks};document.querySelector('#name').addEventListener('input',event=>{value=event.target.value;render()});document.querySelector('#save').addEventListener('click',()=>{clicks++;state.textContent='value='+value+' clicks='+clicks});</script>"
+
+gif "controlled input remount" pointerDuration=250 postClickHold=400 {
+  waitForElement "getByLabel=Display name"
+  fill "getByLabel=Display name" "CMG" delay=120
+  expectValue "getByLabel=Display name" "CMG"
+  click "getByRole=button|Save"
+  expectText "#state" "value=CMG clicks=1"
+}

@@ -98,7 +98,19 @@ public sealed partial class ChromeDevToolsClient
         {
             if (socket.State is WebSocketState.Open)
             {
-                await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "CMG command complete", CancellationToken.None);
+                using var timeout = new CancellationTokenSource(TimeSpan.FromMilliseconds(500));
+                try
+                {
+                    await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "CMG command complete", timeout.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    socket.Abort();
+                }
+                catch (WebSocketException)
+                {
+                    socket.Abort();
+                }
             }
 
             socket.Dispose();

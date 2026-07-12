@@ -138,7 +138,7 @@ public sealed class BrowserControlService : IBrowserControlService
         {
             return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
         }
-        catch (System.Net.Http.HttpRequestException exception)
+        catch (Exception exception) when (IsBrowserTransportFailure(exception))
         {
             return ScriptRunResult.Fail(BuildBrowserConnectionMessage(browserKind, exception));
         }
@@ -161,7 +161,7 @@ public sealed class BrowserControlService : IBrowserControlService
         {
             return scriptRunner.RunText(scriptLine, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind));
         }
-        catch (System.Net.Http.HttpRequestException exception)
+        catch (Exception exception) when (IsBrowserTransportFailure(exception))
         {
             return ScriptRunResult.Fail(BuildBrowserConnectionMessage(browserKind, exception));
         }
@@ -201,7 +201,7 @@ public sealed class BrowserControlService : IBrowserControlService
         {
             return scriptRunner.RunText(script, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
         }
-        catch (System.Net.Http.HttpRequestException exception)
+        catch (Exception exception) when (IsBrowserTransportFailure(exception))
         {
             return ScriptRunResult.Fail(BuildBrowserConnectionMessage(browserKind, exception));
         }
@@ -215,6 +215,9 @@ public sealed class BrowserControlService : IBrowserControlService
 
     private static string BuildBrowserConnectionMessage(BrowserKind browserKind, Exception exception) =>
         $"Could not connect to the CMG-controlled {browserKind.DisplayName()} browser endpoint. Run 'cmg {browserKind.CommandOptionPrefix()}browser launch' again. Reason: {exception.Message}";
+
+    private static bool IsBrowserTransportFailure(Exception exception) =>
+        exception is System.Net.Http.HttpRequestException or System.Net.WebSockets.WebSocketException or OperationCanceledException or TimeoutException;
 
     private static string ResolveSelector(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, string selector)
     {

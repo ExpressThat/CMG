@@ -18,10 +18,10 @@ public static class BrowserFrameScripts
         Element(frameSelector, selector, "dispatchMouse(element, false); return true;");
 
     public static string Type(string frameSelector, string selector, string text) =>
-        Element(frameSelector, selector, $"element.focus(); element.value = (element.value || '') + {Quote(text)}; dispatchInput(element); return true;");
+        Element(frameSelector, selector, $"element.focus(); setInput(element, (element.value || '') + {Quote(text)}, {Quote(text)}); return true;");
 
     public static string Fill(string frameSelector, string selector, string text) =>
-        Element(frameSelector, selector, $"element.focus(); element.value = {Quote(text)}; dispatchInput(element); return true;");
+        Element(frameSelector, selector, $"element.focus(); setInput(element, {Quote(text)}, {Quote(text)}); return true;");
 
     public static string AssertText(
         string frameSelector,
@@ -112,9 +112,14 @@ public static class BrowserFrameScripts
         Wrap(frameSelector, $$"""
         const element = resolveFrameElement({{Quote(selector)}});
         if (!element) throw new Error(`No frame element matched selector {{Escape(selector)}}.`);
-        const dispatchInput = target => {
-          target.dispatchEvent(new Event('input', { bubbles: true }));
-          target.dispatchEvent(new Event('change', { bubbles: true }));
+        const setInput = (target, value, data) => {
+          const view = frame.contentWindow;
+          const prototype = target instanceof view.HTMLTextAreaElement ? view.HTMLTextAreaElement.prototype : view.HTMLInputElement.prototype;
+          const setter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set;
+          if (!setter) throw new Error('Element does not support text input values.');
+          setter.call(target, value);
+          target.dispatchEvent(new view.InputEvent('input', { bubbles: true, composed: true, inputType: 'insertText', data }));
+          target.dispatchEvent(new view.Event('change', { bubbles: true, composed: true }));
         };
         const dispatchMouse = (target, click = true) => {
           const rect = target.getBoundingClientRect();

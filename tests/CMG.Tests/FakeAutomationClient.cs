@@ -11,6 +11,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string LastInitScript { get; private set; } = string.Empty;
     public string LastDiagnosticsUrl { get; private set; } = string.Empty;
     public string LastClickedSelector { get; private set; } = string.Empty;
+    public int ClickCount { get; private set; }
     public string LastHoveredSelector { get; private set; } = string.Empty;
     public string LastWaitSelector { get; private set; } = string.Empty;
     public int LastWaitTimeout { get; private set; }
@@ -24,6 +25,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public BrowserCaptionOptions? LastCaptionOptions { get; private set; }
     public string LastElementTextSelector { get; private set; } = string.Empty;
     public string LastElementBoxSelector { get; private set; } = string.Empty;
+    public string LastElementCenterSelector { get; private set; } = string.Empty;
     public ViewportSize? LastViewport { get; private set; }
     public ViewportOptions? LastViewportOptions { get; private set; }
     public PdfPrintOptions? LastPdfOptions { get; private set; }
@@ -75,7 +77,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         LastWaitSelector = selector;
         LastWaitTimeout = timeoutMilliseconds;
     }
-    public void Click(string remoteDebuggingUrl, string selector) => LastClickedSelector = selector;
+    public void Click(string remoteDebuggingUrl, string selector)
+    {
+        LastClickedSelector = selector;
+        ClickCount++;
+    }
     public void Type(string remoteDebuggingUrl, string selector, string text)
     {
         LastTypedSelector = selector;
@@ -177,7 +183,11 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         LastElementBoxSelector = selector;
         return ElementBoxes.Count > 0 ? ElementBoxes.Dequeue() : new(0, 0, 1, 1);
     }
-    public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) => new(0, 0);
+    public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector)
+    {
+        LastElementCenterSelector = selector;
+        return new(0, 0);
+    }
     public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point, ClickPulseStyle? pulseStyle = null, bool pressed = false, bool trail = false, bool breadcrumb = false, PointerVisualOptions? visual = null)
     {
         LastCursorPulseStyle = pulseStyle;

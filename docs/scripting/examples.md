@@ -315,6 +315,21 @@ describe "checkout" owner=qa annotation.requirement="REQ-1" {
 
 Annotations are report-only metadata. They appear in JSON, HTML, and JUnit reports and do not change browser execution or GIF recording.
 
+## Controlled Inputs That Remount
+
+Framework-controlled fields can replace their DOM element while handling an input event. Keep using the user-facing locator; CMG reacquires the replacement during the same action:
+
+```text
+gif "edit profile" {
+  waitForElement "getByLabel=Display name"
+  fill "getByLabel=Display name" "CMG"
+  expectValue "getByLabel=Display name" "CMG"
+  click "getByRole=button|Save"
+}
+```
+
+`fill` uses the native input value setter and a bubbling `InputEvent`, including during progressive GIF typing. See `demo-scripts/159-controlled-input-remount.cmgscript` for a standalone remounting fixture and click-count assertion.
+
 ## Common Next Steps
 
 | Need | Where To Go |

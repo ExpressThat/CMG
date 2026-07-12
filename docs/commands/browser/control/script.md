@@ -37,6 +37,8 @@ cmg --firefox browser control script --file <path>
 - `--file <path>`: Path to a `.cmgscript` file. Specify exactly one of `--file` or `--inline`.
 - `--file -`: Read script text from stdin.
 - `--inline <script>`: Run inline `.cmgscript` text. Specify exactly one of `--file` or `--inline`.
+
+For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--file -`. PowerShell parses quotes before CMG receives `--inline`, so nested DSL, CSS, and JavaScript quotes are inherently easier to preserve through a file or stdin.
 - `--gif <path>`: Optional output path for an animated GIF recording of the script run.
 - `--gif-quality <highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. Defaults to `highest`.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
@@ -78,6 +80,7 @@ cmg --firefox browser control script --file <path>
 - `skip "reason"` stops the script as skipped, writes `SKIP <line> <reason>` to stdout, and exits `0`.
 - Writes step logs and action outputs to stdout.
 - Writes validation, parse, browser, and action errors to stderr.
+- CDP HTTP, WebSocket, cancellation, and timeout failures are converted into a browser connection error on stderr and exit code `1`; a cold attach cannot fail without a diagnostic result.
 - Supports line-level `import "path"` statements. Relative imports resolve from the script file's directory.
 - Supports the shared CMG action surface documented in the [action index](../../../scripting/action-index.md) and [action reference](../../../scripting/actions.md).
 - Supports control flow, scoped variables, `set` block capture, macros, loops, `try`/`catch`/`finally`, `within`, frame blocks, `step`, `recording` / `withRecording` scoped defaults, and `gif` blocks.

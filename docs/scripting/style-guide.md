@@ -58,6 +58,8 @@ fill "getByLabel=Email" "agent@example.com"
 click "getByTestId=submit-profile"
 ```
 
+These locators remain stable across controlled-component remounts. CMG resolves them again when a framework replaces the matched node during `fill`, `type`, or recorded pointer choreography.
+
 Use CSS selectors when they are stable and meaningful. Avoid brittle selectors that depend on generated class names or deep layout.
 
 ## Capture Values Deliberately

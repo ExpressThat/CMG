@@ -69,6 +69,16 @@ public sealed class CmgLocatorTests
     }
 
     [Fact]
+    public void PrefixExpressions_FilterLocatorsReResolveDisconnectedElements()
+    {
+        var expression = Assert.Single(CmgLocator.PrefixExpressions("getByLabel=Email", 4));
+
+        Assert.Contains("window.__cmgLocatorResolvers", expression);
+        Assert.Contains("current?.isConnected", expression);
+        Assert.Contains("const resolve = () =>", expression);
+    }
+
+    [Fact]
     public void PrefixExpressions_RoleRegexRequiresRoleAndPattern()
     {
         var expression = Assert.Single(CmgLocator.PrefixExpressions("roleRegex=button", 7));

@@ -69,7 +69,7 @@ public sealed partial class ChromeDevToolsClient
         ExecuteElementScript(
             remoteDebuggingUrl,
             selector,
-            $"element.focus({{ preventScroll: true }}); element.value = `${{element.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
+            BuildInputValueScript($"`${{element.value ?? ''}}{BrowserDomScripts.EscapeTemplate(text)}`", text));
     }
 
     public void TypeProgressively(string remoteDebuggingUrl, string selector, string text, int delayMilliseconds = 80, Action? afterCharacter = null)
@@ -90,7 +90,7 @@ public sealed partial class ChromeDevToolsClient
         ExecuteElementScript(
             remoteDebuggingUrl,
             selector,
-            "element.focus({ preventScroll: true }); element.value = ''; element.dispatchEvent(new Event('input', { bubbles: true })); element.dispatchEvent(new Event('change', { bubbles: true })); return true;");
+            BuildInputValueScript("''", string.Empty));
     }
 
     public void Press(string remoteDebuggingUrl, string key)
@@ -150,4 +150,13 @@ public sealed partial class ChromeDevToolsClient
             selector,
             $"element.value = {ToJsonStringLiteral(value)}; element.dispatchEvent(new Event('input', {{ bubbles: true }})); element.dispatchEvent(new Event('change', {{ bubbles: true }})); return true;");
     }
+
+    internal static string BuildInputValueScript(string valueExpression, string insertedText) =>
+        "element.focus({ preventScroll: true }); " +
+        "const prototype = element instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype; " +
+        "const setter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set; " +
+        "if (!setter) throw new Error('Element does not support text input values.'); " +
+        $"setter.call(element, {valueExpression}); " +
+        $"element.dispatchEvent(new InputEvent('input', {{ bubbles: true, composed: true, inputType: 'insertText', data: {ToJsonStringLiteral(insertedText)} }})); " +
+        "element.dispatchEvent(new Event('change', { bubbles: true, composed: true })); return true;";
 }
