@@ -48,14 +48,32 @@ public sealed partial class CmgVisualSegmentExecutor
             .Select(step => step with
             {
                 LineNumber = lineMap.GetValueOrDefault(step.LineNumber, step.LineNumber),
-                Output = step.Output.Select(line => RewriteStructuredLine(line, lineMap)).ToArray()
+                Output = step.Output.Select(line => RewriteStructuredLine(line, lineMap)).ToArray(),
+                Error = RewriteErrorLine(step.Error, lineMap)
             })
             .ToArray();
         return result with
         {
             StdoutLines = result.StdoutLines.Select(line => RewriteStructuredLine(line, lineMap)).ToArray(),
+            Error = RewriteErrorLine(result.Error, lineMap),
             Steps = mappedSteps
         };
+    }
+
+    private static string? RewriteErrorLine(string? error, IReadOnlyDictionary<int, int> lineMap)
+    {
+        if (error is null || !error.StartsWith("Line ", StringComparison.Ordinal))
+        {
+            return error;
+        }
+
+        var colon = error.IndexOf(':', StringComparison.Ordinal);
+        if (colon <= "Line ".Length || !int.TryParse(error.AsSpan("Line ".Length, colon - "Line ".Length), out var line))
+        {
+            return error;
+        }
+
+        return $"Line {lineMap.GetValueOrDefault(line, line)}{error[colon..]}";
     }
 
     private static string RewriteStructuredLine(string line, IReadOnlyDictionary<int, int> lineMap)
@@ -85,6 +103,21 @@ public sealed partial class CmgVisualSegmentExecutor
                 AddPending(pending, lineMap, child, lowerer.Lower(child));
             }
 
+            return;
+        }
+
+        if (action.Children.Count > 0 && lines.Count >= 2 &&
+            lines[0].TrimEnd().EndsWith('{') && lines[^1].Trim().Equals("}", StringComparison.Ordinal))
+        {
+            pending.Add(lines[0]);
+            lineMap[pending.Count] = action.LineNumber;
+            foreach (var child in action.Children)
+            {
+                AddPending(pending, lineMap, child, lowerer.Lower(child));
+            }
+
+            pending.Add(lines[^1]);
+            lineMap[pending.Count] = action.LineNumber;
             return;
         }
 

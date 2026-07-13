@@ -32,13 +32,12 @@ public sealed partial class BrowserScriptRunner
         int frameDelayMilliseconds,
         GifEncodingOptions? gifEncoding)
     {
-        var importResult = ScriptImportExpander.Expand(script, Directory.GetCurrentDirectory());
+        var importResult = ScriptImportExpander.ExpandWithSourceLines(script, Directory.GetCurrentDirectory());
         if (!importResult.Success)
         {
             return ScriptRunResult.Fail(importResult.Error ?? "Could not import script.");
         }
-        script = importResult.Script ?? string.Empty;
-        var parseResult = parser.Parse(script);
+        var parseResult = parser.Parse(importResult.Lines);
         if (!parseResult.Success)
         {
             return ScriptRunResult.Fail(parseResult.Error ?? "Could not parse script.");
@@ -165,18 +164,19 @@ public sealed partial class BrowserScriptRunner
         int stepNumber)
     {
         var action = sourceAction;
+        var sequence = context.NextSequence();
         try
         {
             action = ShouldSkipRecordingOnlyAction(sourceAction, recorder)
                 ? sourceAction
                 : PrepareActionForDispatch(sourceAction, context);
-            recorder?.BeforeAction(action);
-            var sequence = context.NextSequence();
+            recorder?.BeforeAction(action, sequence, context.CurrentContext);
             var stepOutput = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
             if (ShouldCaptureAfterAction(action))
             {
                 recorder?.AfterAction(action, stepOutput);
             }
+            recorder?.CompleteAction(sequence, success: true);
             var stepLines = new List<string> { FormatStepLine("PASS", sequence, action, context, FormatActionForLog(action)) };
             stepLines.AddRange(FormatPayloadLines(stepOutput, sequence, action, context));
             output.AddRange(stepLines);
@@ -191,10 +191,20 @@ public sealed partial class BrowserScriptRunner
             {
                 output.Add($"GIF_FAILURE_CAPTION {action.LineNumber:000} action={QuoteField(action.Name)} status=captured");
             }
-            var sequence = context.NextSequence();
+            recorder?.CompleteAction(sequence, success: false, exception.Message);
             context.StepRecords.Add(new ScriptStepRecord(sequence, action.LineNumber, action.Name, context.CurrentContext, false, [], error));
             context.Trace?.Record(sequence, action, context.CurrentContext, success: false, error, []);
             throw new ScriptActionFailedException(error);
+        }
+        catch (ScriptSkipException)
+        {
+            recorder?.CompleteAction(sequence, success: true);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            recorder?.CompleteAction(sequence, success: false, exception.Message);
+            throw;
         }
     }
 

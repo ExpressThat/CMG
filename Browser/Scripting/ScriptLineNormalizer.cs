@@ -13,6 +13,26 @@ public static class ScriptLineNormalizer
         return lines.ToArray();
     }
 
+    public static ScriptNormalizedLine[] NormalizeWithSourceLines(string script)
+    {
+        var normalized = new List<ScriptNormalizedLine>();
+        var sourceLines = script.ReplaceLineEndings("\n").Split('\n');
+        for (var index = 0; index < sourceLines.Length; index++)
+        {
+            var logicalLines = new List<string>();
+            SplitLine(sourceLines[index], logicalLines);
+            if (logicalLines.Count is 0)
+            {
+                normalized.Add(new ScriptNormalizedLine(string.Empty, index + 1));
+                continue;
+            }
+
+            normalized.AddRange(logicalLines.Select(line => new ScriptNormalizedLine(line, index + 1)));
+        }
+
+        return normalized.ToArray();
+    }
+
     private static void SplitLine(string line, List<string> lines)
     {
         var current = new List<char>();
@@ -108,3 +128,5 @@ public static class ScriptLineNormalizer
         }
     }
 }
+
+public sealed record ScriptNormalizedLine(string Text, int SourceLineNumber);

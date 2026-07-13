@@ -381,7 +381,7 @@ On failure, CMG still writes a partial GIF when at least one frame was captured,
 
 ## Timeline Metadata
 
-Timeline metadata is optional and is written only when a recording is active.
+Timeline metadata is written only when a recording is active. It is optional for standalone recording, but `cmg run` enables the default sidecar automatically when `--report-json` or `--report-html` needs frame-level evidence.
 
 - Direct scripts use `--gif-timeline <file-or-directory>` with command-level `--gif`.
 - Runner tests use `cmg run --gif <directory> --gif-timeline <directory>`.
@@ -395,9 +395,10 @@ The JSON sidecar contains:
 - `frameCount`, `durationMilliseconds`, `width`, `height`
 - `frameDelaysMilliseconds`
 - `checkpoints`: named markers with `name`, `lineNumber`, `frameIndex`, and `timeMilliseconds`
+- `steps`: runtime action spans with raw `sequence`, source `lineNumber`, `action`, nested `context`, `success`, zero-based start/end frame indexes, start/end times, optional `failureFrameIndex`, and the failure reason. `endFrameIndex` is `null` when an action produced no visual frame.
 - `timing.pointerDurationMilliseconds`, `timing.pointerSpeed`, `timing.pointerEasing`, `timing.clickPulse`, `timing.holdAfterActionMilliseconds`, `timing.preClickHoldMilliseconds`, `timing.postClickHoldMilliseconds`, `timing.holdAfterNavigationMilliseconds`, `timing.holdAfterAssertionMilliseconds`, `timing.holdOnFailureMilliseconds`
 
-Use this file when reports, CI artifacts, or agent feedback need machine-readable timing without parsing the GIF binary. JSON run reports also include a `gifMetadata` array for recorded artifacts. Each entry contains the GIF path, quality preset when CMG knows it, frame count, duration, approximate FPS, dimensions, file size, palette color pressure, transparency, and repeat metadata. HTML run reports show recorded GIF artifacts as inline thumbnail previews with links to the original files. JUnit reports add `cmg.gif.path` properties for recorded artifacts; failed tests with an inspectable GIF also include `cmg.gif.failureFrameIndex`, currently the final frame index after the failure-state hold.
+Use this file when reports, CI artifacts, or agent feedback need machine-readable timing without parsing the GIF binary. Timeline schema version `2` adds nested/repeated runtime step spans and failure bookmarks. JSON run reports include a `gifMetadata` array with `timelinePath` and artifact inspection data, while each visual step has a `gifEvidence` array containing exact frame/time boundaries. HTML reports show the animated artifact, link visual steps to embedded static start frames, and pin the final diagnostic failure frame as a static thumbnail. JUnit reports add `cmg.gif.path` properties for recorded artifacts; failed tests with an inspectable GIF also include `cmg.gif.failureFrameIndex`.
 
 Use `cmg gif inspect <file>` when an agent needs to inspect an existing GIF artifact without rerunning the browser flow. It reports frame count, duration, dimensions, file size, transparency, repeat metadata, and palette color pressure as a parseable `GIF_INSPECT` line.
 

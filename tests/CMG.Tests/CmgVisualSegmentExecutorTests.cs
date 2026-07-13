@@ -126,6 +126,34 @@ public sealed class CmgVisualSegmentExecutorTests
     }
 
     [Fact]
+    public void Run_NestedBlockActionsKeepTheirOwnSourceLines()
+    {
+        var child = new CmgNode(11, "click", "click", ["#save"], new Dictionary<string, string>(), []);
+        var parent = new CmgNode(10, "narrate", "narrate", ["Save"], new Dictionary<string, string>(), [child]);
+        var test = new CmgTestCase("flow.cmgscript", "nested lines", [parent], new Dictionary<string, string>());
+
+        var result = Executor(new FakeAutomationClient()).Run(test, "debug", Options(), attempt: 1);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(result.Steps, step => step.Action == "narrate" && step.LineNumber == 10);
+        Assert.Contains(result.Steps, step => step.Action == "click" && step.LineNumber == 11);
+    }
+
+    [Fact]
+    public void Run_FailureReasonUsesNestedActionSourceLine()
+    {
+        var child = new CmgNode(24, "fail", "fail", ["broken"], new Dictionary<string, string>(), []);
+        var parent = new CmgNode(20, "narrate", "narrate", ["check"], new Dictionary<string, string>(), [child]);
+        var test = new CmgTestCase("flow.cmgscript", "nested failure", [parent], new Dictionary<string, string>());
+
+        var result = Executor(new FakeAutomationClient()).Run(test, "debug", Options(), attempt: 1);
+
+        Assert.False(result.Success);
+        Assert.StartsWith("Line 24:", result.Error, StringComparison.Ordinal);
+        Assert.Contains(result.Steps, step => !step.Success && step.LineNumber == 24 && step.Error!.StartsWith("Line 24:", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void Run_CommandGifAppliesEncodingAndIsolatesRetainedFrames()
     {
         var directory = Directory.CreateTempSubdirectory("cmg-run-encoding-");

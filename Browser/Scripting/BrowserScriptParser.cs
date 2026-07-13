@@ -4,7 +4,13 @@ public sealed class BrowserScriptParser
 {
     public ScriptParseResult Parse(string script)
     {
-        var lines = ScriptLineNormalizer.Normalize(script);
+        var lines = ScriptLineNormalizer.NormalizeWithSourceLines(script);
+        return Parse(lines);
+    }
+
+    public ScriptParseResult Parse(IReadOnlyList<ScriptNormalizedLine> sourceLines)
+    {
+        var lines = sourceLines.ToArray();
         var parseResult = ParseActions(lines, 0, stopAtBlockEnd: false);
         if (!parseResult.Success)
         {
@@ -14,14 +20,14 @@ public sealed class BrowserScriptParser
         return ScriptParseResult.Ok(parseResult.Actions);
     }
 
-    private static ActionListParseResult ParseActions(string[] lines, int startIndex, bool stopAtBlockEnd)
+    private static ActionListParseResult ParseActions(ScriptNormalizedLine[] lines, int startIndex, bool stopAtBlockEnd)
     {
         var actions = new List<BrowserScriptAction>();
 
         for (var index = startIndex; index < lines.Length; index++)
         {
-            var lineNumber = index + 1;
-            var rawLine = lines[index];
+            var lineNumber = lines[index].SourceLineNumber;
+            var rawLine = lines[index].Text;
             var trimmed = rawLine.Trim();
 
             if (trimmed.Length is 0 || trimmed.StartsWith('#'))
@@ -105,7 +111,8 @@ public sealed class BrowserScriptParser
 
         if (stopAtBlockEnd)
         {
-            return ActionListParseResult.Fail($"Line {lines.Length}: missing block close '}}'.");
+            var lineNumber = lines.Length is 0 ? 1 : lines[^1].SourceLineNumber;
+            return ActionListParseResult.Fail($"Line {lineNumber}: missing block close '}}'.");
         }
 
         return ActionListParseResult.Ok(actions, lines.Length);

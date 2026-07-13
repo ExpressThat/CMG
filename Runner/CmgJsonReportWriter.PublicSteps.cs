@@ -70,6 +70,8 @@ public static partial class CmgJsonReportWriter
     }
 
     private static bool IsInternalStep(CmgStepResult step) =>
+        (string.IsNullOrWhiteSpace(step.Action) ? step.Name : step.Action)
+            .Equals("evaluate", StringComparison.OrdinalIgnoreCase) &&
         step.Output.Any(line => IsGeneratedEvaluatePassLine(line, out _));
 
     private static bool IsPlannedPlaceholder(CmgStepResult step) =>

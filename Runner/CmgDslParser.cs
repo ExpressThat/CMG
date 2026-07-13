@@ -9,14 +9,13 @@ public sealed partial class CmgDslParser
     public CmgParseResult Parse(string sourcePath, string script)
     {
         var baseDirectory = Path.GetDirectoryName(Path.GetFullPath(sourcePath)) ?? Directory.GetCurrentDirectory();
-        var importResult = ScriptImportExpander.Expand(script, baseDirectory);
+        var importResult = ScriptImportExpander.ExpandWithSourceLines(script, baseDirectory);
         if (!importResult.Success)
         {
             return CmgParseResult.Fail(importResult.Error ?? "Could not import script.");
         }
 
-        script = importResult.Script ?? string.Empty;
-        var lines = ScriptLineNormalizer.Normalize(script);
+        var lines = importResult.Lines.ToArray();
         var result = ParseNodes(lines, 0, stopAtBlockEnd: false);
         if (!result.Success)
         {
@@ -29,13 +28,13 @@ public sealed partial class CmgDslParser
             : CmgParseResult.Fail(validation);
     }
 
-    private static CmgNodeListResult ParseNodes(string[] lines, int startIndex, bool stopAtBlockEnd)
+    private static CmgNodeListResult ParseNodes(ScriptNormalizedLine[] lines, int startIndex, bool stopAtBlockEnd)
     {
         var nodes = new List<CmgNode>();
         for (var index = startIndex; index < lines.Length; index++)
         {
-            var rawLine = lines[index];
-            var lineNumber = index + 1;
+            var rawLine = lines[index].Text;
+            var lineNumber = lines[index].SourceLineNumber;
             var trimmed = rawLine.Trim();
             if (trimmed.Length is 0 || trimmed.StartsWith('#'))
             {
@@ -94,7 +93,7 @@ public sealed partial class CmgDslParser
         }
 
         return stopAtBlockEnd
-            ? CmgNodeListResult.Fail($"Line {lines.Length}: missing block close '}}'.")
+            ? CmgNodeListResult.Fail($"Line {(lines.Length is 0 ? 1 : lines[^1].SourceLineNumber)}: missing block close '}}'.")
             : CmgNodeListResult.Ok(nodes, lines.Length);
     }
 

@@ -2,15 +2,23 @@ namespace CMG.Browser.Scripting;
 
 public static class ScriptImportExpander
 {
-    public static ScriptImportResult Expand(string script, string baseDirectory) =>
-        Expand(script, Path.GetFullPath(baseDirectory), []);
-
-    private static ScriptImportResult Expand(string script, string baseDirectory, HashSet<string> stack)
+    public static ScriptImportResult Expand(string script, string baseDirectory)
     {
-        var output = new List<string>();
-        foreach (var line in ScriptLineNormalizer.Normalize(script))
+        var result = ExpandWithSourceLines(script, baseDirectory);
+        return result.Success
+            ? result with { Script = string.Join('\n', result.Lines.Select(line => line.Text)) }
+            : result;
+    }
+
+    public static ScriptImportResult ExpandWithSourceLines(string script, string baseDirectory) =>
+        ExpandLines(script, Path.GetFullPath(baseDirectory), []);
+
+    private static ScriptImportResult ExpandLines(string script, string baseDirectory, HashSet<string> stack)
+    {
+        var output = new List<ScriptNormalizedLine>();
+        foreach (var line in ScriptLineNormalizer.NormalizeWithSourceLines(script))
         {
-            var trimmed = line.Trim();
+            var trimmed = line.Text.Trim();
             if (!StartsWithImport(trimmed))
             {
                 output.Add(line);
@@ -34,17 +42,17 @@ public static class ScriptImportExpander
                 return ScriptImportResult.Fail($"Import cycle detected for '{fullPath}'.");
             }
 
-            var nested = Expand(File.ReadAllText(fullPath), Path.GetDirectoryName(fullPath) ?? baseDirectory, stack);
+            var nested = ExpandLines(File.ReadAllText(fullPath), Path.GetDirectoryName(fullPath) ?? baseDirectory, stack);
             stack.Remove(fullPath);
             if (!nested.Success)
             {
                 return nested;
             }
 
-            output.Add(nested.Script ?? string.Empty);
+            output.AddRange(nested.Lines);
         }
 
-        return ScriptImportResult.Ok(string.Join('\n', output));
+        return ScriptImportResult.Ok(output);
     }
 
     private static string? ReadImportPath(string trimmed)
@@ -61,9 +69,15 @@ public static class ScriptImportExpander
         char.IsWhiteSpace(trimmed["import".Length]);
 }
 
-public sealed record ScriptImportResult(bool Success, string? Script, string? Error)
+public sealed record ScriptImportResult(
+    bool Success,
+    string? Script,
+    string? Error,
+    IReadOnlyList<ScriptNormalizedLine>? SourceLines = null)
 {
-    public static ScriptImportResult Ok(string script) => new(true, script, null);
+    public IReadOnlyList<ScriptNormalizedLine> Lines => SourceLines ?? [];
+
+    public static ScriptImportResult Ok(IReadOnlyList<ScriptNormalizedLine> lines) => new(true, null, null, lines);
 
     public static ScriptImportResult Fail(string error) => new(false, null, error);
 }

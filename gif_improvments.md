@@ -243,9 +243,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add automatic duplicate-frame coalescing.
 - Add automatic long-wait compression while preserving a visible timer.
 - Add visual progress bar for long waits.
-- Add frame bookmarks for steps and failures.
+- Implemented: add zero-based frame/time spans for nested and repeated runtime steps plus final failure-frame bookmarks in timeline schema version 2.
 - Implemented: add `cmg gif storyboard <file> --output <png>` to export GIF frames as a contact sheet PNG.
-- Add timeline preview in HTML reports.
+- Implemented: add self-contained static step-start and final-failure frame evidence in HTML reports, linked from the runtime step table.
 
 ## Viewport, Layout, And Framing
 
@@ -308,10 +308,10 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add project-level GIF settings for cross-browser matrices.
 - Implemented: add GIF metadata to JSON reports: quality, approximate FPS, frame count, duration, dimensions, palette details, transparency, repeat metadata, and file size.
 - Implemented: add GIF thumbnail previews in HTML reports with artifact links.
-- Add failure frame thumbnail in HTML reports.
-- Add step-to-frame mapping in JSON reports.
-- Add report links that jump to the frame where a step started.
-- Add report links that jump to the failure frame.
+- Implemented: add a static final failure-frame thumbnail in HTML reports.
+- Implemented: add per-step GIF path, timeline path, frame spans, time spans, and failure-frame mappings in JSON reports.
+- Implemented: add report links that jump to the embedded frame where a visual step started.
+- Implemented: add report links that jump to the embedded final failure frame.
 - Implemented: add JUnit properties for GIF paths and failed-test final-frame indexes.
 - Implemented: add artifact size warnings in runner output. CLI: `--gif-warn-size <size>` emits `GIF_WARN_SIZE` for recorded GIFs over the threshold.
 - Add runner declaration `gif=onFailure` to record or keep GIFs only for failing tests. CLI: `--gif-on-failure`.

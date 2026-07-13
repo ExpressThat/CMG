@@ -52,6 +52,7 @@ public static partial class CmgJsonReportWriter
                 writer.WriteBoolean("success", step.Success);
                 writer.WriteString("error", step.Error);
                 writer.WriteString("gifPath", step.GifPath);
+                WriteStepGifEvidence(writer, step);
                 writer.WriteStartArray("output");
                 foreach (var line in CleanOutputForReports(step.Output))
                 {

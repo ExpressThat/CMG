@@ -120,6 +120,7 @@ Run the structured runner demo with reports:
 ```powershell
 dotnet run -- run demo-scripts\20-runner-flow.cmgscript --gif demo-output\runner-gifs --report-json demo-output\runner.json --report-html demo-output\runner.html
 dotnet run -- run demo-scripts\152-runner-gif-report-metadata.cmgscript --gif demo-output\runner-gifs --gif-timeline demo-output\timelines --gif-warn-size 500KB --gif-max-size 2MB --gif-max-duration 10s --report-json demo-output\runner-gif-metadata.json --report-html demo-output\runner-gif-metadata.html --report-junit demo-output\runner-gif-metadata.xml
+dotnet run -- run demo-scripts\173-gif-report-frame-evidence.cmgscript --gif demo-output\report-frame-gifs --report-json demo-output\report-frame-evidence.json --report-html demo-output\report-frame-evidence.html
 ```
 
 The second command can also emit `GIF_WARN_PALETTE` when the recorded page uses enough colors to put pressure on GIF palette fidelity, and can fail with `GIF_MAX_SIZE` or `GIF_MAX_DURATION` if a GIF exceeds the configured review budget.
@@ -313,6 +314,7 @@ dotnet run -- --firefox browser close
 - `170-command-gif-framing-runner.cmgscript`: Demonstrates whole-run framing defaults across multiple structured runner tests.
 - `171-gif-narration.cmgscript`: Demonstrates nested teaching narration, timed caption fades, and automatic successful-assertion evidence.
 - `172-gif-failure-narration-runner.cmgscript`: Intentionally fails to demonstrate automatic failure captions in runner GIF artifacts.
+- `173-gif-report-frame-evidence.cmgscript`: Intentionally includes one failure to demonstrate automatic timeline retention, JSON step-to-frame mappings, and HTML start/failure-frame evidence.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

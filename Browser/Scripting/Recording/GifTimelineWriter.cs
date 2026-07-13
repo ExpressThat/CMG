@@ -9,7 +9,8 @@ public static class GifTimelineWriter
         string gifPath,
         ScriptRecordingOptions options,
         GifFrameSink sink,
-        IReadOnlyList<GifTimelineCheckpoint>? checkpoints = null)
+        IReadOnlyList<GifTimelineCheckpoint>? checkpoints = null,
+        IReadOnlyList<GifTimelineStep>? steps = null)
     {
         var fullPath = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(fullPath);
@@ -21,7 +22,7 @@ public static class GifTimelineWriter
         var gif = new FileInfo(gifPath);
         using var stream = File.Create(fullPath);
         using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
-        WritePayload(writer, gif, options, sink, checkpoints ?? []);
+        WritePayload(writer, gif, options, sink, checkpoints ?? [], steps ?? []);
         return fullPath;
     }
 
@@ -30,10 +31,11 @@ public static class GifTimelineWriter
         FileInfo gif,
         ScriptRecordingOptions options,
         GifFrameSink sink,
-        IReadOnlyList<GifTimelineCheckpoint> checkpoints)
+        IReadOnlyList<GifTimelineCheckpoint> checkpoints,
+        IReadOnlyList<GifTimelineStep> steps)
     {
         writer.WriteStartObject();
-        writer.WriteNumber("version", 1);
+        writer.WriteNumber("version", 2);
         writer.WriteString("createdAtUtc", DateTimeOffset.UtcNow);
         writer.WriteString("gifPath", gif.FullName);
         writer.WriteNumber("fileSizeBytes", gif.Exists ? gif.Length : 0);
@@ -52,8 +54,32 @@ public static class GifTimelineWriter
         }
         writer.WriteEndArray();
         WriteCheckpoints(writer, checkpoints);
+        WriteSteps(writer, steps);
         WriteTiming(writer, options);
         writer.WriteEndObject();
+    }
+
+    private static void WriteSteps(Utf8JsonWriter writer, IReadOnlyList<GifTimelineStep> steps)
+    {
+        writer.WritePropertyName("steps");
+        writer.WriteStartArray();
+        foreach (var step in steps.OrderBy(step => step.Sequence))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("sequence", step.Sequence);
+            writer.WriteNumber("lineNumber", step.LineNumber);
+            writer.WriteString("action", step.Action);
+            writer.WriteString("context", step.Context);
+            writer.WriteBoolean("success", step.Success);
+            writer.WriteNumber("startFrameIndex", step.StartFrameIndex);
+            if (step.EndFrameIndex is int end) writer.WriteNumber("endFrameIndex", end); else writer.WriteNull("endFrameIndex");
+            writer.WriteNumber("startTimeMilliseconds", step.StartTimeMilliseconds);
+            writer.WriteNumber("endTimeMilliseconds", step.EndTimeMilliseconds);
+            if (step.FailureFrameIndex is int failure) writer.WriteNumber("failureFrameIndex", failure); else writer.WriteNull("failureFrameIndex");
+            if (step.Error is null) writer.WriteNull("error"); else writer.WriteString("error", step.Error);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
     }
 
     private static void WriteCheckpoints(Utf8JsonWriter writer, IReadOnlyList<GifTimelineCheckpoint> checkpoints)

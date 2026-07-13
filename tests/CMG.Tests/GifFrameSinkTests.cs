@@ -153,10 +153,12 @@ public sealed class GifFrameSinkTests
                 Encoding: new GifEncodingOptions(GifDitherMode.None, GifPaletteMode.Local, 32, directory.FullName),
                 Framing: new GifFramingOptions("#panel", 12, 0.5, 640, 480)),
             sink,
-            [new GifTimelineCheckpoint("after click", 7, 1, 100)]);
+            [new GifTimelineCheckpoint("after click", 7, 1, 100)],
+            [new GifTimelineStep(3, 7, "click", "step checkout", false, 0, 1, 0, 350, 1, "failed")]);
 
         using var json = JsonDocument.Parse(File.ReadAllText(written));
         var root = json.RootElement;
+        Assert.Equal(2, root.GetProperty("version").GetInt32());
         Assert.Equal(2, root.GetProperty("frameCount").GetInt32());
         Assert.Equal(350, root.GetProperty("durationMilliseconds").GetInt32());
         Assert.Equal(1500, root.GetProperty("timing").GetProperty("holdOnFailureMilliseconds").GetInt32());
@@ -177,6 +179,10 @@ public sealed class GifFrameSinkTests
         Assert.Equal(7, checkpoint.GetProperty("lineNumber").GetInt32());
         Assert.Equal(1, checkpoint.GetProperty("frameIndex").GetInt32());
         Assert.Equal(100, checkpoint.GetProperty("timeMilliseconds").GetInt32());
+        var step = Assert.Single(root.GetProperty("steps").EnumerateArray());
+        Assert.Equal(3, step.GetProperty("sequence").GetInt32());
+        Assert.Equal("step checkout", step.GetProperty("context").GetString());
+        Assert.Equal(1, step.GetProperty("failureFrameIndex").GetInt32());
         directory.Delete(recursive: true);
     }
 

@@ -9,4 +9,16 @@ public sealed record CmgStepResult(
     string? GifPath,
     int Sequence = 0,
     string Context = "",
-    string Action = "");
+    string Action = "")
+{
+    public IReadOnlyList<CmgStepGifEvidence> GifEvidence { get; init; } = [];
+}
+
+public sealed record CmgStepGifEvidence(
+    string GifPath,
+    string TimelinePath,
+    int StartFrameIndex,
+    int? EndFrameIndex,
+    int StartTimeMilliseconds,
+    int EndTimeMilliseconds,
+    int? FailureFrameIndex);

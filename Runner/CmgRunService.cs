@@ -53,6 +53,7 @@ public sealed partial class CmgRunService : ICmgRunService
 
     public CmgRunResult Run(string path, CmgRunOptions options)
     {
+        options = WithReportTimeline(options);
         var files = ResolveFiles(path);
         if (files.Count is 0)
         {
@@ -193,6 +194,11 @@ public sealed partial class CmgRunService : ICmgRunService
             }
         }
     }
+
+    private static CmgRunOptions WithReportTimeline(CmgRunOptions options) =>
+        options.GifTimelinePath is null && (options.JsonReport is not null || options.HtmlReport is not null)
+            ? options with { GifTimelinePath = "true" }
+            : options;
 
     private static string MissingBrowserMessage(CmgRunOptions options) =>
         $"No CMG-controlled {options.BrowserKind.DisplayName()} instance is running. Run '{LaunchCommand(options)}' first.";

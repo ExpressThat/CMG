@@ -7,8 +7,10 @@ public sealed partial class CmgVisualSegmentExecutor
         IReadOnlyList<string> lines,
         IReadOnlyList<Browser.Scripting.ScriptStepRecord> records,
         IReadOnlyDictionary<int, int> lineMap,
-        CmgNode? action)
+        CmgNode? action,
+        FileInfo? gif)
     {
+        var gifEvidence = CmgGifEvidenceReader.Read(lines, gif?.FullName);
         foreach (var record in records)
         {
             var index = steps.FindLastIndex(step => step.Sequence == record.Sequence);
@@ -21,7 +23,10 @@ public sealed partial class CmgVisualSegmentExecutor
                 null,
                 record.Sequence,
                 record.Context,
-                record.Action);
+                record.Action)
+            {
+                GifEvidence = gifEvidence.GetValueOrDefault(record.Sequence) ?? []
+            };
             if (index >= 0)
             {
                 steps[index] = result;

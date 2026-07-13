@@ -19,6 +19,8 @@ public sealed partial class ScriptGifRecorder : IDisposable
     private readonly ScriptRecordingOptions options;
     private readonly GifFrameSink frameSink;
     private readonly List<GifTimelineCheckpoint> checkpoints = [];
+    private readonly List<GifTimelineStep> timelineSteps = [];
+    private readonly Dictionary<int, GifTimelineStepStart> activeTimelineSteps = [];
     private readonly VirtualPointer pointer = new();
     private string? remoteDebuggingUrl;
     private bool cursorPressed;
@@ -51,13 +53,23 @@ public sealed partial class ScriptGifRecorder : IDisposable
         this.remoteDebuggingUrl = remoteDebuggingUrl;
     }
 
-    public void BeforeAction(BrowserScriptAction action)
+    public void BeforeAction(BrowserScriptAction action, int? sequence = null, string context = "")
     {
         if (remoteDebuggingUrl is null || IsCaptureSuspended)
         {
             return;
         }
 
+        if (sequence is int stepSequence)
+        {
+            activeTimelineSteps[stepSequence] = new GifTimelineStepStart(
+                stepSequence,
+                action.LineNumber,
+                action.Name,
+                context,
+                frameSink.FrameCount,
+                frameSink.DurationMilliseconds);
+        }
         var name = action.Name.ToLowerInvariant();
         CaptureConfiguredTitleCards(action);
         ApplyAutoCaption(action);
@@ -154,6 +166,30 @@ public sealed partial class ScriptGifRecorder : IDisposable
             action.LineNumber,
             frameSink.FrameCount,
             frameSink.DurationMilliseconds));
+    }
+
+    public void CompleteAction(int sequence, bool success, string? error = null)
+    {
+        if (!activeTimelineSteps.Remove(sequence, out var start))
+        {
+            return;
+        }
+
+        int? endFrame = frameSink.FrameCount > start.StartFrameIndex
+            ? frameSink.FrameCount - 1
+            : null;
+        timelineSteps.Add(new GifTimelineStep(
+            start.Sequence,
+            start.LineNumber,
+            start.Action,
+            start.Context,
+            success,
+            start.StartFrameIndex,
+            endFrame,
+            start.StartTimeMilliseconds,
+            frameSink.DurationMilliseconds,
+            success ? null : endFrame,
+            error));
     }
 
     private static bool IsClickAction(string name) =>

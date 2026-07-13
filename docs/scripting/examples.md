@@ -139,6 +139,14 @@ cmg browser control script --file demo-scripts\155-touch-pointer-visibility.cmgs
 
 Recording blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `clickPulse=`, `pressedPointer=`, `dragTrail=`, `dragBreadcrumbs=`, `preClickHold=`, `postClickHold=`, `holdAfterAction=`, `holdAfterNavigation=`, `holdAfterAssertion=`, `holdOnFailure=`, `fps=`, `frameDelay=`, and `timeline=` as defaults. Use `recording { ... }` or `withRecording { ... }` when several actions or nested recording blocks should share the same defaults without starting a recording by themselves. Use `pauseGif <milliseconds>` for recording-only holds, `recordCheckpoint "name"` for named JSON timeline markers, and `showPointer` / `hidePointer` when a GIF needs a pointer-visible or unobstructed frame. These recording-only actions skip without injecting the virtual pointer when no GIF recording is active. If a block has child actions, such as `dragAndDrop { ... }`, the parent options are scoped defaults and each child action can override them locally. Use `--gif-timeline` or block-level `timeline=true` when reports or agents need JSON timing metadata beside the GIF.
 
+Runner JSON/HTML reports retain timelines automatically when GIFs are enabled, so an agent can jump from a failed or repeated runtime step to its exact visual frame without adding `--gif-timeline`:
+
+```powershell
+cmg run demo-scripts\173-gif-report-frame-evidence.cmgscript --gif demo-output\report-frame-gifs --report-json demo-output\report-frame-evidence.json --report-html demo-output\report-frame-evidence.html
+```
+
+The demo intentionally exits `1` for its second test. The JSON report exposes `steps[].gifEvidence`; the HTML report embeds each visual start frame and the final failure frame.
+
 Pointer visuals can be styled with `pointerTheme=`, `pointerColor=`, `pointerSize=`, `pointerShadow=`, and `showPointer=` on `recording`, `gif`, `recordVideo`, `screencast`, and individual pointer-aware actions. Use this when a GIF needs a ring pointer for review, a branded pointer for demos, a touch pointer for tap flows, or clean page-state frames without the DOM pointer. Command-level `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, and `--show-pointer` set whole-run defaults for `--gif` recordings.
 
 Caption visuals can be styled with `captionStyle=`, `captionPosition=`, and `captionSeverity=` on recording scopes, recording blocks, `caption`, `showMessageBar`, and `step`. Use `qa` or `bug-report` styles for evidence review, `teaching` for onboarding demos, and `compact` when the caption should stay out of the way.

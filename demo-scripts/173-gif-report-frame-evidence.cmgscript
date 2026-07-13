@@ -1,0 +1,15 @@
+# Generates a passing flow and a diagnosed failure so reports can map steps to GIF frames.
+test "maps steps to visual evidence" {
+  setContent "<style>html,body{margin:0;background:#f8fafc}main{padding:48px;font:16px system-ui}</style><main><h1>Release check</h1><button id='publish'>Publish</button><p id='status'>Draft</p></main>"
+  narrate "Publish the release" {
+    click "#publish"
+    evaluate "document.querySelector('#status').textContent = 'Published'"
+  }
+  expectText "#status" "Published"
+}
+
+test "pins the failure frame" {
+  setContent "<style>html,body{margin:0;background:#f8fafc}main{padding:48px;font:16px system-ui}</style><main><h1>Deployment check</h1><button id='check'>Check</button><p id='status'>Pending</p></main>"
+  click "#check"
+  expectText "#status" "Complete"
+}

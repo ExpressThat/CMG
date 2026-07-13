@@ -57,14 +57,14 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-hold-on-failure <milliseconds>`: Final failure-state hold for command-level `--gif` recordings. Defaults to `1200`; use `0` to suppress the extra failure hold.
 - `--gif-fps <1..100>`: Frame rate for command-level `--gif` recordings. Defaults to `10` FPS.
 - `--gif-frame-delay <milliseconds>`: Frame delay for command-level `--gif` recordings. Must be `10..10000`; overrides `--gif-fps`.
-- `--gif-timeline <file-or-directory>`: Optional JSON timeline sidecar for GIF recordings. With `cmg run --gif`, pass a directory so each test writes `<gif-name>.timeline.json`.
+- `--gif-timeline <file-or-directory>`: Optional explicit JSON timeline destination for GIF recordings. With `cmg run --gif`, pass a directory so each test writes `<gif-name>.timeline.json`. JSON/HTML reports enable the default sidecar automatically when this option is omitted.
 - `--gif-warn-size <size>`: Emit a stdout warning when a recorded GIF exceeds this size. Accepts bytes or `KB`, `MB`, and `GB` suffixes, for example `500KB`.
 - `--gif-max-size <size>`: Fail a test when a recorded GIF exceeds this size. Accepts bytes or `KB`, `MB`, and `GB` suffixes, for example `500KB`.
 - `--gif-max-duration <duration>`: Fail a test when a recorded GIF exceeds this duration. Accepts plain milliseconds or `ms`, `s`, and `m` suffixes, for example `2500ms`, `10s`, or `1m`.
 - `--config <file>`: JSON run config file. CLI options override config values.
 - `--project <name>`: Named project from the run config. Project values override global config values, and CLI options override both.
-- `--report-json <file>`: Write a JSON test report.
-- `--report-html <file>`: Write an HTML test report.
+- `--report-json <file>`: Write a JSON test report. When GIF recording is active, CMG also retains timeline sidecars needed for frame-level report evidence.
+- `--report-html <file>`: Write an HTML test report. When GIF recording is active, CMG also retains timeline sidecars needed for frame-level report evidence.
 - `--report-junit <file>`: Write a JUnit XML test report.
 - `--trace <directory>`: Write per-test trace JSON files.
 - `--grep <text>`: Run tests whose names contain the text.
@@ -126,7 +126,7 @@ Invalid run config files fail before browser connection or test listing. Stderr 
 
 If no selected CMG browser is running, stderr tells the caller which launch command to run, for example `No CMG-controlled Chrome instance is running. Run 'cmg browser launch' first.` Use `--auto-launch` when the runner should start the selected browser automatically, and add `--headless` when that auto-launched browser should not open a visible window.
 
-Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON and HTML `steps` contain public executed runtime steps only; planned placeholders and generated internal evaluate/actionability/locator steps are omitted. Public report step sequences are contiguous per test, and output payload lines are renumbered to match their parent step. JSON step entries include separate `sequence`, `lineNumber`, `context`, and `action` fields; agents should use those fields instead of parsing human stdout strings. JSON reports also include `gifMetadata` entries for every recorded GIF path with `quality`, `frames`, `durationMs`, `fps`, `width`, `height`, `sizeBytes`, palette details, transparency, and repeat metadata when the artifact exists. HTML reports render the same source-aware step order as a table and show recorded GIF artifacts as inline thumbnail previews with artifact links. Traces keep lower-level raw diagnostics. JUnit reports emit `<skipped>` nodes for declaration-skipped tests and runtime skips, plus GIF artifact properties when a test has recorded GIFs.
+Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON and HTML `steps` contain public executed runtime steps only; planned placeholders and generated internal evaluate/actionability/locator steps are omitted. Public report step sequences are contiguous per test, and output payload lines are renumbered to match their parent step. JSON step entries include separate `sequence`, `lineNumber`, `context`, and `action` fields; agents should use those fields instead of parsing human stdout strings. When a step captured GIF frames, its `gifEvidence` array includes the artifact and timeline paths, zero-based start/end frame indexes, start/end times, and an optional failure-frame index. JSON `gifMetadata` entries include `timelinePath` plus quality, frames, duration, approximate FPS, dimensions, size, palette details, transparency, and repeat metadata. HTML reports link each visual step to an embedded static start frame, show a static final diagnostic frame for failures, and retain the animated GIF preview and artifact link. Traces keep lower-level raw diagnostics. JUnit reports emit `<skipped>` nodes for declaration-skipped tests and runtime skips, plus GIF artifact properties when a test has recorded GIFs.
 Report annotations are emitted as `annotations` in JSON, visible list items in HTML, and JUnit `<property name="cmg.annotation.<type>" ... />` entries. JUnit GIF properties use `cmg.gif.path` for one artifact or `cmg.gif.path.1`, `cmg.gif.path.2`, and so on for multiple artifacts. Failed tests with an inspectable GIF also include `cmg.gif.failureFrameIndex`, using the final frame index as the failure-state frame.
 
 ## GIF Behavior
@@ -145,6 +145,7 @@ GIF recording is optional.
 - `--gif-fps` sets the whole-test frame rate when `--gif` is active.
 - `--gif-frame-delay` sets the whole-test frame delay and overrides `--gif-fps`.
 - `--gif-timeline` writes metadata JSON sidecars and emits `GIF_TIMELINE <path>` in the per-test output after each GIF is saved.
+- `--report-json` or `--report-html` automatically enables the default `<gif-name>.timeline.json` sidecar for recorded GIFs when `--gif-timeline` was not specified. An explicit `--gif-timeline` path still wins.
 - `--gif-warn-size` emits `GIF_WARN_SIZE` stdout lines for command-level and block-level GIF files whose final size exceeds the threshold.
 - `--gif-max-size` emits `GIF_MAX_SIZE` stdout lines and fails tests whose recorded artifacts exceed the threshold.
 - `--gif-max-duration` emits `GIF_MAX_DURATION` stdout lines and fails tests whose recorded artifacts exceed the threshold.
