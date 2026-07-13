@@ -11,7 +11,8 @@ public sealed record GifEncodingOptions(
     string? KeepFramesDirectory = null,
     GifFramingOptions? Framing = null,
     GifDebugOptions? Diagnostics = null,
-    GifAccessibilityOptions? Accessibility = null)
+    GifAccessibilityOptions? Accessibility = null,
+    GifEventCaptionOptions? EventCaptions = null)
 {
     public static GifEncodingOptions FromOptions(
         IReadOnlyDictionary<string, string> options,
@@ -24,7 +25,8 @@ public sealed record GifEncodingOptions(
         var keepFrames = ParseKeepFrames(options.GetValueOrDefault("keepFrames"), context, outputPath);
         return new(dither, palette, colors, keepFrames,
             Diagnostics: GifDebugOptions.FromOptions(options, context),
-            Accessibility: GifAccessibilityOptions.FromOptions(options, context));
+            Accessibility: GifAccessibilityOptions.FromOptions(options, context),
+            EventCaptions: GifEventCaptionOptions.FromOptions(options, context));
     }
 
     public GifEncodingOptions WithOptions(
@@ -40,7 +42,8 @@ public sealed record GifEncodingOptions(
             options.ContainsKey("keepFrames") ? parsed.KeepFramesDirectory : KeepFramesDirectory,
             Framing,
             GifDebugOptions.FromOptions(options, context, Diagnostics),
-            MergeAccessibility(options, context));
+            MergeAccessibility(options, context),
+            (EventCaptions ?? new()).WithOptions(options, context));
     }
 
     private GifAccessibilityOptions MergeAccessibility(IReadOnlyDictionary<string, string> options, string context)

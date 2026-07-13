@@ -209,9 +209,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add optional source-line captions for debugging.
 - Implemented: automatic bounded failure captions with `failureCaptions=false` opt-out and parseable `GIF_FAILURE_CAPTION` diagnostics.
 - Implemented: automatic assertion captions show expected vs actual values, mask sensitive values, and support `assertionCaptions=false` opt-out.
-- Add network captions for request waits and mocks.
-- Add dialog captions for alert/confirm/prompt handling.
-- Add console/page-error captions when captured events occur.
+- Implemented: add privacy-safe network captions for request/response waits through `networkCaptions=true` and `--gif-event-captions`.
+- Implemented: add dialog setup and observed-result captions through `dialogCaptions=true`.
+- Implemented: add console/page-error capture, count, success, and observed-event captions through `consoleCaptions=true`.
 - Implemented: add caption severity styles: info, success, warning, error. CLI: `--caption-severity <severity>` for whole-run defaults.
 - Add caption localization hooks.
 - Add markdown-like caption formatting for bold/code snippets.
@@ -336,9 +336,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add service-worker/network overlay support when recording network flows.
 - Add WebSocket event overlays.
 - Add worker action overlays.
-- Add browser dialog overlays that show accepted/dismissed/prompted state.
-- Add download event overlays and artifact links.
-- Add file upload overlays that show selected filenames safely.
+- Implemented as capture-only captions: show browser dialog capture and accepted/dismissed handling state without re-dispatching dialogs.
+- Implemented for event evidence: show download completion without exposing its path. Report artifact links remain open.
+- Implemented for event evidence: show selected upload file counts without exposing filenames or file contents.
 - Add support for browser zoom level detection and correction.
 - Add support for prefers-reduced-motion testing while still making GIFs understandable.
 - Add support for pages using CSS transforms, zoom, and nested scrolling containers.

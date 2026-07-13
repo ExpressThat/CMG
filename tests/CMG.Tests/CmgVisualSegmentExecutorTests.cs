@@ -178,6 +178,33 @@ public sealed class CmgVisualSegmentExecutorTests
         directory.Delete(recursive: true);
     }
 
+    [Fact]
+    public void Run_CommandGifKeepsUploadInsideRecordedActionPipeline()
+    {
+        var directory = Directory.CreateTempSubdirectory("cmg-run-upload-gif-");
+        var upload = Path.Combine(directory.FullName, "evidence.txt");
+        File.WriteAllText(upload, "evidence");
+        var test = new CmgTestCase("flow.cmgscript", "upload evidence",
+            [Node("caption", ["Before upload"]), Node("uploadFiles", ["#file", upload]), Node("caption", ["After upload"])],
+            new Dictionary<string, string>());
+        var client = new FakeAutomationClient();
+        var options = Options() with
+        {
+            GifDirectory = Directory.CreateDirectory(Path.Combine(directory.FullName, "gifs")),
+            GifEncoding = new GifEncodingOptions(EventCaptions: new GifEventCaptionOptions(Uploads: true))
+        };
+
+        var result = Executor(client).Run(test, "debug", options, attempt: 1);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains("UPLOAD 002 1", result.Output);
+        Assert.Contains(result.Steps, step => step.Action.Equals("uploadFiles", StringComparison.OrdinalIgnoreCase));
+        Assert.NotNull(result.GifPath);
+        Assert.True(File.Exists(result.GifPath));
+        Assert.Equal("After upload", client.LastMessageBar);
+        directory.Delete(recursive: true);
+    }
+
     private static CmgVisualSegmentExecutor Executor(IBrowserAutomationClient client) =>
         new(
             new BrowserScriptRunner(new BrowserScriptParser()),

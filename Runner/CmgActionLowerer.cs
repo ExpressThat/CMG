@@ -112,7 +112,7 @@ public sealed partial class CmgActionLowerer
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "dragto" => [ToLine("dragAndDrop", action.Arguments, action.Options)],
             "download" => LowerSelectorCommand(action.Kind, action),
-            "setinputfiles" or "selectfile" => [ToLine("uploadFiles", action.Arguments, action.Options)],
+            "uploadfiles" or "setinputfiles" or "selectfile" => [ToLine("uploadFiles", action.Arguments, action.Options)],
             "tohavescreenshot" => [ToLine("expectScreenshot", action.Arguments, action.Options)],
             "opentab" or "waitfortab" or "waitforpopup" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "apirequest" => [ToLine(action.Kind, action.Arguments, action.Options)],

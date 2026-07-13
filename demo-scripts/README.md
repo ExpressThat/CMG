@@ -336,6 +336,8 @@ dotnet run -- --firefox browser close
 - `183-gif-debug-runner.cmgscript`: Demonstrates whole-run runner diagnostics through `--gif-debug`.
 - `184-gif-contrast-captions.cmgscript`: Demonstrates target contrast warnings, extra-large captions, and child-level accessibility overrides.
 - `185-gif-contrast-captions-runner.cmgscript`: Demonstrates whole-run `--gif-accessibility` and `--caption-size` settings in the structured runner.
+- `186-gif-event-captions.cmgscript`: Demonstrates scoped network, dialog, console, and upload outcome captions without exposing payloads.
+- `187-gif-event-captions-runner.cmgscript`: Demonstrates whole-run event evidence through `--gif-event-captions` in structured tests.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

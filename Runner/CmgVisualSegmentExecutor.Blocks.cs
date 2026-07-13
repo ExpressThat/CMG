@@ -114,17 +114,11 @@ public sealed partial class CmgVisualSegmentExecutor
             return storageStateRunner.Run(action, remoteDebuggingUrl, automationClient);
         }
 
-        if (action.Kind.Equals("uploadFiles", StringComparison.OrdinalIgnoreCase))
-        {
-            return uploadRunner.Run(action, remoteDebuggingUrl, automationClient);
-        }
-
         return visualAssertionRunner.Run(action, remoteDebuggingUrl, automationClient);
     }
 
     private static bool IsDirectAction(CmgNode action) =>
         action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase) ||
         action.Kind.Equals("storageState", StringComparison.OrdinalIgnoreCase) ||
-        action.Kind.Equals("expectScreenshot", StringComparison.OrdinalIgnoreCase) ||
-        action.Kind.Equals("uploadFiles", StringComparison.OrdinalIgnoreCase);
+        action.Kind.Equals("expectScreenshot", StringComparison.OrdinalIgnoreCase);
 }

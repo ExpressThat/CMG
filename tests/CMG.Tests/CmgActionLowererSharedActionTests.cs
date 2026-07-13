@@ -67,6 +67,7 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("toHaveScreenshot", "#dialog", "expectScreenshot \"#dialog\"")]
     [InlineData("setInputFiles", "#file", "uploadFiles \"#file\" \"index.html\"", "index.html")]
     [InlineData("selectFile", "#file", "uploadFiles \"#file\" \"index.html\"", "index.html")]
+    [InlineData("uploadFiles", "#file", "uploadFiles \"#file\" \"index.html\"", "index.html")]
     [InlineData("dragTo", "#source", "dragAndDrop \"#source\" \"#target\"", "#target")]
     [InlineData("pressSequentially", "#name", "pressSequentially \"#name\" \"CMG\"", "CMG")]
     [InlineData("mouseMove", "center", "mouseMove \"center\"")]

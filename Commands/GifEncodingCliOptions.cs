@@ -14,7 +14,8 @@ internal sealed record GifEncodingCliOptions(
     Option<int?> MaxWidth,
     Option<int?> MaxHeight,
     Option<bool> Debug,
-    Option<bool> Accessibility)
+    Option<bool> Accessibility,
+    Option<bool> EventCaptions)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -29,7 +30,8 @@ internal sealed record GifEncodingCliOptions(
             new Option<int?>("--gif-max-width") { Description = "Maximum GIF width from 1 to 10000 pixels." },
             new Option<int?>("--gif-max-height") { Description = "Maximum GIF height from 1 to 10000 pixels." },
             new Option<bool>("--gif-debug") { Description = "Show action, scope, target, pointer, and scroll diagnostics in GIF frames." },
-            new Option<bool>("--gif-accessibility") { Description = "Show keyboard, focus, accessible-name, and contrast evidence in GIF frames." });
+            new Option<bool>("--gif-accessibility") { Description = "Show keyboard, focus, accessible-name, and contrast evidence in GIF frames." },
+            new Option<bool>("--gif-event-captions") { Description = "Show safe outcome captions for network, dialog, console, download, and upload events." });
     }
 
     public bool TryParse(ParseResult result, out GifEncodingOptions encoding, out string? error)
@@ -48,7 +50,8 @@ internal sealed record GifEncodingCliOptions(
         {
             Framing = framing,
             Diagnostics = result.GetValue(Debug) ? new GifDebugOptions(true, true, true, true, true, true) : null,
-            Accessibility = result.GetValue(Accessibility) ? new GifAccessibilityOptions(true, true, true, true, true) : null
+            Accessibility = result.GetValue(Accessibility) ? new GifAccessibilityOptions(true, true, true, true, true) : null,
+            EventCaptions = result.GetValue(EventCaptions) ? new GifEventCaptionOptions(true, true, true, true, true) : null
         };
         return true;
     }

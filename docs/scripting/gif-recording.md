@@ -88,6 +88,8 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `captionTemplate=<template>`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
 - `captionDuration=<milliseconds>`, `fadeIn=<milliseconds>`, `fadeOut=<milliseconds>`: Deterministic caption timeline defaults.
 - `assertionCaptions=<true|false>` / `failureCaptions=<true|false>`: Automatic evidence-caption defaults. Both default to enabled.
+- `eventCaptions=<true|false>`: Enables safe network, dialog, console/page-error, download, and upload outcome captions together.
+- `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`: Category switches that override `eventCaptions` for a scope or child action.
 - `accessibilityEvidence=<true|false>`: Enables keystroke, focus, accessible-name, high-contrast, and contrast-warning evidence together. Defaults to `false`.
 - `showKeystrokes=<true|false>`: Shows keys and shortcuts. Text-entry actions show `Text input`; CMG never copies the entered value into the overlay.
 - `focusEvidence=<true|false>`: Draws an amplified ring around the actual `document.activeElement` during capture.
@@ -366,6 +368,25 @@ Contrast warnings inspect the targeted control's computed foreground and effecti
 For whole-run recordings, `--gif-accessibility` enables the same preset and `--caption-size normal|large|x-large` sets the inherited caption size. Both options are inert without `--gif`.
 
 See demos 178, 179, 184, and 185 for direct, structured-runner, contrast-warning, and scalable-caption examples.
+
+## Event Evidence
+
+Use event captions when the important result is not obvious from the page alone:
+
+```text
+gif "integration evidence" eventCaptions=true {
+  waitForResponse "/api/save"
+  waitForDialog "Saved"
+  waitForConsole "sync complete"
+  uploadFiles "#attachment" "demo-scripts/fixtures/event-evidence.txt"
+}
+```
+
+Category options inherit and can be overridden on one child, for example `recording eventCaptions=true consoleCaptions=false { ... }` or `waitForResponse "/health" networkCaptions=false`. Event captions are capture-only and are removed immediately after their evidence frame. They never create a virtual pointer without an active recorder.
+
+CMG deliberately summarizes sensitive outcomes: console text, page-error stacks, request URLs, query strings, download paths, and upload filenames are not copied into automatic captions. Upload evidence reports only the selected file count. Use an explicit `caption` when reviewed evidence requires approved detail.
+
+Whole-run direct and runner recordings use `--gif-event-captions`. See demos 186 and 187.
 
 For less animated, easier-to-track pointer evidence, combine the visual presets:
 

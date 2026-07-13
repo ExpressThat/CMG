@@ -508,6 +508,21 @@ gif "clear evidence" reducedMotion=true highContrastPointer=true {
 
 See demos 180 and 181 for block-level and whole-run CLI usage.
 
+## Event Captions
+
+Summarize browser and network outcomes without exposing their payloads:
+
+```text
+gif "event review" eventCaptions=true {
+  waitForResponse "/api/checkout"
+  waitForDialog "Order complete"
+  uploadFiles "#receipt" "demo-scripts/fixtures/event-evidence.txt"
+  waitForConsole "receipt stored" consoleCaptions=false
+}
+```
+
+Use `--gif-event-captions` for a whole direct script or runner test. See demos 186 and 187.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

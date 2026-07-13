@@ -1861,6 +1861,8 @@ Options:
 - `captionPosition`: Default caption position: `top`, `bottom`, `left`, `right`, or `auto`.
 - `captionSeverity`: Default caption severity: `info`, `success`, `warning`, or `error`.
 - `autoCaptions`: Automatic narration for supported visual child actions. Defaults to `false`.
+- `eventCaptions`: Enables all privacy-safe event outcome captions.
+- `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`: Override individual event categories for inherited frames.
 - `captionTemplate`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
 - `intro` / `outro`: Optional opening and final full-viewport title-card text.
 - `introDuration` / `outroDuration`: Optional title-card durations in milliseconds. Defaults to `1200`.
@@ -1961,6 +1963,7 @@ Options:
 - `captionPosition`: Optional caption position default for child captions.
 - `captionSeverity`: Optional caption severity default for child captions.
 - `autoCaptions`: Optional `true`/`false` automatic narration for supported visual child actions.
+- `eventCaptions`, `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`: Optional recording-only event narration. The umbrella enables every category; child category options win.
 - `captionTemplate`: Optional automatic-caption template inherited by child actions.
 - `intro` / `outro`: Optional opening and final title-card text.
 - `introDuration` / `outroDuration`: Optional title-card durations in milliseconds. Defaults to `1200`.

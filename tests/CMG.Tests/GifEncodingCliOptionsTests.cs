@@ -13,7 +13,7 @@ public sealed class GifEncodingCliOptionsTests
         var root = Root(options);
         var directory = Path.Combine(Path.GetTempPath(), "cmg-frames");
         var result = root.Parse(["--gif-dither", "sierra", "--gif-palette", "local", "--gif-colors", "144", "--keep-frames", directory,
-            "--gif-crop", "#panel", "--gif-crop-padding", "16", "--gif-scale", "0.5", "--gif-max-width", "640", "--gif-max-height", "480", "--gif-debug", "--gif-accessibility"]);
+            "--gif-crop", "#panel", "--gif-crop-padding", "16", "--gif-scale", "0.5", "--gif-max-width", "640", "--gif-max-height", "480", "--gif-debug", "--gif-accessibility", "--gif-event-captions"]);
 
         Assert.True(options.TryParse(result, out var encoding, out var error), error);
         Assert.Equal(GifDitherMode.Sierra, encoding.Dither);
@@ -25,6 +25,7 @@ public sealed class GifEncodingCliOptionsTests
         Assert.True(encoding.Diagnostics?.Context);
         Assert.True(encoding.Diagnostics?.Target);
         Assert.True(encoding.Accessibility?.ContrastWarnings);
+        Assert.True(encoding.EventCaptions?.Uploads);
     }
 
     [Theory]
@@ -49,6 +50,6 @@ public sealed class GifEncodingCliOptionsTests
     private static RootCommand Root(GifEncodingCliOptions options) => new()
     {
         Options = { options.Dither, options.Palette, options.Colors, options.KeepFrames, options.Crop,
-            options.CropPadding, options.Scale, options.MaxWidth, options.MaxHeight, options.Debug, options.Accessibility }
+            options.CropPadding, options.Scale, options.MaxWidth, options.MaxHeight, options.Debug, options.Accessibility, options.EventCaptions }
     };
 }

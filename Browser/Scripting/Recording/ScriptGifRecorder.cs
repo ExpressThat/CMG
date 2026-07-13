@@ -125,38 +125,46 @@ public sealed partial class ScriptGifRecorder : IDisposable
         }
 
         var name = action.Name.ToLowerInvariant();
+        var eventCaption = ShowEventCaption(action, actionOutput ?? []);
 
-        if (name is "caption" or "showmessagebar" && CaptureCaptionTimeline(action))
+        try
         {
-            return;
-        }
+            if (name is "caption" or "showmessagebar" && CaptureCaptionTimeline(action))
+            {
+                return;
+            }
 
-        if (name is "click" or "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "tap" or "touchtap" or "download" or "frameclick")
+            if (name is "click" or "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "tap" or "touchtap" or "download" or "frameclick")
+            {
+                CaptureClickPulseFrames(action);
+                CapturePostClickHoldFrame(action);
+                return;
+            }
+
+            if (IsNavigationAction(name))
+            {
+                CaptureNavigationHoldFrame(action);
+                return;
+            }
+
+            if (IsAssertionAction(name))
+            {
+                if (!eventCaption) CaptureAssertionCaption(action, actionOutput ?? []);
+                CaptureAssertionHoldFrame(action);
+                return;
+            }
+
+            if (name is "set")
+            {
+                return;
+            }
+
+            CaptureHoldFrame(action);
+        }
+        finally
         {
-            CaptureClickPulseFrames(action);
-            CapturePostClickHoldFrame(action);
-            return;
+            if (eventCaption) RemoveEventCaption();
         }
-
-        if (IsNavigationAction(name))
-        {
-            CaptureNavigationHoldFrame(action);
-            return;
-        }
-
-        if (IsAssertionAction(name))
-        {
-            CaptureAssertionCaption(action, actionOutput ?? []);
-            CaptureAssertionHoldFrame(action);
-            return;
-        }
-
-        if (name is "set")
-        {
-            return;
-        }
-
-        CaptureHoldFrame(action);
     }
 
     public void CaptureTypingFrame()

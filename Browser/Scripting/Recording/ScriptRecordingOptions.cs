@@ -42,5 +42,7 @@ public sealed record ScriptRecordingOptions(
 
     public GifAccessibilityOptions EffectiveAccessibility => Accessibility ?? Encoding?.Accessibility ?? new();
 
+    public GifEventCaptionOptions EffectiveEventCaptions => Encoding?.EventCaptions ?? new();
+
     public int FrameDelayCentiseconds => Math.Max(1, (FrameDelayMilliseconds + 9) / 10);
 }

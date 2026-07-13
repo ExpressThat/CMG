@@ -151,25 +151,6 @@ public sealed partial class CmgVisualSegmentExecutor
                 continue;
             }
 
-            if (action.Kind.Equals("uploadFiles", StringComparison.OrdinalIgnoreCase))
-            {
-                var flush = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options);
-                if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
-                {
-                    return Fail(test, output, error, gifs, steps, gifQualities);
-                }
-
-                var step = uploadRunner.Run(action, remoteDebuggingUrl, automationClient);
-                output.AddRange(step.Output);
-                steps.Add(step);
-                if (!step.Success)
-                {
-                    return Fail(test, output, step.Error, gifs, steps, gifQualities);
-                }
-
-                continue;
-            }
-
             var lines = suppressGifBlocks && IsRecordingBlock(action.Kind)
                 ? lowerer.LowerRecordingBlock(action)
                 : lowerer.Lower(action);

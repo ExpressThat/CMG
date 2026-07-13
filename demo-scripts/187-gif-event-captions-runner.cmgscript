@@ -1,0 +1,17 @@
+test "records event outcomes" {
+  navigate "C:/Projects/CMG/index.html"
+  setContent "<style>html,body{margin:0;background:#fff}main{padding:48px;font:16px system-ui}input{display:block;margin:18px 0}</style><main><h1>Runner event evidence</h1><input id='attachment' type='file'><p id='status'>Ready</p></main>"
+  captureDialogs
+  onDialog dismiss
+  evaluate "confirm('Discard draft?')"
+  waitForDialog "Discard draft?"
+  captureConsole
+  evaluate "console.info('private runner payload')"
+  waitForConsole "private runner payload" level=info
+  intercept "/api/runner-evidence" status=201 body="created"
+  evaluate "fetch('/api/runner-evidence', { method: 'POST' }).then(response => response.text())"
+  waitForResponse "/api/runner-evidence" method=POST status=201 contains=created
+  uploadFiles "#attachment" "demo-scripts/fixtures/event-evidence.txt"
+  evaluate "document.querySelector('#status').textContent = 'Complete'"
+  expectText "#status" "Complete"
+}
