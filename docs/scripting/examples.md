@@ -729,6 +729,15 @@ cmg run demo-scripts\221-gif-auto-captions-cli-runner.cmgscript --gif demo-outpu
 
 `{step}` exposes current lexical step/macro/loop context and `{assertion}` identifies assertion actions without including expected or entered values. Supplying `--caption-template` enables narration even when `--auto-captions` is omitted. Both options are inert without recording.
 
+## Apply Whole-Run Privacy Defaults
+
+```powershell
+cmg browser control script --file demo-scripts\222-gif-cli-redaction.cmgscript --gif demo-output\222-redacted.gif --gif-redact "#email" --gif-blur ".token" --gif-auto-redact none --gif-redaction-safety strict
+cmg run demo-scripts\223-gif-cli-redaction-runner.cmgscript --gif demo-output\223-redacted --gif-mask "#email" --gif-blur ".token" --gif-auto-redact none --gif-redaction-safety strict
+```
+
+Solid and blur rules combine. Repeat an option for multiple selectors. The same defaults can be stored as root/project `gifSettings.redact`, `mask`, and `blur` arrays. Rules are applied only around frame capture and create no page overlays or virtual pointer without recording.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

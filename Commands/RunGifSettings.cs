@@ -20,7 +20,12 @@ internal sealed record RunGifSettings(
     string? CaptionSeverity = null,
     string? CaptionSize = null,
     bool? AutoCaptions = null,
-    string? CaptionTemplate = null)
+    string? CaptionTemplate = null,
+    IReadOnlyList<string>? Redact = null,
+    IReadOnlyList<string>? Mask = null,
+    IReadOnlyList<string>? Blur = null,
+    string? AutoRedact = null,
+    string? RedactionSafety = null)
 {
     public static RunGifSettings Empty { get; } = new();
 
@@ -44,5 +49,10 @@ internal sealed record RunGifSettings(
         child.CaptionSeverity ?? CaptionSeverity,
         child.CaptionSize ?? CaptionSize,
         child.AutoCaptions ?? AutoCaptions,
-        child.CaptionTemplate ?? CaptionTemplate);
+        child.CaptionTemplate ?? CaptionTemplate,
+        child.Redact ?? Redact,
+        child.Mask ?? Mask,
+        child.Blur ?? Blur,
+        child.AutoRedact ?? AutoRedact,
+        child.RedactionSafety ?? RedactionSafety);
 }

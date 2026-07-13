@@ -90,6 +90,23 @@ public sealed class BrowserScriptRunnerGifRedactionTests
     }
 
     [Fact]
+    public void EncodingDefaults_ApplyWholeRunRedactionRules()
+    {
+        using var artifact = new TempGifArtifact();
+        var client = new FakeAutomationClient();
+        var redaction = new GifRedactionOptions([
+            new GifRedactionRule("cli-blur-1", "#secret", GifRedactionStyle.Blur, "#111827", "[redacted]", 0)
+        ], GifAutoRedactionMode.None, Strict: true);
+
+        var result = Runner().RunText("caption \"safe\"", "debug", client, artifact.Gif,
+            gifEncoding: new GifEncodingOptions(Redaction: redaction));
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("#secret", StringComparison.Ordinal) && expression.Contains("blur", StringComparison.Ordinal));
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("GIF redaction safety blocked capture", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void InvalidRedactionStyleExplainsAcceptedValues()
     {
         using var artifact = new TempGifArtifact();

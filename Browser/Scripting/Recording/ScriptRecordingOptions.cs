@@ -38,7 +38,7 @@ public sealed record ScriptRecordingOptions(
 
     public GifFramingOptions EffectiveFraming => Framing ?? Encoding?.Framing ?? new();
 
-    public GifRedactionOptions EffectiveRedaction => Redaction ?? new();
+    public GifRedactionOptions EffectiveRedaction => Redaction ?? Encoding?.Redaction ?? new();
 
     public GifAccessibilityOptions EffectiveAccessibility => Accessibility ?? Encoding?.Accessibility ?? new();
 

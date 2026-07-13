@@ -20,12 +20,14 @@ public sealed class RunCommandBuilderGifConfigTests
             "maxWidth": 900, "maxHeight": 700, "viewport": "800x600", "pixelRatio": 1,
             "captionStyle": "teaching", "captionPosition": "top",
             "captionSeverity": "warning", "captionSize": "large",
-            "autoCaptions": true, "captionTemplate": "{step}: {action}"
+            "autoCaptions": true, "captionTemplate": "{step}: {action}",
+            "redact": ["#root-secret"], "blur": [".token"],
+            "autoRedact": "sensitive", "redactionSafety": "strict"
           },
           "projects": [{
             "name": "visual", "gifSettings": {
               "quality": "highest", "pointerSpeed": "fast", "frameDelay": 120,
-              "cropPadding": 24, "captionPosition": "bottom"
+              "cropPadding": 24, "captionPosition": "bottom", "mask": ["#project-secret"]
             }
           }]
         }
@@ -33,7 +35,7 @@ public sealed class RunCommandBuilderGifConfigTests
         var service = new CapturingRunService();
 
         var exit = BuildRoot(service).Parse(
-            $"run flows --config \"{config}\" --project visual --pointer-duration 250 --gif-scale 0.75 --caption-style qa").Invoke();
+            $"run flows --config \"{config}\" --project visual --pointer-duration 250 --gif-scale 0.75 --caption-style qa --gif-redact #cli-secret --gif-auto-redact none").Invoke();
 
         Assert.Equal(0, exit);
         var options = Assert.IsType<CmgRunOptions>(service.Options);
@@ -57,6 +59,11 @@ public sealed class RunCommandBuilderGifConfigTests
         Assert.Equal(800, framing.ViewportWidth);
         Assert.Equal(600, framing.ViewportHeight);
         Assert.Equal(1, framing.PixelRatio);
+        var redaction = Assert.IsType<CMG.Browser.Scripting.Recording.GifRedactionOptions>(options.GifEncoding?.Redaction);
+        Assert.Equal(CMG.Browser.Scripting.Recording.GifAutoRedactionMode.None, redaction.Auto);
+        Assert.True(redaction.Strict);
+        Assert.Equal(["#cli-secret", "#project-secret", ".token"], redaction.EffectiveRules.Select(rule => rule.Locator).ToArray());
+        Assert.Equal(CMG.Browser.Scripting.Recording.GifRedactionStyle.Blur, redaction.EffectiveRules[2].Style);
     }
 
     [Fact]

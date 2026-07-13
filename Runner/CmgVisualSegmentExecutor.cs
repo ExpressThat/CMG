@@ -82,7 +82,7 @@ public sealed partial class CmgVisualSegmentExecutor
                     !TryGifNavigationHoldFor(action, options.HoldAfterNavigationMilliseconds, out var blockNavigationHold, out error) ||
                     !TryGifAssertionHoldFor(action, options.HoldAfterAssertionMilliseconds, out var blockAssertionHold, out error) ||
                     !TryGifTimelineFor(action, gif, options, out var blockTimeline, out error) ||
-                    !TryGifRedactionFor(action, options.GifRedaction, out var blockRedaction, out error) ||
+                    !TryGifRedactionFor(action, options.GifRedaction ?? options.GifEncoding?.Redaction, out var blockRedaction, out error) ||
                     !TryGifAccessibilityFor(action, options.GifAccessibility, out var blockAccessibility, out error) ||
                     !TryGifFrameDelayFor(action, options.FrameDelayMilliseconds, out var blockFrameDelay, out error))
                 {

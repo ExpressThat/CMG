@@ -373,6 +373,8 @@ dotnet run -- --firefox browser close
 - `gif-settings.example.json`: Root/project GIF settings used by demo 219.
 - `220-gif-auto-captions-cli.cmgscript`: Direct-script whole-run automatic captions with structural template context.
 - `221-gif-auto-captions-cli-runner.cmgscript`: Runner form of whole-run automatic captions and structural context.
+- `222-gif-cli-redaction.cmgscript`: Direct whole-run solid and blur redaction defaults.
+- `223-gif-cli-redaction-runner.cmgscript`: Runner form of whole-run privacy masking.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

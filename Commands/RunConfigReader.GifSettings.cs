@@ -32,7 +32,12 @@ internal static partial class RunConfigReader
             StringOption(value, "captionSeverity"),
             StringOption(value, "captionSize"),
             BoolOption(value, "autoCaptions"),
-            StringOption(value, "captionTemplate"));
+            StringOption(value, "captionTemplate"),
+            StringArrayOption(value, "redact"),
+            StringArrayOption(value, "mask"),
+            StringArrayOption(value, "blur"),
+            StringOption(value, "autoRedact"),
+            StringOption(value, "redactionSafety"));
     }
 
     private static double? DoubleOption(JsonElement root, string name) =>
@@ -42,10 +47,19 @@ internal static partial class RunConfigReader
                 ? number
                 : throw new RunConfigException($"Run config option 'gifSettings.{name}' must be a number.");
 
+    private static IReadOnlyList<string>? StringArrayOption(JsonElement root, string name)
+    {
+        if (!root.TryGetProperty(name, out var value)) return null;
+        if (value.ValueKind is not JsonValueKind.Array || value.EnumerateArray().Any(item => item.ValueKind is not JsonValueKind.String))
+            throw new RunConfigException($"Run config option 'gifSettings.{name}' must be an array of strings.");
+        return value.EnumerateArray().Select(item => item.GetString()!).ToArray();
+    }
+
     private static readonly HashSet<string> GifSettingNames = new(StringComparer.OrdinalIgnoreCase)
     {
         "quality", "pointerDuration", "pointerSpeed", "pointerEasing", "clickPulse", "fps", "frameDelay",
         "crop", "cropPadding", "scale", "maxWidth", "maxHeight", "viewport", "pixelRatio",
-        "captionStyle", "captionPosition", "captionSeverity", "captionSize", "autoCaptions", "captionTemplate"
+        "captionStyle", "captionPosition", "captionSeverity", "captionSize", "autoCaptions", "captionTemplate",
+        "redact", "mask", "blur", "autoRedact", "redactionSafety"
     };
 }

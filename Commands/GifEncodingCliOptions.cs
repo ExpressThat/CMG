@@ -35,7 +35,12 @@ internal sealed record GifEncodingCliOptions(
     Option<int?> MouseDownHold,
     Option<string?> Background,
     Option<string?> GradientMode,
-    Option<bool> HighContrastPalette)
+    Option<bool> HighContrastPalette,
+    Option<string[]> Redact,
+    Option<string[]> Mask,
+    Option<string[]> Blur,
+    Option<string?> AutoRedact,
+    Option<string?> RedactionSafety)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -71,7 +76,12 @@ internal sealed record GifEncodingCliOptions(
             new Option<int?>("--mouse-down-hold") { Description = "Pressed-pointer hold after mouseDown, from 0 to 60000 milliseconds." },
             new Option<string?>("--gif-background") { Description = "Flatten transparent pixels onto this CSS color." },
             new Option<string?>("--gif-gradient-mode") { Description = $"GIF color tuning: {GifColorOptions.GradientModeValues}." },
-            new Option<bool>("--gif-high-contrast-palette") { Description = "Increase frame contrast and saturation for accessibility review." });
+            new Option<bool>("--gif-high-contrast-palette") { Description = "Increase frame contrast and saturation for accessibility review." },
+            new Option<string[]>("--gif-redact") { Description = "Solid-mask a selector in every GIF frame. Repeatable." },
+            new Option<string[]>("--gif-mask") { Description = "Alias-style solid mask selector. Repeatable." },
+            new Option<string[]>("--gif-blur") { Description = "Blur a selector in every GIF frame. Repeatable." },
+            new Option<string?>("--gif-auto-redact") { Description = "Automatic redaction: passwords, sensitive, or none." },
+            new Option<string?>("--gif-redaction-safety") { Description = "Redaction safety: standard or strict." });
     }
 
     public bool TryParse(ParseResult result, RunGifSettings? settings, out GifEncodingOptions encoding, out string? error)
@@ -99,6 +109,7 @@ internal sealed record GifEncodingCliOptions(
         if (!GifColorOptions.TryParse(
             result.GetValue(Background), result.GetValue(GradientMode), result.GetValue(HighContrastPalette),
             out var color, out error)) return false;
+        if (!TryRedaction(result, settings, out var redaction, out error)) return false;
         encoding = encoding with
         {
             Framing = framing,
@@ -108,7 +119,8 @@ internal sealed record GifEncodingCliOptions(
             TitleCards = titleCards,
             CaptureOptimization = captureOptimization,
             PointerEvidence = pointerEvidence,
-            Color = color
+            Color = color,
+            Redaction = redaction
         };
         return true;
     }
@@ -121,4 +133,31 @@ internal sealed record GifEncodingCliOptions(
 
     private static bool Provided(ParseResult result, Option option) =>
         result.Tokens.Any(token => option.Aliases.Prepend(option.Name).Contains(token.Value, StringComparer.Ordinal));
+
+    private bool TryRedaction(ParseResult result, RunGifSettings? settings, out GifRedactionOptions redaction, out string? error)
+    {
+        try
+        {
+            var automatic = Provided(result, AutoRedact) ? result.GetValue(AutoRedact) : settings?.AutoRedact;
+            var safety = Provided(result, RedactionSafety) ? result.GetValue(RedactionSafety) : settings?.RedactionSafety;
+            var parsed = GifRedactionOptions.FromOptions(new Dictionary<string, string>
+            {
+                ["autoRedact"] = automatic ?? "passwords", ["redactionSafety"] = safety ?? "standard"
+            }, "GIF");
+            var rules = Rules(Values(result, Redact, settings?.Redact), "redact", GifRedactionStyle.Solid)
+                .Concat(Rules(Values(result, Mask, settings?.Mask), "mask", GifRedactionStyle.Solid))
+                .Concat(Rules(Values(result, Blur, settings?.Blur), "blur", GifRedactionStyle.Blur)).ToArray();
+            redaction = parsed with { Rules = rules }; error = null; return true;
+        }
+        catch (CMG.Browser.Scripting.ScriptExecutionException exception)
+        { redaction = new(); error = exception.Message; return false; }
+    }
+
+    private static IReadOnlyList<string> Values(ParseResult result, Option<string[]> option, IReadOnlyList<string>? fallback) =>
+        Provided(result, option) ? result.GetValue(option) ?? [] : fallback ?? [];
+
+    private static IEnumerable<GifRedactionRule> Rules(IReadOnlyList<string> selectors, string prefix, GifRedactionStyle style) =>
+        selectors.Select((selector, index) => string.IsNullOrWhiteSpace(selector)
+            ? throw new CMG.Browser.Scripting.ScriptExecutionException($"GIF option --gif-{prefix} requires a non-empty selector.")
+            : new GifRedactionRule($"cli-{prefix}-{index + 1}", selector, style, "#111827", "[redacted]", 0));
 }

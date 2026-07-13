@@ -52,6 +52,11 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-background <color>`: Flatten transparent capture pixels onto a named, hex, `rgb[a]`, or `hsl[a]` color.
 - `--gif-gradient-mode <smooth|text>`: Prefer smooth-gradient or crisp-text defaults. Explicit encoder options still win.
 - `--gif-high-contrast-palette`: Increase contrast and saturation for accessibility review. This intentionally changes source colors.
+- `--gif-redact <selector>`: Solid-mask a selector in every command-level GIF frame. Repeatable.
+- `--gif-mask <selector>`: Alias-style repeatable solid mask for `--gif-redact`.
+- `--gif-blur <selector>`: Blur a selector in every command-level GIF frame. Repeatable and combinable with solid masks.
+- `--gif-auto-redact <passwords|sensitive|none>`: Automatic whole-run privacy masking. Defaults to `passwords`.
+- `--gif-redaction-safety <standard|strict>`: Strict mode blocks capture if sensitive content remains visibly unmasked.
 - `--keep-frames <directory>`: Keep each final pre-quantization PNG as `frame-NNNN.png` in this directory. Cropping and scaling are already applied.
 - `--gif-crop <selector-or-rich-locator>`: Clip each command-level GIF frame to current target bounds.
 - `--gif-crop-padding <0..2000>`: Add CSS-pixel context around `--gif-crop`; requires `--gif-crop`.
@@ -155,6 +160,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.
 - On failure, command-level GIF recording captures one extra final-state hold frame before writing the partial GIF unless `--gif-hold-on-failure 0` is used.
 - `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, encoder controls, framing controls, and recorder timing settings.
+- Whole-run redaction defaults apply before every screenshot and are removed immediately afterward. Timeline `redactions` records configured rules and audit events without recording secret values. Redaction options are inert without `--gif` and never inject a virtual pointer by themselves.
 - `--gif-debug` emits `GIF_DEBUG <path>` after writing the debug sidecar. Each frame record includes timing, action, source line, nested scope, target selector, and virtual-pointer coordinates.
 - Every completed recording emits `GIF_CAPTURE_STATS` with frame, optimization, blank-frame, ICC/CICP/gamma, profile-change, memory, and timing counts. `GIF_WARN_UNCHANGED`, `GIF_WARN_BLANK`, and `GIF_WARN_COLOR_PROFILE` explain evidence-quality risks without changing the exit code.
 - Active recordings also emit `GIF_WARN_MULTIPLE_TARGETS`, `GIF_WARN_TINY_TARGET`, `GIF_WARN_SCROLLED`, and `GIF_WARN_NON_VISUAL` when selector or action choices weaken the resulting evidence. These warnings never fail the script and are not evaluated when GIF recording is inactive.

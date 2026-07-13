@@ -249,7 +249,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add frame recording inside iframes with visible page context.
 - Implemented: active recorders center pointer-targeted elements before coordinate resolution; non-recorded scripts are unchanged.
 - Add safe-area padding so pointer/captions are not clipped.
-- Implemented in the DSL: blur, solid, or replacement masks on recording scopes/blocks and individual actions. CLI repeatable `--gif-mask` / `--gif-blur` coarse defaults remain open.
+- Implemented: blur, solid, and replacement DSL masks plus repeatable whole-run `--gif-redact`, `--gif-mask`, and `--gif-blur` coarse defaults.
 - Implemented: `maskGif` / `redactGif` / `redactText` and `unmaskGif` / `unredactGif` recording-only actions with live locator resolution.
 - Add redaction presets for emails, tokens, passwords, and credit-card-like text.
 - Add live element highlight outlines that follow the target through the action.
@@ -394,8 +394,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `redactText "<selector>"` action for frame-only GIF redaction.
 - Implemented: automatic password input masking is the recording default.
 - Implemented: `autoRedact=sensitive` adds automatic token-like text and value masking.
-- Implemented in the DSL: semicolon-separated `redact="<selector>"` defaults and repeatable persistent redaction actions. CLI repeatable `--gif-redact <selector>` remains open as a coarse whole-run safety default.
-- Add per-project redaction config.
+- Implemented: semicolon-separated DSL redaction, persistent redaction actions, and repeatable whole-run `--gif-redact <selector>` safety defaults.
+- Implemented: root/project `gifSettings` supports solid/blur selector arrays, automatic redaction mode, and strict safety defaults with per-property CLI overrides.
 - Implemented: timeline JSON includes redaction configuration and frame/time audit entries without secret content.
 - Implemented: `redactionSafety=strict` refuses unsafe password-field capture without retrying an unsafe failure frame.
 - Implemented: blur, solid mask, and replacement text redaction styles.

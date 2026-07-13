@@ -1,0 +1,7 @@
+describe "privacy-safe evidence" {
+  test "whole-run masks" {
+    setContent "<main style='box-sizing:border-box;min-height:560px;padding:32px;background:#f8fafc;color:#172033'><h1>Privacy-safe evidence</h1><p id='email'>ada@example.test</p><p class='token'>github_pat_demo_secret</p><button id='save' onclick='document.querySelector(\"#status\").textContent=\"Saved\"'>Save</button><output id='status'>Ready</output></main>"
+    click "#save"
+    assertText "#status" "Saved"
+  }
+}

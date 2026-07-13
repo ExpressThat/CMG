@@ -21,6 +21,8 @@ For sensitive runs, `--no-gif` or `CMG_DISABLE_GIF=1` disables all whole-run and
 
 Runner matrices can share visual defaults through root and project `gifSettings` in the run config. Root values cascade into the selected project, explicit CLI GIF options override individual project properties, and suite/test declarations plus DSL scopes/blocks/actions remain more specific. Quality, pointer movement, click pulse, frame timing, crop/framing, viewport/pixel ratio, and caption presentation are supported. See demo 219 and [`cmg run`](../commands/run.md) for the complete schema.
 
+Whole-run privacy defaults use repeatable `--gif-redact`, `--gif-mask`, and `--gif-blur`, with `--gif-auto-redact` and `--gif-redaction-safety` controlling automatic and strict behavior. Root/project config uses `redact`, `mask`, and `blur` string arrays plus `autoRedact` and `redactionSafety`. CLI values replace the matching config array while unrelated rule families continue to inherit. Redactions are capture-only and never exist without an active recorder. See demos 222 and 223.
+
 - CMG captures the visible page viewport.
 - A frame is captured after visual actions. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
 - Navigation waits such as `waitForNetworkIdle` are logged and traced but do not move the virtual pointer or add pointer motion frames.
