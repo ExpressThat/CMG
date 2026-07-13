@@ -328,6 +328,8 @@ dotnet run -- --firefox browser close
 - `175-gif-redaction-runner.cmgscript`: Demonstrates the same privacy-safe GIF behavior in the structured runner DSL.
 - `176-gif-redaction-strict-failure.cmgscript`: Intentionally fails before capturing a visible unmasked password field when strict redaction safety is enabled.
 - `177-agent-browser-lease.ps1`: Demonstrates opt-in long idle leases, status, activity renewal, explicit keepalive, disablement, and guaranteed demo cleanup on a separate browser port.
+- `178-gif-accessibility-evidence.cmgscript`: Demonstrates safe key labels, amplified focus evidence, role/name callouts, high-contrast evidence, and child overrides in a direct GIF block.
+- `179-gif-accessibility-evidence-runner.cmgscript`: Demonstrates the same accessibility evidence controls in a structured runner test.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

@@ -471,6 +471,20 @@ See `demo-scripts/171-gif-narration.cmgscript`. Demo 172 intentionally fails:
 cmg run demo-scripts\172-gif-failure-narration-runner.cmgscript --gif demo-output\failure-narration --gif-hold-on-failure 1400
 ```
 
+## Accessibility Evidence
+
+Record keyboard labels, the actual focus target, and control role/name evidence without exposing text-entry values:
+
+```text
+gif "accessible form" accessibilityEvidence=true {
+  press "Tab"
+  fill "#name" "Ada"
+  click "#submit"
+}
+```
+
+Use `showKeystrokes { ... }` inside a command-level GIF when only keyboard labels are needed. See `demo-scripts/178-gif-accessibility-evidence.cmgscript` and `demo-scripts/179-gif-accessibility-evidence-runner.cmgscript`.
+
 ## Common Next Steps
 
 | Need | Where To Go |

@@ -38,6 +38,14 @@ public sealed partial class BrowserScriptRunner
             case "withrecording":
                 ExecuteRecordingScope(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
+            case "showkeystrokes":
+                var keystrokeOptions = new Dictionary<string, string>(action.Options, StringComparer.OrdinalIgnoreCase)
+                {
+                    ["showKeystrokes"] = "true"
+                };
+                ExecuteRecordingScope(remoteDebuggingUrl, automationClient,
+                    action with { Name = "recording", Options = keystrokeOptions }, context, recorder, output);
+                return output;
             case "hidefromgif":
             case "cutgif":
             case "speedupgif":
@@ -125,6 +133,7 @@ public sealed partial class BrowserScriptRunner
         name.Equals("frameLocator", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("recording", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("withRecording", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("showKeystrokes", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("hideFromGif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("cutGif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("speedUpGif", StringComparison.OrdinalIgnoreCase) ||

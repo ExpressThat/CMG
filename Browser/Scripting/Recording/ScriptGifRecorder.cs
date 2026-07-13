@@ -36,6 +36,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
     private int captureSuspensionDepth;
     private double playbackRate = 1d;
     private ScreenshotClip? lastCropClip;
+    private BrowserScriptAction? activeAction;
 
     public ScriptGifRecorder(
         IBrowserAutomationClient devToolsClient,
@@ -80,6 +81,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
                 frameSink.DurationMilliseconds);
         }
         ConfigureActionRedactions(action);
+        activeAction = action;
         var name = action.Name.ToLowerInvariant();
         CaptureConfiguredTitleCards(action);
         ApplyAutoCaption(action);
@@ -203,6 +205,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
         actionRedactions.Clear();
         activeAutoRedaction = options.EffectiveRedaction.Auto;
         activeStrictRedaction = options.EffectiveRedaction.Strict;
+        activeAction = null;
     }
 
     private static bool IsClickAction(string name) =>

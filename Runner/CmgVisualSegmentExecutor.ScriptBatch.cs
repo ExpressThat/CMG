@@ -29,7 +29,8 @@ public sealed partial class CmgVisualSegmentExecutor
         string? gifTimelinePath,
         int frameDelayMilliseconds = CMG.Browser.Scripting.Recording.ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
         CMG.Browser.Scripting.Recording.GifEncodingOptions? gifEncoding = null,
-        CMG.Browser.Scripting.Recording.GifRedactionOptions? gifRedaction = null)
+        CMG.Browser.Scripting.Recording.GifRedactionOptions? gifRedaction = null,
+        CMG.Browser.Scripting.Recording.GifAccessibilityOptions? gifAccessibility = null)
     {
         if (lines.Count is 0)
         {
@@ -40,7 +41,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var map = new Dictionary<int, int>(lineMap);
         lines.Clear();
         lineMap.Clear();
-        return new CmgScriptBatchRun(MapScriptResult(scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts, baseUrl, gifQuality: gifQuality, pointerMotion: pointerMotion, pointerVisual: pointerVisual, showPointer: showPointer, captionOptions: captionOptions, clickPulse: clickPulse, holdAfterActionMilliseconds: holdAfterActionMilliseconds, holdOnFailureMilliseconds: holdOnFailureMilliseconds, preClickHoldMilliseconds: preClickHoldMilliseconds, postClickHoldMilliseconds: postClickHoldMilliseconds, holdAfterNavigationMilliseconds: holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds: holdAfterAssertionMilliseconds, gifTimelinePath: gifTimelinePath, frameDelayMilliseconds: frameDelayMilliseconds, gifEncoding: gifEncoding, gifRedaction: gifRedaction), map), map);
+        return new CmgScriptBatchRun(MapScriptResult(scriptRunner.RunText(script, remoteDebuggingUrl, automationClient, gif, trace: null, timeouts, baseUrl, gifQuality: gifQuality, pointerMotion: pointerMotion, pointerVisual: pointerVisual, showPointer: showPointer, captionOptions: captionOptions, clickPulse: clickPulse, holdAfterActionMilliseconds: holdAfterActionMilliseconds, holdOnFailureMilliseconds: holdOnFailureMilliseconds, preClickHoldMilliseconds: preClickHoldMilliseconds, postClickHoldMilliseconds: postClickHoldMilliseconds, holdAfterNavigationMilliseconds: holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds: holdAfterAssertionMilliseconds, gifTimelinePath: gifTimelinePath, frameDelayMilliseconds: frameDelayMilliseconds, gifEncoding: gifEncoding, gifRedaction: gifRedaction, gifAccessibility: gifAccessibility), map), map);
     }
 
     private static ScriptRunResult MapScriptResult(ScriptRunResult result, IReadOnlyDictionary<int, int> lineMap)

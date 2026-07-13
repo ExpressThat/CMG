@@ -30,6 +30,7 @@ cmg run flow.cmgscript --gif demo-output\runner-gifs --gif-quality highest
 - Rich locators such as `getByLabel=`, `getByRole=`, `nth=`, `has=`, `hasNot=`, `hasText=`, `hasNotText=`, `visible=`, `or=`, `and=`, `strict=`, `inside=`, `closest=`, `parent=`, `next=`, `previous=`, `shadow=`, and `shadowText=` resolve before pointer movement. Their marker keeps a live resolver, so dynamically remounted elements are reacquired during the same recorded action instead of retaining a disconnected DOM node.
 - Low-level `mouseMove`, `mouseDown`, and `mouseUp` actions also move the virtual pointer in GIF mode and dispatch page-facing pointer/mouse events.
 - Low-level keyboard actions such as `press`, `keyboardShortcut`, `shortcut`, `hotkey`, `keyDown`, `keyUp`, and `insertText` do not move the pointer, but their output and failures are recorded. Use `step` or `caption` when a GIF should explain held modifier keys, `press delay=`, or inserted text.
+- Accessibility evidence can amplify the real focus ring, show a control's derived role/name, and display safe key labels. These overlays exist only while a frame is captured and never change the application state seen by later actions.
 - Every GIF pointer movement dispatches browser movement and hover events while it moves. This includes automatic movement before `click`, `tap`, `touchTap`, `type`, `clear`, `hover`, `select`, and `dragAndDrop`, not only explicit drag movement.
 - Click actions dispatch one browser activation and then show a visual-only click pulse. The pulse and caption path never call the target, including label/control targets. `tap` and `touchTap` use CMG's touch pointer ring so touch-style flows read differently from mouse clicks.
 - Type actions move to the input, click/focus it, and capture frames as characters appear.
@@ -86,6 +87,11 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `captionTemplate=<template>`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
 - `captionDuration=<milliseconds>`, `fadeIn=<milliseconds>`, `fadeOut=<milliseconds>`: Deterministic caption timeline defaults.
 - `assertionCaptions=<true|false>` / `failureCaptions=<true|false>`: Automatic evidence-caption defaults. Both default to enabled.
+- `accessibilityEvidence=<true|false>`: Enables keystroke, focus, accessible-name, and high-contrast evidence together. Defaults to `false`.
+- `showKeystrokes=<true|false>`: Shows keys and shortcuts. Text-entry actions show `Text input`; CMG never copies the entered value into the overlay.
+- `focusEvidence=<true|false>`: Draws an amplified ring around the actual `document.activeElement` during capture.
+- `accessibleNames=<true|false>`: Labels a targeted or focused control with its derived role and accessible name.
+- `highContrast=<true|false>`: Uses yellow/black high-contrast evidence borders. Child actions can override the preset.
 - `intro=<text>` / `outro=<text>`: Full-viewport title cards captured before the first child and at finalization.
 - `introDuration=<milliseconds>` / `outroDuration=<milliseconds>`: Title-card holds. Defaults to `1200` and must be greater than zero.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
@@ -325,6 +331,31 @@ gif "failure evidence" holdOnFailure=1800 {
 ```
 
 When the wrapped block, direct script, or test fails, CMG captures one extra final-state frame before writing the partial GIF. This only happens when a GIF recorder is active; non-GIF runs do not inject the virtual pointer or capture failure frames.
+
+## Accessibility Evidence
+
+Use the umbrella preset for keyboard and accessibility reviews:
+
+```text
+gif "keyboard checkout" accessibilityEvidence=true {
+  press "Tab"
+  fill "#email" "reviewer@example.test"
+  click "#continue" accessibleNames=true
+}
+```
+
+Use `showKeystrokes { ... }` as a convenience scope when only keyboard labels are needed. It is equivalent to `recording showKeystrokes=true { ... }`:
+
+```text
+showKeystrokes {
+  keyboardShortcut "Control+K"
+  press "Enter"
+}
+```
+
+The scope starts no recording by itself. It affects a surrounding command-level `--gif` or nested `gif` / `recordVideo` / `screencast` recording; without one, its children execute normally with no overlay, screenshot, or virtual pointer. Parent settings are defaults and child actions can override them locally. CMG removes every accessibility node immediately after each browser screenshot, including when capture fails.
+
+See demos 178 and 179 for direct and structured-runner examples.
 
 ## Privacy And Redaction
 

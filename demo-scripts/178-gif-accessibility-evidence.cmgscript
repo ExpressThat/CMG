@@ -1,0 +1,10 @@
+setContent "<style>html,body{margin:0;background:#f8fafc}main{padding:48px;font:16px system-ui}label{display:block;margin:18px 0 6px}input,button{font:inherit;padding:10px 12px}button{margin-top:20px}</style><main><h1>Accessible checkout</h1><label for='email'>Email address</label><input id='email' aria-label='Email address'><button id='continue'>Continue</button><p id='status' aria-live='polite'>Waiting</p></main>"
+
+gif "accessibility evidence" output="demo-output/gif-accessibility-evidence.gif" accessibilityEvidence=true {
+  press "Tab"
+  fill "#email" "reviewer@example.test"
+  press "Tab"
+  click "#continue" accessibleNames=true
+  evaluate "document.querySelector('#status').textContent = 'Complete'"
+  expectText "#status" "Complete"
+}

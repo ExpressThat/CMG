@@ -37,4 +37,31 @@ public sealed partial class CmgVisualSegmentExecutor
         name.Equals("gif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("recordVideo", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("screencast", StringComparison.OrdinalIgnoreCase);
+
+    private static bool TryGifAccessibilityFor(
+        CmgNode action,
+        GifAccessibilityOptions? defaults,
+        out GifAccessibilityOptions accessibility,
+        out string? error)
+    {
+        error = null;
+        try
+        {
+            var parsed = GifAccessibilityOptions.FromOptions(action.Options, "gif option");
+            accessibility = action.Options.ContainsKey("accessibilityEvidence") ? parsed : parsed with
+            {
+                ShowKeystrokes = action.Options.ContainsKey("showKeystrokes") ? parsed.ShowKeystrokes : defaults?.ShowKeystrokes ?? false,
+                FocusEvidence = action.Options.ContainsKey("focusEvidence") ? parsed.FocusEvidence : defaults?.FocusEvidence ?? false,
+                AccessibleNames = action.Options.ContainsKey("accessibleNames") ? parsed.AccessibleNames : defaults?.AccessibleNames ?? false,
+                HighContrast = action.Options.ContainsKey("highContrast") ? parsed.HighContrast : defaults?.HighContrast ?? false
+            };
+            return true;
+        }
+        catch (CMG.Browser.Scripting.ScriptExecutionException exception)
+        {
+            accessibility = defaults ?? new();
+            error = exception.Message;
+            return false;
+        }
+    }
 }

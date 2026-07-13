@@ -293,7 +293,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add `showPointer` and `hidePointer` recording-only actions that skip when no recorder is active, including inside block `dragAndDrop` choreography.
 - Add `pointerStyle` action to change pointer appearance mid-script.
 - Add `highlightTarget` action that coordinates highlight and pointer move.
-- Add `showKeystrokes` block for keyboard-heavy flows.
+- Implemented: add `showKeystrokes` block for keyboard-heavy flows. It is a recording-default scope, skips visual injection without an active recorder, and never renders typed values.
 - Add `showMouseButtons` overlay for low-level mouse scripts.
 - Add `showNetworkActivity` overlay for network-heavy scripts.
 - Add `showConsoleActivity` overlay for console/page-error diagnostics.
@@ -386,15 +386,15 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Accessibility And Review Use Cases
 
-- Add keyboard overlay for keyboard-only flows.
-- Add focus ring amplification for accessibility evidence.
-- Add ARIA role/name captions for clicked controls.
+- Implemented: add keyboard overlay for keyboard-only flows through `showKeystrokes=true` and the `showKeystrokes {}` scope.
+- Implemented: add focus ring amplification for accessibility evidence through `focusEvidence=true`.
+- Implemented: add ARIA role/name captions for targeted or focused controls through `accessibleNames=true`.
 - Add color-contrast warning overlay option.
 - Add reduced-motion recording preset.
 - Add high-contrast pointer preset.
 - Add larger caption text preset.
 - Add screen-reader narration sidecar text file.
-- Add WCAG evidence mode that captures focus order and accessible names.
+- Implemented: add an `accessibilityEvidence=true` preset that captures keyboard labels, focused-element evidence, and accessible role/name callouts with high-contrast styling.
 - Add alt text generation template for GIF artifacts.
 - Add report field for human-written GIF description.
 - Add option to export a step-by-step still image PDF for reviewers who cannot view GIFs.

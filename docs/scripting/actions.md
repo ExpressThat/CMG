@@ -1885,6 +1885,22 @@ Options:
 - `redactPadding`: Extra CSS pixels around each explicit mask, from `0` to `100`.
 - `autoRedact`: Automatic masking mode: `passwords` (default), `sensitive`, or `none`.
 - `redactionSafety`: `standard` (default) or `strict`. Strict mode refuses a frame when any visible password input is not covered.
+- `accessibilityEvidence`: Enables all accessibility evidence overlays for inherited frames.
+- `showKeystrokes`: Shows safe key/chord labels. Text-entry values are never included.
+- `focusEvidence`: Amplifies the actual focused element during frame capture.
+- `accessibleNames`: Shows the targeted or focused control's derived role and name.
+- `highContrast`: Uses high-contrast evidence colors.
+
+### `showKeystrokes`
+
+```text
+showKeystrokes {
+  keyboardShortcut "Control+K"
+  press "Enter"
+}
+```
+
+Convenience alias for `recording showKeystrokes=true { ... }`. It accepts no arguments, requires a child block, and accepts the same scoped recording options as `recording`. It does not start recording. Without command-level `--gif` or a nested recording block, child actions still execute but CMG injects no keyboard overlay or virtual pointer. Text-entry actions display `Text input`, never the entered value.
 
 ### `gif`, `recordVideo`, And `screencast`
 
@@ -1924,6 +1940,7 @@ Records only the wrapped actions when direct `browser control script` or `cmg ru
 Options:
 
 - `output`: Optional GIF path for direct browser-control scripts. Without `output`, CMG writes `<name>.gif` in the current directory.
+- `accessibilityEvidence`, `showKeystrokes`, `focusEvidence`, `accessibleNames`, `highContrast`: Optional accessibility evidence controls. Each accepts `true` or `false`; the umbrella preset enables all four individual behaviors.
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
 - `pointerPath`: Optional default pointer route: `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
 - `dragPath`: Optional default route while the pointer is held during drag movement.

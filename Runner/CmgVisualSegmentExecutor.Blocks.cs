@@ -30,13 +30,14 @@ public sealed partial class CmgVisualSegmentExecutor
         out string? error,
         int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
         GifEncodingOptions? gifEncoding = null,
-        GifRedactionOptions? gifRedaction = null)
+        GifRedactionOptions? gifRedaction = null,
+        GifAccessibilityOptions? gifAccessibility = null)
     {
         var pending = new List<string>();
         var pendingLineMap = new Dictionary<int, int>();
         foreach (var action in actions)
         {
-            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding, gifRedaction, pending, pendingLineMap, output, steps, out error))
+            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding, gifRedaction, gifAccessibility, pending, pendingLineMap, output, steps, out error))
             {
                 if (error is not null)
                 {
@@ -49,7 +50,7 @@ public sealed partial class CmgVisualSegmentExecutor
             AddPending(pending, pendingLineMap, action, lowerer.Lower(action));
         }
 
-        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding, gifRedaction);
+        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding, gifRedaction, gifAccessibility);
         return AppendResult(final.Result, final.LineMap, output, steps, actions.LastOrDefault(), gif, out error);
     }
 
@@ -75,6 +76,7 @@ public sealed partial class CmgVisualSegmentExecutor
         int frameDelayMilliseconds,
         GifEncodingOptions? gifEncoding,
         GifRedactionOptions? gifRedaction,
+        GifAccessibilityOptions? gifAccessibility,
         List<string> pending,
         Dictionary<int, int> pendingLineMap,
         List<string> output,
@@ -87,7 +89,7 @@ public sealed partial class CmgVisualSegmentExecutor
             return false;
         }
 
-        var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding, gifRedaction);
+        var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding, gifRedaction, gifAccessibility);
         if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif, out error))
         {
             return true;
