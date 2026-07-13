@@ -433,11 +433,15 @@ mouseUp "center"
 
 Runs lower-level mouse primitives similar to Playwright and Puppeteer mouse APIs. Unlike `moveMouse`, these actions are available with or without GIF recording. In GIF mode, `mouseMove` uses CMG's virtual pointer movement and frame capture. `mouseDown` and `mouseUp` move the pointer to the target before sending the button event.
 
+In an active recording, `mouseDown` captures a compressed pressed pointer after the real browser down event. `mouseDownHold=<0..60000>` controls that evidence hold and defaults to `500`. `mouseUp` clears the pressed visual after the real release. Without a recorder, neither action injects virtual-pointer or evidence overlays.
+
 Targets use the same forms as `moveMouse`:
 
 - one alias argument: `center`, `top`, `bottom`, `left`, `right`, `topLeft`, `topRight`, `bottomLeft`, or `bottomRight`;
 - `x=<pixels> y=<pixels>` viewport coordinates;
 - selector-edge targeting with `selector=<selector> edge=<edge> inset=<pixels>`.
+
+Recording options include `pointerDuration`, `pointerSpeed`, `pointerEasing`, `pointerContrast`, `targetCallout`, `targetCalloutThreshold`, `focusPulse`, `teleportMarker`, and `mouseDownHold`. Parent recording defaults are inherited and action options override them locally.
 
 Output:
 

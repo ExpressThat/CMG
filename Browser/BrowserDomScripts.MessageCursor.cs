@@ -135,7 +135,7 @@ public static partial class BrowserDomScripts
     {
         if (pulseStyle is null)
         {
-            return string.Empty;
+            return "document.getElementById('__cmg_cursor_pulse')?.remove();";
         }
 
         return pulseStyle is ClickPulseStyle.None

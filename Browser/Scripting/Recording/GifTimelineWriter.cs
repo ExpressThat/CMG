@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace CMG.Browser.Scripting.Recording;
 
-public static class GifTimelineWriter
+public static partial class GifTimelineWriter
 {
     public static string Write(
         string path,
@@ -51,6 +51,7 @@ public static class GifTimelineWriter
         WriteCaptureDiagnostics(writer, sink);
         WriteEncoding(writer, options);
         WriteFraming(writer, options);
+        WritePointerEvidence(writer, options.EffectivePointerEvidence);
         writer.WritePropertyName("frameDelaysMilliseconds");
         writer.WriteStartArray();
         foreach (var delay in sink.FrameDelaysMilliseconds)

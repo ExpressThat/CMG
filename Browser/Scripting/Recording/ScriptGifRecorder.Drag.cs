@@ -72,6 +72,12 @@ public sealed partial class ScriptGifRecorder
         CaptureOptionalHoldFrame(action, "holdAfterMove");
     }
 
+    public void MoveMouseButton(BrowserScriptAction action, bool pressed)
+    {
+        if (remoteDebuggingUrl is null) return;
+        MovePointerTo(ResolveMoveMouseTarget(action), dragging: false, action, "duration", "easing", pressed);
+    }
+
     private static IReadOnlyDictionary<string, string> SourceMoveOptions(BrowserScriptAction action)
     {
         var options = new Dictionary<string, string>(action.Options, StringComparer.OrdinalIgnoreCase);

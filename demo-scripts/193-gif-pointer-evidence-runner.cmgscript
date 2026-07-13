@@ -1,0 +1,11 @@
+test "records precise pointer evidence" {
+  setContent "<style>body{font:16px system-ui;margin:40px}.stage{display:grid;gap:22px;max-width:520px}.dark{background:#111827;color:white;padding:24px}.tiny{width:16px;height:16px;padding:0;border:0;background:#38bdf8}.hold{padding:14px 24px}input{padding:10px;width:280px}</style><main class='stage'><h1>Runner pointer evidence</h1><section class='dark'><button id='tiny' class='tiny' aria-label='Tiny action'></button></section><label>Search <input id='search'></label><button id='hold' class='hold'>Press and hold</button><p id='status'>Ready</p></main>"
+  click "#tiny"
+  fill "#search" "CMG evidence" holdAfterAction=500
+  moveMouse right pointerSpeed=instant
+  pauseGif 1500
+  mouseDown selector="#hold" edge=center mouseDownHold=700
+  mouseUp selector="#hold" edge=center
+  evaluate "document.querySelector('#status').textContent='Complete'"
+  assertText "#status" "Complete"
+}

@@ -47,5 +47,7 @@ public sealed partial class BrowserScriptRunner
         !action.Name.Equals("cutGif", StringComparison.OrdinalIgnoreCase) &&
         !action.Name.Equals("speedUpGif", StringComparison.OrdinalIgnoreCase) &&
         !action.Name.Equals("slowDownGif", StringComparison.OrdinalIgnoreCase) &&
+        !action.Name.Equals("recording", StringComparison.OrdinalIgnoreCase) &&
+        !action.Name.Equals("withRecording", StringComparison.OrdinalIgnoreCase) &&
         !action.Name.Equals("narrate", StringComparison.OrdinalIgnoreCase);
 }

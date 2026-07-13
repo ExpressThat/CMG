@@ -154,20 +154,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Virtual Pointer Choreography
 
-- Add `pointerSpeed=<slow|normal|fast|instant>` on `recording`, `gif`, `recordVideo`, and `screencast` blocks.
-- Add action-level `pointerSpeed=` for pointer-aware actions such as `click`, `hover`, `tap`, `dragAndDrop`, `moveMouse`, `wheel`, `select`, `fill`, and `uploadFiles`.
-- Add child-level `pointerSpeed=` inside block `dragAndDrop { ... }` for `moveMouse`, `hover`, `delay`, and `drop` choreography.
-- Add CLI `--pointer-speed <slow|normal|fast|instant|multiplier>` only as a whole-run default when command-level recording is active.
-- Add numeric pointer speed such as `pointerSpeed=1.5x`.
-- Add `pointerDuration=<ms>` to control movement duration between targets. It should work on `recording`, `gif`, `recordVideo`, `screencast`, and individual pointer-aware actions. CLI: `--pointer-duration <ms>`.
-- Add `pointerDuration=<ms>` on `dragAndDrop` to control drag travel duration specifically, without changing earlier pointer movement to the source.
-- Add `sourcePointerDuration=<ms>` and `targetPointerDuration=<ms>` on `dragAndDrop` for flows where moving to the source should be quick but the drag travel should be slow and readable.
-- Add `dropPointerDuration=<ms>` for block `dragAndDrop { drop "#target" }` to control the final drop move.
-- Add `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>` for movement style at recording scope, block scope, and action scope. CLI: `--pointer-easing <mode>`.
-- Add `dragEasing=<mode>` on `dragAndDrop` for drag travel independent of normal pointer travel.
-- Add per-action pointer speed overrides, for example `click "#save" pointerSpeed=fast`.
-- Add `moveMouse duration=<ms>` and `moveMouse easing=<mode>`.
-- Add `moveMouse pointerDuration=<ms>` as an alias for `duration=<ms>` so pointer settings stay consistent across actions.
+- Implemented: pointer speed presets and positive multipliers inherit through recording scopes/blocks and override on pointer-aware and drag child actions; CLI `--pointer-speed` sets whole-run defaults.
+- Implemented: pointer duration works at recording, block, action, drag source/target/drop, and child levels; `moveMouse duration=` aliases `pointerDuration=` and CLI `--pointer-duration` sets the whole run.
+- Implemented: linear, ease-in, ease-out, ease-in-out, and spring easing works at recording, action, moveMouse alias, and independent drag levels; CLI `--pointer-easing` sets the whole run.
 - Implemented: add pointer path styles: direct line, curved arc, Manhattan path, avoid-target, and avoid-center.
 - Implemented: add `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>` on recording blocks and pointer-aware actions.
 - Implemented: add `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>` on `dragAndDrop`.
@@ -175,24 +164,23 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add `preClickHold=<ms>` and `postClickHold=<ms>` at recording-block and action level. CLI: `--pointer-pre-click-hold <ms>` and `--pointer-post-click-hold <ms>`.
 - Implemented: add `preDragHold=<ms>`, `dragHold=<ms>`, and `postDropHold=<ms>` on `dragAndDrop`.
 - Implemented: add `holdAfterMove=<ms>` on `moveMouse` for demonstrations where the pointer should settle before the next action.
-- Add click pulse style options: ring, ripple, dot, crosshair, or none. CLI: `--click-pulse <style>`. Default should be `ring` so clicks are visible evidence unless a script disables it with `clickPulse=none`.
+- Implemented: click pulse styles ring, ripple, dot, crosshair, and none inherit through recording scopes and action overrides; CLI `--click-pulse` defaults to ring.
 - Implemented: add right-click and middle-click distinct visual pulses.
 - Implemented: add double-click pulse choreography that clearly shows two clicks.
 - Implemented: add drag trail rendering for long drags.
 - Implemented: add optional drag path breadcrumb dots.
-- Add a visible hold state for `mouseDown`.
+- Implemented: `mouseDown` captures a pressed pointer only after the real down event; `mouseDownHold=` and `--mouse-down-hold` default to 500ms.
 - Implemented: add a pressed pointer state while dragging.
 - Implemented: add touch pointer styling for `tap` and `touchTap`.
-- Add keyboard focus pulse when actions do not move the pointer.
-- Add pointer target callout lines for tiny elements.
-- Add automatic pointer zoom/callout for elements smaller than a threshold.
+- Implemented: focus-producing keyboard/pointer actions pulse the actual focused control by default; `focusPulse=false` and `--no-pointer-focus-pulse` opt out.
+- Implemented: `targetCallout=<auto|always|none>` outlines and calls out active targets, with `targetCalloutThreshold=` defaulting to 24px; whole-run CLI controls are available.
 - Implemented: add a configurable pointer theme: system arrow, hand, dot, ring, touch, or branded pointer. CLI: `--pointer-theme <theme>`.
 - Implemented: add pointer color and size options. CLI: `--pointer-color <color>` and `--pointer-size <pixels>`.
 - Implemented: add pointer shadow strength options for dark/light pages. CLI: `--pointer-shadow <none|light|medium|strong>`.
-- Add automatic pointer contrast against the current page background.
+- Implemented: uncolored pointers automatically choose foreground/edge contrast against the page; `pointerContrast=fixed` and `--pointer-contrast fixed` opt out.
 - Implemented: add `showPointer=<true|false|auto>` for recording scopes, recording blocks, and pointer-aware action overrides. CLI: `--show-pointer <true|false|auto>`.
-- Add pointer idle animations for long waits so the GIF does not look frozen.
-- Add pointer teleport markers for `instant` speed so jumps remain understandable.
+- Implemented: long holds use a three-stage pointer halo without changing encoded duration; `pointerIdle`, `pointerIdleThreshold`, and whole-run CLI equivalents control it.
+- Implemented: instant/zero-duration movement shows origin and dashed travel evidence by default; `teleportMarker=false` and `--no-pointer-teleport-marker` opt out.
 
 ## Captions And Narration
 

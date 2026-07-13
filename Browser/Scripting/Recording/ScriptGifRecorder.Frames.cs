@@ -12,58 +12,58 @@ public sealed partial class ScriptGifRecorder
     {
         if (!action.Options.TryGetValue("holdAfterAction", out var value))
         {
-            CaptureHoldFrame();
+            CaptureHoldFrame(options.HoldAfterActionMilliseconds, action);
             return;
         }
 
-        CaptureHoldFrame(ParseHoldMilliseconds(action, value, "holdAfterAction"));
+        CaptureHoldFrame(ParseHoldMilliseconds(action, value, "holdAfterAction"), action);
     }
 
     private void CaptureHoldFrame(BrowserScriptAction action, string optionName)
     {
         if (!action.Options.TryGetValue(optionName, out var value))
         {
-            CaptureHoldFrame();
+            CaptureHoldFrame(options.HoldAfterActionMilliseconds, action);
             return;
         }
 
-        CaptureHoldFrame(ParseHoldMilliseconds(action, value, optionName));
+        CaptureHoldFrame(ParseHoldMilliseconds(action, value, optionName), action);
     }
 
     private void CaptureOptionalHoldFrame(BrowserScriptAction action, string optionName)
     {
         if (action.Options.TryGetValue(optionName, out var value))
         {
-            CaptureHoldFrame(ParseHoldMilliseconds(action, value, optionName));
+            CaptureHoldFrame(ParseHoldMilliseconds(action, value, optionName), action);
         }
     }
 
     private void CapturePreClickHoldFrame(BrowserScriptAction action)
     {
-        CaptureHoldFrame(HoldMillisecondsFor(action, "preClickHold", options.PreClickHoldMilliseconds));
+        CaptureHoldFrame(HoldMillisecondsFor(action, "preClickHold", options.PreClickHoldMilliseconds), action);
     }
 
     private void CapturePostClickHoldFrame(BrowserScriptAction action)
     {
         if (action.Options.TryGetValue("postClickHold", out var value))
         {
-            CaptureHoldFrame(ParseHoldMilliseconds(action, value, "postClickHold"));
+            CaptureHoldFrame(ParseHoldMilliseconds(action, value, "postClickHold"), action);
             return;
         }
 
         CaptureHoldFrame(action.Options.ContainsKey("holdAfterAction")
             ? HoldMillisecondsFor(action, "holdAfterAction", options.PostClickHoldMilliseconds)
-            : options.PostClickHoldMilliseconds);
+            : options.PostClickHoldMilliseconds, action);
     }
 
     private void CaptureNavigationHoldFrame(BrowserScriptAction action)
     {
-        CaptureHoldFrame(HoldMillisecondsFor(action, "holdAfterNavigation", options.HoldAfterNavigationMilliseconds));
+        CaptureHoldFrame(HoldMillisecondsFor(action, "holdAfterNavigation", options.HoldAfterNavigationMilliseconds), action);
     }
 
     private void CaptureAssertionHoldFrame(BrowserScriptAction action)
     {
-        CaptureHoldFrame(HoldMillisecondsFor(action, "holdAfterAssertion", options.HoldAfterAssertionMilliseconds));
+        CaptureHoldFrame(HoldMillisecondsFor(action, "holdAfterAssertion", options.HoldAfterAssertionMilliseconds), action);
     }
 
     public void Pause(BrowserScriptAction action)
@@ -73,7 +73,7 @@ public sealed partial class ScriptGifRecorder
             throw new ScriptExecutionException("pauseGif requires milliseconds.");
         }
 
-        CaptureHoldFrame(ParseHoldMilliseconds(action, action.Arguments[0], "milliseconds"));
+        CaptureHoldFrame(ParseHoldMilliseconds(action, action.Arguments[0], "milliseconds"), action);
     }
 
     public void CaptureFailureHold()
@@ -114,14 +114,33 @@ public sealed partial class ScriptGifRecorder
         AddCapturedFrame(screenshot, delay, "pointer-hidden", action);
     }
 
-    private void CaptureHoldFrame(int milliseconds)
+    private void CaptureHoldFrame(int milliseconds, BrowserScriptAction? action = null)
     {
         if (milliseconds <= 0)
         {
             return;
         }
 
-        CaptureFrame(Math.Max(1, (milliseconds + 9) / 10));
+        var delay = Math.Max(1, (milliseconds + 9) / 10);
+        var evidence = PointerEvidenceFor(action);
+        if (evidence.Idle is PointerIdleMode.None || milliseconds < evidence.IdleThresholdMilliseconds || delay < 3)
+        {
+            CaptureFrame(delay, action: action);
+            return;
+        }
+
+        try
+        {
+            for (var phase = 1; phase <= 3; phase++)
+            {
+                pointerIdlePhase = phase;
+                CaptureFrame(delay / 3 + (phase <= delay % 3 ? 1 : 0), action: action);
+            }
+        }
+        finally
+        {
+            pointerIdlePhase = 0;
+        }
     }
 
     private static int ParseHoldMilliseconds(BrowserScriptAction action, string value, string optionName) =>
@@ -162,8 +181,16 @@ public sealed partial class ScriptGifRecorder
             devToolsClient.RemoveDomCursor(remoteDebuggingUrl);
         }
 
-        var screenshot = CapturePage(promoteMessageBar: false);
-        AddCapturedFrame(screenshot, delay, pulseStyle is null ? "frame" : "click-evidence", action);
+        frameAction = action;
+        try
+        {
+            var screenshot = CapturePage(promoteMessageBar: false);
+            AddCapturedFrame(screenshot, delay, pulseStyle is null ? "frame" : "click-evidence", action);
+        }
+        finally
+        {
+            frameAction = null;
+        }
     }
 
     private bool ShouldShowPointer(BrowserScriptAction? action)

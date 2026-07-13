@@ -127,6 +127,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
         var name = action.Name.ToLowerInvariant();
         var eventCaption = ShowEventCaption(action, actionOutput ?? []);
+        captureAfterAction = true;
 
         try
         {
@@ -160,10 +161,17 @@ public sealed partial class ScriptGifRecorder : IDisposable
                 return;
             }
 
+            if (name is "mousedown")
+            {
+                CaptureHoldFrame(PointerEvidenceFor(action).MouseDownHoldMilliseconds, action);
+                return;
+            }
+
             CaptureHoldFrame(action);
         }
         finally
         {
+            captureAfterAction = false;
             if (eventCaption) RemoveEventCaption();
         }
     }

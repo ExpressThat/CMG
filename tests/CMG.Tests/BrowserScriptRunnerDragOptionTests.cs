@@ -101,6 +101,23 @@ public sealed class BrowserScriptRunnerDragOptionTests
         Assert.True(client.MouseMoveCount > 0);
     }
 
+    [Fact]
+    public void RunText_BlockDragChildOverridesParentPointerEvidence()
+    {
+        var client = new FakeAutomationClient();
+        using var gif = new TempGifFile();
+        var result = Runner().RunText("""
+        dragAndDrop "#source" targetCallout=always pointerDuration=0 {
+          hover "#mid"
+          drop "#target" targetCallout=none
+        }
+        """, "debug", client, gif.File);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(client.EvaluatedExpressions, value => value.Contains("const calloutMode = 'always'", StringComparison.Ordinal));
+        Assert.Contains(client.EvaluatedExpressions, value => value.Contains("const calloutMode = 'none'", StringComparison.Ordinal));
+    }
+
 
     [Fact]
     public void RunText_UnrecordedBlockDragSkipsGifChoreography()

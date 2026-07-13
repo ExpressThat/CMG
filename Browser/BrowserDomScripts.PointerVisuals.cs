@@ -11,7 +11,7 @@ public static partial class BrowserDomScripts
     private static string CursorSvg(PointerVisualOptions? visual)
     {
         var value = visual ?? PointerVisualOptions.Default;
-        var color = value.Color ?? "#2563eb";
+        var color = value.Color ?? "var(--cmg-pointer-color, #2563eb)";
         return value.Theme switch
         {
             PointerTheme.Hand => HandCursorSvg(color),
@@ -63,23 +63,23 @@ public static partial class BrowserDomScripts
 
     private static string ArrowCursorSvg(string? color)
     {
-        var fill = color ?? "#fff";
-        var stroke = color is null ? "#111" : "#0f172a";
-        return $"<svg width=\"26\" height=\"34\" viewBox=\"0 0 26 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M3 2L22 19L13.2 20.1L9.2 31L3 2Z\" fill=\"{fill}\" stroke=\"{stroke}\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M13.2 20.1L18.6 29.4\" stroke=\"{stroke}\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>";
+        var fill = color ?? "var(--cmg-pointer-color, #fff)";
+        var stroke = color is null ? "var(--cmg-pointer-edge, #111)" : "#0f172a";
+        return $"<svg width=\"26\" height=\"34\" viewBox=\"0 0 26 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path data-cmg-pointer-primary=\"fill\" data-cmg-pointer-edge=\"stroke\" d=\"M3 2L22 19L13.2 20.1L9.2 31L3 2Z\" fill=\"{fill}\" stroke=\"{stroke}\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path data-cmg-pointer-edge=\"stroke\" d=\"M13.2 20.1L18.6 29.4\" stroke=\"{stroke}\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>";
     }
 
     private static string HandCursorSvg(string color) =>
-        $"<svg width=\"30\" height=\"34\" viewBox=\"0 0 30 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M9 31c-2.7-4.4-4-7.4-4-9.1v-5.3c0-1.2.9-2.1 2.1-2.1 1 0 1.8.7 2 1.6V7.2c0-1.2.9-2.2 2.1-2.2s2.2 1 2.2 2.2v7.2-9.1c0-1.2 1-2.2 2.2-2.2s2.1 1 2.1 2.2v9.3-7.1c0-1.2 1-2.2 2.2-2.2s2.1 1 2.1 2.2v9.4-5.2c0-1.2.9-2.1 2.1-2.1s2.2.9 2.2 2.1v8.9c0 3.9-1.2 7.3-3.7 10.4H9Z\" fill=\"{color}\" stroke=\"#0f172a\" stroke-width=\"2\" stroke-linejoin=\"round\"/></svg>";
+        $"<svg width=\"30\" height=\"34\" viewBox=\"0 0 30 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path data-cmg-pointer-primary=\"fill\" data-cmg-pointer-edge=\"stroke\" d=\"M9 31c-2.7-4.4-4-7.4-4-9.1v-5.3c0-1.2.9-2.1 2.1-2.1 1 0 1.8.7 2 1.6V7.2c0-1.2.9-2.2 2.1-2.2s2.2 1 2.2 2.2v7.2-9.1c0-1.2 1-2.2 2.2-2.2s2.1 1 2.1 2.2v9.3-7.1c0-1.2 1-2.2 2.2-2.2s2.1 1 2.1 2.2v9.4-5.2c0-1.2.9-2.1 2.1-2.1s2.2.9 2.2 2.1v8.9c0 3.9-1.2 7.3-3.7 10.4H9Z\" fill=\"{color}\" stroke=\"#0f172a\" stroke-width=\"2\" stroke-linejoin=\"round\"/></svg>";
 
     private static string DotCursorSvg(string color) =>
-        $"<svg width=\"34\" height=\"34\" viewBox=\"0 0 34 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><circle cx=\"17\" cy=\"17\" r=\"7\" fill=\"{color}\" stroke=\"#fff\" stroke-width=\"3\"/></svg>";
+        $"<svg width=\"34\" height=\"34\" viewBox=\"0 0 34 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><circle data-cmg-pointer-primary=\"fill\" data-cmg-pointer-edge=\"stroke\" cx=\"17\" cy=\"17\" r=\"7\" fill=\"{color}\" stroke=\"#fff\" stroke-width=\"3\"/></svg>";
 
     private static string RingCursorSvg(string color) =>
-        $"<svg width=\"34\" height=\"34\" viewBox=\"0 0 34 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><circle cx=\"17\" cy=\"17\" r=\"11\" fill=\"none\" stroke=\"{color}\" stroke-width=\"4\"/><circle cx=\"17\" cy=\"17\" r=\"2.5\" fill=\"{color}\"/></svg>";
+        $"<svg width=\"34\" height=\"34\" viewBox=\"0 0 34 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><circle data-cmg-pointer-primary=\"stroke\" cx=\"17\" cy=\"17\" r=\"11\" fill=\"none\" stroke=\"{color}\" stroke-width=\"4\"/><circle data-cmg-pointer-primary=\"fill\" cx=\"17\" cy=\"17\" r=\"2.5\" fill=\"{color}\"/></svg>";
 
     private static string BrandedCursorSvg(string color) =>
-        $"<svg width=\"30\" height=\"34\" viewBox=\"0 0 30 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M4 2L26 17L16 19L12 31L4 2Z\" fill=\"{color}\" stroke=\"#0f172a\" stroke-width=\"2\" stroke-linejoin=\"round\"/><circle cx=\"14\" cy=\"15\" r=\"4\" fill=\"#fff\" opacity=\".88\"/></svg>";
+        $"<svg width=\"30\" height=\"34\" viewBox=\"0 0 30 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path data-cmg-pointer-primary=\"fill\" data-cmg-pointer-edge=\"stroke\" d=\"M4 2L26 17L16 19L12 31L4 2Z\" fill=\"{color}\" stroke=\"#0f172a\" stroke-width=\"2\" stroke-linejoin=\"round\"/><circle cx=\"14\" cy=\"15\" r=\"4\" fill=\"#fff\" opacity=\".88\"/></svg>";
 
     private static string TouchCursorSvg(string color) =>
-        $"<svg width=\"34\" height=\"34\" viewBox=\"0 0 34 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><circle cx=\"17\" cy=\"17\" r=\"11\" fill=\"rgba(37,99,235,.18)\" stroke=\"{color}\" stroke-width=\"3\"/><circle cx=\"17\" cy=\"17\" r=\"4\" fill=\"{color}\"/></svg>";
+        $"<svg width=\"34\" height=\"34\" viewBox=\"0 0 34 34\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><circle data-cmg-pointer-primary=\"stroke\" cx=\"17\" cy=\"17\" r=\"11\" fill=\"rgba(37,99,235,.18)\" stroke=\"{color}\" stroke-width=\"3\"/><circle data-cmg-pointer-primary=\"fill\" cx=\"17\" cy=\"17\" r=\"4\" fill=\"{color}\"/></svg>";
 }

@@ -48,5 +48,7 @@ public sealed record ScriptRecordingOptions(
 
     public GifCaptureOptimizationOptions EffectiveCaptureOptimization => Encoding?.CaptureOptimization ?? new();
 
+    public GifPointerEvidenceOptions EffectivePointerEvidence => Encoding?.PointerEvidence ?? new();
+
     public int FrameDelayCentiseconds => Math.Max(1, (FrameDelayMilliseconds + 9) / 10);
 }

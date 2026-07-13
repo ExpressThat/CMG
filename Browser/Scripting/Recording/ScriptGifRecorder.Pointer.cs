@@ -87,7 +87,8 @@ public sealed partial class ScriptGifRecorder
         bool dragging,
         BrowserScriptAction? action = null,
         string? durationOption = null,
-        string? easingOption = null)
+        string? easingOption = null,
+        bool pressed = false)
     {
         if (remoteDebuggingUrl is null)
         {
@@ -98,18 +99,29 @@ public sealed partial class ScriptGifRecorder
         var frameDelayCentiseconds = Math.Max(1, (frameDelay + 9) / 10);
         var motion = MotionFor(action, durationOption, easingOption);
         var path = PathFor(action, dragging);
-        SetCursorState(action, dragging);
-        var points = pointer.MoveTo(target, motion.FrameCount(action?.Name ?? "recording", frameDelay), motion.PointerEasing, path).ToArray();
-        for (var index = 0; index < points.Length; index++)
+        SetCursorState(action, dragging || pressed);
+        var source = pointer.Position;
+        var actionName = action?.Name ?? "recording";
+        var points = pointer.MoveTo(target, motion.FrameCount(actionName, frameDelay), motion.PointerEasing, path).ToArray();
+        var evidence = PointerEvidenceFor(action);
+        teleportOrigin = evidence.TeleportMarker && motion.DurationMilliseconds(actionName) is 0 && source != target ? source : null;
+        try
         {
-            var point = points[index];
-            devToolsClient.MoveMouse(remoteDebuggingUrl, point, dragging ? 1 : 0);
-            if (dragging)
+            for (var index = 0; index < points.Length; index++)
             {
-                devToolsClient.MovePageDrag(remoteDebuggingUrl, point);
-            }
+                var point = points[index];
+                devToolsClient.MoveMouse(remoteDebuggingUrl, point, dragging || pressed ? 1 : 0);
+                if (dragging)
+                {
+                    devToolsClient.MovePageDrag(remoteDebuggingUrl, point);
+                }
 
-            CaptureFrame(frameDelayCentiseconds, action: action, sampleEligible: index < points.Length - 1);
+                CaptureFrame(frameDelayCentiseconds, action: action, sampleEligible: index < points.Length - 1);
+            }
+        }
+        finally
+        {
+            teleportOrigin = null;
         }
     }
 

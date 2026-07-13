@@ -287,6 +287,17 @@ Element-edge targeting requires both a selector and an edge:
 Line 3: moveMouse failed. moveMouse element-edge targeting requires edge=<top|bottom|left|right|center|topLeft|topRight|bottomLeft|bottomRight>.
 ```
 
+## Invalid Pointer Evidence Option
+
+```text
+Line 3: click failed. click option pointerContrast= must be one of: auto, fixed.
+Line 4: hover failed. hover option targetCallout= must be one of: auto, always, none.
+Line 5: pauseGif failed. pauseGif option pointerIdleThreshold= must be an integer from 100 to 60000.
+Line 6: mouseDown failed. mouseDown option mouseDownHold= must be an integer from 0 to 60000.
+```
+
+Pointer-evidence options are validated when an active GIF recorder applies them. Recording scopes and blocks use the same bounds as action overrides and whole-run CLI flags. Without an active recorder, recorder-only visual settings remain inert and do not inject overlays.
+
 ## Invalid Emulation
 
 ```text

@@ -47,6 +47,12 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-result-outro`: Generate a final `Test passed`, `Test failed`, or `Test skipped` card for each test without an explicit outro.
 - `--gif-no-coalesce`: Keep consecutive pixel-identical frames instead of merging their delays. Coalescing is enabled by default.
 - `--gif-sample-every <1..100>`: Keep every Nth intermediate pointer/drag movement frame. Final targets and semantic evidence frames are never sampled.
+- `--pointer-contrast <auto|fixed>`: Adapt an uncolored pointer to its page background. Defaults to `auto`.
+- `--pointer-callout <auto|always|none>` / `--pointer-callout-threshold <8..100>`: Configure target callouts. Auto mode defaults to targets smaller than `24px` in either dimension.
+- `--no-pointer-focus-pulse`: Disable post-action focused-control evidence.
+- `--pointer-idle <pulse|none>` / `--pointer-idle-threshold <100..60000>`: Configure long-hold pointer evidence. Defaults to a pulse after `1200ms`.
+- `--no-pointer-teleport-marker`: Disable origin/path evidence for instant moves.
+- `--mouse-down-hold <0..60000>`: Pressed-pointer evidence hold after `mouseDown`. Defaults to `500ms`.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -155,7 +161,7 @@ GIF recording is optional.
 
 - With `--gif` or `-gif`, CMG records the whole execution of each test.
 - `--gif-quality` defaults to `highest`, using CMG's most color-faithful palette matching and dithering. Use `high`, `medium`, or `low` to trade color fidelity for smaller/faster GIF artifacts.
-- `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, and `--show-pointer` set whole-test virtual pointer defaults when `--gif` is active.
+- Pointer motion, styling, contrast, target callout, focus, idle, teleport, pressed-state, and visibility options set whole-test virtual-pointer defaults only when `--gif` is active.
 - `--caption-style`, `--caption-position`, `--caption-severity`, and `--caption-size` set whole-test caption defaults for `caption`, `showMessageBar`, `step`, and flattened `gif` / `recordVideo` / `screencast` block captions.
 - `--gif-accessibility` enables safe keyboard labels, focus and accessible-name evidence, high-contrast styling, and targeted-control contrast warnings for every retained frame. It is inert without `--gif`.
 - `--gif-event-captions` summarizes event outcomes without copying console text, page-error stacks, request URLs, download paths, or upload filenames into the GIF. It is inert without `--gif`.

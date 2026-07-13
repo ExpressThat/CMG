@@ -149,7 +149,7 @@ public sealed class BrowserScriptRunnerRecordingScopeTests
             """, "debug", client, gif);
 
         Assert.True(result.Success, result.Error);
-        Assert.Equal(4, client.PageScreenshotCount);
+        Assert.Equal(3, client.PageScreenshotCount);
     }
 
     [Fact]
@@ -165,7 +165,7 @@ public sealed class BrowserScriptRunnerRecordingScopeTests
             """, "debug", client, gif);
 
         Assert.True(result.Success, result.Error);
-        Assert.Equal(3, client.PageScreenshotCount);
+        Assert.Equal(2, client.PageScreenshotCount);
     }
 
     [Fact]

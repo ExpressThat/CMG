@@ -62,6 +62,14 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-result-outro`: Generate a final `Test passed`, `Test failed`, or `Test skipped` card when no explicit outro is set.
 - `--gif-no-coalesce`: Keep consecutive pixel-identical frames instead of merging their encoded delays. Coalescing is enabled by default.
 - `--gif-sample-every <1..100>`: Keep every Nth intermediate pointer/drag movement frame. Final targets, click evidence, holds, captions, failures, and title cards are always retained.
+- `--pointer-contrast <auto|fixed>`: Adapt an uncolored pointer to the page beneath it. Defaults to `auto`.
+- `--pointer-callout <auto|always|none>`: Control active-target outlines/callouts. Defaults to `auto` for tiny targets.
+- `--pointer-callout-threshold <8..100>`: Tiny-target threshold in CSS pixels. Defaults to `24`.
+- `--no-pointer-focus-pulse`: Disable focused-control evidence after focus-producing actions.
+- `--pointer-idle <pulse|none>`: Control pointer evidence during long holds. Defaults to `pulse`.
+- `--pointer-idle-threshold <100..60000>`: Long-hold threshold in milliseconds. Defaults to `1200`.
+- `--no-pointer-teleport-marker`: Disable origin/path evidence for instant pointer moves.
+- `--mouse-down-hold <0..60000>`: Pressed-pointer evidence hold after a real `mouseDown`. Defaults to `500ms`.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.

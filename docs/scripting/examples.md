@@ -547,6 +547,21 @@ gif "long workflow" sampleEvery=3 {
 
 Exact duplicate holds coalesce automatically without shortening the timeline. Use `coalesceDuplicates=false` only when inspecting each source capture. Whole-run equivalents are `--gif-sample-every 3` and `--gif-no-coalesce`. See demos 190 and 191.
 
+## Precise Pointer Evidence
+
+```text
+gif "precise controls" pointerIdleThreshold=800 {
+  click "#tiny-action"
+  fill "#search" "CMG evidence"
+  moveMouse right pointerSpeed=instant
+  pauseGif 1500
+  mouseDown selector="#hold" edge=center mouseDownHold=700
+  mouseUp selector="#hold" edge=center
+}
+```
+
+Adaptive contrast, tiny-target callouts, focus pulses, idle halos, teleport markers, and a real post-dispatch pressed state are enabled by default. Override them at recording, block, parent complex-action, or child-action scope. Whole-run CLI options are documented in the script and runner command pages. See demos 192 and 193.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

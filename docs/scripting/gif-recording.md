@@ -79,6 +79,13 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerColor=<css-color>`: Pointer color. Use a single CSS color value, not a declaration.
 - `pointerSize=<auto|8..96>`: Pointer size in CSS pixels. `auto` uses the theme's designed size.
 - `pointerShadow=<none|light|medium|strong>`: Pointer drop shadow strength. Defaults to `medium`.
+- `pointerContrast=<auto|fixed>`: Adapt the default pointer foreground and edge to the pixels beneath it. Defaults to `auto`; an explicit `pointerColor=` remains authoritative.
+- `targetCallout=<auto|always|none>`: Outline and call out the active target. `auto` is the default and activates when either target dimension is below `targetCalloutThreshold`.
+- `targetCalloutThreshold=<8..100>`: Tiny-target threshold in CSS pixels. Defaults to `24`.
+- `focusPulse=<true|false>`: Pulse the actual focused control after focus-producing pointer or keyboard actions. Defaults to `true`.
+- `pointerIdle=<pulse|none>` / `pointerIdleThreshold=<100..60000>`: Show three readable pointer-halo stages during long holds. Defaults to `pulse` after `1200ms`; encoded hold duration is preserved.
+- `teleportMarker=<true|false>`: Show the origin and dashed travel path for `pointerSpeed=instant` or zero-duration moves. Defaults to `true`.
+- `mouseDownHold=<0..60000>`: Hold the real pressed-pointer state after `mouseDown`. Defaults to `500ms`.
 - `showPointer=<true|false|auto>`: Pointer visibility for captured frames. Defaults to `auto`, which currently shows the pointer for pointer-aware evidence frames. Use `false` for clean page-state frames; child actions can override with `showPointer=true`.
 - `captionStyle=<subtle|teaching|qa|bug-report|compact>`: Caption style default for child captions and step title bars.
 - `captionSize=<normal|large|x-large>`: Caption text-size default. Child captions and steps can override it.
@@ -150,6 +157,7 @@ Supported `recording` / `withRecording` defaults:
 - `pointerColor=<css-color>`: Default pointer color.
 - `pointerSize=<auto|8..96>`: Default pointer size in CSS pixels.
 - `pointerShadow=<none|light|medium|strong>`: Default pointer shadow.
+- `pointerContrast`, `targetCallout`, `targetCalloutThreshold`, `focusPulse`, `pointerIdle`, `pointerIdleThreshold`, `teleportMarker`, `mouseDownHold`: Inherited pointer-evidence defaults described above.
 - `showPointer=<true|false|auto>`: Default pointer visibility for captured frames.
 - `captionStyle=<subtle|teaching|qa|bug-report|compact>`: Default caption style.
 - `captionPosition=<top|bottom|left|right|auto>`: Default caption position.
@@ -425,6 +433,23 @@ Every artifact emits parseable `GIF_CAPTURE_STATS`. High duplicate ratios emit `
 
 Whole-run controls are `--gif-sample-every` and `--gif-no-coalesce`. See demos 190 and 191.
 
+## Pointer Evidence Defaults
+
+CMG adapts an uncolored pointer against the page, calls out controls smaller than `24px`, pulses the resulting focus state, gives long holds a subtle three-stage halo, and marks instant pointer jumps. Low-level `mouseDown` captures its pressed state only after the browser receives the real down event. Each feature can be disabled or restyled without affecting browser events:
+
+```text
+gif "precise controls" targetCallout=auto pointerIdleThreshold=900 {
+  click "#tiny-action"
+  fill "#search" "CMG"
+  moveMouse right pointerSpeed=instant
+  pauseGif 1500
+  mouseDown selector="#hold" edge=center mouseDownHold=700
+  mouseUp selector="#hold" edge=center
+}
+```
+
+Whole-run equivalents are `--pointer-contrast`, `--pointer-callout`, `--pointer-callout-threshold`, `--no-pointer-focus-pulse`, `--pointer-idle`, `--pointer-idle-threshold`, `--no-pointer-teleport-marker`, and `--mouse-down-hold`. All overlays are capture-only and are never created without an active recorder. See demos 192 and 193.
+
 For less animated, easier-to-track pointer evidence, combine the visual presets:
 
 ```text
@@ -554,6 +579,7 @@ The JSON sidecar contains:
 - `checkpoints`: named markers with `name`, `lineNumber`, `frameIndex`, and `timeMilliseconds`
 - `steps`: runtime action spans with raw `sequence`, source `lineNumber`, `action`, nested `context`, `success`, zero-based start/end frame indexes, start/end times, optional `failureFrameIndex`, and the failure reason. `endFrameIndex` is `null` when an action produced no visual frame.
 - `timing.pointerDurationMilliseconds`, `timing.pointerSpeed`, `timing.pointerEasing`, `timing.clickPulse`, `timing.holdAfterActionMilliseconds`, `timing.preClickHoldMilliseconds`, `timing.postClickHoldMilliseconds`, `timing.holdAfterNavigationMilliseconds`, `timing.holdAfterAssertionMilliseconds`, `timing.holdOnFailureMilliseconds`
+- `pointerEvidence.contrast`, `targetCallout`, `targetCalloutThreshold`, `focusPulse`, `idle`, `idleThresholdMilliseconds`, `teleportMarker`, and `mouseDownHoldMilliseconds`
 
 Use this file when reports, CI artifacts, or agent feedback need machine-readable timing without parsing the GIF binary. Timeline schema version `2` adds nested/repeated runtime step spans and failure bookmarks. JSON run reports include a `gifMetadata` array with `timelinePath` and artifact inspection data, while each visual step has a `gifEvidence` array containing exact frame/time boundaries. HTML reports show the animated artifact, link visual steps to embedded static start frames, and pin the final diagnostic failure frame as a static thumbnail. JUnit reports add `cmg.gif.path` properties for recorded artifacts; failed tests with an inspectable GIF also include `cmg.gif.failureFrameIndex`.
 

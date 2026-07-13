@@ -38,6 +38,7 @@ public sealed class BrowserScriptRunnerCaptureDiagnosticsTests
 
         Assert.True(result.Success, result.Error);
         Assert.Equal(5, GifInspector.Inspect(gif.File).FrameCount);
+        Assert.DoesNotContain(result.StdoutLines, line => line.Contains("sourceFrames=6", StringComparison.Ordinal));
     }
 
     [Fact]

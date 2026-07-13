@@ -46,14 +46,17 @@ public sealed partial class BrowserScriptRunner
         bool down)
     {
         var target = BrowserMouseTargetResolver.Resolve(remoteDebuggingUrl, automationClient, action);
-        recorder?.MoveMouse(action, dragging: down);
         if (down)
         {
+            recorder?.MoveMouseButton(action, pressed: false);
             automationClient.MouseDown(remoteDebuggingUrl, target);
+            recorder?.SetMouseButtonState(action, pressed: true);
             return [$"MOUSE_DOWN {action.LineNumber:000} {FormatPoint(target)}"];
         }
 
+        recorder?.MoveMouseButton(action, pressed: true);
         automationClient.MouseUp(remoteDebuggingUrl, target);
+        recorder?.SetMouseButtonState(action, pressed: false);
         return [$"MOUSE_UP {action.LineNumber:000} {FormatPoint(target)}"];
     }
 

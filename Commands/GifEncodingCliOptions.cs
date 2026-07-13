@@ -22,7 +22,15 @@ internal sealed record GifEncodingCliOptions(
     Option<int?> OutroDuration,
     Option<bool> ResultOutro,
     Option<bool> DisableCoalescing,
-    Option<int?> SampleEvery)
+    Option<int?> SampleEvery,
+    Option<string?> PointerContrast,
+    Option<string?> PointerCallout,
+    Option<int?> PointerCalloutThreshold,
+    Option<bool> DisableFocusPulse,
+    Option<string?> PointerIdle,
+    Option<int?> PointerIdleThreshold,
+    Option<bool> DisableTeleportMarker,
+    Option<int?> MouseDownHold)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -45,7 +53,15 @@ internal sealed record GifEncodingCliOptions(
             new Option<int?>("--gif-outro-duration") { Description = "Final title-card duration in milliseconds." },
             new Option<bool>("--gif-result-outro") { Description = "Generate a passed, failed, or skipped final title card." },
             new Option<bool>("--gif-no-coalesce") { Description = "Keep consecutive duplicate frames instead of merging their delays." },
-            new Option<int?>("--gif-sample-every") { Description = "Keep every Nth intermediate pointer/drag frame, from 1 to 100." });
+            new Option<int?>("--gif-sample-every") { Description = "Keep every Nth intermediate pointer/drag frame, from 1 to 100." },
+            new Option<string?>("--pointer-contrast") { Description = $"Virtual pointer contrast: {GifPointerEvidenceOptions.ContrastValues}." },
+            new Option<string?>("--pointer-callout") { Description = $"Target callouts: {GifPointerEvidenceOptions.CalloutValues}." },
+            new Option<int?>("--pointer-callout-threshold") { Description = "Auto-callout target size threshold from 8 to 100 CSS pixels." },
+            new Option<bool>("--no-pointer-focus-pulse") { Description = "Disable focused-control pulses after keyboard/focus actions." },
+            new Option<string?>("--pointer-idle") { Description = $"Long-hold pointer evidence: {GifPointerEvidenceOptions.IdleValues}." },
+            new Option<int?>("--pointer-idle-threshold") { Description = "Long-hold pointer pulse threshold from 100 to 60000 milliseconds." },
+            new Option<bool>("--no-pointer-teleport-marker") { Description = "Disable origin/path evidence for instant pointer moves." },
+            new Option<int?>("--mouse-down-hold") { Description = "Pressed-pointer hold after mouseDown, from 0 to 60000 milliseconds." });
     }
 
     public bool TryParse(ParseResult result, out GifEncodingOptions encoding, out string? error)
@@ -65,6 +81,10 @@ internal sealed record GifEncodingCliOptions(
             result.GetValue(ResultOutro), out var titleCards, out error)) return false;
         if (!GifCaptureOptimizationOptions.TryParse(
             result.GetValue(DisableCoalescing), result.GetValue(SampleEvery), out var captureOptimization, out error)) return false;
+        if (!GifPointerEvidenceOptions.TryParse(
+            result.GetValue(PointerContrast), result.GetValue(PointerCallout), result.GetValue(PointerCalloutThreshold),
+            result.GetValue(DisableFocusPulse), result.GetValue(PointerIdle), result.GetValue(PointerIdleThreshold),
+            result.GetValue(DisableTeleportMarker), result.GetValue(MouseDownHold), out var pointerEvidence, out error)) return false;
         encoding = encoding with
         {
             Framing = framing,
@@ -72,7 +92,8 @@ internal sealed record GifEncodingCliOptions(
             Accessibility = result.GetValue(Accessibility) ? new GifAccessibilityOptions(true, true, true, true, true) : null,
             EventCaptions = result.GetValue(EventCaptions) ? new GifEventCaptionOptions(true, true, true, true, true) : null,
             TitleCards = titleCards,
-            CaptureOptimization = captureOptimization
+            CaptureOptimization = captureOptimization,
+            PointerEvidence = pointerEvidence
         };
         return true;
     }

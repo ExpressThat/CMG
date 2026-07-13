@@ -56,6 +56,14 @@ public sealed class ScriptGifRecorderClickPulseTests
         Assert.DoesNotContain(ClickPulseStyle.Crosshair, client.CursorPulseStyles);
     }
 
+    [Fact]
+    public void NormalPointerFrameRemovesStaleClickPulse()
+    {
+        var script = BrowserDomScripts.MoveDomCursor(new ElementPoint(20, 30));
+
+        Assert.Contains("document.getElementById('__cmg_cursor_pulse')?.remove()", script, StringComparison.Ordinal);
+    }
+
     private static ScriptGifRecorder Recorder(FakeAutomationClient client, int postClickHoldMilliseconds = 350) =>
         new(client, new ScriptRecordingOptions(
             Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif"),

@@ -8,6 +8,7 @@ public sealed partial class ScriptGifRecorder
         try
         {
             if (applyRedactions) PrepareRedactions();
+            if (applyRedactions) PreparePointerEvidence();
             if (applyRedactions) PrepareAccessibilityEvidence();
             if (applyRedactions) PrepareDebugEvidence();
             var framing = options.EffectiveFraming;
@@ -27,6 +28,7 @@ public sealed partial class ScriptGifRecorder
         {
             if (applyRedactions) RemoveDebugEvidence();
             if (applyRedactions) RemoveAccessibilityEvidence();
+            if (applyRedactions) RemovePointerEvidence();
             if (applyRedactions) RemoveRedactionOverlays();
         }
     }
