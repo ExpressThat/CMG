@@ -657,6 +657,18 @@ describe "visual evidence" gifQuality=medium gifPointerSpeed=fast gifFps=20 {
 
 Run with `cmg run <file> -gif <directory>`. Test options override suite values one property at a time. See direct scoped-default demo 210 and runner declaration demo 211.
 
+## Retain Only Useful Runner Evidence
+
+```text
+describe "CI evidence" gif=onFailure {
+  test "retry evidence" gif=onRetry { assertText "#status" "Complete" }
+  test "sampled" gifSampleRate=10 { click "#save" }
+  test "temporary passing evidence" gif=always gifCleanPassed=true { click "#publish" }
+}
+```
+
+Use these declarations with `cmg run <file> -gif <directory>`. Retention is decided after retries; passing cleanup happens after reports and traces are written. Explicit focused recording blocks are unaffected. See demo 212.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

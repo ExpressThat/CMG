@@ -148,6 +148,8 @@ Use `gifIfChanged` / `gif.ifChanged` to keep an artifact only when the final pag
 
 Structured runner tests and suites can override whole-test GIF defaults with `gifQuality`, `gifPointerDuration`, `gifPointerSpeed`, `gifPointerEasing`, `gifFps`, `gifFrameDelay`, and `gif`-prefixed framing declarations. Suite defaults cascade; test values replace only the named properties. See demos 210 and 211.
 
+Runner declarations can keep only useful command-level evidence: `gif=onFailure` retains all attempts only when the final result fails, `gif=onRetry` retains failed attempts, `gif=off` disables command capture, and `gif=always` is the default. `gifSampleRate=<n>` records the first selected test and every nth test after it. `gifCleanPassed=true` lets reports and traces consume a passing artifact before its files are removed. Run these policies with `cmg run <file> -gif <directory>`; they do not disable focused recording blocks in the test body. See demo 212.
+
 ```text
 recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfterAction=500 {
   gif "checkout evidence" {

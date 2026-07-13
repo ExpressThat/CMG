@@ -9,9 +9,10 @@ public sealed partial class CmgRunService
         List<CmgTestResult> tests,
         List<string> output)
     {
-        foreach (var test in selectedTests)
+        for (var index = 0; index < selectedTests.Count; index++)
         {
-            var rawResult = RunScheduledTest(test, remoteDebuggingUrl, options);
+            var test = selectedTests[index];
+            var rawResult = RunScheduledTest(test, remoteDebuggingUrl, options with { GifSampleOrdinal = index + 1 });
             var (sizedResult, sizeOutput) = ApplyGifSizeGuard(rawResult, options);
             var (result, durationOutput) = ApplyGifDurationGuard(sizedResult, options);
             tests.Add(result);
@@ -79,5 +80,6 @@ public sealed partial class CmgRunService
         line.StartsWith("GIF_WARN_SCROLLED ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_WARN_NON_VISUAL ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_WAIT_COMPRESSION ", StringComparison.Ordinal) ||
-        line.StartsWith("GIF_FAILURE_CAPTION ", StringComparison.Ordinal);
+        line.StartsWith("GIF_FAILURE_CAPTION ", StringComparison.Ordinal) ||
+        line.StartsWith("GIF_RETENTION ", StringComparison.Ordinal);
 }

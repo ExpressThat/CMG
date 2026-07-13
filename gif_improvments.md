@@ -303,10 +303,11 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add report links that jump to the embedded final failure frame.
 - Implemented: add JUnit properties for GIF paths and failed-test final-frame indexes.
 - Implemented: add artifact size warnings in runner output. CLI: `--gif-warn-size <size>` emits `GIF_WARN_SIZE` for recorded GIFs over the threshold.
-- Add runner declaration `gif=onFailure` to record or keep GIFs only for failing tests. CLI: `--gif-on-failure`.
-- Add runner declaration `gif=onRetry` to keep GIFs for failed attempts only. CLI: `--gif-on-retry`.
-- Add runner declaration `gifSampleRate=` for huge suites. CLI: `--gif-sample-rate <n>`.
-- Add runner declaration `gifCleanPassed=true` to delete passed-test GIFs after report generation. CLI: `--gif-clean-passed`.
+- Implemented for runner declarations: `gif=onFailure` keeps all attempts only when the final result fails. CLI `--gif-on-failure` remains open.
+- Implemented for runner declarations: `gif=onRetry` keeps failed attempts and removes a passing attempt. CLI `--gif-on-retry` remains open.
+- Implemented for runner declarations: `gifSampleRate=` deterministically captures the first selected test and every nth test. CLI `--gif-sample-rate <n>` remains open.
+- Implemented: runner declaration `gifCleanPassed=true` exposes passing GIF metadata to reports/traces, then deletes the artifact family.
+- CLI `--gif-clean-passed` remains open as a whole-run default.
 - Add CI summary page that groups GIFs by failure reason.
 - Add test-run filmstrip report across all selected tests.
 - Add shard-safe GIF naming with project/browser/retry/repeat metadata.

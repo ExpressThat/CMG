@@ -1,0 +1,28 @@
+describe "failure evidence" gif=onFailure {
+  beforeEach {
+    setContent "<style>html,body{margin:0;min-height:100%;background:#fff;color:#111}</style><main style='font:18px system-ui;padding:48px'><h1>Retention policy</h1><button id='save'>Save</button><p id='status'>Ready</p></main>"
+  }
+
+  test "discards passing evidence" {
+    click "#save"
+    assertText "#status" "Ready"
+  }
+
+  test "keeps failed retry evidence" gif=onRetry {
+    click "#save"
+    assertEval "(window.__cmgRetentionAttempt = (window.__cmgRetentionAttempt || 0) + 1) >= 2"
+  }
+}
+
+describe "sampled evidence" gif=always gifSampleRate=2 {
+  test "records first selected test" { setContent "<h1>First sampled test</h1>" }
+  test "does not record second selected test" { setContent "<h1>Skipped sample</h1>" }
+  test "records third selected test" gifCleanPassed=true { setContent "<h1>Clean after report</h1>" }
+}
+
+test "keeps an explicit focused recording" gif=off {
+  gif "focused-retained" {
+    setContent "<style>html,body{background:#fff;color:#111}</style><h1>Focused evidence remains independent</h1>"
+    gifSnapshot "focused proof"
+  }
+}

@@ -41,8 +41,11 @@ public sealed partial class CmgVisualSegmentExecutor
         var pendingLineMap = new Dictionary<int, int>();
         var steps = new List<CmgStepResult>();
         if (!TryApplyDeclaredGifDefaults(test, options, out options, out var declarationError))
-            return Fail(test, output, declarationError, gifs, steps, gifQualities);
-        var commandGif = BuildGifPath(test, options, attempt);
+            return Fail(test, output, declarationError, gifs, steps, gifQualities, null);
+        CmgGifRetentionPolicy.TryParse(test, out var retention, out _);
+        var commandGif = retention.ShouldRecord(options.GifSampleOrdinal)
+            ? BuildGifPath(test, options, attempt)
+            : null;
         var suppressGifBlocks = commandGif is not null;
         var timeouts = BuildTimeoutOptions(test, options);
         var baseUrl = CmgNavigationOptions.BaseUrl(test, options);
@@ -54,7 +57,7 @@ public sealed partial class CmgVisualSegmentExecutor
                 var flush = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options);
                 if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
-                    return Fail(test, output, error, gifs, steps, gifQualities);
+                    return Fail(test, output, error, gifs, steps, gifQualities, commandGif?.FullName);
                 }
 
                 var gif = ResolveGifPath(test, action, options);
@@ -81,7 +84,7 @@ public sealed partial class CmgVisualSegmentExecutor
                     !TryGifAccessibilityFor(action, options.GifAccessibility, out var blockAccessibility, out error) ||
                     !TryGifFrameDelayFor(action, options.FrameDelayMilliseconds, out var blockFrameDelay, out error))
                 {
-                    return Fail(test, output, error, gifs, steps, gifQualities);
+                    return Fail(test, output, error, gifs, steps, gifQualities, commandGif?.FullName);
                 }
 
                 if (gif is not null)
@@ -91,7 +94,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
                 if (!RunActions(action.Children, remoteDebuggingUrl, gif, timeouts, baseUrl, blockQuality, blockMotion, blockVisual, blockShowPointer, blockCaption, blockPulse, blockHold, blockFailureHold, blockPreClickHold, blockPostClickHold, blockNavigationHold, blockAssertionHold, blockTimeline, output, steps, out error, blockFrameDelay, blockEncoding, blockRedaction, blockAccessibility))
                 {
-                    return Fail(test, output, error, gifs, steps, gifQualities);
+                    return Fail(test, output, error, gifs, steps, gifQualities, commandGif?.FullName);
                 }
 
                 continue;
@@ -101,7 +104,7 @@ public sealed partial class CmgVisualSegmentExecutor
                 var flush = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options);
                 if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
-                    return Fail(test, output, error, gifs, steps, gifQualities);
+                    return Fail(test, output, error, gifs, steps, gifQualities, commandGif?.FullName);
                 }
 
                 var apiStep = apiRequestRunner.Run(ApplyRunTimeoutDefault(action, options));
@@ -109,7 +112,7 @@ public sealed partial class CmgVisualSegmentExecutor
                 steps.Add(apiStep);
                 if (!apiStep.Success)
                 {
-                    return Fail(test, output, apiStep.Error, gifs, steps, gifQualities);
+                    return Fail(test, output, apiStep.Error, gifs, steps, gifQualities, commandGif?.FullName);
                 }
 
                 continue;
@@ -120,7 +123,7 @@ public sealed partial class CmgVisualSegmentExecutor
                 var flush = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options);
                 if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
-                    return Fail(test, output, error, gifs, steps, gifQualities);
+                    return Fail(test, output, error, gifs, steps, gifQualities, commandGif?.FullName);
                 }
 
                 var step = storageStateRunner.Run(action, remoteDebuggingUrl, automationClient);
@@ -128,7 +131,7 @@ public sealed partial class CmgVisualSegmentExecutor
                 steps.Add(step);
                 if (!step.Success)
                 {
-                    return Fail(test, output, step.Error, gifs, steps, gifQualities);
+                    return Fail(test, output, step.Error, gifs, steps, gifQualities, commandGif?.FullName);
                 }
 
                 continue;
@@ -139,7 +142,7 @@ public sealed partial class CmgVisualSegmentExecutor
                 var flush = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options);
                 if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif: null, out var error))
                 {
-                    return Fail(test, output, error, gifs, steps, gifQualities);
+                    return Fail(test, output, error, gifs, steps, gifQualities, commandGif?.FullName);
                 }
 
                 var step = visualAssertionRunner.Run(action, remoteDebuggingUrl, automationClient);
@@ -147,7 +150,7 @@ public sealed partial class CmgVisualSegmentExecutor
                 steps.Add(step);
                 if (!step.Success)
                 {
-                    return Fail(test, output, step.Error, gifs, steps, gifQualities);
+                    return Fail(test, output, step.Error, gifs, steps, gifQualities, commandGif?.FullName);
                 }
 
                 continue;
@@ -168,10 +171,10 @@ public sealed partial class CmgVisualSegmentExecutor
         var final = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, commandGif, timeouts, baseUrl, options, GifTimelineFor(commandGif, options.GifTimelinePath));
         if (!AppendResult(final.Result, final.LineMap, output, steps, test.Actions.LastOrDefault(), commandGif, out var finalError))
         {
-            return Fail(test, output, finalError, gifs, steps, gifQualities);
+            return Fail(test, output, finalError, gifs, steps, gifQualities, commandGif?.FullName);
         }
 
-        return new CmgTestResult(test.Name, test.SourcePath, true, output, null, string.Join(';', gifs), steps) { Annotations = test.Annotations, GifQualities = gifQualities };
+        return new CmgTestResult(test.Name, test.SourcePath, true, output, null, string.Join(';', gifs), steps) { Annotations = test.Annotations, GifQualities = gifQualities, CommandGifPath = commandGif?.FullName };
     }
 
     private static bool AppendResult(
@@ -215,14 +218,15 @@ public sealed partial class CmgVisualSegmentExecutor
         string? error,
         IReadOnlyList<string> gifs,
         IReadOnlyList<CmgStepResult> steps,
-        IReadOnlyDictionary<string, string> gifQualities)
+        IReadOnlyDictionary<string, string> gifQualities,
+        string? commandGifPath)
     {
         if (output.Any(line => line.StartsWith("SKIP ", StringComparison.Ordinal)))
         {
-            return new CmgTestResult(test.Name, test.SourcePath, true, output, error, string.Join(';', gifs), steps) { Status = "skipped", Annotations = test.Annotations, GifQualities = gifQualities };
+            return new CmgTestResult(test.Name, test.SourcePath, true, output, error, string.Join(';', gifs), steps) { Status = "skipped", Annotations = test.Annotations, GifQualities = gifQualities, CommandGifPath = commandGifPath };
         }
 
-        return new CmgTestResult(test.Name, test.SourcePath, false, output, error, string.Join(';', gifs), steps) { Annotations = test.Annotations, GifQualities = gifQualities };
+        return new CmgTestResult(test.Name, test.SourcePath, false, output, error, string.Join(';', gifs), steps) { Annotations = test.Annotations, GifQualities = gifQualities, CommandGifPath = commandGifPath };
     }
 
 }

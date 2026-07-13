@@ -81,7 +81,8 @@ public sealed record CmgRunOptions(
     GifRedactionOptions? GifRedaction = null,
     GifAccessibilityOptions? GifAccessibility = null,
     int? BrowserIdleTimeoutMilliseconds = null,
-    bool NoBrowserIdleCleanup = false);
+    bool NoBrowserIdleCleanup = false,
+    int GifSampleOrdinal = 1);
 
 public sealed partial record CmgRunResult(
     bool Success,
@@ -103,4 +104,6 @@ public sealed record CmgTestResult(
     public string Project { get; init; } = string.Empty;
     public IReadOnlyDictionary<string, string> GifQualities { get; init; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     public IReadOnlyList<CmgAnnotation> Annotations { get; init; } = [];
+    public string? CommandGifPath { get; init; }
+    public IReadOnlyList<string> CleanGifPathsAfterReport { get; init; } = [];
 }

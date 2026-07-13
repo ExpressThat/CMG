@@ -17,6 +17,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var mapped = MapGifOptions(test.Options);
         try
         {
+            if (!CmgGifRetentionPolicy.TryParse(test, out _, out error)) return false;
             var quality = source.GifQuality;
             if (test.Options.TryGetValue("gifQuality", out var rawQuality) &&
                 !GifQualityParser.TryParse(rawQuality, out quality))

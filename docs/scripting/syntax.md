@@ -154,6 +154,17 @@ describe "mobile evidence" gifQuality=high gifPointerSpeed=fast gifFps=20 gifVie
 
 Supported keys are `gifQuality`, `gifPointerDuration`, `gifPointerSpeed`, `gifPointerEasing`, `gifFps`, `gifFrameDelay`, `gifCrop`, `gifCropPadding`, `gifScale`, `gifMaxWidth`, `gifMaxHeight`, `gifViewport`, and `gifPixelRatio`. Suite values cascade and tests override property by property. Invalid values fail that test with the exact declaration option.
 
+Runner declarations also support artifact retention:
+
+```text
+describe "CI evidence" gif=onFailure gifSampleRate=5 {
+  test "keeps failed attempts" gif=onRetry { click "#save" }
+  test "report then delete" gif=always gifCleanPassed=true { click "#publish" }
+}
+```
+
+`gif=` accepts `always`, `onFailure`, `onRetry`, or `off`. `gifSampleRate=<n>` deterministically records the first selected test and every nth test after it. `gifCleanPassed=true` deletes passing command-level artifacts after reports and traces are written. The declarations cascade through suites and affect only whole-test capture requested with `cmg run -gif`; explicit focused recording blocks remain independent.
+
 Parameterized runner tests expand one declaration into one scheduled test per row:
 
 ```text

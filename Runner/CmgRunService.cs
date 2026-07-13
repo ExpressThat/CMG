@@ -120,6 +120,8 @@ public sealed partial class CmgRunService : ICmgRunService
 
         WriteReports(options, tests);
         CmgTraceWriter.Write(options.TraceDirectory, tests);
+        var cleanupError = TryCleanPassedGifsAfterReports(tests, output);
+        if (cleanupError is not null) return new CmgRunResult(false, output, tests, cleanupError);
         return new CmgRunResult(tests.All(test => test.Success), output, tests, null);
     }
 
@@ -141,17 +143,20 @@ public sealed partial class CmgRunService : ICmgRunService
 
     private CmgTestResult RunTestWithRetries(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options)
     {
-        CmgTestResult? last = null;
+        if (!CmgGifRetentionPolicy.TryParse(test, out var retention, out var retentionError))
+            return new CmgTestResult(test.Name, test.SourcePath, false, [], retentionError, null, []);
+        var attempts = new List<CmgTestResult>();
         for (var attempt = 0; attempt <= options.Retries; attempt++)
         {
-            last = RunTest(test, remoteDebuggingUrl, options, attempt + 1);
-            if (last.Success)
+            var result = RunTest(test, remoteDebuggingUrl, options, attempt + 1);
+            attempts.Add(result);
+            if (result.Success)
             {
-                return last;
+                break;
             }
         }
 
-        return last ?? new CmgTestResult(test.Name, test.SourcePath, false, [], "Test did not run.", null, []);
+        return ApplyGifRetention(test, attempts, retention);
     }
 
     private CmgTestResult RunTest(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options, int attempt)

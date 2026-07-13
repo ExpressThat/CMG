@@ -818,3 +818,5 @@ Runtime `GIF_WARN_MULTIPLE_TARGETS`, `GIF_WARN_TINY_TARGET`, `GIF_WARN_SCROLLED`
 Conditional recording blocks propagate their original child failure after retaining the partial artifact. An unchanged/passing discard is not a failure and writes `GIF_SKIPPED` with `reason=unchanged`, `passed`, or `skipped`. `gifSnapshot` rejects a missing name, a body, or a negative/invalid `duration=`.
 
 Invalid runner GIF declarations fail the affected test before browser actions run. Errors name the declaration or mapped recording property, for example `test option gifQuality= must be one of: ...`, `test option fps= must be between 1 and 100`, or `test option scale= must be a number from 0.05 to 1`.
+
+Retention declarations fail before test actions when `gif=` is not `always`, `onFailure`, `onRetry`, or `off`; `gifSampleRate=` is below `1` or not an integer; or `gifCleanPassed=` is not boolean. Artifact deletion failures are reported as runner failures rather than silently claiming cleanup succeeded.
