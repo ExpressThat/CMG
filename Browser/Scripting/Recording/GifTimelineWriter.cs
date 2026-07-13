@@ -10,7 +10,8 @@ public static class GifTimelineWriter
         ScriptRecordingOptions options,
         GifFrameSink sink,
         IReadOnlyList<GifTimelineCheckpoint>? checkpoints = null,
-        IReadOnlyList<GifTimelineStep>? steps = null)
+        IReadOnlyList<GifTimelineStep>? steps = null,
+        IReadOnlyList<GifRedactionAuditEntry>? redactionAudit = null)
     {
         var fullPath = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(fullPath);
@@ -22,7 +23,7 @@ public static class GifTimelineWriter
         var gif = new FileInfo(gifPath);
         using var stream = File.Create(fullPath);
         using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
-        WritePayload(writer, gif, options, sink, checkpoints ?? [], steps ?? []);
+        WritePayload(writer, gif, options, sink, checkpoints ?? [], steps ?? [], redactionAudit ?? []);
         return fullPath;
     }
 
@@ -32,7 +33,8 @@ public static class GifTimelineWriter
         ScriptRecordingOptions options,
         GifFrameSink sink,
         IReadOnlyList<GifTimelineCheckpoint> checkpoints,
-        IReadOnlyList<GifTimelineStep> steps)
+        IReadOnlyList<GifTimelineStep> steps,
+        IReadOnlyList<GifRedactionAuditEntry> redactionAudit)
     {
         writer.WriteStartObject();
         writer.WriteNumber("version", 2);
@@ -55,7 +57,41 @@ public static class GifTimelineWriter
         writer.WriteEndArray();
         WriteCheckpoints(writer, checkpoints);
         WriteSteps(writer, steps);
+        WriteRedactions(writer, options.EffectiveRedaction, redactionAudit);
         WriteTiming(writer, options);
+        writer.WriteEndObject();
+    }
+
+    private static void WriteRedactions(
+        Utf8JsonWriter writer,
+        GifRedactionOptions options,
+        IReadOnlyList<GifRedactionAuditEntry> audit)
+    {
+        writer.WriteStartObject("redactions");
+        writer.WriteString("automatic", options.Auto.ToString().ToLowerInvariant());
+        writer.WriteBoolean("strict", options.Strict);
+        writer.WriteStartArray("initialRules");
+        foreach (var rule in options.EffectiveRules)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("locator", rule.Locator);
+            writer.WriteString("style", rule.Style.ToString().ToLowerInvariant());
+            writer.WriteNumber("padding", rule.Padding);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+        writer.WriteStartArray("audit");
+        foreach (var entry in audit)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("operation", entry.Operation);
+            writer.WriteString("locator", entry.Locator);
+            writer.WriteString("style", entry.Style);
+            writer.WriteNumber("frameIndex", entry.FrameIndex);
+            writer.WriteNumber("timeMilliseconds", entry.TimeMilliseconds);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
         writer.WriteEndObject();
     }
 

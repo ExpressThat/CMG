@@ -78,6 +78,11 @@ public sealed partial class ScriptGifRecorder
 
     public void CaptureFailureHold()
     {
+        if (redactionCaptureBlocked)
+        {
+            return;
+        }
+
         CaptureHoldFrame(options.HoldOnFailureMilliseconds);
         var index = timelineSteps.FindLastIndex(step => !step.Success);
         if (index >= 0 && frameSink.FrameCount > 0)

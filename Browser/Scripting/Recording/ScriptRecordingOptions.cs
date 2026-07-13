@@ -16,7 +16,8 @@ public sealed record ScriptRecordingOptions(
     string? TimelinePath = null,
     int FrameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
     GifEncodingOptions? Encoding = null,
-    GifFramingOptions? Framing = null)
+    GifFramingOptions? Framing = null,
+    GifRedactionOptions? Redaction = null)
 {
     public const int DefaultFrameDelayMilliseconds = 100;
 
@@ -35,6 +36,8 @@ public sealed record ScriptRecordingOptions(
     public GifEncodingOptions EffectiveEncoding => Encoding ?? new();
 
     public GifFramingOptions EffectiveFraming => Framing ?? Encoding?.Framing ?? new();
+
+    public GifRedactionOptions EffectiveRedaction => Redaction ?? new();
 
     public int FrameDelayCentiseconds => Math.Max(1, (FrameDelayMilliseconds + 9) / 10);
 }

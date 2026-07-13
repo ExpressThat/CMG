@@ -260,8 +260,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add frame recording inside iframes with visible page context.
 - Add automatic scroll-to-keep-target-visible behavior.
 - Add safe-area padding so pointer/captions are not clipped.
-- Add option to blur or mask page regions during GIF recording. CLI: repeatable `--gif-mask <selector>` and `--gif-blur <selector>` for coarse defaults.
-- Add `maskGif "<selector>"` and `unmaskGif "<selector>"` actions.
+- Implemented in the DSL: blur, solid, or replacement masks on recording scopes/blocks and individual actions. CLI repeatable `--gif-mask` / `--gif-blur` coarse defaults remain open.
+- Implemented: `maskGif` / `redactGif` / `redactText` and `unmaskGif` / `unredactGif` recording-only actions with live locator resolution.
 - Add redaction presets for emails, tokens, passwords, and credit-card-like text.
 - Add live element highlight outlines that follow the target through the action.
 - Add target zoom inset, like a magnifying glass, for tiny controls.
@@ -401,14 +401,14 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Privacy And Security
 
-- Add `redactText "<selector>"` action for GIF-only redaction.
-- Add automatic password input masking in recordings.
-- Add automatic token-like text masking.
-- Add `redact="<selector>"` and repeatable DSL redaction actions. CLI: repeatable `--gif-redact <selector>` only as a coarse whole-run safety default.
+- Implemented: `redactText "<selector>"` action for frame-only GIF redaction.
+- Implemented: automatic password input masking is the recording default.
+- Implemented: `autoRedact=sensitive` adds automatic token-like text and value masking.
+- Implemented in the DSL: semicolon-separated `redact="<selector>"` defaults and repeatable persistent redaction actions. CLI repeatable `--gif-redact <selector>` remains open as a coarse whole-run safety default.
 - Add per-project redaction config.
-- Add redaction audit metadata in reports.
-- Add fail-safe mode that refuses to record when unredacted password fields are visible.
-- Add blur, solid mask, and replacement text redaction styles.
+- Implemented: timeline JSON includes redaction configuration and frame/time audit entries without secret content.
+- Implemented: `redactionSafety=strict` refuses unsafe password-field capture without retrying an unsafe failure frame.
+- Implemented: blur, solid mask, and replacement text redaction styles.
 - Add option to hide URL bar or browser chrome if future capture includes chrome surfaces.
 - Add environment-variable controlled recording disable switch for sensitive CI. CLI/env: `CMG_DISABLE_GIF=1` and `--no-gif`.
 

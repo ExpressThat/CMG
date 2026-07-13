@@ -1,0 +1,11 @@
+test "records privacy-safe evidence" {
+  setContent "<style>html,body{margin:0;background:#f8fafc}main{padding:42px;font:16px system-ui}.row{display:grid;grid-template-columns:150px 1fr;gap:12px;margin:14px 0;max-width:600px}code,input{padding:8px;background:#fff;border:1px solid #94a3b8}</style><main><h1>Runner privacy evidence</h1><div class='row'><b>Account</b><span id='account'>Grace Hopper</span></div><div class='row'><b>Email</b><span id='email'>grace@example.test</span></div><div class='row'><b>Password</b><input id='password' type='password' value='classified'></div><div class='row'><b>API token</b><code id='token'>github_pat_abcdefghijklmnopqrstuvwxyz123456</code></div><button id='verify'>Verify</button><p id='status'>Pending</p></main>"
+  gif "runner privacy" output="demo-output/runner-gif-redaction.gif" timeline=true autoRedact=sensitive redact="#email" redactStyle=blur redactPadding=3 {
+    maskGif "#account" style=replacement replacement="Account hidden" padding=3
+    click "#verify"
+    evaluate "document.querySelector('#status').textContent = 'Verified'"
+    expectText "#status" "Verified"
+    unmaskGif "#account"
+    caption "Temporary account mask removed" duration=700
+  }
+}

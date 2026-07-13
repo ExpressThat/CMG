@@ -1,0 +1,11 @@
+setContent "<style>html,body{margin:0;background:#f8fafc}main{padding:42px;font:16px system-ui}.row{display:grid;grid-template-columns:150px 1fr;gap:12px;margin:14px 0;max-width:600px}code,input{padding:8px;background:#fff;border:1px solid #94a3b8}</style><main><h1>Privacy-safe evidence</h1><div class='row'><b>Account</b><span id='account'>Ada Lovelace</span></div><div class='row'><b>Email</b><span id='email'>ada@example.test</span></div><div class='row'><b>Password</b><input id='password' type='password' value='correct horse battery staple'></div><div class='row'><b>API token</b><code id='token'>ghp_abcdefghijklmnopqrstuvwxyz123456</code></div><button id='rotate'>Rotate token</button></main>"
+
+gif "privacy evidence" output="demo-output/gif-redaction.gif" timeline=true autoRedact=sensitive redact="#email" redactStyle=blur redactPadding=3 {
+  maskGif "#account" style=replacement replacement="Account hidden" padding=3
+  narrate "Protect account details before the action" {
+    click "#rotate"
+  }
+  caption "Password, token, email, and account details are protected" duration=700
+  unmaskGif "#account"
+  caption "The temporary account mask is removed" duration=700
+}

@@ -21,11 +21,17 @@ public sealed partial class ScriptGifRecorder : IDisposable
     private readonly List<GifTimelineCheckpoint> checkpoints = [];
     private readonly List<GifTimelineStep> timelineSteps = [];
     private readonly Dictionary<int, GifTimelineStepStart> activeTimelineSteps = [];
+    private readonly List<GifRedactionRule> redactions;
+    private readonly List<GifRedactionRule> actionRedactions = [];
+    private GifAutoRedactionMode activeAutoRedaction;
+    private bool activeStrictRedaction;
+    private readonly List<GifRedactionAuditEntry> redactionAudit = [];
     private readonly VirtualPointer pointer = new();
     private string? remoteDebuggingUrl;
     private bool cursorPressed;
     private bool cursorTrail;
     private bool cursorBreadcrumb;
+    private bool redactionCaptureBlocked;
     private PointerVisualOptions cursorVisual = PointerVisualOptions.Default;
     private int captureSuspensionDepth;
     private double playbackRate = 1d;
@@ -37,6 +43,9 @@ public sealed partial class ScriptGifRecorder : IDisposable
     {
         this.devToolsClient = devToolsClient;
         this.options = options;
+        redactions = [.. options.EffectiveRedaction.EffectiveRules];
+        activeAutoRedaction = options.EffectiveRedaction.Auto;
+        activeStrictRedaction = options.EffectiveRedaction.Strict;
         frameSink = new GifFrameSink(options.Quality, options.EffectiveEncoding, options.EffectiveFraming);
     }
 
@@ -70,6 +79,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
                 frameSink.FrameCount,
                 frameSink.DurationMilliseconds);
         }
+        ConfigureActionRedactions(action);
         var name = action.Name.ToLowerInvariant();
         CaptureConfiguredTitleCards(action);
         ApplyAutoCaption(action);
@@ -190,6 +200,9 @@ public sealed partial class ScriptGifRecorder : IDisposable
             frameSink.DurationMilliseconds,
             success ? null : endFrame,
             error));
+        actionRedactions.Clear();
+        activeAutoRedaction = options.EffectiveRedaction.Auto;
+        activeStrictRedaction = options.EffectiveRedaction.Strict;
     }
 
     private static bool IsClickAction(string name) =>

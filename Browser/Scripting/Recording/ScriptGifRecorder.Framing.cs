@@ -2,21 +2,29 @@ namespace CMG.Browser.Scripting.Recording;
 
 public sealed partial class ScriptGifRecorder
 {
-    private byte[] CapturePage(bool promoteMessageBar, bool allowCachedCrop = false)
+    private byte[] CapturePage(bool promoteMessageBar, bool allowCachedCrop = false, bool applyRedactions = true)
     {
         if (remoteDebuggingUrl is null) return [];
-        var framing = options.EffectiveFraming;
-        if (framing.CropSelector is null)
-            return devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar);
+        try
+        {
+            if (applyRedactions) PrepareRedactions();
+            var framing = options.EffectiveFraming;
+            if (framing.CropSelector is null)
+                return devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar);
 
-        var clip = allowCachedCrop && lastCropClip is not null
-            ? lastCropClip
-            : ResolveCropClip(framing);
+            var clip = allowCachedCrop && lastCropClip is not null
+                ? lastCropClip
+                : ResolveCropClip(framing);
 
-        return devToolsClient.GetPageScreenshot(
-            remoteDebuggingUrl,
-            promoteMessageBar,
-            options: new ScreenshotOptions(Clip: clip));
+            return devToolsClient.GetPageScreenshot(
+                remoteDebuggingUrl,
+                promoteMessageBar,
+                options: new ScreenshotOptions(Clip: clip));
+        }
+        finally
+        {
+            if (applyRedactions) RemoveRedactionOverlays();
+        }
     }
 
     private ScreenshotClip ResolveCropClip(GifFramingOptions framing)

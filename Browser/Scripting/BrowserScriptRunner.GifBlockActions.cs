@@ -23,7 +23,8 @@ public sealed partial class BrowserScriptRunner
                 GifBlockHold(action), GifBlockFailureHold(action), GifBlockPreClickHold(action), GifBlockPostClickHold(action),
                 GifBlockNavigationHold(action), GifBlockAssertionHold(action), GifBlockTimeline(action, gifPath), GifBlockFrameDelay(action),
                 GifEncodingOptions.FromOptions(action.Options, "gif", gifPath),
-                GifFramingOptions.FromOptions(action.Options, "gif")));
+                GifFramingOptions.FromOptions(action.Options, "gif"),
+                GifRedactionOptions.FromOptions(action.Options, "gif option")));
         var output = new List<string>();
         var failed = false;
         if (commandRecorder is null)

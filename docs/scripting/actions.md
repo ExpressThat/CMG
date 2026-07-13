@@ -1878,6 +1878,13 @@ Options:
 - `fps`: Default GIF frame rate from `1` to `100`.
 - `frameDelay`: Default GIF frame delay in milliseconds from `10` to `10000`. Overrides `fps`.
 - `timeline`: Default timeline JSON sidecar behavior for nested recording blocks.
+- `redact`: Semicolon-separated selectors or rich locators to mask on every inherited action frame.
+- `redactStyle`: Default redaction style: `solid`, `blur`, or `replacement`.
+- `redactColor`: CSS color used by solid masks and as the replacement background.
+- `redactReplacement`: Text shown by replacement masks. Defaults to `[redacted]`.
+- `redactPadding`: Extra CSS pixels around each explicit mask, from `0` to `100`.
+- `autoRedact`: Automatic masking mode: `passwords` (default), `sensitive`, or `none`.
+- `redactionSafety`: `standard` (default) or `strict`. Strict mode refuses a frame when any visible password input is not covered.
 
 ### `gif`, `recordVideo`, And `screencast`
 
@@ -1945,6 +1952,13 @@ Options:
 - `fps`: Optional frame rate from `1` to `100`. Defaults to `10`.
 - `frameDelay`: Optional frame delay in milliseconds from `10` to `10000`. Overrides `fps`.
 - `timeline`: Optional timeline JSON sidecar. Use `true` to write next to the GIF, `false` / `off` / `none` to disable, a directory to write `<gif-name>.timeline.json` inside it, or a `.json` path to write that exact file.
+- `redact`: Semicolon-separated selectors or rich locators to mask throughout the block.
+- `redactStyle`: `solid`, `blur`, or `replacement` for block-level `redact` rules.
+- `redactColor`: CSS mask color. Defaults to `#111827`.
+- `redactReplacement`: Replacement-mask text. Defaults to `[redacted]`.
+- `redactPadding`: Extra mask padding from `0` to `100` CSS pixels.
+- `autoRedact`: `passwords` (default), `sensitive`, or `none`. Sensitive mode also masks token-like values and text.
+- `redactionSafety`: `standard` (default) or `strict`. Strict mode aborts capture if a visible password field remains uncovered.
 
 Output:
 
@@ -1955,6 +1969,41 @@ Output:
 If the block fails while recording, CMG captures one extra final-state frame before writing the partial GIF. Non-GIF runs do not create a virtual pointer, timeline file, or failure frames.
 
 Automatic captions are recording-only. Default `fill` and `type` narration never includes the entered value. Set `captionPosition=auto` to place automatic captions opposite the target, and use action-level `autoCaptions=false` or `captionTemplate=` when one step needs different narration.
+
+### `maskGif`, `redactGif`, And `redactText`
+
+```text
+maskGif "#account" style=replacement replacement="Account hidden" padding=4
+redactGif getByLabel="Email" style=blur
+redactText "#api-token" style=solid color="#000000"
+```
+
+Adds a persistent GIF-only redaction. All three names are aliases. The action requires one selector or rich locator and accepts `style=solid|blur|replacement`, `color=`, `replacement=`, and `padding=0..100`. A later action using the same locator replaces the earlier rule. CMG resolves the locator again for every captured frame, so the mask follows a moved or remounted element.
+
+The overlay exists only while CMG takes a recording screenshot and is removed immediately afterward. It does not modify the element, its value, application state, pointer events, or normal browser interaction. The virtual pointer, click pulse, and CMG captions remain above masks. Use `solid` or `replacement` for security-sensitive evidence; `blur` is visual obscuration, not irreversible data removal.
+
+Output while recording:
+
+```text
+GIF_REDACT 003 target="#account" status=active
+```
+
+Without an active recording the action skips before resolving variables or locators:
+
+```text
+GIF_REDACT 003 status=skipped reason=no-active-recording
+```
+
+### `unmaskGif` And `unredactGif`
+
+```text
+unmaskGif "#account"
+unredactGif
+```
+
+Removes a persistent redaction by its exact locator. With no argument, it clears all persistent rules added by redaction actions. It does not remove inherited `redact=` rules while their recording scope remains active. Both names are aliases.
+
+Output is `GIF_UNREDACT <line> target="<locator>" status=active`, or `target=all` when every persistent rule is cleared. Without recording it reports `status=skipped reason=no-active-recording` and does not touch the page.
 
 ## Runner Convenience Actions
 

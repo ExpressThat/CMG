@@ -1,0 +1,6 @@
+recording autoRedact=none redactionSafety=strict {
+  gif "strict privacy failure" output="demo-output/gif-redaction-strict-failure.gif" {
+    setContent "<style>html,body{margin:0;background:#f8fafc}main{padding:42px;font:16px system-ui}</style><main><h1>Strict privacy check</h1><label>Password <input type='password' value='must-not-be-recorded'></label></main>"
+    caption "This frame must never be written"
+  }
+}

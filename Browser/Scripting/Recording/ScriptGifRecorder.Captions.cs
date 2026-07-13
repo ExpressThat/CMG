@@ -38,6 +38,10 @@ public sealed partial class ScriptGifRecorder
 
     public bool CaptureFailureCaption(BrowserScriptAction action, string reason)
     {
+        if (redactionCaptureBlocked)
+        {
+            return false;
+        }
         if (remoteDebuggingUrl is null || IsCaptureSuspended || IsFalse(action, "failureCaptions")) return false;
         var message = $"FAILED: {action.Name} (line {action.LineNumber})\n{Trim(reason, 220)}";
         devToolsClient.ShowMessageBar(remoteDebuggingUrl, message,

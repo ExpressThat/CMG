@@ -13,6 +13,7 @@ For the full catalogue of advanced examples, see the [cookbook reference](cookbo
 | Show pointer behavior | [Visual Evidence](#visual-evidence) | `demo-scripts\10-css-hover-states.cmgscript` |
 | Tune GIF quality | [Visual Evidence](#visual-evidence) | `demo-scripts\148-gif-quality.cmgscript` |
 | Choreograph GIF pointer movement | [Visual Evidence](#visual-evidence) | `demo-scripts\149-gif-pointer-choreography.cmgscript` |
+| Protect sensitive GIF evidence | [GIF Privacy](#gif-privacy) | `demo-scripts\174-gif-redaction.cmgscript` |
 | Show touch pointer and hide/show controls | [Visual Evidence](#visual-evidence) | `demo-scripts\155-touch-pointer-visibility.cmgscript` |
 | Style the virtual pointer for evidence | [Visual Evidence](#visual-evidence) | `demo-scripts\156-gif-pointer-styles.cmgscript` |
 | Reuse script logic | [Variables And Macros](#variables-and-macros) | `demo-scripts\30-control-flow-macros.cmgscript` |
@@ -166,6 +167,25 @@ cmg run demo-scripts\144-screenshot-mask-runner.cmgscript
 cmg browser control script --file demo-scripts\145-screenshot-deterministic.cmgscript
 cmg run demo-scripts\146-screenshot-deterministic-runner.cmgscript
 ```
+
+## GIF Privacy
+
+Record privacy-safe visual evidence without changing the application DOM or values:
+
+```powershell
+cmg browser control script --file demo-scripts\174-gif-redaction.cmgscript
+cmg run demo-scripts\175-gif-redaction-runner.cmgscript
+```
+
+The direct and runner demos use `autoRedact=sensitive`, an inherited blurred email mask, a replacement account mask, automatic password/token masks, normal virtual-pointer movement, a click pulse, captions, and timeline audit metadata. The account is deliberately revealed with `unmaskGif` only after the protected action is complete.
+
+The strict-safety demo intentionally exits `1` and writes no unsafe GIF because it disables automatic masking while a password field is visible:
+
+```powershell
+cmg browser control script --file demo-scripts\176-gif-redaction-strict-failure.cmgscript
+```
+
+Use solid or replacement masks for secrets. Blur preserves visual context but should not be treated as irreversible redaction. See [GIF Recording](gif-recording.md#privacy-and-redaction) for every option and the timeline audit shape.
 
 ## Variables And Macros
 

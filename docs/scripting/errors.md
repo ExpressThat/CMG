@@ -247,9 +247,19 @@ GIF_PAUSE 004 status=skipped reason=no-active-recording
 GIF_CHECKPOINT 005 status=skipped reason=no-active-recording
 GIF_SHOW_POINTER 006 status=skipped reason=no-active-recording
 GIF_HIDE_POINTER 007 status=skipped reason=no-active-recording
+GIF_REDACT 008 status=skipped reason=no-active-recording
+GIF_UNREDACT 009 status=skipped reason=no-active-recording
 ```
 
-`moveMouse`, `pauseGif`, `recordCheckpoint`, `showPointer`, and `hidePointer` are recording-only actions. When command-level `--gif` is not active and the action is outside a `gif`, `recordVideo`, or `screencast` block, CMG skips it instead of injecting a virtual pointer or writing timeline metadata. This is not a failure. In that skipped state, recording-only arguments, variables, scoped selectors, options, and child bodies are ignored because there is no active recording to apply them to.
+`moveMouse`, `pauseGif`, `recordCheckpoint`, `showPointer`, `hidePointer`, `maskGif` / `redactGif` / `redactText`, and `unmaskGif` / `unredactGif` are recording-only actions. When command-level `--gif` is not active and the action is outside a `gif`, `recordVideo`, or `screencast` block, CMG skips it instead of injecting a virtual pointer or writing timeline metadata. This is not a failure. In that skipped state, recording-only arguments, variables, scoped selectors, options, and child bodies are ignored because there is no active recording to apply them to.
+
+## GIF Redaction Safety Failure
+
+```text
+Line 2: gif failed. Error: GIF redaction safety blocked capture: 1 visible password field(s) are not masked.
+```
+
+`redactionSafety=strict` refuses to capture a frame if a visible password input is not covered. Keep the default `autoRedact=passwords`, use `autoRedact=sensitive`, or add an explicit `redact=` / `maskGif` rule. CMG does not attempt an unredacted failure screenshot after this error and writes no GIF when no safe frame exists.
 
 ## Invalid `moveMouse` Target
 

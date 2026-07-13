@@ -60,6 +60,7 @@ public sealed partial class BrowserScriptRunner
             "recordcheckpoint" => ExecuteRecordCheckpoint(action, recorder),
             "intro" or "outro" => ExecuteTitleCardAction(action, recorder),
             "showpointer" or "hidepointer" => ExecutePointerVisibilityAction(action, recorder),
+            "maskgif" or "redactgif" or "redacttext" or "unmaskgif" or "unredactgif" => ExecuteGifRedactionAction(action, recorder),
             "html" => ExecuteHtml(remoteDebuggingUrl, automationClient, action),
             "textcontent" or "innertext" or "inputvalue" or "getattribute" or "computedstyle" or "property" or
             "count" or "locatorcount" or "boundingbox" or "alltextcontents" or "allinnertexts" =>
@@ -177,5 +178,10 @@ public sealed partial class BrowserScriptRunner
         name.Equals("intro", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("outro", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("showPointer", StringComparison.OrdinalIgnoreCase) ||
-        name.Equals("hidePointer", StringComparison.OrdinalIgnoreCase);
+        name.Equals("hidePointer", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("maskGif", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("redactGif", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("redactText", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("unmaskGif", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("unredactGif", StringComparison.OrdinalIgnoreCase);
 }

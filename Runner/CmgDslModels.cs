@@ -77,7 +77,8 @@ public sealed record CmgRunOptions(
     long? GifWarnSizeBytes = null,
     long? GifMaxSizeBytes = null,
     int? GifMaxDurationMilliseconds = null,
-    GifEncodingOptions? GifEncoding = null);
+    GifEncodingOptions? GifEncoding = null,
+    GifRedactionOptions? GifRedaction = null);
 
 public sealed partial record CmgRunResult(
     bool Success,

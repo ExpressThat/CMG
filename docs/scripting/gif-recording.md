@@ -289,6 +289,8 @@ Recording-only actions capture frames only when GIF recording is active. Without
 - `recordCheckpoint "<name>"` reports `GIF_CHECKPOINT <line> status=skipped reason=no-active-recording`.
 - `showPointer` reports `GIF_SHOW_POINTER <line> status=skipped reason=no-active-recording`.
 - `hidePointer` reports `GIF_HIDE_POINTER <line> status=skipped reason=no-active-recording`.
+- `maskGif`, `redactGif`, and `redactText` report `GIF_REDACT <line> status=skipped reason=no-active-recording`.
+- `unmaskGif` and `unredactGif` report `GIF_UNREDACT <line> status=skipped reason=no-active-recording`.
 - Inside block `dragAndDrop`, choreography-only children also skip without an active recorder: `delay` reports `GIF_DRAG_DELAY <line> status=skipped reason=no-active-recording`, `hover` reports `GIF_DRAG_HOVER <line> status=skipped reason=no-active-recording`, `moveMouse` keeps the normal `GIF_MOVE_MOUSE` skipped line, `pauseGif` keeps the normal `GIF_PAUSE` skipped line, `recordCheckpoint` keeps the normal `GIF_CHECKPOINT` skipped line, `showPointer` keeps the normal `GIF_SHOW_POINTER` skipped line, and `hidePointer` keeps the normal `GIF_HIDE_POINTER` skipped line. Prep children such as `scrollIntoView` and `waitForElement` still run before the fallback native drag.
 
 Use `recordCheckpoint "<name>"` to add a named marker to timeline JSON without adding a frame:
@@ -323,6 +325,30 @@ gif "failure evidence" holdOnFailure=1800 {
 ```
 
 When the wrapped block, direct script, or test fails, CMG captures one extra final-state frame before writing the partial GIF. This only happens when a GIF recorder is active; non-GIF runs do not inject the virtual pointer or capture failure frames.
+
+## Privacy And Redaction
+
+GIF recordings automatically mask visible password inputs. Set `autoRedact=sensitive` on `recording`, `withRecording`, `gif`, `recordVideo`, or `screencast` to also mask common token-like values and text, including Bearer/JWT values and common GitHub, Slack, and API-key prefixes. Set `autoRedact=none` only when the recording is known to contain no secrets.
+
+Use `redact="<locator>"` for a block default. Separate multiple locators with semicolons. Configure it with `redactStyle=solid|blur|replacement`, `redactColor=`, `redactReplacement=`, and `redactPadding=0..100`:
+
+```text
+gif "privacy-safe evidence" autoRedact=sensitive redact="getByLabel=Email;#customer-id" redactStyle=solid {
+  maskGif "#account" style=replacement replacement="Account hidden"
+  click "#rotate-token"
+  unmaskGif "#account"
+}
+```
+
+`maskGif`, `redactGif`, and `redactText` add the same persistent rule during a recording. `unmaskGif` and `unredactGif` remove a matching persistent rule; omit the locator to clear all persistent action rules. Scoped `redact=` rules remain active until their scope ends. All redaction actions skip without an active GIF and do not inject the virtual pointer.
+
+CMG creates masks immediately before each screenshot and removes them immediately afterward. Locators are resolved live on every frame, so masks follow remounted or moving elements. The page value and application state are unchanged, and the virtual pointer, click pulse, drag evidence, and captions remain visible above masks.
+
+Use solid or replacement masks when disclosure would be unsafe. Blur is intended for readable visual context, but it is not irreversible redaction. Retained PNG frames use the same masks as the encoded GIF.
+
+Set `redactionSafety=strict` when CMG must refuse to capture a visible unmasked password field. The recording fails with a precise `GIF redaction safety blocked capture` reason, does not retry an unsafe failure frame, and writes no artifact when no safe frame was captured. `standard` is the default.
+
+Timeline JSON includes the effective automatic mode, strict setting, initial locator/style/padding rules, and add/remove audit entries with frame and time positions. It never records replacement text, colors, or page contents.
 
 ## `moveMouse`
 

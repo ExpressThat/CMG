@@ -53,7 +53,7 @@ public sealed partial class ScriptGifRecorder
         frameSink.Save(OutputPath);
         if (frameSink.FrameCount > 0 && !string.IsNullOrWhiteSpace(options.TimelinePath))
         {
-            TimelinePath = GifTimelineWriter.Write(options.TimelinePath, OutputPath, options, frameSink, checkpoints, timelineSteps);
+            TimelinePath = GifTimelineWriter.Write(options.TimelinePath, OutputPath, options, frameSink, checkpoints, timelineSteps, redactionAudit);
         }
     }
 
