@@ -515,7 +515,7 @@ Whole-run recordings can use `--gif-reduced-motion` and `--gif-high-contrast-poi
 
 ## Privacy And Redaction
 
-GIF recordings automatically mask visible password inputs. Set `autoRedact=sensitive` on `recording`, `withRecording`, `gif`, `recordVideo`, or `screencast` to also mask common token-like values and text, including Bearer/JWT values and common GitHub, Slack, and API-key prefixes. Set `autoRedact=none` only when the recording is known to contain no secrets.
+GIF recordings automatically mask visible password inputs. Use `autoRedact=tokens`, `emails`, or `payment` for focused presets, or `autoRedact=privacy` to combine password, token, email, and payment-card-like detection. Token detection covers Bearer/JWT values and common GitHub, Slack, and API-key prefixes; `sensitive` remains an alias for `tokens`. Set `autoRedact=none` only when the recording is known to contain no secrets. Automatic matching masks the containing element, so explicit selectors remain preferable when a page mixes sensitive and public text in one element.
 
 Use `redact="<locator>"` for a block default. Separate multiple locators with semicolons. Configure it with `redactStyle=solid|blur|replacement`, `redactColor=`, `redactReplacement=`, and `redactPadding=0..100`:
 

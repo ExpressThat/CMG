@@ -47,7 +47,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-redact <selector>`: Repeatable solid-mask selector for every command-level test GIF.
 - `--gif-mask <selector>`: Repeatable alias-style solid mask.
 - `--gif-blur <selector>`: Repeatable blur selector; combines with solid-mask defaults.
-- `--gif-auto-redact <passwords|sensitive|none>`: Automatic whole-run privacy masking. Defaults to `passwords`.
+- `--gif-auto-redact <passwords|tokens|emails|payment|privacy|none>`: Automatic whole-run privacy masking. `privacy` combines password, token, email, and payment-card-like detection. Defaults to `passwords`; `sensitive` remains an alias for `tokens`.
 - `--gif-redaction-safety <standard|strict>`: Strict mode blocks capture when sensitive content remains visible.
 - `--keep-frames <directory>`: Keep exact pre-encoding PNG frames. Each test writes to `<directory>/<gif-name>/frame-NNNN.png`, including retry suffixes, so parallel tests do not overwrite one another.
 - `--gif-crop <selector-or-rich-locator>`: Clip each test GIF frame to current target bounds.

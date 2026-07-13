@@ -75,7 +75,7 @@ public sealed partial class ScriptGifRecorder
         if (activeAutoRedaction is not GifAutoRedactionMode.None)
         {
             devToolsClient.Evaluate(remoteDebuggingUrl, BrowserDomScripts.AddAutomaticGifRedactions(
-                activeAutoRedaction is GifAutoRedactionMode.Sensitive));
+                activeAutoRedaction.ToString().ToLowerInvariant()));
         }
 
         if (activeStrictRedaction)

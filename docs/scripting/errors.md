@@ -259,7 +259,7 @@ GIF_UNREDACT 009 status=skipped reason=no-active-recording
 Line 2: gif failed. Error: GIF redaction safety blocked capture: 1 visible password field(s) are not masked.
 ```
 
-`redactionSafety=strict` refuses to capture a frame if a visible password input is not covered. Keep the default `autoRedact=passwords`, use `autoRedact=sensitive`, or add an explicit `redact=` / `maskGif` rule. CMG does not attempt an unredacted failure screenshot after this error and writes no GIF when no safe frame exists.
+`redactionSafety=strict` refuses to capture a frame if a visible password input is not covered. Keep the default `autoRedact=passwords`, use a broader `tokens`, `emails`, `payment`, or `privacy` preset, or add an explicit `redact=` / `maskGif` rule. CMG does not attempt an unredacted failure screenshot after this error and writes no GIF when no safe frame exists.
 
 ## Invalid `moveMouse` Target
 

@@ -251,7 +251,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add safe-area padding so pointer/captions are not clipped.
 - Implemented: blur, solid, and replacement DSL masks plus repeatable whole-run `--gif-redact`, `--gif-mask`, and `--gif-blur` coarse defaults.
 - Implemented: `maskGif` / `redactGif` / `redactText` and `unmaskGif` / `unredactGif` recording-only actions with live locator resolution.
-- Add redaction presets for emails, tokens, passwords, and credit-card-like text.
+- Implemented: `autoRedact` presets cover passwords, tokens, emails, payment-card-like text, and combined privacy masking through DSL, CLI, and project settings.
 - Add live element highlight outlines that follow the target through the action.
 - Add target zoom inset, like a magnifying glass, for tiny controls.
 - Add mini-map or viewport position indicator for long pages.
@@ -287,7 +287,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `showNetworkActivity {}` is a scoped alias for privacy-safe network event captions.
 - Implemented: `showConsoleActivity {}` is a scoped alias for privacy-safe console/page-error event captions.
 - Implemented: `recordVariable` adds bounded state captions with default masking for secret-like variable names and explicit `reveal=true` override.
-- Add dry-run validation that reports recording settings without launching the browser.
+- Implemented: `--preview-gif-settings` performs browser-free static recording validation and reports effective scoped settings.
 
 ## Test Runner And Reports
 

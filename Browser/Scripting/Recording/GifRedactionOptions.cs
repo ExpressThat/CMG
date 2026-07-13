@@ -4,7 +4,10 @@ public enum GifAutoRedactionMode
 {
     None,
     Passwords,
-    Sensitive
+    Sensitive,
+    Emails,
+    Payment,
+    Privacy
 }
 
 public enum GifRedactionStyle
@@ -61,9 +64,12 @@ public sealed record GifRedactionOptions(
         value?.Trim().ToLowerInvariant() switch
         {
             null or "" or "passwords" or "password" or "true" or "on" => GifAutoRedactionMode.Passwords,
-            "sensitive" or "tokens" or "all" => GifAutoRedactionMode.Sensitive,
+            "sensitive" or "tokens" => GifAutoRedactionMode.Sensitive,
+            "emails" or "email" => GifAutoRedactionMode.Emails,
+            "payment" or "payments" or "cards" => GifAutoRedactionMode.Payment,
+            "privacy" or "all" => GifAutoRedactionMode.Privacy,
             "none" or "false" or "off" => GifAutoRedactionMode.None,
-            _ => throw new ScriptExecutionException($"{source} autoRedact= must be passwords, sensitive, or none.")
+            _ => throw new ScriptExecutionException($"{source} autoRedact= must be passwords, tokens, emails, payment, privacy, or none.")
         };
 
     private static bool ParseStrict(string? value, string source) =>

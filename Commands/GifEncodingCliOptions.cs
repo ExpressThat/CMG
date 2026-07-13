@@ -80,7 +80,7 @@ internal sealed record GifEncodingCliOptions(
             new Option<string[]>("--gif-redact") { Description = "Solid-mask a selector in every GIF frame. Repeatable." },
             new Option<string[]>("--gif-mask") { Description = "Alias-style solid mask selector. Repeatable." },
             new Option<string[]>("--gif-blur") { Description = "Blur a selector in every GIF frame. Repeatable." },
-            new Option<string?>("--gif-auto-redact") { Description = "Automatic redaction: passwords, sensitive, or none." },
+            new Option<string?>("--gif-auto-redact") { Description = "Automatic redaction: passwords, tokens, emails, payment, privacy, or none." },
             new Option<string?>("--gif-redaction-safety") { Description = "Redaction safety: standard or strict." });
     }
 

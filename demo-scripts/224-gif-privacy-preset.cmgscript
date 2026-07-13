@@ -1,0 +1,4 @@
+setContent "<main style='min-height:520px;padding:32px;background:#f8fafc;color:#172033'><h1>Privacy preset</h1><p id='email'>ada@example.test</p><p id='token'>github_pat_demo_secret_value</p><p id='card'>4242 4242 4242 4242</p><button id='save' onclick='this.textContent=\"Saved\"'>Save</button></main>"
+gif "privacy preset" output="demo-output/224-privacy.gif" autoRedact=privacy {
+  click "#save"
+}

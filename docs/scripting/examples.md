@@ -738,6 +738,16 @@ cmg run demo-scripts\223-gif-cli-redaction-runner.cmgscript --gif demo-output\22
 
 Solid and blur rules combine. Repeat an option for multiple selectors. The same defaults can be stored as root/project `gifSettings.redact`, `mask`, and `blur` arrays. Rules are applied only around frame capture and create no page overlays or virtual pointer without recording.
 
+For broad capture safety, `autoRedact=privacy` combines all automatic detectors:
+
+```text
+gif "privacy preset" autoRedact=privacy {
+  click "#save"
+}
+```
+
+See demo 224. Prefer explicit `redact=` selectors when sensitive and public text share one element.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

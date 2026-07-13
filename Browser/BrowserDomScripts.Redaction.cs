@@ -51,21 +51,32 @@ public static partial class BrowserDomScripts
         })()
         """;
 
-    public static string AddAutomaticGifRedactions(bool sensitive) =>
+    public static string AddAutomaticGifRedactions(string mode) =>
         $$"""
         (() => {
+          const mode = {{JsonString(mode)}};
           let index = 0;
           const add = element => window.__cmgAddGifRedaction?.(element, `auto-${++index}`, 'solid', '#111827', '[redacted]', 2);
           document.querySelectorAll('input[type="password"]').forEach(add);
-          if ({{sensitive.ToString().ToLowerInvariant()}}) {
-            const pattern = /(?:bearer\s+[a-z0-9._~+/=-]{12,}|\beyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}|\b(?:sk|pk|ghp|github_pat|xox[baprs])[-_][a-zA-Z0-9_-]{12,})/i;
+          const patterns = [];
+          if (['sensitive', 'privacy'].includes(mode)) {
+            patterns.push(/(?:bearer\s+[a-z0-9._~+/=-]{12,}|\beyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}|\b(?:sk|pk|ghp|github_pat|xox[baprs])[-_][a-zA-Z0-9_-]{12,})/i);
+          }
+          if (['emails', 'privacy'].includes(mode)) {
+            patterns.push(/\b[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+\b/i);
+          }
+          if (['payment', 'privacy'].includes(mode)) {
+            patterns.push(/(?:\d[ -]*?){13,19}/);
+          }
+          if (patterns.length) {
+            const matches = value => patterns.some(pattern => pattern.test(value));
             document.querySelectorAll('input,textarea,[data-token],[data-secret]').forEach(element => {
               const value = element.value ?? element.textContent ?? '';
-              if (pattern.test(value)) add(element);
+              if (matches(value)) add(element);
             });
             const walker = document.createTreeWalker(document.body ?? document.documentElement, NodeFilter.SHOW_TEXT);
             const elements = new Set();
-            while (walker.nextNode()) if (pattern.test(walker.currentNode.nodeValue ?? '')) elements.add(walker.currentNode.parentElement);
+            while (walker.nextNode()) if (matches(walker.currentNode.nodeValue ?? '')) elements.add(walker.currentNode.parentElement);
             elements.forEach(element => element && add(element));
           }
           return index;

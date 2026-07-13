@@ -1941,7 +1941,7 @@ Options:
 - `redactColor`: CSS color used by solid masks and as the replacement background.
 - `redactReplacement`: Text shown by replacement masks. Defaults to `[redacted]`.
 - `redactPadding`: Extra CSS pixels around each explicit mask, from `0` to `100`.
-- `autoRedact`: Automatic masking mode: `passwords` (default), `sensitive`, or `none`.
+- `autoRedact`: Automatic masking mode: `passwords` (default), `tokens`, `emails`, `payment`, `privacy`, or `none`. `privacy` combines every preset; `sensitive` aliases `tokens`.
 - `redactionSafety`: `standard` (default) or `strict`. Strict mode refuses a frame when any visible password input is not covered.
 - `accessibilityEvidence`: Enables keystroke, focus, accessible-name, high-contrast, and contrast-warning evidence for inherited frames.
 - `showKeystrokes`: Shows safe key/chord labels. Text-entry values are never included.
@@ -2065,7 +2065,7 @@ Options:
 - `redactColor`: CSS mask color. Defaults to `#111827`.
 - `redactReplacement`: Replacement-mask text. Defaults to `[redacted]`.
 - `redactPadding`: Extra mask padding from `0` to `100` CSS pixels.
-- `autoRedact`: `passwords` (default), `sensitive`, or `none`. Sensitive mode also masks token-like values and text.
+- `autoRedact`: `passwords` (default), `tokens`, `emails`, `payment`, `privacy`, or `none`. `privacy` combines every preset; `sensitive` aliases `tokens`.
 - `redactionSafety`: `standard` (default) or `strict`. Strict mode aborts capture if a visible password field remains uncovered.
 
 Output:

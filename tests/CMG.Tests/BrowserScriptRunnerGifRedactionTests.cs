@@ -77,6 +77,24 @@ public sealed class BrowserScriptRunnerGifRedactionTests
         Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("GIF redaction safety blocked capture", StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("emails", GifAutoRedactionMode.Emails, "@")]
+    [InlineData("payment", GifAutoRedactionMode.Payment, "13,19")]
+    [InlineData("privacy", GifAutoRedactionMode.Privacy, "patterns.push")]
+    public void AutomaticRedactionPresets_InstallExpectedDetection(
+        string value, GifAutoRedactionMode expected, string scriptFragment)
+    {
+        using var artifact = new TempGifArtifact();
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText($"recording autoRedact={value} {{ caption \"safe\" }}", "debug", client, artifact.Gif);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(expected, GifRedactionOptions.FromOptions(
+            new Dictionary<string, string> { ["autoRedact"] = value }, "test").Auto);
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains(scriptFragment, StringComparison.Ordinal));
+    }
+
     [Fact]
     public void Recording_DefaultsToAutomaticPasswordMasking()
     {
@@ -140,7 +158,7 @@ public sealed class BrowserScriptRunnerGifRedactionTests
     }
 
     [Theory]
-    [InlineData("autoRedact", "sometimes", "passwords, sensitive, or none")]
+    [InlineData("autoRedact", "sometimes", "passwords, tokens, emails, payment, privacy, or none")]
     [InlineData("redactionSafety", "paranoid", "standard or strict")]
     [InlineData("redactPadding", "101", "between 0 and 100")]
     public void InvalidPrivacyOptions_ExplainAcceptedValues(string name, string value, string expected)

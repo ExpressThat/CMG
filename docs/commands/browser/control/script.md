@@ -55,7 +55,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-redact <selector>`: Solid-mask a selector in every command-level GIF frame. Repeatable.
 - `--gif-mask <selector>`: Alias-style repeatable solid mask for `--gif-redact`.
 - `--gif-blur <selector>`: Blur a selector in every command-level GIF frame. Repeatable and combinable with solid masks.
-- `--gif-auto-redact <passwords|sensitive|none>`: Automatic whole-run privacy masking. Defaults to `passwords`.
+- `--gif-auto-redact <passwords|tokens|emails|payment|privacy|none>`: Automatic whole-run privacy masking. `privacy` combines password, token, email, and payment-card-like detection. Defaults to `passwords`; `sensitive` remains an alias for `tokens`.
 - `--gif-redaction-safety <standard|strict>`: Strict mode blocks capture if sensitive content remains visibly unmasked.
 - `--keep-frames <directory>`: Keep each final pre-quantization PNG as `frame-NNNN.png` in this directory. Cropping and scaling are already applied.
 - `--gif-crop <selector-or-rich-locator>`: Clip each command-level GIF frame to current target bounds.
