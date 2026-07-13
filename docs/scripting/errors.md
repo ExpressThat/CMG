@@ -826,3 +826,5 @@ CLI retention setup fails before browser connection when `--gif-sample-rate` is 
 `showMouseButtons=` accepts only boolean values. Activity overlay blocks require a body and no positional arguments; child action failures propagate normally. Without an active recorder, the blocks do not validate or inject visual evidence, but their child browser actions still run.
 
 `GIF_SETTINGS_WARN ... reason=gif-alias`, `GIF_SETTINGS_WARN ... reason=long-recording-block`, runtime `GIF_ALIAS_WARN`, and runner `GIF_RETENTION_WARN` are authoring guidance, not errors. They are written to stdout, preserve otherwise successful exit code `0`, and never require a browser when produced by `--preview-gif-settings` or `cmg run --list`.
+
+`GIF_DISABLED` and `GIF_SKIPPED ... reason=recording-disabled` are intentional privacy-policy diagnostics, not failures. The wrapped actions still determine success or failure; suppressed recording never injects a virtual pointer or creates a partial artifact.

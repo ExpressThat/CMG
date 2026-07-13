@@ -44,6 +44,7 @@ cmg --firefox browser control script --file <path>
 
 For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--file -`. PowerShell parses quotes before CMG receives `--inline`, so nested DSL, CSS, and JavaScript quotes are inherently easier to preserve through a file or stdin.
 - `--gif <path>`: Optional output path for an animated GIF recording of the script run.
+- `--no-gif`: Disable command-level GIF capture and every script recording block while still executing child actions. This prevents screenshots and virtual-pointer injection. `CMG_DISABLE_GIF=1` provides the same process-wide switch; enabled values are `1`, `true`, `yes`, and `on` (case-insensitive).
 - `--gif-quality <archival|highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. `archival` prioritizes frame-local color fidelity over file size. Defaults to `highest`.
 - `--gif-dither <none|floyd-steinberg|bayer|atkinson|sierra>`: Override the quality preset's dithering algorithm for command-level `--gif`.
 - `--gif-palette <global|local|adaptive>`: Override the GIF color table. `adaptive` currently uses frame-local tables.
@@ -136,6 +137,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - GIF quality defaults to `highest`, which uses CMG's most color-faithful palette matching and dithering. Use `high`, `medium`, or `low` only when smaller/faster GIF artifacts matter more than color fidelity.
 - The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
 - Script-level `gif "name" { ... }`, `recordVideo "name" { ... }`, and `screencast "name" { ... }` blocks record only the wrapped actions when `--gif` is not provided.
+- With `--no-gif` or enabled `CMG_DISABLE_GIF`, stdout emits `GIF_DISABLED source=<cli|environment>` and each suppressed block emits `GIF_SKIPPED <line> status=skipped reason=recording-disabled source=<cli|environment>`. Child actions still run; no GIF, retained frame, screenshot, recording overlay, or virtual pointer is created.
 - `gifIfChanged` / `gif.ifChanged` writes only when final page pixels differ from its baseline; `gifOnFailure` / `gif.onFailure` writes only for a failed block. `gifSnapshot` / `gif.snapshot` adds a named hold to an active recorder.
 - When `--gif` is provided, the whole script is recorded and nested block recordings are suppressed.
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.

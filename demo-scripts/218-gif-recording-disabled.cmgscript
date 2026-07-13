@@ -1,0 +1,11 @@
+setContent "<main><button id='increment' onclick='document.querySelector(\"#count\").textContent=\"1\"'>Increment</button><output id='count'>0</output></main>"
+
+gif "private flow" output="demo-output/218-should-not-exist.gif" {
+  click "#increment"
+  assertText "#count" "1"
+  if (evaluate "document.querySelector('[data-cmg-virtual-pointer]') === null") {
+    assertText "#count" "1"
+  } else {
+    fail "Virtual pointer must not exist while GIF recording is disabled."
+  }
+}

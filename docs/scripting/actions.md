@@ -2018,6 +2018,7 @@ These options may be inherited from `recording` / `withRecording` when a nested 
 Crop bounds are re-resolved before every frame, so a moving or resizing panel remains framed. CMG clips the browser capture after placing the virtual pointer and overlays, then scales the resulting bitmap; pointer coordinates therefore stay aligned. Title cards reuse the most recent crop bounds while their temporary card hides page content.
 
 Records only the wrapped actions when direct `browser control script` or `cmg run` is used without command-level `--gif`. If command-level `--gif` is used, the entire script or test is recorded and nested `gif` blocks do not create separate GIFs.
+With command-level `--no-gif` or enabled `CMG_DISABLE_GIF`, every recording-block alias executes its children with no recorder and emits `GIF_SKIPPED <line> status=skipped reason=recording-disabled source=<cli|environment>`. No screenshot, artifact, recording overlay, or virtual pointer is created.
 `recordVideo` and `screencast` are provider-style aliases for the same CMG GIF recorder. Output is still an animated GIF so the virtual pointer, pointer events, drag ghost behavior, and captions remain consistent. At runtime either alias emits `GIF_ALIAS_WARN <line> action=<alias> format=gif suggestion=use-gif`; the warning is advisory and does not alter the artifact or exit code. Use `gif` when GIF output is intended.
 
 Options:

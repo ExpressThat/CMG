@@ -16,6 +16,9 @@ public sealed partial class BrowserScriptRunner
             throw new ScriptExecutionException("gif requires a block body.");
         }
 
+        if (GifRecordingPolicy.IsDisabled)
+            return ExecuteDisabledGifBlock(remoteDebuggingUrl, automationClient, action, context);
+
         var gifPath = GifBlockPath(action);
         var recorder = commandRecorder ?? new ScriptGifRecorder(
             automationClient,

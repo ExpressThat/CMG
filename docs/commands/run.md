@@ -31,6 +31,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 ## Options
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
+- `--no-gif`: Privacy kill switch that disables command-level and nested script GIFs without skipping test actions. `CMG_DISABLE_GIF=1` is the environment equivalent and also accepts `true`, `yes`, or `on` case-insensitively.
 - `--gif-retention <always|onFailure|onRetry|off>`: Coarse whole-run retention default. `always` keeps every attempted command GIF, `onFailure` keeps attempts only when the final test result fails, `onRetry` keeps failed attempts, and `off` disables command-level capture while leaving explicit focused blocks active.
 - `--gif-on-failure`: Alias-style intent flag for `--gif-retention onFailure`. It cannot be combined with `--gif-retention` or `--gif-on-retry`.
 - `--gif-on-retry`: Alias-style intent flag for `--gif-retention onRetry`. It cannot be combined with `--gif-retention` or `--gif-on-failure`.
@@ -152,6 +153,8 @@ Failures may include action output before the failing test line. Declaration-ski
 `GIF_RETENTION` reports artifacts removed while retry/failure policy is resolved. `GIF_CLEAN_PASSED` is emitted after report and trace generation. Both are stdout diagnostics and do not change the exit code. Reports receive the retained artifact metadata before `gifCleanPassed=true` cleanup occurs.
 
 `GIF_RETENTION_WARN` is an advisory stdout line emitted when command-level `--gif` would retain every selected test in a file and the post-filter, post-shard selection exceeds 20 tests. It is also emitted by browser-free `--list`. Use `--gif-on-failure`, `--gif-on-retry`, `--gif-sample-rate`, `--gif-clean-passed`, or equivalent suite/test declarations when that volume is unintended. The warning does not change selection, recording, or exit status.
+
+`GIF_DISABLED source=<cli|environment>` confirms the privacy kill switch is active. Explicit recording blocks emit `GIF_SKIPPED <line> status=skipped reason=recording-disabled source=<cli|environment>` but execute their children. Suppression creates no GIF paths, screenshots, recording UI, or virtual pointer and silences retention-volume warnings. It does not change test status or exit code.
 
 `GIF_FAILURE_CAPTION` confirms that CMG wrote an explicit visual failure explanation into the partial test GIF. The full failure reason remains available in stderr and structured reports.
 Parameterized tests print and report their expanded names, for example `TEST LIST run opens profile`. Project runs include the project name in brackets, for example `TEST LIST run [firefox-smoke] checkout`.

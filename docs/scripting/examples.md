@@ -700,6 +700,16 @@ cmg run demo-scripts\217-gif-large-suite-warning-runner.cmgscript --list --gif d
 
 Both commands run without a browser. The first identifies GIF-producing provider aliases and focused recording blocks with more than 20 descendant actions. The second suggests failure, retry, sampling, or cleanup retention when a command-level GIF would retain every test in a large selection. The warnings are advisory and preserve exit code `0` for otherwise valid input.
 
+## Disable Recording For Sensitive Runs
+
+```powershell
+cmg browser control script --file demo-scripts\218-gif-recording-disabled.cmgscript --gif demo-output\218-whole-run.gif --no-gif
+$env:CMG_DISABLE_GIF = "1"
+cmg run tests --gif artifacts\gifs
+```
+
+The kill switch suppresses whole-run and nested recording, but actions inside recording blocks still execute. No screenshots, recording overlays, or virtual pointer are created. Unset `CMG_DISABLE_GIF` after the sensitive CI step when later commands should record normally.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

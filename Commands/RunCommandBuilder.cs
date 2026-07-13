@@ -12,8 +12,7 @@ public sealed partial class RunCommandBuilder
         var pathArgument = new Argument<string>("path") { Description = "A CMG script file or folder containing .cmgscript files." };
         var configOption = new Option<FileInfo?>("--config") { Description = "JSON run config file. CLI options override config values." };
         var projectOption = new Option<string?>("--project") { Description = "Named project from the run config." };
-        var gifOption = new Option<DirectoryInfo?>("--gif") { Description = "Write per-test GIF recordings to this directory." };
-        gifOption.Aliases.Add("-gif");
+        var gifOption = new Option<DirectoryInfo?>("--gif") { Description = "Write per-test GIF recordings to this directory." }; var noGifOption = new Option<bool>("--no-gif") { Description = "Disable command-level and script-block GIF recording." }; gifOption.Aliases.Add("-gif");
         var gifQualityOption = new Option<string>("--gif-quality")
         {
             Description = "GIF quality for --gif recordings: archival, highest, high, medium, or low.",
@@ -61,7 +60,7 @@ public sealed partial class RunCommandBuilder
         var envOption = new Option<string[]>("--env") { Description = "Alias for --var, useful for CI or agent-provided values." };
         var command = new Command("run", "Run CMG DSL tests with visual artifacts.")
         {
-            pathArgument, configOption, projectOption, gifOption, gifQualityOption,
+            pathArgument, configOption, projectOption, gifOption, noGifOption, gifQualityOption,
             encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames,
             encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight, encodingOptions.Viewport, encodingOptions.PixelRatio, encodingOptions.Debug, encodingOptions.Accessibility, encodingOptions.EventCaptions, encodingOptions.Intro, encodingOptions.Outro, encodingOptions.IntroDuration, encodingOptions.OutroDuration, encodingOptions.ResultOutro, encodingOptions.DisableCoalescing, encodingOptions.SampleEvery, encodingOptions.PointerContrast, encodingOptions.PointerCallout, encodingOptions.PointerCalloutThreshold, encodingOptions.DisableFocusPulse, encodingOptions.PointerIdle, encodingOptions.PointerIdleThreshold, encodingOptions.DisableTeleportMarker, encodingOptions.MouseDownHold, encodingOptions.Background, encodingOptions.GradientMode, encodingOptions.HighContrastPalette,
             pointerDurationOption,
@@ -110,6 +109,7 @@ public sealed partial class RunCommandBuilder
         };
         command.SetAction(parseResult =>
         {
+            using var gifSuppression = GifRecordingPolicy.Suppress(parseResult.GetValue(noGifOption)); if (GifRecordingPolicy.IsDisabled) Console.WriteLine($"GIF_DISABLED source={GifRecordingPolicy.DisabledSource}");
             if (!RunConfigReader.TryRead(parseResult.GetValue(configOption), out var config, out var configError))
             { Console.Error.WriteLine(configError); return 1; }
             if (!TrySelectProject(parseResult.GetValue(projectOption), config, out var project, out var projectError))

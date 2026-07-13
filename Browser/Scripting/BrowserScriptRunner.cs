@@ -34,6 +34,7 @@ public sealed partial class BrowserScriptRunner
         GifRedactionOptions? gifRedaction,
         GifAccessibilityOptions? gifAccessibility)
     {
+        if (GifRecordingPolicy.IsDisabled) gif = null;
         var importResult = ScriptImportExpander.ExpandWithSourceLines(script, Directory.GetCurrentDirectory());
         if (!importResult.Success)
         {

@@ -37,6 +37,14 @@ public sealed class CmgGifAuthoringWarningTests
         Assert.Empty(CmgRunService.GifAuthoringWarnings(Tests(21), Options() with { GifDirectory = null }));
     }
 
+    [Fact]
+    public void DisabledRecording_DoesNotWarn()
+    {
+        using var suppression = CMG.Browser.Scripting.Recording.GifRecordingPolicy.Suppress(true);
+
+        Assert.Empty(CmgRunService.GifAuthoringWarnings(Tests(21), Options()));
+    }
+
     private static CmgTestCase[] Tests(int count) => Enumerable.Range(1, count)
         .Select(index => new CmgTestCase("suite.cmgscript", $"test {index}", [], new Dictionary<string, string>()))
         .ToArray();

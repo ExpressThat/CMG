@@ -1,3 +1,5 @@
+using CMG.Browser.Scripting.Recording;
+
 namespace CMG.Runner;
 
 public sealed partial class CmgRunService
@@ -6,7 +8,7 @@ public sealed partial class CmgRunService
         IReadOnlyList<CmgTestCase> tests,
         CmgRunOptions options)
     {
-        if (options.GifDirectory is null) return [];
+        if (options.GifDirectory is null || GifRecordingPolicy.IsDisabled) return [];
         var unbounded = tests.Count(test =>
             CmgGifRetentionPolicy.TryParse(test, options, out var policy, out _) &&
             policy.Mode is CmgGifRetentionMode.Always && policy.SampleRate is 1 && !policy.CleanPassed);

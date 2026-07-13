@@ -7,6 +7,7 @@ public sealed partial class CmgVisualSegmentExecutor
 {
     private static FileInfo? ResolveGifPath(CmgTestCase test, CmgNode action, CmgRunOptions options)
     {
+        if (GifRecordingPolicy.IsDisabled) return null;
         if (action.Options.TryGetValue("output", out var output) && !string.IsNullOrWhiteSpace(output))
         {
             return new FileInfo(output);
@@ -20,7 +21,7 @@ public sealed partial class CmgVisualSegmentExecutor
 
     private static FileInfo? BuildGifPath(CmgTestCase test, CmgRunOptions options, int attempt)
     {
-        if (options.GifDirectory is null)
+        if (options.GifDirectory is null || GifRecordingPolicy.IsDisabled)
         {
             return null;
         }

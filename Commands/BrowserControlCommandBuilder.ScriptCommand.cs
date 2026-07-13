@@ -13,6 +13,7 @@ public sealed partial class BrowserControlCommandBuilder
         var inlineOption = new Option<string>("--inline") { Description = "Inline .cmgscript text to run." };
         var previewOption = new Option<bool>("--preview-gif-settings") { Description = "Parse and print effective GIF settings without launching or connecting to a browser." };
         var gifOption = new Option<FileInfo?>("--gif") { Description = "Write an animated GIF recording of the script to this path." };
+        var noGifOption = new Option<bool>("--no-gif") { Description = "Disable all GIF recording, including script recording blocks." };
         var gifQualityOption = new Option<string>("--gif-quality")
         {
             Description = "GIF quality: archival, highest, high, medium, or low.",
@@ -54,7 +55,7 @@ public sealed partial class BrowserControlCommandBuilder
 
         var command = new Command("script", "Run a .cmgscript browser automation script.")
         {
-            fileOption, inlineOption, previewOption, gifOption, gifQualityOption,
+            fileOption, inlineOption, previewOption, gifOption, noGifOption, gifQualityOption,
             encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames,
             encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight, encodingOptions.Viewport, encodingOptions.PixelRatio, encodingOptions.Debug, encodingOptions.Accessibility, encodingOptions.EventCaptions,
             encodingOptions.Intro, encodingOptions.Outro, encodingOptions.IntroDuration, encodingOptions.OutroDuration, encodingOptions.ResultOutro,
@@ -71,6 +72,9 @@ public sealed partial class BrowserControlCommandBuilder
 
         command.SetAction(parseResult =>
         {
+            using var gifSuppression = GifRecordingPolicy.Suppress(parseResult.GetValue(noGifOption));
+            if (GifRecordingPolicy.IsDisabled)
+                Console.WriteLine($"GIF_DISABLED source={GifRecordingPolicy.DisabledSource}");
             var file = parseResult.GetValue(fileOption) ?? string.Empty;
             var inline = parseResult.GetValue(inlineOption);
             if (!ValidateScriptInput(file, inline))

@@ -400,7 +400,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `redactionSafety=strict` refuses unsafe password-field capture without retrying an unsafe failure frame.
 - Implemented: blur, solid mask, and replacement text redaction styles.
 - Add option to hide URL bar or browser chrome if future capture includes chrome surfaces.
-- Add environment-variable controlled recording disable switch for sensitive CI. CLI/env: `CMG_DISABLE_GIF=1` and `--no-gif`.
+- Implemented: `--no-gif` and `CMG_DISABLE_GIF=1|true|yes|on` suppress command-level and nested recording for sensitive runs while executing child actions without screenshots, overlays, artifacts, or a virtual pointer.
 
 ## Authoring Experience
 

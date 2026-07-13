@@ -61,6 +61,8 @@ public sealed partial class CmgVisualSegmentExecutor
                 }
 
                 var gif = ResolveGifPath(test, action, options);
+                if (GifRecordingPolicy.IsDisabled)
+                    output.Add($"GIF_SKIPPED {action.LineNumber:000} status=skipped reason=recording-disabled source={GifRecordingPolicy.DisabledSource}");
                 if (gif is not null)
                 {
                     gifs.Add(gif.FullName);
