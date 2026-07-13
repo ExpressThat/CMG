@@ -27,7 +27,8 @@ public sealed partial class BrowserControlService : IBrowserControlService
 
     public ElementResult GetElement(BrowserKind browserKind, int? port, string selector, ElementOutputMode outputMode)
     {
-        var state = stateStore.Load(browserKind, port);
+        using var activity = stateStore.BeginActivity(browserKind, port);
+        var state = activity.State;
         if (state is null)
         {
             return ElementResult.Fail(BuildBrowserNotRunningMessage(browserKind, port));
@@ -130,7 +131,8 @@ public sealed partial class BrowserControlService : IBrowserControlService
             return ScriptRunResult.Fail($"Script file '{file}' was not found.");
         }
 
-        var state = stateStore.Load(browserKind, port);
+        using var activity = stateStore.BeginActivity(browserKind, port);
+        var state = activity.State;
         if (state is null)
         {
             return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind, port));
@@ -153,7 +155,8 @@ public sealed partial class BrowserControlService : IBrowserControlService
 
     public ScriptRunResult RunScriptAction(BrowserKind browserKind, int? port, string scriptLine)
     {
-        var state = stateStore.Load(browserKind, port);
+        using var activity = stateStore.BeginActivity(browserKind, port);
+        var state = activity.State;
         if (state is null)
         {
             return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind, port));
@@ -194,7 +197,8 @@ public sealed partial class BrowserControlService : IBrowserControlService
         int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
         GifEncodingOptions? gifEncoding = null)
     {
-        var state = stateStore.Load(browserKind, port);
+        using var activity = stateStore.BeginActivity(browserKind, port);
+        var state = activity.State;
         if (state is null)
         {
             return ScriptRunResult.Fail(BuildBrowserNotRunningMessage(browserKind, port));
@@ -231,19 +235,4 @@ public sealed partial class BrowserControlService : IBrowserControlService
 
         return CmgLocator.Resolve(selector, lineNumber: 0).Selector;
     }
-}
-
-public enum ElementOutputMode
-{
-    Html,
-    Screenshot
-}
-
-public sealed record ElementResult(bool Success, string? Html, byte[]? ScreenshotPng, string? Error)
-{
-    public static ElementResult ForHtml(string html) => new(true, html, null, null);
-
-    public static ElementResult ForScreenshot(byte[] screenshotPng) => new(true, null, screenshotPng, null);
-
-    public static ElementResult Fail(string error) => new(false, null, null, error);
 }

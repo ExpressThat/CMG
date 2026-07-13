@@ -81,6 +81,8 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--browser-port <port>`: Remote debugging port for the browser instance used by this run. Use this with browsers launched through `cmg browser --port <port> launch`.
 - `--auto-launch`: Launch the selected browser automatically when no CMG-controlled browser is running. The launch uses the selected browser and `--browser-port` value with the same defaults as `cmg browser launch`.
 - `--headless`: Launch the selected browser in headless mode when `--auto-launch` starts a browser. Chrome and Edge receive `--headless=new`; Firefox receives `--headless`.
+- `--browser-idle-timeout <duration>`: Opt into a renewable idle lease for the selected CMG-owned headless browser. Accepts positive `ms`, `s`, `m`, or `h` durations. When auto-launching, this requires `--headless`.
+- `--no-browser-idle-cleanup`: Disable an existing lease without closing the browser. It cannot be combined with `--browser-idle-timeout`.
 - `--var <name=value>`: Initial variable for every selected test. Can be repeated. Later entries with the same name replace earlier entries.
 - `--env <name=value>`: Alias for `--var`, intended for CI and agent-provided environment values.
 - `--chrome`: Use Chrome. This is the default.
@@ -103,6 +105,7 @@ GIF_MAX_SIZE test="<name>" path="<gif-path>" sizeBytes=<bytes> thresholdBytes=<b
 GIF_MAX_DURATION test="<name>" path="<gif-path>" durationMs=<milliseconds> thresholdMs=<milliseconds>
 RUN STOP maxFailures=<count>
 TEST LIST <run|skip> <name>
+BROWSER_IDLE_LEASE status=<scheduled|disabled> browser=<browser> port=<port> pid=<pid> ownership=cmg idleTimeoutMs=<milliseconds> deadline=<ISO-8601|none> reason=<reason>
 ```
 
 Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `GIF_FRAMES` identifies each retained-frame directory and count; it is emitted only when recording and `--keep-frames` are both active. Encoder flags without `--gif` do not capture frames or inject a virtual pointer. `GIF_WARN_SIZE` lines are emitted only when `--gif-warn-size` is set and a recorded GIF exists above the threshold; they do not change the run exit code. `GIF_WARN_PALETTE` lines are emitted automatically when a recorded GIF uses at least 240 decoded colors or exceeds the 256-color counting cap, which tells agents that the artifact may show color pressure or dithering. `GIF_MAX_SIZE` and `GIF_MAX_DURATION` lines are emitted when their matching guard is set and a recorded GIF exceeds the threshold; the test is marked failed and the run exits `1`. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
@@ -125,6 +128,8 @@ TEST ERROR <file> reason=<reason>
 Invalid run config files fail before browser connection or test listing. Stderr names the config problem, for example `Run config option 'retries' must be an integer.` or `Run config '<path>' was not valid JSON. ...`.
 
 If no selected CMG browser is running, stderr tells the caller which launch command to run, for example `No CMG-controlled Chrome instance is running. Run 'cmg browser launch' first.` Use `--auto-launch` when the runner should start the selected browser automatically, and add `--headless` when that auto-launched browser should not open a visible window.
+
+`--browser-idle-timeout` and config `browserIdleTimeout` are opt-in. During the run, CMG renews the lease in the background so a long test cannot expire its own browser. Cleanup remains disabled when neither is set. Config `noBrowserIdleCleanup: true` matches `--no-browser-idle-cleanup`; CLI values override config. Conflicting enable/disable settings fail before launch.
 
 Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON and HTML `steps` contain public executed runtime steps only; planned placeholders and generated internal evaluate/actionability/locator steps are omitted. Public report step sequences are contiguous per test, and output payload lines are renumbered to match their parent step. JSON step entries include separate `sequence`, `lineNumber`, `context`, and `action` fields; agents should use those fields instead of parsing human stdout strings. When a step captured GIF frames, its `gifEvidence` array includes the artifact and timeline paths, zero-based start/end frame indexes, start/end times, and an optional failure-frame index. JSON `gifMetadata` entries include `timelinePath` plus quality, frames, duration, approximate FPS, dimensions, size, palette details, transparency, and repeat metadata. HTML reports link each visual step to an embedded static start frame, show a static final diagnostic frame for failures, and retain the animated GIF preview and artifact link. Traces keep lower-level raw diagnostics. JUnit reports emit `<skipped>` nodes for declaration-skipped tests and runtime skips, plus GIF artifact properties when a test has recorded GIFs.
 Report annotations are emitted as `annotations` in JSON, visible list items in HTML, and JUnit `<property name="cmg.annotation.<type>" ... />` entries. JUnit GIF properties use `cmg.gif.path` for one artifact or `cmg.gif.path.1`, `cmg.gif.path.2`, and so on for multiple artifacts. Failed tests with an inspectable GIF also include `cmg.gif.failureFrameIndex`, using the final frame index as the failure-state frame.
@@ -203,6 +208,7 @@ cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.e
 cmg run demo-scripts\147-run-config.cmgscript --config demo-scripts\run-config.example.json --project firefox-smoke
 cmg run tests\flows --auto-launch
 cmg run tests\flows --auto-launch --headless
+cmg run tests\flows --auto-launch --headless --browser-idle-timeout 45m
 ```
 
 Example config:
@@ -223,6 +229,8 @@ Example config:
   "navigationTimeout": 15000,
   "assertionTimeout": 5000,
   "baseUrl": "https://example.test/app/",
+  "browserIdleTimeout": "45m",
+  "noBrowserIdleCleanup": false,
   "projects": [
     {
       "name": "chrome-smoke",

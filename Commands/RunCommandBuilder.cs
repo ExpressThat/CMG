@@ -43,21 +43,9 @@ public sealed partial class RunCommandBuilder
         var traceOption = new Option<DirectoryInfo?>("--trace") { Description = "Write per-test trace JSON files to this directory." };
         var grepOption = new Option<string?>("--grep") { Description = "Run tests whose names contain this text." };
         var tagOption = new Option<string?>("--tag") { Description = "Run tests with a matching tag option." };
-        var retriesOption = new Option<int>("--retries")
-        {
-            Description = "Retry failed tests this many times.",
-            DefaultValueFactory = _ => 0
-        };
-        var maxFailuresOption = new Option<int>("--max-failures")
-        {
-            Description = "Stop the run after this many failed tests.",
-            DefaultValueFactory = _ => 0
-        };
-        var repeatEachOption = new Option<int>("--repeat-each")
-        {
-            Description = "Run each selected test this many times.",
-            DefaultValueFactory = _ => 1
-        };
+        var retriesOption = new Option<int>("--retries") { Description = "Retry failed tests this many times.", DefaultValueFactory = _ => 0 };
+        var maxFailuresOption = new Option<int>("--max-failures") { Description = "Stop the run after this many failed tests.", DefaultValueFactory = _ => 0 };
+        var repeatEachOption = new Option<int>("--repeat-each") { Description = "Run each selected test this many times.", DefaultValueFactory = _ => 1 };
         var listOption = new Option<bool>("--list") { Description = "List selected tests without connecting to a browser." };
         var shardOption = new Option<string?>("--shard") { Description = "Run one shard as index/count, for example 1/3." };
         var timeoutOption = new Option<int?>("--timeout") { Description = "Default timeout in milliseconds for timeout-capable actions." };
@@ -65,6 +53,8 @@ public sealed partial class RunCommandBuilder
         var baseUrlOption = new Option<string?>("--base-url") { Description = "Base URL used to resolve relative navigation targets." };
         var browserPortOption = new Option<int?>("--browser-port") { Description = "Remote debugging port for the browser instance used by this run." };
         var autoLaunchOption = new Option<bool>("--auto-launch") { Description = "Launch the selected browser automatically when no CMG-controlled browser is running." }; var headlessOption = new Option<bool>("--headless") { Description = "Launch the browser in headless mode when --auto-launch starts a browser." };
+        var browserIdleTimeoutOption = new Option<string?>("--browser-idle-timeout") { Description = "Opt-in idle lease for the selected CMG headless browser, such as 30m or 2h." };
+        var noBrowserIdleCleanupOption = new Option<bool>("--no-browser-idle-cleanup") { Description = "Disable an existing idle lease for the selected browser." };
         var variableOption = new Option<string[]>("--var") { Description = "Initial runner variable as name=value. Can be repeated." };
         var envOption = new Option<string[]>("--env") { Description = "Alias for --var, useful for CI or agent-provided values." };
         var command = new Command("run", "Run CMG DSL tests with visual artifacts.")
@@ -109,6 +99,8 @@ public sealed partial class RunCommandBuilder
             browserPortOption,
             autoLaunchOption,
             headlessOption,
+            browserIdleTimeoutOption,
+            noBrowserIdleCleanupOption,
             variableOption,
             envOption
         };
@@ -193,6 +185,12 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(durationError);
                 return 1;
             }
+            if (!TryParseBrowserIdle(parseResult, browserIdleTimeoutOption, noBrowserIdleCleanupOption, config,
+                out var browserIdleTimeout, out var browserIdleDisabled, out var browserIdleError))
+            {
+                Console.Error.WriteLine(browserIdleError);
+                return 1;
+            }
             variables = MergeVariables(MergeVariables(config.Variables, project?.Variables), variables);
             var projectBrowser = BrowserKindFor(project?.Browser);
             if (projectBrowser is BrowserKind.InvalidSelection)
@@ -242,7 +240,9 @@ public sealed partial class RunCommandBuilder
                 gifWarnSizeBytes,
                 gifMaxSizeBytes,
                 gifMaxDurationMilliseconds,
-                gifEncoding);
+                gifEncoding,
+                browserIdleTimeout,
+                browserIdleDisabled);
         });
 
         return command;

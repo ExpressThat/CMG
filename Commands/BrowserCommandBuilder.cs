@@ -3,7 +3,7 @@ using System.CommandLine;
 
 namespace CMG.Commands;
 
-public sealed class BrowserCommandBuilder
+public sealed partial class BrowserCommandBuilder
 {
     private readonly IBrowserCommandHandler browserCommandHandler;
     private readonly BrowserControlCommandBuilder browserControlCommandBuilder;
@@ -29,6 +29,7 @@ public sealed class BrowserCommandBuilder
         browserCommand.Subcommands.Add(BuildLaunchCommand(scopedBrowserOptions));
         browserCommand.Subcommands.Add(BuildAppCommand(scopedBrowserOptions));
         browserCommand.Subcommands.Add(BuildCloseCommand(scopedBrowserOptions));
+        browserCommand.Subcommands.Add(BuildLeaseCommand(scopedBrowserOptions));
         browserCommand.Subcommands.Add(browserControlCommandBuilder.Build(scopedBrowserOptions));
 
         return browserCommand;
@@ -45,22 +46,39 @@ public sealed class BrowserCommandBuilder
         {
             Description = "Initial URL or path to open."
         };
+        var idleTimeoutOption = new Option<string?>("--idle-timeout")
+        {
+            Description = "Opt-in idle lease for a CMG-launched headless browser, such as 30m or 2h."
+        };
+        var noIdleCleanupOption = new Option<bool>("--no-idle-cleanup")
+        {
+            Description = "Explicitly disable an existing idle lease for this browser instance."
+        };
         var command = new Command("launch", "Launch a browser instance.")
         {
             arguments,
             headlessOption,
-            urlOption
+            urlOption,
+            idleTimeoutOption,
+            noIdleCleanupOption
         };
 
         command.SetAction(parseResult =>
         {
             var values = parseResult.GetValue(arguments) ?? [];
+            if (!BrowserIdleTimeoutParser.TryParse(parseResult.GetValue(idleTimeoutOption), out var idleTimeout, out var error))
+            {
+                Console.Error.WriteLine(error);
+                return 1;
+            }
             return browserCommandHandler.Launch(
                 CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 values,
                 parseResult.GetValue(headlessOption),
                 parseResult.GetValue(urlOption),
-                CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions));
+                CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
+                idleTimeout,
+                parseResult.GetValue(noIdleCleanupOption));
         });
 
         return command;

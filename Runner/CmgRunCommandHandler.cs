@@ -32,7 +32,8 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             projectName, browserPort, autoLaunch, autoLaunchHeadless, gifQuality, pointerMotion, pointerVisual, showPointer,
             captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds,
             postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath,
-            frameDelayMilliseconds, gifWarnSizeBytes, gifMaxSizeBytes, gifMaxDurationMilliseconds, gifEncoding: null);
+            frameDelayMilliseconds, gifWarnSizeBytes, gifMaxSizeBytes, gifMaxDurationMilliseconds, gifEncoding: null,
+            browserIdleTimeoutMilliseconds: null, noBrowserIdleCleanup: false);
 
     public int Run(
         BrowserKind browserKind,
@@ -75,7 +76,9 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         long? gifWarnSizeBytes = null,
         long? gifMaxSizeBytes = null,
         int? gifMaxDurationMilliseconds = null,
-        GifEncodingOptions? gifEncoding = null)
+        GifEncodingOptions? gifEncoding = null,
+        int? browserIdleTimeoutMilliseconds = null,
+        bool noBrowserIdleCleanup = false)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
@@ -136,7 +139,9 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             gifWarnSizeBytes,
             gifMaxSizeBytes,
             gifMaxDurationMilliseconds,
-            gifEncoding));
+            gifEncoding,
+            BrowserIdleTimeoutMilliseconds: browserIdleTimeoutMilliseconds,
+            NoBrowserIdleCleanup: noBrowserIdleCleanup));
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);

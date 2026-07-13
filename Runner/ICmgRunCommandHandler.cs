@@ -32,7 +32,8 @@ public interface ICmgRunCommandHandler
         ClickPulseStyle clickPulse, int holdAfterActionMilliseconds, int holdOnFailureMilliseconds,
         int preClickHoldMilliseconds, int postClickHoldMilliseconds, int holdAfterNavigationMilliseconds,
         int holdAfterAssertionMilliseconds, string? gifTimelinePath, int frameDelayMilliseconds,
-        long? gifWarnSizeBytes, long? gifMaxSizeBytes, int? gifMaxDurationMilliseconds, GifEncodingOptions? gifEncoding) =>
+        long? gifWarnSizeBytes, long? gifMaxSizeBytes, int? gifMaxDurationMilliseconds, GifEncodingOptions? gifEncoding,
+        int? browserIdleTimeoutMilliseconds = null, bool noBrowserIdleCleanup = false) =>
         Run(browserKind, path, artifacts, jsonReport, htmlReport, junitReport, traceDirectory, grep, tag, retries,
             maxFailures, repeatEach, listOnly, shard, timeout, navigationTimeout, assertionTimeout, baseUrl, variables,
             projectName, browserPort, autoLaunch, autoLaunchHeadless, gifQuality, pointerMotion, pointerVisual, showPointer,

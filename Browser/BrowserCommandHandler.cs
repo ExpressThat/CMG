@@ -7,6 +7,15 @@ public interface IBrowserCommandHandler
     int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url, int? port) =>
         Launch(browserKind, arguments, headless, url);
 
+    int Launch(
+        BrowserKind browserKind,
+        IReadOnlyList<string> arguments,
+        bool headless,
+        string? url,
+        int? port,
+        int? idleTimeoutMilliseconds,
+        bool noIdleCleanup) => Launch(browserKind, arguments, headless, url, port);
+
     int LaunchApp(
         BrowserKind browserKind,
         FileInfo executable,
@@ -20,22 +29,30 @@ public interface IBrowserCommandHandler
 
     int Close(BrowserKind browserKind, IReadOnlyList<string> arguments, int? port) =>
         Close(browserKind, arguments);
+
+    int LeaseStatus(BrowserKind browserKind, int? port) => 0;
+    int LeaseKeepAlive(BrowserKind browserKind, int? port, int? idleTimeoutMilliseconds) => 0;
+    int LeaseDisable(BrowserKind browserKind, int? port) => 0;
+    int LeaseMonitor(BrowserKind browserKind, int? port, string token) => 0;
 }
 
-public sealed class BrowserCommandHandler : IBrowserCommandHandler
+public sealed partial class BrowserCommandHandler : IBrowserCommandHandler
 {
     private readonly IBrowserController browserController;
     private readonly IBrowserAppController browserAppController;
     private readonly BrowserAutomationClientFactory automationClientFactory;
+    private readonly IBrowserLeaseManager leaseManager;
 
     public BrowserCommandHandler(
         IBrowserController browserController,
         IBrowserAppController browserAppController,
-        BrowserAutomationClientFactory automationClientFactory)
+        BrowserAutomationClientFactory automationClientFactory,
+        IBrowserLeaseManager leaseManager)
     {
         this.browserController = browserController;
         this.browserAppController = browserAppController;
         this.automationClientFactory = automationClientFactory;
+        this.leaseManager = leaseManager;
     }
 
     public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url)
@@ -45,28 +62,7 @@ public sealed class BrowserCommandHandler : IBrowserCommandHandler
 
     public int Launch(BrowserKind browserKind, IReadOnlyList<string> arguments, bool headless, string? url, int? port)
     {
-        if (browserKind is BrowserKind.InvalidSelection)
-        {
-            Console.Error.WriteLine("Use only one browser option: --chrome, --edge, or --firefox.");
-            return 1;
-        }
-
-        if (!ValidatePort(port))
-        {
-            return 1;
-        }
-
-        var result = browserController.Launch(browserKind, BuildLaunchArguments(browserKind, arguments, headless, url), port);
-
-        Console.WriteLine(result.Message);
-
-        if (result.RemoteDebuggingUrl is not null)
-        {
-            ArmDiagnostics(browserKind, result.RemoteDebuggingUrl);
-            Console.WriteLine($"Remote debugging: {result.RemoteDebuggingUrl}");
-        }
-
-        return result.ExitCode;
+        return Launch(browserKind, arguments, headless, url, port, idleTimeoutMilliseconds: null, noIdleCleanup: false);
     }
 
     public int LaunchApp(

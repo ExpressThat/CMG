@@ -26,6 +26,25 @@ public sealed partial class RunCommandBuilder
     private static int? IntValue(ParseResult parseResult, Option<int?> option, int? fallback) =>
         WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback;
 
+    private static bool BoolValue(ParseResult parseResult, Option<bool> option, bool? fallback) =>
+        WasProvided(parseResult, option) ? parseResult.GetValue(option) : fallback ?? parseResult.GetValue(option);
+
+    private static bool TryParseBrowserIdle(
+        ParseResult parseResult,
+        Option<string?> timeoutOption,
+        Option<bool> disabledOption,
+        RunConfig config,
+        out int? timeout,
+        out bool disabled,
+        out string? error)
+    {
+        var value = StringValue(parseResult, timeoutOption, config.BrowserIdleTimeout);
+        disabled = BoolValue(parseResult, disabledOption, config.NoBrowserIdleCleanup);
+        if (WasProvided(parseResult, timeoutOption) && !WasProvided(parseResult, disabledOption)) disabled = false;
+        if (WasProvided(parseResult, disabledOption) && !WasProvided(parseResult, timeoutOption)) value = null;
+        return BrowserIdleTimeoutParser.TryParse(value, out timeout, out error);
+    }
+
     private static IReadOnlyDictionary<string, string> MergeVariables(
         IReadOnlyDictionary<string, string>? configVariables,
         IReadOnlyDictionary<string, string>? cliVariables)

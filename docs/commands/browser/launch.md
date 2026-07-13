@@ -18,6 +18,8 @@ cmg --firefox browser launch [browser-arguments...]
 
 - `--headless`: Launch in headless mode. Chrome and Edge receive `--headless=new`; Firefox receives `--headless`.
 - `--url <target>`: Initial URL or path to open. This is appended after raw browser arguments.
+- `--idle-timeout <duration>`: Opt into conservative cleanup for this CMG-launched headless browser. Accepts positive `ms`, `s`, `m`, or `h` durations such as `30m` or `2h`, and requires `--headless`. Cleanup is disabled when this option and `CMG_BROWSER_IDLE_TIMEOUT` are both absent.
+- `--no-idle-cleanup`: Explicitly disable an existing lease for the selected browser and port. This cannot be combined with `--idle-timeout`.
 
 ## Browser Group Options
 
@@ -31,6 +33,8 @@ cmg --firefox browser launch [browser-arguments...]
 - Only one CMG-controlled browser instance is launched per browser and port. Calling this command again for the same browser and port reports the existing process. Calling it with a different port can launch another same-browser instance.
 - If no non-option argument is supplied, the browser opens `about:blank`.
 - On successful launch, CMG arms page-side diagnostics capture for console messages and page errors. Captured diagnostics are stored in `window.__cmgConsole` and `window.__cmgPageErrors` and continue accumulating between CMG CLI invocations. Capture is forward-only; events before launch/diagnostics arming cannot be recovered.
+- Idle cleanup is opt-in and only available for a CMG-launched headless browser. CMG records an ownership token and process start time, starts a lightweight monitor, and renews the lease during browser-control scripts, one-shot controls, and test runs. It never applies this policy to visible, attached, or user-launched browsers.
+- The environment variable `CMG_BROWSER_IDLE_TIMEOUT` provides the same launch default as `--idle-timeout`. An explicit CLI timeout wins. Use a generous duration that allows the agent to reason, edit files, and inspect reports before returning.
 
 ## Stdout
 
@@ -39,6 +43,12 @@ On first launch:
 ```text
 Chrome launched for CMG. PID: <pid>.
 Remote debugging: http://127.0.0.1:9222
+```
+
+An opted-in idle lease adds:
+
+```text
+BROWSER_IDLE_LEASE status=scheduled browser=chrome port=9222 pid=<pid> ownership=cmg idleTimeoutMs=<milliseconds> deadline=<ISO-8601> reason=enabled
 ```
 
 Firefox launch writes:
@@ -65,7 +75,7 @@ Remote debugging: http://127.0.0.1:9222
 ## Exit Codes
 
 - `0`: The selected browser is running or was launched successfully.
-- `1`: The selected browser could not be found or launched, or `browser --port` is outside `1..65535`.
+- `1`: The selected browser could not be found or launched, `browser --port` is outside `1..65535`, the duration is invalid, cleanup was requested for a visible/unowned browser, or the monitor could not start.
 
 ## Examples
 
@@ -75,6 +85,8 @@ cmg --chrome browser launch
 cmg browser --port 9333 launch --headless
 cmg browser --port 9333 launch --url https://example.com
 cmg browser launch --headless --url https://example.com
+cmg browser --port 9333 launch --headless --idle-timeout 45m
+cmg browser --port 9333 launch --headless --no-idle-cleanup
 cmg browser launch --window-size=1200,800
 cmg browser launch https://example.com
 cmg --edge browser launch https://example.com

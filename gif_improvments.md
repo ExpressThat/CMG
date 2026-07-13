@@ -342,7 +342,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add support for browser zoom level detection and correction.
 - Add support for prefers-reduced-motion testing while still making GIFs understandable.
 - Add support for pages using CSS transforms, zoom, and nested scrolling containers.
-- Add conservative automatic cleanup for CMG-launched headless browsers when an agent forgets to close them. Track CMG ownership by browser kind, port, PID, and launch token; renew an activity heartbeat whenever that instance is used; use a long configurable idle grace period so an agent can do other work and return later; warn before lease expiry where a persistent agent can observe it; close immediately only when a runner explicitly owns a short-lived lifecycle; reclaim genuinely orphaned instances after the renewable lease expires; never close user-launched, manually attached, recently active, or explicitly keep-alive browsers; emit parseable cleanup diagnostics; and allow CLI/config/environment overrides for lease duration, cleanup disablement, and keep-alive behavior.
+- Implemented: opt-in conservative cleanup for CMG-launched headless browsers tracks browser/port/PID/start-time/launch-token ownership, renews activity throughout control and runner operations, uses configurable renewable leases, warns and rechecks before expiry, leaves visible/attached/user-launched/replaced browsers alone, isolates concurrent ports, emits parseable persisted diagnostics, and supports launch/run/config/environment enablement plus keepalive/disable commands.
 
 ## Performance And Storage
 
@@ -430,14 +430,14 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Agent Browser Lifecycle Safety
 
-- Add opt-in cleanup for headless browsers abandoned by an agent. This must not eagerly close a browser merely because no command is currently running.
-- Use a long, configurable idle lease measured in minutes, with cleanup disabled by default until a caller or project enables it. CLI candidates: `browser launch --idle-timeout <duration>` and `run --browser-idle-timeout <duration>`.
-- Refresh the lease after every command sent to that browser and while a script or test run is active. Normal agent reasoning, file edits, report inspection, and other work between browser commands must fit comfortably inside the default enabled timeout.
-- Track CMG ownership, browser kind, port, process id, launch time, and last activity. Never terminate an attached browser or a process CMG did not launch unless the caller explicitly opts into that behavior.
-- Prefer graceful browser shutdown, then use bounded forced cleanup only when the owned process does not exit. Clean up child processes and temporary profiles without affecting another CMG browser on a different port.
-- Add a lease-renewal/keepalive command for long non-browser work and an explicit `--no-idle-cleanup` override. Agent-facing output must state the effective deadline and how to extend or disable it.
-- Emit structured diagnostics when cleanup is scheduled, renewed, skipped, or performed, and include the reason, browser port, process id, ownership status, and idle duration.
-- Cover active work, long pauses, concurrent ports, attached browsers, crashed agents, stale state files, process-id reuse, graceful close, forced fallback, and cleanup races with unit and end-to-end tests.
+- Implemented: cleanup is opt-in and never triggers merely because a command ended.
+- Implemented: positive `ms`/`s`/`m`/`h` leases through `browser launch --idle-timeout`, `cmg run --browser-idle-timeout`, run config, and `CMG_BROWSER_IDLE_TIMEOUT`; disabled is the default.
+- Implemented: control commands, direct scripts, and full runner operations renew the lease, including periodic heartbeats during long operations.
+- Implemented: state tracks CMG ownership token, browser, port, PID, process start time, launch/activity times, and timeout; nonmatching or attached state is never closed.
+- Implemented: graceful close with bounded forced process-tree fallback remains port-isolated.
+- Implemented: `browser lease keepAlive`, `browser lease disable`, `--no-idle-cleanup`, and runner/config equivalents expose renewal and disable controls with effective deadlines.
+- Implemented: scheduled, renewed, disabled, warning, skipped, closed, and failed states use parseable diagnostics and persist final monitor events.
+- Implemented unit coverage: long renewal, concurrent ports, legacy/stale state, ownership replacement, expiry recheck, config/CLI routing, and runner lifecycle. Real-process expiry/cleanup verification is included in the implementation chunk's manual verification; broader browser-family E2E remains part of cross-browser CI coverage.
 
 ## Possible Milestones
 

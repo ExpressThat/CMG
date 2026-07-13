@@ -22,10 +22,12 @@ public sealed partial class CmgRunService : ICmgRunService
     private readonly CmgVisualAssertionRunner visualAssertionRunner;
     private readonly CmgUploadRunner uploadRunner;
     private readonly IBrowserController browserController;
+    private readonly IBrowserLeaseManager leaseManager;
 
     public CmgRunService(
         BrowserStateStore stateStore,
         IBrowserController browserController,
+        IBrowserLeaseManager leaseManager,
         BrowserAutomationClientFactory automationClientFactory,
         BrowserScriptRunner scriptRunner,
         CmgDslParser parser,
@@ -39,6 +41,7 @@ public sealed partial class CmgRunService : ICmgRunService
     {
         this.stateStore = stateStore;
         this.browserController = browserController;
+        this.leaseManager = leaseManager;
         this.automationClientFactory = automationClientFactory;
         this.scriptRunner = scriptRunner;
         this.parser = parser;
@@ -65,6 +68,9 @@ public sealed partial class CmgRunService : ICmgRunService
             return ListTests(files, options);
         }
 
+        if (options.BrowserIdleTimeoutMilliseconds is not null && options.NoBrowserIdleCleanup)
+            return CmgRunResult.Fail("Use either --browser-idle-timeout or --no-browser-idle-cleanup, not both.");
+
         var state = stateStore.Load(options.BrowserKind, options.BrowserPort);
         if (state is null)
         {
@@ -72,6 +78,8 @@ public sealed partial class CmgRunService : ICmgRunService
             {
                 return CmgRunResult.Fail(MissingBrowserMessage(options));
             }
+            if (options.BrowserIdleTimeoutMilliseconds is not null && !options.AutoLaunchHeadless)
+                return CmgRunResult.Fail("--browser-idle-timeout requires a CMG-launched headless browser. Add --headless or launch one first.");
 
             var launch = browserController.Launch(options.BrowserKind, AutoLaunchArguments(options), options.BrowserPort);
             if (launch.ExitCode is not 0 || string.IsNullOrWhiteSpace(launch.RemoteDebuggingUrl))
@@ -87,8 +95,21 @@ public sealed partial class CmgRunService : ICmgRunService
                     string.Empty);
         }
 
+        BrowserLeaseResult? leaseResult = null;
+        if (options.BrowserIdleTimeoutMilliseconds is not null || options.NoBrowserIdleCleanup)
+        {
+            leaseResult = options.NoBrowserIdleCleanup
+                ? leaseManager.Disable(options.BrowserKind, options.BrowserPort)
+                : leaseManager.Enable(options.BrowserKind, options.BrowserPort, options.BrowserIdleTimeoutMilliseconds!.Value);
+            if (leaseResult.ExitCode is not 0) return CmgRunResult.Fail(leaseResult.Message);
+        }
+
+        using var leaseActivity = stateStore.BeginActivity(options.BrowserKind, options.BrowserPort);
+        state = leaseActivity.State ?? state;
+
         var tests = new List<CmgTestResult>();
         var output = new List<string>();
+        if (leaseResult is not null) output.Add(leaseResult.Message);
         foreach (var file in files)
         {
             if (!RunFile(file, state.RemoteDebuggingUrl, options, tests, output))

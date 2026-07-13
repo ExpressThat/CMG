@@ -32,6 +32,7 @@ The `browser` command group accepts `--port <port>` after `browser` and before t
 
 ```powershell
 cmg browser --port 9333 launch --headless
+cmg browser --port 9333 lease keepAlive
 cmg browser --port 9333 control page evaluate "document.title"
 cmg browser --port 9333 close
 ```

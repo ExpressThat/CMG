@@ -11,7 +11,7 @@ public interface IBrowserController
     BrowserCloseResult Close(BrowserKind browserKind, int? port);
 }
 
-public sealed class BrowserController : IBrowserController
+public sealed partial class BrowserController : IBrowserController
 {
     private readonly BrowserStateStore stateStore;
 
@@ -77,7 +77,11 @@ public sealed class BrowserController : IBrowserController
                 process.Id,
                 port,
                 remoteDebuggingUrl,
-                userDataDirectory));
+                userDataDirectory,
+                IsHeadless(additionalArguments),
+                Guid.NewGuid().ToString("N"),
+                process.StartTime.ToUniversalTime().Ticks,
+                DateTimeOffset.UtcNow.UtcTicks));
 
             return new BrowserLaunchResult(
                 0,
@@ -109,6 +113,12 @@ public sealed class BrowserController : IBrowserController
             return new BrowserCloseResult(0, $"CMG-controlled {browserKind.DisplayName()} was not running. Cleared stale browser state.");
         }
 
+        if (!MatchesOwnedProcess(state, process))
+        {
+            stateStore.Clear(browserKind, port);
+            return new BrowserCloseResult(0, $"Skipped closing {browserKind.DisplayName()} because its saved process identity is stale. Cleared stale browser state.");
+        }
+
         try
         {
             if (!process.CloseMainWindow())
@@ -134,8 +144,10 @@ public sealed class BrowserController : IBrowserController
     private bool TryGetRunningBrowser(BrowserKind browserKind, int port, out BrowserState state)
     {
         state = stateStore.Load(browserKind, port) ?? BrowserState.Empty;
-
-        return state.ProcessId > 0 && TryGetProcess(state.ProcessId, out _);
+        if (state.ProcessId > 0 && TryGetProcess(state.ProcessId, out var process) && MatchesOwnedProcess(state, process))
+            return true;
+        if (state.ProcessId > 0) stateStore.Clear(browserKind, port);
+        return false;
     }
 
     private static bool TryGetProcess(int processId, out Process process)
@@ -157,88 +169,19 @@ public sealed class BrowserController : IBrowserController
         }
     }
 
-    private static string? FindExecutable(BrowserKind browserKind) =>
-        browserKind switch
-        {
-            BrowserKind.Edge => EdgeExecutableLocator.Find(),
-            BrowserKind.Firefox => FirefoxExecutableLocator.Find(),
-            _ => ChromeExecutableLocator.Find()
-        };
-
-    private static string GetRemoteDebuggingUrl(BrowserKind browserKind, int remoteDebuggingPort) =>
-        browserKind.UsesFirefoxBiDi()
-            ? $"ws://127.0.0.1:{remoteDebuggingPort}/session"
-            : $"http://127.0.0.1:{remoteDebuggingPort}";
-
-    private static IEnumerable<string> BuildBrowserArguments(
-        BrowserKind browserKind,
-        int remoteDebuggingPort,
-        string userDataDirectory,
-        IReadOnlyList<string> additionalArguments)
+    private static bool MatchesOwnedProcess(BrowserState state, Process process)
     {
-        return browserKind.UsesFirefoxBiDi()
-            ? BuildFirefoxArguments(remoteDebuggingPort, userDataDirectory, additionalArguments)
-            : BuildChromeArguments(remoteDebuggingPort, userDataDirectory, additionalArguments);
-    }
-
-    private static IEnumerable<string> BuildChromeArguments(
-        int remoteDebuggingPort,
-        string userDataDirectory,
-        IReadOnlyList<string> additionalArguments)
-    {
-        var arguments = new List<string>
+        if (state.ProcessStartTimeUtcTicks <= 0) return true;
+        try
         {
-            $"--remote-debugging-port={remoteDebuggingPort}",
-            $"--user-data-dir={userDataDirectory}",
-            "--no-first-run",
-            "--no-default-browser-check"
-        };
-
-        arguments.AddRange(additionalArguments);
-
-        if (!additionalArguments.Any(argument => !argument.StartsWith("--", StringComparison.Ordinal)))
-        {
-            arguments.Add("about:blank");
+            return process.StartTime.ToUniversalTime().Ticks == state.ProcessStartTimeUtcTicks;
         }
-
-        return arguments;
-    }
-
-    private static IEnumerable<string> BuildFirefoxArguments(
-        int remoteDebuggingPort,
-        string userDataDirectory,
-        IReadOnlyList<string> additionalArguments)
-    {
-        var arguments = new List<string>
+        catch (InvalidOperationException)
         {
-            "-no-remote",
-            "--remote-debugging-port",
-            remoteDebuggingPort.ToString(),
-            "--profile",
-            userDataDirectory
-        };
-
-        arguments.AddRange(additionalArguments);
-
-        if (!additionalArguments.Any(argument => !argument.StartsWith("-", StringComparison.Ordinal)))
-        {
-            arguments.Add("about:blank");
+            return false;
         }
-
-        return arguments;
     }
 
-    private static void WriteBrowserPreferences(BrowserKind browserKind, string userDataDirectory)
-    {
-        if (!browserKind.UsesFirefoxBiDi())
-        {
-            return;
-        }
-
-        File.WriteAllLines(Path.Combine(userDataDirectory, "user.js"), [
-            "user_pref(\"remote.active-protocols\", 1);"
-        ]);
-    }
 }
 
 public sealed record BrowserLaunchResult(int ExitCode, string Message, string? RemoteDebuggingUrl);

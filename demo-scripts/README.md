@@ -128,6 +128,12 @@ dotnet run -- browser control script --file demo-scripts\176-gif-redaction-stric
 
 The second command can also emit `GIF_WARN_PALETTE` when the recorded page uses enough colors to put pressure on GIF palette fidelity, and can fail with `GIF_MAX_SIZE` or `GIF_MAX_DURATION` if a GIF exceeds the configured review budget.
 
+Run the conservative headless-browser lease demo. It uses a 30-minute renewable lease, explicitly renews and disables it, and always closes the demo browser in `finally`:
+
+```powershell
+.\demo-scripts\177-agent-browser-lease.ps1
+```
+
 Record the whole runner demo test as a GIF:
 
 ```powershell
@@ -321,6 +327,7 @@ dotnet run -- --firefox browser close
 - `174-gif-redaction.cmgscript`: Demonstrates inherited blur, persistent replacement masks, automatic password/token masking, unmasking, and redaction timeline audits.
 - `175-gif-redaction-runner.cmgscript`: Demonstrates the same privacy-safe GIF behavior in the structured runner DSL.
 - `176-gif-redaction-strict-failure.cmgscript`: Intentionally fails before capturing a visible unmasked password field when strict redaction safety is enabled.
+- `177-agent-browser-lease.ps1`: Demonstrates opt-in long idle leases, status, activity renewal, explicit keepalive, disablement, and guaranteed demo cleanup on a separate browser port.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

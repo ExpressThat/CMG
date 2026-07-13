@@ -21,6 +21,7 @@ cmg browser [command] [options]
 - [`launch`](launch.md): Launch a CMG-controlled browser instance with remote debugging enabled.
 - [`app`](app/index.md): Launch or attach to Chromium-based desktop apps such as Electron and Windows WebView2 apps.
 - [`close`](close.md): Close the CMG-controlled browser instance.
+- [`lease`](lease/index.md): Inspect, renew, or disable opt-in idle cleanup for a CMG-owned headless browser.
 - [`control`](control/index.md): Browser interaction and page control commands.
 
 ## Examples
@@ -31,6 +32,8 @@ cmg --chrome browser launch
 cmg --edge browser launch
 cmg --firefox browser launch
 cmg browser --port 9333 launch --headless
+cmg browser --port 9333 lease status
+cmg browser --port 9333 lease keepAlive
 cmg browser --port 9333 control page evaluate "document.title"
 cmg browser --port 9333 close
 cmg browser app launch C:\Apps\DesktopApp.exe --kind electron

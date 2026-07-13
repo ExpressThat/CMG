@@ -78,7 +78,9 @@ public sealed record CmgRunOptions(
     long? GifMaxSizeBytes = null,
     int? GifMaxDurationMilliseconds = null,
     GifEncodingOptions? GifEncoding = null,
-    GifRedactionOptions? GifRedaction = null);
+    GifRedactionOptions? GifRedaction = null,
+    int? BrowserIdleTimeoutMilliseconds = null,
+    bool NoBrowserIdleCleanup = false);
 
 public sealed partial record CmgRunResult(
     bool Success,

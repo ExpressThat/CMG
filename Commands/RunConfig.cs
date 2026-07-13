@@ -18,10 +18,12 @@ internal sealed record RunConfig(
     int? NavigationTimeout,
     int? AssertionTimeout,
     string? BaseUrl,
+    string? BrowserIdleTimeout,
+    bool? NoBrowserIdleCleanup,
     IReadOnlyDictionary<string, string> Variables,
     IReadOnlyDictionary<string, RunProjectConfig> Projects)
 {
-    public static RunConfig Empty { get; } = new(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Dictionary<string, string>(), new Dictionary<string, RunProjectConfig>());
+    public static RunConfig Empty { get; } = new(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Dictionary<string, string>(), new Dictionary<string, RunProjectConfig>());
 }
 
 internal sealed record RunProjectConfig(
@@ -92,6 +94,8 @@ internal static class RunConfigReader
         IntOption(root, "navigationTimeout"),
         IntOption(root, "assertionTimeout"),
         StringOption(root, "baseUrl"),
+        StringOption(root, "browserIdleTimeout"),
+        BoolOption(root, "noBrowserIdleCleanup"),
         Variables(root),
         Projects(root));
 
@@ -114,6 +118,13 @@ internal static class RunConfigReader
             : value.ValueKind is JsonValueKind.Number && value.TryGetInt32(out var number)
                 ? number
                 : throw new RunConfigException($"Run config option '{name}' must be an integer.");
+
+    private static bool? BoolOption(JsonElement root, string name) =>
+        !root.TryGetProperty(name, out var value)
+            ? null
+            : value.ValueKind is JsonValueKind.True or JsonValueKind.False
+                ? value.GetBoolean()
+                : throw new RunConfigException($"Run config option '{name}' must be a boolean.");
 
     private static IReadOnlyDictionary<string, string> Variables(JsonElement root)
     {

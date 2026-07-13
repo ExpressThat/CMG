@@ -33,6 +33,9 @@ public static class BrowserPaths
     public static string GetActiveTargetFile(string key) =>
         Path.Combine(AppDataDirectory, $"active-target-{Sanitize(key)}.state");
 
+    public static string GetLeaseEventFile(BrowserKind browserKind, int? port) =>
+        $"{GetStateFile(browserKind, port)}.lease.log";
+
     public static void EnsureAppDataDirectory()
     {
         Directory.CreateDirectory(AppDataDirectory);
