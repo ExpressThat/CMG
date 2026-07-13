@@ -66,7 +66,7 @@ public sealed partial class CmgActionLowerer
             "localstorage" or "sessionstorage" or "cookie" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "setviewport" => [ToLine("setViewport", action.Arguments, action.Options)],
             "viewport" or "setviewportsize" => [LowerViewportAlias(action)],
-            "click" or "type" or "presssequentially" or "clear" or "hover" or "highlight" or "scrollintoview" or "select" or "selectoption" or "html" or "screenshot" or "asserttext" =>
+            "click" or "type" or "presssequentially" or "clear" or "hover" or "highlight" or "annotatetarget" or "highlighttarget" or "scrollintoview" or "select" or "selectoption" or "html" or "screenshot" or "asserttext" =>
                 LowerSelectorCommand(action.Kind, action),
             "goto" or "visit" => [ToLine("navigate", action.Arguments, action.Options)],
             "navigate" or "waitforelement" or
@@ -107,7 +107,7 @@ public sealed partial class CmgActionLowerer
             "evaluateonselector" or "evalonselector" or "evaluateall" or "evalall" or
             "dispatchevent" or "movemouse" or "showpointer" or "hidepointer" or "mousemove" or "mousedown" or "mouseup" or
             "scrollto" or "scrollby" or "wheel" or "draganddrop" or "listtabs" or "activatetab" or "closetab" or
-            "pausegif" or "recordcheckpoint" or "setrecording" or "previewrecordingsettings" or "intro" or "outro" or "maskgif" or "redactgif" or "redacttext" or "unmaskgif" or "unredactgif" or
+            "pausegif" or "recordcheckpoint" or "setrecording" or "previewrecordingsettings" or "pointerstyle" or "recordvariable" or "intro" or "outro" or "maskgif" or "redactgif" or "redacttext" or "unmaskgif" or "unredactgif" or
             "fail" or "skip" or "expect" or "assert" or "softexpect" or "softassert" or "expect.soft" or "assert.soft" =>
                 [ToLine(action.Kind, action.Arguments, action.Options)],
             "dragto" => [ToLine("dragAndDrop", action.Arguments, action.Options)],

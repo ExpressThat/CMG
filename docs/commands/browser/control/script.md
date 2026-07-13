@@ -138,7 +138,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - Script-level `gif "name" { ... }`, `recordVideo "name" { ... }`, and `screencast "name" { ... }` blocks record only the wrapped actions when `--gif` is not provided.
 - When `--gif` is provided, the whole script is recorded and nested block recordings are suppressed.
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
-- Without `--gif` or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif`, `moveMouse`, `recordCheckpoint`, `showPointer`, and `hidePointer` are skipped instead of creating pointer frames or timeline entries.
+- Without `--gif` or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif`, `moveMouse`, `recordCheckpoint`, `showPointer`, `hidePointer`, `pointerStyle`, `annotateTarget`, `highlightTarget`, and `recordVariable` are skipped instead of reading target/variable state or creating pointer frames and timeline entries.
 - Whole-run encoder flags are inert without `--gif`; `--keep-frames` does not capture screenshots or inject a virtual pointer by itself.
 - Pointer-aware actions resolve rich locators to the same target used by browser dispatch, so pointer movement, pointer events, hover state, drag ghosts, screenshots, and captions stay aligned.
 - DSL recording scopes and blocks can set `autoCaptions=true` and `captionTemplate=`. Automatic captions use privacy-safe text-entry defaults and target-aware `captionPosition=auto`; without an active GIF they do not modify the page.

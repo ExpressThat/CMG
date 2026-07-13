@@ -812,3 +812,5 @@ Line 4: setRecording option pointerDuration= must be zero or greater.
 `recording`, `withRecording`, `recordingDefaults`, and `setRecording` reject unknown option names. Value ranges are validated when an affected recording or visual action consumes the setting. Use `browser control script --preview-gif-settings` to catch unknown settings, imports, and syntax without connecting to a browser. Warnings such as `GIF_SETTINGS_WARN ... reason=non-visual-action` identify explicit visual options that cannot affect the named action; warnings do not change the exit code.
 
 Runtime `GIF_WARN_MULTIPLE_TARGETS`, `GIF_WARN_TINY_TARGET`, `GIF_WARN_SCROLLED`, and `GIF_WARN_NON_VISUAL` lines are evidence-quality diagnostics, not script failures. Tighten the selector, enlarge or call out the target, or remove the ignored option when deterministic evidence matters.
+
+`pointerStyle` rejects options outside its pointer appearance/visibility set. `recordVariable` fails when the named variable is undefined or `reveal=` is not boolean. These checks occur only with an active recorder; without one the recording-only actions skip without reading state.

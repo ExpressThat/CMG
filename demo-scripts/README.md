@@ -356,6 +356,8 @@ dotnet run -- --firefox browser close
 - `203-gif-recording-settings-runner.cmgscript`: Structured runner form of mutable and scoped recording settings.
 - `204-gif-target-diagnostics.cmgscript`: Demonstrates ambiguous, tiny, offscreen, and non-visual recording warnings during a command-level GIF run.
 - `205-gif-target-diagnostics-runner.cmgscript`: Structured runner form of GIF target diagnostics.
+- `206-gif-recording-annotations.cmgscript`: Demonstrates scoped pointer styling, target annotation, state captions, and default secret masking.
+- `207-gif-recording-annotations-runner.cmgscript`: Structured runner form of recording annotations with a rich locator.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

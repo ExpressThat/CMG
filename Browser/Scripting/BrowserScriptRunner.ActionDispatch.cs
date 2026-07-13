@@ -150,6 +150,9 @@ public sealed partial class BrowserScriptRunner
             "accessibilitysnapshot" => ExecuteAccessibilitySnapshot(remoteDebuggingUrl, automationClient, action),
             "expectaccessible" => ExecuteExpectAccessible(remoteDebuggingUrl, automationClient, action),
             "movemouse" => ExecuteMoveMouse(action, recorder, dragging: false),
+            "pointerstyle" => ExecutePointerStyle(action, context, recorder),
+            "annotatetarget" or "highlighttarget" => ExecuteTargetAnnotation(remoteDebuggingUrl, automationClient, action, recorder),
+            "recordvariable" => ExecuteRecordVariable(action, context, recorder),
             "mousemove" or "mousedown" or "mouseup" => ExecuteMouseAction(remoteDebuggingUrl, automationClient, action, recorder),
             "scrollto" or "scrollby" or "wheel" => ExecuteScrollAction(remoteDebuggingUrl, automationClient, action, recorder),
             "draganddrop" or "dragto" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action with { Name = "dragAndDrop" }, recorder),
@@ -177,6 +180,10 @@ public sealed partial class BrowserScriptRunner
         name.Equals("moveMouse", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("pauseGif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("recordCheckpoint", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("pointerStyle", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("annotateTarget", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("highlightTarget", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("recordVariable", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("intro", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("outro", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("showPointer", StringComparison.OrdinalIgnoreCase) ||

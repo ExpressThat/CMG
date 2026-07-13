@@ -99,6 +99,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("expectInViewport", "#save", "expectinviewport \"#save\"")]
     [InlineData("apiRequest", "GET", "apiRequest \"GET\" \"https://example.test\"", "https://example.test")]
     [InlineData("recordCheckpoint", "after setup", "recordCheckpoint \"after setup\"")]
+    [InlineData("pointerStyle", null, "pointerStyle")]
+    [InlineData("recordVariable", "status", "recordVariable \"status\"")]
     [InlineData("intro", "Welcome", "intro \"Welcome\"")]
     [InlineData("outro", "Complete", "outro \"Complete\"")]
     [InlineData("fail", "Missing setup", "fail \"Missing setup\"")]
@@ -135,6 +137,17 @@ public sealed class CmgActionLowererSharedActionTests
         Assert.Contains(lines, line => line.Contains("new Promise", StringComparison.Ordinal));
         Assert.Equal("highlight \"#save\" message=\"Save\"", lines.Last());
         Assert.Contains("message=\"Save\"", lines.Last(), StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("annotateTarget")]
+    [InlineData("highlightTarget")]
+    public void Lower_TargetAnnotationsUseSharedSelectorActionPath(string name)
+    {
+        var lines = new CmgActionLowerer().Lower(Node(name, ["getByRole=button|Save", "Primary"]));
+
+        Assert.Contains(lines, line => line.Contains("data-cmg-locator-id", StringComparison.Ordinal));
+        Assert.Equal($"{name} \"[data-cmg-locator-id=\\\"__cmg_locator_1\\\"]\" \"Primary\"", lines.Last());
     }
 
     [Theory]

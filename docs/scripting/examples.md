@@ -618,6 +618,19 @@ recordingDefaults captionStyle=qa {
 
 `setRecording` affects subsequent actions only in the current scope. `recordingDefaults` restores its parent settings after the block. Both remain pointer-free without an active recording. Preview a file without Chrome using `cmg browser control script --file <path> --preview-gif-settings`. See demos 202 and 203.
 
+## Annotate Pointer, Target, And State
+
+```text
+gif "review" {
+  pointerStyle pointerTheme=hand pointerColor="#dc2626"
+  annotateTarget "#save" "Primary action"
+  click "#save"
+  recordVariable "status" label="Current state"
+}
+```
+
+The pointer style applies to later actions in the current scope. Target annotation uses the same resolved locator as the virtual pointer, and `recordVariable` masks secret-like names by default. See demos 206 and 207.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

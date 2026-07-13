@@ -51,6 +51,7 @@ public sealed partial class BrowserScriptRunner
             action.Name.Equals("withRecording", StringComparison.OrdinalIgnoreCase) ||
             action.Name.Equals("recordingDefaults", StringComparison.OrdinalIgnoreCase) ||
             action.Name.Equals("setRecording", StringComparison.OrdinalIgnoreCase) ||
+            action.Name.Equals("pointerStyle", StringComparison.OrdinalIgnoreCase) ||
             action.Name.Equals("previewRecordingSettings", StringComparison.OrdinalIgnoreCase))
         {
             return action;

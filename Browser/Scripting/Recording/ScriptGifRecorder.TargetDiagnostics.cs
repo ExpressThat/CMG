@@ -79,6 +79,6 @@ public sealed partial class ScriptGifRecorder
     private static readonly HashSet<string> ConfigurationActions = new(StringComparer.OrdinalIgnoreCase)
     {
         "recording", "withRecording", "recordingDefaults", "setRecording", "previewRecordingSettings",
-        "gif", "recordVideo", "screencast"
+        "pointerStyle", "gif", "recordVideo", "screencast"
     };
 }

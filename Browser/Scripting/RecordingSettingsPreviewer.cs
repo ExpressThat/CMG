@@ -100,5 +100,5 @@ public static class RecordingSettingsPreviewer
     private static readonly HashSet<string> VisualOnlyOptions = new(StringComparer.OrdinalIgnoreCase)
         { "pointerDuration", "pointerSpeed", "pointerEasing", "pointerPath", "clickPulse", "showPointer", "holdAfterAction" };
     private static readonly HashSet<string> VisualActions = new(StringComparer.OrdinalIgnoreCase)
-        { "gif", "recordVideo", "screencast", "click", "hover", "fill", "type", "dragAndDrop", "moveMouse", "wheel", "scrollTo", "scrollBy", "pauseGif", "caption", "step" };
+        { "gif", "recordVideo", "screencast", "click", "hover", "fill", "type", "dragAndDrop", "moveMouse", "wheel", "scrollTo", "scrollBy", "pauseGif", "caption", "step", "pointerStyle", "annotateTarget", "highlightTarget", "recordVariable" };
 }

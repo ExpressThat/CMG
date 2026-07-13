@@ -1860,6 +1860,22 @@ recordingDefaults quality=highest captionStyle=qa {
 
 The scope inherits through nested macros, loops, `try` / `catch` / `finally`, `within`, frame blocks, and nested recording blocks. Child action options override the scoped defaults locally. Unknown default names fail with the exact action, line, and option.
 
+### Recording Annotations
+
+```text
+pointerStyle pointerTheme=hand pointerColor="#dc2626" pointerSize=40
+annotateTarget "#save" "Primary action" color="#2563eb" duration=800
+highlightTarget getByRole=button|Save message="Confirm changes"
+recordVariable "status" label="Current state" duration=700
+recordVariable "apiToken"
+```
+
+These actions require an active command-level GIF or `gif` / `recordVideo` / `screencast` block. Otherwise they write a `status=skipped reason=no-active-recording` line and do not resolve selectors, read variables, add overlays, capture screenshots, or inject a virtual pointer.
+
+- `pointerStyle` accepts `pointerTheme=`, `pointerColor=`, `pointerSize=`, `pointerShadow=`, and `showPointer=`. It changes subsequent actions in the current lexical recording scope, writes `GIF_POINTER_STYLE <line> status=updated options=...`, and restores with the containing scope.
+- `annotateTarget` and `highlightTarget` are aliases. They accept a selector/rich locator and optional positional text. `message=` is the option form; `color=` defaults to amber and `duration=` defaults to `1200`. The recorder moves its virtual pointer to the target, captures the live outline/label, and writes `GIF_TARGET_ANNOTATION <line> selector="..." duration=<ms> status=captured`.
+- `recordVariable` accepts one variable name plus optional `label=`, caption style/position/severity/timing options, and `reveal=<true|false>`. It writes `GIF_VARIABLE <line> name="..." value="..." status=captured`. Names containing password, token, secret, authorization, cookie, or API key are shown as `[masked]` unless `reveal=true` is explicit. Undefined variables and invalid booleans fail with the exact reason.
+
 Options:
 
 - `quality`: Default quality for nested recording blocks that create their own artifact.

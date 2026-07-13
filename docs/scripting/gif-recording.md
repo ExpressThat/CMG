@@ -142,6 +142,8 @@ previewRecordingSettings
 
 Run `cmg browser control script --file journey.cmgscript --preview-gif-settings` to statically print effective settings and ignored-option warnings without a browser. Command-level GIF options are validated but remain separate from the reported DSL scopes. This preflight is appropriate for agents and CI before a real recording run.
 
+Use `pointerStyle` for a visual-only mid-flow pointer change, `annotateTarget` / `highlightTarget` for coordinated pointer and target callouts, and `recordVariable` for a bounded state caption. Secret-like variable names are masked unless `reveal=true`. All four actions skip without reading page/script state when no GIF recorder is active. See demos 206 and 207.
+
 ```text
 recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfterAction=500 {
   gif "checkout evidence" {

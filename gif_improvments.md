@@ -278,15 +278,15 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add `gif.ifChanged "name" { ... }` to write only when visual changes occurred.
 - Add `gif.onFailure "name" { ... }` to record only diagnostic sections when a flow fails.
 - Add `gif.snapshot "name"` to capture a short still/hold frame sequence.
-- Add `annotateTarget "#save" "Primary action"` action.
+- Implemented: `annotateTarget` / `highlightTarget` coordinate rich target resolution, virtual-pointer movement, and a timed live callout.
 - Implemented: add `showPointer` and `hidePointer` recording-only actions that skip when no recorder is active, including inside block `dragAndDrop` choreography.
-- Add `pointerStyle` action to change pointer appearance mid-script.
-- Add `highlightTarget` action that coordinates highlight and pointer move.
+- Implemented: `pointerStyle` changes subsequent pointer appearance/visibility in the current lexical recording scope.
+- Implemented: `highlightTarget` is a readable alias of `annotateTarget`.
 - Implemented: add `showKeystrokes` block for keyboard-heavy flows. It is a recording-default scope, skips visual injection without an active recorder, and never renders typed values.
 - Add `showMouseButtons` overlay for low-level mouse scripts.
 - Add `showNetworkActivity` overlay for network-heavy scripts.
 - Add `showConsoleActivity` overlay for console/page-error diagnostics.
-- Add `recordVariable "name"` caption action for explaining state changes.
+- Implemented: `recordVariable` adds bounded state captions with default masking for secret-like variable names and explicit `reveal=true` override.
 - Add dry-run validation that reports recording settings without launching the browser.
 
 ## Test Runner And Reports

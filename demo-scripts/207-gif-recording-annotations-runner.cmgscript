@@ -1,0 +1,11 @@
+test "records annotated state" {
+  set status "Ready to save"
+  set apiToken "demo-secret-value"
+  setContent "<style>html,body{margin:0;min-height:100%;background:#fff}main{font:16px system-ui;padding:64px}button{padding:16px 24px}</style><main><h1>Runner annotations</h1><button id='save'>Save changes</button></main>"
+
+  pointerStyle pointerTheme=hand pointerColor=#dc2626 pointerSize=40 pointerShadow=strong
+  annotateTarget getByRole=button|Save "Primary action" color=#2563eb duration=700
+  click getByRole=button|Save
+  recordVariable "status" label="Current state" captionStyle=qa duration=700
+  recordVariable "apiToken" label="API token" captionStyle=compact duration=500
+}
