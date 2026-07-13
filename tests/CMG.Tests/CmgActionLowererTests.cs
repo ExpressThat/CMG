@@ -35,15 +35,16 @@ public sealed partial class CmgActionLowererTests
     }
 
     [Fact]
-    public void Lower_GifBlockCanBeFlattenedWhenCommandGifIsActive()
+    public void Lower_GifBlockPreservesBlockForRuntimeSuppression()
     {
         var action = Node("gif", ["Only this"], [Node("click", ["#open"], [])]);
         var lines = new CmgActionLowerer().Lower(action);
 
-        Assert.Equal(3, lines.Count);
-        Assert.Equal("showMessageBar \"Only this\"", lines[0]);
+        Assert.Equal(4, lines.Count);
+        Assert.Equal("gif \"Only this\" {", lines[0]);
         Assert.Contains("not actionable", lines[1]);
         Assert.Equal("click \"#open\"", lines[2]);
+        Assert.Equal("}", lines[3]);
     }
 
     [Fact]
@@ -61,13 +62,14 @@ public sealed partial class CmgActionLowererTests
     [Theory]
     [InlineData("recordVideo")]
     [InlineData("screencast")]
-    public void Lower_ProviderRecordingBlocksCanBeFlattenedWhenCommandGifIsActive(string name)
+    public void Lower_ProviderRecordingBlocksPreserveRuntimeBoundary(string name)
     {
         var action = Node(name, ["Only this"], [Node("click", ["#open"], [])]);
         var lines = new CmgActionLowerer().Lower(action);
 
-        Assert.Equal("showMessageBar \"Only this\"", lines[0]);
+        Assert.Equal($"{name} \"Only this\" {{", lines[0]);
         Assert.Equal("click \"#open\"", lines[2]);
+        Assert.Equal("}", lines[3]);
     }
 
     [Fact]

@@ -373,6 +373,26 @@ gif "review flow" {
 
 Hidden actions still change the page; the next visible frame shows their result. Playback factors affect only encoded frame delays. Both block types are inert wrappers in non-GIF runs, so their children execute without pointer injection.
 
+## Encoder Color Evidence
+
+Retain the browser's exact PNG frames when tuning GIF palette behavior:
+
+```text
+recording quality=archival dither=atkinson palette=local colors=256 keepFrames=true {
+  gif "brand palette" output="demo-output/brand-palette.gif" {
+    click "#show-gradient"
+  }
+}
+```
+
+Then measure a corresponding frame without opening a browser:
+
+```powershell
+cmg gif color-diff demo-output\brand-palette.frames\frame-0001.png demo-output\brand-palette.gif --frame 1
+```
+
+See `demo-scripts/165-gif-color-controls.cmgscript` and `166-gif-color-controls-runner.cmgscript` for both script forms.
+
 ## Common Next Steps
 
 | Need | Where To Go |

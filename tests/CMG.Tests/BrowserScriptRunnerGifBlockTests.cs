@@ -69,6 +69,39 @@ public sealed class BrowserScriptRunnerGifBlockTests
         Assert.Contains("gif quality must be one of", result.Error, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void RunText_GifBlockAppliesEncoderControlsAndRetainsFrames()
+    {
+        var directory = Directory.CreateTempSubdirectory("cmg-gif-controls-");
+        var path = Path.Combine(directory.FullName, "controlled.gif");
+
+        var result = Runner().RunText($$"""
+        recording quality=archival dither=atkinson palette=local colors=96 keepFrames=true {
+          gif "controlled" output="{{Slash(path)}}" {
+            showMessageBar "Color evidence"
+          }
+        }
+        """, "debug", new FakeAutomationClient());
+
+        Assert.True(result.Success, result.Error);
+        Assert.True(File.Exists(path));
+        Assert.NotEmpty(Directory.GetFiles(Path.Combine(directory.FullName, "controlled.frames"), "*.png"));
+        directory.Delete(recursive: true);
+    }
+
+    [Theory]
+    [InlineData("dither=noisy", "dither=")]
+    [InlineData("palette=shared-ish", "palette=")]
+    [InlineData("colors=1", "colors=")]
+    [InlineData("colors=257", "colors=")]
+    public void RunText_GifBlockRejectsInvalidEncoderControls(string option, string expected)
+    {
+        var result = Runner().RunText($"gif \"block\" {option} {{ caption \"x\" }}", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains(expected, result.Error, StringComparison.Ordinal);
+    }
+
     private static string Slash(string path) => path.Replace('\\', '/');
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

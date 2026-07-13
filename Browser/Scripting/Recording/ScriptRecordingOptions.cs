@@ -14,7 +14,8 @@ public sealed record ScriptRecordingOptions(
     int HoldAfterNavigationMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
     int HoldAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
     string? TimelinePath = null,
-    int FrameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
+    int FrameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
+    GifEncodingOptions? Encoding = null)
 {
     public const int DefaultFrameDelayMilliseconds = 100;
 
@@ -29,6 +30,8 @@ public sealed record ScriptRecordingOptions(
     public ScriptPointerMotionOptions EffectivePointerMotion => PointerMotion ?? ScriptPointerMotionOptions.Default;
 
     public PointerVisualOptions EffectivePointerVisual => PointerVisual ?? PointerVisualOptions.Default;
+
+    public GifEncodingOptions EffectiveEncoding => Encoding ?? new();
 
     public int FrameDelayCentiseconds => Math.Max(1, (FrameDelayMilliseconds + 9) / 10);
 }

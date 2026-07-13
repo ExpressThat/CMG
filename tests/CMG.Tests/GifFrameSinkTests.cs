@@ -25,6 +25,7 @@ public sealed class GifFrameSinkTests
 
     [Theory]
     [InlineData("highest", GifQuality.Highest)]
+    [InlineData("archival", GifQuality.Archival)]
     [InlineData("best", GifQuality.Highest)]
     [InlineData("high", GifQuality.High)]
     [InlineData("medium", GifQuality.Medium)]
@@ -56,6 +57,42 @@ public sealed class GifFrameSinkTests
         var quantizer = Assert.IsType<OctreeQuantizer>(encoder.Quantizer);
         Assert.Equal(64, quantizer.Options.MaxColors);
         Assert.Null(quantizer.Options.Dither);
+    }
+
+    [Fact]
+    public void CreateEncoder_ArchivalUsesFrameLocalMaximumPalette()
+    {
+        var encoder = GifFrameSink.CreateEncoder(GifQuality.Archival);
+
+        Assert.Equal(GifColorTableMode.Local, encoder.ColorTableMode);
+        var quantizer = Assert.IsType<WuQuantizer>(encoder.Quantizer);
+        Assert.Equal(256, quantizer.Options.MaxColors);
+        Assert.Equal(1f, quantizer.Options.DitherScale);
+    }
+
+    [Fact]
+    public void CreateEncoder_ExplicitControlsOverridePreset()
+    {
+        var options = new GifEncodingOptions(GifDitherMode.None, GifPaletteMode.Global, 32);
+        var encoder = GifFrameSink.CreateEncoder(GifQuality.Archival, options);
+
+        Assert.Equal(GifColorTableMode.Global, encoder.ColorTableMode);
+        var quantizer = Assert.IsType<WuQuantizer>(encoder.Quantizer);
+        Assert.Equal(32, quantizer.Options.MaxColors);
+        Assert.Null(quantizer.Options.Dither);
+    }
+
+    [Fact]
+    public void AddFrame_KeepFramesWritesOriginalPngBytes()
+    {
+        var directory = Directory.CreateTempSubdirectory("cmg-gif-frames-");
+        var png = Png(Color.HotPink);
+        using var sink = new GifFrameSink(encoding: new GifEncodingOptions(KeepFramesDirectory: directory.FullName));
+
+        sink.AddFrame(png, 10);
+
+        Assert.Equal(png, File.ReadAllBytes(Path.Combine(directory.FullName, "frame-0001.png")));
+        directory.Delete(recursive: true);
     }
 
     [Fact]
@@ -91,7 +128,8 @@ public sealed class GifFrameSinkTests
         var written = GifTimelineWriter.Write(
             timelinePath,
             gifPath,
-            new ScriptRecordingOptions(gifPath, HoldOnFailureMilliseconds: 1500),
+            new ScriptRecordingOptions(gifPath, HoldOnFailureMilliseconds: 1500,
+                Encoding: new GifEncodingOptions(GifDitherMode.None, GifPaletteMode.Local, 32, directory.FullName)),
             sink,
             [new GifTimelineCheckpoint("after click", 7, 1, 100)]);
 
@@ -100,6 +138,11 @@ public sealed class GifFrameSinkTests
         Assert.Equal(2, root.GetProperty("frameCount").GetInt32());
         Assert.Equal(350, root.GetProperty("durationMilliseconds").GetInt32());
         Assert.Equal(1500, root.GetProperty("timing").GetProperty("holdOnFailureMilliseconds").GetInt32());
+        var encoding = root.GetProperty("encoding");
+        Assert.Equal("none", encoding.GetProperty("dither").GetString());
+        Assert.Equal("local", encoding.GetProperty("palette").GetString());
+        Assert.Equal(32, encoding.GetProperty("colors").GetInt32());
+        Assert.Equal(directory.FullName, encoding.GetProperty("keepFramesDirectory").GetString());
         Assert.Equal([100, 250], root.GetProperty("frameDelaysMilliseconds").EnumerateArray().Select(value => value.GetInt32()).ToArray());
         var checkpoint = Assert.Single(root.GetProperty("checkpoints").EnumerateArray());
         Assert.Equal("after click", checkpoint.GetProperty("name").GetString());

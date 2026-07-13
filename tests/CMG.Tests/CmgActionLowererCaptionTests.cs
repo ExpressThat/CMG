@@ -14,6 +14,22 @@ public sealed class CmgActionLowererCaptionTests
         Assert.Equal("showMessageBar \"Open\" captionStyle=\"qa\" captionPosition=\"bottom\"", lines[0]);
     }
 
+    [Theory]
+    [InlineData("gif")]
+    [InlineData("recordVideo")]
+    [InlineData("screencast")]
+    public void Lower_RecordingArtifactsPreserveBlockAndOptions(string actionName)
+    {
+        var options = new Dictionary<string, string> { ["quality"] = "archival", ["colors"] = "128" };
+        var action = Node(actionName, ["Evidence"], options, [Node("click", ["#open"], [])]);
+
+        var lines = new CmgActionLowerer().Lower(action);
+
+        Assert.Equal($"{actionName} \"Evidence\" quality=\"archival\" colors=\"128\" {{", lines[0]);
+        Assert.Equal("}", lines[^1]);
+        Assert.Contains("click \"#open\"", lines);
+    }
+
     private static CmgNode Node(string kind, IReadOnlyList<string> args, IReadOnlyList<CmgNode> children) =>
         new(1, kind, kind, args, new Dictionary<string, string>(), children);
 

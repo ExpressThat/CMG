@@ -156,7 +156,8 @@ public sealed class GifCommandBuilderTests
 
             Assert.Equal(0, exitCode);
             var text = output.ToString();
-            Assert.Contains("GIF_PRESETS quality=highest,high,medium,low defaultQuality=highest", text, StringComparison.Ordinal);
+            Assert.Contains("GIF_PRESETS quality=archival,highest,high,medium,low defaultQuality=highest", text, StringComparison.Ordinal);
+            Assert.Contains("dither=none,floyd-steinberg,bayer,atkinson,sierra", text, StringComparison.Ordinal);
             Assert.Contains("pointerSpeed=slow,normal,fast,instant,multiplier", text, StringComparison.Ordinal);
             Assert.Contains("pointerEasing=linear,ease-in,ease-out,ease-in-out,spring", text, StringComparison.Ordinal);
             Assert.Contains("clickPulse=ring,ripple,dot,crosshair,none defaultClickPulse=ring", text, StringComparison.Ordinal);

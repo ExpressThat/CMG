@@ -21,7 +21,8 @@ public sealed partial class BrowserScriptRunner
             automationClient,
             new ScriptRecordingOptions(gifPath, GifBlockQuality(action), GifBlockMotion(action), GifBlockVisual(action), GifBlockPointerVisibility(action), GifBlockPulse(action),
                 GifBlockHold(action), GifBlockFailureHold(action), GifBlockPreClickHold(action), GifBlockPostClickHold(action),
-                GifBlockNavigationHold(action), GifBlockAssertionHold(action), GifBlockTimeline(action, gifPath), GifBlockFrameDelay(action)));
+                GifBlockNavigationHold(action), GifBlockAssertionHold(action), GifBlockTimeline(action, gifPath), GifBlockFrameDelay(action),
+                GifEncodingOptions.FromOptions(action.Options, "gif", gifPath)));
         var output = new List<string>();
         var failed = false;
         if (commandRecorder is null)

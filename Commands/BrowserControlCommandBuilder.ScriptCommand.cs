@@ -14,7 +14,7 @@ public sealed partial class BrowserControlCommandBuilder
         var gifOption = new Option<FileInfo?>("--gif") { Description = "Write an animated GIF recording of the script to this path." };
         var gifQualityOption = new Option<string>("--gif-quality")
         {
-            Description = "GIF quality: highest, high, medium, or low.",
+            Description = "GIF quality: archival, highest, high, medium, or low.",
             DefaultValueFactory = _ => "highest"
         };
         var pointerDurationOption = new Option<int?>("--pointer-duration") { Description = "Default virtual pointer movement duration in milliseconds for --gif recordings." };

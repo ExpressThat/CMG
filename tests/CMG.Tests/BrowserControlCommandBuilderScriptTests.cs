@@ -52,10 +52,10 @@ public sealed class BrowserControlCommandBuilderScriptTests
     {
         var handler = new CapturingBrowserControlCommandHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --gif-quality medium").Invoke();
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --gif-quality archival").Invoke();
 
         Assert.Equal(0, exitCode);
-        Assert.Equal(GifQuality.Medium, handler.GifQuality);
+        Assert.Equal(GifQuality.Archival, handler.GifQuality);
     }
 
     [Fact]

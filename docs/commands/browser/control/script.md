@@ -40,7 +40,7 @@ cmg --firefox browser control script --file <path>
 
 For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--file -`. PowerShell parses quotes before CMG receives `--inline`, so nested DSL, CSS, and JavaScript quotes are inherently easier to preserve through a file or stdin.
 - `--gif <path>`: Optional output path for an animated GIF recording of the script run.
-- `--gif-quality <highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. Defaults to `highest`.
+- `--gif-quality <archival|highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. `archival` prioritizes frame-local color fidelity over file size. Defaults to `highest`.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.

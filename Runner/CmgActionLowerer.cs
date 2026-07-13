@@ -9,7 +9,8 @@ public sealed partial class CmgActionLowerer
         var name = action.Kind.ToLowerInvariant();
         return name switch
         {
-            "step" or "gif" or "recordvideo" or "screencast" => LowerStep(action),
+            "step" => LowerStep(action),
+            "gif" or "recordvideo" or "screencast" => LowerRecordingBlock(action),
             "draganddrop" when action.Children.Count > 0 => LowerDragAndDropBlock(action),
             "recording" or "withrecording" => LowerRecordingBlock(action),
             "macro" or "return" or "within" or "frame" or "framelocator" or "if" or "elseif" or "else" or "for" or "foreach" or "foreachjson" or "foreachlist" or "foreachselector" or "while" or "until" or

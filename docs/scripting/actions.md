@@ -1871,6 +1871,16 @@ screencast "compact" quality=medium {
 }
 ```
 
+Encoder options:
+
+- `quality=<archival|highest|high|medium|low>` selects a preset. `archival` prioritizes frame-local color fidelity over file size.
+- `dither=<none|floyd-steinberg|bayer|atkinson|sierra>` overrides the preset dithering algorithm.
+- `palette=<global|local|adaptive>` controls the GIF color table. `adaptive` currently uses frame-local tables.
+- `colors=<2..256>` overrides the maximum color count.
+- `keepFrames=<true|false|directory>` retains each exact pre-encoding PNG as `frame-NNNN.png`; `true` uses a sibling `<gif-name>.frames` directory.
+
+These options may be inherited from `recording` / `withRecording` when a nested GIF block creates the artifact. Invalid names or ranges fail with the exact option and accepted values. Retained PNGs contain the page and CMG recording UI exactly as captured, so treat them with the same privacy controls as the GIF.
+
 Records only the wrapped actions when direct `browser control script` or `cmg run` is used without command-level `--gif`. If command-level `--gif` is used, the entire script or test is recorded and nested `gif` blocks do not create separate GIFs.
 `recordVideo` and `screencast` are provider-style aliases for the same CMG GIF recorder. Output is still an animated GIF so the virtual pointer, pointer events, drag ghost behavior, and captions remain consistent.
 

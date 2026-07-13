@@ -113,7 +113,11 @@ recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfter
 
 Supported `recording` / `withRecording` defaults:
 
-- `quality=<highest|high|medium|low>`: Default for nested recording blocks that create their own artifact.
+- `quality=<archival|highest|high|medium|low>`: Encoder preset for nested recording blocks that create their own artifact. `archival` uses a full 256-color frame-local palette and maximum preset dithering strength.
+- `dither=<none|floyd-steinberg|bayer|atkinson|sierra>`: Explicit palette dithering algorithm.
+- `palette=<global|local|adaptive>`: GIF color-table strategy. `adaptive` currently selects frame-local tables so each frame can adapt to its own colors.
+- `colors=<2..256>`: Explicit maximum palette size.
+- `keepFrames=<true|false|directory>`: Keep the exact browser PNG inputs before GIF quantization. `true` writes `<gif-name>.frames/frame-NNNN.png`; a directory writes there instead.
 - `pointerDuration=<milliseconds>`: Movement duration between pointer targets.
 - `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
@@ -415,11 +419,15 @@ cmg browser control script --file flow.cmgscript --gif demo-output\flow.gif --gi
 cmg run flow.cmgscript --gif demo-output\runner-gifs --gif-quality high
 ```
 
-Use block-level `quality=` for script-level recording blocks and aliases:
+Use block-level encoder controls for script-level recording blocks and aliases:
 
 ```text
 gif "checkout" quality=highest {
   click "#checkout"
+}
+
+gif "brand-review" quality=archival dither=atkinson palette=local colors=256 keepFrames=true {
+  click "#show-gradient"
 }
 
 recordVideo "hover-state" quality=high {
@@ -432,6 +440,8 @@ screencast "compact" quality=medium {
 ```
 
 When command-level `--gif` is active, nested `gif`, `recordVideo`, and `screencast` block files are still suppressed and the command-level `--gif-quality` applies to the whole recording.
+
+`keepFrames=` is deliberately block-level in this stage. It writes source PNGs only while that block owns the recorder. Use `cmg gif color-diff <source.png> <gif> --frame <n>` to quantify encoder drift as mean absolute error, RMS error, maximum channel error, and changed-pixel count. The command requires no browser.
 
 ## Timing
 

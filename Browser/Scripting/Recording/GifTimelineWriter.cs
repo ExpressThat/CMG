@@ -42,6 +42,7 @@ public static class GifTimelineWriter
         writer.WriteNumber("durationMilliseconds", sink.DurationMilliseconds);
         writer.WriteNumber("width", sink.Width);
         writer.WriteNumber("height", sink.Height);
+        WriteEncoding(writer, options);
         writer.WritePropertyName("frameDelaysMilliseconds");
         writer.WriteStartArray();
         foreach (var delay in sink.FrameDelaysMilliseconds)
@@ -93,6 +94,21 @@ public static class GifTimelineWriter
         writer.WriteNumber("holdAfterAssertionMilliseconds", options.HoldAfterAssertionMilliseconds);
         writer.WriteNumber("frameDelayMilliseconds", options.FrameDelayMilliseconds);
         writer.WriteNumber("fps", Math.Round(1000d / Math.Max(1, options.FrameDelayMilliseconds), 2));
+        writer.WriteEndObject();
+    }
+
+    private static void WriteEncoding(Utf8JsonWriter writer, ScriptRecordingOptions options)
+    {
+        var encoding = options.EffectiveEncoding;
+        writer.WritePropertyName("encoding");
+        writer.WriteStartObject();
+        writer.WriteString("dither", encoding.Dither.ToString().ToLowerInvariant());
+        writer.WriteString("palette", encoding.Palette.ToString().ToLowerInvariant());
+        if (encoding.Colors is int colors) writer.WriteNumber("colors", colors); else writer.WriteNull("colors");
+        if (encoding.KeepFramesDirectory is not null)
+            writer.WriteString("keepFramesDirectory", Path.GetFullPath(encoding.KeepFramesDirectory));
+        else
+            writer.WriteNull("keepFramesDirectory");
         writer.WriteEndObject();
     }
 }

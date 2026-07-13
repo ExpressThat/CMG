@@ -16,7 +16,7 @@ public sealed partial class RunCommandBuilder
         gifOption.Aliases.Add("-gif");
         var gifQualityOption = new Option<string>("--gif-quality")
         {
-            Description = "GIF quality for --gif recordings: highest, high, medium, or low.",
+            Description = "GIF quality for --gif recordings: archival, highest, high, medium, or low.",
             DefaultValueFactory = _ => "highest"
         };
         var pointerDurationOption = new Option<int?>("--pointer-duration") { Description = "Default virtual pointer movement duration in milliseconds for --gif recordings." };

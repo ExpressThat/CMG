@@ -10,14 +10,17 @@ public sealed class GifFrameSink : IDisposable
 {
     private readonly List<Image<Rgba32>> frames = [];
     private readonly GifQuality quality;
+    private readonly GifEncodingOptions encoding;
 
-    public GifFrameSink(GifQuality quality = GifQuality.Highest)
+    public GifFrameSink(GifQuality quality = GifQuality.Highest, GifEncodingOptions? encoding = null)
     {
         this.quality = quality;
+        this.encoding = encoding ?? new GifEncodingOptions();
     }
 
     public void AddFrame(byte[] pngBytes, int delayCentiseconds)
     {
+        RetainSourceFrame(pngBytes, frames.Count);
         var image = Image.Load<Rgba32>(pngBytes);
         SetFrameMetadata(image.Frames.RootFrame.Metadata.GetGifMetadata(), delayCentiseconds);
         frames.Add(image);
@@ -61,46 +64,66 @@ public sealed class GifFrameSink : IDisposable
             gif.Frames.AddFrame(normalized.Frames.RootFrame);
         }
 
-        gif.SaveAsGif(fullPath, CreateEncoder(quality));
+        gif.SaveAsGif(fullPath, CreateEncoder(quality, encoding));
     }
 
-    internal static GifEncoder CreateEncoder(GifQuality quality = GifQuality.Highest) => new()
+    internal static GifEncoder CreateEncoder(GifQuality quality = GifQuality.Highest, GifEncodingOptions? encoding = null)
     {
-        ColorTableMode = quality is GifQuality.Low ? GifColorTableMode.Local : GifColorTableMode.Global,
-        Quantizer = CreateQuantizer(quality)
-    };
+        encoding ??= new GifEncodingOptions();
+        return new GifEncoder
+        {
+            ColorTableMode = ColorTableMode(quality, encoding.Palette),
+            Quantizer = CreateQuantizer(quality, encoding)
+        };
+    }
 
-    private static IQuantizer CreateQuantizer(GifQuality quality) =>
+    private static IQuantizer CreateQuantizer(GifQuality quality, GifEncodingOptions encoding)
+    {
+        var defaults = QualityDefaults(quality);
+        var options = new QuantizerOptions
+        {
+            ColorMatchingMode = defaults.Matching,
+            Dither = Dither(encoding.Dither, defaults.Dither),
+            DitherScale = defaults.Scale,
+            MaxColors = encoding.Colors ?? defaults.Colors
+        };
+        return quality is GifQuality.Low ? new OctreeQuantizer(options) : new WuQuantizer(options);
+    }
+
+    private static (ColorMatchingMode Matching, GifDitherMode Dither, float Scale, int Colors) QualityDefaults(GifQuality quality) =>
         quality switch
         {
-            GifQuality.Low => new OctreeQuantizer(new QuantizerOptions
-            {
-                ColorMatchingMode = ColorMatchingMode.Coarse,
-                Dither = null,
-                MaxColors = 64
-            }),
-            GifQuality.Medium => new WuQuantizer(new QuantizerOptions
-            {
-                ColorMatchingMode = ColorMatchingMode.Hybrid,
-                Dither = KnownDitherings.Bayer4x4,
-                DitherScale = 0.35f,
-                MaxColors = 128
-            }),
-            GifQuality.High => new WuQuantizer(new QuantizerOptions
-            {
-                ColorMatchingMode = ColorMatchingMode.Exact,
-                Dither = KnownDitherings.FloydSteinberg,
-                DitherScale = 0.5f,
-                MaxColors = 256
-            }),
-            _ => new WuQuantizer(new QuantizerOptions
-            {
-                ColorMatchingMode = ColorMatchingMode.Exact,
-                Dither = KnownDitherings.FloydSteinberg,
-                DitherScale = 0.75f,
-                MaxColors = 256
-            })
+            GifQuality.Low => (ColorMatchingMode.Coarse, GifDitherMode.None, 1f, 64),
+            GifQuality.Medium => (ColorMatchingMode.Hybrid, GifDitherMode.Bayer, 0.35f, 128),
+            GifQuality.High => (ColorMatchingMode.Exact, GifDitherMode.FloydSteinberg, 0.5f, 256),
+            GifQuality.Archival => (ColorMatchingMode.Exact, GifDitherMode.FloydSteinberg, 1f, 256),
+            _ => (ColorMatchingMode.Exact, GifDitherMode.FloydSteinberg, 0.75f, 256)
         };
+
+    private static SixLabors.ImageSharp.Processing.Processors.Dithering.IDither? Dither(
+        GifDitherMode selected,
+        GifDitherMode fallback) => (selected is GifDitherMode.Default ? fallback : selected) switch
+        {
+            GifDitherMode.None => null,
+            GifDitherMode.Bayer => KnownDitherings.Bayer4x4,
+            GifDitherMode.Atkinson => KnownDitherings.Atkinson,
+            GifDitherMode.Sierra => KnownDitherings.Sierra3,
+            _ => KnownDitherings.FloydSteinberg
+        };
+
+    private static GifColorTableMode ColorTableMode(GifQuality quality, GifPaletteMode palette) => palette switch
+    {
+        GifPaletteMode.Global => GifColorTableMode.Global,
+        GifPaletteMode.Local or GifPaletteMode.Adaptive => GifColorTableMode.Local,
+        _ => quality is GifQuality.Low or GifQuality.Archival ? GifColorTableMode.Local : GifColorTableMode.Global
+    };
+
+    private void RetainSourceFrame(byte[] pngBytes, int index)
+    {
+        if (encoding.KeepFramesDirectory is null) return;
+        Directory.CreateDirectory(encoding.KeepFramesDirectory);
+        File.WriteAllBytes(Path.Combine(encoding.KeepFramesDirectory, $"frame-{index + 1:0000}.png"), pngBytes);
+    }
 
     private static Image<Rgba32> NormalizeFrame(Image<Rgba32> frame, int width, int height)
     {

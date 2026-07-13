@@ -3,13 +3,14 @@ using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Commands;
 
-public sealed class GifCommandBuilder
+public sealed partial class GifCommandBuilder
 {
     public Command Build()
     {
         var command = new Command("gif", "GIF artifact inspection and utility commands.");
         command.Subcommands.Add(BuildInspectCommand());
         command.Subcommands.Add(BuildCompareCommand());
+        command.Subcommands.Add(BuildColorDiffCommand());
         command.Subcommands.Add(BuildStoryboardCommand());
         command.Subcommands.Add(BuildOptimizeCommand());
         command.Subcommands.Add(BuildPresetsCommand());
@@ -176,7 +177,8 @@ public sealed class GifCommandBuilder
         var command = new Command("presets", "List GIF quality, pointer, pulse, and timing presets.");
         command.SetAction(_ =>
         {
-            Console.WriteLine("GIF_PRESETS quality=highest,high,medium,low defaultQuality=highest");
+            Console.WriteLine("GIF_PRESETS quality=archival,highest,high,medium,low defaultQuality=highest");
+            Console.WriteLine($"GIF_PRESETS dither={Compact(GifEncodingOptions.DitherValues)} palette={Compact(GifEncodingOptions.PaletteValues)} colors=2..256");
             Console.WriteLine("GIF_PRESETS pointerSpeed=slow,normal,fast,instant,multiplier defaultPointerSpeed=normal multiplierExample=1.5x");
             Console.WriteLine("GIF_PRESETS pointerEasing=linear,ease-in,ease-out,ease-in-out,spring defaultPointerEasing=ease-in-out");
             Console.WriteLine("GIF_PRESETS clickPulse=ring,ripple,dot,crosshair,none defaultClickPulse=ring");
@@ -188,4 +190,6 @@ public sealed class GifCommandBuilder
 
     private static string Quote(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
+
+    private static string Compact(string value) => value.Replace(", ", ",", StringComparison.Ordinal);
 }

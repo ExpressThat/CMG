@@ -34,7 +34,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
     {
         this.devToolsClient = devToolsClient;
         this.options = options;
-        frameSink = new GifFrameSink(options.Quality);
+        frameSink = new GifFrameSink(options.Quality, options.EffectiveEncoding);
     }
 
     public string OutputPath => Path.GetFullPath(options.OutputPath);

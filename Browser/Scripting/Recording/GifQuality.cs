@@ -2,6 +2,7 @@ namespace CMG.Browser.Scripting.Recording;
 
 public enum GifQuality
 {
+    Archival,
     Highest,
     High,
     Medium,
@@ -20,6 +21,7 @@ public static class GifQualityParser
 
         return value.Trim().ToLowerInvariant() switch
         {
+            "archival" => Set(out quality, GifQuality.Archival),
             "highest" or "best" => Set(out quality, GifQuality.Highest),
             "high" => Set(out quality, GifQuality.High),
             "medium" => Set(out quality, GifQuality.Medium),
@@ -28,7 +30,7 @@ public static class GifQualityParser
         };
     }
 
-    public static string Values => "highest, high, medium, low";
+    public static string Values => "archival, highest, high, medium, low";
 
     private static bool Set(out GifQuality target, GifQuality value)
     {

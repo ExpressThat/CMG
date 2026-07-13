@@ -1,0 +1,11 @@
+test "retains source color evidence" {
+  navigate "about:blank"
+  setContent "<main style='font:16px system-ui;padding:28px;background:#fff'><h1>Runner color fidelity</h1><button id='reveal'>Reveal palette</button><section id='swatches' hidden style='margin-top:18px;height:180px;background:linear-gradient(90deg,#f50057,#ff9100,#00c853,#00b8d4,#6200ea)'><p style='padding:24px;color:#111;background:rgba(255,255,255,.8)'>Runner visual evidence</p></section></main><script>document.querySelector('#reveal').onclick=()=>document.querySelector('#swatches').hidden=false</script>"
+  recording quality=archival dither=sierra palette=adaptive colors=256 keepFrames="demo-output/runner-color.frames" {
+    gif "runner color controls" output="demo-output/runner-gif-color-controls.gif" {
+      click "#reveal"
+      pauseGif 500
+    }
+  }
+  expectEval "document.querySelector('#swatches').hidden === false"
+}

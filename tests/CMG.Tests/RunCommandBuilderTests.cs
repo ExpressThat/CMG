@@ -33,10 +33,10 @@ public sealed class RunCommandBuilderTests
     public void RunCommand_MapsGifQuality()
     {
         var handler = new CapturingRunCommandHandler();
-        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --gif-quality low").Invoke();
+        var exitCode = BuildRoot(handler).Parse("run flows --gif artifacts --gif-quality archival").Invoke();
 
         Assert.Equal(0, exitCode);
-        Assert.Equal(GifQuality.Low, handler.GifQuality);
+        Assert.Equal(GifQuality.Archival, handler.GifQuality);
     }
 
     [Fact]

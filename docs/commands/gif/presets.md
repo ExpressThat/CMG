@@ -19,7 +19,8 @@ No command-specific options.
 Writes one parseable `GIF_PRESETS` line per preset family:
 
 ```text
-GIF_PRESETS quality=highest,high,medium,low defaultQuality=highest
+GIF_PRESETS quality=archival,highest,high,medium,low defaultQuality=highest
+GIF_PRESETS dither=none,floyd-steinberg,bayer,atkinson,sierra palette=global,local,adaptive colors=2..256
 GIF_PRESETS pointerSpeed=slow,normal,fast,instant,multiplier defaultPointerSpeed=normal multiplierExample=1.5x
 GIF_PRESETS pointerEasing=linear,ease-in,ease-out,ease-in-out,spring defaultPointerEasing=ease-in-out
 GIF_PRESETS clickPulse=ring,ripple,dot,crosshair,none defaultClickPulse=ring

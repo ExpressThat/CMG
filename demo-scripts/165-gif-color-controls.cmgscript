@@ -1,0 +1,9 @@
+navigate "about:blank"
+setContent "<main style='font:16px system-ui;padding:28px;background:#fff'><h1>Color fidelity</h1><button id='reveal'>Reveal palette</button><section id='swatches' hidden style='margin-top:18px;height:220px;background:linear-gradient(90deg,#ff1744,#ffea00,#00e676,#00b0ff,#651fff);box-shadow:0 12px 32px rgba(17,24,39,.24)'><p style='padding:24px;color:#111;background:rgba(255,255,255,.82)'>Brand colors, gradients, text, and shadows</p></section></main><script>document.querySelector('#reveal').onclick=()=>document.querySelector('#swatches').hidden=false</script>"
+recording quality=archival dither=atkinson palette=local colors=256 keepFrames=true {
+  gif "color controls" output="demo-output/gif-color-controls.gif" timeline=true {
+    click "#reveal"
+    pauseGif 600
+  }
+}
+expectEval "document.querySelector('#swatches').hidden === false"

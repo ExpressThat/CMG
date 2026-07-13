@@ -27,7 +27,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 ## Options
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
-- `--gif-quality <highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. Defaults to `highest`.
+- `--gif-quality <archival|highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. `archival` prioritizes frame-local color fidelity over file size. Defaults to `highest`.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.

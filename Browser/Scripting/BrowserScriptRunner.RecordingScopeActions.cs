@@ -64,6 +64,10 @@ public sealed partial class BrowserScriptRunner
     private static readonly HashSet<string> RecordingScopeOptions = new(StringComparer.OrdinalIgnoreCase)
     {
         "quality",
+        "dither",
+        "palette",
+        "colors",
+        "keepFrames",
         "pointerDuration",
         "pointerSpeed",
         "pointerEasing",
