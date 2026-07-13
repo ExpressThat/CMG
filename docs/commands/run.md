@@ -38,6 +38,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-max-width <1..10000>`: Cap output width while preserving aspect ratio.
 - `--gif-max-height <1..10000>`: Cap output height while preserving aspect ratio.
 - `--gif-debug`: Add a frame-only diagnostics HUD and write one `<gif-name>.debug.json` sidecar per recorded test.
+- `--gif-accessibility`: Enable safe keystroke labels, amplified focus evidence, accessible role/name labels, high-contrast evidence styling, and WCAG contrast warnings for every whole-run GIF.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -49,6 +50,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-reduced-motion`: Removes default pointer travel animation and uses linear/static click evidence for every whole-run GIF. Explicit pointer durations still override it.
 - `--gif-high-contrast-pointer`: Uses the large yellow high-contrast ring pointer for every whole-run GIF. Explicit pointer visual options override individual preset properties.
 - `--caption-style <subtle|teaching|qa|bug-report|compact>`: Default caption style for command-level `--gif` recordings.
+- `--caption-size <normal|large|x-large>`: Default caption text size for command-level `--gif` recordings.
 - `--caption-position <top|bottom|left|right|auto>`: Default caption position for command-level `--gif` recordings.
 - `--caption-severity <info|success|warning|error>`: Default caption severity color for command-level `--gif` recordings.
 - `--click-pulse <ring|ripple|dot|crosshair|none>`: Default click/tap/drop pulse style for command-level `--gif` recordings. Defaults to `ring`.
@@ -144,7 +146,8 @@ GIF recording is optional.
 - With `--gif` or `-gif`, CMG records the whole execution of each test.
 - `--gif-quality` defaults to `highest`, using CMG's most color-faithful palette matching and dithering. Use `high`, `medium`, or `low` to trade color fidelity for smaller/faster GIF artifacts.
 - `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, and `--show-pointer` set whole-test virtual pointer defaults when `--gif` is active.
-- `--caption-style`, `--caption-position`, and `--caption-severity` set whole-test caption defaults for `caption`, `showMessageBar`, `step`, and flattened `gif` / `recordVideo` / `screencast` block captions.
+- `--caption-style`, `--caption-position`, `--caption-severity`, and `--caption-size` set whole-test caption defaults for `caption`, `showMessageBar`, `step`, and flattened `gif` / `recordVideo` / `screencast` block captions.
+- `--gif-accessibility` enables safe keyboard labels, focus and accessible-name evidence, high-contrast styling, and targeted-control contrast warnings for every retained frame. It is inert without `--gif`.
 - `--click-pulse` sets the whole-test click/tap/drop pulse style when `--gif` is active.
 - `--gif-hold-after-action` sets the whole-test post-action hold duration when `--gif` is active.
 - `--pointer-pre-click-hold` and `--pointer-post-click-hold` set whole-test click/tap settle and post-pulse hold durations when `--gif` is active.
@@ -194,6 +197,7 @@ cmg run tests\flows --gif artifacts\gifs --pointer-duration 600 --pointer-easing
 cmg run tests\flows --gif artifacts\gifs --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44 --pointer-shadow strong
 cmg run tests\flows --gif artifacts\gifs --show-pointer false
 cmg run demo-scripts\181-gif-accessible-presets-runner.cmgscript --gif artifacts\accessible --gif-reduced-motion --gif-high-contrast-pointer
+cmg run demo-scripts\185-gif-contrast-captions-runner.cmgscript --gif artifacts\accessibility-review --gif-accessibility --caption-size large
 cmg run tests\flows --gif artifacts\gifs --caption-style qa --caption-position bottom --caption-severity success
 cmg run tests\flows --gif artifacts\gifs --click-pulse ripple --pointer-pre-click-hold 120 --pointer-post-click-hold 450 --gif-hold-on-failure 1800
 cmg run tests\flows --gif artifacts\gifs --gif-timeline artifacts\timelines

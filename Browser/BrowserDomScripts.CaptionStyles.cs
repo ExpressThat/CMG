@@ -5,7 +5,7 @@ public static partial class BrowserDomScripts
     private static string CaptionMode(BrowserCaptionOptions? options)
     {
         var value = options ?? BrowserCaptionOptions.Default;
-        return $"{value.Style}:{value.Position}:{value.Severity}";
+        return $"{value.Style}:{value.Position}:{value.Severity}:{value.Size}";
     }
 
     private static string CaptionStyleText(BrowserCaptionOptions? options)
@@ -15,7 +15,8 @@ public static partial class BrowserDomScripts
         return "all:initial;position:fixed;z-index:2147483646;margin:0;border:0;"
             + "box-sizing:border-box;pointer-events:none;white-space:pre-wrap;overflow-wrap:anywhere;"
             + CaptionPositionCss(position)
-            + CaptionPresetCss(value.Style, value.Severity);
+            + CaptionPresetCss(value.Style, value.Severity)
+            + CaptionSizeCss(value.Style, value.Size);
     }
 
     private static string CaptionPositionCss(CaptionPosition position) =>
@@ -49,4 +50,17 @@ public static partial class BrowserDomScripts
             CaptionSeverity.Error => ("#7f1d1d", "#fef2f2", "#f87171"),
             _ => ("#111827", "#ffffff", "#60a5fa")
         };
+
+    private static string CaptionSizeCss(CaptionStyle style, CaptionSize size)
+    {
+        if (size is CaptionSize.Normal) return string.Empty;
+        var extra = size is CaptionSize.ExtraLarge;
+        var pixels = style switch
+        {
+            CaptionStyle.Compact => extra ? 20 : 16,
+            CaptionStyle.Qa => extra ? 21 : 17,
+            _ => extra ? 24 : 19
+        };
+        return $"font-size:{pixels}px;line-height:1.45;";
+    }
 }

@@ -1885,11 +1885,12 @@ Options:
 - `redactPadding`: Extra CSS pixels around each explicit mask, from `0` to `100`.
 - `autoRedact`: Automatic masking mode: `passwords` (default), `sensitive`, or `none`.
 - `redactionSafety`: `standard` (default) or `strict`. Strict mode refuses a frame when any visible password input is not covered.
-- `accessibilityEvidence`: Enables all accessibility evidence overlays for inherited frames.
+- `accessibilityEvidence`: Enables keystroke, focus, accessible-name, high-contrast, and contrast-warning evidence for inherited frames.
 - `showKeystrokes`: Shows safe key/chord labels. Text-entry values are never included.
 - `focusEvidence`: Amplifies the actual focused element during frame capture.
 - `accessibleNames`: Shows the targeted or focused control's derived role and name.
 - `highContrast`: Uses high-contrast evidence colors.
+- `contrastWarnings`: Shows a visual warning when the targeted control is below the applicable `4.5:1` or `3:1` WCAG contrast threshold.
 - `reducedMotion`: Removes default pointer travel and inherited caption fades while retaining static action evidence.
 - `highContrastPointer`: Uses the large yellow ring pointer preset with a strong dark edge.
 - `debug`: Enables the complete capture-only diagnostics HUD and per-frame debug sidecar.
@@ -1944,7 +1945,7 @@ Records only the wrapped actions when direct `browser control script` or `cmg ru
 Options:
 
 - `output`: Optional GIF path for direct browser-control scripts. Without `output`, CMG writes `<name>.gif` in the current directory.
-- `accessibilityEvidence`, `showKeystrokes`, `focusEvidence`, `accessibleNames`, `highContrast`: Optional accessibility evidence controls. Each accepts `true` or `false`; the umbrella preset enables all four individual behaviors.
+- `accessibilityEvidence`, `showKeystrokes`, `focusEvidence`, `accessibleNames`, `highContrast`, `contrastWarnings`: Optional accessibility evidence controls. Each accepts `true` or `false`; the umbrella preset enables all five individual behaviors.
 - `reducedMotion`, `highContrastPointer`: Optional accessible choreography presets. Child pointer, fade, and pulse options override preset properties locally.
 - `debug`, `debugAction`, `debugContext`, `debugTarget`, `debugCoordinates`, `debugScroll`: Optional frame diagnostics. Invalid booleans fail with the exact option name; `debug=false` disables inherited diagnostics for that child.
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
@@ -1956,6 +1957,7 @@ Options:
 - `pointerShadow`: Optional pointer shadow: `none`, `light`, `medium`, or `strong`.
 - `showPointer`: Optional pointer visibility default for child frames: `true`, `false`, or `auto`.
 - `captionStyle`: Optional caption style default for child `caption`, `showMessageBar`, and `step` captions.
+- `captionSize`: Optional caption text size: `normal`, `large`, or `x-large`.
 - `captionPosition`: Optional caption position default for child captions.
 - `captionSeverity`: Optional caption severity default for child captions.
 - `autoCaptions`: Optional `true`/`false` automatic narration for supported visual child actions.

@@ -1,0 +1,9 @@
+setContent "<style>html,body{margin:0;background:#fff}main{padding:48px;font:16px system-ui}button{font:inherit;padding:12px 18px;margin:12px 12px 12px 0}.low{color:#aaa;background:#f3f4f6;border:1px solid #ddd}.good{color:#fff;background:#166534;border:0}</style><main><h1>Accessibility review</h1><button id='continue' class='low' aria-label='Low contrast continue'>Continue</button><button id='confirm' class='good'>Confirm</button><p id='status'>Ready</p></main>"
+
+gif "contrast and captions" output="demo-output/gif-contrast-captions.gif" accessibilityEvidence=true captionSize=x-large {
+  caption "Review visual accessibility" captionStyle=teaching duration=700
+  click "#continue"
+  click "#confirm" contrastWarnings=false captionSize=large
+  evaluate "document.querySelector('#status').textContent = 'Complete'"
+  expectText "#status" "Complete"
+}

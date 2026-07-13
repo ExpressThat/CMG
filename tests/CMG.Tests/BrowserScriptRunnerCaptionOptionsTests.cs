@@ -9,13 +9,14 @@ public sealed class BrowserScriptRunnerCaptionOptionsTests
     public void RunText_CaptionUsesActionOptions()
     {
         var client = new FakeAutomationClient();
-        var result = Runner().RunText("""caption "Review state" captionStyle=qa captionPosition=bottom captionSeverity=success""", "debug", client);
+        var result = Runner().RunText("""caption "Review state" captionStyle=qa captionPosition=bottom captionSeverity=success captionSize=x-large""", "debug", client);
 
         Assert.True(result.Success);
         Assert.Equal("Review state", client.LastMessageBar);
         Assert.Equal(CaptionStyle.Qa, client.LastCaptionOptions?.Style);
         Assert.Equal(CaptionPosition.Bottom, client.LastCaptionOptions?.Position);
         Assert.Equal(CaptionSeverity.Success, client.LastCaptionOptions?.Severity);
+        Assert.Equal(CaptionSize.ExtraLarge, client.LastCaptionOptions?.Size);
     }
 
     [Fact]
@@ -23,8 +24,8 @@ public sealed class BrowserScriptRunnerCaptionOptionsTests
     {
         var client = new FakeAutomationClient();
         var result = Runner().RunText("""
-            recording captionStyle=teaching captionPosition=left captionSeverity=warning {
-              caption "Watch this"
+            recording captionStyle=teaching captionPosition=left captionSeverity=warning captionSize=large {
+              caption "Watch this" captionSize=x-large
             }
             """, "debug", client);
 
@@ -32,6 +33,7 @@ public sealed class BrowserScriptRunnerCaptionOptionsTests
         Assert.Equal(CaptionStyle.Teaching, client.LastCaptionOptions?.Style);
         Assert.Equal(CaptionPosition.Left, client.LastCaptionOptions?.Position);
         Assert.Equal(CaptionSeverity.Warning, client.LastCaptionOptions?.Severity);
+        Assert.Equal(CaptionSize.ExtraLarge, client.LastCaptionOptions?.Size);
     }
 
     [Fact]
@@ -57,6 +59,15 @@ public sealed class BrowserScriptRunnerCaptionOptionsTests
 
         Assert.False(result.Success);
         Assert.Contains("caption option captionStyle= must be one of", result.Error);
+    }
+
+    [Fact]
+    public void RunText_RejectsInvalidCaptionSize()
+    {
+        var result = Runner().RunText("""caption "Nope" captionSize=huge""", "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("captionSize= must be normal, large, or x-large", result.Error);
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

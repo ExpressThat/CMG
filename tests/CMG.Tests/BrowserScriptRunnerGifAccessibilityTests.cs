@@ -24,6 +24,10 @@ public sealed class BrowserScriptRunnerGifAccessibilityTests
         Assert.Contains(client.EvaluatedExpressions, expression =>
             expression.Contains("[data-cmg-gif-a11y]", StringComparison.Ordinal) &&
             expression.Contains("remove", StringComparison.Ordinal));
+        Assert.Contains(client.EvaluatedExpressions, expression =>
+            expression.Contains("Contrast", StringComparison.Ordinal) && expression.Contains("4.5", StringComparison.Ordinal));
+        Assert.Contains(client.EvaluatedExpressions, expression =>
+            expression.Contains("active !== document.body", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -62,6 +66,23 @@ public sealed class BrowserScriptRunnerGifAccessibilityTests
     }
 
     [Fact]
+    public void ContrastWarnings_CanBeDisabledForOneChild()
+    {
+        using var gif = new TempGif();
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText(
+            "recording accessibilityEvidence=true { click \"#save\" contrastWarnings=false }",
+            "debug",
+            client,
+            gif.File);
+
+        Assert.True(result.Success, result.Error);
+        var overlays = client.EvaluatedExpressions.Where(expression => expression.Contains("cmgGifA11y", StringComparison.Ordinal));
+        Assert.Contains(overlays, expression => expression.Contains("if (false && visible)", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void ShowKeystrokesBlock_EnablesSafeKeyboardOverlay()
     {
         using var gif = new TempGif();
@@ -81,6 +102,7 @@ public sealed class BrowserScriptRunnerGifAccessibilityTests
     [InlineData("focusEvidence")]
     [InlineData("accessibleNames")]
     [InlineData("highContrast")]
+    [InlineData("contrastWarnings")]
     public void InvalidAccessibilityBoolean_ExplainsAcceptedValues(string option)
     {
         var error = Assert.Throws<ScriptExecutionException>(() => GifAccessibilityOptions.FromOptions(

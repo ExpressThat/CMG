@@ -6,14 +6,15 @@ public sealed partial class ScriptGifRecorder
     {
         if (remoteDebuggingUrl is null || activeAction is null) return;
         var accessibility = EffectiveAccessibility(activeAction);
-        if (!accessibility.ShowKeystrokes && !accessibility.FocusEvidence && !accessibility.AccessibleNames) return;
+        if (!accessibility.ShowKeystrokes && !accessibility.FocusEvidence && !accessibility.AccessibleNames && !accessibility.ContrastWarnings) return;
 
         devToolsClient.Evaluate(remoteDebuggingUrl, BrowserDomScripts.ShowGifAccessibilityEvidence(
             AccessibilityTarget(activeAction),
             accessibility.ShowKeystrokes ? KeystrokeLabel(activeAction) : null,
             accessibility.FocusEvidence,
             accessibility.AccessibleNames,
-            accessibility.HighContrast));
+            accessibility.HighContrast,
+            accessibility.ContrastWarnings));
     }
 
     private GifAccessibilityOptions EffectiveAccessibility(BrowserScriptAction action)
@@ -26,7 +27,8 @@ public sealed partial class ScriptGifRecorder
             ShowKeystrokes = action.Options.ContainsKey("showKeystrokes") ? scoped.ShowKeystrokes : defaults.ShowKeystrokes,
             FocusEvidence = action.Options.ContainsKey("focusEvidence") ? scoped.FocusEvidence : defaults.FocusEvidence,
             AccessibleNames = action.Options.ContainsKey("accessibleNames") ? scoped.AccessibleNames : defaults.AccessibleNames,
-            HighContrast = action.Options.ContainsKey("highContrast") ? scoped.HighContrast : defaults.HighContrast
+            HighContrast = action.Options.ContainsKey("highContrast") ? scoped.HighContrast : defaults.HighContrast,
+            ContrastWarnings = action.Options.ContainsKey("contrastWarnings") ? scoped.ContrastWarnings : defaults.ContrastWarnings
         };
     }
 

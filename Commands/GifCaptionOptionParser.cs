@@ -10,11 +10,12 @@ public static class GifCaptionOptionParser
         string? position,
         string? severity,
         out BrowserCaptionOptions? options,
-        out string error)
+        out string error,
+        string? size = null)
     {
         options = null;
         error = string.Empty;
-        if (style is null && position is null && severity is null)
+        if (style is null && position is null && severity is null && size is null)
         {
             return true;
         }
@@ -23,6 +24,7 @@ public static class GifCaptionOptionParser
         Add(values, "captionStyle", style);
         Add(values, "captionPosition", position);
         Add(values, "captionSeverity", severity);
+        Add(values, "captionSize", size);
         try
         {
             options = BrowserCaptionOptions.FromOptions(values, "GIF");

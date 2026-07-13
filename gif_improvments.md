@@ -389,12 +389,12 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add keyboard overlay for keyboard-only flows through `showKeystrokes=true` and the `showKeystrokes {}` scope.
 - Implemented: add focus ring amplification for accessibility evidence through `focusEvidence=true`.
 - Implemented: add ARIA role/name captions for targeted or focused controls through `accessibleNames=true`.
-- Add color-contrast warning overlay option.
+- Implemented: add `contrastWarnings=true` and `--gif-accessibility` target contrast warnings using the applicable `4.5:1` or `3:1` WCAG threshold.
 - Implemented: add `reducedMotion=true` plus `--gif-reduced-motion`, with static pointer travel/click evidence, suppressed inherited caption fades, and child overrides.
 - Implemented: add `highContrastPointer=true` plus `--gif-high-contrast-pointer`, with a large yellow ring, strong edge, and per-property child overrides.
-- Add larger caption text preset.
+- Implemented: add `captionSize=<normal|large|x-large>` on recording scopes and child captions, plus `--caption-size` for whole-run GIFs.
 - Add screen-reader narration sidecar text file.
-- Implemented: add an `accessibilityEvidence=true` preset that captures keyboard labels, focused-element evidence, and accessible role/name callouts with high-contrast styling.
+- Implemented: add an `accessibilityEvidence=true` preset that captures keyboard labels, focused-element evidence, accessible role/name callouts, high-contrast styling, and contrast warnings.
 - Add alt text generation template for GIF artifacts.
 - Add report field for human-written GIF description.
 - Add option to export a step-by-step still image PDF for reviewers who cannot view GIFs.

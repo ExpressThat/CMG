@@ -334,6 +334,8 @@ dotnet run -- --firefox browser close
 - `181-gif-accessible-presets-runner.cmgscript`: Demonstrates the accessible pointer presets in structured tests and with whole-run CLI flags.
 - `182-gif-debug.cmgscript`: Demonstrates the capture-only diagnostics HUD, nested scope, target bounds, coordinates, scroll state, and per-frame debug JSON.
 - `183-gif-debug-runner.cmgscript`: Demonstrates whole-run runner diagnostics through `--gif-debug`.
+- `184-gif-contrast-captions.cmgscript`: Demonstrates target contrast warnings, extra-large captions, and child-level accessibility overrides.
+- `185-gif-contrast-captions-runner.cmgscript`: Demonstrates whole-run `--gif-accessibility` and `--caption-size` settings in the structured runner.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

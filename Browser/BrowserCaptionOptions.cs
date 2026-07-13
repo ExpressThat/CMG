@@ -28,10 +28,18 @@ public enum CaptionSeverity
     Error
 }
 
+public enum CaptionSize
+{
+    Normal,
+    Large,
+    ExtraLarge
+}
+
 public sealed record BrowserCaptionOptions(
     CaptionStyle Style = CaptionStyle.Subtle,
     CaptionPosition Position = CaptionPosition.Top,
-    CaptionSeverity Severity = CaptionSeverity.Info)
+    CaptionSeverity Severity = CaptionSeverity.Info,
+    CaptionSize Size = CaptionSize.Normal)
 {
     public static readonly BrowserCaptionOptions Default = new();
 
@@ -49,7 +57,9 @@ public sealed record BrowserCaptionOptions(
             action.Options.TryGetValue("severity", out rawSeverity)
             ? ParseSeverity(rawSeverity, action.Name)
             : Severity;
-        return new(style, position, severity);
+        var size = action.Options.TryGetValue("captionSize", out var rawSize)
+            ? ParseSize(rawSize, action.Name) : Size;
+        return new(style, position, severity, size);
     }
 
     public static BrowserCaptionOptions FromOptions(IReadOnlyDictionary<string, string> options, string source) =>
@@ -59,14 +69,16 @@ public sealed record BrowserCaptionOptions(
             options.TryGetValue("captionPosition", out var position) || options.TryGetValue("position", out position)
                 ? ParsePosition(position, source) : CaptionPosition.Top,
             options.TryGetValue("captionSeverity", out var severity) || options.TryGetValue("severity", out severity)
-                ? ParseSeverity(severity, source) : CaptionSeverity.Info);
+                ? ParseSeverity(severity, source) : CaptionSeverity.Info,
+            options.TryGetValue("captionSize", out var size) ? ParseSize(size, source) : CaptionSize.Normal);
 
     public IReadOnlyDictionary<string, string> ToRecordingDefaults() =>
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["captionStyle"] = StyleValue(Style),
             ["captionPosition"] = PositionValue(Position),
-            ["captionSeverity"] = SeverityValue(Severity)
+            ["captionSeverity"] = SeverityValue(Severity),
+            ["captionSize"] = SizeValue(Size)
         };
 
     private static CaptionStyle ParseStyle(string value, string source) =>
@@ -101,11 +113,22 @@ public sealed record BrowserCaptionOptions(
             _ => throw new ScriptExecutionException($"{source} option captionSeverity= must be one of: info, success, warning, error.")
         };
 
+    private static CaptionSize ParseSize(string value, string source) =>
+        value.Trim().ToLowerInvariant() switch
+        {
+            "normal" or "default" => CaptionSize.Normal,
+            "large" => CaptionSize.Large,
+            "x-large" or "xlarge" or "extra-large" => CaptionSize.ExtraLarge,
+            _ => throw new ScriptExecutionException($"{source} option captionSize= must be normal, large, or x-large.")
+        };
+
     public static string StyleValues => "subtle, teaching, qa, bug-report, compact";
 
     public static string PositionValues => "top, bottom, left, right, auto";
 
     public static string SeverityValues => "info, success, warning, error";
+
+    public static string SizeValues => "normal, large, x-large";
 
     private static string StyleValue(CaptionStyle style) =>
         style is CaptionStyle.BugReport ? "bug-report" : style.ToString().ToLowerInvariant();
@@ -115,4 +138,7 @@ public sealed record BrowserCaptionOptions(
 
     private static string SeverityValue(CaptionSeverity severity) =>
         severity.ToString().ToLowerInvariant();
+
+    private static string SizeValue(CaptionSize size) =>
+        size is CaptionSize.ExtraLarge ? "x-large" : size.ToString().ToLowerInvariant();
 }

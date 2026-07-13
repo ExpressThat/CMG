@@ -53,7 +53,8 @@ public sealed partial class CmgVisualSegmentExecutor
                 ShowKeystrokes = action.Options.ContainsKey("showKeystrokes") ? parsed.ShowKeystrokes : defaults?.ShowKeystrokes ?? false,
                 FocusEvidence = action.Options.ContainsKey("focusEvidence") ? parsed.FocusEvidence : defaults?.FocusEvidence ?? false,
                 AccessibleNames = action.Options.ContainsKey("accessibleNames") ? parsed.AccessibleNames : defaults?.AccessibleNames ?? false,
-                HighContrast = action.Options.ContainsKey("highContrast") ? parsed.HighContrast : defaults?.HighContrast ?? false
+                HighContrast = action.Options.ContainsKey("highContrast") ? parsed.HighContrast : defaults?.HighContrast ?? false,
+                ContrastWarnings = action.Options.ContainsKey("contrastWarnings") ? parsed.ContrastWarnings : defaults?.ContrastWarnings ?? false
             };
             return true;
         }

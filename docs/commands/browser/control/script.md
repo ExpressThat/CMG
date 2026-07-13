@@ -53,6 +53,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-max-width <1..10000>`: Cap output width while preserving aspect ratio.
 - `--gif-max-height <1..10000>`: Cap output height while preserving aspect ratio.
 - `--gif-debug`: Add a frame-only diagnostics HUD and write `<gif-name>.debug.json` with one metadata record per captured frame.
+- `--gif-accessibility`: Enable safe keystroke labels, amplified focus evidence, accessible role/name labels, high-contrast evidence styling, and WCAG contrast warnings for the whole GIF.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -64,6 +65,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-reduced-motion`: Removes default pointer travel animation and uses linear/static click evidence for the whole GIF. Explicit pointer durations still override the preset.
 - `--gif-high-contrast-pointer`: Uses a large yellow ring pointer with a strong dark edge for the whole GIF. Explicit pointer theme, color, size, and shadow options override individual preset properties.
 - `--caption-style <subtle|teaching|qa|bug-report|compact>`: Default caption style for command-level `--gif` recordings.
+- `--caption-size <normal|large|x-large>`: Default caption text size for command-level `--gif` recordings.
 - `--caption-position <top|bottom|left|right|auto>`: Default caption position for command-level `--gif` recordings.
 - `--caption-severity <info|success|warning|error>`: Default caption severity color for command-level `--gif` recordings.
 - `--click-pulse <ring|ripple|dot|crosshair|none>`: Default click/tap/drop pulse style for command-level `--gif` recordings. Defaults to `ring`.
@@ -121,7 +123,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `caption` and nestable `narrate` blocks support `captionDuration=` / `duration=`, `fadeIn=`, and `fadeOut=` deterministic encoded timing.
 - DSL recording scopes and blocks can set `intro=`, `outro=`, `introDuration=`, and `outroDuration=`. Explicit `intro` and `outro` actions capture chapter cards. All title-card forms are recording-only and never create a pointer or overlay in non-GIF runs.
 - `hideFromGif` / `cutGif` execute child actions without recording frames or pointer UI. `speedUpGif factor=` and `slowDownGif factor=` scale encoded delays locally. These blocks are nestable and execute normally with no pointer when GIF recording is inactive.
-- Whole-run pointer, caption, and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, `--show-pointer`, `--caption-style`, `--caption-position`, `--caption-severity`, `--pointer-pre-click-hold`, `--pointer-post-click-hold`, `--gif-hold-after-action`, `--gif-hold-after-navigation`, `--gif-hold-after-assertion`, `--gif-hold-on-failure`, `--gif-fps`, and `--gif-frame-delay` apply when `--gif` is active. DSL `recording` / `withRecording`, `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `pointerTheme=`, `pointerColor=`, `pointerSize=`, `pointerShadow=`, `showPointer=`, `captionStyle=`, `captionPosition=`, `captionSeverity=`, `clickPulse=`, `preClickHold=`, `postClickHold=`, `holdAfterAction=`, `holdAfterNavigation=`, `holdAfterAssertion=`, `holdOnFailure=`, `fps=`, and `frameDelay=` as scoped defaults for child actions; child actions can override action options locally.
+- Whole-run pointer, caption, accessibility, and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, `--show-pointer`, `--caption-style`, `--caption-position`, `--caption-severity`, `--caption-size`, `--gif-accessibility`, `--pointer-pre-click-hold`, `--pointer-post-click-hold`, `--gif-hold-after-action`, `--gif-hold-after-navigation`, `--gif-hold-after-assertion`, `--gif-hold-on-failure`, `--gif-fps`, and `--gif-frame-delay` apply when `--gif` is active. DSL `recording` / `withRecording`, `gif`, `recordVideo`, and `screencast` blocks can set matching scoped defaults for child actions; child actions can override action options locally.
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.
 - On failure, command-level GIF recording captures one extra final-state hold frame before writing the partial GIF unless `--gif-hold-on-failure 0` is used.
 - `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, encoder controls, framing controls, and recorder timing settings.
@@ -208,6 +210,7 @@ cmg browser control script --file demo-scripts\141-base-url.cmgscript --base-url
 cmg browser control script --file demo-scripts\148-gif-quality.cmgscript --gif demo-output\quality.gif --gif-quality highest
 cmg browser control script --file demo-scripts\149-gif-pointer-choreography.cmgscript --gif demo-output\pointer-choreography.gif --pointer-duration 500 --pointer-pre-click-hold 120 --pointer-post-click-hold 450
 cmg browser control script --file demo-scripts\180-gif-accessible-presets.cmgscript --gif demo-output\accessible-presets.gif --gif-reduced-motion --gif-high-contrast-pointer
+cmg browser control script --file demo-scripts\184-gif-contrast-captions.cmgscript --gif demo-output\accessible-review.gif --gif-accessibility --caption-size x-large
 cmg browser control script --file demo-scripts\156-gif-pointer-styles.cmgscript --gif demo-output\pointer-styles-whole-run.gif --pointer-theme branded --pointer-color "#2563eb"
 cmg browser control script --file demo-scripts\157-gif-caption-styles.cmgscript --gif demo-output\caption-styles-whole-run.gif --caption-style bug-report --caption-position bottom
 cmg browser control script --file demo-scripts\150-gif-failure-hold.cmgscript --gif demo-output\failure-hold.gif --gif-hold-on-failure 1800 --gif-timeline demo-output\timelines

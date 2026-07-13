@@ -81,17 +81,19 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerShadow=<none|light|medium|strong>`: Pointer drop shadow strength. Defaults to `medium`.
 - `showPointer=<true|false|auto>`: Pointer visibility for captured frames. Defaults to `auto`, which currently shows the pointer for pointer-aware evidence frames. Use `false` for clean page-state frames; child actions can override with `showPointer=true`.
 - `captionStyle=<subtle|teaching|qa|bug-report|compact>`: Caption style default for child captions and step title bars.
+- `captionSize=<normal|large|x-large>`: Caption text-size default. Child captions and steps can override it.
 - `captionPosition=<top|bottom|left|right|auto>`: Caption placement default.
 - `captionSeverity=<info|success|warning|error>`: Caption color intent default.
 - `autoCaptions=<true|false>`: Narrate supported visual actions automatically. Defaults to `false`; children can override it.
 - `captionTemplate=<template>`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
 - `captionDuration=<milliseconds>`, `fadeIn=<milliseconds>`, `fadeOut=<milliseconds>`: Deterministic caption timeline defaults.
 - `assertionCaptions=<true|false>` / `failureCaptions=<true|false>`: Automatic evidence-caption defaults. Both default to enabled.
-- `accessibilityEvidence=<true|false>`: Enables keystroke, focus, accessible-name, and high-contrast evidence together. Defaults to `false`.
+- `accessibilityEvidence=<true|false>`: Enables keystroke, focus, accessible-name, high-contrast, and contrast-warning evidence together. Defaults to `false`.
 - `showKeystrokes=<true|false>`: Shows keys and shortcuts. Text-entry actions show `Text input`; CMG never copies the entered value into the overlay.
 - `focusEvidence=<true|false>`: Draws an amplified ring around the actual `document.activeElement` during capture.
 - `accessibleNames=<true|false>`: Labels a targeted or focused control with its derived role and accessible name.
 - `highContrast=<true|false>`: Uses yellow/black high-contrast evidence borders. Child actions can override the preset.
+- `contrastWarnings=<true|false>`: Shows a capture-only warning when the targeted control falls below the applicable WCAG contrast threshold.
 - `reducedMotion=<true|false>`: Removes inherited pointer travel, uses linear movement, suppresses inherited caption fades, and defaults click evidence to a static dot. Explicit child durations, fades, and pulses still win; `false` restores normal defaults.
 - `highContrastPointer=<true|false>`: Uses a 42px yellow ring pointer with a strong dark edge. Child pointer properties override individual preset values; `false` restores the normal pointer.
 - `debug=<true|false>`: Enables the complete frame diagnostics HUD and `.debug.json` sidecar.
@@ -359,7 +361,11 @@ showKeystrokes {
 
 The scope starts no recording by itself. It affects a surrounding command-level `--gif` or nested `gif` / `recordVideo` / `screencast` recording; without one, its children execute normally with no overlay, screenshot, or virtual pointer. Parent settings are defaults and child actions can override them locally. CMG removes every accessibility node immediately after each browser screenshot, including when capture fails.
 
-See demos 178 and 179 for direct and structured-runner examples.
+Contrast warnings inspect the targeted control's computed foreground and effective background. CMG uses a `4.5:1` threshold for normal text and `3:1` for large or bold text. The warning is visual evidence only: it does not fail the action or alter the page. Use `contrastWarnings=false` on a child when a deliberate low-contrast state should not be called out.
+
+For whole-run recordings, `--gif-accessibility` enables the same preset and `--caption-size normal|large|x-large` sets the inherited caption size. Both options are inert without `--gif`.
+
+See demos 178, 179, 184, and 185 for direct, structured-runner, contrast-warning, and scalable-caption examples.
 
 For less animated, easier-to-track pointer evidence, combine the visual presets:
 

@@ -13,7 +13,8 @@ internal sealed record GifEncodingCliOptions(
     Option<double?> Scale,
     Option<int?> MaxWidth,
     Option<int?> MaxHeight,
-    Option<bool> Debug)
+    Option<bool> Debug,
+    Option<bool> Accessibility)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -27,7 +28,8 @@ internal sealed record GifEncodingCliOptions(
             new Option<double?>("--gif-scale") { Description = "Output scale from 0.05 to 1." },
             new Option<int?>("--gif-max-width") { Description = "Maximum GIF width from 1 to 10000 pixels." },
             new Option<int?>("--gif-max-height") { Description = "Maximum GIF height from 1 to 10000 pixels." },
-            new Option<bool>("--gif-debug") { Description = "Show action, scope, target, pointer, and scroll diagnostics in GIF frames." });
+            new Option<bool>("--gif-debug") { Description = "Show action, scope, target, pointer, and scroll diagnostics in GIF frames." },
+            new Option<bool>("--gif-accessibility") { Description = "Show keyboard, focus, accessible-name, and contrast evidence in GIF frames." });
     }
 
     public bool TryParse(ParseResult result, out GifEncodingOptions encoding, out string? error)
@@ -45,7 +47,8 @@ internal sealed record GifEncodingCliOptions(
         encoding = encoding with
         {
             Framing = framing,
-            Diagnostics = result.GetValue(Debug) ? new GifDebugOptions(true, true, true, true, true, true) : null
+            Diagnostics = result.GetValue(Debug) ? new GifDebugOptions(true, true, true, true, true, true) : null,
+            Accessibility = result.GetValue(Accessibility) ? new GifAccessibilityOptions(true, true, true, true, true) : null
         };
         return true;
     }

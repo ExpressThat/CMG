@@ -473,7 +473,7 @@ cmg run demo-scripts\172-gif-failure-narration-runner.cmgscript --gif demo-outpu
 
 ## Accessibility Evidence
 
-Record keyboard labels, the actual focus target, and control role/name evidence without exposing text-entry values:
+Record keyboard labels, the actual focus target, control role/name evidence, and targeted-control contrast warnings without exposing text-entry values:
 
 ```text
 gif "accessible form" accessibilityEvidence=true {
@@ -484,6 +484,18 @@ gif "accessible form" accessibilityEvidence=true {
 ```
 
 Use `showKeystrokes { ... }` inside a command-level GIF when only keyboard labels are needed. See `demo-scripts/178-gif-accessibility-evidence.cmgscript` and `demo-scripts/179-gif-accessibility-evidence-runner.cmgscript`.
+
+Use scalable captions and override an inherited warning on a deliberate low-contrast state:
+
+```text
+gif "accessibility review" accessibilityEvidence=true captionSize=x-large {
+  caption "Review the primary action"
+  click "#continue"
+  click "#disabled-preview" contrastWarnings=false captionSize=large
+}
+```
+
+For a whole run, use `--gif-accessibility --caption-size large`. See demos 184 and 185.
 
 Use reduced motion and a high-contrast pointer together when motion itself would make evidence harder to review:
 

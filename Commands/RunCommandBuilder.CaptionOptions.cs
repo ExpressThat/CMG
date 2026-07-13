@@ -9,7 +9,8 @@ public sealed partial class RunCommandBuilder
         new(
             new Option<string?>("--caption-style") { Description = $"Default caption style for --gif recordings: {BrowserCaptionOptions.StyleValues}." },
             new Option<string?>("--caption-position") { Description = $"Default caption position for --gif recordings: {BrowserCaptionOptions.PositionValues}." },
-            new Option<string?>("--caption-severity") { Description = $"Default caption severity color for --gif recordings: {BrowserCaptionOptions.SeverityValues}." });
+            new Option<string?>("--caption-severity") { Description = $"Default caption severity color for --gif recordings: {BrowserCaptionOptions.SeverityValues}." },
+            new Option<string?>("--caption-size") { Description = $"Default caption text size for --gif recordings: {BrowserCaptionOptions.SizeValues}." });
 
     private static bool TryParseCaption(
         ParseResult parseResult,
@@ -21,10 +22,12 @@ public sealed partial class RunCommandBuilder
             parseResult.GetValue(options.Position),
             parseResult.GetValue(options.Severity),
             out caption,
-            out error);
+            out error,
+            parseResult.GetValue(options.Size));
 
     private sealed record CaptionCliOptions(
         Option<string?> Style,
         Option<string?> Position,
-        Option<string?> Severity);
+        Option<string?> Severity,
+        Option<string?> Size);
 }

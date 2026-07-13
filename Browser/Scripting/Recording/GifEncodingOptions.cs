@@ -10,7 +10,8 @@ public sealed record GifEncodingOptions(
     int? Colors = null,
     string? KeepFramesDirectory = null,
     GifFramingOptions? Framing = null,
-    GifDebugOptions? Diagnostics = null)
+    GifDebugOptions? Diagnostics = null,
+    GifAccessibilityOptions? Accessibility = null)
 {
     public static GifEncodingOptions FromOptions(
         IReadOnlyDictionary<string, string> options,
@@ -21,7 +22,9 @@ public sealed record GifEncodingOptions(
         var palette = ParsePalette(options.GetValueOrDefault("palette"), context);
         var colors = ParseColors(options.GetValueOrDefault("colors"), context);
         var keepFrames = ParseKeepFrames(options.GetValueOrDefault("keepFrames"), context, outputPath);
-        return new(dither, palette, colors, keepFrames, Diagnostics: GifDebugOptions.FromOptions(options, context));
+        return new(dither, palette, colors, keepFrames,
+            Diagnostics: GifDebugOptions.FromOptions(options, context),
+            Accessibility: GifAccessibilityOptions.FromOptions(options, context));
     }
 
     public GifEncodingOptions WithOptions(
@@ -36,7 +39,23 @@ public sealed record GifEncodingOptions(
             options.ContainsKey("colors") ? parsed.Colors : Colors,
             options.ContainsKey("keepFrames") ? parsed.KeepFramesDirectory : KeepFramesDirectory,
             Framing,
-            GifDebugOptions.FromOptions(options, context, Diagnostics));
+            GifDebugOptions.FromOptions(options, context, Diagnostics),
+            MergeAccessibility(options, context));
+    }
+
+    private GifAccessibilityOptions MergeAccessibility(IReadOnlyDictionary<string, string> options, string context)
+    {
+        var parsed = GifAccessibilityOptions.FromOptions(options, context);
+        var defaults = Accessibility ?? new();
+        if (options.ContainsKey("accessibilityEvidence")) return parsed;
+        return parsed with
+        {
+            ShowKeystrokes = options.ContainsKey("showKeystrokes") ? parsed.ShowKeystrokes : defaults.ShowKeystrokes,
+            FocusEvidence = options.ContainsKey("focusEvidence") ? parsed.FocusEvidence : defaults.FocusEvidence,
+            AccessibleNames = options.ContainsKey("accessibleNames") ? parsed.AccessibleNames : defaults.AccessibleNames,
+            HighContrast = options.ContainsKey("highContrast") ? parsed.HighContrast : defaults.HighContrast,
+            ContrastWarnings = options.ContainsKey("contrastWarnings") ? parsed.ContrastWarnings : defaults.ContrastWarnings
+        };
     }
 
     public GifEncodingOptions ForOutput(string outputPath, bool isolate)
