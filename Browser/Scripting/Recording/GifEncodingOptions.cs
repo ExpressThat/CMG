@@ -69,7 +69,8 @@ public sealed record GifEncodingOptions(
             FocusEvidence = options.ContainsKey("focusEvidence") ? parsed.FocusEvidence : defaults.FocusEvidence,
             AccessibleNames = options.ContainsKey("accessibleNames") ? parsed.AccessibleNames : defaults.AccessibleNames,
             HighContrast = options.ContainsKey("highContrast") ? parsed.HighContrast : defaults.HighContrast,
-            ContrastWarnings = options.ContainsKey("contrastWarnings") ? parsed.ContrastWarnings : defaults.ContrastWarnings
+            ContrastWarnings = options.ContainsKey("contrastWarnings") ? parsed.ContrastWarnings : defaults.ContrastWarnings,
+            ShowMouseButtons = options.ContainsKey("showMouseButtons") ? parsed.ShowMouseButtons : defaults.ShowMouseButtons
         };
     }
 

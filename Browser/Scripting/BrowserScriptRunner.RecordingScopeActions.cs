@@ -153,6 +153,7 @@ public sealed partial class BrowserScriptRunner
         "redactionSafety",
         "accessibilityEvidence",
         "showKeystrokes",
+        "showMouseButtons",
         "focusEvidence",
         "accessibleNames",
         "highContrast",

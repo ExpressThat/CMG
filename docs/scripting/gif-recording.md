@@ -99,6 +99,7 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`: Category switches that override `eventCaptions` for a scope or child action.
 - `accessibilityEvidence=<true|false>`: Enables keystroke, focus, accessible-name, high-contrast, and contrast-warning evidence together. Defaults to `false`.
 - `showKeystrokes=<true|false>`: Shows keys and shortcuts. Text-entry actions show `Text input`; CMG never copies the entered value into the overlay.
+- `showMouseButtons=<true|false>`: Labels low-level `mouseDown` and `mouseUp` frames without replacing the real pointer event or pressed pointer state.
 - `focusEvidence=<true|false>`: Draws an amplified ring around the actual `document.activeElement` during capture.
 - `accessibleNames=<true|false>`: Labels a targeted or focused control with its derived role and accessible name.
 - `highContrast=<true|false>`: Uses yellow/black high-contrast evidence borders. Child actions can override the preset.
@@ -411,6 +412,8 @@ showKeystrokes {
 }
 ```
 
+The sibling scopes `showMouseButtons`, `showNetworkActivity`, and `showConsoleActivity` enable `showMouseButtons=true`, `networkCaptions=true`, and `consoleCaptions=true` respectively. Parent options remain defaults and child actions can opt out locally.
+
 The scope starts no recording by itself. It affects a surrounding command-level `--gif` or nested `gif` / `recordVideo` / `screencast` recording; without one, its children execute normally with no overlay, screenshot, or virtual pointer. Parent settings are defaults and child actions can override them locally. CMG removes every accessibility node immediately after each browser screenshot, including when capture fails.
 
 Contrast warnings inspect the targeted control's computed foreground and effective background. CMG uses a `4.5:1` threshold for normal text and `3:1` for large or bold text. The warning is visual evidence only: it does not fail the action or alter the page. Use `contrastWarnings=false` on a child when a deliberate low-contrast state should not be called out.
@@ -437,6 +440,8 @@ Category options inherit and can be overridden on one child, for example `record
 CMG deliberately summarizes sensitive outcomes: console text, page-error stacks, request URLs, query strings, download paths, and upload filenames are not copied into automatic captions. Upload evidence reports only the selected file count. Use an explicit `caption` when reviewed evidence requires approved detail.
 
 Whole-run direct and runner recordings use `--gif-event-captions`. See demos 186 and 187.
+
+Use the narrower activity blocks when only part of a journey needs event evidence. Demos 214 and 215 combine mouse-button, console, and network overlays in direct and runner scripts.
 
 ## Result Cards
 

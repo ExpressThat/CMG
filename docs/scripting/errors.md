@@ -822,3 +822,5 @@ Invalid runner GIF declarations fail the affected test before browser actions ru
 Retention declarations fail before test actions when `gif=` is not `always`, `onFailure`, `onRetry`, or `off`; `gifSampleRate=` is below `1` or not an integer; or `gifCleanPassed=` is not boolean. Artifact deletion failures are reported as runner failures rather than silently claiming cleanup succeeded.
 
 CLI retention setup fails before browser connection when `--gif-sample-rate` is below `1`, a retention mode is unknown, or more than one of `--gif-retention`, `--gif-on-failure`, and `--gif-on-retry` is supplied. Run-config type errors name the exact `gifRetention`, `gifSampleRate`, or `gifCleanPassed` property.
+
+`showMouseButtons=` accepts only boolean values. Activity overlay blocks require a body and no positional arguments; child action failures propagate normally. Without an active recorder, the blocks do not validate or inject visual evidence, but their child browser actions still run.

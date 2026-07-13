@@ -5,7 +5,8 @@ public sealed record GifAccessibilityOptions(
     bool FocusEvidence = false,
     bool AccessibleNames = false,
     bool HighContrast = false,
-    bool ContrastWarnings = false)
+    bool ContrastWarnings = false,
+    bool ShowMouseButtons = false)
 {
     public static GifAccessibilityOptions FromOptions(
         IReadOnlyDictionary<string, string> options,
@@ -17,7 +18,8 @@ public sealed record GifAccessibilityOptions(
             ParseBoolean(options.GetValueOrDefault("focusEvidence"), preset, "focusEvidence", source),
             ParseBoolean(options.GetValueOrDefault("accessibleNames"), preset, "accessibleNames", source),
             ParseBoolean(options.GetValueOrDefault("highContrast"), preset, "highContrast", source),
-            ParseBoolean(options.GetValueOrDefault("contrastWarnings"), preset, "contrastWarnings", source));
+            ParseBoolean(options.GetValueOrDefault("contrastWarnings"), preset, "contrastWarnings", source),
+            ParseBoolean(options.GetValueOrDefault("showMouseButtons"), false, "showMouseButtons", source));
     }
 
     private static bool ParseBoolean(string? value, bool fallback, string option, string source) =>

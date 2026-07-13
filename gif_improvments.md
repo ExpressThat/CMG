@@ -283,9 +283,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `pointerStyle` changes subsequent pointer appearance/visibility in the current lexical recording scope.
 - Implemented: `highlightTarget` is a readable alias of `annotateTarget`.
 - Implemented: add `showKeystrokes` block for keyboard-heavy flows. It is a recording-default scope, skips visual injection without an active recorder, and never renders typed values.
-- Add `showMouseButtons` overlay for low-level mouse scripts.
-- Add `showNetworkActivity` overlay for network-heavy scripts.
-- Add `showConsoleActivity` overlay for console/page-error diagnostics.
+- Implemented: `showMouseButtons {}` and `showMouseButtons=true` add recorder-only low-level button labels while preserving pressed-pointer events.
+- Implemented: `showNetworkActivity {}` is a scoped alias for privacy-safe network event captions.
+- Implemented: `showConsoleActivity {}` is a scoped alias for privacy-safe console/page-error event captions.
 - Implemented: `recordVariable` adds bounded state captions with default masking for secret-like variable names and explicit `reveal=true` override.
 - Add dry-run validation that reports recording settings without launching the browser.
 

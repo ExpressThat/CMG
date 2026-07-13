@@ -96,6 +96,58 @@ public sealed class BrowserScriptRunnerGifAccessibilityTests
             expression.Contains("cmgGifA11y", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void ShowMouseButtonsBlock_LabelsLowLevelButtonState()
+    {
+        using var gif = new TempGif();
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText(
+            """
+            showMouseButtons {
+              mouseDown x=40 y=50
+              mouseUp x=40 y=50
+            }
+            """, "debug", client, gif.File);
+
+        Assert.True(result.Success, result.Error);
+        var overlays = client.EvaluatedExpressions.Where(expression =>
+            expression.Contains("cmgGifA11y", StringComparison.Ordinal)).ToArray();
+        Assert.Contains(overlays, expression => expression.Contains("Mouse: left down", StringComparison.Ordinal));
+        Assert.Contains(overlays, expression => expression.Contains("Mouse: left up", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void ShowMouseButtonsBlock_IsVisuallyInertWithoutRecording()
+    {
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText(
+            """
+            showMouseButtons {
+              mouseDown x=40 y=50
+              mouseUp x=40 y=50
+            }
+            """, "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Empty(client.EvaluatedExpressions);
+        Assert.Equal(0, client.PageScreenshotCount);
+    }
+
+    [Theory]
+    [InlineData("showKeystrokes")]
+    [InlineData("showMouseButtons")]
+    [InlineData("showNetworkActivity")]
+    [InlineData("showConsoleActivity")]
+    public void ActivityOverlayBlock_RequiresChildren(string action)
+    {
+        var result = Runner().RunText(action, "debug", new FakeAutomationClient());
+
+        Assert.False(result.Success);
+        Assert.Contains("requires a child block", result.Error, StringComparison.Ordinal);
+    }
+
     [Theory]
     [InlineData("accessibilityEvidence")]
     [InlineData("showKeystrokes")]
@@ -103,6 +155,7 @@ public sealed class BrowserScriptRunnerGifAccessibilityTests
     [InlineData("accessibleNames")]
     [InlineData("highContrast")]
     [InlineData("contrastWarnings")]
+    [InlineData("showMouseButtons")]
     public void InvalidAccessibilityBoolean_ExplainsAcceptedValues(string option)
     {
         var error = Assert.Throws<ScriptExecutionException>(() => GifAccessibilityOptions.FromOptions(

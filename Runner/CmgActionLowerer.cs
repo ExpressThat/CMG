@@ -13,7 +13,8 @@ public sealed partial class CmgActionLowerer
             "narrate" => LowerControlBlock(action),
             "gif" or "recordvideo" or "screencast" or "gififchanged" or "gif.ifchanged" or "gifonfailure" or "gif.onfailure" => LowerRecordingBlock(action),
             "draganddrop" when action.Children.Count > 0 => LowerDragAndDropBlock(action),
-            "recording" or "withrecording" or "recordingdefaults" or "showkeystrokes" => LowerRecordingBlock(action),
+            "recording" or "withrecording" or "recordingdefaults" or "showkeystrokes" or "showmousebuttons" or
+            "shownetworkactivity" or "showconsoleactivity" => LowerRecordingBlock(action),
             "macro" or "return" or "within" or "frame" or "framelocator" or "if" or "elseif" or "else" or "for" or "foreach" or "foreachjson" or "foreachlist" or "foreachselector" or "while" or "until" or
             "dowhile" or "dountil" or "repeat" or "retry" or "topass" or
             "withtimeout" or "withdefaulttimeout" or "withnavigationtimeout" or "withassertiontimeout" or "withexpecttimeout" or

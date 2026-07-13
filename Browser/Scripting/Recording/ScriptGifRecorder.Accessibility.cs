@@ -6,11 +6,15 @@ public sealed partial class ScriptGifRecorder
     {
         if (remoteDebuggingUrl is null || activeAction is null) return;
         var accessibility = EffectiveAccessibility(activeAction);
-        if (!accessibility.ShowKeystrokes && !accessibility.FocusEvidence && !accessibility.AccessibleNames && !accessibility.ContrastWarnings) return;
+        if (!accessibility.ShowKeystrokes && !accessibility.ShowMouseButtons && !accessibility.FocusEvidence &&
+            !accessibility.AccessibleNames && !accessibility.ContrastWarnings) return;
+
+        var inputLabel = accessibility.ShowKeystrokes ? KeystrokeLabel(activeAction) : null;
+        if (accessibility.ShowMouseButtons) inputLabel ??= MouseButtonLabel(activeAction);
 
         devToolsClient.Evaluate(remoteDebuggingUrl, BrowserDomScripts.ShowGifAccessibilityEvidence(
             AccessibilityTarget(activeAction),
-            accessibility.ShowKeystrokes ? KeystrokeLabel(activeAction) : null,
+            inputLabel,
             accessibility.FocusEvidence,
             accessibility.AccessibleNames,
             accessibility.HighContrast,
@@ -28,7 +32,8 @@ public sealed partial class ScriptGifRecorder
             FocusEvidence = action.Options.ContainsKey("focusEvidence") ? scoped.FocusEvidence : defaults.FocusEvidence,
             AccessibleNames = action.Options.ContainsKey("accessibleNames") ? scoped.AccessibleNames : defaults.AccessibleNames,
             HighContrast = action.Options.ContainsKey("highContrast") ? scoped.HighContrast : defaults.HighContrast,
-            ContrastWarnings = action.Options.ContainsKey("contrastWarnings") ? scoped.ContrastWarnings : defaults.ContrastWarnings
+            ContrastWarnings = action.Options.ContainsKey("contrastWarnings") ? scoped.ContrastWarnings : defaults.ContrastWarnings,
+            ShowMouseButtons = action.Options.ContainsKey("showMouseButtons") ? scoped.ShowMouseButtons : defaults.ShowMouseButtons
         };
     }
 
@@ -46,6 +51,14 @@ public sealed partial class ScriptGifRecorder
                 action.Arguments.Count > 0 ? action.Arguments[0] : null,
             "type" or "presssequentially" or "fill" or "inserttext" or "frametype" or "framefill" => "Text input",
             "clear" => "Clear input",
+            _ => null
+        };
+
+    private static string? MouseButtonLabel(BrowserScriptAction action) =>
+        action.Name.ToLowerInvariant() switch
+        {
+            "mousedown" => "Mouse: left down",
+            "mouseup" => "Mouse: left up",
             _ => null
         };
 

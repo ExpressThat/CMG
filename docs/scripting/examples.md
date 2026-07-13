@@ -523,6 +523,19 @@ gif "event review" eventCaptions=true {
 
 Use `--gif-event-captions` for a whole direct script or runner test. See demos 186 and 187.
 
+Use scoped aliases when only one section needs evidence:
+
+```text
+showMouseButtons {
+  mouseDown x=80 y=120
+  mouseUp x=80 y=120
+}
+showNetworkActivity { waitForResponse "/api/save" }
+showConsoleActivity { waitForConsole "sync complete" }
+```
+
+These blocks execute normally without recording and add no visual DOM, screenshots, or virtual pointer. See demos 214 and 215.
+
 ## Outcome Cards
 
 ```text

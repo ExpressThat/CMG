@@ -165,7 +165,7 @@ public sealed partial class BrowserScriptRunner
             "closetab" => ExecuteCloseTab(remoteDebuggingUrl, automationClient, action),
             "readfile" or "fixture" or "writefile" or "appendfile" or "expectfile" => ExecuteFileAction(action, context),
             "set" => ExecuteSet(remoteDebuggingUrl, automationClient, action, context, recorder),
-            "step" or "narrate" or "macro" or "call" or "return" or "within" or "frame" or "framelocator" or "recording" or "withrecording" or "recordingdefaults" or "showkeystrokes" or
+            "step" or "narrate" or "macro" or "call" or "return" or "within" or "frame" or "framelocator" or "recording" or "withrecording" or "recordingdefaults" or "showkeystrokes" or "showmousebuttons" or "shownetworkactivity" or "showconsoleactivity" or
             "if" or "elseif" or "else" or "switch" or "case" or "default" or
             "for" or "foreach" or "foreachjson" or "foreachlist" or "foreachselector" or "while" or "until" or
             "dowhile" or "dountil" or "repeat" or "retry" or "topass" or

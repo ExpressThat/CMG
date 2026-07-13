@@ -1,0 +1,23 @@
+test "records input and activity overlays" {
+  navigate "C:/Projects/CMG/index.html"
+  setContent "<style>html,body{margin:0;min-height:100%;background:#fff;color:#111}main{font:18px system-ui;padding:48px}button{padding:14px 22px}</style><main><h1>Runner activity overlays</h1><button id='run'>Run</button></main>"
+
+  showMouseButtons {
+    mouseMove x=86 y=142
+    mouseDown x=86 y=142
+    mouseUp x=86 y=142
+  }
+
+  showConsoleActivity {
+    captureConsole
+    evaluate "setTimeout(() => console.warn('CMG runner overlay complete'), 50); true"
+    waitForConsole "CMG runner overlay complete" timeout=2000
+  }
+
+  showNetworkActivity {
+    intercept "/api/runner-activity-overlay" status=200 body="saved"
+    evaluate "fetch('/api/runner-activity-overlay').then(response => response.text())"
+    waitForResponse "/api/runner-activity-overlay" status=200 contains=saved timeout=2000
+    clearRoutes
+  }
+}

@@ -40,12 +40,18 @@ public sealed partial class BrowserScriptRunner
                 ExecuteRecordingScope(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
             case "showkeystrokes":
-                var keystrokeOptions = new Dictionary<string, string>(action.Options, StringComparer.OrdinalIgnoreCase)
+            case "showmousebuttons":
+            case "shownetworkactivity":
+            case "showconsoleactivity":
+                RequireArgumentCount(action, 0, 0);
+                if (action.Children.Count is 0)
+                    throw new ScriptExecutionException($"{action.Name} requires a child block.");
+                var overlayOptions = new Dictionary<string, string>(action.Options, StringComparer.OrdinalIgnoreCase)
                 {
-                    ["showKeystrokes"] = "true"
+                    [RecordingOverlayOption(action.Name)] = "true"
                 };
                 ExecuteRecordingScope(remoteDebuggingUrl, automationClient,
-                    action with { Name = "recording", Options = keystrokeOptions }, context, recorder, output);
+                    action with { Name = "recording", Options = overlayOptions }, context, recorder, output);
                 return output;
             case "hidefromgif":
             case "cutgif":
@@ -136,6 +142,9 @@ public sealed partial class BrowserScriptRunner
         name.Equals("withRecording", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("recordingDefaults", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("showKeystrokes", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("showMouseButtons", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("showNetworkActivity", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("showConsoleActivity", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("hideFromGif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("cutGif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("speedUpGif", StringComparison.OrdinalIgnoreCase) ||
@@ -168,6 +177,14 @@ public sealed partial class BrowserScriptRunner
         name.Equals("switch", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("case", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("default", StringComparison.OrdinalIgnoreCase);
+
+    private static string RecordingOverlayOption(string name) => name.ToLowerInvariant() switch
+    {
+        "showkeystrokes" => "showKeystrokes",
+        "showmousebuttons" => "showMouseButtons",
+        "shownetworkactivity" => "networkCaptions",
+        _ => "consoleCaptions"
+    };
 
     private void ExecuteStep(
         string remoteDebuggingUrl,

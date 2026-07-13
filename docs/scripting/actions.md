@@ -1945,6 +1945,7 @@ Options:
 - `redactionSafety`: `standard` (default) or `strict`. Strict mode refuses a frame when any visible password input is not covered.
 - `accessibilityEvidence`: Enables keystroke, focus, accessible-name, high-contrast, and contrast-warning evidence for inherited frames.
 - `showKeystrokes`: Shows safe key/chord labels. Text-entry values are never included.
+- `showMouseButtons`: Labels low-level left-button down/up frames while preserving the real pressed pointer state.
 - `focusEvidence`: Amplifies the actual focused element during frame capture.
 - `accessibleNames`: Shows the targeted or focused control's derived role and name.
 - `highContrast`: Uses high-contrast evidence colors.
@@ -1954,16 +1955,29 @@ Options:
 - `debug`: Enables the complete capture-only diagnostics HUD and per-frame debug sidecar.
 - `debugAction`, `debugContext`, `debugTarget`, `debugCoordinates`, `debugScroll`: Individual diagnostics toggles inherited by child actions.
 
-### `showKeystrokes`
+### Activity Overlay Blocks
 
 ```text
 showKeystrokes {
   keyboardShortcut "Control+K"
   press "Enter"
 }
+
+showMouseButtons {
+  mouseDown x=80 y=120
+  mouseUp x=80 y=120
+}
+
+showNetworkActivity {
+  waitForResponse "/api/save"
+}
+
+showConsoleActivity {
+  waitForConsole "sync complete"
+}
 ```
 
-Convenience alias for `recording showKeystrokes=true { ... }`. It accepts no arguments, requires a child block, and accepts the same scoped recording options as `recording`. It does not start recording. Without command-level `--gif` or a nested recording block, child actions still execute but CMG injects no keyboard overlay or virtual pointer. Text-entry actions display `Text input`, never the entered value.
+Convenience aliases for `recording showKeystrokes=true`, `recording showMouseButtons=true`, `recording networkCaptions=true`, and `recording consoleCaptions=true`. Each accepts no arguments, requires a child block, and accepts the same scoped recording options as `recording`. The blocks do not start recording. Without command-level `--gif` or a nested recording block, child actions still execute but CMG injects no overlay or virtual pointer. Text-entry actions display `Text input`, never the entered value; event overlays summarize outcomes without console payloads or request URLs.
 
 ### `gif`, `recordVideo`, And `screencast`
 
@@ -2010,6 +2024,7 @@ Options:
 
 - `output`: Optional GIF path for direct browser-control scripts. Without `output`, CMG writes `<name>.gif` in the current directory.
 - `accessibilityEvidence`, `showKeystrokes`, `focusEvidence`, `accessibleNames`, `highContrast`, `contrastWarnings`: Optional accessibility evidence controls. Each accepts `true` or `false`; the umbrella preset enables all five individual behaviors.
+- `showMouseButtons`: Optional low-level mouse down/up labels. Accepts `true` or `false` and remains independent from the accessibility umbrella preset.
 - `reducedMotion`, `highContrastPointer`: Optional accessible choreography presets. Child pointer, fade, and pulse options override preset properties locally.
 - `debug`, `debugAction`, `debugContext`, `debugTarget`, `debugCoordinates`, `debugScroll`: Optional frame diagnostics. Invalid booleans fail with the exact option name; `debug=false` disables inherited diagnostics for that child.
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
