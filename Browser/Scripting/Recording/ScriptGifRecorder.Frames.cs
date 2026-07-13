@@ -94,7 +94,7 @@ public sealed partial class ScriptGifRecorder
         }
 
         devToolsClient.RemoveDomCursor(remoteDebuggingUrl);
-        var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar: true);
+        var screenshot = CapturePage(promoteMessageBar: true);
         frameSink.AddFrame(screenshot, ScaleDelay(FrameDelayCentisecondsFor(action)));
     }
 
@@ -162,7 +162,7 @@ public sealed partial class ScriptGifRecorder
             devToolsClient.RemoveDomCursor(remoteDebuggingUrl);
         }
 
-        var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar: false);
+        var screenshot = CapturePage(promoteMessageBar: false);
         frameSink.AddFrame(screenshot, ScaleDelay(delayCentiseconds));
     }
 

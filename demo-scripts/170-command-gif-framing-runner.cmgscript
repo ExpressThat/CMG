@@ -1,0 +1,17 @@
+test "focused warm result" {
+  hideFromGif {
+    navigate "about:blank"
+    setContent "<style>html,body{margin:0;background:#e2e8f0}main{padding:50px}.stage{width:600px;padding:26px;background:#fff;border:2px solid #111827}.result{height:160px;margin-top:18px;background:linear-gradient(90deg,#dc2626,#f97316,#facc15)}</style><main><section id='stage' class='stage'><h1>Warm result</h1><button id='show'>Show</button><div id='result' class='result' hidden></div></section></main><script>document.querySelector('#show').onclick=()=>document.querySelector('#result').hidden=false</script>"
+  }
+  click "#show"
+  pauseGif 400
+}
+
+test "focused cool result" {
+  hideFromGif {
+    navigate "about:blank"
+    setContent "<style>html,body{margin:0;background:#e2e8f0}main{padding:50px}.stage{width:600px;padding:26px;background:#fff;border:2px solid #111827}.result{height:160px;margin-top:18px;background:linear-gradient(90deg,#14b8a6,#0ea5e9,#7c3aed)}</style><main><section id='stage' class='stage'><h1>Cool result</h1><button id='show'>Show</button><div id='result' class='result' hidden></div></section></main><script>document.querySelector('#show').onclick=()=>document.querySelector('#result').hidden=false</script>"
+  }
+  click "#show"
+  pauseGif 400
+}

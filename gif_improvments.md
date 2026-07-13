@@ -141,7 +141,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add APNG output for lossless color when users do not need old GIF compatibility.
 - Add animated WebP output for smaller files with better color.
 - Add MP4/H.264 or WebM export for long recordings where GIF is too large.
-- Implemented for DSL recording blocks: sidecar PNG frame export preserves the exact browser PNG bytes before encoding.
+- Implemented for DSL recording blocks: sidecar PNG frame export preserves final pre-quantization frames; without crop/scale transforms these remain the exact browser PNG bytes.
 - Implemented: DSL `keepFrames=<directory|true|false>` and whole-run CLI `--keep-frames <directory>`. Runner output is isolated per GIF for parallel safety.
 - Implemented: `cmg gif color-diff <source.png> <encoded.gif> --frame <n>` reports parseable MAE, RMS, maximum-channel, and changed-pixel encoder drift.
 - Implemented for gradients and exact source-byte retention: automated color-delta tests. Brand-color, shadow, and transparency coverage remains open.
@@ -250,11 +250,11 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 ## Viewport, Layout, And Framing
 
 - Add `viewport=<width>x<height>` recording setting independent of browser viewport setup. CLI: `--gif-viewport <width>x<height>`.
-- Add `scale=<number>` to downscale large captures. CLI: `--gif-scale <number>`.
-- Add `maxWidth=` and `maxHeight=` recording settings. CLI: `--gif-max-width <pixels>` and `--gif-max-height <pixels>`.
+- Implemented: `scale=<0.05..1>` downscales complete composited frames. CLI: `--gif-scale <number>`.
+- Implemented: `maxWidth=` and `maxHeight=` preserve aspect ratio. CLI: `--gif-max-width <pixels>` and `--gif-max-height <pixels>`.
 - Add high-DPI capture support with controlled CSS pixel to output pixel scaling.
-- Add `crop="<selector>"` for focused recordings. CLI: `--gif-crop <selector>`.
-- Add `gif crop="#panel" { ... }` block support.
+- Implemented: `crop="<selector-or-rich-locator>"` resolves live for every frame. CLI: `--gif-crop <selector>`.
+- Implemented: `gif "name" crop="#panel" { ... }` block support, with `cropPadding=` / `--gif-crop-padding` for context.
 - Add smart crop that follows the pointer and active element.
 - Add split-screen recording for multi-tab or popup flows.
 - Add frame recording inside iframes with visible page context.

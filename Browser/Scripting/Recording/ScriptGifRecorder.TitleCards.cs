@@ -54,10 +54,11 @@ public sealed partial class ScriptGifRecorder
         }
 
         devToolsClient.RemoveDomCursor(remoteDebuggingUrl);
+        PrimeCropBounds();
         devToolsClient.Evaluate(remoteDebuggingUrl, BrowserDomScripts.ShowTitleCard(text, kind));
         try
         {
-            var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar: false);
+            var screenshot = CapturePage(promoteMessageBar: false, allowCachedCrop: true);
             frameSink.AddFrame(screenshot, ScaleDelay(Math.Max(1, (durationMilliseconds + 9) / 10)));
         }
         finally

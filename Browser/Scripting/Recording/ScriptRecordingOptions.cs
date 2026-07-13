@@ -15,7 +15,8 @@ public sealed record ScriptRecordingOptions(
     int HoldAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
     string? TimelinePath = null,
     int FrameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
-    GifEncodingOptions? Encoding = null)
+    GifEncodingOptions? Encoding = null,
+    GifFramingOptions? Framing = null)
 {
     public const int DefaultFrameDelayMilliseconds = 100;
 
@@ -32,6 +33,8 @@ public sealed record ScriptRecordingOptions(
     public PointerVisualOptions EffectivePointerVisual => PointerVisual ?? PointerVisualOptions.Default;
 
     public GifEncodingOptions EffectiveEncoding => Encoding ?? new();
+
+    public GifFramingOptions EffectiveFraming => Framing ?? Encoding?.Framing ?? new();
 
     public int FrameDelayCentiseconds => Math.Max(1, (FrameDelayMilliseconds + 9) / 10);
 }

@@ -8,7 +8,8 @@ public sealed record GifEncodingOptions(
     GifDitherMode Dither = GifDitherMode.Default,
     GifPaletteMode Palette = GifPaletteMode.Default,
     int? Colors = null,
-    string? KeepFramesDirectory = null)
+    string? KeepFramesDirectory = null,
+    GifFramingOptions? Framing = null)
 {
     public static GifEncodingOptions FromOptions(
         IReadOnlyDictionary<string, string> options,
@@ -32,7 +33,8 @@ public sealed record GifEncodingOptions(
             options.ContainsKey("dither") ? parsed.Dither : Dither,
             options.ContainsKey("palette") ? parsed.Palette : Palette,
             options.ContainsKey("colors") ? parsed.Colors : Colors,
-            options.ContainsKey("keepFrames") ? parsed.KeepFramesDirectory : KeepFramesDirectory);
+            options.ContainsKey("keepFrames") ? parsed.KeepFramesDirectory : KeepFramesDirectory,
+            Framing);
     }
 
     public GifEncodingOptions ForOutput(string outputPath, bool isolate)

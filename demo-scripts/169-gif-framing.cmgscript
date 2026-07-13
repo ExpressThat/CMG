@@ -1,0 +1,7 @@
+navigate "about:blank"
+setContent "<style>html,body{margin:0;background:#eef2f7}main{padding:60px}.stage{width:620px;padding:28px;background:#fff;border:2px solid #0f172a;box-shadow:0 16px 36px rgba(15,23,42,.2)}.result{height:170px;margin-top:20px;background:linear-gradient(90deg,#ef4444,#facc15,#22c55e,#0ea5e9)}</style><main><section id='stage' class='stage'><h1>Focused evidence</h1><button id='reveal'>Reveal result</button><div id='result' class='result' hidden></div></section></main><script>document.querySelector('#reveal').onclick=()=>document.querySelector('#result').hidden=false</script>"
+gif "framed evidence" output="demo-output/gif-framing.gif" crop="#stage" cropPadding=20 scale=0.75 maxWidth=500 keepFrames=true timeline=true {
+  click "#reveal"
+  pauseGif 500
+}
+expectEval "document.querySelector('#result').hidden === false"

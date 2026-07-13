@@ -117,7 +117,11 @@ Supported `recording` / `withRecording` defaults:
 - `dither=<none|floyd-steinberg|bayer|atkinson|sierra>`: Explicit palette dithering algorithm.
 - `palette=<global|local|adaptive>`: GIF color-table strategy. `adaptive` currently selects frame-local tables so each frame can adapt to its own colors.
 - `colors=<2..256>`: Explicit maximum palette size.
-- `keepFrames=<true|false|directory>`: Keep the exact browser PNG inputs before GIF quantization. `true` writes `<gif-name>.frames/frame-NNNN.png`; a directory writes there instead.
+- `keepFrames=<true|false|directory>`: Keep final pre-quantization PNG inputs. `true` writes `<gif-name>.frames/frame-NNNN.png`; a directory writes there instead. Cropping and scaling are already applied.
+- `crop=<selector-or-rich-locator>`: Clip each captured frame to current element bounds.
+- `cropPadding=<0..2000>`: Add context around `crop=` in CSS pixels.
+- `scale=<0.05..1>`: Downscale output after capture and before quantization.
+- `maxWidth=<1..10000>` / `maxHeight=<1..10000>`: Cap output dimensions while preserving aspect ratio.
 - `pointerDuration=<milliseconds>`: Movement duration between pointer targets.
 - `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
@@ -442,6 +446,8 @@ screencast "compact" quality=medium {
 When command-level `--gif` is active, nested `gif`, `recordVideo`, and `screencast` block files are still suppressed and the command-level `--gif-quality` applies to the whole recording.
 
 Whole-run recordings support the same encoder controls through `--gif-quality`, `--gif-dither`, `--gif-palette`, `--gif-colors`, and `--keep-frames`. Direct scripts write retained PNGs directly into the requested directory. `cmg run` creates one child directory per GIF so parallel tests and retries cannot overwrite one another. Every retained recording emits `GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>`.
+
+Whole-run framing uses `--gif-crop`, `--gif-crop-padding`, `--gif-scale`, `--gif-max-width`, and `--gif-max-height`. Crop bounds are resolved live for each frame and clipped after CMG places its pointer/caption UI. Downscaling and dimension caps are then applied to the complete clipped frame, preserving pointer alignment and aspect ratio. Retained frames use the final pre-quantization dimensions, so they can be compared directly with the encoded GIF.
 
 Use `cmg gif color-diff <source.png> <gif> --frame <n>` to quantify encoder drift as mean absolute error, RMS error, maximum-channel error, changed-pixel count, and transparency-change count. The command requires no browser.
 

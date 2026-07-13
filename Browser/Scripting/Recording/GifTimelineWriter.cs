@@ -43,6 +43,7 @@ public static class GifTimelineWriter
         writer.WriteNumber("width", sink.Width);
         writer.WriteNumber("height", sink.Height);
         WriteEncoding(writer, options);
+        WriteFraming(writer, options);
         writer.WritePropertyName("frameDelaysMilliseconds");
         writer.WriteStartArray();
         foreach (var delay in sink.FrameDelaysMilliseconds)
@@ -109,6 +110,19 @@ public static class GifTimelineWriter
             writer.WriteString("keepFramesDirectory", Path.GetFullPath(encoding.KeepFramesDirectory));
         else
             writer.WriteNull("keepFramesDirectory");
+        writer.WriteEndObject();
+    }
+
+    private static void WriteFraming(Utf8JsonWriter writer, ScriptRecordingOptions options)
+    {
+        var framing = options.EffectiveFraming;
+        writer.WritePropertyName("framing");
+        writer.WriteStartObject();
+        if (framing.CropSelector is null) writer.WriteNull("crop"); else writer.WriteString("crop", framing.CropSelector);
+        writer.WriteNumber("cropPadding", framing.CropPadding);
+        writer.WriteNumber("scale", framing.Scale);
+        if (framing.MaxWidth is int width) writer.WriteNumber("maxWidth", width); else writer.WriteNull("maxWidth");
+        if (framing.MaxHeight is int height) writer.WriteNumber("maxHeight", height); else writer.WriteNull("maxHeight");
         writer.WriteEndObject();
     }
 }

@@ -11,17 +11,20 @@ public sealed class GifFrameSink : IDisposable
     private readonly List<Image<Rgba32>> frames = [];
     private readonly GifQuality quality;
     private readonly GifEncodingOptions encoding;
+    private readonly GifFramingOptions framing;
 
-    public GifFrameSink(GifQuality quality = GifQuality.Highest, GifEncodingOptions? encoding = null)
+    public GifFrameSink(GifQuality quality = GifQuality.Highest, GifEncodingOptions? encoding = null, GifFramingOptions? framing = null)
     {
         this.quality = quality;
         this.encoding = encoding ?? new GifEncodingOptions();
+        this.framing = framing ?? new GifFramingOptions();
     }
 
     public void AddFrame(byte[] pngBytes, int delayCentiseconds)
     {
-        RetainSourceFrame(pngBytes, frames.Count);
         var image = Image.Load<Rgba32>(pngBytes);
+        var resized = ResizeFrame(image);
+        RetainSourceFrame(resized ? Png(image) : pngBytes, frames.Count);
         SetFrameMetadata(image.Frames.RootFrame.Metadata.GetGifMetadata(), delayCentiseconds);
         frames.Add(image);
     }
@@ -123,6 +126,31 @@ public sealed class GifFrameSink : IDisposable
         if (encoding.KeepFramesDirectory is null) return;
         Directory.CreateDirectory(encoding.KeepFramesDirectory);
         File.WriteAllBytes(Path.Combine(encoding.KeepFramesDirectory, $"frame-{index + 1:0000}.png"), pngBytes);
+    }
+
+    private bool ResizeFrame(Image<Rgba32> image)
+    {
+        var factor = framing.Scale;
+        if (framing.MaxWidth is int maxWidth) factor = Math.Min(factor, maxWidth / (double)image.Width);
+        if (framing.MaxHeight is int maxHeight) factor = Math.Min(factor, maxHeight / (double)image.Height);
+        factor = Math.Min(1d, factor);
+        var width = Math.Max(1, (int)Math.Round(image.Width * factor));
+        var height = Math.Max(1, (int)Math.Round(image.Height * factor));
+        if (width == image.Width && height == image.Height) return false;
+        image.Mutate(context => context.Resize(new ResizeOptions
+        {
+            Size = new Size(width, height),
+            Mode = ResizeMode.Stretch,
+            Sampler = KnownResamplers.Lanczos3
+        }));
+        return true;
+    }
+
+    private static byte[] Png(Image<Rgba32> image)
+    {
+        using var stream = new MemoryStream();
+        image.SaveAsPng(stream);
+        return stream.ToArray();
     }
 
     private static Image<Rgba32> NormalizeFrame(Image<Rgba32> frame, int width, int height)

@@ -309,6 +309,8 @@ dotnet run -- --firefox browser close
 - `166-gif-color-controls-runner.cmgscript`: Demonstrates the same encoder controls from the structured runner DSL.
 - `167-command-gif-color-controls.cmgscript`: Demonstrates whole-run `--gif-dither`, `--gif-palette`, `--gif-colors`, and `--keep-frames` with a direct script.
 - `168-command-gif-color-controls-runner.cmgscript`: Demonstrates per-test retained-frame isolation for whole-run runner GIFs.
+- `169-gif-framing.cmgscript`: Demonstrates selector crop, crop padding, output scaling, maximum width, retained frames, and timeline framing metadata.
+- `170-command-gif-framing-runner.cmgscript`: Demonstrates whole-run framing defaults across multiple structured runner tests.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

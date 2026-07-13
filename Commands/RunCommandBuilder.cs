@@ -71,6 +71,7 @@ public sealed partial class RunCommandBuilder
         {
             pathArgument, configOption, projectOption, gifOption, gifQualityOption,
             encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames,
+            encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight,
             pointerDurationOption,
             pointerSpeedOption,
             pointerEasingOption,

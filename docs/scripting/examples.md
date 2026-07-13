@@ -405,6 +405,25 @@ For runner GIFs, the retained-frame directory is automatically split by artifact
 cmg run demo-scripts\168-command-gif-color-controls-runner.cmgscript --gif demo-output\runner-colors --gif-quality archival --gif-dither sierra --gif-palette adaptive --gif-colors 192 --keep-frames demo-output\runner-color-frames
 ```
 
+## Focused GIF Framing
+
+Crop to a stable container, retain some context, and downscale only after pointer and caption compositing:
+
+```text
+gif "focused checkout" crop="#checkout" cropPadding=24 scale=0.75 maxWidth=700 {
+  click "#submit"
+  expectText "#status" "Complete"
+}
+```
+
+The same defaults work for command-level runner artifacts:
+
+```powershell
+cmg run demo-scripts\170-command-gif-framing-runner.cmgscript --gif demo-output\framed-runner --gif-crop "#stage" --gif-crop-padding 24 --gif-scale 0.75 --gif-max-width 500
+```
+
+See `demo-scripts/169-gif-framing.cmgscript` for block-level framing and demo 170 for whole-run structured tests.
+
 ## Common Next Steps
 
 | Need | Where To Go |

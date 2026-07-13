@@ -50,7 +50,10 @@ public sealed partial class BrowserControlCommandBuilder
 
         var command = new Command("script", "Run a .cmgscript browser automation script.")
         {
-            fileOption, inlineOption, gifOption, gifQualityOption, encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames, pointerDurationOption, pointerSpeedOption,
+            fileOption, inlineOption, gifOption, gifQualityOption,
+            encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames,
+            encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight,
+            pointerDurationOption, pointerSpeedOption,
             pointerEasingOption, pointerThemeOption, pointerColorOption, pointerSizeOption, pointerShadowOption,
             showPointerOption, captionStyleOption, captionPositionOption, captionSeverityOption,
             clickPulseOption, holdAfterActionOption, holdOnFailureOption, preClickHoldOption, postClickHoldOption,

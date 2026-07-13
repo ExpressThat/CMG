@@ -12,6 +12,7 @@ cmg browser control script --file -
 cmg browser control script --file <path> --gif <path>
 cmg browser control script --file <path> --gif <path> --gif-quality highest
 cmg browser control script --file <path> --gif <path> --gif-dither atkinson --gif-palette local --gif-colors 192 --keep-frames <directory>
+cmg browser control script --file <path> --gif <path> --gif-crop "#panel" --gif-crop-padding 24 --gif-scale 0.75 --gif-max-width 800
 cmg browser control script --file <path> --gif <path> --pointer-duration 600 --pointer-easing ease-in-out
 cmg browser control script --file <path> --gif <path> --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44 --pointer-shadow strong
 cmg browser control script --file <path> --gif <path> --show-pointer false
@@ -45,7 +46,12 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-dither <none|floyd-steinberg|bayer|atkinson|sierra>`: Override the quality preset's dithering algorithm for command-level `--gif`.
 - `--gif-palette <global|local|adaptive>`: Override the GIF color table. `adaptive` currently uses frame-local tables.
 - `--gif-colors <2..256>`: Override the maximum GIF palette size.
-- `--keep-frames <directory>`: Keep each exact browser PNG before GIF encoding as `frame-NNNN.png` in this directory.
+- `--keep-frames <directory>`: Keep each final pre-quantization PNG as `frame-NNNN.png` in this directory. Cropping and scaling are already applied.
+- `--gif-crop <selector-or-rich-locator>`: Clip each command-level GIF frame to current target bounds.
+- `--gif-crop-padding <0..2000>`: Add CSS-pixel context around `--gif-crop`; requires `--gif-crop`.
+- `--gif-scale <0.05..1>`: Downscale the captured frame before quantization.
+- `--gif-max-width <1..10000>`: Cap output width while preserving aspect ratio.
+- `--gif-max-height <1..10000>`: Cap output height while preserving aspect ratio.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -113,7 +119,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - Whole-run pointer, caption, and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, `--show-pointer`, `--caption-style`, `--caption-position`, `--caption-severity`, `--pointer-pre-click-hold`, `--pointer-post-click-hold`, `--gif-hold-after-action`, `--gif-hold-after-navigation`, `--gif-hold-after-assertion`, `--gif-hold-on-failure`, `--gif-fps`, and `--gif-frame-delay` apply when `--gif` is active. DSL `recording` / `withRecording`, `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `pointerTheme=`, `pointerColor=`, `pointerSize=`, `pointerShadow=`, `showPointer=`, `captionStyle=`, `captionPosition=`, `captionSeverity=`, `clickPulse=`, `preClickHold=`, `postClickHold=`, `holdAfterAction=`, `holdAfterNavigation=`, `holdAfterAssertion=`, `holdOnFailure=`, `fps=`, and `frameDelay=` as scoped defaults for child actions; child actions can override action options locally.
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.
 - On failure, command-level GIF recording captures one extra final-state hold frame before writing the partial GIF unless `--gif-hold-on-failure 0` is used.
-- `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, and recorder timing settings.
+- `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, encoder controls, framing controls, and recorder timing settings.
 
 ## Trace Behavior
 
@@ -159,6 +165,8 @@ Line 8: click failed in macro login > repeat[2/3]. No element matched selector '
 ```
 
 Invalid encoder values fail before browser connection and name the option, for example `GIF option dither= must be one of: ...`, `GIF option palette= must be one of: ...`, or `GIF option colors= must be an integer from 2 to 256.`
+
+Invalid framing values use the same pre-browser failure path and name `cropPadding=`, `scale=`, `maxWidth=`, or `maxHeight=`. A missing crop target during recording fails the responsible action with the selector resolution reason.
 
 ## Exit Codes
 

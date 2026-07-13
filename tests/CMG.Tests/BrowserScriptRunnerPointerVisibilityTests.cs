@@ -86,11 +86,14 @@ public sealed class BrowserScriptRunnerPointerVisibilityTests
         var client = new FakeAutomationClient();
 
         var result = Runner().RunText("click \"#save\"\npauseGif 100", "debug", client,
-            gifEncoding: new GifEncodingOptions(KeepFramesDirectory: directory));
+            gifEncoding: new GifEncodingOptions(
+                KeepFramesDirectory: directory,
+                Framing: new GifFramingOptions("#panel", 10, 0.5, 400, 300)));
 
         Assert.True(result.Success, result.Error);
         Assert.Equal(0, client.PageScreenshotCount);
         Assert.Empty(client.CursorStates);
+        Assert.True(string.IsNullOrEmpty(client.LastElementBoxSelector));
         Assert.False(Directory.Exists(directory));
         Assert.Contains(result.StdoutLines, line => line.Contains("status=skipped reason=no-active-recording", StringComparison.Ordinal));
     }

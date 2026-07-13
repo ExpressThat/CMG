@@ -32,6 +32,11 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-palette <global|local|adaptive>`: Override the GIF color table. `adaptive` currently uses frame-local tables.
 - `--gif-colors <2..256>`: Override the maximum GIF palette size.
 - `--keep-frames <directory>`: Keep exact pre-encoding PNG frames. Each test writes to `<directory>/<gif-name>/frame-NNNN.png`, including retry suffixes, so parallel tests do not overwrite one another.
+- `--gif-crop <selector-or-rich-locator>`: Clip each test GIF frame to current target bounds.
+- `--gif-crop-padding <0..2000>`: Add CSS-pixel context around `--gif-crop`; requires `--gif-crop`.
+- `--gif-scale <0.05..1>`: Downscale test GIF frames before quantization.
+- `--gif-max-width <1..10000>`: Cap output width while preserving aspect ratio.
+- `--gif-max-height <1..10000>`: Cap output height while preserving aspect ratio.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -153,6 +158,8 @@ Actions, locators, control flow, loops, macros, scoped variables, `recording` / 
 
 Invalid encoder values fail before browser connection or test scheduling and name the option, for example `GIF option dither= must be one of: ...`, `GIF option palette= must be one of: ...`, or `GIF option colors= must be an integer from 2 to 256.`
 
+Invalid framing values use the same pre-browser failure path and name `cropPadding=`, `scale=`, `maxWidth=`, or `maxHeight=`. A crop selector missing during a test fails that test with the selector resolution reason.
+
 `contains "text"` and `notContains "text"` check the page body. `contains "<selector>" "text"`, `containsText`, `waitForText`, `notContainsText`, and the negative text aliases check a selector or rich locator and accept `timeout=<milliseconds>`, `match=contains|exact|regex`, and `ignoreCase=true`. Successful text checks emit the normal test/step pass output; failed checks include the expected and actual text in the step failure reason.
 
 ## Exit Codes
@@ -169,6 +176,7 @@ cmg run demo-scripts\20-runner-flow.cmgscript
 cmg run tests\flows --gif artifacts\gifs
 cmg run tests\flows --gif artifacts\gifs --gif-quality highest
 cmg run tests\flows --gif artifacts\gifs --gif-dither sierra --gif-palette local --gif-colors 192 --keep-frames artifacts\source-frames
+cmg run tests\flows --gif artifacts\gifs --gif-crop "#stage" --gif-crop-padding 24 --gif-scale 0.75 --gif-max-width 700
 cmg run tests\flows --gif artifacts\gifs --pointer-duration 600 --pointer-easing spring
 cmg run tests\flows --gif artifacts\gifs --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44 --pointer-shadow strong
 cmg run tests\flows --gif artifacts\gifs --show-pointer false

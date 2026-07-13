@@ -96,6 +96,27 @@ public sealed class GifFrameSinkTests
     }
 
     [Fact]
+    public void AddFrame_AppliesScaleAndMaximumDimensionsBeforeEncodingAndRetention()
+    {
+        var directory = Directory.CreateTempSubdirectory("cmg-scaled-frames-");
+        var gif = Path.Combine(directory.FullName, "scaled.gif");
+        var frames = Path.Combine(directory.FullName, "frames");
+        using var sink = new GifFrameSink(
+            encoding: new GifEncodingOptions(KeepFramesDirectory: frames),
+            framing: new GifFramingOptions(Scale: 0.75, MaxWidth: 40, MaxHeight: 100));
+        sink.AddFrame(Png(Color.CornflowerBlue, 100, 80), 10);
+
+        sink.Save(gif);
+
+        Assert.Equal(40, sink.Width);
+        Assert.Equal(32, sink.Height);
+        using var retained = Image.Load<Rgba32>(Path.Combine(frames, "frame-0001.png"));
+        Assert.Equal(40, retained.Width);
+        Assert.Equal(32, retained.Height);
+        directory.Delete(recursive: true);
+    }
+
+    [Fact]
     public void Save_WritesFullFrameDisposalMetadata()
     {
         var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
@@ -129,7 +150,8 @@ public sealed class GifFrameSinkTests
             timelinePath,
             gifPath,
             new ScriptRecordingOptions(gifPath, HoldOnFailureMilliseconds: 1500,
-                Encoding: new GifEncodingOptions(GifDitherMode.None, GifPaletteMode.Local, 32, directory.FullName)),
+                Encoding: new GifEncodingOptions(GifDitherMode.None, GifPaletteMode.Local, 32, directory.FullName),
+                Framing: new GifFramingOptions("#panel", 12, 0.5, 640, 480)),
             sink,
             [new GifTimelineCheckpoint("after click", 7, 1, 100)]);
 
@@ -143,6 +165,12 @@ public sealed class GifFrameSinkTests
         Assert.Equal("local", encoding.GetProperty("palette").GetString());
         Assert.Equal(32, encoding.GetProperty("colors").GetInt32());
         Assert.Equal(directory.FullName, encoding.GetProperty("keepFramesDirectory").GetString());
+        var framing = root.GetProperty("framing");
+        Assert.Equal("#panel", framing.GetProperty("crop").GetString());
+        Assert.Equal(12, framing.GetProperty("cropPadding").GetInt32());
+        Assert.Equal(0.5, framing.GetProperty("scale").GetDouble());
+        Assert.Equal(640, framing.GetProperty("maxWidth").GetInt32());
+        Assert.Equal(480, framing.GetProperty("maxHeight").GetInt32());
         Assert.Equal([100, 250], root.GetProperty("frameDelaysMilliseconds").EnumerateArray().Select(value => value.GetInt32()).ToArray());
         var checkpoint = Assert.Single(root.GetProperty("checkpoints").EnumerateArray());
         Assert.Equal("after click", checkpoint.GetProperty("name").GetString());
@@ -161,9 +189,9 @@ public sealed class GifFrameSinkTests
         Assert.Null(GifTimelinePath.Resolve("flow.gif", value));
     }
 
-    private static byte[] Png(Color color)
+    private static byte[] Png(Color color, int width = 8, int height = 8)
     {
-        using var image = new Image<Rgba32>(8, 8, color);
+        using var image = new Image<Rgba32>(width, height, color);
         using var stream = new MemoryStream();
         image.SaveAsPng(stream);
         return stream.ToArray();

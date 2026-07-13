@@ -27,6 +27,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
     private PointerVisualOptions cursorVisual = PointerVisualOptions.Default;
     private int captureSuspensionDepth;
     private double playbackRate = 1d;
+    private ScreenshotClip? lastCropClip;
 
     public ScriptGifRecorder(
         IBrowserAutomationClient devToolsClient,
@@ -34,7 +35,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
     {
         this.devToolsClient = devToolsClient;
         this.options = options;
-        frameSink = new GifFrameSink(options.Quality, options.EffectiveEncoding);
+        frameSink = new GifFrameSink(options.Quality, options.EffectiveEncoding, options.EffectiveFraming);
     }
 
     public string OutputPath => Path.GetFullPath(options.OutputPath);

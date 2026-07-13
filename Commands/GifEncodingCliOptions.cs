@@ -7,7 +7,12 @@ internal sealed record GifEncodingCliOptions(
     Option<string?> Dither,
     Option<string?> Palette,
     Option<int?> Colors,
-    Option<DirectoryInfo?> KeepFrames)
+    Option<DirectoryInfo?> KeepFrames,
+    Option<string?> Crop,
+    Option<int?> CropPadding,
+    Option<double?> Scale,
+    Option<int?> MaxWidth,
+    Option<int?> MaxHeight)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -15,15 +20,27 @@ internal sealed record GifEncodingCliOptions(
             new Option<string?>("--gif-dither") { Description = $"GIF dithering: {GifEncodingOptions.DitherValues}." },
             new Option<string?>("--gif-palette") { Description = $"GIF color table: {GifEncodingOptions.PaletteValues}." },
             new Option<int?>("--gif-colors") { Description = "Maximum GIF palette colors, from 2 to 256." },
-            new Option<DirectoryInfo?>("--keep-frames") { Description = "Keep exact pre-encoding PNG frames in this directory." });
+            new Option<DirectoryInfo?>("--keep-frames") { Description = "Keep exact pre-encoding PNG frames in this directory." },
+            new Option<string?>("--gif-crop") { Description = "Crop GIF frames to this selector or rich locator." },
+            new Option<int?>("--gif-crop-padding") { Description = "Padding around --gif-crop in CSS pixels, from 0 to 2000." },
+            new Option<double?>("--gif-scale") { Description = "Output scale from 0.05 to 1." },
+            new Option<int?>("--gif-max-width") { Description = "Maximum GIF width from 1 to 10000 pixels." },
+            new Option<int?>("--gif-max-height") { Description = "Maximum GIF height from 1 to 10000 pixels." });
     }
 
-    public bool TryParse(ParseResult result, out GifEncodingOptions encoding, out string? error) =>
-        GifEncodingOptions.TryParse(
+    public bool TryParse(ParseResult result, out GifEncodingOptions encoding, out string? error)
+    {
+        if (!GifEncodingOptions.TryParse(
             result.GetValue(Dither),
             result.GetValue(Palette),
             result.GetValue(Colors),
             result.GetValue(KeepFrames)?.FullName,
             out encoding,
-            out error);
+            out error)) return false;
+        if (!GifFramingOptions.TryParse(
+            result.GetValue(Crop), result.GetValue(CropPadding), result.GetValue(Scale),
+            result.GetValue(MaxWidth), result.GetValue(MaxHeight), out var framing, out error)) return false;
+        encoding = encoding with { Framing = framing };
+        return true;
+    }
 }

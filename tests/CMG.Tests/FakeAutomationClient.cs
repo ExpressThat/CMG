@@ -41,6 +41,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public CoverageOptions? LastCoverageOptions { get; private set; }
     public ScreenshotOptions? LastElementScreenshotOptions { get; private set; }
     public ScreenshotOptions? LastPageScreenshotOptions { get; private set; }
+    public List<ScreenshotOptions> PageScreenshotOptions { get; } = [];
     public ElementPoint? LastMouseMove { get; private set; }
     public ElementPoint? LastMouseDown { get; private set; }
     public ElementPoint? LastMouseUp { get; private set; }
@@ -167,6 +168,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     {
         PageScreenshotCount++;
         LastPageScreenshotOptions = options ?? new(FullPage: fullPage);
+        PageScreenshotOptions.Add(LastPageScreenshotOptions);
         LastFullPageScreenshot = LastPageScreenshotOptions.FullPage;
         using var image = new Image<Rgba32>(1, 1, Color.White);
         using var stream = new MemoryStream();
