@@ -354,6 +354,8 @@ dotnet run -- --firefox browser close
 - `201-gif-long-wait-progress-runner.cmgscript`: Structured runner form of long-wait compression.
 - `202-gif-recording-settings.cmgscript`: Demonstrates mutable recording defaults, nested scope restoration, preflight output, and mid-recording virtual-pointer overrides.
 - `203-gif-recording-settings-runner.cmgscript`: Structured runner form of mutable and scoped recording settings.
+- `204-gif-target-diagnostics.cmgscript`: Demonstrates ambiguous, tiny, offscreen, and non-visual recording warnings during a command-level GIF run.
+- `205-gif-target-diagnostics-runner.cmgscript`: Structured runner form of GIF target diagnostics.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

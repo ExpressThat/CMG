@@ -233,6 +233,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: long waits show deterministic 33%, 67%, and 100% progress stages; `waitProgress=false` opts out.
 - Implemented: add zero-based frame/time spans for nested and repeated runtime steps plus final failure-frame bookmarks in timeline schema version 2.
 - Implemented: add `cmg gif storyboard <file> --output <png>` to export GIF frames as a contact sheet PNG.
+- Fix storyboard export compositing for GIF delta/disposal frames; real-Chrome diagnostic artifacts can currently show black unchanged regions in the contact sheet even when the animated GIF frames are valid.
 - Implemented: add self-contained static step-start and final-failure frame evidence in HTML reports, linked from the runtime step table.
 
 ## Viewport, Layout, And Framing
@@ -361,14 +362,14 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add virtual-pointer coordinates to the diagnostics HUD and sidecar.
 - Implemented: add scroll position to the diagnostics HUD.
 - Add overlay showing active browser tab/context.
-- Add warning when an action was non-visual and did not capture a meaningful frame.
-- Add warning when pointer target is offscreen and had to be scrolled.
-- Add warning when a selector resolved to multiple elements.
-- Add warning when a target is too small to see clearly.
+- Implemented: active recorders emit `GIF_WARN_NON_VISUAL` when explicit recording options produce no meaningful frame.
+- Implemented: active recorders emit `GIF_WARN_SCROLLED` when a pointer target begins offscreen and requires recorder scrolling.
+- Implemented: active recorders emit `GIF_WARN_MULTIPLE_TARGETS` with the match count before using the first selector match.
+- Implemented: active recorders emit `GIF_WARN_TINY_TARGET` below a 16 CSS-pixel review threshold.
 - Implemented: emit non-failing `GIF_WARN_BLANK` when retained evidence is mostly white, black, or transparent.
 - Implemented: emit non-failing `GIF_WARN_UNCHANGED` when at least 60% of source frames are exact consecutive duplicates.
 - Add diagnostics when the pointer could not be promoted above page UI.
-- Add diagnostics when GIF blocks are suppressed by command-level recording.
+- Implemented: nested GIF aliases emit `GIF_BLOCK_SUPPRESSED ... reason=command-level-recording` when whole-run recording owns capture.
 - Add diagnostics for invalid recording settings in runner reports.
 - Add a generated reproduction command for every GIF.
 

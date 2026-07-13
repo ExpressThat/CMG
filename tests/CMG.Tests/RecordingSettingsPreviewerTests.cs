@@ -63,17 +63,24 @@ public sealed class RecordingSettingsPreviewerTests
     [Fact]
     public void RuntimeSetRecordingChangesSubsequentPointerChoreography()
     {
-        var gif = new TemporaryFile(".gif");
+        var gifPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
         var client = new FakeAutomationClient();
-        var result = new BrowserScriptRunner(new BrowserScriptParser()).RunText($$"""
-            gif "settings" output="{{gif.File.FullName.Replace("\\", "/")}}" frameDelay=100 pointerDuration=0 {
-              hover "#first"
-              setRecording pointerDuration=400
-              hover "#second"
-            }
-            """, "debug", client);
+        try
+        {
+            var result = new BrowserScriptRunner(new BrowserScriptParser()).RunText($$"""
+                gif "settings" output="{{gifPath.Replace("\\", "/")}}" frameDelay=100 pointerDuration=0 {
+                  hover "#first"
+                  setRecording pointerDuration=400
+                  hover "#second"
+                }
+                """, "debug", client);
 
-        Assert.True(result.Success, result.Error);
-        Assert.Equal(5, client.MouseMoveCount);
+            Assert.True(result.Success, result.Error);
+            Assert.Equal(5, client.MouseMoveCount);
+        }
+        finally
+        {
+            if (File.Exists(gifPath)) File.Delete(gifPath);
+        }
     }
 }

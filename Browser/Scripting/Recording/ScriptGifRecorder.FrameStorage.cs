@@ -28,6 +28,7 @@ public sealed partial class ScriptGifRecorder
             lines.Add($"GIF_WARN_BLANK path={path} retainedFrames={FrameCount} blankFrames={BlankFrameCount}");
         if (ColorProfileChangeCount > 0)
             lines.Add($"GIF_WARN_COLOR_PROFILE path={path} profileChanges={ColorProfileChangeCount}");
+        lines.AddRange(evidenceWarnings);
         return lines;
     }
 

@@ -35,7 +35,7 @@ public sealed partial class BrowserScriptRunner
         }
         else
         {
-            output.Add($"GIF_BLOCK_SUPPRESSED {action.LineNumber:000}");
+            output.Add($"GIF_BLOCK_SUPPRESSED {action.LineNumber:000} reason=command-level-recording");
         }
 
         try

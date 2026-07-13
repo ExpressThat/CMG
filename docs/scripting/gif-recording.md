@@ -578,6 +578,17 @@ Whole-run direct and runner recordings use `--gif-debug`. Without an active `--g
 
 See demos 182 and 183.
 
+Every active recorder performs lightweight target checks before its own automatic scroll. It emits parseable, non-failing warnings when a selector matches more than one element, the selected target is smaller than `16px` on either axis, or the target begins outside the viewport and must be scrolled into view. An explicit recording option on an action that captures no visual frame emits `GIF_WARN_NON_VISUAL`.
+
+```text
+GIF_WARN_MULTIPLE_TARGETS line=2 action=click selector=".duplicate" count=2
+GIF_WARN_TINY_TARGET line=2 action=click selector=".duplicate" width=12 height=12 threshold=16
+GIF_WARN_SCROLLED line=3 action=click selector="#offscreen" reason=offscreen-target
+GIF_WARN_NON_VISUAL line=4 action=recordCheckpoint options=pointerDuration
+```
+
+The checks do not query or inject anything when no GIF recorder is active. Diagnostic-probe failures are ignored so they cannot fail a valid browser action. `cmg run` relays the same warning lines for agent and CI parsing. See demos 204 and 205.
+
 ## Output
 
 On success, stdout includes:

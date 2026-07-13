@@ -152,6 +152,8 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, encoder controls, framing controls, and recorder timing settings.
 - `--gif-debug` emits `GIF_DEBUG <path>` after writing the debug sidecar. Each frame record includes timing, action, source line, nested scope, target selector, and virtual-pointer coordinates.
 - Every completed recording emits `GIF_CAPTURE_STATS` with frame, optimization, blank-frame, ICC/CICP/gamma, profile-change, memory, and timing counts. `GIF_WARN_UNCHANGED`, `GIF_WARN_BLANK`, and `GIF_WARN_COLOR_PROFILE` explain evidence-quality risks without changing the exit code.
+- Active recordings also emit `GIF_WARN_MULTIPLE_TARGETS`, `GIF_WARN_TINY_TARGET`, `GIF_WARN_SCROLLED`, and `GIF_WARN_NON_VISUAL` when selector or action choices weaken the resulting evidence. These warnings never fail the script and are not evaluated when GIF recording is inactive.
+- Suppressed nested recording blocks emit `GIF_BLOCK_SUPPRESSED <line> reason=command-level-recording` when `--gif` owns the whole run.
 
 ## Trace Behavior
 
@@ -179,6 +181,10 @@ GIF_TIMELINE C:\Projects\CMG\demo-output\dialog-flow.timeline.json
 GIF_DEBUG C:\Projects\CMG\demo-output\dialog-flow.debug.json
 GIF_PAUSE 008 milliseconds=800 status=captured
 GIF_FAILURE_CAPTION 009 action="expectText" status=captured
+GIF_WARN_MULTIPLE_TARGETS line=10 action=click selector=".save" count=2
+GIF_WARN_TINY_TARGET line=10 action=click selector=".save" width=12 height=12 threshold=16
+GIF_WARN_SCROLLED line=11 action=click selector="#finish" reason=offscreen-target
+GIF_WARN_NON_VISUAL line=12 action=recordCheckpoint options=pointerDuration
 TRACE C:\Projects\CMG\demo-output\dialog-flow.trace.json
 SKIP 007 Feature flag disabled
 ```

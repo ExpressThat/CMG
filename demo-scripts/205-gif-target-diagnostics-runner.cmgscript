@@ -1,0 +1,7 @@
+test "reports weak visual evidence" {
+  setContent "<style>html,body{margin:0;min-height:1800px;background:#fff}main{font:16px system-ui;padding:32px}.duplicate{width:12px;height:12px;padding:0}.offscreen{position:absolute;top:1500px;padding:16px 24px}</style><main><button class='duplicate' aria-label='Duplicate one'></button><button class='duplicate' aria-label='Duplicate two'></button><button id='offscreen' class='offscreen'>Offscreen action</button></main>"
+  evaluate "scrollTo(0,0)"
+  click ".duplicate" pointerDuration=0
+  click "#offscreen" pointerDuration=0
+  recordCheckpoint "metadata-only" pointerDuration=200
+}

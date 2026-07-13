@@ -224,6 +224,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
             frameSink.DurationMilliseconds,
             success ? null : endFrame,
             error));
+        RecordNonVisualWarning(start);
         actionRedactions.Clear();
         activeAutoRedaction = options.EffectiveRedaction.Auto;
         activeStrictRedaction = options.EffectiveRedaction.Strict;

@@ -47,6 +47,7 @@ public sealed partial class ScriptGifRecorder
         }
 
         var selector = ResolveLocator(action.Arguments[0], action.LineNumber);
+        InspectTarget(action, selector);
         devToolsClient.ScrollElementIntoView(remoteDebuggingUrl, selector);
         var target = action.Options.ContainsKey("x") || action.Options.ContainsKey("y")
             ? ResolveElementOffsetTarget(action, selector)

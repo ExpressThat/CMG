@@ -632,6 +632,8 @@ gif "debug checkout" debug=true debugScroll=false {
 
 CMG writes `<gif-name>.debug.json` and emits `GIF_DEBUG <path>`. See demos 182 and 183.
 
+For target-quality diagnostics, run demo 204 with command-level `--gif`, or demo 205 with runner `-gif`. Active recording warns about ambiguous selectors, tiny targets, automatic offscreen scrolling, and visual options on non-visual actions. The same scripts without GIF recording do not run recorder probes or inject the virtual pointer.
+
 ## Common Next Steps
 
 | Need | Where To Go |
