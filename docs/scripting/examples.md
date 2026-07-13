@@ -631,6 +631,21 @@ gif "review" {
 
 The pointer style applies to later actions in the current scope. Target annotation uses the same resolved locator as the virtual pointer, and `recordVariable` masks secret-like names by default. See demos 206 and 207.
 
+## Keep Only Useful Focused GIFs
+
+```text
+gifIfChanged "save" {
+  click "#save"
+  gifSnapshot "saved state" duration=600
+}
+
+gifOnFailure "save failure" {
+  assertText "#status" "Saved"
+}
+```
+
+The first block compares recorder-free baseline/final page pixels; the second discards passing evidence. Failures always preserve partial choreography. See demos 208 and 209.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

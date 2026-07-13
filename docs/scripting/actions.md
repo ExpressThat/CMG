@@ -1876,6 +1876,27 @@ These actions require an active command-level GIF or `gif` / `recordVideo` / `sc
 - `annotateTarget` and `highlightTarget` are aliases. They accept a selector/rich locator and optional positional text. `message=` is the option form; `color=` defaults to amber and `duration=` defaults to `1200`. The recorder moves its virtual pointer to the target, captures the live outline/label, and writes `GIF_TARGET_ANNOTATION <line> selector="..." duration=<ms> status=captured`.
 - `recordVariable` accepts one variable name plus optional `label=`, caption style/position/severity/timing options, and `reveal=<true|false>`. It writes `GIF_VARIABLE <line> name="..." value="..." status=captured`. Names containing password, token, secret, authorization, cookie, or API key are shown as `[masked]` unless `reveal=true` is explicit. Undefined variables and invalid booleans fail with the exact reason.
 
+### Conditional Recording
+
+```text
+gifIfChanged "saved state" output="artifacts/saved.gif" {
+  click "#save"
+  gifSnapshot "saved result" duration=700
+}
+
+gif.onFailure "diagnostic" output="artifacts/failure.gif" {
+  assertText "#status" "Complete"
+}
+```
+
+`gifIfChanged` and `gif.ifChanged` are aliases. They buffer normal virtual-pointer frames but write the artifact only when the final page screenshot differs from the baseline taken before the block. CMG pointer/caption UI is removed from both signatures. A matching page writes `GIF_SKIPPED <line> path="..." reason=unchanged`; any block failure retains partial evidence.
+
+`gifOnFailure` and `gif.onFailure` are aliases. A passing block discards its buffered artifact and writes `GIF_SKIPPED <line> path="..." reason=passed`. A failing block writes its partial GIF before propagating the original failure; a skipped block uses `reason=skipped`.
+
+`gifSnapshot` and `gif.snapshot` are aliases that add a named checkpoint plus a still hold inside an active recorder. They require one name and accept `duration=<milliseconds>`, defaulting to the recorder's post-action hold. They write `GIF_SNAPSHOT <line> name="..." status=captured`, or skip without screenshot/pointer work when no recorder is active.
+
+Command-level `--gif` / runner `-gif` records the whole run and suppresses all nested conditional artifacts with `GIF_BLOCK_SUPPRESSED ... reason=command-level-recording`.
+
 Options:
 
 - `quality`: Default quality for nested recording blocks that create their own artifact.

@@ -55,6 +55,15 @@ public sealed partial class BrowserScriptRunner
         return [$"GIF_VARIABLE {action.LineNumber:000} name={QuoteField(name)} value={QuoteField(shown)} status=captured"];
     }
 
+    private static IReadOnlyList<string> ExecuteGifSnapshot(BrowserScriptAction action, ScriptGifRecorder? recorder)
+    {
+        if (recorder is null) return [SkipLine("GIF_SNAPSHOT", action)];
+        RequireArgumentCount(action, 1, 1);
+        if (action.Children.Count > 0) throw new ScriptExecutionException($"{action.Name} does not accept a block body.");
+        recorder.Snapshot(action, action.Arguments[0]);
+        return [$"GIF_SNAPSHOT {action.LineNumber:000} name={QuoteField(action.Arguments[0])} status=captured"];
+    }
+
     private static bool BooleanOption(BrowserScriptAction action, string name, bool fallback)
     {
         if (!action.Options.TryGetValue(name, out var value)) return fallback;

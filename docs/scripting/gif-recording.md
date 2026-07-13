@@ -144,6 +144,8 @@ Run `cmg browser control script --file journey.cmgscript --preview-gif-settings`
 
 Use `pointerStyle` for a visual-only mid-flow pointer change, `annotateTarget` / `highlightTarget` for coordinated pointer and target callouts, and `recordVariable` for a bounded state caption. Secret-like variable names are masked unless `reveal=true`. All four actions skip without reading page/script state when no GIF recorder is active. See demos 206 and 207.
 
+Use `gifIfChanged` / `gif.ifChanged` to keep an artifact only when the final page differs from the block baseline, and `gifOnFailure` / `gif.onFailure` to retain only failed-block evidence. Both still buffer pointer-accurate frames while running. `gifSnapshot` / `gif.snapshot` adds a named still hold to any active recorder and skips without one. See demos 208 and 209.
+
 ```text
 recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfterAction=500 {
   gif "checkout evidence" {

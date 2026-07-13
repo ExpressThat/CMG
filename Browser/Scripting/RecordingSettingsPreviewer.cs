@@ -65,7 +65,7 @@ public static class RecordingSettingsPreviewer
                 Visit(action.Children, nested, lines, $"{scope}/{name}");
                 continue;
             }
-            if (name is "gif" or "recordvideo" or "screencast")
+            if (name is "gif" or "recordvideo" or "screencast" or "gififchanged" or "gif.ifchanged" or "gifonfailure" or "gif.onfailure")
             {
                 var effective = new Dictionary<string, string>(current, StringComparer.OrdinalIgnoreCase);
                 Merge(effective, own);
@@ -100,5 +100,5 @@ public static class RecordingSettingsPreviewer
     private static readonly HashSet<string> VisualOnlyOptions = new(StringComparer.OrdinalIgnoreCase)
         { "pointerDuration", "pointerSpeed", "pointerEasing", "pointerPath", "clickPulse", "showPointer", "holdAfterAction" };
     private static readonly HashSet<string> VisualActions = new(StringComparer.OrdinalIgnoreCase)
-        { "gif", "recordVideo", "screencast", "click", "hover", "fill", "type", "dragAndDrop", "moveMouse", "wheel", "scrollTo", "scrollBy", "pauseGif", "caption", "step", "pointerStyle", "annotateTarget", "highlightTarget", "recordVariable" };
+        { "gif", "recordVideo", "screencast", "gifIfChanged", "gif.ifChanged", "gifOnFailure", "gif.onFailure", "gifSnapshot", "gif.snapshot", "click", "hover", "fill", "type", "dragAndDrop", "moveMouse", "wheel", "scrollTo", "scrollBy", "pauseGif", "caption", "step", "pointerStyle", "annotateTarget", "highlightTarget", "recordVariable" };
 }

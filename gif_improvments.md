@@ -275,9 +275,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add nested complex-action overrides consistently:
   - `dragAndDrop { moveMouse ... pointerDuration=800; drop ... pointerDuration=400 }`
   - future multi-step gestures should follow the same child override model.
-- Add `gif.ifChanged "name" { ... }` to write only when visual changes occurred.
-- Add `gif.onFailure "name" { ... }` to record only diagnostic sections when a flow fails.
-- Add `gif.snapshot "name"` to capture a short still/hold frame sequence.
+- Implemented: `gifIfChanged` / `gif.ifChanged` writes only when recorder-free final page pixels differ from the block baseline; failures always retain partial evidence.
+- Implemented: `gifOnFailure` / `gif.onFailure` buffers normal choreography but discards passing focused artifacts.
+- Implemented: `gifSnapshot` / `gif.snapshot` adds a named checkpoint and deterministic still hold inside active recording, and skips without a recorder.
 - Implemented: `annotateTarget` / `highlightTarget` coordinate rich target resolution, virtual-pointer movement, and a timed live callout.
 - Implemented: add `showPointer` and `hidePointer` recording-only actions that skip when no recorder is active, including inside block `dragAndDrop` choreography.
 - Implemented: `pointerStyle` changes subsequent pointer appearance/visibility in the current lexical recording scope.

@@ -99,6 +99,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("expectInViewport", "#save", "expectinviewport \"#save\"")]
     [InlineData("apiRequest", "GET", "apiRequest \"GET\" \"https://example.test\"", "https://example.test")]
     [InlineData("recordCheckpoint", "after setup", "recordCheckpoint \"after setup\"")]
+    [InlineData("gifSnapshot", "state", "gifSnapshot \"state\"")]
+    [InlineData("gif.snapshot", "state", "gif.snapshot \"state\"")]
     [InlineData("pointerStyle", null, "pointerStyle")]
     [InlineData("recordVariable", "status", "recordVariable \"status\"")]
     [InlineData("intro", "Welcome", "intro \"Welcome\"")]

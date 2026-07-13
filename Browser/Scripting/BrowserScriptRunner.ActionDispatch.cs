@@ -156,7 +156,8 @@ public sealed partial class BrowserScriptRunner
             "mousemove" or "mousedown" or "mouseup" => ExecuteMouseAction(remoteDebuggingUrl, automationClient, action, recorder),
             "scrollto" or "scrollby" or "wheel" => ExecuteScrollAction(remoteDebuggingUrl, automationClient, action, recorder),
             "draganddrop" or "dragto" => ExecuteDragAndDrop(remoteDebuggingUrl, automationClient, action with { Name = "dragAndDrop" }, recorder),
-            "gif" or "recordvideo" or "screencast" => ExecuteGifBlock(remoteDebuggingUrl, automationClient, action, context, recorder),
+            "gif" or "recordvideo" or "screencast" or "gififchanged" or "gif.ifchanged" or "gifonfailure" or "gif.onfailure" => ExecuteGifBlock(remoteDebuggingUrl, automationClient, action, context, recorder),
+            "gifsnapshot" or "gif.snapshot" => ExecuteGifSnapshot(action, recorder),
             "listtabs" => ExecuteListTabs(remoteDebuggingUrl, automationClient, action),
             "opentab" => ExecuteOpenTab(remoteDebuggingUrl, automationClient, action, context),
             "waitfortab" or "waitforpopup" => ExecuteWaitForTab(remoteDebuggingUrl, automationClient, action),
@@ -180,6 +181,8 @@ public sealed partial class BrowserScriptRunner
         name.Equals("moveMouse", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("pauseGif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("recordCheckpoint", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("gifSnapshot", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("gif.snapshot", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("pointerStyle", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("annotateTarget", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("highlightTarget", StringComparison.OrdinalIgnoreCase) ||

@@ -35,6 +35,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public Queue<string> TextResponses { get; } = new();
     public Queue<string> EvaluateResponses { get; } = new();
     public Queue<ElementBox> ElementBoxes { get; } = new();
+    public Queue<byte[]> PageScreenshotResponses { get; } = new();
     public Queue<IReadOnlyList<ChromePageTab>> TabResponses { get; } = new();
     public string LastOpenedTab { get; private set; } = string.Empty;
     public List<BrowserContextInfo> BrowserContexts { get; } = [];
@@ -175,6 +176,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         LastPageScreenshotOptions = options ?? new(FullPage: fullPage);
         PageScreenshotOptions.Add(LastPageScreenshotOptions);
         LastFullPageScreenshot = LastPageScreenshotOptions.FullPage;
+        if (PageScreenshotResponses.Count > 0) return PageScreenshotResponses.Dequeue();
         using var image = new Image<Rgba32>(1, 1, Color.White);
         using var stream = new MemoryStream();
         image.SaveAsPng(stream);

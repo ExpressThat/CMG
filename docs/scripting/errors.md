@@ -814,3 +814,5 @@ Line 4: setRecording option pointerDuration= must be zero or greater.
 Runtime `GIF_WARN_MULTIPLE_TARGETS`, `GIF_WARN_TINY_TARGET`, `GIF_WARN_SCROLLED`, and `GIF_WARN_NON_VISUAL` lines are evidence-quality diagnostics, not script failures. Tighten the selector, enlarge or call out the target, or remove the ignored option when deterministic evidence matters.
 
 `pointerStyle` rejects options outside its pointer appearance/visibility set. `recordVariable` fails when the named variable is undefined or `reveal=` is not boolean. These checks occur only with an active recorder; without one the recording-only actions skip without reading state.
+
+Conditional recording blocks propagate their original child failure after retaining the partial artifact. An unchanged/passing discard is not a failure and writes `GIF_SKIPPED` with `reason=unchanged`, `passed`, or `skipped`. `gifSnapshot` rejects a missing name, a body, or a negative/invalid `duration=`.

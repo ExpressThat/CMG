@@ -29,9 +29,12 @@ public sealed partial class BrowserScriptRunner
         var output = new List<string>();
         var failed = false;
         var skipped = false;
+        string? baseline = null;
+        BrowserScriptAction? currentAction = null;
         if (commandRecorder is null)
         {
             recorder.Start(remoteDebuggingUrl);
+            if (IsIfChangedBlock(action.Name)) baseline = recorder.VisualSignature();
         }
         else
         {
@@ -45,6 +48,7 @@ public sealed partial class BrowserScriptRunner
                 foreach (var child in action.Children)
                 {
                     var prepared = PrepareActionForDispatch(child, context);
+                    currentAction = prepared;
                     recorder.BeforeAction(prepared, context: context.CurrentContext);
                     var lines = ExecuteAction(remoteDebuggingUrl, automationClient, prepared, context, recorder);
                     if (ShouldCaptureAfterAction(prepared))
@@ -60,16 +64,27 @@ public sealed partial class BrowserScriptRunner
             skipped = true;
             throw;
         }
-        catch
+        catch (Exception exception)
         {
             failed = true;
+            if (currentAction is not null && recorder.CaptureFailureCaption(currentAction, exception.Message))
+                output.Add($"GIF_FAILURE_CAPTION {currentAction.LineNumber:000} action={QuoteField(currentAction.Name)} status=captured");
             throw;
         }
         finally
         {
             if (commandRecorder is null)
             {
-                FinishRecording(recorder, output, failed, skipped);
+                if (ShouldKeepRecording(action.Name, recorder, baseline, failed))
+                {
+                    FinishRecording(recorder, output, failed, skipped);
+                }
+                else
+                {
+                    recorder.Discard();
+                    var reason = IsOnFailureBlock(action.Name) ? (skipped ? "skipped" : "passed") : "unchanged";
+                    output.Add($"GIF_SKIPPED {action.LineNumber:000} path={QuoteField(recorder.OutputPath)} reason={reason}");
+                }
                 recorder.Dispose();
             }
         }
@@ -190,5 +205,18 @@ public sealed partial class BrowserScriptRunner
     private static bool IsRecordingBlock(string name) =>
         name.Equals("gif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("recordVideo", StringComparison.OrdinalIgnoreCase) ||
-        name.Equals("screencast", StringComparison.OrdinalIgnoreCase);
+        name.Equals("screencast", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("gifIfChanged", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("gif.ifChanged", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("gifOnFailure", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("gif.onFailure", StringComparison.OrdinalIgnoreCase);
+
+    private static bool ShouldKeepRecording(string name, ScriptGifRecorder recorder, string? baseline, bool failed) =>
+        failed || (!IsOnFailureBlock(name) && (!IsIfChangedBlock(name) || recorder.VisualSignature() != baseline));
+
+    private static bool IsIfChangedBlock(string name) =>
+        name.Equals("gifIfChanged", StringComparison.OrdinalIgnoreCase) || name.Equals("gif.ifChanged", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsOnFailureBlock(string name) =>
+        name.Equals("gifOnFailure", StringComparison.OrdinalIgnoreCase) || name.Equals("gif.onFailure", StringComparison.OrdinalIgnoreCase);
 }

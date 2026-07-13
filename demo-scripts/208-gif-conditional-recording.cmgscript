@@ -1,0 +1,22 @@
+setContent "<style>html,body{margin:0;min-height:100%;background:#f8fafc}main{font:16px system-ui;padding:64px}button{padding:16px 24px}</style><main><h1>Conditional recording</h1><button id='save'>Save</button><p id='status'>Ready</p></main><script>document.querySelector('#save').addEventListener('click',()=>document.querySelector('#status').textContent='Saved')</script>"
+
+gifIfChanged "unchanged" output="demo-output/gif-conditional-unchanged.gif" {
+  gifSnapshot "unchanged state" duration=300
+}
+
+gif.ifChanged "changed" output="demo-output/gif-conditional-changed.gif" {
+  click "#save"
+  gif.snapshot "saved state" duration=500
+}
+
+gifOnFailure "passing" output="demo-output/gif-conditional-passing.gif" {
+  assertText "#status" "Saved"
+}
+
+try {
+  gif.onFailure "failure" output="demo-output/gif-conditional-failure.gif" {
+    assertText "#status" "Missing" timeout=100
+  }
+} catch {
+  evaluate "true"
+}
