@@ -60,7 +60,9 @@ public sealed partial class RunCommandBuilder
             Value(result, captionOptions.Position, settings.CaptionPosition),
             Value(result, captionOptions.Severity, settings.CaptionSeverity),
             out caption, out var captionError,
-            Value(result, captionOptions.Size, settings.CaptionSize))) return Error(captionError);
+            Value(result, captionOptions.Size, settings.CaptionSize),
+            WasProvided(result, captionOptions.AutoCaptions) ? result.GetValue(captionOptions.AutoCaptions) : settings.AutoCaptions,
+            Value(result, captionOptions.Template, settings.CaptionTemplate))) return Error(captionError);
         return true;
     }
 

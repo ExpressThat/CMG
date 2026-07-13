@@ -1,5 +1,6 @@
 using CMG.Browser;
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Commands;
 
@@ -11,11 +12,14 @@ public static class GifCaptionOptionParser
         string? severity,
         out BrowserCaptionOptions? options,
         out string error,
-        string? size = null)
+        string? size = null,
+        bool? autoCaptions = null,
+        string? captionTemplate = null)
     {
         options = null;
         error = string.Empty;
-        if (style is null && position is null && severity is null && size is null)
+        autoCaptions ??= captionTemplate is null ? null : true;
+        if (style is null && position is null && severity is null && size is null && autoCaptions is null && captionTemplate is null)
         {
             return true;
         }
@@ -25,8 +29,11 @@ public static class GifCaptionOptionParser
         Add(values, "captionPosition", position);
         Add(values, "captionSeverity", severity);
         Add(values, "captionSize", size);
+        if (autoCaptions is not null) values["autoCaptions"] = autoCaptions.Value ? "true" : "false";
+        Add(values, "captionTemplate", captionTemplate);
         try
         {
+            ScriptAutoCaption.ValidateTemplate(captionTemplate, "GIF");
             options = BrowserCaptionOptions.FromOptions(values, "GIF");
             return true;
         }

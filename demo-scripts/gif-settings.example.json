@@ -12,7 +12,9 @@
     "viewport": "800x600",
     "pixelRatio": 1,
     "captionStyle": "teaching",
-    "captionPosition": "top"
+    "captionPosition": "top",
+    "autoCaptions": true,
+    "captionTemplate": "{step}: {action} {selector}"
   },
   "projects": [
     {

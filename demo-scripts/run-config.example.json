@@ -21,7 +21,9 @@
     "fps": 10,
     "scale": 1,
     "captionStyle": "qa",
-    "captionPosition": "auto"
+    "captionPosition": "auto",
+    "autoCaptions": true,
+    "captionTemplate": "{step}: {action} {selector}"
   },
   "projects": [
     {

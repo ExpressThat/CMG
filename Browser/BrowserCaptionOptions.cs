@@ -40,7 +40,9 @@ public sealed record BrowserCaptionOptions(
     CaptionPosition Position = CaptionPosition.Top,
     CaptionSeverity Severity = CaptionSeverity.Info,
     CaptionSize Size = CaptionSize.Normal,
-    bool Markdown = false)
+    bool Markdown = false,
+    bool AutoCaptions = false,
+    string? CaptionTemplate = null)
 {
     public static readonly BrowserCaptionOptions Default = new();
 
@@ -62,7 +64,7 @@ public sealed record BrowserCaptionOptions(
             ? ParseSize(rawSize, action.Name) : Size;
         var markdown = action.Options.TryGetValue("captionFormat", out var format)
             ? ParseFormat(format, action.Name) : Markdown;
-        return new(style, position, severity, size, markdown);
+        return new(style, position, severity, size, markdown, AutoCaptions, CaptionTemplate);
     }
 
     public static BrowserCaptionOptions FromOptions(IReadOnlyDictionary<string, string> options, string source) =>
@@ -74,17 +76,24 @@ public sealed record BrowserCaptionOptions(
             options.TryGetValue("captionSeverity", out var severity) || options.TryGetValue("severity", out severity)
                 ? ParseSeverity(severity, source) : CaptionSeverity.Info,
             options.TryGetValue("captionSize", out var size) ? ParseSize(size, source) : CaptionSize.Normal,
-            options.TryGetValue("captionFormat", out var format) && ParseFormat(format, source));
+            options.TryGetValue("captionFormat", out var format) && ParseFormat(format, source),
+            options.TryGetValue("autoCaptions", out var automatic) && ParseBoolean(automatic, source, "autoCaptions"),
+            options.GetValueOrDefault("captionTemplate"));
 
-    public IReadOnlyDictionary<string, string> ToRecordingDefaults() =>
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    public IReadOnlyDictionary<string, string> ToRecordingDefaults()
+    {
+        var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["captionStyle"] = StyleValue(Style),
             ["captionPosition"] = PositionValue(Position),
             ["captionSeverity"] = SeverityValue(Severity),
             ["captionSize"] = SizeValue(Size),
-            ["captionFormat"] = Markdown ? "markdown" : "plain"
+            ["captionFormat"] = Markdown ? "markdown" : "plain",
+            ["autoCaptions"] = AutoCaptions ? "true" : "false"
         };
+        if (CaptionTemplate is not null) values["captionTemplate"] = CaptionTemplate;
+        return values;
+    }
 
     private static CaptionStyle ParseStyle(string value, string source) =>
         value.Trim().ToLowerInvariant() switch
@@ -132,6 +141,13 @@ public sealed record BrowserCaptionOptions(
         "markdown" or "formatted" => true,
         "plain" or "text" => false,
         _ => throw new ScriptExecutionException($"{source} option captionFormat= must be markdown or plain.")
+    };
+
+    private static bool ParseBoolean(string value, string source, string name) => value.Trim().ToLowerInvariant() switch
+    {
+        "true" or "yes" or "on" or "1" => true,
+        "false" or "no" or "off" or "0" => false,
+        _ => throw new ScriptExecutionException($"{source} option {name}= must be true or false.")
     };
 
     public static string StyleValues => "subtle, teaching, qa, bug-report, compact";

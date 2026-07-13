@@ -69,7 +69,7 @@ public sealed partial class RunCommandBuilder
             pointerVisualOptions.Theme, pointerVisualOptions.Color, pointerVisualOptions.Size, pointerVisualOptions.Shadow,
             presetOptions.ReducedMotion, presetOptions.HighContrastPointer,
             showPointerOption,
-            captionOptions.Style, captionOptions.Position, captionOptions.Severity, captionOptions.Size,
+            captionOptions.Style, captionOptions.Position, captionOptions.Severity, captionOptions.Size, captionOptions.AutoCaptions, captionOptions.Template,
             clickPulseOption,
             holdAfterActionOption,
             holdOnFailureOption,

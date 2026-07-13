@@ -34,6 +34,20 @@ public sealed class ScriptAutoCaptionTests
     }
 
     [Fact]
+    public void Template_ExpandsStepAndAssertionContext()
+    {
+        var options = new Dictionary<string, string>
+        {
+            ["autoCaptions"] = "true",
+            ["captionTemplate"] = "{step}: {assertion} {selector}"
+        };
+        var action = new BrowserScriptAction(7, "assertText", "assertText", ["#status", "Saved"], options, []);
+
+        Assert.True(ScriptAutoCaption.TryCreate(action, "step Verify save", out var caption));
+        Assert.Equal("step Verify save: assertText #status", caption.Message);
+    }
+
+    [Fact]
     public void DisabledAction_DoesNotCreateCaption()
     {
         var options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { ["autoCaptions"] = "false" };

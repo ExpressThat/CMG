@@ -1,0 +1,6 @@
+setContent "<main style='box-sizing:border-box;min-height:560px;padding:32px;background:#f8fafc;color:#172033'><h1>Automatic narration</h1><button id='save' onclick='this.textContent=\"Saved\"'>Save</button></main>"
+
+step "Save profile" {
+  click "#save"
+  assertText "#save" "Saved"
+}

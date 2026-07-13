@@ -4,7 +4,7 @@ public sealed partial class ScriptGifRecorder
 {
     private void ApplyAutoCaption(BrowserScriptAction action)
     {
-        if (remoteDebuggingUrl is null || !ScriptAutoCaption.TryCreate(action, out var caption))
+        if (remoteDebuggingUrl is null || !ScriptAutoCaption.TryCreate(action, activeExecutionContext, out var caption))
         {
             return;
         }

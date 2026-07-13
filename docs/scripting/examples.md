@@ -720,6 +720,15 @@ cmg browser --port 9467 close
 
 `gifSettings` merges root, selected project, and explicit CLI properties independently. The demo inherits root crop/viewport settings, project quality/timing/padding, and CLI scale/caption style. Suite, test, recording block, and action overrides remain more specific.
 
+## Narrate A Whole Run Automatically
+
+```powershell
+cmg browser control script --file demo-scripts\220-gif-auto-captions-cli.cmgscript --gif demo-output\220-auto-captions.gif --auto-captions --caption-style teaching --caption-position bottom --caption-template "{step}: {action} {selector}"
+cmg run demo-scripts\221-gif-auto-captions-cli-runner.cmgscript --gif demo-output\221-auto-captions --auto-captions --caption-style qa --caption-position bottom --caption-template "{step}: {action} {selector}"
+```
+
+`{step}` exposes current lexical step/macro/loop context and `{assertion}` identifies assertion actions without including expected or entered values. Supplying `--caption-template` enables narration even when `--auto-captions` is omitted. Both options are inert without recording.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

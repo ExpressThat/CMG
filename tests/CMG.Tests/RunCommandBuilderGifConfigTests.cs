@@ -19,7 +19,8 @@ public sealed class RunCommandBuilderGifConfigTests
             "crop": "#panel", "cropPadding": 16, "scale": 0.9,
             "maxWidth": 900, "maxHeight": 700, "viewport": "800x600", "pixelRatio": 1,
             "captionStyle": "teaching", "captionPosition": "top",
-            "captionSeverity": "warning", "captionSize": "large"
+            "captionSeverity": "warning", "captionSize": "large",
+            "autoCaptions": true, "captionTemplate": "{step}: {action}"
           },
           "projects": [{
             "name": "visual", "gifSettings": {
@@ -45,6 +46,8 @@ public sealed class RunCommandBuilderGifConfigTests
         Assert.Equal(CaptionPosition.Bottom, options.CaptionOptions?.Position);
         Assert.Equal(CaptionSeverity.Warning, options.CaptionOptions?.Severity);
         Assert.Equal(CaptionSize.Large, options.CaptionOptions?.Size);
+        Assert.True(options.CaptionOptions?.AutoCaptions);
+        Assert.Equal("{step}: {action}", options.CaptionOptions?.CaptionTemplate);
         var framing = Assert.IsType<CMG.Browser.Scripting.Recording.GifFramingOptions>(options.GifEncoding?.Framing);
         Assert.Equal("#panel", framing.CropSelector);
         Assert.Equal(24, framing.CropPadding);

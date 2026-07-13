@@ -34,6 +34,8 @@ public sealed partial class BrowserControlCommandBuilder
         var captionPositionOption = new Option<string?>("--caption-position") { Description = $"Default caption position for --gif recordings: {BrowserCaptionOptions.PositionValues}." };
         var captionSeverityOption = new Option<string?>("--caption-severity") { Description = $"Default caption severity color for --gif recordings: {BrowserCaptionOptions.SeverityValues}." };
         var captionSizeOption = new Option<string?>("--caption-size") { Description = $"Default caption text size for --gif recordings: {BrowserCaptionOptions.SizeValues}." };
+        var autoCaptionsOption = new Option<bool>("--auto-captions") { Description = "Automatically caption supported visual actions in --gif recordings." };
+        var captionTemplateOption = new Option<string?>("--caption-template") { Description = "Automatic-caption template for --gif recordings." };
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Default click pulse style for --gif recordings: ring, ripple, dot, crosshair, or none." };
         var holdAfterActionOption = new Option<int?>("--gif-hold-after-action") { Description = "Default post-action hold in milliseconds for --gif recordings." };
         var holdOnFailureOption = new Option<int?>("--gif-hold-on-failure") { Description = "Final failure-state hold in milliseconds for --gif recordings." };
@@ -64,7 +66,7 @@ public sealed partial class BrowserControlCommandBuilder
             encodingOptions.Background, encodingOptions.GradientMode, encodingOptions.HighContrastPalette,
             pointerDurationOption, pointerSpeedOption,
             pointerEasingOption, pointerThemeOption, pointerColorOption, pointerSizeOption, pointerShadowOption,
-            showPointerOption, reducedMotionOption, highContrastPointerOption, captionStyleOption, captionPositionOption, captionSeverityOption, captionSizeOption,
+            showPointerOption, reducedMotionOption, highContrastPointerOption, captionStyleOption, captionPositionOption, captionSeverityOption, captionSizeOption, autoCaptionsOption, captionTemplateOption,
             clickPulseOption, holdAfterActionOption, holdOnFailureOption, preClickHoldOption, postClickHoldOption,
             holdAfterNavigationOption, holdAfterAssertionOption, gifFpsOption, gifFrameDelayOption, gifTimelineOption,
             traceOption, timeoutOption, navigationTimeoutOption, assertionTimeoutOption, baseUrlOption, variableOption, envOption
@@ -135,7 +137,7 @@ public sealed partial class BrowserControlCommandBuilder
                 Console.Error.WriteLine(showPointerError);
                 return false;
             }
-            if (!GifCaptionOptionParser.TryParse(parseResult.GetValue(captionStyleOption), parseResult.GetValue(captionPositionOption), parseResult.GetValue(captionSeverityOption), out var captionOptions, out var captionError, parseResult.GetValue(captionSizeOption)))
+            if (!GifCaptionOptionParser.TryParse(parseResult.GetValue(captionStyleOption), parseResult.GetValue(captionPositionOption), parseResult.GetValue(captionSeverityOption), out var captionOptions, out var captionError, parseResult.GetValue(captionSizeOption), parseResult.GetValue(autoCaptionsOption) ? true : null, parseResult.GetValue(captionTemplateOption)))
             {
                 Console.Error.WriteLine(captionError);
                 return false;

@@ -30,7 +30,9 @@ internal static partial class RunConfigReader
             StringOption(value, "captionStyle"),
             StringOption(value, "captionPosition"),
             StringOption(value, "captionSeverity"),
-            StringOption(value, "captionSize"));
+            StringOption(value, "captionSize"),
+            BoolOption(value, "autoCaptions"),
+            StringOption(value, "captionTemplate"));
     }
 
     private static double? DoubleOption(JsonElement root, string name) =>
@@ -44,6 +46,6 @@ internal static partial class RunConfigReader
     {
         "quality", "pointerDuration", "pointerSpeed", "pointerEasing", "clickPulse", "fps", "frameDelay",
         "crop", "cropPadding", "scale", "maxWidth", "maxHeight", "viewport", "pixelRatio",
-        "captionStyle", "captionPosition", "captionSeverity", "captionSize"
+        "captionStyle", "captionPosition", "captionSeverity", "captionSize", "autoCaptions", "captionTemplate"
     };
 }

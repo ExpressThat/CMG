@@ -80,6 +80,8 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-high-contrast-pointer`: Uses the large yellow high-contrast ring pointer for every whole-run GIF. Explicit pointer visual options override individual preset properties.
 - `--caption-style <subtle|teaching|qa|bug-report|compact>`: Default caption style for command-level `--gif` recordings.
 - `--caption-size <normal|large|x-large>`: Default caption text size for command-level `--gif` recordings.
+- `--auto-captions`: Automatically narrate supported visual actions in each command-level test GIF.
+- `--caption-template <template>`: Whole-run automatic-caption template; supplying it enables automatic captions. Supports `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}`. Unknown placeholders fail before browser connection or `--list` output.
 - `--caption-position <top|bottom|left|right|auto>`: Default caption position for command-level `--gif` recordings.
 - `--caption-severity <info|success|warning|error>`: Default caption severity color for command-level `--gif` recordings.
 - `--click-pulse <ring|ripple|dot|crosshair|none>`: Default click/tap/drop pulse style for command-level `--gif` recordings. Defaults to `ring`.
@@ -179,7 +181,7 @@ If no selected CMG browser is running, stderr tells the caller which launch comm
 
 Run config supports `gifRetention` (`always`, `onFailure`, `onRetry`, or `off`), positive integer `gifSampleRate`, and boolean `gifCleanPassed`. Explicit CLI retention values override config. Suite/test declarations then override the effective run default one property at a time.
 
-Root config and individual projects may define a `gifSettings` object. Supported properties are `quality`, `pointerDuration`, `pointerSpeed`, `pointerEasing`, `clickPulse`, `fps`, `frameDelay`, `crop`, `cropPadding`, `scale`, `maxWidth`, `maxHeight`, `viewport`, `pixelRatio`, `captionStyle`, `captionPosition`, `captionSeverity`, and `captionSize`. Project properties overlay root properties individually; explicit CLI options overlay project properties individually; suite/test declarations and DSL recording/action overrides remain more specific. Unknown properties and invalid types fail during config loading; invalid values fail before browser connection or `--list` output with the responsible setting in stderr.
+Root config and individual projects may define a `gifSettings` object. Supported properties are `quality`, `pointerDuration`, `pointerSpeed`, `pointerEasing`, `clickPulse`, `fps`, `frameDelay`, `crop`, `cropPadding`, `scale`, `maxWidth`, `maxHeight`, `viewport`, `pixelRatio`, `captionStyle`, `captionPosition`, `captionSeverity`, `captionSize`, `autoCaptions`, and `captionTemplate`. Project properties overlay root properties individually; explicit CLI options overlay project properties individually; suite/test declarations and DSL recording/action overrides remain more specific. Unknown properties and invalid types fail during config loading; invalid values fail before browser connection or `--list` output with the responsible setting in stderr.
 
 ```json
 {

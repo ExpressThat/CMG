@@ -1916,7 +1916,7 @@ Options:
 - `autoCaptions`: Automatic narration for supported visual child actions. Defaults to `false`.
 - `eventCaptions`: Enables all privacy-safe event outcome captions.
 - `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`: Override individual event categories for inherited frames.
-- `captionTemplate`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
+- `captionTemplate`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}`. `{step}` is the lexical execution context (or action name); `{assertion}` is the assertion action name or empty text.
 - `intro` / `outro`: Optional opening and final full-viewport title-card text.
 - `introDuration` / `outroDuration`: Optional title-card durations in milliseconds. Defaults to `1200`.
 - `resultOutro`: Optional `true`/`false` generated passed, failed, or skipped final card. Explicit outro text/actions take precedence.

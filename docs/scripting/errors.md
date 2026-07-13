@@ -825,6 +825,8 @@ CLI retention setup fails before browser connection when `--gif-sample-rate` is 
 
 Run-config `gifSettings` rejects unknown keys, incorrect JSON types, and invalid recording values before browser connection or `--list` output. Root settings are validated even when no project is selected; selected project settings overlay root values before validation and CLI precedence is applied per property.
 
+Automatic-caption templates reject unknown placeholders before browser connection for whole-run CLI/config defaults and at the responsible DSL action for scoped overrides. Supported placeholders are `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}`.
+
 `showMouseButtons=` accepts only boolean values. Activity overlay blocks require a body and no positional arguments; child action failures propagate normally. Without an active recorder, the blocks do not validate or inject visual evidence, but their child browser actions still run.
 
 `GIF_SETTINGS_WARN ... reason=gif-alias`, `GIF_SETTINGS_WARN ... reason=long-recording-block`, runtime `GIF_ALIAS_WARN`, and runner `GIF_RETENTION_WARN` are authoring guidance, not errors. They are written to stdout, preserve otherwise successful exit code `0`, and never require a browser when produced by `--preview-gif-settings` or `cmg run --list`.

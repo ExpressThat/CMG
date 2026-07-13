@@ -371,6 +371,8 @@ dotnet run -- --firefox browser close
 - `218-gif-recording-disabled.cmgscript`: Proves the privacy kill switch executes actions without artifacts, screenshots, or a virtual pointer.
 - `219-gif-project-settings-runner.cmgscript`: Records a runner flow using merged root, project, and CLI GIF defaults.
 - `gif-settings.example.json`: Root/project GIF settings used by demo 219.
+- `220-gif-auto-captions-cli.cmgscript`: Direct-script whole-run automatic captions with structural template context.
+- `221-gif-auto-captions-cli-runner.cmgscript`: Runner form of whole-run automatic captions and structural context.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

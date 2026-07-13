@@ -96,7 +96,7 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `captionPosition=<top|bottom|left|right|auto>`: Caption placement default.
 - `captionSeverity=<info|success|warning|error>`: Caption color intent default.
 - `autoCaptions=<true|false>`: Narrate supported visual actions automatically. Defaults to `false`; children can override it.
-- `captionTemplate=<template>`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
+- `captionTemplate=<template>`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}`.
 - `captionDuration=<milliseconds>`, `fadeIn=<milliseconds>`, `fadeOut=<milliseconds>`: Deterministic caption timeline defaults.
 - `assertionCaptions=<true|false>` / `failureCaptions=<true|false>`: Automatic evidence-caption defaults. Both default to enabled.
 - `eventCaptions=<true|false>`: Enables safe network, dialog, console/page-error, download, and upload outcome captions together.
@@ -205,7 +205,9 @@ Recording viewport controls are inert without an active GIF. While recording, CM
 - `captionPosition=<top|bottom|left|right|auto>`: Default caption position.
 - `captionSeverity=<info|success|warning|error>`: Default caption severity.
 - `autoCaptions=<true|false>`: Automatic narration default for supported child actions.
-- `captionTemplate=<template>`: Automatic-caption template inherited by child actions.
+- `captionTemplate=<template>`: Automatic-caption template inherited by child actions. `{step}` uses current lexical execution context and `{assertion}` names an assertion action or expands to an empty string.
+
+Whole-run direct and runner recordings use `--auto-captions` and `--caption-template`. Supplying a template enables automatic captions. These defaults are recorder-only: without command-level `--gif` or a focused recording block, CMG adds no caption DOM or virtual pointer. See demos 220 and 221.
 - `intro=<text>` / `outro=<text>`: Optional opening and final title cards.
 - `introDuration=<milliseconds>` / `outroDuration=<milliseconds>`: Optional title-card durations. Defaults to `1200`.
 - `pressedPointer=<true|false>`: Whether the pointer visually compresses while a recorded drag is active. Defaults to `true`.

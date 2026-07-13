@@ -73,13 +73,15 @@ public sealed class RunCommandBuilderPointerMotionTests
     {
         var handler = new CapturingHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "run flows --gif artifacts --caption-style teaching --caption-position right --caption-severity warning --caption-size x-large").Invoke();
+            "run flows --gif artifacts --caption-style teaching --caption-position right --caption-severity warning --caption-size x-large --auto-captions --caption-template \"{step}: {assertion}\"").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal(CaptionStyle.Teaching, handler.CaptionOptions?.Style);
         Assert.Equal(CaptionPosition.Right, handler.CaptionOptions?.Position);
         Assert.Equal(CaptionSeverity.Warning, handler.CaptionOptions?.Severity);
         Assert.Equal(CaptionSize.ExtraLarge, handler.CaptionOptions?.Size);
+        Assert.True(handler.CaptionOptions?.AutoCaptions);
+        Assert.Equal("{step}: {assertion}", handler.CaptionOptions?.CaptionTemplate);
     }
 
     [Fact]

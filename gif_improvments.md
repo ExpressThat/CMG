@@ -188,8 +188,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add `captionStyle=<subtle|teaching|qa|bug-report|compact>` on recording blocks, `step`, and captions. CLI: `--caption-style <style>`.
 - Implemented: add `captionPosition=<top|bottom|left|right|auto>` on recording blocks, `step`, and captions. CLI: `--caption-position <position>`.
 - Implemented for automatic action captions: `captionPosition=auto` places the caption opposite the active target's viewport half. Target-aware placement for standalone manual captions remains open.
-- Implemented in DSL recording scopes and recording blocks: `autoCaptions=true`. A whole-run CLI default remains open.
-- Implemented in DSL recording scopes, recording blocks, and action overrides: `captionTemplate=` with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`. A whole-run CLI default and structural `{step}` / `{assertion}` context placeholders remain open.
+- Implemented: DSL `autoCaptions=true`, whole-run `--auto-captions`, and root/project `gifSettings.autoCaptions` share recorder-only automatic narration.
+- Implemented: DSL, CLI `--caption-template`, and root/project config templates support `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}` with pre-browser validation for whole-run defaults.
 - Implemented: `caption duration=<ms>` / `captionDuration=<ms>` controls encoded visibility duration and can be inherited from recording scopes.
 - Implemented: `fadeIn=<ms>` and `fadeOut=<ms>` capture deterministic opacity stages and remove completed captions.
 - Implemented: nested `step` captions stack as breadcrumbs and restore parent context; `captionStacking=false` opts out.

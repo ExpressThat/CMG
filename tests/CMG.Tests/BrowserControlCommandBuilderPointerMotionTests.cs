@@ -77,13 +77,15 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     {
         var handler = new CapturingHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --caption-style qa --caption-position bottom --caption-severity success --caption-size large").Invoke();
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --caption-style qa --caption-position bottom --caption-severity success --caption-size large --auto-captions --caption-template \"{step}: {action}\"").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal(CaptionStyle.Qa, handler.CaptionOptions?.Style);
         Assert.Equal(CaptionPosition.Bottom, handler.CaptionOptions?.Position);
         Assert.Equal(CaptionSeverity.Success, handler.CaptionOptions?.Severity);
         Assert.Equal(CaptionSize.Large, handler.CaptionOptions?.Size);
+        Assert.True(handler.CaptionOptions?.AutoCaptions);
+        Assert.Equal("{step}: {action}", handler.CaptionOptions?.CaptionTemplate);
     }
 
     [Fact]
