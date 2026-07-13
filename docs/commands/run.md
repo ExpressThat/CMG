@@ -22,7 +22,7 @@ Runner declarations can include report annotations with `owner=`, `issue=`, `lin
 
 Runner declarations can also include initial variables as `var.<name>=<value>`. Suite variables cascade to child tests, and test-level variables override suite values. Command-line `--var` and `--env` values are injected before declaration variables, so a test declaration can intentionally override a command-provided default.
 
-Runner declarations can set per-test GIF defaults with `gifQuality=`, `gifPointerDuration=`, `gifPointerSpeed=`, `gifPointerEasing=`, `gifFps=`, `gifFrameDelay=`, `gifCrop=`, `gifCropPadding=`, `gifScale=`, `gifMaxWidth=`, `gifMaxHeight=`, `gifViewport=`, and `gifPixelRatio=`. `describe` / `suite` / `context` values cascade to child tests; test values override individual properties while unrelated command-line defaults remain intact. These defaults affect command-level `-gif` artifacts and are validated even when GIF output is disabled.
+Runner declarations can set per-test GIF defaults with `gifQuality=`, `gifPointerDuration=`, `gifPointerSpeed=`, `gifPointerEasing=`, `gifFps=`, `gifFrameDelay=`, `gifCrop=`, `gifCropPadding=`, `gifScale=`, `gifMaxWidth=`, `gifMaxHeight=`, `gifViewport=`, `gifPixelRatio=`, `gifSafeArea=`, and `gifLayoutStability=`. `describe` / `suite` / `context` values cascade to child tests; test values override individual properties while unrelated command-line defaults remain intact. These defaults affect command-level `-gif` artifacts and are validated even when GIF output is disabled.
 
 Artifact declarations control which command-level test GIFs are retained. `gif=always` is the default, `gif=onFailure` retains all attempts only when the test finally fails, `gif=onRetry` retains failed attempts but removes a passing attempt, and `gif=off` disables command-level capture for that test. `gifSampleRate=<n>` records the first selected test and every nth test after it. `gifCleanPassed=true` removes a passing GIF only after reports and traces are written. These declarations require `-gif` to create whole-test artifacts and do not suppress explicit `gif` / `gifIfChanged` / `gifOnFailure` blocks authored inside a script.
 
@@ -52,6 +52,8 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--keep-frames <directory>`: Keep exact pre-encoding PNG frames. Each test writes to `<directory>/<gif-name>/frame-NNNN.png`, including retry suffixes, so parallel tests do not overwrite one another.
 - `--gif-crop <selector-or-rich-locator>`: Clip each test GIF frame to current target bounds.
 - `--gif-crop-padding <0..2000>`: Add CSS-pixel context around `--gif-crop`; requires `--gif-crop`.
+- `--gif-safe-area <0..500>`: Minimum target/crop margin. Defaults to `24`; use `0` to disable.
+- `--gif-layout-stability <0..5000>`: Target-settling window after scroll and sticky-overlay correction. Defaults to `150` milliseconds; use `0` to disable.
 - `--gif-scale <0.05..1>`: Downscale test GIF frames before quantization.
 - `--gif-max-width <1..10000>`: Cap output width while preserving aspect ratio.
 - `--gif-max-height <1..10000>`: Cap output height while preserving aspect ratio.
@@ -186,7 +188,7 @@ If no selected CMG browser is running, stderr tells the caller which launch comm
 
 Run config supports `gifRetention` (`always`, `onFailure`, `onRetry`, or `off`), positive integer `gifSampleRate`, and boolean `gifCleanPassed`. Explicit CLI retention values override config. Suite/test declarations then override the effective run default one property at a time.
 
-Root config and individual projects may define a `gifSettings` object. Supported properties are `quality`, `pointerDuration`, `pointerSpeed`, `pointerEasing`, `clickPulse`, `fps`, `frameDelay`, `crop`, `cropPadding`, `scale`, `maxWidth`, `maxHeight`, `viewport`, `pixelRatio`, `captionStyle`, `captionPosition`, `captionSeverity`, `captionSize`, `autoCaptions`, `captionTemplate`, string arrays `redact`, `mask`, and `blur`, plus `autoRedact` and `redactionSafety`. Project properties overlay root properties individually; explicit CLI options overlay project properties individually; suite/test declarations and DSL recording/action overrides remain more specific. Unknown properties and invalid types fail during config loading; invalid values fail before browser connection or `--list` output with the responsible setting in stderr.
+Root config and individual projects may define a `gifSettings` object. Supported properties are `quality`, `pointerDuration`, `pointerSpeed`, `pointerEasing`, `clickPulse`, `fps`, `frameDelay`, `crop`, `cropPadding`, `scale`, `maxWidth`, `maxHeight`, `viewport`, `pixelRatio`, `safeArea`, `layoutStability`, `captionStyle`, `captionPosition`, `captionSeverity`, `captionSize`, `autoCaptions`, `captionTemplate`, string arrays `redact`, `mask`, and `blur`, plus `autoRedact` and `redactionSafety`. Project properties overlay root properties individually; explicit CLI options overlay project properties individually; suite/test declarations and DSL recording/action overrides remain more specific. Unknown properties and invalid types fail during config loading; invalid values fail before browser connection or `--list` output with the responsible setting in stderr.
 
 ```json
 {
@@ -238,7 +240,7 @@ Actions, locators, control flow, loops, macros, scoped variables, `recording` / 
 
 Invalid encoder values fail before browser connection or test scheduling and name the option, including invalid `background=` colors and `gradientMode=` values.
 
-Invalid framing values use the same pre-browser failure path and name `cropPadding=`, `scale=`, `maxWidth=`, or `maxHeight=`. A crop selector missing during a test fails that test with the selector resolution reason.
+Invalid framing values use the same pre-browser failure path and name `cropPadding=`, `safeArea=`, `layoutStability=`, `scale=`, `maxWidth=`, or `maxHeight=`. A crop selector missing during a test fails that test with the selector resolution reason.
 
 `contains "text"` and `notContains "text"` check the page body. `contains "<selector>" "text"`, `containsText`, `waitForText`, `notContainsText`, and the negative text aliases check a selector or rich locator and accept `timeout=<milliseconds>`, `match=contains|exact|regex`, and `ignoreCase=true`. Successful text checks emit the normal test/step pass output; failed checks include the expected and actual text in the step failure reason.
 

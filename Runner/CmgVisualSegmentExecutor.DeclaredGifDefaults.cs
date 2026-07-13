@@ -59,6 +59,8 @@ public sealed partial class CmgVisualSegmentExecutor
         Add(options, mapped, "gifMaxHeight", "maxHeight");
         Add(options, mapped, "gifViewport", "viewport");
         Add(options, mapped, "gifPixelRatio", "pixelRatio");
+        Add(options, mapped, "gifSafeArea", "safeArea");
+        Add(options, mapped, "gifLayoutStability", "layoutStability");
         return mapped;
     }
 

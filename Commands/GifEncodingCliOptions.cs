@@ -15,6 +15,8 @@ internal sealed record GifEncodingCliOptions(
     Option<int?> MaxHeight,
     Option<string?> Viewport,
     Option<double?> PixelRatio,
+    Option<int?> SafeArea,
+    Option<int?> LayoutStability,
     Option<bool> Debug,
     Option<bool> Accessibility,
     Option<bool> EventCaptions,
@@ -56,6 +58,8 @@ internal sealed record GifEncodingCliOptions(
             new Option<int?>("--gif-max-height") { Description = "Maximum GIF height from 1 to 10000 pixels." },
             new Option<string?>("--gif-viewport") { Description = "Temporary recording viewport as <width>x<height>." },
             new Option<double?>("--gif-pixel-ratio") { Description = "Recording device pixel ratio from 1 to 4." },
+            new Option<int?>("--gif-safe-area") { Description = "Minimum target/crop safety margin from 0 to 500 CSS pixels." },
+            new Option<int?>("--gif-layout-stability") { Description = "Target settling window from 0 to 5000 milliseconds." },
             new Option<bool>("--gif-debug") { Description = "Show action, scope, target, pointer, and scroll diagnostics in GIF frames." },
             new Option<bool>("--gif-accessibility") { Description = "Show keyboard, focus, accessible-name, and contrast evidence in GIF frames." },
             new Option<bool>("--gif-event-captions") { Description = "Show safe outcome captions for network, dialog, console, download, and upload events." },
@@ -96,6 +100,7 @@ internal sealed record GifEncodingCliOptions(
         if (!GifFramingOptions.TryParse(
             Value(result, Crop, settings?.Crop), Value(result, CropPadding, settings?.CropPadding), Value(result, Scale, settings?.Scale),
             Value(result, MaxWidth, settings?.MaxWidth), Value(result, MaxHeight, settings?.MaxHeight), Value(result, Viewport, settings?.Viewport), Value(result, PixelRatio, settings?.PixelRatio),
+            Value(result, SafeArea, settings?.SafeArea), Value(result, LayoutStability, settings?.LayoutStability),
             out var framing, out error)) return false;
         if (!GifTitleCardOptions.TryParse(
             result.GetValue(Intro), result.GetValue(Outro), result.GetValue(IntroDuration), result.GetValue(OutroDuration),

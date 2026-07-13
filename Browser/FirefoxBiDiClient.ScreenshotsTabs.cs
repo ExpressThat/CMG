@@ -27,8 +27,22 @@ public sealed partial class FirefoxBiDiClient
                 writer.WriteString("origin", options.FullPage ? "document" : "viewport");
             });
 
+            if (!options.FullPage && options.Clip is not null)
+            {
+                var json = ReadScriptResultValue(await Evaluate(session, context.Id, "JSON.stringify({x:scrollX,y:scrollY})"));
+                using var document = JsonDocument.Parse(json);
+                options = NormalizePageClip(options, new ElementPoint(
+                    document.RootElement.GetProperty("x").GetDouble(),
+                    document.RootElement.GetProperty("y").GetDouble()));
+            }
             return ScreenshotImage.ConvertIfNeeded(DecodeScreenshot(response), options);
         });
+
+    internal static ScreenshotOptions NormalizePageClip(ScreenshotOptions options, ElementPoint offset) =>
+        options.Clip is not { } clip ? options : options with
+        {
+            Clip = clip with { X = clip.X - offset.X, Y = clip.Y - offset.Y }
+        };
 
     public ElementPoint GetElementCenter(string remoteDebuggingUrl, string selector) =>
         Run(async () =>

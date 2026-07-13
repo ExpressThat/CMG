@@ -17,7 +17,7 @@ public sealed class RunCommandBuilderGifConfigTests
             "quality": "medium", "pointerDuration": 700, "pointerSpeed": "slow",
             "pointerEasing": "linear", "clickPulse": "dot", "fps": 8,
             "crop": "#panel", "cropPadding": 16, "scale": 0.9,
-            "maxWidth": 900, "maxHeight": 700, "viewport": "800x600", "pixelRatio": 1,
+            "maxWidth": 900, "maxHeight": 700, "viewport": "800x600", "pixelRatio": 1, "safeArea": 20,
             "captionStyle": "teaching", "captionPosition": "top",
             "captionSeverity": "warning", "captionSize": "large",
             "autoCaptions": true, "captionTemplate": "{step}: {action}",
@@ -27,7 +27,7 @@ public sealed class RunCommandBuilderGifConfigTests
           "projects": [{
             "name": "visual", "gifSettings": {
               "quality": "highest", "pointerSpeed": "fast", "frameDelay": 120,
-              "cropPadding": 24, "captionPosition": "bottom", "mask": ["#project-secret"]
+              "cropPadding": 24, "layoutStability": 350, "captionPosition": "bottom", "mask": ["#project-secret"]
             }
           }]
         }
@@ -35,7 +35,7 @@ public sealed class RunCommandBuilderGifConfigTests
         var service = new CapturingRunService();
 
         var exit = BuildRoot(service).Parse(
-            $"run flows --config \"{config}\" --project visual --pointer-duration 250 --gif-scale 0.75 --caption-style qa --gif-redact #cli-secret --gif-auto-redact none").Invoke();
+            $"run flows --config \"{config}\" --project visual --pointer-duration 250 --gif-scale 0.75 --gif-safe-area 40 --caption-style qa --gif-redact #cli-secret --gif-auto-redact none").Invoke();
 
         Assert.Equal(0, exit);
         var options = Assert.IsType<CmgRunOptions>(service.Options);
@@ -59,6 +59,8 @@ public sealed class RunCommandBuilderGifConfigTests
         Assert.Equal(800, framing.ViewportWidth);
         Assert.Equal(600, framing.ViewportHeight);
         Assert.Equal(1, framing.PixelRatio);
+        Assert.Equal(40, framing.SafeArea);
+        Assert.Equal(350, framing.LayoutStabilityMilliseconds);
         var redaction = Assert.IsType<CMG.Browser.Scripting.Recording.GifRedactionOptions>(options.GifEncoding?.Redaction);
         Assert.Equal(CMG.Browser.Scripting.Recording.GifAutoRedactionMode.None, redaction.Auto);
         Assert.True(redaction.Strict);

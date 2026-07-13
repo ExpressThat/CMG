@@ -248,15 +248,15 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add split-screen recording for multi-tab or popup flows.
 - Add frame recording inside iframes with visible page context.
 - Implemented: active recorders center pointer-targeted elements before coordinate resolution; non-recorded scripts are unchanged.
-- Add safe-area padding so pointer/captions are not clipped.
+- Implemented: inherited `safeArea=` and `--gif-safe-area` keep pointer targets clear of viewport edges/detected sticky blockers and expand tight crops; the evidence-oriented default is 24 CSS pixels and `0` disables it.
 - Implemented: blur, solid, and replacement DSL masks plus repeatable whole-run `--gif-redact`, `--gif-mask`, and `--gif-blur` coarse defaults.
 - Implemented: `maskGif` / `redactGif` / `redactText` and `unmaskGif` / `unredactGif` recording-only actions with live locator resolution.
 - Implemented: `autoRedact` presets cover passwords, tokens, emails, payment-card-like text, and combined privacy masking through DSL, CLI, and project settings.
 - Add live element highlight outlines that follow the target through the action.
 - Add target zoom inset, like a magnifying glass, for tiny controls.
 - Add mini-map or viewport position indicator for long pages.
-- Add automatic viewport stabilization after layout shifts.
-- Add handling for sticky headers that would cover scrolled targets.
+- Implemented: inherited `layoutStability=` and `--gif-layout-stability` wait for two settled animation frames before pointer coordinate capture.
+- Implemented: recorder target positioning detects obstructing fixed/sticky elements, corrects scroll position, then rechecks safe-area bounds before pointer movement.
 
 ## Script And DSL Controls
 

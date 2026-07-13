@@ -2008,6 +2008,8 @@ Encoder options:
 - Caption scopes support `captionStacking`, `persistentStepTitle`, `sourceLineCaptions`, `debugNarration`, `captionFormat=plain|markdown`, and localized generated-label options. All are recording-only defaults.
 - `crop=<selector-or-rich-locator>` clips every frame to the live target bounds.
 - `cropPadding=<0..2000>` adds CSS-pixel context around `crop=` and requires it.
+- `safeArea=<0..500>` keeps pointer targets and tight crops clear of clipping; default `24`, disabled with `0`.
+- `layoutStability=<0..5000>` waits for settled target coordinates after scrolling; default `150`, disabled with `0`.
 - `scale=<0.05..1>` downscales the cropped or viewport frame before GIF quantization.
 - `maxWidth=<1..10000>` and `maxHeight=<1..10000>` add output dimension caps while preserving aspect ratio.
 - `viewport=<width>x<height>` temporarily sets recording viewport dimensions and restores the prior viewport afterward.

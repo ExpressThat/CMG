@@ -1,0 +1,8 @@
+describe "framing resilience" gifSafeArea=36 gifLayoutStability=500 gifCrop=#stage {
+  test "settles moving target" {
+    setContent "<style>html,body{margin:0;background:#e2e8f0;color:#172033}header{position:sticky;top:0;z-index:10;height:320px;background:#172033;color:white}main{padding:40px}.spacer{height:620px}#stage{padding:28px;background:white;border:2px solid #172033}#save{transition:transform 120ms ease;padding:12px 20px}</style><header>Sticky review header</header><main><div class='spacer'></div><section id='stage'><h1>Stable runner evidence</h1><button id='save' onclick='this.textContent=\"Saved\"'>Save</button></section></main>"
+    evaluate "document.querySelector('#save').style.transform='translateY(36px)'"
+    click "#save"
+    assertText "#save" "Saved"
+  }
+}

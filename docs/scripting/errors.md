@@ -825,6 +825,8 @@ CLI retention setup fails before browser connection when `--gif-sample-rate` is 
 
 Run-config `gifSettings` rejects unknown keys, incorrect JSON types, and invalid recording values before browser connection or `--list` output. Root settings are validated even when no project is selected; selected project settings overlay root values before validation and CLI precedence is applied per property.
 
+`safeArea` must be from `0` to `500`; `layoutStability` must be from `0` to `5000`. Invalid CLI, config, suite/test, recording-scope, or GIF-block values identify the responsible option. Set either to `0` when exact edge framing or immediate coordinates are intentional.
+
 Automatic-caption templates reject unknown placeholders before browser connection for whole-run CLI/config defaults and at the responsible DSL action for scoped overrides. Supported placeholders are `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}`.
 
 Whole-run redaction rejects empty selectors, non-string config array entries, unknown `autoRedact` or `redactionSafety` values, and strict safety failures with an exact reason. Strict capture failures fail the responsible action rather than writing an unmasked frame.

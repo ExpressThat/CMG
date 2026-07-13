@@ -15,6 +15,8 @@ public sealed class CmgDeclaredGifDefaultsTests
             ["gifPointerSpeed"] = "fast",
             ["gifFps"] = "20",
             ["gifCrop"] = "#panel",
+            ["gifSafeArea"] = "40",
+            ["gifLayoutStability"] = "350",
             ["gifScale"] = "0.75"
         });
 
@@ -25,6 +27,8 @@ public sealed class CmgDeclaredGifDefaultsTests
         Assert.Equal("fast", result.PointerMotion?.PointerSpeed);
         Assert.Equal(50, result.FrameDelayMilliseconds);
         Assert.Equal("#panel", result.GifEncoding?.Framing?.CropSelector);
+        Assert.Equal(40, result.GifEncoding?.Framing?.SafeArea);
+        Assert.Equal(350, result.GifEncoding?.Framing?.LayoutStabilityMilliseconds);
         Assert.Equal(.75, result.GifEncoding?.Framing?.Scale);
     }
 

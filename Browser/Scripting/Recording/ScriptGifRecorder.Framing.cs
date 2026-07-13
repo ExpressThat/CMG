@@ -60,16 +60,23 @@ public sealed partial class ScriptGifRecorder
     private ScreenshotClip ResolveCropClip(GifFramingOptions framing)
     {
         var selector = ResolveLocator(framing.CropSelector!, 0);
-        var box = devToolsClient.GetElementBox(remoteDebuggingUrl!, selector);
         var viewport = devToolsClient.GetViewportSize(remoteDebuggingUrl!);
-        var padding = framing.CropPadding;
-        var x = Math.Max(0, box.X - padding);
-        var y = Math.Max(0, box.Y - padding);
-        var width = Math.Min(viewport.Width - x, box.Width + padding * 2);
-        var height = Math.Min(viewport.Height - y, box.Height + padding * 2);
+        var box = devToolsClient.GetElementBox(remoteDebuggingUrl!, selector);
+        if (box.X + box.Width <= 0 || box.Y + box.Height <= 0 || box.X >= viewport.Width || box.Y >= viewport.Height)
+        {
+            devToolsClient.ScrollElementIntoView(remoteDebuggingUrl!, selector);
+            StabilizeTarget(selector);
+            box = devToolsClient.GetElementBox(remoteDebuggingUrl!, selector);
+        }
+        var padding = Math.Max(framing.CropPadding, framing.SafeArea);
+        var localX = Math.Max(0, box.X - padding);
+        var localY = Math.Max(0, box.Y - padding);
+        var width = Math.Min(viewport.Width - localX, box.Width + padding * 2);
+        var height = Math.Min(viewport.Height - localY, box.Height + padding * 2);
         if (width <= 0 || height <= 0)
             throw new ScriptExecutionException($"GIF crop selector '{framing.CropSelector}' resolved outside the viewport.");
-        return lastCropClip = new ScreenshotClip(x, y, width, height, framing.PixelRatio);
+        var offset = ResolveViewportOffset();
+        return lastCropClip = new ScreenshotClip(offset.X + localX, offset.Y + localY, width, height, framing.PixelRatio);
     }
 
     private void PrimeCropBounds()

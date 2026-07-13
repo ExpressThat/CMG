@@ -186,6 +186,8 @@ Supported recording-scope and `setRecording` defaults:
 - `captionPassLabel`, `captionFailedLabel`, `captionExpectedLabel`, `captionActualLabel`: Localize generated evidence labels.
 - `crop=<selector-or-rich-locator>`: Clip each captured frame to current element bounds.
 - `cropPadding=<0..2000>`: Add context around `crop=` in CSS pixels.
+- `safeArea=<0..500>`: Keep pointer targets clear of viewport edges and detected sticky/fixed blockers, and expand tight crops by at least this margin. Defaults to `24`; `0` disables it.
+- `layoutStability=<0..5000>`: Wait up to this many milliseconds for two consecutive stable target rectangles after scrolling. Defaults to `150`; `0` disables it.
 - `scale=<0.05..1>`: Downscale output after capture and before quantization.
 - `maxWidth=<1..10000>` / `maxHeight=<1..10000>`: Cap output dimensions while preserving aspect ratio.
 - `viewport=<width>x<height>`: Temporarily set the browser viewport for this recording and restore it afterward.
@@ -711,7 +713,7 @@ When command-level `--gif` is active, nested `gif`, `recordVideo`, and `screenca
 
 Whole-run recordings support the same encoder controls through `--gif-quality`, `--gif-dither`, `--gif-palette`, `--gif-colors`, `--keep-frames`, `--gif-background`, `--gif-gradient-mode`, and `--gif-high-contrast-palette`. Direct scripts write retained PNGs directly into the requested directory. `cmg run` creates one child directory per GIF so parallel tests and retries cannot overwrite one another. Every retained recording emits `GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>`. Frames remain byte-identical browser PNGs only when no resize or color transform is needed; otherwise they are the exact transformed pre-quantization pixels.
 
-Whole-run framing uses `--gif-crop`, `--gif-crop-padding`, `--gif-scale`, `--gif-max-width`, and `--gif-max-height`. Crop bounds are resolved live for each frame and clipped after CMG places its pointer/caption UI. Downscaling and dimension caps are then applied to the complete clipped frame, preserving pointer alignment and aspect ratio. Retained frames use the final pre-quantization dimensions, so they can be compared directly with the encoded GIF.
+Whole-run framing uses `--gif-crop`, `--gif-crop-padding`, `--gif-safe-area`, `--gif-layout-stability`, `--gif-scale`, `--gif-max-width`, and `--gif-max-height`. Crop bounds are resolved live for each frame and clipped after CMG places its pointer/caption UI. Before pointer coordinates are captured, CMG corrects detected sticky/fixed obstruction, enforces the safe viewport margin, and waits for two settled animation frames. Downscaling and dimension caps are then applied to the complete clipped frame, preserving pointer alignment and aspect ratio. Retained frames use the final pre-quantization dimensions, so they can be compared directly with the encoded GIF. These behaviors exist only while recording.
 
 Use `cmg gif color-diff <source.png> <gif> --frame <n>` to quantify encoder drift as mean absolute error, RMS error, maximum-channel error, changed-pixel count, and transparency-change count. The command requires no browser.
 

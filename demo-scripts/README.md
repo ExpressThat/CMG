@@ -376,6 +376,8 @@ dotnet run -- --firefox browser close
 - `222-gif-cli-redaction.cmgscript`: Direct whole-run solid and blur redaction defaults.
 - `223-gif-cli-redaction-runner.cmgscript`: Runner form of whole-run privacy masking.
 - `224-gif-privacy-preset.cmgscript`: Combined password, token, email, and payment-card-like automatic masking with `autoRedact=privacy`.
+- `225-gif-framing-resilience.cmgscript`: Stabilizes a moving target and keeps it clear of a large sticky header.
+- `226-gif-framing-resilience-runner.cmgscript`: Runner declarations for target safe area, stable coordinates, and a protected crop.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

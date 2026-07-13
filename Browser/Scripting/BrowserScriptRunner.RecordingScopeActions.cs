@@ -101,6 +101,8 @@ public sealed partial class BrowserScriptRunner
         "keepFrames",
         "crop",
         "cropPadding",
+        "safeArea",
+        "layoutStability",
         "viewport",
         "pixelRatio",
         "scale",

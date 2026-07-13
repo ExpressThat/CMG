@@ -60,6 +60,8 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--keep-frames <directory>`: Keep each final pre-quantization PNG as `frame-NNNN.png` in this directory. Cropping and scaling are already applied.
 - `--gif-crop <selector-or-rich-locator>`: Clip each command-level GIF frame to current target bounds.
 - `--gif-crop-padding <0..2000>`: Add CSS-pixel context around `--gif-crop`; requires `--gif-crop`.
+- `--gif-safe-area <0..500>`: Minimum CSS-pixel margin around pointer targets and tight crops. Defaults to `24`; use `0` to disable.
+- `--gif-layout-stability <0..5000>`: Maximum target-settling window in milliseconds. CMG waits for two stable animation frames after scrolling and sticky-overlay correction. Defaults to `150`; use `0` to disable.
 - `--gif-scale <0.05..1>`: Downscale the captured frame before quantization.
 - `--gif-max-width <1..10000>`: Cap output width while preserving aspect ratio.
 - `--gif-max-height <1..10000>`: Cap output height while preserving aspect ratio.
@@ -233,7 +235,7 @@ Line 8: click failed in macro login > repeat[2/3]. No element matched selector '
 
 Invalid encoder values fail before browser connection and name the option, including invalid `background=` colors and `gradientMode=` values.
 
-Invalid framing values use the same pre-browser failure path and name `cropPadding=`, `scale=`, `maxWidth=`, or `maxHeight=`. A missing crop target during recording fails the responsible action with the selector resolution reason.
+Invalid framing values use the same pre-browser failure path and name `cropPadding=`, `safeArea=`, `layoutStability=`, `scale=`, `maxWidth=`, or `maxHeight=`. A missing crop target during recording fails the responsible action with the selector resolution reason. Framing controls do not evaluate page scripts, inject a pointer, or capture frames when GIF recording is inactive.
 
 ## Exit Codes
 

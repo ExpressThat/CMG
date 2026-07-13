@@ -11,6 +11,7 @@
     "scale": 0.9,
     "viewport": "800x600",
     "pixelRatio": 1,
+    "safeArea": 24,
     "captionStyle": "teaching",
     "captionPosition": "top",
     "autoCaptions": true,
@@ -26,6 +27,7 @@
         "pointerSpeed": "fast",
         "frameDelay": 120,
         "cropPadding": 24,
+        "layoutStability": 300,
         "captionPosition": "bottom"
       }
     }

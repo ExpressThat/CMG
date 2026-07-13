@@ -8,7 +8,9 @@ public sealed record GifFramingOptions(
     int? MaxHeight = null,
     int? ViewportWidth = null,
     int? ViewportHeight = null,
-    double PixelRatio = 1d)
+    double PixelRatio = 1d,
+    int SafeArea = 24,
+    int LayoutStabilityMilliseconds = 150)
 {
     public static GifFramingOptions FromOptions(IReadOnlyDictionary<string, string> options, string context)
     {
@@ -19,10 +21,12 @@ public sealed record GifFramingOptions(
         var maxHeight = ParseNullableInt(options.GetValueOrDefault("maxHeight"), 1, 10000, context, "maxHeight");
         var (viewportWidth, viewportHeight) = ParseViewport(options.GetValueOrDefault("viewport"), context);
         var pixelRatio = ParsePixelRatio(options.GetValueOrDefault("pixelRatio"), context);
+        var safeArea = ParseInt(options.GetValueOrDefault("safeArea"), 24, 0, 500, context, "safeArea");
+        var stability = ParseInt(options.GetValueOrDefault("layoutStability"), 150, 0, 5000, context, "layoutStability");
         if (crop is null && options.ContainsKey("cropPadding"))
             throw new ScriptExecutionException($"{context} option cropPadding= requires crop=.");
         return new(string.IsNullOrWhiteSpace(crop) ? null : crop, padding, scale, maxWidth, maxHeight,
-            viewportWidth, viewportHeight, pixelRatio);
+            viewportWidth, viewportHeight, pixelRatio, safeArea, stability);
     }
 
     public GifFramingOptions WithOptions(IReadOnlyDictionary<string, string> options, string context)
@@ -36,7 +40,9 @@ public sealed record GifFramingOptions(
             options.ContainsKey("maxHeight") ? parsed.MaxHeight : MaxHeight,
             options.ContainsKey("viewport") ? parsed.ViewportWidth : ViewportWidth,
             options.ContainsKey("viewport") ? parsed.ViewportHeight : ViewportHeight,
-            options.ContainsKey("pixelRatio") ? parsed.PixelRatio : PixelRatio);
+            options.ContainsKey("pixelRatio") ? parsed.PixelRatio : PixelRatio,
+            options.ContainsKey("safeArea") ? parsed.SafeArea : SafeArea,
+            options.ContainsKey("layoutStability") ? parsed.LayoutStabilityMilliseconds : LayoutStabilityMilliseconds);
     }
 
     public static bool TryParse(
@@ -47,6 +53,8 @@ public sealed record GifFramingOptions(
         int? maxHeight,
         string? viewport,
         double? pixelRatio,
+        int? safeArea,
+        int? layoutStability,
         out GifFramingOptions framing,
         out string? error)
     {
@@ -58,6 +66,8 @@ public sealed record GifFramingOptions(
         Add(options, "maxHeight", maxHeight);
         Add(options, "viewport", viewport);
         Add(options, "pixelRatio", pixelRatio);
+        Add(options, "safeArea", safeArea);
+        Add(options, "layoutStability", layoutStability);
         try { framing = FromOptions(options, "GIF"); error = null; return true; }
         catch (ScriptExecutionException exception) { framing = new(); error = exception.Message; return false; }
     }

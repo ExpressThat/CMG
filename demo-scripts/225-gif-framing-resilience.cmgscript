@@ -1,0 +1,6 @@
+setContent "<style>html,body{margin:0;background:#e2e8f0;color:#172033}header{position:sticky;top:0;z-index:10;height:320px;display:grid;place-items:center;background:#172033;color:white}main{padding:40px}.spacer{height:620px}#stage{padding:28px;background:white;border:2px solid #172033}#save{transition:transform 120ms ease;padding:12px 20px}</style><header>Sticky review header</header><main><div class='spacer'></div><section id='stage'><h1>Stable target evidence</h1><button id='save' onclick='this.textContent=\"Saved\"'>Save</button></section></main>"
+gif "framing resilience" output="demo-output/225-framing-resilience.gif" viewport=800x600 safeArea=36 layoutStability=500 {
+  evaluate "document.querySelector('#save').style.transform='translateY(36px)'"
+  click "#save"
+  assertText "#save" "Saved"
+}

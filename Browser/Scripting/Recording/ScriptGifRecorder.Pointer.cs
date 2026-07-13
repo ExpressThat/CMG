@@ -34,6 +34,7 @@ public sealed partial class ScriptGifRecorder
 
         var resolved = ResolveLocator(selector, lineNumber: 0);
         devToolsClient.ScrollElementIntoView(remoteDebuggingUrl, resolved);
+        StabilizeTarget(resolved);
         var target = devToolsClient.GetElementCenter(remoteDebuggingUrl, resolved);
 
         MovePointerTo(target, dragging: false);
@@ -49,6 +50,7 @@ public sealed partial class ScriptGifRecorder
         var selector = ResolveLocator(action.Arguments[0], action.LineNumber);
         InspectTarget(action, selector);
         devToolsClient.ScrollElementIntoView(remoteDebuggingUrl, selector);
+        StabilizeTarget(selector);
         var target = action.Options.ContainsKey("x") || action.Options.ContainsKey("y")
             ? ResolveElementOffsetTarget(action, selector)
             : devToolsClient.GetElementCenter(remoteDebuggingUrl, selector);
@@ -81,9 +83,17 @@ public sealed partial class ScriptGifRecorder
             return;
         }
 
+        StabilizeTarget(selector);
         var target = devToolsClient.GetElementCenter(remoteDebuggingUrl, selector);
 
         MovePointerTo(target, dragging: true, action, durationOption, easingOption);
+    }
+
+    private void StabilizeTarget(string selector)
+    {
+        var framing = options.EffectiveFraming;
+        devToolsClient.Evaluate(remoteDebuggingUrl!, BrowserDomScripts.StabilizeGifTarget(
+            selector, framing.SafeArea, framing.LayoutStabilityMilliseconds));
     }
 
     private void MovePointerTo(

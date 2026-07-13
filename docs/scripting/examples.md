@@ -748,6 +748,16 @@ gif "privacy preset" autoRedact=privacy {
 
 See demo 224. Prefer explicit `redact=` selectors when sensitive and public text share one element.
 
+## Stabilize Moving And Obstructed Targets
+
+```text
+gif "framing resilience" safeArea=36 layoutStability=500 {
+  click "#save"
+}
+```
+
+The default `safeArea=24` keeps pointer evidence away from viewport/crop edges and detected sticky or fixed blockers. The default `layoutStability=150` waits for two stable animation frames before CMG fixes pointer coordinates. Set either to `0` for exact-edge or immediate-coordinate evidence. Runner suites use `gifSafeArea=` and `gifLayoutStability=`; whole runs use `--gif-safe-area` and `--gif-layout-stability`. See demos 225 and 226.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

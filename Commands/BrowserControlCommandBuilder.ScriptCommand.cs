@@ -59,7 +59,7 @@ public sealed partial class BrowserControlCommandBuilder
         {
             fileOption, inlineOption, previewOption, gifOption, noGifOption, gifQualityOption,
             encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames,
-            encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight, encodingOptions.Viewport, encodingOptions.PixelRatio, encodingOptions.Debug, encodingOptions.Accessibility, encodingOptions.EventCaptions,
+            encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight, encodingOptions.Viewport, encodingOptions.PixelRatio, encodingOptions.SafeArea, encodingOptions.LayoutStability, encodingOptions.Debug, encodingOptions.Accessibility, encodingOptions.EventCaptions,
             encodingOptions.Intro, encodingOptions.Outro, encodingOptions.IntroDuration, encodingOptions.OutroDuration, encodingOptions.ResultOutro,
             encodingOptions.DisableCoalescing, encodingOptions.SampleEvery,
             encodingOptions.PointerContrast, encodingOptions.PointerCallout, encodingOptions.PointerCalloutThreshold, encodingOptions.DisableFocusPulse, encodingOptions.PointerIdle, encodingOptions.PointerIdleThreshold, encodingOptions.DisableTeleportMarker, encodingOptions.MouseDownHold,
