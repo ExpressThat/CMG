@@ -82,6 +82,8 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `captionStyle=<subtle|teaching|qa|bug-report|compact>`: Caption style default for child captions and step title bars.
 - `captionPosition=<top|bottom|left|right|auto>`: Caption placement default.
 - `captionSeverity=<info|success|warning|error>`: Caption color intent default.
+- `autoCaptions=<true|false>`: Narrate supported visual actions automatically. Defaults to `false`; children can override it.
+- `captionTemplate=<template>`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
 - `preClickHold=<milliseconds>`: Hold after pointer movement and before click/tap dispatch. Defaults to `0`.
@@ -123,6 +125,8 @@ Supported `recording` / `withRecording` defaults:
 - `captionStyle=<subtle|teaching|qa|bug-report|compact>`: Default caption style.
 - `captionPosition=<top|bottom|left|right|auto>`: Default caption position.
 - `captionSeverity=<info|success|warning|error>`: Default caption severity.
+- `autoCaptions=<true|false>`: Automatic narration default for supported child actions.
+- `captionTemplate=<template>`: Automatic-caption template inherited by child actions.
 - `pressedPointer=<true|false>`: Whether the pointer visually compresses while a recorded drag is active. Defaults to `true`.
 - `dragTrail=<true|false>`: Draw a trailing line behind held-pointer drag movement. Defaults to `false`.
 - `dragBreadcrumbs=<true|false>`: Add dot breadcrumbs along held-pointer drag movement. Defaults to `false`.
@@ -201,6 +205,16 @@ cmg run tests\flows --gif demo-output\runner-gifs --gif-max-duration 10s
 ```
 
 CMG also enables evidence-focused defaults when they make the GIF easier to understand. Click and tap actions show a visible pulse by default so the recording proves that an activation happened. Right-clicks default to a crosshair pulse, middle-clicks default to a dot pulse, and double-clicks capture two pulse frames so the GIF shows both activations. Use `clickPulse=` when a script needs a different pulse style or needs to suppress the pulse for one action.
+
+Automatic captions are opt-in because narration changes visual intent. CMG uses privacy-safe defaults: `fill` and `type` identify the target without copying the entered value into the GIF. With `captionPosition=auto`, captions appear below targets in the upper viewport half and above targets in the lower half. They exist only while recording; without `--gif` or a recording block, they do not touch the page.
+
+```text
+gif "guided checkout" autoCaptions=true captionPosition=auto captionStyle=teaching {
+  fill "getByLabel=Cardholder name" "Ada Lovelace"
+  click "getByRole=button|Pay" captionTemplate="{action}: {selector}"
+  expectText "#status" "Paid"
+}
+```
 
 ```text
 gif "click evidence" clickPulse=ripple {

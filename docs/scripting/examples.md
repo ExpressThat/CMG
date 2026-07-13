@@ -330,6 +330,20 @@ gif "edit profile" {
 
 `fill` uses the native input value setter and a bubbling `InputEvent`, including during progressive GIF typing. See `demo-scripts/159-controlled-input-remount.cmgscript` for a standalone remounting fixture and click-count assertion.
 
+## Automatic GIF Narration
+
+Enable automatic captions at recording scope, then override individual actions only when useful:
+
+```text
+gif "guided form" autoCaptions=true captionPosition=auto captionStyle=teaching {
+  fill "getByLabel=Display name" "CMG"
+  click "getByRole=button|Save" captionTemplate="{action}: {selector}"
+  expectText "#status" "Saved"
+}
+```
+
+CMG does not place entered text in default `fill` or `type` captions. Automatic captions and target-aware placement are skipped entirely when no GIF recorder is active.
+
 ## Common Next Steps
 
 | Need | Where To Go |

@@ -173,7 +173,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>` on `dragAndDrop`.
 - Add auto pathing that avoids covering the target text or button label.
 - Implemented: add `preClickHold=<ms>` and `postClickHold=<ms>` at recording-block and action level. CLI: `--pointer-pre-click-hold <ms>` and `--pointer-post-click-hold <ms>`.
-- Add `preDragHold=<ms>`, `dragHold=<ms>`, and `postDropHold=<ms>` on `dragAndDrop`.
+- Implemented: add `preDragHold=<ms>`, `dragHold=<ms>`, and `postDropHold=<ms>` on `dragAndDrop`.
 - Implemented: add `holdAfterMove=<ms>` on `moveMouse` for demonstrations where the pointer should settle before the next action.
 - Add click pulse style options: ring, ripple, dot, crosshair, or none. CLI: `--click-pulse <style>`. Default should be `ring` so clicks are visible evidence unless a script disables it with `clickPulse=none`.
 - Implemented: add right-click and middle-click distinct visual pulses.
@@ -199,9 +199,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add caption style presets: subtle, teaching, QA evidence, bug report, compact.
 - Implemented: add `captionStyle=<subtle|teaching|qa|bug-report|compact>` on recording blocks, `step`, and captions. CLI: `--caption-style <style>`.
 - Implemented: add `captionPosition=<top|bottom|left|right|auto>` on recording blocks, `step`, and captions. CLI: `--caption-position <position>`.
-- Add auto caption placement that avoids covering the active target.
-- Add `autoCaptions=true` in DSL recording scopes. CLI: `--auto-captions`.
-- Add `captionTemplate=` using variables like `{action}`, `{selector}`, `{step}`, `{assertion}`. CLI: `--caption-template <template>`.
+- Implemented for automatic action captions: `captionPosition=auto` places the caption opposite the active target's viewport half. Target-aware placement for standalone manual captions remains open.
+- Implemented in DSL recording scopes and recording blocks: `autoCaptions=true`. A whole-run CLI default remains open.
+- Implemented in DSL recording scopes, recording blocks, and action overrides: `captionTemplate=` with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`. A whole-run CLI default and structural `{step}` / `{assertion}` context placeholders remain open.
 - Add `caption duration=<ms>` to control how long captions stay visible.
 - Add caption fade in/out.
 - Add caption stacking for nested `step` blocks.

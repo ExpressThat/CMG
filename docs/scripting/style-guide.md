@@ -106,6 +106,8 @@ softExpect evaluate "window.optionalPanelReady" == "true" message="Optional pane
 
 ## Keep GIFs Watchable
 
+Use `autoCaptions=true` for teaching or evidence flows where important interactions need narration. Keep it off for dense test runs, and use `captionTemplate=` sparingly so captions describe intent without repeating sensitive input values.
+
 Use captions or steps for non-visual work:
 
 ```text

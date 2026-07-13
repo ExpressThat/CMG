@@ -1,0 +1,14 @@
+# Demonstrates automatic GIF narration without exposing entered values.
+
+navigate "about:blank"
+setContent "<main style='font:16px system-ui;min-height:100vh;padding:24px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between'><section><button id='top'>Top action</button><label style='display:block;margin-top:20px'>Private note <input id='note'></label></section><section><button id='bottom'>Bottom action</button><p id='status'>Ready</p></section></main><script>let count=0;document.querySelector('#top').onclick=()=>document.querySelector('#status').textContent='Top clicked';document.querySelector('#bottom').onclick=()=>{count++;document.querySelector('#status').textContent='Bottom clicked '+count};</script>"
+
+gif "automatic captions" autoCaptions=true captionStyle=teaching captionPosition=auto pointerDuration=250 postClickHold=450 {
+  click "#top"
+  expectEval "document.querySelector('#__cmg_message_bar').style.bottom === '16px'"
+  fill "getByLabel=Private note" "not shown in the caption" delay=70
+  click "#bottom" captionTemplate="{action}: {selector} (line {line})"
+  expectEval "document.querySelector('#__cmg_message_bar').style.top === '12px'"
+  expectText "#status" "Bottom clicked 1"
+  hover "#top" autoCaptions=false
+}

@@ -300,6 +300,7 @@ dotnet run -- --firefox browser close
 - `157-gif-caption-styles.cmgscript`: Demonstrates GIF caption styles, positions, severity colors, scoped defaults, and action overrides.
 - `158-gif-pointer-visibility.cmgscript`: Demonstrates `showPointer=false` scoped defaults and action-level `showPointer=true` overrides.
 - `159-controlled-input-remount.cmgscript`: Demonstrates React-style controlled-input remounts, live rich locators, native input events, and single-dispatch GIF click evidence.
+- `160-gif-auto-captions.cmgscript`: Demonstrates scoped automatic captions, privacy-safe text-entry narration, target-aware placement, templates, and action-level opt-out.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

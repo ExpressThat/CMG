@@ -1807,6 +1807,8 @@ Options:
 - `captionStyle`: Default caption style: `subtle`, `teaching`, `qa`, `bug-report`, or `compact`.
 - `captionPosition`: Default caption position: `top`, `bottom`, `left`, `right`, or `auto`.
 - `captionSeverity`: Default caption severity: `info`, `success`, `warning`, or `error`.
+- `autoCaptions`: Automatic narration for supported visual child actions. Defaults to `false`.
+- `captionTemplate`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
 - `pressedPointer`: Default held-pointer visual compression during recorded drags. Defaults to `true`.
 - `dragTrail`: Default held-pointer trail line during recorded drags. Defaults to `false`.
 - `dragBreadcrumbs`: Default held-pointer breadcrumb dots during recorded drags. Defaults to `false`.
@@ -1855,6 +1857,8 @@ Options:
 - `captionStyle`: Optional caption style default for child `caption`, `showMessageBar`, and `step` captions.
 - `captionPosition`: Optional caption position default for child captions.
 - `captionSeverity`: Optional caption severity default for child captions.
+- `autoCaptions`: Optional `true`/`false` automatic narration for supported visual child actions.
+- `captionTemplate`: Optional automatic-caption template inherited by child actions.
 - `pressedPointer`: Optional held-pointer visual compression default for recorded drags.
 - `dragTrail`: Optional held-pointer trail line default for recorded drags.
 - `dragBreadcrumbs`: Optional held-pointer breadcrumb dots default for recorded drags.
@@ -1876,6 +1880,8 @@ Output:
 - `GIF_BLOCK_SUPPRESSED <line>` when command-level `--gif` is active and the block is included in the full recording instead.
 
 If the block fails while recording, CMG captures one extra final-state frame before writing the partial GIF. Non-GIF runs do not create a virtual pointer, timeline file, or failure frames.
+
+Automatic captions are recording-only. Default `fill` and `type` narration never includes the entered value. Set `captionPosition=auto` to place automatic captions opposite the target, and use action-level `autoCaptions=false` or `captionTemplate=` when one step needs different narration.
 
 ## Runner Convenience Actions
 

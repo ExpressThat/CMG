@@ -75,6 +75,8 @@ public sealed partial class BrowserScriptRunner
         "captionStyle",
         "captionPosition",
         "captionSeverity",
+        "autoCaptions",
+        "captionTemplate",
         "pointerPath",
         "dragPath",
         "pressedPointer",
