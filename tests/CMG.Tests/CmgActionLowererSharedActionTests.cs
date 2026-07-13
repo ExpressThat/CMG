@@ -98,6 +98,8 @@ public sealed class CmgActionLowererSharedActionTests
     [InlineData("expectInViewport", "#save", "expectinviewport \"#save\"")]
     [InlineData("apiRequest", "GET", "apiRequest \"GET\" \"https://example.test\"", "https://example.test")]
     [InlineData("recordCheckpoint", "after setup", "recordCheckpoint \"after setup\"")]
+    [InlineData("intro", "Welcome", "intro \"Welcome\"")]
+    [InlineData("outro", "Complete", "outro \"Complete\"")]
     [InlineData("fail", "Missing setup", "fail \"Missing setup\"")]
     public void Lower_SharedActionsPassThrough(
         string kind,

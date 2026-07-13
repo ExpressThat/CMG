@@ -566,6 +566,17 @@ Output:
 - `GIF_PAUSE <line> milliseconds=<value> status=captured` when a GIF recorder is active.
 - `GIF_PAUSE <line> status=skipped reason=no-active-recording` when the script or test is running without command-level `--gif` and outside any `gif`, `recordVideo`, or `screencast` block.
 
+## `intro` And `outro`
+
+```text
+intro "Checkout walkthrough" duration=900
+outro "Order completed" duration=1200
+```
+
+Capture full-viewport title cards without the virtual pointer. Each action accepts exactly one text argument and optional `duration=<milliseconds>`, which defaults to `1200` and must be greater than zero. Without an active recorder it skips before variable expansion and emits `GIF_INTRO ... status=skipped` or `GIF_OUTRO ... status=skipped`.
+
+Recording scopes and `gif` / `recordVideo` / `screencast` blocks can instead set `intro=`, `outro=`, `introDuration=`, and `outroDuration=`. A scoped intro is captured before the first recorded child; a scoped outro is captured during finalization, including for a partial failure artifact.
+
 ## `recordCheckpoint`
 
 ```text
@@ -1809,6 +1820,8 @@ Options:
 - `captionSeverity`: Default caption severity: `info`, `success`, `warning`, or `error`.
 - `autoCaptions`: Automatic narration for supported visual child actions. Defaults to `false`.
 - `captionTemplate`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
+- `intro` / `outro`: Optional opening and final full-viewport title-card text.
+- `introDuration` / `outroDuration`: Optional title-card durations in milliseconds. Defaults to `1200`.
 - `pressedPointer`: Default held-pointer visual compression during recorded drags. Defaults to `true`.
 - `dragTrail`: Default held-pointer trail line during recorded drags. Defaults to `false`.
 - `dragBreadcrumbs`: Default held-pointer breadcrumb dots during recorded drags. Defaults to `false`.
@@ -1859,6 +1872,8 @@ Options:
 - `captionSeverity`: Optional caption severity default for child captions.
 - `autoCaptions`: Optional `true`/`false` automatic narration for supported visual child actions.
 - `captionTemplate`: Optional automatic-caption template inherited by child actions.
+- `intro` / `outro`: Optional opening and final title-card text.
+- `introDuration` / `outroDuration`: Optional title-card durations in milliseconds. Defaults to `1200`.
 - `pressedPointer`: Optional held-pointer visual compression default for recorded drags.
 - `dragTrail`: Optional held-pointer trail line default for recorded drags.
 - `dragBreadcrumbs`: Optional held-pointer breadcrumb dots default for recorded drags.

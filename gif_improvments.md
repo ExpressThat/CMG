@@ -228,8 +228,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add `holdAfterNavigation=<ms>`. CLI: `--gif-hold-after-navigation <ms>`.
 - Implemented: add `holdAfterAssertion=<ms>`. CLI: `--gif-hold-after-assertion <ms>`.
 - Implemented: `holdOnFailure=<ms>` so final failure state is readable. CLI: `--gif-hold-on-failure <ms>`.
-- Add `intro "<text>"` or `recording intro="..." { ... }` to add a title card. CLI: `--gif-intro <text>`.
-- Add `outro "<text>"` or `recording outro="..." { ... }` to add a final summary card. CLI: `--gif-outro <text>`.
+- Implemented in DSL: add `intro "<text>"` and `recording intro="..." introDuration=<ms> { ... }` title cards. A whole-run `--gif-intro` CLI default remains open.
+- Implemented in DSL: add `outro "<text>"` and `recording outro="..." outroDuration=<ms> { ... }` final summary cards. A whole-run `--gif-outro` CLI default remains open.
 - Add automatic pass/fail outro cards for test runs.
 - Add `pauseGif <ms>` action for recording-only holds.
 - Add `cutGif` action to skip boring waits from output while still executing them.

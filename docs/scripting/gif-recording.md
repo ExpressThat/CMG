@@ -84,6 +84,8 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `captionSeverity=<info|success|warning|error>`: Caption color intent default.
 - `autoCaptions=<true|false>`: Narrate supported visual actions automatically. Defaults to `false`; children can override it.
 - `captionTemplate=<template>`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
+- `intro=<text>` / `outro=<text>`: Full-viewport title cards captured before the first child and at finalization.
+- `introDuration=<milliseconds>` / `outroDuration=<milliseconds>`: Title-card holds. Defaults to `1200` and must be greater than zero.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
 - `preClickHold=<milliseconds>`: Hold after pointer movement and before click/tap dispatch. Defaults to `0`.
@@ -127,6 +129,8 @@ Supported `recording` / `withRecording` defaults:
 - `captionSeverity=<info|success|warning|error>`: Default caption severity.
 - `autoCaptions=<true|false>`: Automatic narration default for supported child actions.
 - `captionTemplate=<template>`: Automatic-caption template inherited by child actions.
+- `intro=<text>` / `outro=<text>`: Optional opening and final title cards.
+- `introDuration=<milliseconds>` / `outroDuration=<milliseconds>`: Optional title-card durations. Defaults to `1200`.
 - `pressedPointer=<true|false>`: Whether the pointer visually compresses while a recorded drag is active. Defaults to `true`.
 - `dragTrail=<true|false>`: Draw a trailing line behind held-pointer drag movement. Defaults to `false`.
 - `dragBreadcrumbs=<true|false>`: Add dot breadcrumbs along held-pointer drag movement. Defaults to `false`.
@@ -215,6 +219,19 @@ gif "guided checkout" autoCaptions=true captionPosition=auto captionStyle=teachi
   expectText "#status" "Paid"
 }
 ```
+
+Use scoped bookend cards or explicit chapter cards:
+
+```text
+gif "release flow" intro="Release verification" outro="Verification complete" introDuration=900 outroDuration=1100 {
+  click "#deploy"
+  intro "Post-deploy checks" duration=700
+  expectText "#status" "Healthy"
+  outro "Ready to share" duration=800
+}
+```
+
+Title cards capture without the virtual pointer. Explicit actions skip with `status=skipped reason=no-active-recording` when no GIF is active.
 
 ```text
 gif "click evidence" clickPulse=ripple {

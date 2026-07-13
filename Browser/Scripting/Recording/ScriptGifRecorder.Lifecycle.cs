@@ -44,6 +44,7 @@ public sealed partial class ScriptGifRecorder
 
     public void Finish()
     {
+        CaptureConfiguredOutro();
         if (remoteDebuggingUrl is not null)
         {
             TryRemoveDomCursor();

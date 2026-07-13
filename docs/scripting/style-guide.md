@@ -108,6 +108,8 @@ softExpect evaluate "window.optionalPanelReady" == "true" message="Optional pane
 
 Use `autoCaptions=true` for teaching or evidence flows where important interactions need narration. Keep it off for dense test runs, and use `captionTemplate=` sparingly so captions describe intent without repeating sensitive input values.
 
+Use `intro=` and `outro=` to establish context and summarize the result, not before every small interaction. Reserve explicit `intro` actions for genuine chapter changes so the recording remains evidence rather than a slide deck.
+
 Use captions or steps for non-visual work:
 
 ```text

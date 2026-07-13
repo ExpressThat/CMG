@@ -58,6 +58,7 @@ public sealed partial class BrowserScriptRunner
             "delay" => ExecuteDelay(action),
             "pausegif" => ExecutePauseGif(action, recorder),
             "recordcheckpoint" => ExecuteRecordCheckpoint(action, recorder),
+            "intro" or "outro" => ExecuteTitleCardAction(action, recorder),
             "showpointer" or "hidepointer" => ExecutePointerVisibilityAction(action, recorder),
             "html" => ExecuteHtml(remoteDebuggingUrl, automationClient, action),
             "textcontent" or "innertext" or "inputvalue" or "getattribute" or "computedstyle" or "property" or
@@ -172,6 +173,8 @@ public sealed partial class BrowserScriptRunner
         name.Equals("moveMouse", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("pauseGif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("recordCheckpoint", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("intro", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("outro", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("showPointer", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("hidePointer", StringComparison.OrdinalIgnoreCase);
 }

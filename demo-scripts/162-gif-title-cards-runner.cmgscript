@@ -1,0 +1,13 @@
+# Demonstrates title cards in the structured runner DSL.
+
+suite "GIF title cards" {
+  test "records pointer-free bookends" {
+    navigate "about:blank"
+    setContent "<main style='font:16px system-ui;padding:32px'><button id='run'>Run check</button><p id='status'>Waiting</p></main><script>document.querySelector('#run').onclick=()=>document.querySelector('#status').textContent='Passed';</script>"
+
+    gif "runner title cards" intro="Runner verification" outro="Runner complete" introDuration=700 outroDuration=900 {
+      click "#run"
+      expectText "#status" "Passed"
+    }
+  }
+}

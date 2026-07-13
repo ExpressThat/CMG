@@ -344,6 +344,20 @@ gif "guided form" autoCaptions=true captionPosition=auto captionStyle=teaching {
 
 CMG does not place entered text in default `fill` or `type` captions. Automatic captions and target-aware placement are skipped entirely when no GIF recorder is active.
 
+## GIF Title Cards
+
+Bookend a recording and add an explicit chapter marker where the story changes:
+
+```text
+gif "release" intro="Release verification" outro="Ready to share" {
+  click "#deploy"
+  intro "Health checks" duration=700
+  expectText "#status" "Healthy"
+}
+```
+
+Title cards hide the virtual pointer. Without active recording, explicit title-card actions skip without injecting page UI.
+
 ## Common Next Steps
 
 | Need | Where To Go |

@@ -1,0 +1,13 @@
+# Demonstrates recording bookends and explicit chapter title cards.
+
+navigate "about:blank"
+setContent "<main style='font:16px system-ui;padding:32px'><h1>Release workflow</h1><button id='deploy'>Deploy</button><button id='verify'>Verify</button><p id='status'>Waiting</p></main><script>document.querySelector('#deploy').onclick=()=>document.querySelector('#status').textContent='Deployed';document.querySelector('#verify').onclick=()=>document.querySelector('#status').textContent='Healthy';</script>"
+
+gif "title cards" intro="Release verification" outro="Ready to share" introDuration=900 outroDuration=1100 pointerDuration=250 {
+  click "#deploy"
+  expectText "#status" "Deployed"
+  intro "Post-deploy health checks" duration=700
+  click "#verify"
+  expectText "#status" "Healthy"
+  outro "All checks passed" duration=800
+}
