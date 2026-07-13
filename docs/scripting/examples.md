@@ -578,6 +578,8 @@ recording background="#f8fafc" gradientMode=smooth {
 cmg run demo-scripts\195-gif-color-fidelity-runner.cmgscript --gif demo-output\color-runner --gif-background "#f8fafc" --gif-gradient-mode smooth
 ```
 
+Use `viewport=390x844 pixelRatio=2` for deterministic high-DPI mobile evidence without permanently changing browser state. See demos 196 and 197.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

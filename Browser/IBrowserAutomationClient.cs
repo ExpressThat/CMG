@@ -145,7 +145,7 @@ public sealed record ScreenshotOptions(
     bool OmitBackground = false,
     ScreenshotClip? Clip = null);
 
-public sealed record ScreenshotClip(double X, double Y, double Width, double Height);
+public sealed record ScreenshotClip(double X, double Y, double Width, double Height, double Scale = 1d);
 
 public sealed record PdfPrintOptions(
     bool Landscape,

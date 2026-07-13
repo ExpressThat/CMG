@@ -64,6 +64,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
     public void Start(string remoteDebuggingUrl)
     {
         this.remoteDebuggingUrl = remoteDebuggingUrl;
+        ApplyRecordingViewport();
     }
 
     public void BeforeAction(BrowserScriptAction action, int? sequence = null, string context = "")

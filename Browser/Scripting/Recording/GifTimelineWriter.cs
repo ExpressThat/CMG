@@ -229,6 +229,10 @@ public static partial class GifTimelineWriter
         writer.WriteNumber("scale", framing.Scale);
         if (framing.MaxWidth is int width) writer.WriteNumber("maxWidth", width); else writer.WriteNull("maxWidth");
         if (framing.MaxHeight is int height) writer.WriteNumber("maxHeight", height); else writer.WriteNull("maxHeight");
+        if (framing.ViewportWidth is int viewportWidth)
+            writer.WriteString("viewport", $"{viewportWidth}x{framing.ViewportHeight}");
+        else writer.WriteNull("viewport");
+        writer.WriteNumber("pixelRatio", framing.PixelRatio);
         writer.WriteEndObject();
     }
 }

@@ -28,6 +28,8 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public string LastElementCenterSelector { get; private set; } = string.Empty;
     public ViewportSize? LastViewport { get; private set; }
     public ViewportOptions? LastViewportOptions { get; private set; }
+    public List<ViewportOptions> ViewportOptionsHistory { get; } = [];
+    public string LastScrolledSelector { get; private set; } = string.Empty;
     public PdfPrintOptions? LastPdfOptions { get; private set; }
     public Queue<string> TextResponses { get; } = new();
     public Queue<string> EvaluateResponses { get; } = new();
@@ -109,7 +111,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     }
     public void InsertText(string remoteDebuggingUrl, string text) => LastInsertedText = text;
     public void Hover(string remoteDebuggingUrl, string selector) => LastHoveredSelector = selector;
-    public void ScrollElementIntoView(string remoteDebuggingUrl, string selector) { }
+    public void ScrollElementIntoView(string remoteDebuggingUrl, string selector) => LastScrolledSelector = selector;
     public void Select(string remoteDebuggingUrl, string selector, string value)
     {
         LastSelectedSelector = selector;
@@ -145,6 +147,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     {
         LastViewport = new(options.Width, options.Height);
         LastViewportOptions = options;
+        ViewportOptionsHistory.Add(options);
     }
     public ViewportSize GetViewportSize(string remoteDebuggingUrl) => new(800, 600);
     public void DragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector)

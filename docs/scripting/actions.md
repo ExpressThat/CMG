@@ -1946,6 +1946,8 @@ Encoder options:
 - `cropPadding=<0..2000>` adds CSS-pixel context around `crop=` and requires it.
 - `scale=<0.05..1>` downscales the cropped or viewport frame before GIF quantization.
 - `maxWidth=<1..10000>` and `maxHeight=<1..10000>` add output dimension caps while preserving aspect ratio.
+- `viewport=<width>x<height>` temporarily sets recording viewport dimensions and restores the prior viewport afterward.
+- `pixelRatio=<1..4>` controls high-DPI recording capture.
 
 These options may be inherited from `recording` / `withRecording` when a nested GIF block creates the artifact. Invalid names or ranges fail with the exact option and accepted values. Retained PNGs contain the page and CMG recording UI after requested crop, scale, background, and contrast transforms, so treat them with the same privacy controls as the GIF.
 

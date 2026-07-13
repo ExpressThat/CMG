@@ -151,6 +151,10 @@ Supported `recording` / `withRecording` defaults:
 - `cropPadding=<0..2000>`: Add context around `crop=` in CSS pixels.
 - `scale=<0.05..1>`: Downscale output after capture and before quantization.
 - `maxWidth=<1..10000>` / `maxHeight=<1..10000>`: Cap output dimensions while preserving aspect ratio.
+- `viewport=<width>x<height>`: Temporarily set the browser viewport for this recording and restore it afterward.
+- `pixelRatio=<1..4>`: Set the recording device pixel ratio for controlled high-DPI capture.
+
+Recording viewport controls are inert without an active GIF. While recording, CMG scrolls pointer-targeted elements to the viewport center before resolving pointer coordinates, which avoids offscreen/sticky-header targeting failures. Whole-run equivalents are `--gif-viewport` and `--gif-pixel-ratio`.
 - `pointerDuration=<milliseconds>`: Movement duration between pointer targets.
 - `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.

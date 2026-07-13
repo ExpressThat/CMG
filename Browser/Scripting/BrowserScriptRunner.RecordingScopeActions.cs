@@ -73,6 +73,8 @@ public sealed partial class BrowserScriptRunner
         "keepFrames",
         "crop",
         "cropPadding",
+        "viewport",
+        "pixelRatio",
         "scale",
         "maxWidth",
         "maxHeight",

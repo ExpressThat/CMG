@@ -26,6 +26,8 @@ public sealed class BrowserScriptRunnerGifFramingTests
     [InlineData("maxWidth=0", "maxWidth=")]
     [InlineData("maxHeight=10001", "maxHeight=")]
     [InlineData("cropPadding=4", "requires crop=")]
+    [InlineData("viewport=wide", "viewport=")]
+    [InlineData("pixelRatio=5", "pixelRatio=")]
     public void GifBlock_RejectsInvalidFraming(string option, string expected)
     {
         var result = Runner().RunText($"gif \"bad\" {option} {{ pauseGif 10 }}", "debug", new FakeAutomationClient());
@@ -44,6 +46,22 @@ public sealed class BrowserScriptRunnerGifFramingTests
         Assert.True(string.IsNullOrEmpty(client.LastElementBoxSelector));
         Assert.Equal(0, client.PageScreenshotCount);
         Assert.Empty(client.CursorStates);
+        Assert.Empty(client.ViewportOptionsHistory);
+    }
+
+    [Fact]
+    public void GifBlock_AppliesAndRestoresRecordingViewport()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText($"gif \"viewport\" output=\"{Slash(path)}\" viewport=640x480 pixelRatio=2 {{ click \"#save\" }}", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(new ViewportOptions(640, 480, 2), client.ViewportOptionsHistory[0]);
+        Assert.Equal(new ViewportOptions(800, 600), client.ViewportOptionsHistory[^1]);
+        Assert.Equal("#save", client.LastScrolledSelector);
+        File.Delete(path);
     }
 
     [Fact]

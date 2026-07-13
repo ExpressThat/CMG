@@ -55,6 +55,8 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-scale <0.05..1>`: Downscale the captured frame before quantization.
 - `--gif-max-width <1..10000>`: Cap output width while preserving aspect ratio.
 - `--gif-max-height <1..10000>`: Cap output height while preserving aspect ratio.
+- `--gif-viewport <width>x<height>`: Temporarily use this CSS-pixel viewport while recording, then restore the prior viewport.
+- `--gif-pixel-ratio <1..4>`: Capture at a controlled device pixel ratio for high-DPI evidence.
 - `--gif-debug`: Add a frame-only diagnostics HUD and write `<gif-name>.debug.json` with one metadata record per captured frame.
 - `--gif-accessibility`: Enable safe keystroke labels, amplified focus evidence, accessible role/name labels, high-contrast evidence styling, and WCAG contrast warnings for the whole GIF.
 - `--gif-event-captions`: Add privacy-safe outcome captions for network, dialog, console/page-error, download, and upload events in the whole GIF.

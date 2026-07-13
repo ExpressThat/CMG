@@ -60,6 +60,7 @@ public sealed partial class ScriptGifRecorder
             DebugPath = GifTimelineWriter.Write(Path.ChangeExtension(OutputPath, ".debug.json"), OutputPath, options,
                 frameSink, checkpoints, timelineSteps, redactionAudit, debugFrames);
         }
+        RestoreRecordingViewport();
     }
 
     public string? TimelinePath { get; private set; }
@@ -68,6 +69,7 @@ public sealed partial class ScriptGifRecorder
 
     public void Dispose()
     {
+        RestoreRecordingViewport();
         frameSink.Dispose();
     }
 }

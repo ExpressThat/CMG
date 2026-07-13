@@ -1,0 +1,5 @@
+gif "mobile viewport" output="demo-output/gif-recording-viewport.gif" viewport=390x844 pixelRatio=2 timeline=true {
+  setContent "<style>body{margin:0;font:16px system-ui}.hero{height:900px;padding:24px;background:linear-gradient(#e0f2fe,#f8fafc)}button{padding:14px 22px}</style><main class='hero'><h1>Scoped mobile evidence</h1><p>The target begins below the fold.</p><button id='finish' style='margin-top:680px' onclick=\"this.textContent='Done'\">Finish</button></main>"
+  click "#finish"
+  assertText "#finish" "Done"
+}

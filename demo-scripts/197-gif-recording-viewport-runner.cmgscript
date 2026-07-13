@@ -1,0 +1,5 @@
+test "records a scoped mobile viewport" {
+  setContent "<style>body{margin:0;font:16px system-ui}.hero{height:900px;padding:24px;background:linear-gradient(#dcfce7,#f8fafc)}button{padding:14px 22px}</style><main class='hero'><h1>Runner mobile evidence</h1><button id='finish' style='margin-top:720px' onclick=\"this.textContent='Done'\">Finish</button></main>"
+  click "#finish"
+  assertText "#finish" "Done"
+}

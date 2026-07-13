@@ -97,7 +97,7 @@ public sealed partial class ChromeDevToolsClient : IBrowserAutomationClient
             writer.WriteNumber("y", clip.Y);
             writer.WriteNumber("width", clip.Width);
             writer.WriteNumber("height", clip.Height);
-            writer.WriteNumber("scale", 1);
+            writer.WriteNumber("scale", clip.Scale);
             writer.WriteEndObject();
         }
     }

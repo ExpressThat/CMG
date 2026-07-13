@@ -346,6 +346,8 @@ dotnet run -- --firefox browser close
 - `193-gif-pointer-evidence-runner.cmgscript`: Demonstrates the same pointer-evidence defaults and action overrides in a structured runner test.
 - `194-gif-color-fidelity.cmgscript`: Demonstrates inherited alpha flattening, smooth-gradient tuning, retained frames, and timeline color diagnostics.
 - `195-gif-color-fidelity-runner.cmgscript`: Demonstrates the same color controls through a structured test and whole-run CLI options.
+- `196-gif-recording-viewport.cmgscript`: Demonstrates a scoped high-DPI mobile recording viewport and automatic target visibility.
+- `197-gif-recording-viewport-runner.cmgscript`: Runner form for whole-run viewport and pixel-ratio options.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

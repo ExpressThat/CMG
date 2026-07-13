@@ -792,3 +792,8 @@ Line 4: gif failed. gif option highContrastPalette= must be true or false.
 ```
 
 Color-profile changes do not fail a script. CMG emits `GIF_WARN_COLOR_PROFILE path="..." profileChanges=<count>` so an agent can inspect retained frames or run `cmg gif color-diff`.
+
+```text
+Line 2: gif failed. gif option viewport= must use <width>x<height> with dimensions from 100 to 10000.
+Line 3: recording failed. recording option pixelRatio= must be a number from 1 to 4.
+```

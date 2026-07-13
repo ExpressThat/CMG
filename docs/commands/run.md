@@ -40,6 +40,8 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-scale <0.05..1>`: Downscale test GIF frames before quantization.
 - `--gif-max-width <1..10000>`: Cap output width while preserving aspect ratio.
 - `--gif-max-height <1..10000>`: Cap output height while preserving aspect ratio.
+- `--gif-viewport <width>x<height>`: Temporarily use this CSS-pixel viewport for each recorded test.
+- `--gif-pixel-ratio <1..4>`: Capture whole-run GIF evidence at a controlled device pixel ratio.
 - `--gif-debug`: Add a frame-only diagnostics HUD and write one `<gif-name>.debug.json` sidecar per recorded test.
 - `--gif-accessibility`: Enable safe keystroke labels, amplified focus evidence, accessible role/name labels, high-contrast evidence styling, and WCAG contrast warnings for every whole-run GIF.
 - `--gif-event-captions`: Add privacy-safe outcome captions for network, dialog, console/page-error, download, and upload events in every whole-run GIF.

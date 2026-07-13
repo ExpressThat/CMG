@@ -32,7 +32,9 @@ public sealed partial class ScriptGifRecorder
             return;
         }
 
-        var target = devToolsClient.GetElementCenter(remoteDebuggingUrl, ResolveLocator(selector, lineNumber: 0));
+        var resolved = ResolveLocator(selector, lineNumber: 0);
+        devToolsClient.ScrollElementIntoView(remoteDebuggingUrl, resolved);
+        var target = devToolsClient.GetElementCenter(remoteDebuggingUrl, resolved);
 
         MovePointerTo(target, dragging: false);
     }
@@ -45,6 +47,7 @@ public sealed partial class ScriptGifRecorder
         }
 
         var selector = ResolveLocator(action.Arguments[0], action.LineNumber);
+        devToolsClient.ScrollElementIntoView(remoteDebuggingUrl, selector);
         var target = action.Options.ContainsKey("x") || action.Options.ContainsKey("y")
             ? ResolveElementOffsetTarget(action, selector)
             : devToolsClient.GetElementCenter(remoteDebuggingUrl, selector);

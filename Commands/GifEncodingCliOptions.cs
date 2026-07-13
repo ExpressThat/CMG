@@ -13,6 +13,8 @@ internal sealed record GifEncodingCliOptions(
     Option<double?> Scale,
     Option<int?> MaxWidth,
     Option<int?> MaxHeight,
+    Option<string?> Viewport,
+    Option<double?> PixelRatio,
     Option<bool> Debug,
     Option<bool> Accessibility,
     Option<bool> EventCaptions,
@@ -47,6 +49,8 @@ internal sealed record GifEncodingCliOptions(
             new Option<double?>("--gif-scale") { Description = "Output scale from 0.05 to 1." },
             new Option<int?>("--gif-max-width") { Description = "Maximum GIF width from 1 to 10000 pixels." },
             new Option<int?>("--gif-max-height") { Description = "Maximum GIF height from 1 to 10000 pixels." },
+            new Option<string?>("--gif-viewport") { Description = "Temporary recording viewport as <width>x<height>." },
+            new Option<double?>("--gif-pixel-ratio") { Description = "Recording device pixel ratio from 1 to 4." },
             new Option<bool>("--gif-debug") { Description = "Show action, scope, target, pointer, and scroll diagnostics in GIF frames." },
             new Option<bool>("--gif-accessibility") { Description = "Show keyboard, focus, accessible-name, and contrast evidence in GIF frames." },
             new Option<bool>("--gif-event-captions") { Description = "Show safe outcome captions for network, dialog, console, download, and upload events." },
@@ -81,7 +85,8 @@ internal sealed record GifEncodingCliOptions(
             out error)) return false;
         if (!GifFramingOptions.TryParse(
             result.GetValue(Crop), result.GetValue(CropPadding), result.GetValue(Scale),
-            result.GetValue(MaxWidth), result.GetValue(MaxHeight), out var framing, out error)) return false;
+            result.GetValue(MaxWidth), result.GetValue(MaxHeight), result.GetValue(Viewport), result.GetValue(PixelRatio),
+            out var framing, out error)) return false;
         if (!GifTitleCardOptions.TryParse(
             result.GetValue(Intro), result.GetValue(Outro), result.GetValue(IntroDuration), result.GetValue(OutroDuration),
             result.GetValue(ResultOutro), out var titleCards, out error)) return false;

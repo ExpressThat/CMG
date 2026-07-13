@@ -237,16 +237,16 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Viewport, Layout, And Framing
 
-- Add `viewport=<width>x<height>` recording setting independent of browser viewport setup. CLI: `--gif-viewport <width>x<height>`.
+- Implemented: inherited `viewport=<width>x<height>` and CLI `--gif-viewport` temporarily set recording dimensions and restore the previous viewport.
 - Implemented: `scale=<0.05..1>` downscales complete composited frames. CLI: `--gif-scale <number>`.
 - Implemented: `maxWidth=` and `maxHeight=` preserve aspect ratio. CLI: `--gif-max-width <pixels>` and `--gif-max-height <pixels>`.
-- Add high-DPI capture support with controlled CSS pixel to output pixel scaling.
+- Implemented: inherited `pixelRatio=<1..4>` and CLI `--gif-pixel-ratio` provide controlled high-DPI capture.
 - Implemented: `crop="<selector-or-rich-locator>"` resolves live for every frame. CLI: `--gif-crop <selector>`.
 - Implemented: `gif "name" crop="#panel" { ... }` block support, with `cropPadding=` / `--gif-crop-padding` for context.
 - Add smart crop that follows the pointer and active element.
 - Add split-screen recording for multi-tab or popup flows.
 - Add frame recording inside iframes with visible page context.
-- Add automatic scroll-to-keep-target-visible behavior.
+- Implemented: active recorders center pointer-targeted elements before coordinate resolution; non-recorded scripts are unchanged.
 - Add safe-area padding so pointer/captions are not clipped.
 - Implemented in the DSL: blur, solid, or replacement masks on recording scopes/blocks and individual actions. CLI repeatable `--gif-mask` / `--gif-blur` coarse defaults remain open.
 - Implemented: `maskGif` / `redactGif` / `redactText` and `unmaskGif` / `unredactGif` recording-only actions with live locator resolution.
