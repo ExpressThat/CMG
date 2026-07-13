@@ -179,6 +179,19 @@ If no selected CMG browser is running, stderr tells the caller which launch comm
 
 Run config supports `gifRetention` (`always`, `onFailure`, `onRetry`, or `off`), positive integer `gifSampleRate`, and boolean `gifCleanPassed`. Explicit CLI retention values override config. Suite/test declarations then override the effective run default one property at a time.
 
+Root config and individual projects may define a `gifSettings` object. Supported properties are `quality`, `pointerDuration`, `pointerSpeed`, `pointerEasing`, `clickPulse`, `fps`, `frameDelay`, `crop`, `cropPadding`, `scale`, `maxWidth`, `maxHeight`, `viewport`, `pixelRatio`, `captionStyle`, `captionPosition`, `captionSeverity`, and `captionSize`. Project properties overlay root properties individually; explicit CLI options overlay project properties individually; suite/test declarations and DSL recording/action overrides remain more specific. Unknown properties and invalid types fail during config loading; invalid values fail before browser connection or `--list` output with the responsible setting in stderr.
+
+```json
+{
+  "gifSettings": { "quality": "medium", "pointerSpeed": "slow", "fps": 8 },
+  "projects": [{
+    "name": "chrome-visual",
+    "browser": "chrome",
+    "gifSettings": { "quality": "highest", "frameDelay": 120 }
+  }]
+}
+```
+
 Reports and traces include per-test status, output, and per-step diagnostics so agents can explain why a run failed. JSON and HTML `steps` contain public executed runtime steps only; planned placeholders and generated internal evaluate/actionability/locator steps are omitted. Public report step sequences are contiguous per test, and output payload lines are renumbered to match their parent step. JSON step entries include separate `sequence`, `lineNumber`, `context`, and `action` fields; agents should use those fields instead of parsing human stdout strings. When a step captured GIF frames, its `gifEvidence` array includes the artifact and timeline paths, zero-based start/end frame indexes, start/end times, and an optional failure-frame index. JSON `gifMetadata` entries include `timelinePath` plus quality, frames, duration, approximate FPS, dimensions, size, palette details, transparency, and repeat metadata. HTML reports link each visual step to an embedded static start frame, show a static final diagnostic frame for failures, and retain the animated GIF preview and artifact link. Traces keep lower-level raw diagnostics. JUnit reports emit `<skipped>` nodes for declaration-skipped tests and runtime skips, plus GIF artifact properties when a test has recorded GIFs.
 Report annotations are emitted as `annotations` in JSON, visible list items in HTML, and JUnit `<property name="cmg.annotation.<type>" ... />` entries. JUnit GIF properties use `cmg.gif.path` for one artifact or `cmg.gif.path.1`, `cmg.gif.path.2`, and so on for multiple artifacts. Failed tests with an inspectable GIF also include `cmg.gif.failureFrameIndex`, using the final frame index as the failure-state frame.
 

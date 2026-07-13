@@ -12,7 +12,7 @@ public static partial class BrowserDomScripts
     {
         var value = options ?? BrowserCaptionOptions.Default;
         var position = value.Position is CaptionPosition.Auto ? CaptionPosition.Top : value.Position;
-        return "all:initial;position:fixed;z-index:2147483646;margin:0;border:0;"
+        return "all:initial;position:fixed;z-index:2147483646;margin:0;border:0;width:max-content;"
             + "box-sizing:border-box;pointer-events:none;white-space:pre-wrap;overflow-wrap:anywhere;"
             + CaptionPositionCss(position)
             + CaptionPresetCss(value.Style, value.Severity)

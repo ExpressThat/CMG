@@ -119,7 +119,7 @@ public sealed partial class RunCommandBuilder
             { Console.Error.WriteLine(error); return 1; }
             if (!GifQualityParser.TryParse(parseResult.GetValue(gifQualityOption), out var gifQuality))
             { Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}."); return 1; }
-            if (!TryParseEncoding(parseResult, encodingOptions, out var gifEncoding)) return 1;
+            if (!TryParseEncoding(parseResult, encodingOptions, config.GifSettings.Overlay(project?.GifSettings), out var gifEncoding)) return 1;
             if (!GifMotionOptionParser.TryParse(
                 parseResult.GetValue(pointerDurationOption),
                 parseResult.GetValue(pointerSpeedOption),
@@ -183,7 +183,7 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(durationError);
                 return 1;
             }
-            if (!TryParseGifRetention(parseResult, retentionOptions, config, out var gifRetention)) return 1;
+            if (!ApplyRunGifSettings(parseResult, config.GifSettings.Overlay(project?.GifSettings), gifQualityOption, pointerDurationOption, pointerSpeedOption, pointerEasingOption, clickPulseOption, gifFpsOption, gifFrameDelayOption, encodingOptions, captionOptions, presetOptions, ref gifQuality, ref pointerMotion, ref clickPulse, ref frameDelay, ref gifEncoding, ref caption) || !TryParseGifRetention(parseResult, retentionOptions, config, out var gifRetention)) return 1;
             if (!TryParseBrowserIdle(parseResult, browserIdleTimeoutOption, noBrowserIdleCleanupOption, config,
                 out var browserIdleTimeout, out var browserIdleDisabled, out var browserIdleError))
             {

@@ -23,10 +23,11 @@ internal sealed record RunConfig(
     string? GifRetention,
     int? GifSampleRate,
     bool? GifCleanPassed,
+    RunGifSettings GifSettings,
     IReadOnlyDictionary<string, string> Variables,
     IReadOnlyDictionary<string, RunProjectConfig> Projects)
 {
-    public static RunConfig Empty { get; } = new(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Dictionary<string, string>(), new Dictionary<string, RunProjectConfig>());
+    public static RunConfig Empty { get; } = new(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, RunGifSettings.Empty, new Dictionary<string, string>(), new Dictionary<string, RunProjectConfig>());
 }
 
 internal sealed record RunProjectConfig(
@@ -39,9 +40,10 @@ internal sealed record RunProjectConfig(
     int? Timeout,
     int? NavigationTimeout,
     int? AssertionTimeout,
+    RunGifSettings GifSettings,
     IReadOnlyDictionary<string, string> Variables);
 
-internal static class RunConfigReader
+internal static partial class RunConfigReader
 {
     public static bool TryRead(FileInfo? file, out RunConfig config, out string? error)
     {
@@ -102,6 +104,7 @@ internal static class RunConfigReader
         StringOption(root, "gifRetention"),
         IntOption(root, "gifSampleRate"),
         BoolOption(root, "gifCleanPassed"),
+        GifSettings(root),
         Variables(root),
         Projects(root));
 
@@ -186,6 +189,7 @@ internal static class RunConfigReader
             IntOption(element, "timeout"),
             IntOption(element, "navigationTimeout"),
             IntOption(element, "assertionTimeout"),
+            GifSettings(element),
             Variables(element));
     }
 

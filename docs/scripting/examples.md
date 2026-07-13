@@ -710,6 +710,16 @@ cmg run tests --gif artifacts\gifs
 
 The kill switch suppresses whole-run and nested recording, but actions inside recording blocks still execute. No screenshots, recording overlays, or virtual pointer are created. Unset `CMG_DISABLE_GIF` after the sensitive CI step when later commands should record normally.
 
+## Share GIF Defaults Across Projects
+
+```powershell
+cmg browser --port 9467 launch --headless --idle-timeout 20m
+cmg run demo-scripts\219-gif-project-settings-runner.cmgscript --config demo-scripts\gif-settings.example.json --project chrome-visual --browser-port 9467 --gif-scale 0.75 --caption-style qa
+cmg browser --port 9467 close
+```
+
+`gifSettings` merges root, selected project, and explicit CLI properties independently. The demo inherits root crop/viewport settings, project quality/timing/padding, and CLI scale/caption style. Suite, test, recording block, and action overrides remain more specific.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

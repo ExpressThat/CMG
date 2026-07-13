@@ -265,7 +265,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `setRecording quality=highest pointerSpeed=normal` mutates subsequent defaults in the current lexical scope and reports the complete effective settings.
 - Implemented: add scoped recording settings that restore after the block.
 - Implemented: add `withRecording quality=highest pointerDuration=500 { ... }` as a readable alias if `recording { ... }` feels too much like it must record by itself.
-- Implemented in the DSL: `recordingDefaults { ... }` is a scoped house-style block. Folder/project configuration remains open.
+- Implemented: `recordingDefaults { ... }` provides lexical house style, while root/project `gifSettings` provides shared quality, motion, timing, framing, and caption defaults for runner matrices.
 - Add action-level recording overrides consistently:
   - `click "#save" pointerDuration=250 clickPulse=ripple`
   - `hover "#menu" pointerDuration=700 postHoverHold=500`
@@ -293,8 +293,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 - Implemented: per-test runner declarations support quality, pointer motion, FPS/frame delay, crop, scale, max dimensions, viewport, and pixel ratio defaults.
 - Implemented: `describe` / `suite` / `context` GIF defaults cascade to child tests, with property-level test overrides.
-- Add config-file support for GIF quality, pointer speed, FPS, and crop settings.
-- Add project-level GIF settings for cross-browser matrices.
+- Implemented: run config `gifSettings` supports quality, pointer movement, click pulse, FPS/frame delay, crop/framing, viewport/pixel ratio, and caption defaults.
+- Implemented: each named project can overlay root `gifSettings` per property before CLI, suite/test, block, and action overrides.
 - Implemented: add GIF metadata to JSON reports: quality, approximate FPS, frame count, duration, dimensions, palette details, transparency, repeat metadata, and file size.
 - Implemented: add GIF thumbnail previews in HTML reports with artifact links.
 - Implemented: add a static final failure-frame thumbnail in HTML reports.

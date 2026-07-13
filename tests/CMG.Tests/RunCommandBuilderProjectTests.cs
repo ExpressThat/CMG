@@ -52,6 +52,54 @@ public sealed class RunCommandBuilderProjectTests
         Assert.Null(handler.Path);
     }
 
+    [Fact]
+    public void RunCommand_MergesRootProjectAndCliGifSettingsPerProperty()
+    {
+        using var directory = new TempRunDirectory();
+        var config = directory.Write("cmg.run.json", """
+        {
+          "gifSettings": {
+            "quality": "low", "pointerDuration": 900, "pointerSpeed": "slow",
+            "fps": 5, "captionStyle": "teaching", "captionPosition": "top"
+          },
+          "projects": [{
+            "name": "visual", "browser": "chrome",
+            "gifSettings": {
+              "quality": "high", "pointerSpeed": "fast", "frameDelay": 80,
+              "captionPosition": "bottom"
+            }
+          }]
+        }
+        """);
+        var handler = new CapturingRunCommandHandler();
+
+        var exitCode = BuildRoot(handler).Parse(
+            $"run flows --config \"{config}\" --project visual --pointer-duration 250 --caption-style qa").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(GifQuality.High, handler.GifQuality);
+        Assert.Equal(250, handler.PointerMotion?.PointerDurationMilliseconds);
+        Assert.Equal("fast", handler.PointerMotion?.PointerSpeed);
+        Assert.Equal(80, handler.FrameDelayMilliseconds);
+        Assert.Equal(CaptionStyle.Qa, handler.CaptionOptions?.Style);
+        Assert.Equal(CaptionPosition.Bottom, handler.CaptionOptions?.Position);
+    }
+
+    [Fact]
+    public void RunCommand_RejectsInvalidProjectGifSetting()
+    {
+        using var directory = new TempRunDirectory();
+        var config = directory.Write("cmg.run.json", """
+        { "projects": [{ "name": "visual", "gifSettings": { "quality": "crunchy" } }] }
+        """);
+        var handler = new CapturingRunCommandHandler();
+
+        var exitCode = BuildRoot(handler).Parse($"run flows --config \"{config}\" --project visual").Invoke();
+
+        Assert.Equal(1, exitCode);
+        Assert.Null(handler.Path);
+    }
+
     private static RootCommand BuildRoot(CapturingRunCommandHandler handler)
     {
         var chrome = new Option<bool>("--chrome");
@@ -73,6 +121,10 @@ public sealed class RunCommandBuilderProjectTests
         public int Retries { get; private set; }
         public string? BaseUrl { get; private set; }
         public string ProjectName { get; private set; } = string.Empty;
+        public GifQuality GifQuality { get; private set; }
+        public ScriptPointerMotionOptions? PointerMotion { get; private set; }
+        public BrowserCaptionOptions? CaptionOptions { get; private set; }
+        public int FrameDelayMilliseconds { get; private set; }
         public IReadOnlyDictionary<string, string> Variables { get; private set; } =
             new Dictionary<string, string>();
 
@@ -125,6 +177,10 @@ public sealed class RunCommandBuilderProjectTests
             BaseUrl = baseUrl;
             Variables = variables;
             ProjectName = projectName;
+            GifQuality = gifQuality;
+            PointerMotion = pointerMotion;
+            CaptionOptions = captionOptions;
+            FrameDelayMilliseconds = frameDelayMilliseconds;
             return 0;
         }
     }

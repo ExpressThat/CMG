@@ -1,0 +1,31 @@
+{
+  "gif": "../demo-output/project-settings",
+  "reportJson": "../demo-output/project-settings-report.json",
+  "gifSettings": {
+    "quality": "medium",
+    "pointerDuration": 700,
+    "pointerSpeed": "slow",
+    "fps": 8,
+    "crop": "#evidence",
+    "cropPadding": 16,
+    "scale": 0.9,
+    "viewport": "800x600",
+    "pixelRatio": 1,
+    "captionStyle": "teaching",
+    "captionPosition": "top"
+  },
+  "projects": [
+    {
+      "name": "chrome-visual",
+      "browser": "chrome",
+      "gifSettings": {
+        "quality": "highest",
+        "pointerDuration": 300,
+        "pointerSpeed": "fast",
+        "frameDelay": 120,
+        "cropPadding": 24,
+        "captionPosition": "bottom"
+      }
+    }
+  ]
+}

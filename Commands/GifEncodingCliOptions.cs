@@ -74,7 +74,7 @@ internal sealed record GifEncodingCliOptions(
             new Option<bool>("--gif-high-contrast-palette") { Description = "Increase frame contrast and saturation for accessibility review." });
     }
 
-    public bool TryParse(ParseResult result, out GifEncodingOptions encoding, out string? error)
+    public bool TryParse(ParseResult result, RunGifSettings? settings, out GifEncodingOptions encoding, out string? error)
     {
         if (!GifEncodingOptions.TryParse(
             result.GetValue(Dither),
@@ -84,8 +84,8 @@ internal sealed record GifEncodingCliOptions(
             out encoding,
             out error)) return false;
         if (!GifFramingOptions.TryParse(
-            result.GetValue(Crop), result.GetValue(CropPadding), result.GetValue(Scale),
-            result.GetValue(MaxWidth), result.GetValue(MaxHeight), result.GetValue(Viewport), result.GetValue(PixelRatio),
+            Value(result, Crop, settings?.Crop), Value(result, CropPadding, settings?.CropPadding), Value(result, Scale, settings?.Scale),
+            Value(result, MaxWidth, settings?.MaxWidth), Value(result, MaxHeight, settings?.MaxHeight), Value(result, Viewport, settings?.Viewport), Value(result, PixelRatio, settings?.PixelRatio),
             out var framing, out error)) return false;
         if (!GifTitleCardOptions.TryParse(
             result.GetValue(Intro), result.GetValue(Outro), result.GetValue(IntroDuration), result.GetValue(OutroDuration),
@@ -112,4 +112,13 @@ internal sealed record GifEncodingCliOptions(
         };
         return true;
     }
+
+    public bool TryParse(ParseResult result, out GifEncodingOptions encoding, out string? error) =>
+        TryParse(result, settings: null, out encoding, out error);
+
+    private static T? Value<T>(ParseResult result, Option<T?> option, T? fallback) =>
+        Provided(result, option) ? result.GetValue(option) : fallback;
+
+    private static bool Provided(ParseResult result, Option option) =>
+        result.Tokens.Any(token => option.Aliases.Prepend(option.Name).Contains(token.Value, StringComparer.Ordinal));
 }

@@ -14,12 +14,25 @@
   "gifRetention": "onFailure",
   "gifSampleRate": 1,
   "gifCleanPassed": false,
+  "gifSettings": {
+    "quality": "highest",
+    "pointerDuration": 500,
+    "pointerSpeed": "normal",
+    "fps": 10,
+    "scale": 1,
+    "captionStyle": "qa",
+    "captionPosition": "auto"
+  },
   "projects": [
     {
       "name": "chrome-smoke",
       "browser": "chrome",
       "baseUrl": "https://example.test/chrome/",
       "tag": "smoke",
+      "gifSettings": {
+        "pointerSpeed": "fast",
+        "frameDelay": 100
+      },
       "variables": {
         "browserName": "chrome"
       }

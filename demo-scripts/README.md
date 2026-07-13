@@ -369,6 +369,8 @@ dotnet run -- --firefox browser close
 - `216-gif-authoring-warnings.cmgscript`: Demonstrates browser-free alias and long-recording-block authoring diagnostics.
 - `217-gif-large-suite-warning-runner.cmgscript`: Demonstrates the browser-free large-suite retention suggestion with runner listing.
 - `218-gif-recording-disabled.cmgscript`: Proves the privacy kill switch executes actions without artifacts, screenshots, or a virtual pointer.
+- `219-gif-project-settings-runner.cmgscript`: Records a runner flow using merged root, project, and CLI GIF defaults.
+- `gif-settings.example.json`: Root/project GIF settings used by demo 219.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

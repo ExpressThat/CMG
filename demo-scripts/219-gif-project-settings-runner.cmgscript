@@ -1,0 +1,8 @@
+describe "configured visual evidence" {
+  test "project settings reach recorder" {
+    setContent "<main id='evidence' style='box-sizing:border-box;min-height:560px;padding:32px;background:#f8fafc;color:#172033'><h1>Project GIF settings</h1><button id='save' onclick='this.textContent=\"Saved\"'>Save</button></main>"
+    caption "Merged root, project, and CLI settings"
+    click "#save"
+    assertText "#save" "Saved"
+  }
+}

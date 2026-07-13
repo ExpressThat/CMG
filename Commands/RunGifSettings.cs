@@ -1,0 +1,44 @@
+namespace CMG.Commands;
+
+internal sealed record RunGifSettings(
+    string? Quality = null,
+    int? PointerDuration = null,
+    string? PointerSpeed = null,
+    string? PointerEasing = null,
+    string? ClickPulse = null,
+    int? Fps = null,
+    int? FrameDelay = null,
+    string? Crop = null,
+    int? CropPadding = null,
+    double? Scale = null,
+    int? MaxWidth = null,
+    int? MaxHeight = null,
+    string? Viewport = null,
+    double? PixelRatio = null,
+    string? CaptionStyle = null,
+    string? CaptionPosition = null,
+    string? CaptionSeverity = null,
+    string? CaptionSize = null)
+{
+    public static RunGifSettings Empty { get; } = new();
+
+    public RunGifSettings Overlay(RunGifSettings? child) => child is null ? this : new(
+        child.Quality ?? Quality,
+        child.PointerDuration ?? PointerDuration,
+        child.PointerSpeed ?? PointerSpeed,
+        child.PointerEasing ?? PointerEasing,
+        child.ClickPulse ?? ClickPulse,
+        child.Fps ?? Fps,
+        child.FrameDelay ?? FrameDelay,
+        child.Crop ?? Crop,
+        child.CropPadding ?? CropPadding,
+        child.Scale ?? Scale,
+        child.MaxWidth ?? MaxWidth,
+        child.MaxHeight ?? MaxHeight,
+        child.Viewport ?? Viewport,
+        child.PixelRatio ?? PixelRatio,
+        child.CaptionStyle ?? CaptionStyle,
+        child.CaptionPosition ?? CaptionPosition,
+        child.CaptionSeverity ?? CaptionSeverity,
+        child.CaptionSize ?? CaptionSize);
+}

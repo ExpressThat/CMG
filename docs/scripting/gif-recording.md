@@ -19,6 +19,8 @@ cmg run flow.cmgscript --gif demo-output\runner-gifs --gif-quality highest
 
 For sensitive runs, `--no-gif` or `CMG_DISABLE_GIF=1` disables all whole-run and block recording while preserving browser automation. CMG emits `GIF_DISABLED` plus `GIF_SKIPPED ... reason=recording-disabled`, creates no screenshots or artifacts, and never injects the virtual pointer. The environment switch also accepts `true`, `yes`, and `on` case-insensitively. See demo 218.
 
+Runner matrices can share visual defaults through root and project `gifSettings` in the run config. Root values cascade into the selected project, explicit CLI GIF options override individual project properties, and suite/test declarations plus DSL scopes/blocks/actions remain more specific. Quality, pointer movement, click pulse, frame timing, crop/framing, viewport/pixel ratio, and caption presentation are supported. See demo 219 and [`cmg run`](../commands/run.md) for the complete schema.
+
 - CMG captures the visible page viewport.
 - A frame is captured after visual actions. The `set` variable action is logged but does not add a standalone frame because it has no page-visible effect.
 - Navigation waits such as `waitForNetworkIdle` are logged and traced but do not move the virtual pointer or add pointer motion frames.

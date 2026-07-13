@@ -15,5 +15,6 @@ public sealed class BrowserDomScriptsCaptionSizeTests
             new BrowserCaptionOptions(CaptionStyle.Teaching, Size: size));
 
         Assert.Contains(expectedCss, script, StringComparison.Ordinal);
+        Assert.Contains("width:max-content", script, StringComparison.Ordinal);
     }
 }
