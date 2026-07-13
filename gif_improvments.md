@@ -232,10 +232,10 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented in DSL: add `outro "<text>"` and `recording outro="..." outroDuration=<ms> { ... }` final summary cards. A whole-run `--gif-outro` CLI default remains open.
 - Add automatic pass/fail outro cards for test runs.
 - Add `pauseGif <ms>` action for recording-only holds.
-- Add `cutGif` action to skip boring waits from output while still executing them.
-- Add `speedUpGif { ... }` block for long setup sections.
-- Add `slowDownGif { ... }` block for important interactions.
-- Add `hideFromGif { ... }` block for sensitive or boring actions.
+- Implemented: add `cutGif { ... }` to execute boring waits/setup while suppressing their frames, pointer, captions, checkpoints, and nested GIF artifacts.
+- Implemented: add nestable `speedUpGif factor=<number> { ... }` blocks for long setup sections.
+- Implemented: add nestable `slowDownGif factor=<number> { ... }` blocks for important interactions.
+- Implemented: add `hideFromGif { ... }` as the intent-revealing alias for cut sections.
 - Implemented: `recordCheckpoint "name"` markers emit parseable step output and write frame/time bookmarks into GIF timeline JSON when recording is active.
 - Implemented: add timeline metadata JSON beside each GIF. CLI: `--gif-timeline <file|directory>`; DSL blocks support `timeline=<true|false|file|directory>`.
 - Add an editor command to trim start/end frames after recording.
@@ -342,6 +342,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add support for browser zoom level detection and correction.
 - Add support for prefers-reduced-motion testing while still making GIFs understandable.
 - Add support for pages using CSS transforms, zoom, and nested scrolling containers.
+- Add conservative automatic cleanup for CMG-launched headless browsers when an agent forgets to close them. Track CMG ownership by browser kind, port, PID, and launch token; renew an activity heartbeat whenever that instance is used; use a long configurable idle grace period so an agent can do other work and return later; warn before lease expiry where a persistent agent can observe it; close immediately only when a runner explicitly owns a short-lived lifecycle; reclaim genuinely orphaned instances after the renewable lease expires; never close user-launched, manually attached, recently active, or explicitly keep-alive browsers; emit parseable cleanup diagnostics; and allow CLI/config/environment overrides for lease duration, cleanup disablement, and keep-alive behavior.
 
 ## Performance And Storage
 

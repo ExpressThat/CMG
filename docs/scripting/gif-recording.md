@@ -233,6 +233,21 @@ gif "release flow" intro="Release verification" outro="Verification complete" in
 
 Title cards capture without the virtual pointer. Explicit actions skip with `status=skipped reason=no-active-recording` when no GIF is active.
 
+Use timeline blocks to remove or re-time sections without changing browser behavior:
+
+```text
+gif "concise setup" {
+  hideFromGif {
+    click "#seed-data"
+    waitForText "#status" "Ready"
+  }
+  speedUpGif factor=4 { pauseGif 1200 }
+  slowDownGif factor=2 { click "#important" }
+}
+```
+
+`hideFromGif` and `cutGif` suspend the active recorder, including nested GIF files and virtual-pointer injection. `speedUpGif` and `slowDownGif` scale frame delays from `0 < factor <= 100`; nested factors compose. No block changes real browser wait duration or event ordering. Without active recording, children still execute and no pointer is created.
+
 ```text
 gif "click evidence" clickPulse=ripple {
   click "#save"

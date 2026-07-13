@@ -1,0 +1,26 @@
+# Demonstrates hiding and re-timing GIF sections without changing browser behavior.
+
+navigate "about:blank"
+setContent "<main style='font:16px system-ui;padding:32px'><h1>Timeline editing</h1><button id='setup'>Setup</button><button id='normal'>Normal</button><button id='fast'>Fast</button><button id='slow'>Slow</button><p id='status'>Waiting</p></main><script>document.querySelectorAll('button').forEach(button=>button.onclick=()=>document.querySelector('#status').textContent=button.textContent);</script>"
+
+gif "timeline blocks" intro="Timeline editing" outro="Timeline complete" pointerDuration=300 {
+  hideFromGif {
+    click "#setup"
+    pauseGif 1200
+  }
+  expectText "#status" "Setup"
+  click "#normal"
+  speedUpGif factor=4 {
+    click "#fast"
+    pauseGif 1200
+  }
+  slowDownGif factor=2 {
+    click "#slow"
+    pauseGif 400
+  }
+  cutGif {
+    evaluate "document.body.dataset.cutExecuted = 'true'"
+  }
+  expectEval "document.body.dataset.cutExecuted === 'true'"
+  expectText "#status" "Slow"
+}

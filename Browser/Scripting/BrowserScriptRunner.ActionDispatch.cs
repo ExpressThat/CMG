@@ -163,6 +163,7 @@ public sealed partial class BrowserScriptRunner
             "for" or "foreach" or "foreachjson" or "foreachlist" or "foreachselector" or "while" or "until" or
             "dowhile" or "dountil" or "repeat" or "retry" or "topass" or
             "withtimeout" or "withdefaulttimeout" or "withnavigationtimeout" or "withassertiontimeout" or "withexpecttimeout" or
+            "hidefromgif" or "cutgif" or "speedupgif" or "slowdowngif" or
             "break" or "continue" or "try" or "catch" or "finally" =>
                 ExecuteControlAction(remoteDebuggingUrl, automationClient, action, context, recorder),
             _ => throw new ScriptExecutionException($"Unknown action '{action.Name}'.")

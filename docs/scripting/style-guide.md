@@ -110,6 +110,8 @@ Use `autoCaptions=true` for teaching or evidence flows where important interacti
 
 Use `intro=` and `outro=` to establish context and summarize the result, not before every small interaction. Reserve explicit `intro` actions for genuine chapter changes so the recording remains evidence rather than a slide deck.
 
+Use `hideFromGif` for setup that matters to execution but not to the viewer. Prefer modest `speedUpGif` factors for repetitive visible work and `slowDownGif` only around evidence that genuinely needs inspection; extreme timing changes make pointer motion harder to read.
+
 Use captions or steps for non-visual work:
 
 ```text

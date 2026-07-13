@@ -35,6 +35,12 @@ public sealed partial class BrowserScriptRunner
             case "withrecording":
                 ExecuteRecordingScope(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
+            case "hidefromgif":
+            case "cutgif":
+            case "speedupgif":
+            case "slowdowngif":
+                ExecuteTimelineBlock(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
             case "if":
                 ExecuteIf(remoteDebuggingUrl, automationClient, [action], context, recorder, output);
                 return output;
@@ -115,6 +121,10 @@ public sealed partial class BrowserScriptRunner
         name.Equals("frameLocator", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("recording", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("withRecording", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("hideFromGif", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("cutGif", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("speedUpGif", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("slowDownGif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("if", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("elseif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("else", StringComparison.OrdinalIgnoreCase) ||

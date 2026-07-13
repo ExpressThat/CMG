@@ -358,6 +358,21 @@ gif "release" intro="Release verification" outro="Ready to share" {
 
 Title cards hide the virtual pointer. Without active recording, explicit title-card actions skip without injecting page UI.
 
+## Hide And Re-Time GIF Sections
+
+```text
+gif "review flow" {
+  hideFromGif {
+    click "#prepare"
+    waitForText "#status" "Prepared"
+  }
+  speedUpGif factor=3 { pauseGif 900 }
+  slowDownGif factor=2 { click "#confirm" }
+}
+```
+
+Hidden actions still change the page; the next visible frame shows their result. Playback factors affect only encoded frame delays. Both block types are inert wrappers in non-GIF runs, so their children execute without pointer injection.
+
 ## Common Next Steps
 
 | Need | Where To Go |

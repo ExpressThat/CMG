@@ -1,0 +1,18 @@
+# Demonstrates timeline editing in the structured runner DSL.
+
+suite "GIF timeline blocks" {
+  test "cuts setup and emphasizes evidence" {
+    navigate "about:blank"
+    setContent "<main style='font:16px system-ui;padding:32px'><button id='setup'>Setup</button><button id='prove'>Prove</button><p id='status'>Waiting</p></main><script>document.querySelector('#setup').onclick=()=>document.querySelector('#status').textContent='Prepared';document.querySelector('#prove').onclick=()=>document.querySelector('#status').textContent='Proven';</script>"
+
+    gif "runner timeline" {
+      hideFromGif { click "#setup" }
+      expectText "#status" "Prepared"
+      slowDownGif factor=2 {
+        click "#prove"
+        pauseGif 300
+      }
+      expectText "#status" "Proven"
+    }
+  }
+}

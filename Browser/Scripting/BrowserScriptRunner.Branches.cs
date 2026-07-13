@@ -42,5 +42,9 @@ public sealed partial class BrowserScriptRunner
         !action.Name.Equals("intro", StringComparison.OrdinalIgnoreCase) &&
         !action.Name.Equals("outro", StringComparison.OrdinalIgnoreCase) &&
         !action.Name.Equals("showPointer", StringComparison.OrdinalIgnoreCase) &&
-        !action.Name.Equals("hidePointer", StringComparison.OrdinalIgnoreCase);
+        !action.Name.Equals("hidePointer", StringComparison.OrdinalIgnoreCase) &&
+        !action.Name.Equals("hideFromGif", StringComparison.OrdinalIgnoreCase) &&
+        !action.Name.Equals("cutGif", StringComparison.OrdinalIgnoreCase) &&
+        !action.Name.Equals("speedUpGif", StringComparison.OrdinalIgnoreCase) &&
+        !action.Name.Equals("slowDownGif", StringComparison.OrdinalIgnoreCase);
 }

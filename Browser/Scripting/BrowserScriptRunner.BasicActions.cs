@@ -168,6 +168,10 @@ public sealed partial class BrowserScriptRunner
         {
             return [$"GIF_PAUSE {action.LineNumber:000} status=skipped reason=no-active-recording"];
         }
+        if (recorder.IsCaptureSuspended)
+        {
+            return [$"GIF_PAUSE {action.LineNumber:000} status=suppressed reason=timeline-cut"];
+        }
 
         if (action.Children.Count > 0)
         {
@@ -185,6 +189,10 @@ public sealed partial class BrowserScriptRunner
         if (recorder is null)
         {
             return [$"GIF_CHECKPOINT {action.LineNumber:000} status=skipped reason=no-active-recording"];
+        }
+        if (recorder.IsCaptureSuspended)
+        {
+            return [$"GIF_CHECKPOINT {action.LineNumber:000} status=suppressed reason=timeline-cut"];
         }
 
         if (action.Children.Count > 0)

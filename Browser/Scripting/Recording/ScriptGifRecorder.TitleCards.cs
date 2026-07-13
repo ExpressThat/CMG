@@ -48,7 +48,7 @@ public sealed partial class ScriptGifRecorder
 
     private void CaptureTitleCard(string text, string kind, int durationMilliseconds)
     {
-        if (remoteDebuggingUrl is null)
+        if (remoteDebuggingUrl is null || IsCaptureSuspended)
         {
             return;
         }
@@ -58,7 +58,7 @@ public sealed partial class ScriptGifRecorder
         try
         {
             var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar: false);
-            frameSink.AddFrame(screenshot, Math.Max(1, (durationMilliseconds + 9) / 10));
+            frameSink.AddFrame(screenshot, ScaleDelay(Math.Max(1, (durationMilliseconds + 9) / 10)));
         }
         finally
         {

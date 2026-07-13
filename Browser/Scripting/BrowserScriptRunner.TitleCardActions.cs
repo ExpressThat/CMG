@@ -12,6 +12,10 @@ public sealed partial class BrowserScriptRunner
         {
             return [$"{label} {action.LineNumber:000} status=skipped reason=no-active-recording"];
         }
+        if (recorder.IsCaptureSuspended)
+        {
+            return [$"{label} {action.LineNumber:000} status=suppressed reason=timeline-cut"];
+        }
 
         if (action.Children.Count > 0)
         {

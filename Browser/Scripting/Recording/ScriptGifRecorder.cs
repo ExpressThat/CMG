@@ -25,6 +25,8 @@ public sealed partial class ScriptGifRecorder : IDisposable
     private bool cursorTrail;
     private bool cursorBreadcrumb;
     private PointerVisualOptions cursorVisual = PointerVisualOptions.Default;
+    private int captureSuspensionDepth;
+    private double playbackRate = 1d;
 
     public ScriptGifRecorder(
         IBrowserAutomationClient devToolsClient,
@@ -46,7 +48,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
     public void BeforeAction(BrowserScriptAction action)
     {
-        if (remoteDebuggingUrl is null)
+        if (remoteDebuggingUrl is null || IsCaptureSuspended)
         {
             return;
         }
@@ -85,7 +87,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
     public void AfterAction(BrowserScriptAction action)
     {
-        if (remoteDebuggingUrl is null)
+        if (remoteDebuggingUrl is null || IsCaptureSuspended)
         {
             return;
         }
@@ -131,7 +133,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
     public void RecordCheckpoint(BrowserScriptAction action, string name)
     {
-        if (remoteDebuggingUrl is null)
+        if (remoteDebuggingUrl is null || IsCaptureSuspended)
         {
             return;
         }

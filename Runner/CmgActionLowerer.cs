@@ -15,6 +15,7 @@ public sealed partial class CmgActionLowerer
             "macro" or "return" or "within" or "frame" or "framelocator" or "if" or "elseif" or "else" or "for" or "foreach" or "foreachjson" or "foreachlist" or "foreachselector" or "while" or "until" or
             "dowhile" or "dountil" or "repeat" or "retry" or "topass" or
             "withtimeout" or "withdefaulttimeout" or "withnavigationtimeout" or "withassertiontimeout" or "withexpecttimeout" or
+            "hidefromgif" or "cutgif" or "speedupgif" or "slowdowngif" or
             "try" or "catch" or "finally" or "switch" or "case" or "default" => LowerControlBlock(action),
             "call" or "break" or "continue" or "drop" => [ToLine(action.Kind, action.Arguments, action.Options)],
             "caption" => [ToLine("showMessageBar", action.Arguments, action.Options)],

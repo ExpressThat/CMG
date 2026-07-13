@@ -303,6 +303,8 @@ dotnet run -- --firefox browser close
 - `160-gif-auto-captions.cmgscript`: Demonstrates scoped automatic captions, privacy-safe text-entry narration, target-aware placement, templates, and action-level opt-out.
 - `161-gif-title-cards.cmgscript`: Demonstrates scoped intro/outro bookends, explicit chapter cards, durations, pointer-free title frames, and final-state verification.
 - `162-gif-title-cards-runner.cmgscript`: Demonstrates the same title-card choreography inside a structured runner test.
+- `163-gif-timeline-blocks.cmgscript`: Demonstrates hidden/cut execution and nested speed-up/slow-down playback scopes in a direct script.
+- `164-gif-timeline-blocks-runner.cmgscript`: Demonstrates timeline editing blocks inside a structured runner test.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

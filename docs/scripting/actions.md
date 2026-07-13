@@ -577,6 +577,24 @@ Capture full-viewport title cards without the virtual pointer. Each action accep
 
 Recording scopes and `gif` / `recordVideo` / `screencast` blocks can instead set `intro=`, `outro=`, `introDuration=`, and `outroDuration=`. A scoped intro is captured before the first recorded child; a scoped outro is captured during finalization, including for a partial failure artifact.
 
+## `hideFromGif`, `cutGif`, `speedUpGif`, And `slowDownGif`
+
+```text
+hideFromGif {
+  click "#setup"
+  waitForText "#status" "Ready"
+}
+
+speedUpGif factor=4 { pauseGif 1200 }
+slowDownGif factor=2 { click "#important" }
+```
+
+All four actions require a block body and are nestable. `hideFromGif` and `cutGif` execute children while suspending frame capture, virtual-pointer DOM, automatic captions, checkpoints, and nested GIF artifacts. Browser state changes remain visible to later recorded actions.
+
+`speedUpGif` divides encoded frame delays by `factor`; `slowDownGif` multiplies them. `factor` must be greater than zero and at most `100`. Nested rates compose and restore after their block. They alter only GIF playback timing, not browser waits, action ordering, or page event timing.
+
+Without an active recorder, children execute normally, no virtual pointer is injected, and output includes `GIF_TIMELINE_BLOCK ... status=inactive`. Active blocks emit `status=applied` with their mode and factor.
+
 ## `recordCheckpoint`
 
 ```text

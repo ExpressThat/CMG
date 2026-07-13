@@ -66,6 +66,10 @@ public sealed class CmgActionLowererControlTests
     [Theory]
     [InlineData("recording")]
     [InlineData("withRecording")]
+    [InlineData("hideFromGif")]
+    [InlineData("cutGif")]
+    [InlineData("speedUpGif")]
+    [InlineData("slowDownGif")]
     public void Lower_RecordingBlocksPreserveChildrenAndOptions(string name)
     {
         var node = new CmgNode(1, name, name, [], new Dictionary<string, string>
