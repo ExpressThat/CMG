@@ -40,6 +40,8 @@ public sealed partial class CmgVisualSegmentExecutor
         var pending = new List<string>();
         var pendingLineMap = new Dictionary<int, int>();
         var steps = new List<CmgStepResult>();
+        if (!TryApplyDeclaredGifDefaults(test, options, out options, out var declarationError))
+            return Fail(test, output, declarationError, gifs, steps, gifQualities);
         var commandGif = BuildGifPath(test, options, attempt);
         var suppressGifBlocks = commandGif is not null;
         var timeouts = BuildTimeoutOptions(test, options);

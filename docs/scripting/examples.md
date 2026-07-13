@@ -646,6 +646,17 @@ gifOnFailure "save failure" {
 
 The first block compares recorder-free baseline/final page pixels; the second discards passing evidence. Failures always preserve partial choreography. See demos 208 and 209.
 
+## Suite And Test GIF Defaults
+
+```text
+describe "visual evidence" gifQuality=medium gifPointerSpeed=fast gifFps=20 {
+  test "inherits defaults" { click "#save" }
+  test "overrides quality" gifQuality=highest { click "#save" }
+}
+```
+
+Run with `cmg run <file> -gif <directory>`. Test options override suite values one property at a time. See direct scoped-default demo 210 and runner declaration demo 211.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

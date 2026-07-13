@@ -291,8 +291,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Test Runner And Reports
 
-- Add per-test GIF quality in runner declarations: `test "x" gifQuality=high`.
-- Add suite-level GIF defaults: `describe "x" gifQuality=highest`.
+- Implemented: per-test runner declarations support quality, pointer motion, FPS/frame delay, crop, scale, max dimensions, viewport, and pixel ratio defaults.
+- Implemented: `describe` / `suite` / `context` GIF defaults cascade to child tests, with property-level test overrides.
 - Add config-file support for GIF quality, pointer speed, FPS, and crop settings.
 - Add project-level GIF settings for cross-browser matrices.
 - Implemented: add GIF metadata to JSON reports: quality, approximate FPS, frame count, duration, dimensions, palette details, transparency, repeat metadata, and file size.

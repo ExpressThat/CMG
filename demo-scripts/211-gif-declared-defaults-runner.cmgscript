@@ -1,0 +1,13 @@
+describe "declared GIF defaults" gifQuality=medium gifPointerSpeed=fast gifFps=20 gifCrop=#panel gifCropPadding=12 gifScale=0.75 {
+  beforeEach {
+    setContent "<style>html,body{margin:0;min-height:100%;background:#fff}main{font:16px system-ui;padding:48px}section{border:1px solid #94a3b8;padding:32px;width:520px}button{padding:16px 24px}</style><main><section id='panel'><h1>Runner defaults</h1><button id='save'>Save</button></section></main>"
+  }
+
+  test "inherits suite GIF defaults" {
+    click "#save"
+  }
+
+  test "overrides only quality" gifQuality=highest {
+    click "#save"
+  }
+}

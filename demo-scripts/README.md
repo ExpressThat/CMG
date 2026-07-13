@@ -360,6 +360,8 @@ dotnet run -- --firefox browser close
 - `207-gif-recording-annotations-runner.cmgscript`: Structured runner form of recording annotations with a rich locator.
 - `208-gif-conditional-recording.cmgscript`: Demonstrates unchanged discard, changed retention, named snapshots, and failure-only retention recovered by `try`/`catch`.
 - `209-gif-conditional-recording-runner.cmgscript`: Structured runner form of conditional focused recordings.
+- `210-gif-declared-defaults.cmgscript`: Direct-script equivalent of inherited quality, pointer speed, FPS, crop, and scale defaults.
+- `211-gif-declared-defaults-runner.cmgscript`: Demonstrates suite GIF declarations and a test-level quality override.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

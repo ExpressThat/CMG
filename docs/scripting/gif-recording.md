@@ -146,6 +146,8 @@ Use `pointerStyle` for a visual-only mid-flow pointer change, `annotateTarget` /
 
 Use `gifIfChanged` / `gif.ifChanged` to keep an artifact only when the final page differs from the block baseline, and `gifOnFailure` / `gif.onFailure` to retain only failed-block evidence. Both still buffer pointer-accurate frames while running. `gifSnapshot` / `gif.snapshot` adds a named still hold to any active recorder and skips without one. See demos 208 and 209.
 
+Structured runner tests and suites can override whole-test GIF defaults with `gifQuality`, `gifPointerDuration`, `gifPointerSpeed`, `gifPointerEasing`, `gifFps`, `gifFrameDelay`, and `gif`-prefixed framing declarations. Suite defaults cascade; test values replace only the named properties. See demos 210 and 211.
+
 ```text
 recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfterAction=500 {
   gif "checkout evidence" {

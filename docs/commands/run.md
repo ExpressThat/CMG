@@ -22,6 +22,8 @@ Runner declarations can include report annotations with `owner=`, `issue=`, `lin
 
 Runner declarations can also include initial variables as `var.<name>=<value>`. Suite variables cascade to child tests, and test-level variables override suite values. Command-line `--var` and `--env` values are injected before declaration variables, so a test declaration can intentionally override a command-provided default.
 
+Runner declarations can set per-test GIF defaults with `gifQuality=`, `gifPointerDuration=`, `gifPointerSpeed=`, `gifPointerEasing=`, `gifFps=`, `gifFrameDelay=`, `gifCrop=`, `gifCropPadding=`, `gifScale=`, `gifMaxWidth=`, `gifMaxHeight=`, `gifViewport=`, and `gifPixelRatio=`. `describe` / `suite` / `context` values cascade to child tests; test values override individual properties while unrelated command-line defaults remain intact. These defaults affect command-level `-gif` artifacts and are validated even when GIF output is disabled.
+
 Relative navigation targets can be resolved with command-line `--base-url` or declaration `baseUrl=` / `baseURL=`. Suite base URLs cascade to child tests, and test-level base URLs override suite and command values.
 
 ## Options

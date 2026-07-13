@@ -1,0 +1,7 @@
+setContent "<style>html,body{margin:0;min-height:100%;background:#f8fafc}main{font:16px system-ui;padding:48px}section{border:1px solid #94a3b8;padding:32px;width:520px}button{padding:16px 24px}</style><main><section id='panel'><h1>Declared defaults</h1><button id='save'>Save</button></section></main>"
+
+recording quality=medium pointerSpeed=fast fps=20 crop=#panel cropPadding=12 scale=0.75 {
+  gif "declared defaults" output="demo-output/gif-declared-defaults.gif" timeline=true {
+    click "#save"
+  }
+}

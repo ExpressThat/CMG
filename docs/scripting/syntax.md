@@ -143,6 +143,17 @@ describe.slow "slow area" { it "eventual case" { expectText "#status" "Saved" } 
 Suite-level `only`, `skip`, `fixme`, and `todo` options cascade to child tests. A skipped suite keeps child tests skipped even if a child sets `skip=false`.
 Suite-level `slow` also cascades unless a child test sets `slow=false`. `slow=true` uses a `3x` multiplier for inherited default wait, navigation, and assertion timeouts; `slow=<number>` uses that numeric multiplier. Explicit action-level `timeout=` still wins.
 
+Runner declarations can also define command-level GIF defaults:
+
+```text
+describe "mobile evidence" gifQuality=high gifPointerSpeed=fast gifFps=20 gifViewport=390x844 gifPixelRatio=2 {
+  test "inherits suite defaults" { click "#save" }
+  test "uses a smaller artifact" gifQuality=medium gifScale=0.75 { click "#save" }
+}
+```
+
+Supported keys are `gifQuality`, `gifPointerDuration`, `gifPointerSpeed`, `gifPointerEasing`, `gifFps`, `gifFrameDelay`, `gifCrop`, `gifCropPadding`, `gifScale`, `gifMaxWidth`, `gifMaxHeight`, `gifViewport`, and `gifPixelRatio`. Suite values cascade and tests override property by property. Invalid values fail that test with the exact declaration option.
+
 Parameterized runner tests expand one declaration into one scheduled test per row:
 
 ```text
