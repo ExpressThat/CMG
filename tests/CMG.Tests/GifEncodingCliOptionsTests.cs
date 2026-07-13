@@ -14,7 +14,8 @@ public sealed class GifEncodingCliOptionsTests
         var directory = Path.Combine(Path.GetTempPath(), "cmg-frames");
         var result = root.Parse(["--gif-dither", "sierra", "--gif-palette", "local", "--gif-colors", "144", "--keep-frames", directory,
             "--gif-crop", "#panel", "--gif-crop-padding", "16", "--gif-scale", "0.5", "--gif-max-width", "640", "--gif-max-height", "480", "--gif-debug", "--gif-accessibility", "--gif-event-captions",
-            "--gif-intro", "Start", "--gif-outro", "Done", "--gif-intro-duration", "500", "--gif-outro-duration", "700", "--gif-result-outro"]);
+            "--gif-intro", "Start", "--gif-outro", "Done", "--gif-intro-duration", "500", "--gif-outro-duration", "700", "--gif-result-outro",
+            "--gif-no-coalesce", "--gif-sample-every", "3"]);
 
         Assert.True(options.TryParse(result, out var encoding, out var error), error);
         Assert.Equal(GifDitherMode.Sierra, encoding.Dither);
@@ -32,6 +33,8 @@ public sealed class GifEncodingCliOptionsTests
         Assert.Equal(500, encoding.TitleCards?.IntroDuration);
         Assert.Equal(700, encoding.TitleCards?.OutroDuration);
         Assert.True(encoding.TitleCards?.ResultOutro);
+        Assert.False(encoding.CaptureOptimization?.CoalesceDuplicates);
+        Assert.Equal(3, encoding.CaptureOptimization?.SampleEvery);
     }
 
     [Theory]
@@ -46,6 +49,8 @@ public sealed class GifEncodingCliOptionsTests
     [InlineData("--gif-crop-padding", "4", "requires crop=")]
     [InlineData("--gif-intro-duration", "0", "introDuration= must be greater than zero")]
     [InlineData("--gif-outro-duration", "-1", "outroDuration= must be greater than zero")]
+    [InlineData("--gif-sample-every", "0", "sampleEvery= must be an integer from 1 to 100")]
+    [InlineData("--gif-sample-every", "101", "sampleEvery= must be an integer from 1 to 100")]
     public void TryParse_RejectsInvalidValues(string option, string value, string expected)
     {
         var options = GifEncodingCliOptions.Build();
@@ -59,6 +64,6 @@ public sealed class GifEncodingCliOptionsTests
     {
         Options = { options.Dither, options.Palette, options.Colors, options.KeepFrames, options.Crop,
             options.CropPadding, options.Scale, options.MaxWidth, options.MaxHeight, options.Debug, options.Accessibility, options.EventCaptions,
-            options.Intro, options.Outro, options.IntroDuration, options.OutroDuration, options.ResultOutro }
+            options.Intro, options.Outro, options.IntroDuration, options.OutroDuration, options.ResultOutro, options.DisableCoalescing, options.SampleEvery }
     };
 }

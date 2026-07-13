@@ -99,15 +99,17 @@ public sealed partial class ScriptGifRecorder
         var motion = MotionFor(action, durationOption, easingOption);
         var path = PathFor(action, dragging);
         SetCursorState(action, dragging);
-        foreach (var point in pointer.MoveTo(target, motion.FrameCount(action?.Name ?? "recording", frameDelay), motion.PointerEasing, path))
+        var points = pointer.MoveTo(target, motion.FrameCount(action?.Name ?? "recording", frameDelay), motion.PointerEasing, path).ToArray();
+        for (var index = 0; index < points.Length; index++)
         {
+            var point = points[index];
             devToolsClient.MoveMouse(remoteDebuggingUrl, point, dragging ? 1 : 0);
             if (dragging)
             {
                 devToolsClient.MovePageDrag(remoteDebuggingUrl, point);
             }
 
-            CaptureFrame(frameDelayCentiseconds, action: action);
+            CaptureFrame(frameDelayCentiseconds, action: action, sampleEligible: index < points.Length - 1);
         }
     }
 

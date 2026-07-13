@@ -240,7 +240,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add timeline metadata JSON beside each GIF. CLI: `--gif-timeline <file|directory>`; DSL blocks support `timeline=<true|false|file|directory>`.
 - Add an editor command to trim start/end frames after recording.
 - Implemented: add `cmg gif optimize <file> --output <gif>` to remove consecutive duplicate frames while preserving duration.
-- Add automatic duplicate-frame coalescing.
+- Implemented: automatically coalesce exact consecutive pre-quantization frames while preserving total delay; `coalesceDuplicates=false` and `--gif-no-coalesce` opt out.
 - Add automatic long-wait compression while preserving a visible timer.
 - Add visual progress bar for long waits.
 - Implemented: add zero-based frame/time spans for nested and repeated runtime steps plus final failure-frame bookmarks in timeline schema version 2.
@@ -348,10 +348,10 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 - Add streaming GIF encoding to avoid holding every frame in memory.
 - Add frame diffing to store only changed regions where the encoder supports it.
-- Add duplicate-frame detection before encoding.
-- Add configurable frame sampling for long recordings.
+- Implemented: detect and coalesce exact duplicate frames before encoding and report source/retained counts.
+- Implemented: add `sampleEvery=<1..100>` and `--gif-sample-every` for intermediate pointer/drag frames while preserving final semantic frames and all pointer events.
 - Add parallel frame preprocessing before final encode.
-- Add memory usage diagnostics for long GIFs.
+- Implemented: emit peak retained RGBA pixel bytes and preprocessing time in `GIF_CAPTURE_STATS` and timeline `captureDiagnostics`.
 - Implemented: add max duration guard with clear failure reason. CLI: `--gif-max-duration <duration>` emits `GIF_MAX_DURATION`, fails the test, and writes the reason into reports.
 - Implemented: add max file size guard with clear failure reason. CLI: `--gif-max-size <size>` emits `GIF_MAX_SIZE`, fails the test, and writes the reason into reports.
 - Add automatic downscale when file size exceeds a threshold.
@@ -377,8 +377,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add warning when pointer target is offscreen and had to be scrolled.
 - Add warning when a selector resolved to multiple elements.
 - Add warning when a target is too small to see clearly.
-- Add warning when a capture is mostly blank or all white/black.
-- Add warning when repeated frames indicate the page did not visually change.
+- Implemented: emit non-failing `GIF_WARN_BLANK` when retained evidence is mostly white, black, or transparent.
+- Implemented: emit non-failing `GIF_WARN_UNCHANGED` when at least 60% of source frames are exact consecutive duplicates.
 - Add diagnostics when the pointer could not be promoted above page UI.
 - Add diagnostics when GIF blocks are suppressed by command-level recording.
 - Add diagnostics for invalid recording settings in runner reports.

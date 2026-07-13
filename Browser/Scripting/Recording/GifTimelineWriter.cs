@@ -48,6 +48,7 @@ public static class GifTimelineWriter
         writer.WriteNumber("durationMilliseconds", sink.DurationMilliseconds);
         writer.WriteNumber("width", sink.Width);
         writer.WriteNumber("height", sink.Height);
+        WriteCaptureDiagnostics(writer, sink);
         WriteEncoding(writer, options);
         WriteFraming(writer, options);
         writer.WritePropertyName("frameDelaysMilliseconds");
@@ -62,6 +63,19 @@ public static class GifTimelineWriter
         WriteRedactions(writer, options.EffectiveRedaction, redactionAudit);
         WriteDebugFrames(writer, debugFrames);
         WriteTiming(writer, options);
+        writer.WriteEndObject();
+    }
+
+    private static void WriteCaptureDiagnostics(Utf8JsonWriter writer, GifFrameSink sink)
+    {
+        writer.WriteStartObject("captureDiagnostics");
+        writer.WriteNumber("sourceFrameCount", sink.SourceFrameCount);
+        writer.WriteNumber("retainedFrameCount", sink.FrameCount);
+        writer.WriteNumber("duplicateFramesCoalesced", sink.DuplicateFramesCoalesced);
+        writer.WriteNumber("sampledFramesSkipped", sink.SampledFramesSkipped);
+        writer.WriteNumber("blankFrameCount", sink.BlankFrameCount);
+        writer.WriteNumber("peakRetainedPixelBytes", sink.PeakRetainedPixelBytes);
+        writer.WriteNumber("processingMilliseconds", Math.Round(sink.ProcessingMilliseconds, 2));
         writer.WriteEndObject();
     }
 

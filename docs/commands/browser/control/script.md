@@ -60,6 +60,8 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-intro-duration <milliseconds>`: Opening title-card duration. Must be greater than zero; defaults to `1200`.
 - `--gif-outro-duration <milliseconds>`: Explicit or generated final title-card duration. Must be greater than zero; defaults to `1200`.
 - `--gif-result-outro`: Generate a final `Test passed`, `Test failed`, or `Test skipped` card when no explicit outro is set.
+- `--gif-no-coalesce`: Keep consecutive pixel-identical frames instead of merging their encoded delays. Coalescing is enabled by default.
+- `--gif-sample-every <1..100>`: Keep every Nth intermediate pointer/drag movement frame. Final targets, click evidence, holds, captions, failures, and title cards are always retained.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -134,6 +136,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - On failure, command-level GIF recording captures one extra final-state hold frame before writing the partial GIF unless `--gif-hold-on-failure 0` is used.
 - `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, encoder controls, framing controls, and recorder timing settings.
 - `--gif-debug` emits `GIF_DEBUG <path>` after writing the debug sidecar. Each frame record includes timing, action, source line, nested scope, target selector, and virtual-pointer coordinates.
+- Every completed recording emits `GIF_CAPTURE_STATS` with source/retained frame counts, duplicate and sampled counts, blank-frame count, peak retained pixel bytes, and preprocessing milliseconds. `GIF_WARN_UNCHANGED` identifies heavily repeated evidence; `GIF_WARN_BLANK` identifies mostly white, black, or transparent artifacts. Warnings do not change the exit code.
 
 ## Trace Behavior
 
@@ -219,6 +222,7 @@ cmg browser control script --file demo-scripts\180-gif-accessible-presets.cmgscr
 cmg browser control script --file demo-scripts\184-gif-contrast-captions.cmgscript --gif demo-output\accessible-review.gif --gif-accessibility --caption-size x-large
 cmg browser control script --file demo-scripts\186-gif-event-captions.cmgscript
 cmg browser control script --file demo-scripts\188-gif-result-cards.cmgscript
+cmg browser control script --file demo-scripts\190-gif-capture-efficiency.cmgscript
 cmg browser control script --file demo-scripts\156-gif-pointer-styles.cmgscript --gif demo-output\pointer-styles-whole-run.gif --pointer-theme branded --pointer-color "#2563eb"
 cmg browser control script --file demo-scripts\157-gif-caption-styles.cmgscript --gif demo-output\caption-styles-whole-run.gif --caption-style bug-report --caption-position bottom
 cmg browser control script --file demo-scripts\150-gif-failure-hold.cmgscript --gif demo-output\failure-hold.gif --gif-hold-on-failure 1800 --gif-timeline demo-output\timelines

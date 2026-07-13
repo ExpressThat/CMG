@@ -14,7 +14,8 @@ public sealed class GifOptimizeCommandTests
     {
         var input = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
         var output = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}-optimized.gif");
-        using var sink = new GifFrameSink();
+        using var sink = new GifFrameSink(encoding: new GifEncodingOptions(
+            CaptureOptimization: new GifCaptureOptimizationOptions(CoalesceDuplicates: false)));
         sink.AddFrame(Png(Color.Red), 10);
         sink.AddFrame(Png(Color.Red), 10);
         sink.AddFrame(Png(Color.Blue), 10);

@@ -124,6 +124,8 @@ public sealed partial class BrowserScriptRunner
         "introDuration",
         "outroDuration",
         "resultOutro",
+        "coalesceDuplicates",
+        "sampleEvery",
         "pointerPath",
         "dragPath",
         "pressedPointer",

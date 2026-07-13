@@ -6,7 +6,7 @@ using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
 namespace CMG.Browser.Scripting.Recording;
 
-public sealed class GifFrameSink : IDisposable
+public sealed partial class GifFrameSink : IDisposable
 {
     private readonly List<Image<Rgba32>> frames = [];
     private readonly GifQuality quality;
@@ -20,13 +20,30 @@ public sealed class GifFrameSink : IDisposable
         this.framing = framing ?? new GifFramingOptions();
     }
 
-    public void AddFrame(byte[] pngBytes, int delayCentiseconds)
+    public GifFrameAddResult AddFrame(
+        byte[] pngBytes,
+        int delayCentiseconds,
+        bool? coalesceDuplicates = null)
     {
+        SourceFrameCount++;
+        var started = System.Diagnostics.Stopwatch.GetTimestamp();
         var image = Image.Load<Rgba32>(pngBytes);
         var resized = ResizeFrame(image);
-        RetainSourceFrame(resized ? Png(image) : pngBytes, frames.Count);
+        var retainedPng = resized ? Png(image) : pngBytes;
+        var coalesce = coalesceDuplicates ?? encoding.CaptureOptimization?.CoalesceDuplicates ?? true;
+        if (coalesce && IsDuplicate(image) && TryMergeDelay(delayCentiseconds))
+        {
+            DuplicateFramesCoalesced++;
+            image.Dispose();
+            AddProcessingTime(started);
+            return new(false, true, frames.Count - 1);
+        }
+        RetainSourceFrame(retainedPng, frames.Count);
         SetFrameMetadata(image.Frames.RootFrame.Metadata.GetGifMetadata(), delayCentiseconds);
         frames.Add(image);
+        TrackRetainedFrame(image);
+        AddProcessingTime(started);
+        return new(true, false, frames.Count - 1);
     }
 
     public int FrameCount => frames.Count;

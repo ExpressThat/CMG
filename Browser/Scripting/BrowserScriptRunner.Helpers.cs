@@ -177,6 +177,7 @@ public sealed partial class BrowserScriptRunner
 
         recorder.Finish(failure ? GifRecordingOutcome.Failed : skipped ? GifRecordingOutcome.Skipped : GifRecordingOutcome.Passed);
         output.Add($"GIF {recorder.OutputPath}");
+        output.AddRange(recorder.CaptureDiagnosticLines());
         if (recorder.RetainedFramesDirectory is not null)
         {
             var path = $"\"{System.Text.Json.JsonEncodedText.Encode(Path.GetFullPath(recorder.RetainedFramesDirectory))}\"";

@@ -45,6 +45,8 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-intro-duration <milliseconds>`: Opening title-card duration. Must be greater than zero; defaults to `1200`.
 - `--gif-outro-duration <milliseconds>`: Explicit or generated final title-card duration. Must be greater than zero; defaults to `1200`.
 - `--gif-result-outro`: Generate a final `Test passed`, `Test failed`, or `Test skipped` card for each test without an explicit outro.
+- `--gif-no-coalesce`: Keep consecutive pixel-identical frames instead of merging their delays. Coalescing is enabled by default.
+- `--gif-sample-every <1..100>`: Keep every Nth intermediate pointer/drag movement frame. Final targets and semantic evidence frames are never sampled.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -120,6 +122,8 @@ BROWSER_IDLE_LEASE status=<scheduled|disabled> browser=<browser> port=<port> pid
 ```
 
 Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `GIF_FRAMES` identifies each retained-frame directory and count; it is emitted only when recording and `--keep-frames` are both active. `GIF_DEBUG <path>` identifies a per-frame diagnostics sidecar created by `--gif-debug`. Encoder/debug flags without `--gif` do not capture frames or inject a virtual pointer. `GIF_WARN_SIZE` lines are emitted only when `--gif-warn-size` is set and a recorded GIF exists above the threshold; they do not change the run exit code. `GIF_WARN_PALETTE` lines are emitted automatically when a recorded GIF uses at least 240 decoded colors or exceeds the 256-color counting cap, which tells agents that the artifact may show color pressure or dithering. `GIF_MAX_SIZE` and `GIF_MAX_DURATION` lines are emitted when their matching guard is set and a recorded GIF exceeds the threshold; the test is marked failed and the run exits `1`. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
+
+`GIF_CAPTURE_STATS` is emitted for every recorded test with source/retained frame counts, duplicate and sampled counts, blank-frame count, peak retained pixel bytes, and preprocessing milliseconds. `GIF_WARN_UNCHANGED` and `GIF_WARN_BLANK` are non-failing artifact-quality warnings. Timeline JSON stores the same values under `captureDiagnostics`.
 
 `GIF_FAILURE_CAPTION` confirms that CMG wrote an explicit visual failure explanation into the partial test GIF. The full failure reason remains available in stderr and structured reports.
 Parameterized tests print and report their expanded names, for example `TEST LIST run opens profile`. Project runs include the project name in brackets, for example `TEST LIST run [firefox-smoke] checkout`.
@@ -208,6 +212,7 @@ cmg run demo-scripts\181-gif-accessible-presets-runner.cmgscript --gif artifacts
 cmg run demo-scripts\185-gif-contrast-captions-runner.cmgscript --gif artifacts\accessibility-review --gif-accessibility --caption-size large
 cmg run demo-scripts\187-gif-event-captions-runner.cmgscript --gif artifacts\event-evidence --gif-event-captions
 cmg run demo-scripts\189-gif-result-cards-runner.cmgscript --gif artifacts\result-cards --gif-intro "Checkout review" --gif-result-outro
+cmg run demo-scripts\191-gif-capture-efficiency-runner.cmgscript --gif artifacts\efficient --gif-sample-every 3 --gif-timeline artifacts\timelines
 cmg run tests\flows --gif artifacts\gifs --caption-style qa --caption-position bottom --caption-severity success
 cmg run tests\flows --gif artifacts\gifs --click-pulse ripple --pointer-pre-click-hold 120 --pointer-post-click-hold 450 --gif-hold-on-failure 1800
 cmg run tests\flows --gif artifacts\gifs --gif-timeline artifacts\timelines

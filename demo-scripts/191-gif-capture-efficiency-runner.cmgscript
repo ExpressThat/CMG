@@ -1,0 +1,9 @@
+test "records efficient evidence" {
+  setContent "<style>html,body{margin:0;background:#fff}main{padding:48px;font:16px system-ui}button{font:inherit;padding:12px 18px;margin-right:18px}</style><main><h1>Runner efficiency</h1><button id='details'>Details</button><button id='save'>Save</button><p id='status'>Ready</p></main>"
+  hover "#details" pointerDuration=900
+  pauseGif 300
+  pauseGif 400
+  click "#save" sampleEvery=1
+  evaluate "document.querySelector('#status').textContent = 'Saved'"
+  expectText "#status" "Saved"
+}

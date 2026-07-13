@@ -340,6 +340,8 @@ dotnet run -- --firefox browser close
 - `187-gif-event-captions-runner.cmgscript`: Demonstrates whole-run event evidence through `--gif-event-captions` in structured tests.
 - `188-gif-result-cards.cmgscript`: Demonstrates DSL intro timing and an outcome-aware final card.
 - `189-gif-result-cards-runner.cmgscript`: Demonstrates whole-run CLI intro and result cards in structured tests.
+- `190-gif-capture-efficiency.cmgscript`: Demonstrates exact duplicate coalescing, movement sampling, timeline metrics, and action override precedence.
+- `191-gif-capture-efficiency-runner.cmgscript`: Demonstrates whole-run movement sampling and capture diagnostics in structured tests.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

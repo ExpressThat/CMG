@@ -534,6 +534,19 @@ gif "release check" intro="Release verification" resultOutro=true {
 
 Use explicit `outro="Approved for release"` when authored text should replace the generated result. Whole-run test GIFs can use `--gif-intro "Release verification" --gif-result-outro`. See demos 188 and 189.
 
+## Efficient Long Recordings
+
+```text
+gif "long workflow" sampleEvery=3 {
+  hover "#advanced" pointerDuration=1200
+  click "#confirm" sampleEvery=1
+  pauseGif 800
+  pauseGif 800
+}
+```
+
+Exact duplicate holds coalesce automatically without shortening the timeline. Use `coalesceDuplicates=false` only when inspecting each source capture. Whole-run equivalents are `--gif-sample-every 3` and `--gif-no-coalesce`. See demos 190 and 191.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

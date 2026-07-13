@@ -12,7 +12,8 @@ public sealed class BrowserScriptRunnerCaptionTimelineTests
         using var gif = new TempGifFile();
         var client = new FakeAutomationClient();
 
-        var result = Runner().RunText("caption \"Explain\" duration=400 fadeIn=200 fadeOut=200", "debug", client, gif.File);
+        var encoding = new GifEncodingOptions(CaptureOptimization: new GifCaptureOptimizationOptions(false));
+        var result = Runner().RunText("caption \"Explain\" duration=400 fadeIn=200 fadeOut=200", "debug", client, gif.File, gifEncoding: encoding);
 
         Assert.True(result.Success, result.Error);
         Assert.Equal(5, GifInspector.Inspect(gif.File).FrameCount);

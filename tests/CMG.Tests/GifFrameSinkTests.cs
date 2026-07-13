@@ -117,6 +117,37 @@ public sealed class GifFrameSinkTests
     }
 
     [Fact]
+    public void AddFrame_CoalescesExactDuplicatesAndPreservesDuration()
+    {
+        using var sink = new GifFrameSink();
+        var png = Png(Color.White);
+
+        sink.AddFrame(png, 10);
+        sink.AddFrame(png, 20);
+        sink.AddFrame(png, 30);
+
+        Assert.Equal(3, sink.SourceFrameCount);
+        Assert.Equal(1, sink.FrameCount);
+        Assert.Equal(2, sink.DuplicateFramesCoalesced);
+        Assert.Equal(600, sink.DurationMilliseconds);
+        Assert.Equal(1, sink.BlankFrameCount);
+    }
+
+    [Fact]
+    public void AddFrame_CoalescingCanBeDisabled()
+    {
+        var optimization = new GifCaptureOptimizationOptions(CoalesceDuplicates: false);
+        using var sink = new GifFrameSink(encoding: new GifEncodingOptions(CaptureOptimization: optimization));
+        var png = Png(Color.White);
+
+        sink.AddFrame(png, 10);
+        sink.AddFrame(png, 20);
+
+        Assert.Equal(2, sink.FrameCount);
+        Assert.Equal(0, sink.DuplicateFramesCoalesced);
+    }
+
+    [Fact]
     public void Save_WritesFullFrameDisposalMetadata()
     {
         var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
@@ -160,6 +191,7 @@ public sealed class GifFrameSinkTests
         var root = json.RootElement;
         Assert.Equal(2, root.GetProperty("version").GetInt32());
         Assert.Equal(2, root.GetProperty("frameCount").GetInt32());
+        Assert.Equal(2, root.GetProperty("captureDiagnostics").GetProperty("sourceFrameCount").GetInt32());
         Assert.Equal(350, root.GetProperty("durationMilliseconds").GetInt32());
         Assert.Equal(1500, root.GetProperty("timing").GetProperty("holdOnFailureMilliseconds").GetInt32());
         var encoding = root.GetProperty("encoding");

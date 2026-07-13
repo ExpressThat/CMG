@@ -199,16 +199,16 @@ public sealed partial class ScriptGifRecorder : IDisposable
             return;
         }
 
-        int? endFrame = frameSink.FrameCount > start.StartFrameIndex
-            ? frameSink.FrameCount - 1
-            : null;
+        int? endFrame = frameSink.DurationMilliseconds > start.StartTimeMilliseconds && frameSink.FrameCount > 0
+            ? frameSink.FrameCount - 1 : null;
+        var startFrame = endFrame is int retainedEnd ? Math.Min(start.StartFrameIndex, retainedEnd) : start.StartFrameIndex;
         timelineSteps.Add(new GifTimelineStep(
             start.Sequence,
             start.LineNumber,
             start.Action,
             start.Context,
             success,
-            start.StartFrameIndex,
+            startFrame,
             endFrame,
             start.StartTimeMilliseconds,
             frameSink.DurationMilliseconds,

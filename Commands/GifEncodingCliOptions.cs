@@ -20,7 +20,9 @@ internal sealed record GifEncodingCliOptions(
     Option<string?> Outro,
     Option<int?> IntroDuration,
     Option<int?> OutroDuration,
-    Option<bool> ResultOutro)
+    Option<bool> ResultOutro,
+    Option<bool> DisableCoalescing,
+    Option<int?> SampleEvery)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -41,7 +43,9 @@ internal sealed record GifEncodingCliOptions(
             new Option<string?>("--gif-outro") { Description = "Final title-card text for the whole GIF." },
             new Option<int?>("--gif-intro-duration") { Description = "Opening title-card duration in milliseconds." },
             new Option<int?>("--gif-outro-duration") { Description = "Final title-card duration in milliseconds." },
-            new Option<bool>("--gif-result-outro") { Description = "Generate a passed, failed, or skipped final title card." });
+            new Option<bool>("--gif-result-outro") { Description = "Generate a passed, failed, or skipped final title card." },
+            new Option<bool>("--gif-no-coalesce") { Description = "Keep consecutive duplicate frames instead of merging their delays." },
+            new Option<int?>("--gif-sample-every") { Description = "Keep every Nth intermediate pointer/drag frame, from 1 to 100." });
     }
 
     public bool TryParse(ParseResult result, out GifEncodingOptions encoding, out string? error)
@@ -59,13 +63,16 @@ internal sealed record GifEncodingCliOptions(
         if (!GifTitleCardOptions.TryParse(
             result.GetValue(Intro), result.GetValue(Outro), result.GetValue(IntroDuration), result.GetValue(OutroDuration),
             result.GetValue(ResultOutro), out var titleCards, out error)) return false;
+        if (!GifCaptureOptimizationOptions.TryParse(
+            result.GetValue(DisableCoalescing), result.GetValue(SampleEvery), out var captureOptimization, out error)) return false;
         encoding = encoding with
         {
             Framing = framing,
             Diagnostics = result.GetValue(Debug) ? new GifDebugOptions(true, true, true, true, true, true) : null,
             Accessibility = result.GetValue(Accessibility) ? new GifAccessibilityOptions(true, true, true, true, true) : null,
             EventCaptions = result.GetValue(EventCaptions) ? new GifEventCaptionOptions(true, true, true, true, true) : null,
-            TitleCards = titleCards
+            TitleCards = titleCards,
+            CaptureOptimization = captureOptimization
         };
         return true;
     }

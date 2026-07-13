@@ -95,8 +95,7 @@ public sealed partial class ScriptGifRecorder
         {
             var screenshot = CapturePage(promoteMessageBar: false, allowCachedCrop: true, applyRedactions: false);
             var delay = ScaleDelay(Math.Max(1, (durationMilliseconds + 9) / 10));
-            RecordDebugFrame(delay * 10, $"title-{kind}");
-            frameSink.AddFrame(screenshot, delay);
+            AddCapturedFrame(screenshot, delay, $"title-{kind}");
         }
         finally
         {

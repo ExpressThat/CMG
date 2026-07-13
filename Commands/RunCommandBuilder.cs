@@ -62,7 +62,7 @@ public sealed partial class RunCommandBuilder
         {
             pathArgument, configOption, projectOption, gifOption, gifQualityOption,
             encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames,
-            encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight, encodingOptions.Debug, encodingOptions.Accessibility, encodingOptions.EventCaptions, encodingOptions.Intro, encodingOptions.Outro, encodingOptions.IntroDuration, encodingOptions.OutroDuration, encodingOptions.ResultOutro,
+            encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight, encodingOptions.Debug, encodingOptions.Accessibility, encodingOptions.EventCaptions, encodingOptions.Intro, encodingOptions.Outro, encodingOptions.IntroDuration, encodingOptions.OutroDuration, encodingOptions.ResultOutro, encodingOptions.DisableCoalescing, encodingOptions.SampleEvery,
             pointerDurationOption,
             pointerSpeedOption,
             pointerEasingOption,

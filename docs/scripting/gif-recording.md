@@ -102,6 +102,8 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `debugAction`, `debugContext`, `debugTarget`, `debugCoordinates`, `debugScroll`: Toggle individual HUD fields. Each accepts `true` or `false` and can override an inherited `debug=true`.
 - `intro=<text>` / `outro=<text>`: Full-viewport title cards captured before the first child and at finalization.
 - `resultOutro=<true|false>`: Generate a passed, failed, or skipped final card when no explicit `outro` text/action was captured.
+- `coalesceDuplicates=<true|false>`: Merge consecutive pixel-identical frames while adding their delay to the retained frame. Defaults to `true`.
+- `sampleEvery=<1..100>`: Keep every Nth intermediate pointer/drag movement frame. Defaults to `1`; child pointer-aware actions can override it.
 - `introDuration=<milliseconds>` / `outroDuration=<milliseconds>`: Title-card holds. Defaults to `1200` and must be greater than zero.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
@@ -403,6 +405,25 @@ gif "checkout evidence" intro="Checkout review" introDuration=800 resultOutro=tr
 CMG resolves the final card after execution: `Test passed`, `Test failed`, or `Test skipped`. An explicit `outro="..."` default or `outro "..."` action takes precedence, so authored conclusions are never followed by a second generated card. The virtual pointer is removed before every title-card screenshot, and all options remain inert when no GIF recorder exists.
 
 Whole-run equivalents are `--gif-intro`, `--gif-outro`, `--gif-intro-duration`, `--gif-outro-duration`, and `--gif-result-outro`. See demos 188 and 189.
+
+## Capture Efficiency
+
+Duplicate coalescing is lossless: CMG compares final pre-quantization frames and merges only exact consecutive matches. Their delays are accumulated, so the GIF duration and visible hold time do not change. Use `coalesceDuplicates=false` on a block/action or `--gif-no-coalesce` when every source frame is needed for forensic analysis.
+
+`sampleEvery=3` captures every third intermediate pointer/drag position while always retaining the final target, click/tap/drop pulse, hold, caption, assertion/failure evidence, and title cards. Skipped movement frames are not requested from the browser, but their time is added to the preceding retained frame. Page pointer events and drag events still execute for every movement position.
+
+```text
+gif "efficient review" sampleEvery=3 {
+  hover "#details" pointerDuration=900
+  click "#save" sampleEvery=1
+  pauseGif 500
+  pauseGif 500
+}
+```
+
+Every artifact emits parseable `GIF_CAPTURE_STATS`. High duplicate ratios emit `GIF_WARN_UNCHANGED`; mostly white, black, or transparent retained frames emit `GIF_WARN_BLANK`. The warnings diagnose evidence quality without failing the run. Timeline sidecars include the same `captureDiagnostics` object. All controls are inert without an active recorder and never introduce a virtual pointer into ordinary scripts.
+
+Whole-run controls are `--gif-sample-every` and `--gif-no-coalesce`. See demos 190 and 191.
 
 For less animated, easier-to-track pointer evidence, combine the visual presets:
 

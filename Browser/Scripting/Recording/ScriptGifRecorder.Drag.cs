@@ -42,7 +42,7 @@ public sealed partial class ScriptGifRecorder
         {
             devToolsClient.MoveMouse(remoteDebuggingUrl, pointer.Position, buttons: 1);
             devToolsClient.MovePageDrag(remoteDebuggingUrl, pointer.Position);
-            CaptureFrame(options.FrameDelayCentiseconds, action: action);
+            CaptureFrame(options.FrameDelayCentiseconds, action: action, sampleEligible: index < frameCount - 1);
         }
     }
 

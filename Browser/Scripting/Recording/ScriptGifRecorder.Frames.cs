@@ -111,8 +111,7 @@ public sealed partial class ScriptGifRecorder
         devToolsClient.RemoveDomCursor(remoteDebuggingUrl);
         var screenshot = CapturePage(promoteMessageBar: true);
         var delay = ScaleDelay(FrameDelayCentisecondsFor(action));
-        RecordDebugFrame(delay * 10, "pointer-hidden", action);
-        frameSink.AddFrame(screenshot, delay);
+        AddCapturedFrame(screenshot, delay, "pointer-hidden", action);
     }
 
     private void CaptureHoldFrame(int milliseconds)
@@ -142,12 +141,16 @@ public sealed partial class ScriptGifRecorder
         int delayCentiseconds,
         ClickPulseStyle? pulseStyle = null,
         BrowserScriptAction? action = null,
-        bool forcePointer = false)
+        bool forcePointer = false,
+        bool sampleEligible = false)
     {
         if (remoteDebuggingUrl is null || IsCaptureSuspended)
         {
             return;
         }
+
+        var delay = ScaleDelay(delayCentiseconds);
+        if (TrySkipCapture(delay, action, sampleEligible)) return;
 
         devToolsClient.PromoteMessageBar(remoteDebuggingUrl);
         if (forcePointer || ShouldShowPointer(action))
@@ -160,9 +163,7 @@ public sealed partial class ScriptGifRecorder
         }
 
         var screenshot = CapturePage(promoteMessageBar: false);
-        var delay = ScaleDelay(delayCentiseconds);
-        RecordDebugFrame(delay * 10, pulseStyle is null ? "frame" : "click-evidence", action);
-        frameSink.AddFrame(screenshot, delay);
+        AddCapturedFrame(screenshot, delay, pulseStyle is null ? "frame" : "click-evidence", action);
     }
 
     private bool ShouldShowPointer(BrowserScriptAction? action)
