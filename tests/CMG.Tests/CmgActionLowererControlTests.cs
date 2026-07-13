@@ -67,6 +67,7 @@ public sealed class CmgActionLowererControlTests
     [Theory]
     [InlineData("recording")]
     [InlineData("withRecording")]
+    [InlineData("recordingDefaults")]
     [InlineData("showKeystrokes")]
     [InlineData("hideFromGif")]
     [InlineData("cutGif")]

@@ -259,12 +259,12 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Script And DSL Controls
 
-- Add recording options to `gif`, `recordVideo`, and `screencast`: `quality=`, `fps=`, `pointerSpeed=`, `captionStyle=`, `crop=`, `scale=`.
+- Implemented: recording options on `gif`, `recordVideo`, and `screencast`, including `quality=`, `fps=`, `pointerSpeed=`, `captionStyle=`, `crop=`, and `scale=`.
 - Implemented: add `recording { ... }` block for shared recording settings and make it inherit through nested macros, loops, `try/catch`, `within`, frame scopes, nested recording blocks, and command-level `--gif` action choreography.
-- Add `setRecording quality=highest pointerSpeed=normal` action.
+- Implemented: `setRecording quality=highest pointerSpeed=normal` mutates subsequent defaults in the current lexical scope and reports the complete effective settings.
 - Implemented: add scoped recording settings that restore after the block.
 - Implemented: add `withRecording quality=highest pointerDuration=500 { ... }` as a readable alias if `recording { ... }` feels too much like it must record by itself.
-- Add `recordingDefaults { ... }` or config-level defaults for teams that want every script in a folder to share a house style.
+- Implemented in the DSL: `recordingDefaults { ... }` is a scoped house-style block. Folder/project configuration remains open.
 - Add action-level recording overrides consistently:
   - `click "#save" pointerDuration=250 clickPulse=ripple`
   - `hover "#menu" pointerDuration=700 postHoverHold=500`
@@ -402,8 +402,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Authoring Experience
 
-- Add `previewRecordingSettings` validation/action support to print effective DSL recording settings.
-- Add `cmg browser control script --preview-gif-settings` only as a convenience wrapper over the same analysis.
+- Implemented: `previewRecordingSettings` prints effective runtime DSL recording settings without requiring active capture.
+- Implemented: `cmg browser control script --preview-gif-settings` performs browser-free static analysis of imports, syntax, scoped settings, and relevant warnings.
 - Implemented: add `cmg gif presets` to list quality, pointer speed, pointer easing, click pulse, and timing presets.
 - Add docs with side-by-side examples of quality presets.
 - Add generated sample GIFs to docs for visual comparison.
@@ -411,7 +411,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add inline suggestions when users use `recordVideo` expecting MP4.
 - Add warnings that `recordVideo` and `screencast` are GIF aliases unless `format=` or a future whole-run format default changes that.
 - Add VS Code snippets for GIF blocks and recording settings.
-- Add script validation warnings for ignored recording options.
+- Implemented: static preflight warns when explicit virtual-pointer/visual-only options are attached to non-visual actions.
 - Add lint rules for overly long GIF blocks.
 - Add lint rule suggesting `gif=onFailure` or the equivalent whole-run CLI default for large test suites.
 - Add script style-guide section for readable visual evidence.

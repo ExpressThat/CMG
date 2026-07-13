@@ -1,0 +1,15 @@
+setRecording quality=highest pointerSpeed=fast captionStyle=qa
+previewRecordingSettings
+
+setContent "<style>html,body{margin:0;min-height:100%;background:#f8fafc}main{font:16px system-ui;padding:48px;display:flex;gap:280px}button{padding:16px 24px}</style><main><button id='first'>First</button><button id='second'>Second</button></main>"
+
+recordingDefaults clickPulse=dot {
+  gif "recording settings" output="demo-output/gif-recording-settings.gif" timeline=true {
+    click "#first"
+    setRecording pointerDuration=900 clickPulse=ripple
+    previewRecordingSettings
+    click "#second"
+  }
+}
+
+previewRecordingSettings

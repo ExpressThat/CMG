@@ -1832,7 +1832,7 @@ step "Open dialog" {
 
 Adds a visible caption before running the wrapped actions. This works in direct browser-control scripts and `cmg run`, including nested blocks, macros, imports, `try`/`catch`, loops, `gif` blocks, and scoped selectors. In GIF mode, the caption appears in the recording before the wrapped visual actions run. If a child action fails, the failure keeps the child's line number and action name so agent callers can see the precise cause.
 
-### `recording` And `withRecording`
+### Recording Settings
 
 ```text
 recording pointerDuration=300 clickPulse=dot holdAfterAction=500 {
@@ -1844,11 +1844,21 @@ withRecording pointerSpeed=slow pointerTheme=ring pointerColor="#dc2626" {
     click "#pay" pointerTheme=hand pointerColor="#16a34a"
   }
 }
+
+recordingDefaults quality=highest captionStyle=qa {
+  setRecording pointerSpeed=fast
+  previewRecordingSettings
+  click "#save"
+}
 ```
 
-Sets scoped GIF recording defaults without starting a recording by itself. The virtual pointer is still injected only when command-level `--gif` is active or a nested `gif`, `recordVideo`, or `screencast` block creates a recording. Without an active recorder, recording-only actions inside the scope still skip with their normal `GIF_* ... reason=no-active-recording` lines.
+`recording`, `withRecording`, and `recordingDefaults` set scoped GIF recording defaults without starting a recording by themselves. They are equivalent block forms. The virtual pointer is still injected only when command-level `--gif` is active or a nested `gif`, `recordVideo`, or `screencast` block creates a recording. Without an active recorder, recording-only actions inside the scope still skip with their normal `GIF_* ... reason=no-active-recording` lines.
 
-The scope inherits through nested macros, loops, `try` / `catch` / `finally`, `within`, frame blocks, and nested recording blocks. Child action options override the scoped defaults locally.
+`setRecording option=value ...` changes defaults for subsequent actions in the current lexical scope and accepts no body. A nested block receives the current values, may change its own copy, and restores the parent values when it exits. It writes `RECORDING_SETTINGS <line> options=<effective-settings>` and does not start capture.
+
+`previewRecordingSettings` accepts no arguments, options, or body. It writes the current effective defaults as `GIF_SETTINGS <line> options=<effective-settings>` during execution and does not need an active recorder.
+
+The scope inherits through nested macros, loops, `try` / `catch` / `finally`, `within`, frame blocks, and nested recording blocks. Child action options override the scoped defaults locally. Unknown default names fail with the exact action, line, and option.
 
 Options:
 

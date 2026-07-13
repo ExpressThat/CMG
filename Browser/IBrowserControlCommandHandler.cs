@@ -111,4 +111,8 @@ public interface IBrowserControlCommandHandler
     int ValidateScript(string file);
 
     int ValidateInlineScript(string script) => 0;
+
+    int PreviewGifSettings(string file) => 0;
+
+    int PreviewInlineGifSettings(string script) => 0;
 }

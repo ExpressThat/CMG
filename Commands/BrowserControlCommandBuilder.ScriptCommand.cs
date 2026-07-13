@@ -11,6 +11,7 @@ public sealed partial class BrowserControlCommandBuilder
     {
         var fileOption = new Option<string>("--file") { Description = "Path to a .cmgscript file, or '-' to read from stdin." };
         var inlineOption = new Option<string>("--inline") { Description = "Inline .cmgscript text to run." };
+        var previewOption = new Option<bool>("--preview-gif-settings") { Description = "Parse and print effective GIF settings without launching or connecting to a browser." };
         var gifOption = new Option<FileInfo?>("--gif") { Description = "Write an animated GIF recording of the script to this path." };
         var gifQualityOption = new Option<string>("--gif-quality")
         {
@@ -53,7 +54,7 @@ public sealed partial class BrowserControlCommandBuilder
 
         var command = new Command("script", "Run a .cmgscript browser automation script.")
         {
-            fileOption, inlineOption, gifOption, gifQualityOption,
+            fileOption, inlineOption, previewOption, gifOption, gifQualityOption,
             encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames,
             encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight, encodingOptions.Viewport, encodingOptions.PixelRatio, encodingOptions.Debug, encodingOptions.Accessibility, encodingOptions.EventCaptions,
             encodingOptions.Intro, encodingOptions.Outro, encodingOptions.IntroDuration, encodingOptions.OutroDuration, encodingOptions.ResultOutro,
@@ -81,6 +82,9 @@ public sealed partial class BrowserControlCommandBuilder
             {
                 return 1;
             }
+
+            if (parseResult.GetValue(previewOption))
+                return inline is null ? browserControlCommandHandler.PreviewGifSettings(file) : browserControlCommandHandler.PreviewInlineGifSettings(inline);
 
             var timeouts = new ScriptTimeoutOptions(
                 parseResult.GetValue(timeoutOption),

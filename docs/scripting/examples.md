@@ -602,6 +602,22 @@ recording compressLongWaits=true longWaitThreshold=2000 longWaitDuration=1200 wa
 
 See demos 200 and 201. Use `cmg gif trim` afterward when an existing artifact needs precise frame/time editing.
 
+## Preview And Change Recording Settings
+
+```text
+setRecording quality=highest pointerSpeed=fast
+recordingDefaults captionStyle=qa {
+  gif "settings" output="demo-output/settings.gif" {
+    click "#first"
+    setRecording pointerDuration=900 clickPulse=ripple
+    previewRecordingSettings
+    click "#second"
+  }
+}
+```
+
+`setRecording` affects subsequent actions only in the current scope. `recordingDefaults` restores its parent settings after the block. Both remain pointer-free without an active recording. Preview a file without Chrome using `cmg browser control script --file <path> --preview-gif-settings`. See demos 202 and 203.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

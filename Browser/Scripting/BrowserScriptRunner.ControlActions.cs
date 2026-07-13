@@ -36,6 +36,7 @@ public sealed partial class BrowserScriptRunner
                 return output;
             case "recording":
             case "withrecording":
+            case "recordingdefaults":
                 ExecuteRecordingScope(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
             case "showkeystrokes":
@@ -133,6 +134,7 @@ public sealed partial class BrowserScriptRunner
         name.Equals("frameLocator", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("recording", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("withRecording", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("recordingDefaults", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("showKeystrokes", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("hideFromGif", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("cutGif", StringComparison.OrdinalIgnoreCase) ||

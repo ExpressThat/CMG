@@ -126,7 +126,21 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 
 The same options can be set on pointer-aware child actions. A block's options are defaults for everything inside that block, and child actions can override them for only that action.
 
-Use `recording { ... }` or `withRecording { ... }` to set scoped recording defaults without starting a recording by itself. The scope inherits through macros, loops, `try` / `catch` / `finally`, `within`, frame blocks, nested `gif` / `recordVideo` / `screencast` blocks, and command-level `--gif` runs. It still follows CMG's virtual pointer rule: without `--gif` or a nested recording block, no virtual pointer is injected and recording-only actions skip.
+Use `recording { ... }`, `withRecording { ... }`, or `recordingDefaults { ... }` to set scoped recording defaults without starting a recording by itself. The scope inherits through macros, loops, `try` / `catch` / `finally`, `within`, frame blocks, nested `gif` / `recordVideo` / `screencast` blocks, and command-level `--gif` runs. It still follows CMG's virtual pointer rule: without `--gif` or a nested recording block, no virtual pointer is injected and recording-only actions skip.
+
+Use `setRecording` when later actions in the current scope need a new default. Nested scopes receive a copy, so their changes do not leak back to the parent:
+
+```text
+setRecording quality=highest pointerSpeed=fast
+recordingDefaults captionStyle=qa {
+  setRecording pointerSpeed=slow
+  previewRecordingSettings
+  gif "focused proof" { click "#confirm" }
+}
+previewRecordingSettings
+```
+
+Run `cmg browser control script --file journey.cmgscript --preview-gif-settings` to statically print effective settings and ignored-option warnings without a browser. Command-level GIF options are validated but remain separate from the reported DSL scopes. This preflight is appropriate for agents and CI before a real recording run.
 
 ```text
 recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfterAction=500 {
@@ -137,7 +151,7 @@ recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfter
 }
 ```
 
-Supported `recording` / `withRecording` defaults:
+Supported recording-scope and `setRecording` defaults:
 
 - `quality=<archival|highest|high|medium|low>`: Encoder preset for nested recording blocks that create their own artifact. `archival` uses a full 256-color frame-local palette and maximum preset dithering strength.
 - `dither=<none|floyd-steinberg|bayer|atkinson|sierra>`: Explicit palette dithering algorithm.

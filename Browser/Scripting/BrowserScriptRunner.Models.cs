@@ -37,7 +37,7 @@ internal sealed class ScriptExecutionContext
     private readonly List<string> selectorScopes = [];
     private readonly List<string> frameScopes = [];
     private readonly List<string> contextScopes = [];
-    private readonly List<IReadOnlyDictionary<string, string>> recordingDefaultScopes = [];
+    private readonly List<Dictionary<string, string>> recordingDefaultScopes = [];
 
     public Dictionary<string, ScriptMacro> Macros { get; } = new(StringComparer.OrdinalIgnoreCase);
 
@@ -180,7 +180,7 @@ internal sealed class ScriptExecutionContext
 
     public void PushRecordingDefaults(IReadOnlyDictionary<string, string> options, Action body)
     {
-        recordingDefaultScopes.Add(options);
+        recordingDefaultScopes.Add(new Dictionary<string, string>(options, StringComparer.OrdinalIgnoreCase));
         try
         {
             body();
@@ -192,7 +192,13 @@ internal sealed class ScriptExecutionContext
     }
 
     public void AddRecordingDefaults(IReadOnlyDictionary<string, string> options) =>
-        recordingDefaultScopes.Add(options);
+        recordingDefaultScopes.Add(new Dictionary<string, string>(options, StringComparer.OrdinalIgnoreCase));
+
+    public void SetRecordingDefaults(IReadOnlyDictionary<string, string> options)
+    {
+        if (recordingDefaultScopes.Count == 0) recordingDefaultScopes.Add(new(StringComparer.OrdinalIgnoreCase));
+        foreach (var option in options) recordingDefaultScopes[^1][option.Key] = option.Value;
+    }
 
     private static readonly IReadOnlyDictionary<string, string> EmptyRecordingDefaults =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

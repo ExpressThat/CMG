@@ -21,6 +21,24 @@ public sealed partial class BrowserScriptRunner
             ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output));
     }
 
+    private static IReadOnlyList<string> ExecuteSetRecording(BrowserScriptAction action, ScriptExecutionContext context)
+    {
+        RequireArgumentCount(action, 0, 0);
+        if (action.Children.Count > 0) throw new ScriptExecutionException("setRecording does not accept a block body.");
+        ValidateRecordingOptions(action);
+        var values = RecordingDefaultsFrom(action.Options);
+        context.SetRecordingDefaults(values);
+        return [$"RECORDING_SETTINGS {action.LineNumber:000} {FormatRecordingSettings(context.CurrentRecordingDefaults)}"];
+    }
+
+    private static IReadOnlyList<string> ExecutePreviewRecordingSettings(BrowserScriptAction action, ScriptExecutionContext context)
+    {
+        RequireArgumentCount(action, 0, 0);
+        if (action.Options.Count > 0 || action.Children.Count > 0)
+            throw new ScriptExecutionException("previewRecordingSettings does not accept options or a block body.");
+        return [$"GIF_SETTINGS {action.LineNumber:000} {FormatRecordingSettings(context.CurrentRecordingDefaults)}"];
+    }
+
     private static BrowserScriptAction ApplyRecordingDefaults(BrowserScriptAction action, ScriptExecutionContext context)
     {
         var defaults = context.CurrentRecordingDefaults;
@@ -30,7 +48,10 @@ public sealed partial class BrowserScriptRunner
         }
 
         if (action.Name.Equals("recording", StringComparison.OrdinalIgnoreCase) ||
-            action.Name.Equals("withRecording", StringComparison.OrdinalIgnoreCase))
+            action.Name.Equals("withRecording", StringComparison.OrdinalIgnoreCase) ||
+            action.Name.Equals("recordingDefaults", StringComparison.OrdinalIgnoreCase) ||
+            action.Name.Equals("setRecording", StringComparison.OrdinalIgnoreCase) ||
+            action.Name.Equals("previewRecordingSettings", StringComparison.OrdinalIgnoreCase))
         {
             return action;
         }
@@ -48,7 +69,7 @@ public sealed partial class BrowserScriptRunner
     {
         foreach (var option in action.Options)
         {
-            if (!RecordingScopeOptions.Contains(option.Key))
+            if (!IsRecordingOption(option.Key))
             {
                 throw new ScriptExecutionException(
                     $"{action.Name} option {option.Key}= is not a supported recording default.");
@@ -58,8 +79,14 @@ public sealed partial class BrowserScriptRunner
 
     private static IReadOnlyDictionary<string, string> RecordingDefaultsFrom(IReadOnlyDictionary<string, string> options) =>
         options
-            .Where(option => RecordingScopeOptions.Contains(option.Key))
+            .Where(option => IsRecordingOption(option.Key))
             .ToDictionary(option => option.Key, option => option.Value, StringComparer.OrdinalIgnoreCase);
+
+    private static string FormatRecordingSettings(IReadOnlyDictionary<string, string> values) =>
+        values.Count == 0 ? "options=none" : "options=" + string.Join(',', values.OrderBy(value => value.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(value => $"{value.Key}={value.Value.Replace(",", "\\,", StringComparison.Ordinal)}"));
+
+    internal static bool IsRecordingOption(string name) => RecordingScopeOptions.Contains(name);
 
     private static readonly HashSet<string> RecordingScopeOptions = new(StringComparer.OrdinalIgnoreCase)
     {

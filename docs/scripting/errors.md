@@ -801,3 +801,12 @@ Line 3: recording failed. recording option pixelRatio= must be a number from 1 t
 Caption booleans reject values other than `true` or `false`. `captionFormat=` accepts `plain` or `markdown`; markdown supports only safe bold and inline-code spans, not arbitrary HTML.
 
 Long-wait duration options must be positive durations. Compression never changes execution time and `GIF_WAIT_COMPRESSION` is a diagnostic, not a failure.
+
+## Invalid Recording Settings
+
+```text
+Line 2: recordingDefaults option pointerWiggle= is not a supported recording default.
+Line 4: setRecording option pointerDuration= must be zero or greater.
+```
+
+`recording`, `withRecording`, `recordingDefaults`, and `setRecording` reject unknown option names. Value ranges are validated when an affected recording or visual action consumes the setting. Use `browser control script --preview-gif-settings` to catch unknown settings, imports, and syntax without connecting to a browser. Warnings such as `GIF_SETTINGS_WARN ... reason=non-visual-action` identify explicit visual options that cannot affect the named action; warnings do not change the exit code.

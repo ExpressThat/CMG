@@ -352,6 +352,8 @@ dotnet run -- --firefox browser close
 - `199-gif-caption-narration-runner.cmgscript`: Structured runner form of the caption narration demo.
 - `200-gif-long-wait-progress.cmgscript`: Demonstrates a five-second logical hold as concise progress evidence.
 - `201-gif-long-wait-progress-runner.cmgscript`: Structured runner form of long-wait compression.
+- `202-gif-recording-settings.cmgscript`: Demonstrates mutable recording defaults, nested scope restoration, preflight output, and mid-recording virtual-pointer overrides.
+- `203-gif-recording-settings-runner.cmgscript`: Structured runner form of mutable and scoped recording settings.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

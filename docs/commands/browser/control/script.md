@@ -29,6 +29,7 @@ cmg browser control script --file <path> --trace <path>
 cmg browser control script --file <path> --timeout 10000 --assertion-timeout 5000
 cmg browser control script --file <path> --base-url https://example.test/app/
 cmg browser control script --file <path> --var user=Ada --env mode=demo
+cmg browser control script --file <path> --preview-gif-settings
 cmg --chrome browser control script --file <path>
 cmg --edge browser control script --file <path>
 cmg --firefox browser control script --file <path>
@@ -39,6 +40,7 @@ cmg --firefox browser control script --file <path>
 - `--file <path>`: Path to a `.cmgscript` file. Specify exactly one of `--file` or `--inline`.
 - `--file -`: Read script text from stdin.
 - `--inline <script>`: Run inline `.cmgscript` text. Specify exactly one of `--file` or `--inline`.
+- `--preview-gif-settings`: Parse the script and print effective DSL recording settings without launching, selecting, or connecting to a browser. Command-level GIF options are still validated, but preview lines describe DSL scopes.
 
 For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--file -`. PowerShell parses quotes before CMG receives `--inline`, so nested DSL, CSS, and JavaScript quotes are inherently easier to preserve through a file or stdin.
 - `--gif <path>`: Optional output path for an animated GIF recording of the script run.
@@ -109,7 +111,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 
 ## Behavior
 
-- Requires a browser started with [`browser launch`](../launch.md). For Edge, use `cmg --edge browser launch`. For Firefox, use `cmg --firefox browser launch`.
+- Requires a browser started with [`browser launch`](../launch.md), except when `--preview-gif-settings` is used. For Edge, use `cmg --edge browser launch`. For Firefox, use `cmg --firefox browser launch`.
 - Use `cmg browser --port <port> control script --file <path>` when the target browser was launched with `cmg browser --port <port> launch`.
 - Use [`validateScript`](validateScript.md) to check imports and syntax before connecting to a browser.
 - `--file -` fails with `No script text was provided on stdin for --file -.` when stdin is empty.
@@ -120,7 +122,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - CDP HTTP, WebSocket, cancellation, and timeout failures are converted into a browser connection error on stderr and exit code `1`; a cold attach cannot fail without a diagnostic result.
 - Supports line-level `import "path"` statements. Relative imports resolve from the script file's directory.
 - Supports the shared CMG action surface documented in the [action index](../../../scripting/action-index.md) and [action reference](../../../scripting/actions.md).
-- Supports control flow, scoped variables, `set` block capture, macros, loops, `try`/`catch`/`finally`, `within`, frame blocks, `step`, `recording` / `withRecording` scoped defaults, and `gif` blocks.
+- Supports control flow, scoped variables, `set` block capture, macros, loops, `try`/`catch`/`finally`, `within`, frame blocks, `step`, `recording` / `withRecording` / `recordingDefaults` scoped defaults, mutable `setRecording` defaults, and `gif` blocks.
 - Relative navigation targets are resolved against `--base-url` before the browser is asked to navigate.
 - Initial `--var` and `--env` values are available as `${name}` before the first action, macro call, condition, or `set` block runs.
 - `set` is a script action for scoped variables and command-result capture. It is intentionally not a CLI command because it only has meaning inside a script scope.
@@ -185,9 +187,21 @@ SKIP 007 Feature flag disabled
 
 Action-specific payload lines are documented in the [action reference](../../../scripting/actions.md).
 
+Preflight writes one line for each recording scope or artifact and any actionable warning:
+
+```text
+GIF_SETTINGS scope=recordingdefaults line=2 action=recordingDefaults options=captionStyle=qa,quality=highest
+GIF_SETTINGS scope=gif line=3 action=gif options=captionStyle=qa,pointerSpeed=slow,quality=highest
+GIF_SETTINGS_WARN line=8 action=evaluate option=pointerDuration reason=non-visual-action
+```
+
+During execution, `setRecording` writes `RECORDING_SETTINGS <line> options=<effective-settings>` and `previewRecordingSettings` writes `GIF_SETTINGS <line> options=<effective-settings>`.
+
 `GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>` is emitted only when source-frame retention is active. The retained PNGs contain the same visible page and CMG recording UI as their corresponding GIF frames and should be handled as sensitive artifacts.
 
 ## Stderr
+
+`--preview-gif-settings` writes parse, import, and invalid recording-option errors to stderr. It produces no browser connection errors because it never connects.
 
 Failure output includes the script line number, action, and reason:
 
@@ -201,6 +215,8 @@ Invalid encoder values fail before browser connection and name the option, inclu
 Invalid framing values use the same pre-browser failure path and name `cropPadding=`, `scale=`, `maxWidth=`, or `maxHeight=`. A missing crop target during recording fails the responsible action with the selector resolution reason.
 
 ## Exit Codes
+
+With `--preview-gif-settings`, exit code `1` means invalid input, import, syntax, command-level GIF option, or DSL recording option. A browser is not required.
 
 - `0`: Script completed successfully.
 - `0`: Script stopped with `skip "reason"`.

@@ -188,6 +188,17 @@ public sealed partial class BrowserControlCommandHandler : IBrowserControlComman
         return WriteValidationResult(result);
     }
 
+    public int PreviewGifSettings(string file) => WriteGifSettingsPreview(RecordingSettingsPreviewer.PreviewFile(file));
+
+    public int PreviewInlineGifSettings(string script) => WriteGifSettingsPreview(RecordingSettingsPreviewer.PreviewText(script));
+
+    private static int WriteGifSettingsPreview(RecordingSettingsPreview result)
+    {
+        if (!result.Success) { Console.Error.WriteLine(result.Error); return 1; }
+        foreach (var line in result.Lines) Console.WriteLine(line);
+        return 0;
+    }
+
     private static int WriteValidationResult(ScriptValidationResult result)
     {
         if (result.Success)
