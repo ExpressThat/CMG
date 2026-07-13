@@ -141,16 +141,16 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add APNG output for lossless color when users do not need old GIF compatibility.
 - Add animated WebP output for smaller files with better color.
 - Add MP4/H.264 or WebM export for long recordings where GIF is too large.
-- Implemented for DSL recording blocks: sidecar PNG frame export preserves final pre-quantization frames; without crop/scale transforms these remain the exact browser PNG bytes.
+- Implemented for DSL recording blocks: sidecar PNG frame export preserves final pre-quantization frames; without crop, scale, or color transforms these remain the exact browser PNG bytes.
 - Implemented: DSL `keepFrames=<directory|true|false>` and whole-run CLI `--keep-frames <directory>`. Runner output is isolated per GIF for parallel safety.
 - Implemented: `cmg gif color-diff <source.png> <encoded.gif> --frame <n>` reports parseable MAE, RMS, maximum-channel, and changed-pixel encoder drift.
-- Implemented for gradients and exact source-byte retention: automated color-delta tests. Brand-color, shadow, and transparency coverage remains open.
+- Implemented for gradients, exact source-byte retention, transparent-background flattening, and color-metadata transitions: automated color tests. Broader browser shadow baselines remain open.
 - Implemented: direct and structured-runner gradient/brand-color fidelity fixtures in demos 165 and 166. Broader browser visual baselines remain open.
-- Add `background=<color>` for pages with transparent captures. CLI: `--gif-background <color>`.
-- Add color-space metadata handling checks for browser screenshots.
-- Add a high-contrast palette mode for accessibility review GIFs.
-- Add `dither=none` for sharp UI screenshots where dithering looks noisy.
-- Add `gradientMode=smooth` that prefers gradient fidelity over crisp text edges. CLI: `--gif-gradient-mode <smooth|text>`.
+- Implemented: inherited `background=<color|transparent|none>` and CLI `--gif-background <color>` flatten transparent captures before quantization.
+- Implemented: inspect ICC, CICP, and gamma metadata on browser PNGs; timeline/stats expose counts and profile changes emit `GIF_WARN_COLOR_PROFILE`.
+- Implemented: inherited `highContrastPalette=<true|false>` and CLI `--gif-high-contrast-palette` deliberately increase contrast and saturation for accessibility review.
+- Implemented: `dither=none` for sharp UI screenshots where dithering looks noisy.
+- Implemented: inherited `gradientMode=<smooth|text>` and CLI `--gif-gradient-mode <smooth|text>` select useful defaults while explicit controls remain authoritative.
 
 ## Virtual Pointer Choreography
 
@@ -420,6 +420,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 - Implemented: cleanup is opt-in and never triggers merely because a command ended.
 - Implemented: positive `ms`/`s`/`m`/`h` leases through `browser launch --idle-timeout`, `cmg run --browser-idle-timeout`, run config, and `CMG_BROWSER_IDLE_TIMEOUT`; disabled is the default.
+- Cleanup is deliberately conservative: it is opt-in, applies only to CMG-owned headless browsers, and should use a generous timeout so an agent can reason, edit, or perform other work before returning. Visible browsers and headless browsers without a lease are never auto-closed.
 - Implemented: control commands, direct scripts, and full runner operations renew the lease, including periodic heartbeats during long operations.
 - Implemented: state tracks CMG ownership token, browser, port, PID, process start time, launch/activity times, and timeout; nonmatching or attached state is never closed.
 - Implemented: graceful close with bounded forced process-tree fallback remains port-isolated.

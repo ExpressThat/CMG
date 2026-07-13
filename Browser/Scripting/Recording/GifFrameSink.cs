@@ -28,8 +28,10 @@ public sealed partial class GifFrameSink : IDisposable
         SourceFrameCount++;
         var started = System.Diagnostics.Stopwatch.GetTimestamp();
         var image = Image.Load<Rgba32>(pngBytes);
+        TrackColorMetadata(image);
         var resized = ResizeFrame(image);
-        var retainedPng = resized ? Png(image) : pngBytes;
+        var colorAdjusted = ApplyColorOptions(image);
+        var retainedPng = resized || colorAdjusted ? Png(image) : pngBytes;
         var coalesce = coalesceDuplicates ?? encoding.CaptureOptimization?.CoalesceDuplicates ?? true;
         if (coalesce && IsDuplicate(image) && TryMergeDelay(delayCentiseconds))
         {
@@ -92,14 +94,14 @@ public sealed partial class GifFrameSink : IDisposable
         encoding ??= new GifEncodingOptions();
         return new GifEncoder
         {
-            ColorTableMode = ColorTableMode(quality, encoding.Palette),
+            ColorTableMode = ColorTableMode(quality, encoding.Palette, encoding.Color),
             Quantizer = CreateQuantizer(quality, encoding)
         };
     }
 
     private static IQuantizer CreateQuantizer(GifQuality quality, GifEncodingOptions encoding)
     {
-        var defaults = QualityDefaults(quality);
+        var defaults = EncodingDefaults(quality, encoding);
         var options = new QuantizerOptions
         {
             ColorMatchingMode = defaults.Matching,
@@ -120,6 +122,20 @@ public sealed partial class GifFrameSink : IDisposable
             _ => (ColorMatchingMode.Exact, GifDitherMode.FloydSteinberg, 0.75f, 256)
         };
 
+    private static (ColorMatchingMode Matching, GifDitherMode Dither, float Scale, int Colors) EncodingDefaults(
+        GifQuality quality,
+        GifEncodingOptions encoding)
+    {
+        var defaults = QualityDefaults(quality);
+        return encoding.Color switch
+        {
+            { HighContrastPalette: true } => (ColorMatchingMode.Exact, GifDitherMode.None, 1f, 256),
+            { GradientMode: GifGradientMode.Smooth } => (ColorMatchingMode.Exact, GifDitherMode.FloydSteinberg, 1f, 256),
+            { GradientMode: GifGradientMode.Text } => (ColorMatchingMode.Exact, GifDitherMode.None, 1f, 256),
+            _ => defaults
+        };
+    }
+
     private static SixLabors.ImageSharp.Processing.Processors.Dithering.IDither? Dither(
         GifDitherMode selected,
         GifDitherMode fallback) => (selected is GifDitherMode.Default ? fallback : selected) switch
@@ -131,10 +147,12 @@ public sealed partial class GifFrameSink : IDisposable
             _ => KnownDitherings.FloydSteinberg
         };
 
-    private static GifColorTableMode ColorTableMode(GifQuality quality, GifPaletteMode palette) => palette switch
+    private static GifColorTableMode ColorTableMode(GifQuality quality, GifPaletteMode palette, GifColorOptions? color = null) => palette switch
     {
         GifPaletteMode.Global => GifColorTableMode.Global,
         GifPaletteMode.Local or GifPaletteMode.Adaptive => GifColorTableMode.Local,
+        _ when color is { HighContrastPalette: true } or { GradientMode: GifGradientMode.Smooth } => GifColorTableMode.Local,
+        _ when color is { GradientMode: GifGradientMode.Text } => GifColorTableMode.Global,
         _ => quality is GifQuality.Low or GifQuality.Archival ? GifColorTableMode.Local : GifColorTableMode.Global
     };
 

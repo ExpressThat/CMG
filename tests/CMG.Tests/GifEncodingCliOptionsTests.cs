@@ -17,7 +17,8 @@ public sealed class GifEncodingCliOptionsTests
             "--gif-intro", "Start", "--gif-outro", "Done", "--gif-intro-duration", "500", "--gif-outro-duration", "700", "--gif-result-outro",
             "--gif-no-coalesce", "--gif-sample-every", "3", "--pointer-contrast", "fixed", "--pointer-callout", "always",
             "--pointer-callout-threshold", "32", "--no-pointer-focus-pulse", "--pointer-idle", "none",
-            "--pointer-idle-threshold", "900", "--no-pointer-teleport-marker", "--mouse-down-hold", "250"]);
+            "--pointer-idle-threshold", "900", "--no-pointer-teleport-marker", "--mouse-down-hold", "250",
+            "--gif-background", "#112233", "--gif-gradient-mode", "smooth", "--gif-high-contrast-palette"]);
 
         Assert.True(options.TryParse(result, out var encoding, out var error), error);
         Assert.Equal(GifDitherMode.Sierra, encoding.Dither);
@@ -45,6 +46,9 @@ public sealed class GifEncodingCliOptionsTests
         Assert.Equal(900, encoding.PointerEvidence?.IdleThresholdMilliseconds);
         Assert.False(encoding.PointerEvidence?.TeleportMarker);
         Assert.Equal(250, encoding.PointerEvidence?.MouseDownHoldMilliseconds);
+        Assert.Equal("#112233", encoding.Color?.Background);
+        Assert.Equal(GifGradientMode.Smooth, encoding.Color?.GradientMode);
+        Assert.True(encoding.Color?.HighContrastPalette);
     }
 
     [Theory]
@@ -67,6 +71,8 @@ public sealed class GifEncodingCliOptionsTests
     [InlineData("--pointer-idle", "spin", "pointerIdle=")]
     [InlineData("--pointer-idle-threshold", "99", "pointerIdleThreshold=")]
     [InlineData("--mouse-down-hold", "60001", "mouseDownHold=")]
+    [InlineData("--gif-background", "not-a-color", "background=")]
+    [InlineData("--gif-gradient-mode", "photographic", "gradientMode=")]
     public void TryParse_RejectsInvalidValues(string option, string value, string expected)
     {
         var options = GifEncodingCliOptions.Build();
@@ -82,6 +88,7 @@ public sealed class GifEncodingCliOptionsTests
             options.CropPadding, options.Scale, options.MaxWidth, options.MaxHeight, options.Debug, options.Accessibility, options.EventCaptions,
             options.Intro, options.Outro, options.IntroDuration, options.OutroDuration, options.ResultOutro, options.DisableCoalescing, options.SampleEvery,
             options.PointerContrast, options.PointerCallout, options.PointerCalloutThreshold, options.DisableFocusPulse,
-            options.PointerIdle, options.PointerIdleThreshold, options.DisableTeleportMarker, options.MouseDownHold }
+            options.PointerIdle, options.PointerIdleThreshold, options.DisableTeleportMarker, options.MouseDownHold,
+            options.Background, options.GradientMode, options.HighContrastPalette }
     };
 }

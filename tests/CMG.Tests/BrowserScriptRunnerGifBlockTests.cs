@@ -1,4 +1,5 @@
 using CMG.Browser.Scripting;
+using System.Text.Json;
 
 namespace CMG.Tests;
 
@@ -90,11 +91,36 @@ public sealed class BrowserScriptRunnerGifBlockTests
         directory.Delete(recursive: true);
     }
 
+    [Fact]
+    public void RunText_GifBlockInheritsAndOverridesColorControls()
+    {
+        var directory = Directory.CreateTempSubdirectory("cmg-gif-color-scope-");
+        var path = Path.Combine(directory.FullName, "color.gif");
+
+        var result = Runner().RunText($$"""
+        recording background="#f8fafc" gradientMode=text highContrastPalette=true {
+          gif "color" output="{{Slash(path)}}" timeline=true gradientMode=smooth {
+            caption "Color evidence"
+          }
+        }
+        """, "debug", new FakeAutomationClient());
+
+        Assert.True(result.Success, result.Error);
+        using var timeline = JsonDocument.Parse(File.ReadAllText(Path.ChangeExtension(path, ".timeline.json")));
+        var color = timeline.RootElement.GetProperty("color");
+        Assert.Equal("#f8fafc", color.GetProperty("background").GetString());
+        Assert.Equal("smooth", color.GetProperty("gradientMode").GetString());
+        Assert.True(color.GetProperty("highContrastPalette").GetBoolean());
+        directory.Delete(recursive: true);
+    }
+
     [Theory]
     [InlineData("dither=noisy", "dither=")]
     [InlineData("palette=shared-ish", "palette=")]
     [InlineData("colors=1", "colors=")]
     [InlineData("colors=257", "colors=")]
+    [InlineData("background=not-a-color", "background=")]
+    [InlineData("gradientMode=photographic", "gradientMode=")]
     public void RunText_GifBlockRejectsInvalidEncoderControls(string option, string expected)
     {
         var result = Runner().RunText($"gif \"block\" {option} {{ caption \"x\" }}", "debug", new FakeAutomationClient());

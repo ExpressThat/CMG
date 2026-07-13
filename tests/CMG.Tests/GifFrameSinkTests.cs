@@ -3,12 +3,13 @@ using CMG.Browser.Scripting.Recording;
 using System.Text.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
 namespace CMG.Tests;
 
-public sealed class GifFrameSinkTests
+public sealed partial class GifFrameSinkTests
 {
     [Fact]
     public void CreateEncoder_UsesColorFidelitySettings()
@@ -199,6 +200,10 @@ public sealed class GifFrameSinkTests
         Assert.Equal("local", encoding.GetProperty("palette").GetString());
         Assert.Equal(32, encoding.GetProperty("colors").GetInt32());
         Assert.Equal(directory.FullName, encoding.GetProperty("keepFramesDirectory").GetString());
+        var color = root.GetProperty("color");
+        Assert.Equal("default", color.GetProperty("gradientMode").GetString());
+        Assert.False(color.GetProperty("highContrastPalette").GetBoolean());
+        Assert.Equal(0, root.GetProperty("captureDiagnostics").GetProperty("colorProfileChangeCount").GetInt32());
         var framing = root.GetProperty("framing");
         Assert.Equal("#panel", framing.GetProperty("crop").GetString());
         Assert.Equal(12, framing.GetProperty("cropPadding").GetInt32());
@@ -239,4 +244,5 @@ public sealed class GifFrameSinkTests
         image.SaveAsPng(stream);
         return stream.ToArray();
     }
+
 }

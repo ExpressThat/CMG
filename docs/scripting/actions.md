@@ -1939,12 +1939,15 @@ Encoder options:
 - `palette=<global|local|adaptive>` controls the GIF color table. `adaptive` currently uses frame-local tables.
 - `colors=<2..256>` overrides the maximum color count.
 - `keepFrames=<true|false|directory>` retains each exact pre-encoding PNG as `frame-NNNN.png`; `true` uses a sibling `<gif-name>.frames` directory.
+- `background=<color|transparent|none>` flattens captured alpha onto a color, or clears an inherited background.
+- `gradientMode=<smooth|text>` supplies gradient- or text-oriented encoder defaults; explicit encoder controls override it.
+- `highContrastPalette=<true|false>` intentionally increases contrast and saturation for accessibility evidence.
 - `crop=<selector-or-rich-locator>` clips every frame to the live target bounds.
 - `cropPadding=<0..2000>` adds CSS-pixel context around `crop=` and requires it.
 - `scale=<0.05..1>` downscales the cropped or viewport frame before GIF quantization.
 - `maxWidth=<1..10000>` and `maxHeight=<1..10000>` add output dimension caps while preserving aspect ratio.
 
-These options may be inherited from `recording` / `withRecording` when a nested GIF block creates the artifact. Invalid names or ranges fail with the exact option and accepted values. Retained PNGs contain the page and CMG recording UI exactly as captured, so treat them with the same privacy controls as the GIF.
+These options may be inherited from `recording` / `withRecording` when a nested GIF block creates the artifact. Invalid names or ranges fail with the exact option and accepted values. Retained PNGs contain the page and CMG recording UI after requested crop, scale, background, and contrast transforms, so treat them with the same privacy controls as the GIF.
 
 Crop bounds are re-resolved before every frame, so a moving or resizing panel remains framed. CMG clips the browser capture after placing the virtual pointer and overlays, then scales the resulting bitmap; pointer coordinates therefore stay aligned. Title cards reuse the most recent crop bounds while their temporary card hides page content.
 

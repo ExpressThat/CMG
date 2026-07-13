@@ -9,6 +9,7 @@ public sealed partial class ScriptGifRecorder
     public int BlankFrameCount => frameSink.BlankFrameCount;
     public long PeakRetainedPixelBytes => frameSink.PeakRetainedPixelBytes;
     public double FrameProcessingMilliseconds => frameSink.ProcessingMilliseconds;
+    public int ColorProfileChangeCount => frameSink.ColorProfileChangeCount;
 
     public IReadOnlyList<string> CaptureDiagnosticLines()
     {
@@ -17,12 +18,15 @@ public sealed partial class ScriptGifRecorder
         {
             $"GIF_CAPTURE_STATS path={path} sourceFrames={SourceFrameCount} retainedFrames={FrameCount} " +
             $"duplicateFrames={DuplicateFramesCoalesced} sampledFrames={SampledFramesSkipped} blankFrames={BlankFrameCount} " +
-            $"peakRetainedPixelBytes={PeakRetainedPixelBytes} processingMs={FrameProcessingMilliseconds.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)}"
+            $"iccFrames={frameSink.IccProfileFrameCount} cicpFrames={frameSink.CicpProfileFrameCount} gammaFrames={frameSink.GammaMetadataFrameCount} " +
+            $"profileChanges={ColorProfileChangeCount} peakRetainedPixelBytes={PeakRetainedPixelBytes} processingMs={FrameProcessingMilliseconds.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)}"
         };
         if (SourceFrameCount >= 5 && DuplicateFramesCoalesced / (double)SourceFrameCount >= .6)
             lines.Add($"GIF_WARN_UNCHANGED path={path} sourceFrames={SourceFrameCount} duplicateFrames={DuplicateFramesCoalesced}");
         if (SourceFrameCount >= 2 && FrameCount >= 1 && BlankFrameCount / (double)FrameCount >= .8)
             lines.Add($"GIF_WARN_BLANK path={path} retainedFrames={FrameCount} blankFrames={BlankFrameCount}");
+        if (ColorProfileChangeCount > 0)
+            lines.Add($"GIF_WARN_COLOR_PROFILE path={path} profileChanges={ColorProfileChangeCount}");
         return lines;
     }
 

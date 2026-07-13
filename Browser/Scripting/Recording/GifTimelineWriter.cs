@@ -50,6 +50,7 @@ public static partial class GifTimelineWriter
         writer.WriteNumber("height", sink.Height);
         WriteCaptureDiagnostics(writer, sink);
         WriteEncoding(writer, options);
+        WriteColor(writer, options.EffectiveColor);
         WriteFraming(writer, options);
         WritePointerEvidence(writer, options.EffectivePointerEvidence);
         writer.WritePropertyName("frameDelaysMilliseconds");
@@ -75,6 +76,10 @@ public static partial class GifTimelineWriter
         writer.WriteNumber("duplicateFramesCoalesced", sink.DuplicateFramesCoalesced);
         writer.WriteNumber("sampledFramesSkipped", sink.SampledFramesSkipped);
         writer.WriteNumber("blankFrameCount", sink.BlankFrameCount);
+        writer.WriteNumber("iccProfileFrameCount", sink.IccProfileFrameCount);
+        writer.WriteNumber("cicpProfileFrameCount", sink.CicpProfileFrameCount);
+        writer.WriteNumber("gammaMetadataFrameCount", sink.GammaMetadataFrameCount);
+        writer.WriteNumber("colorProfileChangeCount", sink.ColorProfileChangeCount);
         writer.WriteNumber("peakRetainedPixelBytes", sink.PeakRetainedPixelBytes);
         writer.WriteNumber("processingMilliseconds", Math.Round(sink.ProcessingMilliseconds, 2));
         writer.WriteEndObject();

@@ -46,6 +46,9 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-dither <none|floyd-steinberg|bayer|atkinson|sierra>`: Override the quality preset's dithering algorithm for command-level `--gif`.
 - `--gif-palette <global|local|adaptive>`: Override the GIF color table. `adaptive` currently uses frame-local tables.
 - `--gif-colors <2..256>`: Override the maximum GIF palette size.
+- `--gif-background <color>`: Flatten transparent capture pixels onto a named, hex, `rgb[a]`, or `hsl[a]` color.
+- `--gif-gradient-mode <smooth|text>`: Prefer smooth-gradient or crisp-text defaults. Explicit encoder options still win.
+- `--gif-high-contrast-palette`: Increase contrast and saturation for accessibility review. This intentionally changes source colors.
 - `--keep-frames <directory>`: Keep each final pre-quantization PNG as `frame-NNNN.png` in this directory. Cropping and scaling are already applied.
 - `--gif-crop <selector-or-rich-locator>`: Clip each command-level GIF frame to current target bounds.
 - `--gif-crop-padding <0..2000>`: Add CSS-pixel context around `--gif-crop`; requires `--gif-crop`.
@@ -144,7 +147,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - On failure, command-level GIF recording captures one extra final-state hold frame before writing the partial GIF unless `--gif-hold-on-failure 0` is used.
 - `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, encoder controls, framing controls, and recorder timing settings.
 - `--gif-debug` emits `GIF_DEBUG <path>` after writing the debug sidecar. Each frame record includes timing, action, source line, nested scope, target selector, and virtual-pointer coordinates.
-- Every completed recording emits `GIF_CAPTURE_STATS` with source/retained frame counts, duplicate and sampled counts, blank-frame count, peak retained pixel bytes, and preprocessing milliseconds. `GIF_WARN_UNCHANGED` identifies heavily repeated evidence; `GIF_WARN_BLANK` identifies mostly white, black, or transparent artifacts. Warnings do not change the exit code.
+- Every completed recording emits `GIF_CAPTURE_STATS` with frame, optimization, blank-frame, ICC/CICP/gamma, profile-change, memory, and timing counts. `GIF_WARN_UNCHANGED`, `GIF_WARN_BLANK`, and `GIF_WARN_COLOR_PROFILE` explain evidence-quality risks without changing the exit code.
 
 ## Trace Behavior
 
@@ -191,7 +194,7 @@ Line 4: waitForElement failed. No element matched selector '#missing'.
 Line 8: click failed in macro login > repeat[2/3]. No element matched selector '#save'.
 ```
 
-Invalid encoder values fail before browser connection and name the option, for example `GIF option dither= must be one of: ...`, `GIF option palette= must be one of: ...`, or `GIF option colors= must be an integer from 2 to 256.`
+Invalid encoder values fail before browser connection and name the option, including invalid `background=` colors and `gradientMode=` values.
 
 Invalid framing values use the same pre-browser failure path and name `cropPadding=`, `scale=`, `maxWidth=`, or `maxHeight=`. A missing crop target during recording fails the responsible action with the selector resolution reason.
 

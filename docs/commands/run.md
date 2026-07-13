@@ -31,6 +31,9 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-dither <none|floyd-steinberg|bayer|atkinson|sierra>`: Override the quality preset's dithering algorithm for every command-level test GIF.
 - `--gif-palette <global|local|adaptive>`: Override the GIF color table. `adaptive` currently uses frame-local tables.
 - `--gif-colors <2..256>`: Override the maximum GIF palette size.
+- `--gif-background <color>`: Flatten transparent pixels in every whole-run GIF onto this CSS color.
+- `--gif-gradient-mode <smooth|text>`: Prefer smooth-gradient or crisp-text defaults. Explicit encoder options still win.
+- `--gif-high-contrast-palette`: Increase contrast and saturation for accessibility review. This intentionally changes source colors.
 - `--keep-frames <directory>`: Keep exact pre-encoding PNG frames. Each test writes to `<directory>/<gif-name>/frame-NNNN.png`, including retry suffixes, so parallel tests do not overwrite one another.
 - `--gif-crop <selector-or-rich-locator>`: Clip each test GIF frame to current target bounds.
 - `--gif-crop-padding <0..2000>`: Add CSS-pixel context around `--gif-crop`; requires `--gif-crop`.
@@ -120,6 +123,7 @@ GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>
 GIF_FAILURE_CAPTION <line> action="<action>" status=captured
 GIF_WARN_SIZE test="<name>" path="<gif-path>" sizeBytes=<bytes> thresholdBytes=<bytes>
 GIF_WARN_PALETTE test="<name>" path="<gif-path>" paletteColors=<count-or->256> thresholdColors=240 palette=<mode>
+GIF_WARN_COLOR_PROFILE path="<gif-path>" profileChanges=<count>
 GIF_MAX_SIZE test="<name>" path="<gif-path>" sizeBytes=<bytes> thresholdBytes=<bytes>
 GIF_MAX_DURATION test="<name>" path="<gif-path>" durationMs=<milliseconds> thresholdMs=<milliseconds>
 RUN STOP maxFailures=<count>
@@ -189,7 +193,7 @@ All recorded actions use CMG's virtual pointer, pointer/mouse event dispatch, ca
 
 Actions, locators, control flow, loops, macros, scoped variables, `recording` / `withRecording` scoped GIF defaults, and `gif` blocks are shared with direct browser-control scripts unless a reference page says otherwise. Start with the [action index](../scripting/action-index.md), then use the [detailed action reference](../scripting/actions.md) for options and examples.
 
-Invalid encoder values fail before browser connection or test scheduling and name the option, for example `GIF option dither= must be one of: ...`, `GIF option palette= must be one of: ...`, or `GIF option colors= must be an integer from 2 to 256.`
+Invalid encoder values fail before browser connection or test scheduling and name the option, including invalid `background=` colors and `gradientMode=` values.
 
 Invalid framing values use the same pre-browser failure path and name `cropPadding=`, `scale=`, `maxWidth=`, or `maxHeight=`. A crop selector missing during a test fails that test with the selector resolution reason.
 

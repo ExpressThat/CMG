@@ -50,5 +50,7 @@ public sealed record ScriptRecordingOptions(
 
     public GifPointerEvidenceOptions EffectivePointerEvidence => Encoding?.PointerEvidence ?? new();
 
+    public GifColorOptions EffectiveColor => Encoding?.Color ?? new();
+
     public int FrameDelayCentiseconds => Math.Max(1, (FrameDelayMilliseconds + 9) / 10);
 }

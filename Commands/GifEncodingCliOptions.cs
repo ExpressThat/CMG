@@ -30,7 +30,10 @@ internal sealed record GifEncodingCliOptions(
     Option<string?> PointerIdle,
     Option<int?> PointerIdleThreshold,
     Option<bool> DisableTeleportMarker,
-    Option<int?> MouseDownHold)
+    Option<int?> MouseDownHold,
+    Option<string?> Background,
+    Option<string?> GradientMode,
+    Option<bool> HighContrastPalette)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -61,7 +64,10 @@ internal sealed record GifEncodingCliOptions(
             new Option<string?>("--pointer-idle") { Description = $"Long-hold pointer evidence: {GifPointerEvidenceOptions.IdleValues}." },
             new Option<int?>("--pointer-idle-threshold") { Description = "Long-hold pointer pulse threshold from 100 to 60000 milliseconds." },
             new Option<bool>("--no-pointer-teleport-marker") { Description = "Disable origin/path evidence for instant pointer moves." },
-            new Option<int?>("--mouse-down-hold") { Description = "Pressed-pointer hold after mouseDown, from 0 to 60000 milliseconds." });
+            new Option<int?>("--mouse-down-hold") { Description = "Pressed-pointer hold after mouseDown, from 0 to 60000 milliseconds." },
+            new Option<string?>("--gif-background") { Description = "Flatten transparent pixels onto this CSS color." },
+            new Option<string?>("--gif-gradient-mode") { Description = $"GIF color tuning: {GifColorOptions.GradientModeValues}." },
+            new Option<bool>("--gif-high-contrast-palette") { Description = "Increase frame contrast and saturation for accessibility review." });
     }
 
     public bool TryParse(ParseResult result, out GifEncodingOptions encoding, out string? error)
@@ -85,6 +91,9 @@ internal sealed record GifEncodingCliOptions(
             result.GetValue(PointerContrast), result.GetValue(PointerCallout), result.GetValue(PointerCalloutThreshold),
             result.GetValue(DisableFocusPulse), result.GetValue(PointerIdle), result.GetValue(PointerIdleThreshold),
             result.GetValue(DisableTeleportMarker), result.GetValue(MouseDownHold), out var pointerEvidence, out error)) return false;
+        if (!GifColorOptions.TryParse(
+            result.GetValue(Background), result.GetValue(GradientMode), result.GetValue(HighContrastPalette),
+            out var color, out error)) return false;
         encoding = encoding with
         {
             Framing = framing,
@@ -93,7 +102,8 @@ internal sealed record GifEncodingCliOptions(
             EventCaptions = result.GetValue(EventCaptions) ? new GifEventCaptionOptions(true, true, true, true, true) : null,
             TitleCards = titleCards,
             CaptureOptimization = captureOptimization,
-            PointerEvidence = pointerEvidence
+            PointerEvidence = pointerEvidence,
+            Color = color
         };
         return true;
     }

@@ -144,6 +144,9 @@ Supported `recording` / `withRecording` defaults:
 - `palette=<global|local|adaptive>`: GIF color-table strategy. `adaptive` currently selects frame-local tables so each frame can adapt to its own colors.
 - `colors=<2..256>`: Explicit maximum palette size.
 - `keepFrames=<true|false|directory>`: Keep final pre-quantization PNG inputs. `true` writes `<gif-name>.frames/frame-NNNN.png`; a directory writes there instead. Cropping and scaling are already applied.
+- `background=<color|transparent|none>`: Flatten alpha onto a CSS color before duplicate detection and quantization. `transparent` and `none` clear an inherited background.
+- `gradientMode=<smooth|text>`: Use defaults tuned for smooth gradients or crisp text/UI. Explicit encoder controls override these defaults.
+- `highContrastPalette=<true|false>`: Increase contrast and saturation for accessibility review. This deliberately changes colors.
 - `crop=<selector-or-rich-locator>`: Clip each captured frame to current element bounds.
 - `cropPadding=<0..2000>`: Add context around `crop=` in CSS pixels.
 - `scale=<0.05..1>`: Downscale output after capture and before quantization.
@@ -429,7 +432,7 @@ gif "efficient review" sampleEvery=3 {
 }
 ```
 
-Every artifact emits parseable `GIF_CAPTURE_STATS`. High duplicate ratios emit `GIF_WARN_UNCHANGED`; mostly white, black, or transparent retained frames emit `GIF_WARN_BLANK`. The warnings diagnose evidence quality without failing the run. Timeline sidecars include the same `captureDiagnostics` object. All controls are inert without an active recorder and never introduce a virtual pointer into ordinary scripts.
+Every artifact emits parseable `GIF_CAPTURE_STATS`, including ICC, CICP, gamma, and profile-change counts from captured browser PNGs. High duplicate ratios emit `GIF_WARN_UNCHANGED`; mostly white, black, or transparent frames emit `GIF_WARN_BLANK`; changing color metadata emits `GIF_WARN_COLOR_PROFILE`. These warnings do not fail the run. Timeline sidecars include the same diagnostics and resolved `color` options. All controls are inert without an active recorder.
 
 Whole-run controls are `--gif-sample-every` and `--gif-no-coalesce`. See demos 190 and 191.
 
@@ -635,7 +638,7 @@ screencast "compact" quality=medium {
 
 When command-level `--gif` is active, nested `gif`, `recordVideo`, and `screencast` block files are still suppressed and the command-level `--gif-quality` applies to the whole recording.
 
-Whole-run recordings support the same encoder controls through `--gif-quality`, `--gif-dither`, `--gif-palette`, `--gif-colors`, and `--keep-frames`. Direct scripts write retained PNGs directly into the requested directory. `cmg run` creates one child directory per GIF so parallel tests and retries cannot overwrite one another. Every retained recording emits `GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>`.
+Whole-run recordings support the same encoder controls through `--gif-quality`, `--gif-dither`, `--gif-palette`, `--gif-colors`, `--keep-frames`, `--gif-background`, `--gif-gradient-mode`, and `--gif-high-contrast-palette`. Direct scripts write retained PNGs directly into the requested directory. `cmg run` creates one child directory per GIF so parallel tests and retries cannot overwrite one another. Every retained recording emits `GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>`. Frames remain byte-identical browser PNGs only when no resize or color transform is needed; otherwise they are the exact transformed pre-quantization pixels.
 
 Whole-run framing uses `--gif-crop`, `--gif-crop-padding`, `--gif-scale`, `--gif-max-width`, and `--gif-max-height`. Crop bounds are resolved live for each frame and clipped after CMG places its pointer/caption UI. Downscaling and dimension caps are then applied to the complete clipped frame, preserving pointer alignment and aspect ratio. Retained frames use the final pre-quantization dimensions, so they can be compared directly with the encoded GIF.
 

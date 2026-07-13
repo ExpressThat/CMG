@@ -782,3 +782,13 @@ Loop variables and macro parameters are scoped to the loop iteration or macro ca
 `retry` and `toPass` rerun a failing child block until it succeeds or the attempt limit is exhausted. Failed attempts are written to stdout with `RETRY <line> attempt=<n> failed=<reason>` or `TO_PASS <line> attempt=<n> failed=<reason>`, and an exhausted block reports the final child-action reason.
 
 `try` can recover from expected action failures with `catch`. If the `catch` or `finally` body fails, that new failure becomes the script failure. If there is no `catch`, `finally` still runs and the original failure is reported.
+
+## Invalid GIF Color Controls
+
+```text
+Line 2: gif failed. gif option background= must be a named, hex, rgb, rgba, hsl, or hsla color.
+Line 3: recording failed. recording option gradientMode= must be one of: smooth, text.
+Line 4: gif failed. gif option highContrastPalette= must be true or false.
+```
+
+Color-profile changes do not fail a script. CMG emits `GIF_WARN_COLOR_PROFILE path="..." profileChanges=<count>` so an agent can inspect retained frames or run `cmg gif color-diff`.

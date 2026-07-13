@@ -562,6 +562,22 @@ gif "precise controls" pointerIdleThreshold=800 {
 
 Adaptive contrast, tiny-target callouts, focus pulses, idle halos, teleport markers, and a real post-dispatch pressed state are enabled by default. Override them at recording, block, parent complex-action, or child-action scope. Whole-run CLI options are documented in the script and runner command pages. See demos 192 and 193.
 
+## Color Fidelity Modes
+
+Use `background=` for transparent UI, `gradientMode=smooth` for blended surfaces, and `gradientMode=text` for sharp UI edges. `highContrastPalette=true` is an accessibility-review transform, not a source-fidelity setting. These options inherit through `recording` and can be overridden by a nested GIF block. See demos 194 and 195.
+
+```text
+recording background="#f8fafc" gradientMode=smooth {
+  gif "color evidence" output="demo-output/color-fidelity.gif" keepFrames=true {
+    click "#confirm"
+  }
+}
+```
+
+```powershell
+cmg run demo-scripts\195-gif-color-fidelity-runner.cmgscript --gif demo-output\color-runner --gif-background "#f8fafc" --gif-gradient-mode smooth
+```
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

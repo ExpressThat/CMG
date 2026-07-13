@@ -73,5 +73,6 @@ public sealed partial class CmgRunService
         line.StartsWith("GIF_CAPTURE_STATS ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_WARN_UNCHANGED ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_WARN_BLANK ", StringComparison.Ordinal) ||
+        line.StartsWith("GIF_WARN_COLOR_PROFILE ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_FAILURE_CAPTION ", StringComparison.Ordinal);
 }

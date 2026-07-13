@@ -344,6 +344,8 @@ dotnet run -- --firefox browser close
 - `191-gif-capture-efficiency-runner.cmgscript`: Demonstrates whole-run movement sampling and capture diagnostics in structured tests.
 - `192-gif-pointer-evidence.cmgscript`: Demonstrates adaptive pointer contrast, tiny-target callouts, focus pulses, idle halos, teleport markers, and pressed-state evidence.
 - `193-gif-pointer-evidence-runner.cmgscript`: Demonstrates the same pointer-evidence defaults and action overrides in a structured runner test.
+- `194-gif-color-fidelity.cmgscript`: Demonstrates inherited alpha flattening, smooth-gradient tuning, retained frames, and timeline color diagnostics.
+- `195-gif-color-fidelity-runner.cmgscript`: Demonstrates the same color controls through a structured test and whole-run CLI options.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.
