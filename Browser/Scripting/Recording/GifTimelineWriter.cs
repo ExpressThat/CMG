@@ -11,7 +11,8 @@ public static class GifTimelineWriter
         GifFrameSink sink,
         IReadOnlyList<GifTimelineCheckpoint>? checkpoints = null,
         IReadOnlyList<GifTimelineStep>? steps = null,
-        IReadOnlyList<GifRedactionAuditEntry>? redactionAudit = null)
+        IReadOnlyList<GifRedactionAuditEntry>? redactionAudit = null,
+        IReadOnlyList<GifDebugFrame>? debugFrames = null)
     {
         var fullPath = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(fullPath);
@@ -23,7 +24,7 @@ public static class GifTimelineWriter
         var gif = new FileInfo(gifPath);
         using var stream = File.Create(fullPath);
         using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
-        WritePayload(writer, gif, options, sink, checkpoints ?? [], steps ?? [], redactionAudit ?? []);
+        WritePayload(writer, gif, options, sink, checkpoints ?? [], steps ?? [], redactionAudit ?? [], debugFrames ?? []);
         return fullPath;
     }
 
@@ -34,7 +35,8 @@ public static class GifTimelineWriter
         GifFrameSink sink,
         IReadOnlyList<GifTimelineCheckpoint> checkpoints,
         IReadOnlyList<GifTimelineStep> steps,
-        IReadOnlyList<GifRedactionAuditEntry> redactionAudit)
+        IReadOnlyList<GifRedactionAuditEntry> redactionAudit,
+        IReadOnlyList<GifDebugFrame> debugFrames)
     {
         writer.WriteStartObject();
         writer.WriteNumber("version", 2);
@@ -58,8 +60,30 @@ public static class GifTimelineWriter
         WriteCheckpoints(writer, checkpoints);
         WriteSteps(writer, steps);
         WriteRedactions(writer, options.EffectiveRedaction, redactionAudit);
+        WriteDebugFrames(writer, debugFrames);
         WriteTiming(writer, options);
         writer.WriteEndObject();
+    }
+
+    private static void WriteDebugFrames(Utf8JsonWriter writer, IReadOnlyList<GifDebugFrame> frames)
+    {
+        writer.WriteStartArray("debugFrames");
+        foreach (var frame in frames)
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("frameIndex", frame.FrameIndex);
+            writer.WriteNumber("startTimeMilliseconds", frame.StartTimeMilliseconds);
+            writer.WriteNumber("delayMilliseconds", frame.DelayMilliseconds);
+            writer.WriteString("kind", frame.Kind);
+            if (frame.Action is null) writer.WriteNull("action"); else writer.WriteString("action", frame.Action);
+            if (frame.LineNumber is int line) writer.WriteNumber("lineNumber", line); else writer.WriteNull("lineNumber");
+            writer.WriteString("context", frame.Context);
+            if (frame.Target is null) writer.WriteNull("target"); else writer.WriteString("target", frame.Target);
+            writer.WriteNumber("pointerX", frame.Pointer.X);
+            writer.WriteNumber("pointerY", frame.Pointer.Y);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
     }
 
     private static void WriteRedactions(

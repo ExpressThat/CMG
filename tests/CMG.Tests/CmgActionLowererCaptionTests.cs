@@ -11,7 +11,7 @@ public sealed class CmgActionLowererCaptionTests
         var action = Node("step", ["Open"], options, [Node("click", ["#open"], [])]);
         var lines = new CmgActionLowerer().Lower(action);
 
-        Assert.Equal("showMessageBar \"Open\" captionStyle=\"qa\" captionPosition=\"bottom\"", lines[0]);
+        Assert.Equal("step \"Open\" captionStyle=\"qa\" captionPosition=\"bottom\" {", lines[0]);
     }
 
     [Theory]

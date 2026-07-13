@@ -52,6 +52,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-scale <0.05..1>`: Downscale the captured frame before quantization.
 - `--gif-max-width <1..10000>`: Cap output width while preserving aspect ratio.
 - `--gif-max-height <1..10000>`: Cap output height while preserving aspect ratio.
+- `--gif-debug`: Add a frame-only diagnostics HUD and write `<gif-name>.debug.json` with one metadata record per captured frame.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -124,6 +125,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - If the script fails, CMG still writes a partial GIF containing frames captured before the failure.
 - On failure, command-level GIF recording captures one extra final-state hold frame before writing the partial GIF unless `--gif-hold-on-failure 0` is used.
 - `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, encoder controls, framing controls, and recorder timing settings.
+- `--gif-debug` emits `GIF_DEBUG <path>` after writing the debug sidecar. Each frame record includes timing, action, source line, nested scope, target selector, and virtual-pointer coordinates.
 
 ## Trace Behavior
 
@@ -148,6 +150,7 @@ EVALUATE 007 CMG Browser Control Test Page
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 GIF_FRAMES path="C:\\Projects\\CMG\\demo-output\\dialog-flow.frames" count=14
 GIF_TIMELINE C:\Projects\CMG\demo-output\dialog-flow.timeline.json
+GIF_DEBUG C:\Projects\CMG\demo-output\dialog-flow.debug.json
 GIF_PAUSE 008 milliseconds=800 status=captured
 GIF_FAILURE_CAPTION 009 action="expectText" status=captured
 TRACE C:\Projects\CMG\demo-output\dialog-flow.trace.json

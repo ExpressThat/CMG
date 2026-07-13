@@ -94,6 +94,8 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `highContrast=<true|false>`: Uses yellow/black high-contrast evidence borders. Child actions can override the preset.
 - `reducedMotion=<true|false>`: Removes inherited pointer travel, uses linear movement, suppresses inherited caption fades, and defaults click evidence to a static dot. Explicit child durations, fades, and pulses still win; `false` restores normal defaults.
 - `highContrastPointer=<true|false>`: Uses a 42px yellow ring pointer with a strong dark edge. Child pointer properties override individual preset values; `false` restores the normal pointer.
+- `debug=<true|false>`: Enables the complete frame diagnostics HUD and `.debug.json` sidecar.
+- `debugAction`, `debugContext`, `debugTarget`, `debugCoordinates`, `debugScroll`: Toggle individual HUD fields. Each accepts `true` or `false` and can override an inherited `debug=true`.
 - `intro=<text>` / `outro=<text>`: Full-viewport title cards captured before the first child and at finalization.
 - `introDuration=<milliseconds>` / `outroDuration=<milliseconds>`: Title-card holds. Defaults to `1200` and must be greater than zero.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
@@ -438,6 +440,26 @@ When the page does not call `DataTransfer.setDragImage()`, a manual browser drag
 
 After the visual mouse drag finishes, CMG still applies the normal scripted drop behavior used by the non-GIF `dragAndDrop` action. This keeps command execution reliable for pages that accept scripted drag events but do not complete a drop from DevTools mouse events alone.
 
+## Recording Diagnostics
+
+Enable all diagnostics on a focused block:
+
+```text
+gif "inspect checkout" debug=true {
+  step "Payment" {
+    click "#pay"
+  }
+}
+```
+
+The top-right HUD shows the current action and line, nested macro/loop/step scope, virtual-pointer coordinates, and page scroll position. A cyan dashed rectangle marks the resolved target. The HUD and rectangle exist only around browser screenshot capture and are removed in `finally`; they never intercept input or change later selector behavior.
+
+Every debug recording writes `<gif-name>.debug.json` and emits `GIF_DEBUG <path>`. Its `debugFrames` array records every frame index, start time, delay, frame kind, action, line, context, target selector, and pointer coordinates. Use individual flags such as `debugContext=false` or `debugScroll=false` to simplify the HUD while retaining the remaining metadata.
+
+Whole-run direct and runner recordings use `--gif-debug`. Without an active `--gif` or nested recording block, debug settings create no HUD, sidecar, screenshot, or virtual pointer.
+
+See demos 182 and 183.
+
 ## Output
 
 On success, stdout includes:
@@ -445,6 +467,7 @@ On success, stdout includes:
 ```text
 GIF C:\Projects\CMG\demo-output\flow.gif
 GIF_TIMELINE C:\Projects\CMG\demo-output\flow.timeline.json
+GIF_DEBUG C:\Projects\CMG\demo-output\flow.debug.json
 ```
 
 On failure, CMG still writes a partial GIF when at least one frame was captured, then exits with code `1`.

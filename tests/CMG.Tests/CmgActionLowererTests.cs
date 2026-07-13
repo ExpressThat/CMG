@@ -23,15 +23,16 @@ public sealed partial class CmgActionLowererTests
     }
 
     [Fact]
-    public void Lower_StepAddsCaptionBeforeChildren()
+    public void Lower_StepPreservesNestedExecutionContext()
     {
         var action = Node("step", ["Open"], [Node("click", ["#open"], [])]);
         var lines = new CmgActionLowerer().Lower(action);
 
-        Assert.Equal(3, lines.Count);
-        Assert.Equal("showMessageBar \"Open\"", lines[0]);
+        Assert.Equal(4, lines.Count);
+        Assert.Equal("step \"Open\" {", lines[0]);
         Assert.Contains("not actionable", lines[1]);
         Assert.Equal("click \"#open\"", lines[2]);
+        Assert.Equal("}", lines[3]);
     }
 
     [Fact]

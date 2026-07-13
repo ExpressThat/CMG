@@ -1,0 +1,11 @@
+setContent "<style>html,body{margin:0;background:#f8fafc}main{padding:48px;font:16px system-ui;height:900px}button{font:inherit;padding:12px 18px}.lower{margin-top:260px}</style><main><h1>Recording diagnostics</h1><button id='start'>Start review</button><div class='lower'><button id='finish'>Finish review</button><p id='status'>Ready</p></div></main>"
+
+gif "diagnostics" output="demo-output/gif-debug.gif" debug=true {
+  step "Review controls" {
+    click "#start"
+    scrollIntoView "#finish"
+    click "#finish"
+  }
+  evaluate "document.querySelector('#status').textContent = 'Complete'"
+  expectText "#status" "Complete"
+}

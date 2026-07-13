@@ -26,6 +26,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
     private GifAutoRedactionMode activeAutoRedaction;
     private bool activeStrictRedaction;
     private readonly List<GifRedactionAuditEntry> redactionAudit = [];
+    private readonly List<GifDebugFrame> debugFrames = [];
     private readonly VirtualPointer pointer = new();
     private string? remoteDebuggingUrl;
     private bool cursorPressed;
@@ -37,6 +38,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
     private double playbackRate = 1d;
     private ScreenshotClip? lastCropClip;
     private BrowserScriptAction? activeAction;
+    private string activeExecutionContext = string.Empty;
 
     public ScriptGifRecorder(
         IBrowserAutomationClient devToolsClient,
@@ -82,6 +84,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
         }
         ConfigureActionRedactions(action);
         activeAction = action;
+        activeExecutionContext = context;
         var name = action.Name.ToLowerInvariant();
         CaptureConfiguredTitleCards(action);
         ApplyAutoCaption(action);
@@ -206,6 +209,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
         activeAutoRedaction = options.EffectiveRedaction.Auto;
         activeStrictRedaction = options.EffectiveRedaction.Strict;
         activeAction = null;
+        activeExecutionContext = string.Empty;
     }
 
     private static bool IsClickAction(string name) =>

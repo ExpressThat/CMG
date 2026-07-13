@@ -9,7 +9,8 @@ public sealed record GifEncodingOptions(
     GifPaletteMode Palette = GifPaletteMode.Default,
     int? Colors = null,
     string? KeepFramesDirectory = null,
-    GifFramingOptions? Framing = null)
+    GifFramingOptions? Framing = null,
+    GifDebugOptions? Diagnostics = null)
 {
     public static GifEncodingOptions FromOptions(
         IReadOnlyDictionary<string, string> options,
@@ -20,7 +21,7 @@ public sealed record GifEncodingOptions(
         var palette = ParsePalette(options.GetValueOrDefault("palette"), context);
         var colors = ParseColors(options.GetValueOrDefault("colors"), context);
         var keepFrames = ParseKeepFrames(options.GetValueOrDefault("keepFrames"), context, outputPath);
-        return new(dither, palette, colors, keepFrames);
+        return new(dither, palette, colors, keepFrames, Diagnostics: GifDebugOptions.FromOptions(options, context));
     }
 
     public GifEncodingOptions WithOptions(
@@ -34,7 +35,8 @@ public sealed record GifEncodingOptions(
             options.ContainsKey("palette") ? parsed.Palette : Palette,
             options.ContainsKey("colors") ? parsed.Colors : Colors,
             options.ContainsKey("keepFrames") ? parsed.KeepFramesDirectory : KeepFramesDirectory,
-            Framing);
+            Framing,
+            GifDebugOptions.FromOptions(options, context, Diagnostics));
     }
 
     public GifEncodingOptions ForOutput(string outputPath, bool isolate)

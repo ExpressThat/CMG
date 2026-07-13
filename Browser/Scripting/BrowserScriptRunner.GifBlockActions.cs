@@ -44,7 +44,7 @@ public sealed partial class BrowserScriptRunner
                 foreach (var child in action.Children)
                 {
                     var prepared = PrepareActionForDispatch(child, context);
-                    recorder.BeforeAction(prepared);
+                    recorder.BeforeAction(prepared, context: context.CurrentContext);
                     var lines = ExecuteAction(remoteDebuggingUrl, automationClient, prepared, context, recorder);
                     if (ShouldCaptureAfterAction(prepared))
                     {

@@ -123,7 +123,7 @@ public sealed partial class CmgActionLowerer
     private IReadOnlyList<string> LowerStep(CmgNode action)
     {
         var caption = action.Arguments.Count > 0 ? action.Arguments[0] : $"Step at line {action.LineNumber}";
-        return [ToLine("showMessageBar", [caption], action.Options), .. action.Children.SelectMany(Lower)];
+        return LowerControlBlock(action with { Arguments = [caption] });
     }
 
     private IReadOnlyList<string> LowerDragAndDropBlock(CmgNode action) =>

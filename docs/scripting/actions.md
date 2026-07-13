@@ -1892,6 +1892,8 @@ Options:
 - `highContrast`: Uses high-contrast evidence colors.
 - `reducedMotion`: Removes default pointer travel and inherited caption fades while retaining static action evidence.
 - `highContrastPointer`: Uses the large yellow ring pointer preset with a strong dark edge.
+- `debug`: Enables the complete capture-only diagnostics HUD and per-frame debug sidecar.
+- `debugAction`, `debugContext`, `debugTarget`, `debugCoordinates`, `debugScroll`: Individual diagnostics toggles inherited by child actions.
 
 ### `showKeystrokes`
 
@@ -1944,6 +1946,7 @@ Options:
 - `output`: Optional GIF path for direct browser-control scripts. Without `output`, CMG writes `<name>.gif` in the current directory.
 - `accessibilityEvidence`, `showKeystrokes`, `focusEvidence`, `accessibleNames`, `highContrast`: Optional accessibility evidence controls. Each accepts `true` or `false`; the umbrella preset enables all four individual behaviors.
 - `reducedMotion`, `highContrastPointer`: Optional accessible choreography presets. Child pointer, fade, and pulse options override preset properties locally.
+- `debug`, `debugAction`, `debugContext`, `debugTarget`, `debugCoordinates`, `debugScroll`: Optional frame diagnostics. Invalid booleans fail with the exact option name; `debug=false` disables inherited diagnostics for that child.
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
 - `pointerPath`: Optional default pointer route: `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
 - `dragPath`: Optional default route while the pointer is held during drag movement.

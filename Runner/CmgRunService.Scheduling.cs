@@ -68,5 +68,7 @@ public sealed partial class CmgRunService
 
     private static bool IsGifArtifactOutput(string line) =>
         line.StartsWith("GIF_FRAMES ", StringComparison.Ordinal) ||
+        line.StartsWith("GIF_TIMELINE ", StringComparison.Ordinal) ||
+        line.StartsWith("GIF_DEBUG ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_FAILURE_CAPTION ", StringComparison.Ordinal);
 }

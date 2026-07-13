@@ -12,7 +12,8 @@ internal sealed record GifEncodingCliOptions(
     Option<int?> CropPadding,
     Option<double?> Scale,
     Option<int?> MaxWidth,
-    Option<int?> MaxHeight)
+    Option<int?> MaxHeight,
+    Option<bool> Debug)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -25,7 +26,8 @@ internal sealed record GifEncodingCliOptions(
             new Option<int?>("--gif-crop-padding") { Description = "Padding around --gif-crop in CSS pixels, from 0 to 2000." },
             new Option<double?>("--gif-scale") { Description = "Output scale from 0.05 to 1." },
             new Option<int?>("--gif-max-width") { Description = "Maximum GIF width from 1 to 10000 pixels." },
-            new Option<int?>("--gif-max-height") { Description = "Maximum GIF height from 1 to 10000 pixels." });
+            new Option<int?>("--gif-max-height") { Description = "Maximum GIF height from 1 to 10000 pixels." },
+            new Option<bool>("--gif-debug") { Description = "Show action, scope, target, pointer, and scroll diagnostics in GIF frames." });
     }
 
     public bool TryParse(ParseResult result, out GifEncodingOptions encoding, out string? error)
@@ -40,7 +42,11 @@ internal sealed record GifEncodingCliOptions(
         if (!GifFramingOptions.TryParse(
             result.GetValue(Crop), result.GetValue(CropPadding), result.GetValue(Scale),
             result.GetValue(MaxWidth), result.GetValue(MaxHeight), out var framing, out error)) return false;
-        encoding = encoding with { Framing = framing };
+        encoding = encoding with
+        {
+            Framing = framing,
+            Diagnostics = result.GetValue(Debug) ? new GifDebugOptions(true, true, true, true, true, true) : null
+        };
         return true;
     }
 }

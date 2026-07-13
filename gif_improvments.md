@@ -366,12 +366,12 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Debugging And Diagnostics
 
-- Add `debug=true` on recording blocks to write metadata about every captured frame. CLI: `--gif-debug`.
-- Add overlay showing current action name and source line.
-- Add overlay showing current macro/loop/step context.
-- Add overlay showing current selector and resolved target rectangle.
-- Add overlay showing mouse coordinates.
-- Add overlay showing scroll position.
+- Implemented: add `debug=true` on recording blocks and `--gif-debug` to write a `.debug.json` record for every captured frame.
+- Implemented: add a capture-only HUD showing current action name and source line.
+- Implemented: add nested macro/loop/step context to the diagnostics HUD and sidecar.
+- Implemented: add current selector metadata and a resolved target rectangle.
+- Implemented: add virtual-pointer coordinates to the diagnostics HUD and sidecar.
+- Implemented: add scroll position to the diagnostics HUD.
 - Add overlay showing active browser tab/context.
 - Add warning when an action was non-visual and did not capture a meaningful frame.
 - Add warning when pointer target is offscreen and had to be scrolled.

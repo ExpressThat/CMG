@@ -37,6 +37,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-scale <0.05..1>`: Downscale test GIF frames before quantization.
 - `--gif-max-width <1..10000>`: Cap output width while preserving aspect ratio.
 - `--gif-max-height <1..10000>`: Cap output height while preserving aspect ratio.
+- `--gif-debug`: Add a frame-only diagnostics HUD and write one `<gif-name>.debug.json` sidecar per recorded test.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -110,7 +111,7 @@ TEST LIST <run|skip> <name>
 BROWSER_IDLE_LEASE status=<scheduled|disabled> browser=<browser> port=<port> pid=<pid> ownership=cmg idleTimeoutMs=<milliseconds> deadline=<ISO-8601|none> reason=<reason>
 ```
 
-Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `GIF_FRAMES` identifies each retained-frame directory and count; it is emitted only when recording and `--keep-frames` are both active. Encoder flags without `--gif` do not capture frames or inject a virtual pointer. `GIF_WARN_SIZE` lines are emitted only when `--gif-warn-size` is set and a recorded GIF exists above the threshold; they do not change the run exit code. `GIF_WARN_PALETTE` lines are emitted automatically when a recorded GIF uses at least 240 decoded colors or exceeds the 256-color counting cap, which tells agents that the artifact may show color pressure or dithering. `GIF_MAX_SIZE` and `GIF_MAX_DURATION` lines are emitted when their matching guard is set and a recorded GIF exceeds the threshold; the test is marked failed and the run exits `1`. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
+Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `GIF_FRAMES` identifies each retained-frame directory and count; it is emitted only when recording and `--keep-frames` are both active. `GIF_DEBUG <path>` identifies a per-frame diagnostics sidecar created by `--gif-debug`. Encoder/debug flags without `--gif` do not capture frames or inject a virtual pointer. `GIF_WARN_SIZE` lines are emitted only when `--gif-warn-size` is set and a recorded GIF exists above the threshold; they do not change the run exit code. `GIF_WARN_PALETTE` lines are emitted automatically when a recorded GIF uses at least 240 decoded colors or exceeds the 256-color counting cap, which tells agents that the artifact may show color pressure or dithering. `GIF_MAX_SIZE` and `GIF_MAX_DURATION` lines are emitted when their matching guard is set and a recorded GIF exceeds the threshold; the test is marked failed and the run exits `1`. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
 
 `GIF_FAILURE_CAPTION` confirms that CMG wrote an explicit visual failure explanation into the partial test GIF. The full failure reason remains available in stderr and structured reports.
 Parameterized tests print and report their expanded names, for example `TEST LIST run opens profile`. Project runs include the project name in brackets, for example `TEST LIST run [firefox-smoke] checkout`.
@@ -187,6 +188,7 @@ cmg run demo-scripts\20-runner-flow.cmgscript
 cmg run tests\flows --gif artifacts\gifs
 cmg run tests\flows --gif artifacts\gifs --gif-quality highest
 cmg run tests\flows --gif artifacts\gifs --gif-dither sierra --gif-palette local --gif-colors 192 --keep-frames artifacts\source-frames
+cmg run demo-scripts\183-gif-debug-runner.cmgscript --gif artifacts\debug --gif-debug
 cmg run tests\flows --gif artifacts\gifs --gif-crop "#stage" --gif-crop-padding 24 --gif-scale 0.75 --gif-max-width 700
 cmg run tests\flows --gif artifacts\gifs --pointer-duration 600 --pointer-easing spring
 cmg run tests\flows --gif artifacts\gifs --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44 --pointer-shadow strong

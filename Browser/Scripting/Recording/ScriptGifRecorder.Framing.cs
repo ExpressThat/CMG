@@ -9,6 +9,7 @@ public sealed partial class ScriptGifRecorder
         {
             if (applyRedactions) PrepareRedactions();
             if (applyRedactions) PrepareAccessibilityEvidence();
+            if (applyRedactions) PrepareDebugEvidence();
             var framing = options.EffectiveFraming;
             if (framing.CropSelector is null)
                 return devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar);
@@ -24,6 +25,7 @@ public sealed partial class ScriptGifRecorder
         }
         finally
         {
+            if (applyRedactions) RemoveDebugEvidence();
             if (applyRedactions) RemoveAccessibilityEvidence();
             if (applyRedactions) RemoveRedactionOverlays();
         }

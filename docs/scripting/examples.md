@@ -496,6 +496,20 @@ gif "clear evidence" reducedMotion=true highContrastPointer=true {
 
 See demos 180 and 181 for block-level and whole-run CLI usage.
 
+## GIF Diagnostics
+
+Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:
+
+```text
+gif "debug checkout" debug=true debugScroll=false {
+  step "Submit" {
+    click "#submit"
+  }
+}
+```
+
+CMG writes `<gif-name>.debug.json` and emits `GIF_DEBUG <path>`. See demos 182 and 183.
+
 ## Common Next Steps
 
 | Need | Where To Go |

@@ -53,11 +53,18 @@ public sealed partial class ScriptGifRecorder
         frameSink.Save(OutputPath);
         if (frameSink.FrameCount > 0 && !string.IsNullOrWhiteSpace(options.TimelinePath))
         {
-            TimelinePath = GifTimelineWriter.Write(options.TimelinePath, OutputPath, options, frameSink, checkpoints, timelineSteps, redactionAudit);
+            TimelinePath = GifTimelineWriter.Write(options.TimelinePath, OutputPath, options, frameSink, checkpoints, timelineSteps, redactionAudit, debugFrames);
+        }
+        if (frameSink.FrameCount > 0 && debugFrames.Count > 0)
+        {
+            DebugPath = GifTimelineWriter.Write(Path.ChangeExtension(OutputPath, ".debug.json"), OutputPath, options,
+                frameSink, checkpoints, timelineSteps, redactionAudit, debugFrames);
         }
     }
 
     public string? TimelinePath { get; private set; }
+
+    public string? DebugPath { get; private set; }
 
     public void Dispose()
     {
