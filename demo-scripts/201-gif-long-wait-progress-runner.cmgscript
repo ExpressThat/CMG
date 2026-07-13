@@ -1,0 +1,8 @@
+test "compresses long wait evidence" {
+  recording coalesceDuplicates=false compressLongWaits=true longWaitThreshold=2000 longWaitDuration=1200 waitProgress=true {
+    setContent "<style>html,body{margin:0;min-height:100%;background:#f8fafc}main{font:16px system-ui;padding:48px}</style><main><h1>Runner processing</h1><p id='status'>Waiting</p></main>"
+    pauseGif 5000
+    evaluate "document.querySelector('#status').textContent='Ready'"
+    assertText "#status" "Ready"
+  }
+}

@@ -13,6 +13,7 @@ public sealed partial class GifCommandBuilder
         command.Subcommands.Add(BuildColorDiffCommand());
         command.Subcommands.Add(BuildStoryboardCommand());
         command.Subcommands.Add(BuildOptimizeCommand());
+        command.Subcommands.Add(BuildTrimCommand());
         command.Subcommands.Add(BuildPresetsCommand());
         return command;
     }

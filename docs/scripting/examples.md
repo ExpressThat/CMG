@@ -592,6 +592,16 @@ recording persistentStepTitle=true sourceLineCaptions=true debugNarration=true c
 
 See demos 198 and 199. Without an active GIF, these recording defaults create no caption, pointer, or screenshot state.
 
+Long visual waits can stay honest without making reviewers watch every millisecond:
+
+```text
+recording compressLongWaits=true longWaitThreshold=2000 longWaitDuration=1200 waitProgress=true {
+  pauseGif 5000
+}
+```
+
+See demos 200 and 201. Use `cmg gif trim` afterward when an existing artifact needs precise frame/time editing.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

@@ -219,18 +219,18 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add DSL intro actions/defaults plus whole-run `--gif-intro` and `--gif-intro-duration` controls.
 - Implemented: add DSL outro actions/defaults plus whole-run `--gif-outro` and `--gif-outro-duration` controls.
 - Implemented: add `resultOutro=true` and `--gif-result-outro` outcome cards for passed, failed, and skipped runs, with explicit outro precedence.
-- Add `pauseGif <ms>` action for recording-only holds.
+- Implemented: `pauseGif <ms>` is a recording-only hold and safely skips without a recorder.
 - Implemented: add `cutGif { ... }` to execute boring waits/setup while suppressing their frames, pointer, captions, checkpoints, and nested GIF artifacts.
 - Implemented: add nestable `speedUpGif factor=<number> { ... }` blocks for long setup sections.
 - Implemented: add nestable `slowDownGif factor=<number> { ... }` blocks for important interactions.
 - Implemented: add `hideFromGif { ... }` as the intent-revealing alias for cut sections.
 - Implemented: `recordCheckpoint "name"` markers emit parseable step output and write frame/time bookmarks into GIF timeline JSON when recording is active.
 - Implemented: add timeline metadata JSON beside each GIF. CLI: `--gif-timeline <file|directory>`; DSL blocks support `timeline=<true|false|file|directory>`.
-- Add an editor command to trim start/end frames after recording.
+- Implemented: `cmg gif trim` supports inclusive frame ranges and precise millisecond ranges with adjusted boundary delays.
 - Implemented: add `cmg gif optimize <file> --output <gif>` to remove consecutive duplicate frames while preserving duration.
 - Implemented: automatically coalesce exact consecutive pre-quantization frames while preserving total delay; `coalesceDuplicates=false` and `--gif-no-coalesce` opt out.
-- Add automatic long-wait compression while preserving a visible timer.
-- Add visual progress bar for long waits.
+- Implemented: inherited long-wait threshold/duration controls compress visual evidence while labels preserve requested time and browser waits retain real runtime.
+- Implemented: long waits show deterministic 33%, 67%, and 100% progress stages; `waitProgress=false` opts out.
 - Implemented: add zero-based frame/time spans for nested and repeated runtime steps plus final failure-frame bookmarks in timeline schema version 2.
 - Implemented: add `cmg gif storyboard <file> --output <png>` to export GIF frames as a contact sheet PNG.
 - Implemented: add self-contained static step-start and final-failure frame evidence in HTML reports, linked from the runtime step table.

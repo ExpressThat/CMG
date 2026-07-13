@@ -320,6 +320,8 @@ gif "checkout evidence" holdAfterAction=600 {
 }
 ```
 
+Long holds and numeric `delay` / `waitForTimeout` actions use a progress panel at 33%, 67%, and 100%. `compressLongWaits=true`, `longWaitThreshold=2000`, and `longWaitDuration=1200` are inherited defaults. Compression changes only GIF duration, never browser wait behavior. `waitProgress=false` removes the panel. Completed compression emits `GIF_WAIT_COMPRESSION path="<gif>" waits=<count> savedMs=<milliseconds>`.
+
 Recording-only actions capture frames only when GIF recording is active. Without `--gif` or an active `gif` / `recordVideo` / `screencast` block, they are no-ops and report a skipped status. They do not create or move the virtual pointer outside GIF recording, and recording-only arguments, variables, scoped selectors, options, or child bodies are ignored because no recording exists to apply them to. Inside an active recording, the same actions validate their normal arguments and reject unsupported block bodies.
 
 - `pauseGif <milliseconds>` reports `GIF_PAUSE <line> status=skipped reason=no-active-recording`.
@@ -601,6 +603,8 @@ Use `cmg gif inspect <file>` when an agent needs to inspect an existing GIF arti
 Use `cmg gif storyboard <file> --output <png>` when a reviewer or agent needs a still-image overview of a GIF. It samples frames into a PNG contact sheet and emits `GIF_STORYBOARD input="<gif>" output="<png>" frames=<exported>/<total> columns=<count> width=<pixels> height=<pixels>`.
 
 Use `cmg gif optimize <file> --output <gif>` to coalesce consecutive duplicate frames in an existing artifact while preserving duration. It emits `GIF_OPTIMIZE input="<gif>" output="<gif>" framesBefore=<count> framesAfter=<count> duplicateFramesRemoved=<count> durationMs=<milliseconds> sizeBeforeBytes=<bytes> sizeAfterBytes=<bytes>`.
+
+Use `cmg gif trim <file> --output <gif>` with inclusive zero-based `--start-frame` / `--end-frame`, or millisecond `--start-time` / `--end-time`, to edit an existing artifact. Time trimming shortens boundary-frame delays instead of rounding away visible evidence.
 
 Use `cmg run --gif-warn-size <size>` when CI or agents should flag unexpectedly large visual artifacts. The runner emits `GIF_WARN_SIZE test="<name>" path="<gif>" sizeBytes=<bytes> thresholdBytes=<bytes>` after the relevant test result line, and the warning does not fail the run.
 

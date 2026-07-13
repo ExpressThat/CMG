@@ -73,7 +73,8 @@ public sealed partial class ScriptGifRecorder
             throw new ScriptExecutionException("pauseGif requires milliseconds.");
         }
 
-        CaptureHoldFrame(ParseHoldMilliseconds(action, action.Arguments[0], "milliseconds"), action);
+        var milliseconds = ParseHoldMilliseconds(action, action.Arguments[0], "milliseconds");
+        if (!CaptureLongWait(action, milliseconds)) CaptureHoldFrame(milliseconds, action);
     }
 
     public void CaptureFailureHold()

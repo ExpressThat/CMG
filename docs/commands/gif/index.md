@@ -13,6 +13,7 @@ cmg gif [command] [arguments] [options]
 - [`color-diff`](color-diff.md): Measure color drift between a pre-encoding PNG and a GIF frame.
 - [`storyboard`](storyboard.md): Export GIF frames to a PNG contact sheet.
 - [`optimize`](optimize.md): Coalesce consecutive duplicate frames into a smaller GIF.
+- [`trim`](trim.md): Keep an inclusive frame range or millisecond time range from a GIF.
 - [`presets`](presets.md): List GIF quality, pointer, pulse, and timing presets.
 
 ## Behavior

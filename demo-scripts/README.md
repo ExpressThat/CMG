@@ -350,6 +350,8 @@ dotnet run -- --firefox browser close
 - `197-gif-recording-viewport-runner.cmgscript`: Runner form for whole-run viewport and pixel-ratio options.
 - `198-gif-caption-narration.cmgscript`: Demonstrates nested step breadcrumbs, safe formatting, source lines, localization, and control-flow narration.
 - `199-gif-caption-narration-runner.cmgscript`: Structured runner form of the caption narration demo.
+- `200-gif-long-wait-progress.cmgscript`: Demonstrates a five-second logical hold as concise progress evidence.
+- `201-gif-long-wait-progress-runner.cmgscript`: Structured runner form of long-wait compression.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

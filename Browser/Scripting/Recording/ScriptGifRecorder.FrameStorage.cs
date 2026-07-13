@@ -21,6 +21,7 @@ public sealed partial class ScriptGifRecorder
             $"iccFrames={frameSink.IccProfileFrameCount} cicpFrames={frameSink.CicpProfileFrameCount} gammaFrames={frameSink.GammaMetadataFrameCount} " +
             $"profileChanges={ColorProfileChangeCount} peakRetainedPixelBytes={PeakRetainedPixelBytes} processingMs={FrameProcessingMilliseconds.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)}"
         };
+        if (LongWaitCount > 0) lines.Add($"GIF_WAIT_COMPRESSION path={path} waits={LongWaitCount} savedMs={LongWaitMillisecondsSaved}");
         if (SourceFrameCount >= 5 && DuplicateFramesCoalesced / (double)SourceFrameCount >= .6)
             lines.Add($"GIF_WARN_UNCHANGED path={path} sourceFrames={SourceFrameCount} duplicateFrames={DuplicateFramesCoalesced}");
         if (SourceFrameCount >= 2 && FrameCount >= 1 && BlankFrameCount / (double)FrameCount >= .8)

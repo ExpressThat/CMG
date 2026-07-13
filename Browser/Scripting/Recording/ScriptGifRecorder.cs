@@ -88,6 +88,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
         activeAction = action;
         activeExecutionContext = context;
         var name = action.Name.ToLowerInvariant();
+        CaptureWaitAction(action, name);
         CaptureConfiguredTitleCards(action);
         ApplyAutoCaption(action);
 

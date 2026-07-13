@@ -589,6 +589,8 @@ pauseGif 1000
 
 Adds a recording-only hold frame for the specified number of milliseconds. `pauseGif` does not sleep the browser, does not change page state, and does not create or move the virtual pointer unless GIF recording is active. Without an active recorder it skips before applying recording-only arguments, variables, scoped selectors, options, or child bodies.
 
+Holds at or above `longWaitThreshold` (default `2000`) render three visible progress stages and are compressed to `longWaitDuration` (default `1200`) in the GIF. The label retains the requested duration. Use `compressLongWaits=false` to preserve encoded duration or `waitProgress=false` for a single frame. Real `delay` / `waitForTimeout` actions still wait for their full runtime duration; only visual evidence is compressed.
+
 Output:
 
 - `GIF_PAUSE <line> milliseconds=<value> status=captured` when a GIF recorder is active.

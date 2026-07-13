@@ -799,3 +799,5 @@ Line 3: recording failed. recording option pixelRatio= must be a number from 1 t
 ```
 
 Caption booleans reject values other than `true` or `false`. `captionFormat=` accepts `plain` or `markdown`; markdown supports only safe bold and inline-code spans, not arbitrary HTML.
+
+Long-wait duration options must be positive durations. Compression never changes execution time and `GIF_WAIT_COMPRESSION` is a diagnostic, not a failure.

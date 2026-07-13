@@ -11,6 +11,7 @@ public sealed class CmgRunGifArtifactOutputTests
     [InlineData("GIF_WARN_UNCHANGED path=\"C:\\\\artifacts\\\\flow.gif\"")]
     [InlineData("GIF_WARN_BLANK path=\"C:\\\\artifacts\\\\flow.gif\"")]
     [InlineData("GIF_WARN_COLOR_PROFILE path=\"C:\\\\artifacts\\\\flow.gif\" profileChanges=1")]
+    [InlineData("GIF_WAIT_COMPRESSION path=\"C:\\\\artifacts\\\\flow.gif\" waits=2 savedMs=7600")]
     public void Run_RelaysMachineReadableGifSidecars(string artifactLine)
     {
         var method = typeof(CmgRunService).GetMethod(
