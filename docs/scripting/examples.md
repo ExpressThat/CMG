@@ -580,6 +580,18 @@ cmg run demo-scripts\195-gif-color-fidelity-runner.cmgscript --gif demo-output\c
 
 Use `viewport=390x844 pixelRatio=2` for deterministic high-DPI mobile evidence without permanently changing browser state. See demos 196 and 197.
 
+Nested visual narratives can retain their parent context and explain control flow:
+
+```text
+recording persistentStepTitle=true sourceLineCaptions=true debugNarration=true captionFormat=markdown {
+  step "**Checkout**" {
+    step "Run `payment` macro" { call "payment" }
+  }
+}
+```
+
+See demos 198 and 199. Without an active GIF, these recording defaults create no caption, pointer, or screenshot state.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

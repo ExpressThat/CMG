@@ -18,6 +18,7 @@ public sealed partial class BrowserScriptRunner
         ScriptActionFailedException? failure = null;
         try
         {
+            recorder?.CaptureDebugNarration(PrepareActionForDispatch(tryBranch, context), "Try");
             WithMacroScope(context, () =>
                 context.PushExecutionContext("try", () =>
                     ExecuteActions(remoteDebuggingUrl, automationClient, tryBranch.Children, context, recorder, output)));
@@ -27,6 +28,7 @@ public sealed partial class BrowserScriptRunner
             failure = exception;
             if (catchBranch is not null)
             {
+                recorder?.CaptureDebugNarration(PrepareActionForDispatch(catchBranch, context), "Catch");
                 ExecuteCatch(remoteDebuggingUrl, automationClient, catchBranch, exception.Message, context, recorder, output);
                 failure = null;
             }
@@ -35,6 +37,7 @@ public sealed partial class BrowserScriptRunner
         {
             if (finallyBranch is not null)
             {
+                recorder?.CaptureDebugNarration(PrepareActionForDispatch(finallyBranch, context), "Finally");
                 WithMacroScope(context, () =>
                     context.PushExecutionContext("finally", () =>
                         ExecuteActions(remoteDebuggingUrl, automationClient, finallyBranch.Children, context, recorder, output)));

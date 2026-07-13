@@ -151,6 +151,7 @@ public sealed partial class BrowserScriptRunner
     {
         try
         {
+            recorder?.CaptureDebugNarration(action, contextName);
             WithVariables(context, variables, () =>
                 context.PushExecutionContext(contextName, () =>
                     ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output)));

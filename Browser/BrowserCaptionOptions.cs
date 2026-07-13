@@ -39,7 +39,8 @@ public sealed record BrowserCaptionOptions(
     CaptionStyle Style = CaptionStyle.Subtle,
     CaptionPosition Position = CaptionPosition.Top,
     CaptionSeverity Severity = CaptionSeverity.Info,
-    CaptionSize Size = CaptionSize.Normal)
+    CaptionSize Size = CaptionSize.Normal,
+    bool Markdown = false)
 {
     public static readonly BrowserCaptionOptions Default = new();
 
@@ -59,7 +60,9 @@ public sealed record BrowserCaptionOptions(
             : Severity;
         var size = action.Options.TryGetValue("captionSize", out var rawSize)
             ? ParseSize(rawSize, action.Name) : Size;
-        return new(style, position, severity, size);
+        var markdown = action.Options.TryGetValue("captionFormat", out var format)
+            ? ParseFormat(format, action.Name) : Markdown;
+        return new(style, position, severity, size, markdown);
     }
 
     public static BrowserCaptionOptions FromOptions(IReadOnlyDictionary<string, string> options, string source) =>
@@ -70,7 +73,8 @@ public sealed record BrowserCaptionOptions(
                 ? ParsePosition(position, source) : CaptionPosition.Top,
             options.TryGetValue("captionSeverity", out var severity) || options.TryGetValue("severity", out severity)
                 ? ParseSeverity(severity, source) : CaptionSeverity.Info,
-            options.TryGetValue("captionSize", out var size) ? ParseSize(size, source) : CaptionSize.Normal);
+            options.TryGetValue("captionSize", out var size) ? ParseSize(size, source) : CaptionSize.Normal,
+            options.TryGetValue("captionFormat", out var format) && ParseFormat(format, source));
 
     public IReadOnlyDictionary<string, string> ToRecordingDefaults() =>
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -78,7 +82,8 @@ public sealed record BrowserCaptionOptions(
             ["captionStyle"] = StyleValue(Style),
             ["captionPosition"] = PositionValue(Position),
             ["captionSeverity"] = SeverityValue(Severity),
-            ["captionSize"] = SizeValue(Size)
+            ["captionSize"] = SizeValue(Size),
+            ["captionFormat"] = Markdown ? "markdown" : "plain"
         };
 
     private static CaptionStyle ParseStyle(string value, string source) =>
@@ -121,6 +126,13 @@ public sealed record BrowserCaptionOptions(
             "x-large" or "xlarge" or "extra-large" => CaptionSize.ExtraLarge,
             _ => throw new ScriptExecutionException($"{source} option captionSize= must be normal, large, or x-large.")
         };
+
+    private static bool ParseFormat(string value, string source) => value.Trim().ToLowerInvariant() switch
+    {
+        "markdown" or "formatted" => true,
+        "plain" or "text" => false,
+        _ => throw new ScriptExecutionException($"{source} option captionFormat= must be markdown or plain.")
+    };
 
     public static string StyleValues => "subtle, teaching, qa, bug-report, compact";
 

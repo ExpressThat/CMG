@@ -147,6 +147,12 @@ Supported `recording` / `withRecording` defaults:
 - `background=<color|transparent|none>`: Flatten alpha onto a CSS color before duplicate detection and quantization. `transparent` and `none` clear an inherited background.
 - `gradientMode=<smooth|text>`: Use defaults tuned for smooth gradients or crisp text/UI. Explicit encoder controls override these defaults.
 - `highContrastPalette=<true|false>`: Increase contrast and saturation for accessibility review. This deliberately changes colors.
+- `captionStacking=<true|false>`: Join nested `step` titles as a breadcrumb. Defaults to `true`.
+- `persistentStepTitle=<true|false>`: Capture and restore the active step title around nested actions.
+- `sourceLineCaptions=<true|false>`: Include DSL line numbers in step and debug captions.
+- `debugNarration=<true|false>`: Caption loop iterations, macro calls, and `try`/`catch`/`finally` transitions.
+- `captionFormat=<plain|markdown>`: Render safe `**bold**` and `` `code` `` spans without HTML injection.
+- `captionPassLabel`, `captionFailedLabel`, `captionExpectedLabel`, `captionActualLabel`: Localize generated evidence labels.
 - `crop=<selector-or-rich-locator>`: Clip each captured frame to current element bounds.
 - `cropPadding=<0..2000>`: Add context around `crop=` in CSS pixels.
 - `scale=<0.05..1>`: Downscale output after capture and before quantization.

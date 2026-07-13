@@ -797,3 +797,5 @@ Color-profile changes do not fail a script. CMG emits `GIF_WARN_COLOR_PROFILE pa
 Line 2: gif failed. gif option viewport= must use <width>x<height> with dimensions from 100 to 10000.
 Line 3: recording failed. recording option pixelRatio= must be a number from 1 to 4.
 ```
+
+Caption booleans reject values other than `true` or `false`. `captionFormat=` accepts `plain` or `markdown`; markdown supports only safe bold and inline-code spans, not arbitrary HTML.

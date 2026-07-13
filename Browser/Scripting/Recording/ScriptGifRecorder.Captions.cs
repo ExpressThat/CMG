@@ -43,7 +43,7 @@ public sealed partial class ScriptGifRecorder
             return false;
         }
         if (remoteDebuggingUrl is null || IsCaptureSuspended || IsFalse(action, "failureCaptions")) return false;
-        var message = $"FAILED: {action.Name} (line {action.LineNumber})\n{Trim(reason, 220)}";
+        var message = $"{Label(action, "captionFailedLabel", "FAILED")}: {action.Name} (line {action.LineNumber})\n{Trim(reason, 220)}";
         devToolsClient.ShowMessageBar(remoteDebuggingUrl, message,
             new BrowserCaptionOptions(CaptionStyle.BugReport, CaptionPosition.Bottom, CaptionSeverity.Error));
         CaptureHoldFrame(Math.Min(700, options.HoldOnFailureMilliseconds));
@@ -56,7 +56,9 @@ public sealed partial class ScriptGifRecorder
         var expected = Sensitive(action) ? "[masked]" : ExpectedValue(action);
         var actual = output.LastOrDefault()?.StartsWith("EXPECT_EVAL ", StringComparison.Ordinal) is true
             ? output[^1].Split(' ').Last() : expected;
-        var message = $"PASS: {action.Name}\nExpected: {Trim(expected, 100)}\nActual: {Trim(actual, 120)}";
+        var message = $"{Label(action, "captionPassLabel", "PASS")}: {action.Name}\n" +
+            $"{Label(action, "captionExpectedLabel", "Expected")}: {Trim(expected, 100)}\n" +
+            $"{Label(action, "captionActualLabel", "Actual")}: {Trim(actual, 120)}";
         devToolsClient.ShowMessageBar(remoteDebuggingUrl, message,
             new BrowserCaptionOptions(CaptionStyle.Qa, CaptionPosition.Bottom, CaptionSeverity.Success));
     }
@@ -96,4 +98,7 @@ public sealed partial class ScriptGifRecorder
     }
 
     private static string Trim(string value, int length) => value.Length <= length ? value : value[..length] + "...";
+
+    private static string Label(BrowserScriptAction action, string name, string fallback) =>
+        action.Options.TryGetValue(name, out var value) && !string.IsNullOrWhiteSpace(value) ? value.Trim() : fallback;
 }

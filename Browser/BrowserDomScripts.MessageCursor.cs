@@ -51,7 +51,22 @@ public static partial class BrowserDomScripts
           }
           bar.setAttribute('data-cmg-caption-mode', {{JsonString(CaptionMode(options))}});
           bar.style.cssText = styleText;
-          document.getElementById('__cmg_message_bar_text').textContent = {{JsonString(message)}};
+          const text = document.getElementById('__cmg_message_bar_text');
+          const message = {{JsonString(message)}};
+          if (!{{(options?.Markdown is true ? "false" : "true")}}) {
+            text.replaceChildren();
+            const pattern = /(\*\*[^*]+\*\*|`[^`]+`)/g;
+            let offset = 0;
+            for (const match of message.matchAll(pattern)) {
+              text.append(document.createTextNode(message.slice(offset, match.index)));
+              const node = document.createElement(match[0][0] === '`' ? 'code' : 'strong');
+              node.textContent = match[0].slice(match[0][0] === '`' ? 1 : 2, match[0][0] === '`' ? -1 : -2);
+              if (node.tagName === 'CODE') node.style.cssText = 'font:600 12px/1.4 ui-monospace,monospace;background:rgba(255,255,255,.14);padding:2px 4px;border-radius:3px';
+              text.append(node);
+              offset = match.index + match[0].length;
+            }
+            text.append(document.createTextNode(message.slice(offset)));
+          } else text.textContent = message;
           promote(bar);
           return true;
         })()

@@ -348,6 +348,8 @@ dotnet run -- --firefox browser close
 - `195-gif-color-fidelity-runner.cmgscript`: Demonstrates the same color controls through a structured test and whole-run CLI options.
 - `196-gif-recording-viewport.cmgscript`: Demonstrates a scoped high-DPI mobile recording viewport and automatic target visibility.
 - `197-gif-recording-viewport-runner.cmgscript`: Runner form for whole-run viewport and pixel-ratio options.
+- `198-gif-caption-narration.cmgscript`: Demonstrates nested step breadcrumbs, safe formatting, source lines, localization, and control-flow narration.
+- `199-gif-caption-narration-runner.cmgscript`: Structured runner form of the caption narration demo.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

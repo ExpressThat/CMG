@@ -1942,6 +1942,7 @@ Encoder options:
 - `background=<color|transparent|none>` flattens captured alpha onto a color, or clears an inherited background.
 - `gradientMode=<smooth|text>` supplies gradient- or text-oriented encoder defaults; explicit encoder controls override it.
 - `highContrastPalette=<true|false>` intentionally increases contrast and saturation for accessibility evidence.
+- Caption scopes support `captionStacking`, `persistentStepTitle`, `sourceLineCaptions`, `debugNarration`, `captionFormat=plain|markdown`, and localized generated-label options. All are recording-only defaults.
 - `crop=<selector-or-rich-locator>` clips every frame to the live target bounds.
 - `cropPadding=<0..2000>` adds CSS-pixel context around `crop=` and requires it.
 - `scale=<0.05..1>` downscales the cropped or viewport frame before GIF quantization.

@@ -176,9 +176,17 @@ public sealed partial class BrowserScriptRunner
         List<string> output)
     {
         RequireArgumentCount(action, 1, 1);
-        automationClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0], BrowserCaptionOptions.FromOptions(action.Options, action.Name));
-        context.PushExecutionContext($"step {action.Arguments[0]}", () =>
-            ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output));
+        if (recorder is null)
+        {
+            automationClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0], BrowserCaptionOptions.FromOptions(action.Options, action.Name));
+        }
+        recorder?.EnterStep(action);
+        try
+        {
+            context.PushExecutionContext($"step {action.Arguments[0]}", () =>
+                ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output));
+        }
+        finally { recorder?.ExitStep(action); }
     }
 
     private void ExecuteNarrate(

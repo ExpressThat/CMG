@@ -35,6 +35,7 @@ public sealed partial class BrowserScriptRunner
             throw new ScriptExecutionException($"Macro '{macroAction.Arguments[0]}' expects {parameterNames.Length} argument(s), got {values.Length}.");
         }
 
+        recorder?.CaptureDebugNarration(action, $"Macro {macroAction.Arguments[0]}");
         WithMacroVariables(context, macro, parameterNames.Zip(values), () =>
             context.PushExecutionContext($"macro {macroAction.Arguments[0]}", () =>
                 ExecuteActions(remoteDebuggingUrl, automationClient, macroAction.Children, context, recorder, output)));

@@ -1,0 +1,8 @@
+macro "work" { evaluate "document.querySelector('#status').textContent='Complete'" }
+gif "caption narration" output="demo-output/gif-caption-narration.gif" timeline=true persistentStepTitle=true sourceLineCaptions=true debugNarration=true captionFormat=markdown captionPassLabel=OK captionExpectedLabel=Wanted captionActualLabel=Observed {
+  setContent "<style>html,body{margin:0;min-height:100%;background:#fff}</style><main style='font:16px system-ui;padding:48px'><h1>Caption narration</h1><p id='status'>Ready</p></main>"
+  step "**Checkout**" {
+    step "Run `work` macro" { repeat 1 { call "work" } }
+    try { assertText "#status" "Complete" } finally { pauseGif 150 }
+  }
+}

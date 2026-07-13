@@ -192,20 +192,20 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented in DSL recording scopes, recording blocks, and action overrides: `captionTemplate=` with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`. A whole-run CLI default and structural `{step}` / `{assertion}` context placeholders remain open.
 - Implemented: `caption duration=<ms>` / `captionDuration=<ms>` controls encoded visibility duration and can be inherited from recording scopes.
 - Implemented: `fadeIn=<ms>` and `fadeOut=<ms>` capture deterministic opacity stages and remove completed captions.
-- Add caption stacking for nested `step` blocks.
-- Add a persistent step title bar option.
-- Add optional source-line captions for debugging.
+- Implemented: nested `step` captions stack as breadcrumbs and restore parent context; `captionStacking=false` opts out.
+- Implemented: `persistentStepTitle=true` captures and restores scoped step titles.
+- Implemented: `sourceLineCaptions=true` includes DSL line numbers in step and debug narration.
 - Implemented: automatic bounded failure captions with `failureCaptions=false` opt-out and parseable `GIF_FAILURE_CAPTION` diagnostics.
 - Implemented: automatic assertion captions show expected vs actual values, mask sensitive values, and support `assertionCaptions=false` opt-out.
 - Implemented: add privacy-safe network captions for request/response waits through `networkCaptions=true` and `--gif-event-captions`.
 - Implemented: add dialog setup and observed-result captions through `dialogCaptions=true`.
 - Implemented: add console/page-error capture, count, success, and observed-event captions through `consoleCaptions=true`.
 - Implemented: add caption severity styles: info, success, warning, error. CLI: `--caption-severity <severity>` for whole-run defaults.
-- Add caption localization hooks.
-- Add markdown-like caption formatting for bold/code snippets.
+- Implemented: generated pass/failure/expected/actual labels have inherited localization hooks.
+- Implemented: `captionFormat=markdown` safely renders bold and inline-code spans with DOM nodes, never caller HTML.
 - Implemented: nestable `narrate "message" { ... }` teaching-style blocks with scoped execution context and timing options.
-- Add automatic captions for `try/catch/finally` transitions.
-- Add automatic captions for loop iterations and macro calls when debug narration is enabled.
+- Implemented: `debugNarration=true` captions `try`, `catch`, and `finally` transitions.
+- Implemented: `debugNarration=true` captions loop iterations and macro calls.
 
 ## Timeline And Editing Controls
 
