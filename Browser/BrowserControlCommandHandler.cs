@@ -104,9 +104,10 @@ public sealed partial class BrowserControlCommandHandler : IBrowserControlComman
         int preClickHoldMilliseconds = 0, int postClickHoldMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdAfterNavigationMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds, int holdAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         string? gifTimelinePath = null,
-        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
+        GifEncodingOptions? gifEncoding = null)
     {
-        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
+        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding);
     }
 
     public int RunScript(
@@ -129,14 +130,15 @@ public sealed partial class BrowserControlCommandHandler : IBrowserControlComman
         int preClickHoldMilliseconds = 0, int postClickHoldMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdAfterNavigationMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds, int holdAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         string? gifTimelinePath = null,
-        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
+        GifEncodingOptions? gifEncoding = null)
     {
         if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
+        var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding);
 
         return WriteScriptResult(result);
     }
@@ -161,14 +163,15 @@ public sealed partial class BrowserControlCommandHandler : IBrowserControlComman
         int preClickHoldMilliseconds = 0, int postClickHoldMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdAfterNavigationMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds, int holdAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         string? gifTimelinePath = null,
-        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
+        GifEncodingOptions? gifEncoding = null)
     {
         if (!ValidateBrowserSelection(browserKind) || !ValidatePort(port))
         {
             return 1;
         }
 
-        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
+        var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding);
 
         return WriteScriptResult(result);
     }

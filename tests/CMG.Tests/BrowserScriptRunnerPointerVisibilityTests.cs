@@ -1,5 +1,6 @@
 using CMG.Browser;
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Tests;
 
@@ -76,6 +77,22 @@ public sealed class BrowserScriptRunnerPointerVisibilityTests
 
         Assert.True(result.Success, result.Error);
         Assert.NotEmpty(client.CursorStates);
+    }
+
+    [Fact]
+    public void RunText_EncodingDefaultsWithoutGifDoNotCaptureOrInjectPointer()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), $"cmg-no-gif-{Guid.NewGuid():N}");
+        var client = new FakeAutomationClient();
+
+        var result = Runner().RunText("click \"#save\"\npauseGif 100", "debug", client,
+            gifEncoding: new GifEncodingOptions(KeepFramesDirectory: directory));
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(0, client.PageScreenshotCount);
+        Assert.Empty(client.CursorStates);
+        Assert.False(Directory.Exists(directory));
+        Assert.Contains(result.StdoutLines, line => line.Contains("status=skipped reason=no-active-recording", StringComparison.Ordinal));
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

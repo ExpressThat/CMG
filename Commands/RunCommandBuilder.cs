@@ -18,7 +18,7 @@ public sealed partial class RunCommandBuilder
         {
             Description = "GIF quality for --gif recordings: archival, highest, high, medium, or low.",
             DefaultValueFactory = _ => "highest"
-        };
+        }; var encodingOptions = GifEncodingCliOptions.Build();
         var pointerDurationOption = new Option<int?>("--pointer-duration") { Description = "Default virtual pointer movement duration in milliseconds for --gif recordings." };
         var pointerSpeedOption = new Option<string?>("--pointer-speed") { Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x." };
         var pointerEasingOption = new Option<string?>("--pointer-easing") { Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring." };
@@ -69,11 +69,8 @@ public sealed partial class RunCommandBuilder
         var envOption = new Option<string[]>("--env") { Description = "Alias for --var, useful for CI or agent-provided values." };
         var command = new Command("run", "Run CMG DSL tests with visual artifacts.")
         {
-            pathArgument,
-            configOption,
-            projectOption,
-            gifOption,
-            gifQualityOption,
+            pathArgument, configOption, projectOption, gifOption, gifQualityOption,
+            encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames,
             pointerDurationOption,
             pointerSpeedOption,
             pointerEasingOption,
@@ -129,6 +126,7 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}.");
                 return 1;
             }
+            if (!TryParseEncoding(parseResult, encodingOptions, out var gifEncoding)) return 1;
             if (!GifMotionOptionParser.TryParse(
                 parseResult.GetValue(pointerDurationOption),
                 parseResult.GetValue(pointerSpeedOption),
@@ -242,7 +240,8 @@ public sealed partial class RunCommandBuilder
                 frameDelay,
                 gifWarnSizeBytes,
                 gifMaxSizeBytes,
-                gifMaxDurationMilliseconds);
+                gifMaxDurationMilliseconds,
+                gifEncoding);
         });
 
         return command;

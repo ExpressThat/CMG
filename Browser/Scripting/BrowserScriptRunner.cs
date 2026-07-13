@@ -29,7 +29,8 @@ public sealed partial class BrowserScriptRunner
         int holdAfterNavigationMilliseconds,
         int holdAfterAssertionMilliseconds,
         string? gifTimelinePath,
-        int frameDelayMilliseconds)
+        int frameDelayMilliseconds,
+        GifEncodingOptions? gifEncoding)
     {
         var importResult = ScriptImportExpander.Expand(script, Directory.GetCurrentDirectory());
         if (!importResult.Success)
@@ -79,7 +80,7 @@ public sealed partial class BrowserScriptRunner
         var output = new List<string>();
         using var recorder = gif is null
             ? null
-            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality, pointerMotion, pointerVisual, showPointer, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, GifTimelinePath.Resolve(gif.FullName, gifTimelinePath), frameDelayMilliseconds));
+            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality, pointerMotion, pointerVisual, showPointer, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, GifTimelinePath.Resolve(gif.FullName, gifTimelinePath), frameDelayMilliseconds, gifEncoding));
 
         recorder?.Start(remoteDebuggingUrl);
 

@@ -393,6 +393,18 @@ cmg gif color-diff demo-output\brand-palette.frames\frame-0001.png demo-output\b
 
 See `demo-scripts/165-gif-color-controls.cmgscript` and `166-gif-color-controls-runner.cmgscript` for both script forms.
 
+Apply the same controls to a whole direct run:
+
+```powershell
+cmg browser control script --file demo-scripts\167-command-gif-color-controls.cmgscript --gif demo-output\command-colors.gif --gif-quality archival --gif-dither atkinson --gif-palette local --gif-colors 192 --keep-frames demo-output\command-colors.frames
+```
+
+For runner GIFs, the retained-frame directory is automatically split by artifact name:
+
+```powershell
+cmg run demo-scripts\168-command-gif-color-controls-runner.cmgscript --gif demo-output\runner-colors --gif-quality archival --gif-dither sierra --gif-palette adaptive --gif-colors 192 --keep-frames demo-output\runner-color-frames
+```
+
 ## Common Next Steps
 
 | Need | Where To Go |

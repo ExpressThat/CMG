@@ -17,6 +17,7 @@ public sealed partial class BrowserControlCommandBuilder
             Description = "GIF quality: archival, highest, high, medium, or low.",
             DefaultValueFactory = _ => "highest"
         };
+        var encodingOptions = GifEncodingCliOptions.Build();
         var pointerDurationOption = new Option<int?>("--pointer-duration") { Description = "Default virtual pointer movement duration in milliseconds for --gif recordings." };
         var pointerSpeedOption = new Option<string?>("--pointer-speed") { Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x." };
         var pointerEasingOption = new Option<string?>("--pointer-easing") { Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring." };
@@ -49,7 +50,7 @@ public sealed partial class BrowserControlCommandBuilder
 
         var command = new Command("script", "Run a .cmgscript browser automation script.")
         {
-            fileOption, inlineOption, gifOption, gifQualityOption, pointerDurationOption, pointerSpeedOption,
+            fileOption, inlineOption, gifOption, gifQualityOption, encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames, pointerDurationOption, pointerSpeedOption,
             pointerEasingOption, pointerThemeOption, pointerColorOption, pointerSizeOption, pointerShadowOption,
             showPointerOption, captionStyleOption, captionPositionOption, captionSeverityOption,
             clickPulseOption, holdAfterActionOption, holdOnFailureOption, preClickHoldOption, postClickHoldOption,
@@ -85,15 +86,15 @@ public sealed partial class BrowserControlCommandBuilder
             var browserKind = CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions);
             var port = CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions);
             return inline is null
-                ? browserControlCommandHandler.RunScript(browserKind, port, file, options.Gif, options.Trace, timeouts, parseResult.GetValue(baseUrlOption), variables, options.Quality, options.Motion, options.Visual, options.ShowPointer, options.Caption, options.Pulse, options.HoldAfterAction, options.HoldOnFailure, options.PreClickHold, options.PostClickHold, options.HoldAfterNavigation, options.HoldAfterAssertion, options.Timeline, options.FrameDelay)
-                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, options.Gif, options.Trace, timeouts, parseResult.GetValue(baseUrlOption), variables, options.Quality, options.Motion, options.Visual, options.ShowPointer, options.Caption, options.Pulse, options.HoldAfterAction, options.HoldOnFailure, options.PreClickHold, options.PostClickHold, options.HoldAfterNavigation, options.HoldAfterAssertion, options.Timeline, options.FrameDelay);
+                ? browserControlCommandHandler.RunScript(browserKind, port, file, options.Gif, options.Trace, timeouts, parseResult.GetValue(baseUrlOption), variables, options.Quality, options.Motion, options.Visual, options.ShowPointer, options.Caption, options.Pulse, options.HoldAfterAction, options.HoldOnFailure, options.PreClickHold, options.PostClickHold, options.HoldAfterNavigation, options.HoldAfterAssertion, options.Timeline, options.FrameDelay, options.Encoding)
+                : browserControlCommandHandler.RunInlineScript(browserKind, port, inline, options.Gif, options.Trace, timeouts, parseResult.GetValue(baseUrlOption), variables, options.Quality, options.Motion, options.Visual, options.ShowPointer, options.Caption, options.Pulse, options.HoldAfterAction, options.HoldOnFailure, options.PreClickHold, options.PostClickHold, options.HoldAfterNavigation, options.HoldAfterAssertion, options.Timeline, options.FrameDelay, options.Encoding);
         });
 
         return command;
 
         bool TryParseGifScriptOptions(ParseResult parseResult, out GifScriptCommandOptions options)
         {
-            options = new GifScriptCommandOptions(parseResult.GetValue(gifOption), parseResult.GetValue(traceOption), GifQuality.Highest, null, null, PointerVisibility.Auto, null, ClickPulseStyle.Ring, 0, 0, 0, 0, 0, 0, parseResult.GetValue(gifTimelineOption), 0);
+            options = new GifScriptCommandOptions(parseResult.GetValue(gifOption), parseResult.GetValue(traceOption), GifQuality.Highest, null, null, PointerVisibility.Auto, null, ClickPulseStyle.Ring, 0, 0, 0, 0, 0, 0, parseResult.GetValue(gifTimelineOption), 0, new());
             if (!GifQualityParser.TryParse(parseResult.GetValue(gifQualityOption), out var gifQuality))
             {
                 Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}.");
@@ -129,7 +130,13 @@ public sealed partial class BrowserControlCommandBuilder
                 return false;
             }
 
-            options = new GifScriptCommandOptions(parseResult.GetValue(gifOption), parseResult.GetValue(traceOption), gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holds.HoldAfterAction, holds.HoldOnFailure, holds.PreClickHold, holds.PostClickHold, holds.HoldAfterNavigation, holds.HoldAfterAssertion, parseResult.GetValue(gifTimelineOption), frameDelay);
+            if (!encodingOptions.TryParse(parseResult, out var encoding, out var encodingError))
+            {
+                Console.Error.WriteLine(encodingError);
+                return false;
+            }
+
+            options = new GifScriptCommandOptions(parseResult.GetValue(gifOption), parseResult.GetValue(traceOption), gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holds.HoldAfterAction, holds.HoldOnFailure, holds.PreClickHold, holds.PostClickHold, holds.HoldAfterNavigation, holds.HoldAfterAssertion, parseResult.GetValue(gifTimelineOption), frameDelay, encoding);
             return true;
         }
 
@@ -168,7 +175,8 @@ public sealed partial class BrowserControlCommandBuilder
         int HoldAfterNavigation,
         int HoldAfterAssertion,
         string? Timeline,
-        int FrameDelay);
+        int FrameDelay,
+        GifEncodingOptions Encoding);
 
     private readonly record struct GifHoldOptions(
         int HoldAfterAction,

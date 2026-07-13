@@ -307,6 +307,8 @@ dotnet run -- --firefox browser close
 - `164-gif-timeline-blocks-runner.cmgscript`: Demonstrates timeline editing blocks inside a structured runner test.
 - `165-gif-color-controls.cmgscript`: Demonstrates archival quality, dithering, palette/color controls, retained source PNG frames, and timeline metadata.
 - `166-gif-color-controls-runner.cmgscript`: Demonstrates the same encoder controls from the structured runner DSL.
+- `167-command-gif-color-controls.cmgscript`: Demonstrates whole-run `--gif-dither`, `--gif-palette`, `--gif-colors`, and `--keep-frames` with a direct script.
+- `168-command-gif-color-controls-runner.cmgscript`: Demonstrates per-test retained-frame isolation for whole-run runner GIFs.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

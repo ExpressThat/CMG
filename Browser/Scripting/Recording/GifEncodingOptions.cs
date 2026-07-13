@@ -22,8 +22,54 @@ public sealed record GifEncodingOptions(
         return new(dither, palette, colors, keepFrames);
     }
 
+    public GifEncodingOptions WithOptions(
+        IReadOnlyDictionary<string, string> options,
+        string context,
+        string outputPath)
+    {
+        var parsed = FromOptions(options, context, outputPath);
+        return new(
+            options.ContainsKey("dither") ? parsed.Dither : Dither,
+            options.ContainsKey("palette") ? parsed.Palette : Palette,
+            options.ContainsKey("colors") ? parsed.Colors : Colors,
+            options.ContainsKey("keepFrames") ? parsed.KeepFramesDirectory : KeepFramesDirectory);
+    }
+
+    public GifEncodingOptions ForOutput(string outputPath, bool isolate)
+    {
+        if (!isolate || KeepFramesDirectory is null) return this;
+        var name = Path.GetFileNameWithoutExtension(outputPath);
+        return this with { KeepFramesDirectory = Path.Combine(KeepFramesDirectory, name) };
+    }
+
     public static string DitherValues => "none, floyd-steinberg, bayer, atkinson, sierra";
     public static string PaletteValues => "global, local, adaptive";
+
+    public static bool TryParse(
+        string? ditherValue,
+        string? paletteValue,
+        int? colors,
+        string? keepFramesDirectory,
+        out GifEncodingOptions encoding,
+        out string? error)
+    {
+        encoding = new();
+        error = null;
+        try
+        {
+            var dither = ParseDither(ditherValue, "GIF");
+            var palette = ParsePalette(paletteValue, "GIF");
+            if (colors is < 2 or > 256)
+                throw new ScriptExecutionException("GIF option colors= must be an integer from 2 to 256.");
+            encoding = new(dither, palette, colors, keepFramesDirectory);
+            return true;
+        }
+        catch (ScriptExecutionException exception)
+        {
+            error = exception.Message;
+            return false;
+        }
+    }
 
     private static GifDitherMode ParseDither(string? value, string context) => value?.ToLowerInvariant() switch
     {

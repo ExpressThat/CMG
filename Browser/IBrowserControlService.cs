@@ -44,6 +44,19 @@ public interface IBrowserControlService
         RunScript(browserKind, file, gif, trace, timeouts, baseUrl, variables);
 
     ScriptRunResult RunScript(
+        BrowserKind browserKind, int? port, string file, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts,
+        string? baseUrl, IReadOnlyDictionary<string, string> variables, GifQuality gifQuality,
+        ScriptPointerMotionOptions? pointerMotion, PointerVisualOptions? pointerVisual, PointerVisibility showPointer,
+        BrowserCaptionOptions? captionOptions, ClickPulseStyle clickPulse, int holdAfterActionMilliseconds,
+        int holdOnFailureMilliseconds, int preClickHoldMilliseconds, int postClickHoldMilliseconds,
+        int holdAfterNavigationMilliseconds, int holdAfterAssertionMilliseconds, string? gifTimelinePath,
+        int frameDelayMilliseconds, GifEncodingOptions? gifEncoding) =>
+        RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual,
+            showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds,
+            preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds,
+            holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
+
+    ScriptRunResult RunScript(
         BrowserKind browserKind,
         string file,
         FileInfo? gif,
@@ -81,4 +94,17 @@ public interface IBrowserControlService
         int holdAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         string? gifTimelinePath = null,
         int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds);
+
+    ScriptRunResult RunScriptText(
+        BrowserKind browserKind, int? port, string script, FileInfo? gif, FileInfo? trace, ScriptTimeoutOptions? timeouts,
+        string? baseUrl, IReadOnlyDictionary<string, string> variables, GifQuality gifQuality,
+        ScriptPointerMotionOptions? pointerMotion, PointerVisualOptions? pointerVisual, PointerVisibility showPointer,
+        BrowserCaptionOptions? captionOptions, ClickPulseStyle clickPulse, int holdAfterActionMilliseconds,
+        int holdOnFailureMilliseconds, int preClickHoldMilliseconds, int postClickHoldMilliseconds,
+        int holdAfterNavigationMilliseconds, int holdAfterAssertionMilliseconds, string? gifTimelinePath,
+        int frameDelayMilliseconds, GifEncodingOptions? gifEncoding) =>
+        RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion,
+            pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds,
+            preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds,
+            holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
 }

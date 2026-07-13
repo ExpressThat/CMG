@@ -1,0 +1,7 @@
+hideFromGif {
+  navigate "about:blank"
+  setContent "<main style='font:16px system-ui;padding:28px;background:#fff'><h1>Command-level color controls</h1><button id='reveal'>Reveal evidence</button><section id='evidence' hidden style='margin-top:18px;height:210px;background:linear-gradient(90deg,#ff1744,#ffea00,#00e676,#00b0ff,#651fff);box-shadow:0 12px 30px rgba(0,0,0,.25)'><p style='padding:22px;background:rgba(255,255,255,.82)'>Retained before GIF quantization</p></section></main><script>document.querySelector('#reveal').onclick=()=>document.querySelector('#evidence').hidden=false</script>"
+}
+click "#reveal"
+pauseGif 600
+expectEval "document.querySelector('#evidence').hidden === false"

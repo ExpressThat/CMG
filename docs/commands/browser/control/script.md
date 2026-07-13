@@ -11,6 +11,7 @@ cmg browser --port <port> control script --file <path>
 cmg browser control script --file -
 cmg browser control script --file <path> --gif <path>
 cmg browser control script --file <path> --gif <path> --gif-quality highest
+cmg browser control script --file <path> --gif <path> --gif-dither atkinson --gif-palette local --gif-colors 192 --keep-frames <directory>
 cmg browser control script --file <path> --gif <path> --pointer-duration 600 --pointer-easing ease-in-out
 cmg browser control script --file <path> --gif <path> --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44 --pointer-shadow strong
 cmg browser control script --file <path> --gif <path> --show-pointer false
@@ -41,6 +42,10 @@ cmg --firefox browser control script --file <path>
 For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--file -`. PowerShell parses quotes before CMG receives `--inline`, so nested DSL, CSS, and JavaScript quotes are inherently easier to preserve through a file or stdin.
 - `--gif <path>`: Optional output path for an animated GIF recording of the script run.
 - `--gif-quality <archival|highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. `archival` prioritizes frame-local color fidelity over file size. Defaults to `highest`.
+- `--gif-dither <none|floyd-steinberg|bayer|atkinson|sierra>`: Override the quality preset's dithering algorithm for command-level `--gif`.
+- `--gif-palette <global|local|adaptive>`: Override the GIF color table. `adaptive` currently uses frame-local tables.
+- `--gif-colors <2..256>`: Override the maximum GIF palette size.
+- `--keep-frames <directory>`: Keep each exact browser PNG before GIF encoding as `frame-NNNN.png` in this directory.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -100,6 +105,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - When `--gif` is provided, the whole script is recorded and nested block recordings are suppressed.
 - GIF recording adds a virtual pointer in the browser page. The pointer is visible live during recording and is captured in the GIF frames.
 - Without `--gif` or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif`, `moveMouse`, `recordCheckpoint`, `showPointer`, and `hidePointer` are skipped instead of creating pointer frames or timeline entries.
+- Whole-run encoder flags are inert without `--gif`; `--keep-frames` does not capture screenshots or inject a virtual pointer by itself.
 - Pointer-aware actions resolve rich locators to the same target used by browser dispatch, so pointer movement, pointer events, hover state, drag ghosts, screenshots, and captions stay aligned.
 - DSL recording scopes and blocks can set `autoCaptions=true` and `captionTemplate=`. Automatic captions use privacy-safe text-entry defaults and target-aware `captionPosition=auto`; without an active GIF they do not modify the page.
 - DSL recording scopes and blocks can set `intro=`, `outro=`, `introDuration=`, and `outroDuration=`. Explicit `intro` and `outro` actions capture chapter cards. All title-card forms are recording-only and never create a pointer or overlay in non-GIF runs.
@@ -130,6 +136,7 @@ SCREENSHOT 006 C:\Projects\CMG\profile-dialog.png
 PASS 007 line=7 action=evaluate document.title
 EVALUATE 007 CMG Browser Control Test Page
 GIF C:\Projects\CMG\demo-output\dialog-flow.gif
+GIF_FRAMES path="C:\\Projects\\CMG\\demo-output\\dialog-flow.frames" count=14
 GIF_TIMELINE C:\Projects\CMG\demo-output\dialog-flow.timeline.json
 GIF_PAUSE 008 milliseconds=800 status=captured
 TRACE C:\Projects\CMG\demo-output\dialog-flow.trace.json
@@ -140,6 +147,8 @@ SKIP 007 Feature flag disabled
 
 Action-specific payload lines are documented in the [action reference](../../../scripting/actions.md).
 
+`GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>` is emitted only when source-frame retention is active. The retained PNGs contain the same visible page and CMG recording UI as their corresponding GIF frames and should be handled as sensitive artifacts.
+
 ## Stderr
 
 Failure output includes the script line number, action, and reason:
@@ -149,11 +158,14 @@ Line 4: waitForElement failed. No element matched selector '#missing'.
 Line 8: click failed in macro login > repeat[2/3]. No element matched selector '#save'.
 ```
 
+Invalid encoder values fail before browser connection and name the option, for example `GIF option dither= must be one of: ...`, `GIF option palette= must be one of: ...`, or `GIF option colors= must be an integer from 2 to 256.`
+
 ## Exit Codes
 
 - `0`: Script completed successfully.
 - `0`: Script stopped with `skip "reason"`.
 - `1`: Browser is not running, script cannot be read, script syntax is invalid, or an action fails.
+- `1`: A GIF encoder option is invalid or `--gif-colors` is outside `2..256`.
 
 ## Example
 

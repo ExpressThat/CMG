@@ -76,7 +76,8 @@ public sealed record CmgRunOptions(
     int FrameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
     long? GifWarnSizeBytes = null,
     long? GifMaxSizeBytes = null,
-    int? GifMaxDurationMilliseconds = null);
+    int? GifMaxDurationMilliseconds = null,
+    GifEncodingOptions? GifEncoding = null);
 
 public sealed partial record CmgRunResult(
     bool Success,

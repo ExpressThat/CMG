@@ -4,7 +4,7 @@ using CMG.Runner;
 
 namespace CMG.Browser;
 
-public sealed class BrowserControlService : IBrowserControlService
+public sealed partial class BrowserControlService : IBrowserControlService
 {
     private readonly BrowserStateStore stateStore;
     private readonly BrowserAutomationClientFactory automationClientFactory;
@@ -94,9 +94,10 @@ public sealed class BrowserControlService : IBrowserControlService
         int holdAfterNavigationMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         string? gifTimelinePath = null,
-        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
+        GifEncodingOptions? gifEncoding = null)
     {
-        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, postClickHoldMilliseconds: postClickHoldMilliseconds, preClickHoldMilliseconds: preClickHoldMilliseconds, holdAfterNavigationMilliseconds: holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds: holdAfterAssertionMilliseconds, gifTimelinePath: gifTimelinePath, frameDelayMilliseconds: frameDelayMilliseconds);
+        return RunScript(browserKind, port: null, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, postClickHoldMilliseconds: postClickHoldMilliseconds, preClickHoldMilliseconds: preClickHoldMilliseconds, holdAfterNavigationMilliseconds: holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds: holdAfterAssertionMilliseconds, gifTimelinePath: gifTimelinePath, frameDelayMilliseconds: frameDelayMilliseconds, gifEncoding: gifEncoding);
     }
 
     public ScriptRunResult RunScript(
@@ -121,7 +122,8 @@ public sealed class BrowserControlService : IBrowserControlService
         int holdAfterNavigationMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         string? gifTimelinePath = null,
-        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
+        GifEncodingOptions? gifEncoding = null)
     {
         if (file is not "-" && !File.Exists(file))
         {
@@ -136,7 +138,7 @@ public sealed class BrowserControlService : IBrowserControlService
 
         try
         {
-            return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
+            return scriptRunner.Run(file, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding);
         }
         catch (Exception exception) when (IsBrowserTransportFailure(exception))
         {
@@ -189,7 +191,8 @@ public sealed class BrowserControlService : IBrowserControlService
         int holdAfterNavigationMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         int holdAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         string? gifTimelinePath = null,
-        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
+        GifEncodingOptions? gifEncoding = null)
     {
         var state = stateStore.Load(browserKind, port);
         if (state is null)
@@ -199,7 +202,7 @@ public sealed class BrowserControlService : IBrowserControlService
 
         try
         {
-            return scriptRunner.RunText(script, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
+            return scriptRunner.RunText(script, state.RemoteDebuggingUrl, automationClientFactory.Create(browserKind), gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding);
         }
         catch (Exception exception) when (IsBrowserTransportFailure(exception))
         {

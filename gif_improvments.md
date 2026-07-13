@@ -132,9 +132,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: DSL `quality=<highest|high|medium|low>` presets on `gif`, `recordVideo`, and `screencast`.
 - Implemented: DSL `recording quality=highest { ... }` scoped defaults and CLI `--gif-quality <highest|high|medium|low>` as a whole-run default.
 - Implemented: lossless-ish `quality=archival` uses a 256-color frame-local palette and maximum preset dithering strength. CLI: `--gif-quality archival`.
-- Implemented in DSL: `dither=<none|floyd-steinberg|bayer|atkinson|sierra>` explicit palette control. Whole-run CLI support remains open.
-- Implemented in DSL: `palette=<global|local|adaptive>`; adaptive currently selects frame-local tables. Whole-run CLI support remains open.
-- Implemented in DSL: `colors=<2..256>` advanced palette tuning. Whole-run CLI support remains open.
+- Implemented: `dither=<none|floyd-steinberg|bayer|atkinson|sierra>` and whole-run CLI `--gif-dither <mode>`.
+- Implemented: `palette=<global|local|adaptive>` and whole-run CLI `--gif-palette <mode>`; adaptive currently selects frame-local tables.
+- Implemented: `colors=<2..256>` and whole-run CLI `--gif-colors <count>`.
 - Implemented: add automatic runner palette diagnostics that emit `GIF_WARN_PALETTE` when recorded artifacts approach the GIF color limit.
 - Add DSL `format=<gif|apng|webp|mp4>` on recording blocks while keeping GIF as the default visual-evidence format.
 - Add CLI `--record-format <gif|apng|webp|mp4>` only for whole-run output defaults.
@@ -142,7 +142,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add animated WebP output for smaller files with better color.
 - Add MP4/H.264 or WebM export for long recordings where GIF is too large.
 - Implemented for DSL recording blocks: sidecar PNG frame export preserves the exact browser PNG bytes before encoding.
-- Implemented in DSL: `keepFrames=<directory|true|false>` on recording blocks and inherited recording scopes. Whole-run CLI support remains open.
+- Implemented: DSL `keepFrames=<directory|true|false>` and whole-run CLI `--keep-frames <directory>`. Runner output is isolated per GIF for parallel safety.
 - Implemented: `cmg gif color-diff <source.png> <encoded.gif> --frame <n>` reports parseable MAE, RMS, maximum-channel, and changed-pixel encoder drift.
 - Implemented for gradients and exact source-byte retention: automated color-delta tests. Brand-color, shadow, and transparency coverage remains open.
 - Implemented: direct and structured-runner gradient/brand-color fidelity fixtures in demos 165 and 166. Broader browser visual baselines remain open.

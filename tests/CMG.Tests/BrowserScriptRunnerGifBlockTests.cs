@@ -86,6 +86,7 @@ public sealed class BrowserScriptRunnerGifBlockTests
         Assert.True(result.Success, result.Error);
         Assert.True(File.Exists(path));
         Assert.NotEmpty(Directory.GetFiles(Path.Combine(directory.FullName, "controlled.frames"), "*.png"));
+        Assert.Contains(result.StdoutLines, line => line.StartsWith("GIF_FRAMES path=", StringComparison.Ordinal) && line.Contains("controlled.frames", StringComparison.Ordinal));
         directory.Delete(recursive: true);
     }
 

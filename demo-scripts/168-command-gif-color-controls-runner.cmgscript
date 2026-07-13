@@ -1,0 +1,17 @@
+test "warm palette" {
+  hideFromGif {
+    navigate "about:blank"
+    setContent "<style>html,body{margin:0;background:#fff}main{box-sizing:border-box;min-height:100vh}</style><main style='font:16px system-ui;padding:28px'><h1>Warm evidence</h1><button id='show'>Show</button><section id='evidence' hidden style='height:180px;background:linear-gradient(90deg,#d50000,#ff6d00,#ffd600)'></section></main><script>document.querySelector('#show').onclick=()=>document.querySelector('#evidence').hidden=false</script>"
+  }
+  click "#show"
+  pauseGif 400
+}
+
+test "cool palette" {
+  hideFromGif {
+    navigate "about:blank"
+    setContent "<style>html,body{margin:0;background:#fff}main{box-sizing:border-box;min-height:100vh}</style><main style='font:16px system-ui;padding:28px'><h1>Cool evidence</h1><button id='show'>Show</button><section id='evidence' hidden style='height:180px;background:linear-gradient(90deg,#00bfa5,#0091ea,#6200ea)'></section></main><script>document.querySelector('#show').onclick=()=>document.querySelector('#evidence').hidden=false</script>"
+  }
+  click "#show"
+  pauseGif 400
+}

@@ -177,6 +177,11 @@ public sealed partial class BrowserScriptRunner
 
         recorder.Finish();
         output.Add($"GIF {recorder.OutputPath}");
+        if (recorder.RetainedFramesDirectory is not null)
+        {
+            var path = $"\"{System.Text.Json.JsonEncodedText.Encode(Path.GetFullPath(recorder.RetainedFramesDirectory))}\"";
+            output.Add($"GIF_FRAMES path={path} count={recorder.FrameCount}");
+        }
         if (!string.IsNullOrWhiteSpace(recorder.TimelinePath))
         {
             output.Add($"GIF_TIMELINE {recorder.TimelinePath}");

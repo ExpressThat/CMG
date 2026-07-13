@@ -62,6 +62,7 @@ public sealed partial class CmgVisualSegmentExecutor
                 }
 
                 if (!TryGifQualityFor(action, out var blockQuality, out error) ||
+                    !TryGifEncodingFor(action, options.GifEncoding, gif, out var blockEncoding, out error) ||
                     !TryGifMotionFor(action, options.PointerMotion, out var blockMotion, out error) ||
                     !TryGifVisualFor(action, options.PointerVisual, out var blockVisual, out error) ||
                     !TryGifPointerVisibilityFor(action, options.ShowPointer, out var blockShowPointer, out error) ||
@@ -84,14 +85,13 @@ public sealed partial class CmgVisualSegmentExecutor
                     gifQualities[gif.FullName] = FormatQuality(blockQuality);
                 }
 
-                if (!RunActions(action.Children, remoteDebuggingUrl, gif, timeouts, baseUrl, blockQuality, blockMotion, blockVisual, blockShowPointer, blockCaption, blockPulse, blockHold, blockFailureHold, blockPreClickHold, blockPostClickHold, blockNavigationHold, blockAssertionHold, blockTimeline, output, steps, out error, blockFrameDelay))
+                if (!RunActions(action.Children, remoteDebuggingUrl, gif, timeouts, baseUrl, blockQuality, blockMotion, blockVisual, blockShowPointer, blockCaption, blockPulse, blockHold, blockFailureHold, blockPreClickHold, blockPostClickHold, blockNavigationHold, blockAssertionHold, blockTimeline, output, steps, out error, blockFrameDelay, blockEncoding))
                 {
                     return Fail(test, output, error, gifs, steps, gifQualities);
                 }
 
                 continue;
             }
-
             if (action.Kind.Equals("apiRequest", StringComparison.OrdinalIgnoreCase))
             {
                 var flush = FlushPending(pending, pendingLineMap, remoteDebuggingUrl, gif: null, timeouts, baseUrl, options);
@@ -221,7 +221,8 @@ public sealed partial class CmgVisualSegmentExecutor
         RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, options.GifQuality, options.PointerMotion,
             options.PointerVisual, options.ShowPointer, options.CaptionOptions, options.ClickPulse, options.HoldAfterActionMilliseconds, options.HoldOnFailureMilliseconds,
             options.PreClickHoldMilliseconds, options.PostClickHoldMilliseconds, options.HoldAfterNavigationMilliseconds,
-            options.HoldAfterAssertionMilliseconds, gifTimelinePath, options.FrameDelayMilliseconds);
+            options.HoldAfterAssertionMilliseconds, gifTimelinePath, options.FrameDelayMilliseconds,
+            options.GifEncoding?.ForOutput(gif?.FullName ?? "recording.gif", isolate: true));
 
     private static CmgTestResult Fail(
         CmgTestCase test,

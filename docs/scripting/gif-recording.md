@@ -441,7 +441,9 @@ screencast "compact" quality=medium {
 
 When command-level `--gif` is active, nested `gif`, `recordVideo`, and `screencast` block files are still suppressed and the command-level `--gif-quality` applies to the whole recording.
 
-`keepFrames=` is deliberately block-level in this stage. It writes source PNGs only while that block owns the recorder. Use `cmg gif color-diff <source.png> <gif> --frame <n>` to quantify encoder drift as mean absolute error, RMS error, maximum channel error, and changed-pixel count. The command requires no browser.
+Whole-run recordings support the same encoder controls through `--gif-quality`, `--gif-dither`, `--gif-palette`, `--gif-colors`, and `--keep-frames`. Direct scripts write retained PNGs directly into the requested directory. `cmg run` creates one child directory per GIF so parallel tests and retries cannot overwrite one another. Every retained recording emits `GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>`.
+
+Use `cmg gif color-diff <source.png> <gif> --frame <n>` to quantify encoder drift as mean absolute error, RMS error, maximum-channel error, changed-pixel count, and transparency-change count. The command requires no browser.
 
 ## Timing
 

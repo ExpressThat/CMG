@@ -28,13 +28,14 @@ public sealed partial class CmgVisualSegmentExecutor
         List<string> output,
         List<CmgStepResult> steps,
         out string? error,
-        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds)
+        int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
+        GifEncodingOptions? gifEncoding = null)
     {
         var pending = new List<string>();
         var pendingLineMap = new Dictionary<int, int>();
         foreach (var action in actions)
         {
-            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, pending, pendingLineMap, output, steps, out error))
+            if (TryRunDirectAction(action, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding, pending, pendingLineMap, output, steps, out error))
             {
                 if (error is not null)
                 {
@@ -47,7 +48,7 @@ public sealed partial class CmgVisualSegmentExecutor
             AddPending(pending, pendingLineMap, action, lowerer.Lower(action));
         }
 
-        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
+        var final = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding);
         return AppendResult(final.Result, final.LineMap, output, steps, actions.LastOrDefault(), gif, out error);
     }
 
@@ -71,6 +72,7 @@ public sealed partial class CmgVisualSegmentExecutor
         int holdAfterAssertionMilliseconds,
         string? gifTimelinePath,
         int frameDelayMilliseconds,
+        GifEncodingOptions? gifEncoding,
         List<string> pending,
         Dictionary<int, int> pendingLineMap,
         List<string> output,
@@ -83,7 +85,7 @@ public sealed partial class CmgVisualSegmentExecutor
             return false;
         }
 
-        var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds);
+        var flush = RunLines(pending, pendingLineMap, remoteDebuggingUrl, gif, timeouts, baseUrl, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding);
         if (!AppendResult(flush.Result, flush.LineMap, output, steps, action, gif, out error))
         {
             return true;

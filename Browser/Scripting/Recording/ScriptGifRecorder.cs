@@ -41,6 +41,10 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
     public IReadOnlyList<GifTimelineCheckpoint> Checkpoints => checkpoints;
 
+    public string? RetainedFramesDirectory => options.EffectiveEncoding.KeepFramesDirectory;
+
+    public int FrameCount => frameSink.FrameCount;
+
     public void Start(string remoteDebuggingUrl)
     {
         this.remoteDebuggingUrl = remoteDebuggingUrl;

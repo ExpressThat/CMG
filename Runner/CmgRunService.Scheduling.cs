@@ -16,6 +16,7 @@ public sealed partial class CmgRunService
             var (result, durationOutput) = ApplyGifDurationGuard(sizedResult, options);
             tests.Add(result);
             output.Add(TestOutput(StatusWord(result), result.Name, options));
+            output.AddRange(result.Output.Where(line => line.StartsWith("GIF_FRAMES ", StringComparison.Ordinal)).Distinct(StringComparer.Ordinal));
             output.AddRange(sizeOutput);
             output.AddRange(durationOutput);
             output.AddRange(GifSizeWarnings(result, options));

@@ -1,5 +1,6 @@
 using CMG.Browser;
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 using CMG.Runner;
 
 namespace CMG.Tests;
@@ -122,6 +123,31 @@ public sealed class CmgVisualSegmentExecutorTests
         Assert.All(result.Steps, step => Assert.NotEqual(0, step.Sequence));
         Assert.Contains(result.Steps, step => step.Action == "navigate");
         Assert.Contains(result.Steps, step => step.Action == "click");
+    }
+
+    [Fact]
+    public void Run_CommandGifAppliesEncodingAndIsolatesRetainedFrames()
+    {
+        var directory = Directory.CreateTempSubdirectory("cmg-run-encoding-");
+        var gifs = Directory.CreateDirectory(Path.Combine(directory.FullName, "gifs"));
+        var frames = Directory.CreateDirectory(Path.Combine(directory.FullName, "frames"));
+        var test = new CmgTestCase("flow.cmgscript", "color evidence", [Node("caption", ["Ready"])], new Dictionary<string, string>());
+        var options = Options() with
+        {
+            GifDirectory = gifs,
+            GifQuality = GifQuality.Archival,
+            GifEncoding = new GifEncodingOptions(GifDitherMode.None, GifPaletteMode.Local, 32, frames.FullName)
+        };
+
+        var result = Executor(new FakeAutomationClient()).Run(test, "debug", options, attempt: 1);
+
+        Assert.True(result.Success, result.Error);
+        var gif = Assert.Single(result.GifPath!.Split(';', StringSplitOptions.RemoveEmptyEntries));
+        Assert.True(File.Exists(gif));
+        var retained = Path.Combine(frames.FullName, Path.GetFileNameWithoutExtension(gif));
+        Assert.NotEmpty(Directory.GetFiles(retained, "*.png"));
+        Assert.Contains(result.Output, line => line.StartsWith("GIF_FRAMES path=", StringComparison.Ordinal) && line.Contains(Path.GetFileName(retained), StringComparison.Ordinal));
+        directory.Delete(recursive: true);
     }
 
     private static CmgVisualSegmentExecutor Executor(IBrowserAutomationClient client) =>

@@ -28,6 +28,10 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
 - `--gif-quality <archival|highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. `archival` prioritizes frame-local color fidelity over file size. Defaults to `highest`.
+- `--gif-dither <none|floyd-steinberg|bayer|atkinson|sierra>`: Override the quality preset's dithering algorithm for every command-level test GIF.
+- `--gif-palette <global|local|adaptive>`: Override the GIF color table. `adaptive` currently uses frame-local tables.
+- `--gif-colors <2..256>`: Override the maximum GIF palette size.
+- `--keep-frames <directory>`: Keep exact pre-encoding PNG frames. Each test writes to `<directory>/<gif-name>/frame-NNNN.png`, including retry suffixes, so parallel tests do not overwrite one another.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -86,6 +90,7 @@ Stdout prints one parseable line per test:
 TEST PASS <name>
 TEST FAIL <name>
 TEST SKIP <name>
+GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>
 GIF_WARN_SIZE test="<name>" path="<gif-path>" sizeBytes=<bytes> thresholdBytes=<bytes>
 GIF_WARN_PALETTE test="<name>" path="<gif-path>" paletteColors=<count-or->256> thresholdColors=240 palette=<mode>
 GIF_MAX_SIZE test="<name>" path="<gif-path>" sizeBytes=<bytes> thresholdBytes=<bytes>
@@ -94,7 +99,7 @@ RUN STOP maxFailures=<count>
 TEST LIST <run|skip> <name>
 ```
 
-Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `GIF_WARN_SIZE` lines are emitted only when `--gif-warn-size` is set and a recorded GIF exists above the threshold; they do not change the run exit code. `GIF_WARN_PALETTE` lines are emitted automatically when a recorded GIF uses at least 240 decoded colors or exceeds the 256-color counting cap, which tells agents that the artifact may show color pressure or dithering. `GIF_MAX_SIZE` and `GIF_MAX_DURATION` lines are emitted when their matching guard is set and a recorded GIF exceeds the threshold; the test is marked failed and the run exits `1`. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
+Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `GIF_FRAMES` identifies each retained-frame directory and count; it is emitted only when recording and `--keep-frames` are both active. Encoder flags without `--gif` do not capture frames or inject a virtual pointer. `GIF_WARN_SIZE` lines are emitted only when `--gif-warn-size` is set and a recorded GIF exists above the threshold; they do not change the run exit code. `GIF_WARN_PALETTE` lines are emitted automatically when a recorded GIF uses at least 240 decoded colors or exceeds the 256-color counting cap, which tells agents that the artifact may show color pressure or dithering. `GIF_MAX_SIZE` and `GIF_MAX_DURATION` lines are emitted when their matching guard is set and a recorded GIF exceeds the threshold; the test is marked failed and the run exits `1`. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
 Parameterized tests print and report their expanded names, for example `TEST LIST run opens profile`. Project runs include the project name in brackets, for example `TEST LIST run [firefox-smoke] checkout`.
 
 When a step fails, stderr also includes:
@@ -146,12 +151,15 @@ All recorded actions use CMG's virtual pointer, pointer/mouse event dispatch, ca
 
 Actions, locators, control flow, loops, macros, scoped variables, `recording` / `withRecording` scoped GIF defaults, and `gif` blocks are shared with direct browser-control scripts unless a reference page says otherwise. Start with the [action index](../scripting/action-index.md), then use the [detailed action reference](../scripting/actions.md) for options and examples.
 
+Invalid encoder values fail before browser connection or test scheduling and name the option, for example `GIF option dither= must be one of: ...`, `GIF option palette= must be one of: ...`, or `GIF option colors= must be an integer from 2 to 256.`
+
 `contains "text"` and `notContains "text"` check the page body. `contains "<selector>" "text"`, `containsText`, `waitForText`, `notContainsText`, and the negative text aliases check a selector or rich locator and accept `timeout=<milliseconds>`, `match=contains|exact|regex`, and `ignoreCase=true`. Successful text checks emit the normal test/step pass output; failed checks include the expected and actual text in the step failure reason.
 
 ## Exit Codes
 
 - `0`: All tests passed.
 - `1`: At least one test failed, a GIF exceeded `--gif-max-size` or `--gif-max-duration`, no script files matched, the selected browser is invalid, `--browser-port` is outside `1..65535`, the selected `--project` is missing or invalid, the selected browser is not running, or `--auto-launch` could not start it.
+- `1`: A GIF encoder option is invalid or `--gif-colors` is outside `2..256`.
 
 ## Examples
 
@@ -160,6 +168,7 @@ cmg browser launch
 cmg run demo-scripts\20-runner-flow.cmgscript
 cmg run tests\flows --gif artifacts\gifs
 cmg run tests\flows --gif artifacts\gifs --gif-quality highest
+cmg run tests\flows --gif artifacts\gifs --gif-dither sierra --gif-palette local --gif-colors 192 --keep-frames artifacts\source-frames
 cmg run tests\flows --gif artifacts\gifs --pointer-duration 600 --pointer-easing spring
 cmg run tests\flows --gif artifacts\gifs --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44 --pointer-shadow strong
 cmg run tests\flows --gif artifacts\gifs --show-pointer false
