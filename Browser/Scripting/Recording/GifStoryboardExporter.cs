@@ -1,5 +1,6 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace CMG.Browser.Scripting.Recording;
 
@@ -77,14 +78,6 @@ public static class GifStoryboardExporter
     private static void CopyFrame(Image<Rgba32> gif, int frameIndex, Image<Rgba32> storyboard, int offsetX, int offsetY)
     {
         using var frame = gif.Frames.CloneFrame(frameIndex);
-        var pixels = new Rgba32[frame.Width * frame.Height];
-        frame.CopyPixelDataTo(pixels);
-        storyboard.ProcessPixelRows(target =>
-        {
-            for (var y = 0; y < frame.Height; y++)
-            {
-                pixels.AsSpan(y * frame.Width, frame.Width).CopyTo(target.GetRowSpan(offsetY + y).Slice(offsetX, frame.Width));
-            }
-        });
+        storyboard.Mutate(context => context.DrawImage(frame, new Point(offsetX, offsetY), 1f));
     }
 }

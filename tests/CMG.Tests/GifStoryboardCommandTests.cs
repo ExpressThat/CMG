@@ -2,6 +2,7 @@ using System.CommandLine;
 using CMG.Browser.Scripting.Recording;
 using CMG.Commands;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace CMG.Tests;
@@ -86,6 +87,37 @@ public sealed class GifStoryboardCommandTests
         finally
         {
             Console.SetError(original);
+            File.Delete(input);
+            File.Delete(output);
+        }
+    }
+
+    [Fact]
+    public void Storyboard_CompositesTransparentFramePixelsOntoWhite()
+    {
+        var input = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        var output = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.png");
+        try
+        {
+            using (var gif = new Image<Rgba32>(8, 8, Color.White))
+            using (var delta = new Image<Rgba32>(8, 8, Color.Transparent))
+            {
+                delta[4, 4] = Color.Blue;
+                var metadata = delta.Frames.RootFrame.Metadata.GetGifMetadata();
+                metadata.HasTransparency = true;
+                metadata.DisposalMethod = GifDisposalMethod.NotDispose;
+                gif.Frames.AddFrame(delta.Frames.RootFrame);
+                gif.SaveAsGif(input);
+            }
+
+            GifStoryboardExporter.Export(new(input), new(output), columns: 2, maxFrames: null);
+
+            using var storyboard = Image.Load<Rgba32>(output);
+            Assert.Equal(new Rgba32(255, 255, 255, 255), storyboard[8, 0]);
+            Assert.True(storyboard[12, 4].B > 200);
+        }
+        finally
+        {
             File.Delete(input);
             File.Delete(output);
         }

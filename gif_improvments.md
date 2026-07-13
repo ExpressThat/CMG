@@ -233,7 +233,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: long waits show deterministic 33%, 67%, and 100% progress stages; `waitProgress=false` opts out.
 - Implemented: add zero-based frame/time spans for nested and repeated runtime steps plus final failure-frame bookmarks in timeline schema version 2.
 - Implemented: add `cmg gif storyboard <file> --output <png>` to export GIF frames as a contact sheet PNG.
-- Fix storyboard export compositing for GIF delta/disposal frames; real-Chrome diagnostic artifacts can currently show black unchanged regions in the contact sheet even when the animated GIF frames are valid.
+- Implemented: storyboard export alpha-composites transparent GIF pixels onto a white review background so valid frames do not show black evidence gaps.
 - Implemented: add self-contained static step-start and final-failure frame evidence in HTML reports, linked from the runtime step table.
 
 ## Viewport, Layout, And Framing

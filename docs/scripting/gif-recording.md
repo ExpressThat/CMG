@@ -625,7 +625,7 @@ Use this file when reports, CI artifacts, or agent feedback need machine-readabl
 
 Use `cmg gif inspect <file>` when an agent needs to inspect an existing GIF artifact without rerunning the browser flow. It reports frame count, duration, dimensions, file size, transparency, repeat metadata, and palette color pressure as a parseable `GIF_INSPECT` line.
 
-Use `cmg gif storyboard <file> --output <png>` when a reviewer or agent needs a still-image overview of a GIF. It samples frames into a PNG contact sheet and emits `GIF_STORYBOARD input="<gif>" output="<png>" frames=<exported>/<total> columns=<count> width=<pixels> height=<pixels>`.
+Use `cmg gif storyboard <file> --output <png>` when a reviewer or agent needs a still-image overview of a GIF. It samples frames into a white-background PNG contact sheet, alpha-compositing transparent pixels so they never render as black evidence gaps. It emits `GIF_STORYBOARD input="<gif>" output="<png>" frames=<exported>/<total> columns=<count> width=<pixels> height=<pixels>`.
 
 Use `cmg gif optimize <file> --output <gif>` to coalesce consecutive duplicate frames in an existing artifact while preserving duration. It emits `GIF_OPTIMIZE input="<gif>" output="<gif>" framesBefore=<count> framesAfter=<count> duplicateFramesRemoved=<count> durationMs=<milliseconds> sizeBeforeBytes=<bytes> sizeAfterBytes=<bytes>`.
 
