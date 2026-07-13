@@ -390,8 +390,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add focus ring amplification for accessibility evidence through `focusEvidence=true`.
 - Implemented: add ARIA role/name captions for targeted or focused controls through `accessibleNames=true`.
 - Add color-contrast warning overlay option.
-- Add reduced-motion recording preset.
-- Add high-contrast pointer preset.
+- Implemented: add `reducedMotion=true` plus `--gif-reduced-motion`, with static pointer travel/click evidence, suppressed inherited caption fades, and child overrides.
+- Implemented: add `highContrastPointer=true` plus `--gif-high-contrast-pointer`, with a large yellow ring, strong edge, and per-property child overrides.
 - Add larger caption text preset.
 - Add screen-reader narration sidecar text file.
 - Implemented: add an `accessibilityEvidence=true` preset that captures keyboard labels, focused-element evidence, and accessible role/name callouts with high-contrast styling.

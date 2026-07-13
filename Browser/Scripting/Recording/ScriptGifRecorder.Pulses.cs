@@ -29,6 +29,10 @@ public sealed partial class ScriptGifRecorder
 
         if (action is not null)
         {
+            if (GifRecordingPresetOptions.Boolean(action.Options, "reducedMotion", false, action.Name))
+            {
+                return ClickPulseStyle.Dot;
+            }
             var actionName = action.Name.ToLowerInvariant();
             if (actionName is "rightclick" or "contextclick" ||
                 action.Options.GetValueOrDefault("button")?.Equals("right", StringComparison.OrdinalIgnoreCase) is true)

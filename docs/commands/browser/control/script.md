@@ -60,6 +60,8 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--pointer-size <8..96>`: Default virtual pointer size in CSS pixels for command-level `--gif` recordings.
 - `--pointer-shadow <none|light|medium|strong>`: Default virtual pointer shadow strength for command-level `--gif` recordings.
 - `--show-pointer <true|false|auto>`: Default virtual pointer visibility for command-level `--gif` recordings. Defaults to `auto`, which currently shows the pointer for pointer-aware frames. Use `false` to capture frames without the DOM pointer; child actions can override with `showPointer=true`.
+- `--gif-reduced-motion`: Removes default pointer travel animation and uses linear/static click evidence for the whole GIF. Explicit pointer durations still override the preset.
+- `--gif-high-contrast-pointer`: Uses a large yellow ring pointer with a strong dark edge for the whole GIF. Explicit pointer theme, color, size, and shadow options override individual preset properties.
 - `--caption-style <subtle|teaching|qa|bug-report|compact>`: Default caption style for command-level `--gif` recordings.
 - `--caption-position <top|bottom|left|right|auto>`: Default caption position for command-level `--gif` recordings.
 - `--caption-severity <info|success|warning|error>`: Default caption severity color for command-level `--gif` recordings.
@@ -202,6 +204,7 @@ cmg browser control script --file demo-scripts\139-cli-variables.cmgscript --var
 cmg browser control script --file demo-scripts\141-base-url.cmgscript --base-url https://example.test/app/
 cmg browser control script --file demo-scripts\148-gif-quality.cmgscript --gif demo-output\quality.gif --gif-quality highest
 cmg browser control script --file demo-scripts\149-gif-pointer-choreography.cmgscript --gif demo-output\pointer-choreography.gif --pointer-duration 500 --pointer-pre-click-hold 120 --pointer-post-click-hold 450
+cmg browser control script --file demo-scripts\180-gif-accessible-presets.cmgscript --gif demo-output\accessible-presets.gif --gif-reduced-motion --gif-high-contrast-pointer
 cmg browser control script --file demo-scripts\156-gif-pointer-styles.cmgscript --gif demo-output\pointer-styles-whole-run.gif --pointer-theme branded --pointer-color "#2563eb"
 cmg browser control script --file demo-scripts\157-gif-caption-styles.cmgscript --gif demo-output\caption-styles-whole-run.gif --caption-style bug-report --caption-position bottom
 cmg browser control script --file demo-scripts\150-gif-failure-hold.cmgscript --gif demo-output\failure-hold.gif --gif-hold-on-failure 1800 --gif-timeline demo-output\timelines

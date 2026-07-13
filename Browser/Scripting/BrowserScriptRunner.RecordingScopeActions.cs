@@ -103,6 +103,8 @@ public sealed partial class BrowserScriptRunner
         "focusEvidence",
         "accessibleNames",
         "highContrast",
+        "reducedMotion",
+        "highContrastPointer",
         "intro",
         "outro",
         "introDuration",

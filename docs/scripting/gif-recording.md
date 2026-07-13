@@ -92,6 +92,8 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `focusEvidence=<true|false>`: Draws an amplified ring around the actual `document.activeElement` during capture.
 - `accessibleNames=<true|false>`: Labels a targeted or focused control with its derived role and accessible name.
 - `highContrast=<true|false>`: Uses yellow/black high-contrast evidence borders. Child actions can override the preset.
+- `reducedMotion=<true|false>`: Removes inherited pointer travel, uses linear movement, suppresses inherited caption fades, and defaults click evidence to a static dot. Explicit child durations, fades, and pulses still win; `false` restores normal defaults.
+- `highContrastPointer=<true|false>`: Uses a 42px yellow ring pointer with a strong dark edge. Child pointer properties override individual preset values; `false` restores the normal pointer.
 - `intro=<text>` / `outro=<text>`: Full-viewport title cards captured before the first child and at finalization.
 - `introDuration=<milliseconds>` / `outroDuration=<milliseconds>`: Title-card holds. Defaults to `1200` and must be greater than zero.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
@@ -356,6 +358,17 @@ showKeystrokes {
 The scope starts no recording by itself. It affects a surrounding command-level `--gif` or nested `gif` / `recordVideo` / `screencast` recording; without one, its children execute normally with no overlay, screenshot, or virtual pointer. Parent settings are defaults and child actions can override them locally. CMG removes every accessibility node immediately after each browser screenshot, including when capture fails.
 
 See demos 178 and 179 for direct and structured-runner examples.
+
+For less animated, easier-to-track pointer evidence, combine the visual presets:
+
+```text
+recording reducedMotion=true highContrastPointer=true {
+  click "#continue"
+  click "#details" pointerDuration=250 pointerSize=48
+}
+```
+
+Whole-run recordings can use `--gif-reduced-motion` and `--gif-high-contrast-pointer`. These flags only alter a recorder already created by `--gif`; they never start recording or inject a pointer themselves.
 
 ## Privacy And Redaction
 

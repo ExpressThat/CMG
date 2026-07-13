@@ -69,7 +69,8 @@ public sealed partial class ScriptGifRecorder
 
     private static int CaptionTime(BrowserScriptAction action, string name, int fallback) =>
         action.Options.TryGetValue(name, out var value)
-            ? ScriptPointerMotionOptions.ParseDuration(value, $"{action.Name} option {name}=") : fallback;
+            ? ScriptPointerMotionOptions.ParseDuration(value, $"{action.Name} option {name}=")
+            : GifRecordingPresetOptions.Boolean(action.Options, "reducedMotion", false, action.Name) ? 0 : fallback;
 
     private void SetCaptionOpacity(double opacity) =>
         devToolsClient.Evaluate(remoteDebuggingUrl!, BrowserDomScripts.SetMessageBarOpacity(opacity));

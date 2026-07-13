@@ -1,0 +1,8 @@
+setContent "<style>html,body{margin:0;background:#f8fafc}main{padding:48px;font:16px system-ui}.actions{display:flex;gap:18px}button{font:inherit;padding:12px 18px}</style><main><h1>Clear pointer evidence</h1><div class='actions'><button id='continue'>Continue</button><button id='details'>Details</button></div><p id='status'>Ready</p></main>"
+
+gif "accessible presets" output="demo-output/gif-accessible-presets.gif" reducedMotion=true highContrastPointer=true autoCaptions=true {
+  click "#continue"
+  click "#details" pointerDuration=220 pointerSize=48
+  evaluate "document.querySelector('#status').textContent = 'Complete'"
+  expectText "#status" "Complete"
+}

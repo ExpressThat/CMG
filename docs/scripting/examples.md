@@ -485,6 +485,17 @@ gif "accessible form" accessibilityEvidence=true {
 
 Use `showKeystrokes { ... }` inside a command-level GIF when only keyboard labels are needed. See `demo-scripts/178-gif-accessibility-evidence.cmgscript` and `demo-scripts/179-gif-accessibility-evidence-runner.cmgscript`.
 
+Use reduced motion and a high-contrast pointer together when motion itself would make evidence harder to review:
+
+```text
+gif "clear evidence" reducedMotion=true highContrastPointer=true {
+  click "#continue"
+  click "#details" pointerDuration=200
+}
+```
+
+See demos 180 and 181 for block-level and whole-run CLI usage.
+
 ## Common Next Steps
 
 | Need | Where To Go |

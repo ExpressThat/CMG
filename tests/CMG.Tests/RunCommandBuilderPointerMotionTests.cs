@@ -46,6 +46,19 @@ public sealed class RunCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void RunCommand_MapsAccessibleGifPresets()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "run flows --gif artifacts --gif-reduced-motion --gif-high-contrast-pointer").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(0, handler.PointerMotion?.PointerDurationMilliseconds);
+        Assert.Equal(ScriptPointerEasing.Linear, handler.PointerMotion?.PointerEasing);
+        Assert.Equal(PointerVisualOptions.HighContrast, handler.PointerVisual);
+    }
+
+    [Fact]
     public void RunCommand_MapsShowPointerOption()
     {
         var handler = new CapturingHandler();

@@ -23,6 +23,7 @@ public sealed partial class RunCommandBuilder
         var pointerSpeedOption = new Option<string?>("--pointer-speed") { Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x." };
         var pointerEasingOption = new Option<string?>("--pointer-easing") { Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring." };
         var pointerVisualOptions = BuildPointerVisualOptions();
+        var presetOptions = BuildGifPresetOptions();
         var showPointerOption = new Option<string?>("--show-pointer") { Description = $"Default virtual pointer visibility for --gif recordings: {PointerVisibilityOptions.Values}." };
         var captionOptions = BuildCaptionOptions();
         var clickPulseOption = new Option<string?>("--click-pulse") { Description = "Click pulse style for --gif: ring, ripple, dot, crosshair, or none." };
@@ -66,6 +67,7 @@ public sealed partial class RunCommandBuilder
             pointerSpeedOption,
             pointerEasingOption,
             pointerVisualOptions.Theme, pointerVisualOptions.Color, pointerVisualOptions.Size, pointerVisualOptions.Shadow,
+            presetOptions.ReducedMotion, presetOptions.HighContrastPointer,
             showPointerOption,
             captionOptions.Style, captionOptions.Position, captionOptions.Severity,
             clickPulseOption,
@@ -104,7 +106,6 @@ public sealed partial class RunCommandBuilder
             variableOption,
             envOption
         };
-
         command.SetAction(parseResult =>
         {
             if (!RunConfigReader.TryRead(parseResult.GetValue(configOption), out var config, out var configError))
@@ -137,6 +138,7 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(visualError);
                 return 1;
             }
+            ApplyGifPresets(parseResult, presetOptions, parseResult.GetValue(pointerDurationOption), parseResult.GetValue(pointerSpeedOption), parseResult.GetValue(pointerEasingOption), parseResult.GetValue(pointerVisualOptions.Theme), parseResult.GetValue(pointerVisualOptions.Color), parseResult.GetValue(pointerVisualOptions.Size), parseResult.GetValue(pointerVisualOptions.Shadow), ref pointerMotion, ref pointerVisual);
             if (!PointerVisibilityOptions.TryParse(parseResult.GetValue(showPointerOption), out var showPointer, out var showPointerError))
             {
                 Console.Error.WriteLine(showPointerError);
@@ -198,7 +200,6 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine($"Run config project '{project?.Name}' has unknown browser '{project?.Browser}'.");
                 return 1;
             }
-
             return handler.Run(
                 projectBrowser ?? CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 parseResult.GetValue(pathArgument) ?? string.Empty,
@@ -244,7 +245,6 @@ public sealed partial class RunCommandBuilder
                 browserIdleTimeout,
                 browserIdleDisabled);
         });
-
         return command;
     }
 }

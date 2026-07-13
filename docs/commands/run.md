@@ -45,6 +45,8 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--pointer-size <8..96>`: Default virtual pointer size in CSS pixels for command-level `--gif` recordings.
 - `--pointer-shadow <none|light|medium|strong>`: Default virtual pointer shadow strength for command-level `--gif` recordings.
 - `--show-pointer <true|false|auto>`: Default virtual pointer visibility for command-level `--gif` recordings. Defaults to `auto`, which currently shows the pointer for pointer-aware frames. Use `false` to capture frames without the DOM pointer; DSL blocks and child actions can override with `showPointer=`.
+- `--gif-reduced-motion`: Removes default pointer travel animation and uses linear/static click evidence for every whole-run GIF. Explicit pointer durations still override it.
+- `--gif-high-contrast-pointer`: Uses the large yellow high-contrast ring pointer for every whole-run GIF. Explicit pointer visual options override individual preset properties.
 - `--caption-style <subtle|teaching|qa|bug-report|compact>`: Default caption style for command-level `--gif` recordings.
 - `--caption-position <top|bottom|left|right|auto>`: Default caption position for command-level `--gif` recordings.
 - `--caption-severity <info|success|warning|error>`: Default caption severity color for command-level `--gif` recordings.
@@ -189,6 +191,7 @@ cmg run tests\flows --gif artifacts\gifs --gif-crop "#stage" --gif-crop-padding 
 cmg run tests\flows --gif artifacts\gifs --pointer-duration 600 --pointer-easing spring
 cmg run tests\flows --gif artifacts\gifs --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44 --pointer-shadow strong
 cmg run tests\flows --gif artifacts\gifs --show-pointer false
+cmg run demo-scripts\181-gif-accessible-presets-runner.cmgscript --gif artifacts\accessible --gif-reduced-motion --gif-high-contrast-pointer
 cmg run tests\flows --gif artifacts\gifs --caption-style qa --caption-position bottom --caption-severity success
 cmg run tests\flows --gif artifacts\gifs --click-pulse ripple --pointer-pre-click-hold 120 --pointer-post-click-hold 450 --gif-hold-on-failure 1800
 cmg run tests\flows --gif artifacts\gifs --gif-timeline artifacts\timelines

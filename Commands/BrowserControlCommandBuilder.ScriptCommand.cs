@@ -26,6 +26,8 @@ public sealed partial class BrowserControlCommandBuilder
         var pointerSizeOption = new Option<int?>("--pointer-size") { Description = "Default virtual pointer size in CSS pixels for --gif recordings. Valid range is 8 to 96." };
         var pointerShadowOption = new Option<string?>("--pointer-shadow") { Description = $"Default virtual pointer shadow for --gif recordings: {PointerVisualOptions.ShadowValues}." };
         var showPointerOption = new Option<string?>("--show-pointer") { Description = $"Default virtual pointer visibility for --gif recordings: {PointerVisibilityOptions.Values}." };
+        var reducedMotionOption = new Option<bool>("--gif-reduced-motion") { Description = "Use reduced-motion pointer choreography for the whole GIF." };
+        var highContrastPointerOption = new Option<bool>("--gif-high-contrast-pointer") { Description = "Use the high-contrast virtual pointer preset for the whole GIF." };
         var captionStyleOption = new Option<string?>("--caption-style") { Description = $"Default caption style for --gif recordings: {BrowserCaptionOptions.StyleValues}." };
         var captionPositionOption = new Option<string?>("--caption-position") { Description = $"Default caption position for --gif recordings: {BrowserCaptionOptions.PositionValues}." };
         var captionSeverityOption = new Option<string?>("--caption-severity") { Description = $"Default caption severity color for --gif recordings: {BrowserCaptionOptions.SeverityValues}." };
@@ -55,7 +57,7 @@ public sealed partial class BrowserControlCommandBuilder
             encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight,
             pointerDurationOption, pointerSpeedOption,
             pointerEasingOption, pointerThemeOption, pointerColorOption, pointerSizeOption, pointerShadowOption,
-            showPointerOption, captionStyleOption, captionPositionOption, captionSeverityOption,
+            showPointerOption, reducedMotionOption, highContrastPointerOption, captionStyleOption, captionPositionOption, captionSeverityOption,
             clickPulseOption, holdAfterActionOption, holdOnFailureOption, preClickHoldOption, postClickHoldOption,
             holdAfterNavigationOption, holdAfterAssertionOption, gifFpsOption, gifFrameDelayOption, gifTimelineOption,
             traceOption, timeoutOption, navigationTimeoutOption, assertionTimeoutOption, baseUrlOption, variableOption, envOption
@@ -113,6 +115,8 @@ public sealed partial class BrowserControlCommandBuilder
                 Console.Error.WriteLine(visualError);
                 return false;
             }
+            pointerMotion = GifRecordingPresetCli.Motion(parseResult.GetValue(reducedMotionOption), parseResult.GetValue(pointerDurationOption), parseResult.GetValue(pointerSpeedOption), parseResult.GetValue(pointerEasingOption), pointerMotion);
+            pointerVisual = GifRecordingPresetCli.Visual(parseResult.GetValue(highContrastPointerOption), parseResult.GetValue(pointerThemeOption), parseResult.GetValue(pointerColorOption), parseResult.GetValue(pointerSizeOption), parseResult.GetValue(pointerShadowOption), pointerVisual);
             if (!PointerVisibilityOptions.TryParse(parseResult.GetValue(showPointerOption), out var showPointer, out var showPointerError))
             {
                 Console.Error.WriteLine(showPointerError);

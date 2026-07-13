@@ -1,4 +1,5 @@
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Browser;
 
@@ -37,25 +38,30 @@ public sealed record PointerVisualOptions(
 
     public PointerVisualOptions WithAction(BrowserScriptAction action, bool touch)
     {
-        var theme = ThemeFor(action, touch);
+        var highContrast = GifRecordingPresetOptions.Boolean(action.Options, "highContrastPointer", false, action.Name);
+        var baseline = highContrast ? HighContrast : action.Options.ContainsKey("highContrastPointer") ? Default : this;
+        var theme = baseline.ThemeFor(action, touch);
         var color = action.Options.TryGetValue("pointerColor", out var rawColor)
             ? ParseColor(rawColor, action.Name)
-            : Color;
+            : baseline.Color;
         var size = action.Options.TryGetValue("pointerSize", out var rawSize)
             ? ParseSize(rawSize, action.Name)
-            : SizePixels;
+            : baseline.SizePixels;
         var shadow = action.Options.TryGetValue("pointerShadow", out var rawShadow)
             ? ParseShadow(rawShadow, action.Name)
-            : Shadow;
+            : baseline.Shadow;
         return new(theme, color, size, shadow);
     }
 
-    public static PointerVisualOptions FromOptions(IReadOnlyDictionary<string, string> options, string source) =>
-        new(
-            options.TryGetValue("pointerTheme", out var theme) ? ParseTheme(theme, source) : PointerTheme.Arrow,
-            options.TryGetValue("pointerColor", out var color) ? ParseColor(color, source) : null,
-            options.TryGetValue("pointerSize", out var size) ? ParseSize(size, source) : null,
-            options.TryGetValue("pointerShadow", out var shadow) ? ParseShadow(shadow, source) : PointerShadow.Medium);
+    public static PointerVisualOptions FromOptions(IReadOnlyDictionary<string, string> options, string source)
+    {
+        var preset = GifRecordingPresetOptions.Boolean(options, "highContrastPointer", false, source) ? HighContrast : Default;
+        return new(
+            options.TryGetValue("pointerTheme", out var theme) ? ParseTheme(theme, source) : preset.Theme,
+            options.TryGetValue("pointerColor", out var color) ? ParseColor(color, source) : preset.Color,
+            options.TryGetValue("pointerSize", out var size) ? ParseSize(size, source) : preset.SizePixels,
+            options.TryGetValue("pointerShadow", out var shadow) ? ParseShadow(shadow, source) : preset.Shadow);
+    }
 
     private PointerTheme ThemeFor(BrowserScriptAction action, bool touch)
     {
@@ -119,4 +125,7 @@ public sealed record PointerVisualOptions(
     public static string ThemeValues => "arrow, hand, dot, ring, branded, touch";
 
     public static string ShadowValues => "none, light, medium, strong";
+
+    public static readonly PointerVisualOptions HighContrast =
+        new(PointerTheme.Ring, "#ffea00", 42, PointerShadow.Strong);
 }

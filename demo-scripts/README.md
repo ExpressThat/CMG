@@ -330,6 +330,8 @@ dotnet run -- --firefox browser close
 - `177-agent-browser-lease.ps1`: Demonstrates opt-in long idle leases, status, activity renewal, explicit keepalive, disablement, and guaranteed demo cleanup on a separate browser port.
 - `178-gif-accessibility-evidence.cmgscript`: Demonstrates safe key labels, amplified focus evidence, role/name callouts, high-contrast evidence, and child overrides in a direct GIF block.
 - `179-gif-accessibility-evidence-runner.cmgscript`: Demonstrates the same accessibility evidence controls in a structured runner test.
+- `180-gif-accessible-presets.cmgscript`: Demonstrates reduced-motion choreography, a high-contrast pointer, and child property overrides.
+- `181-gif-accessible-presets-runner.cmgscript`: Demonstrates the accessible pointer presets in structured tests and with whole-run CLI flags.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

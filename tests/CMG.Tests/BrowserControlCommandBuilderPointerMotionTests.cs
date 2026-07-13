@@ -47,6 +47,21 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     }
 
     [Fact]
+    public void ScriptCommand_MapsAccessibleGifPresetsAndExplicitOverrides()
+    {
+        var handler = new CapturingHandler();
+        var exitCode = BuildRoot(handler).Parse(
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --gif-reduced-motion --pointer-duration 120 --gif-high-contrast-pointer --pointer-size 48").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(120, handler.PointerMotion?.PointerDurationMilliseconds);
+        Assert.Equal(ScriptPointerEasing.Linear, handler.PointerMotion?.PointerEasing);
+        Assert.Equal(PointerTheme.Ring, handler.PointerVisual?.Theme);
+        Assert.Equal("#ffea00", handler.PointerVisual?.Color);
+        Assert.Equal(48, handler.PointerVisual?.SizePixels);
+    }
+
+    [Fact]
     public void ScriptCommand_MapsShowPointerOption()
     {
         var handler = new CapturingHandler();

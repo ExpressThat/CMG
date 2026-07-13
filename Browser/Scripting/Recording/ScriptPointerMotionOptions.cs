@@ -14,15 +14,23 @@ public sealed record ScriptPointerMotionOptions(
 
     public ScriptPointerMotionOptions WithAction(BrowserScriptAction action, string? durationAlias = null, string? easingAlias = null)
     {
-        var duration = PointerDurationMilliseconds;
+        var reduced = GifRecordingPresetOptions.Boolean(action.Options, "reducedMotion", false, action.Name);
+        var duration = reduced ? 0 : PointerDurationMilliseconds;
+        var speed = reduced ? null : PointerSpeed;
+        var easing = reduced ? ScriptPointerEasing.Linear : PointerEasing;
+        if (action.Options.ContainsKey("reducedMotion") && !reduced)
+        {
+            duration = null;
+            speed = null;
+            easing = ScriptPointerEasing.EaseInOut;
+        }
         if (action.Options.TryGetValue("pointerDuration", out var rawDuration) ||
             durationAlias is not null && action.Options.TryGetValue(durationAlias, out rawDuration))
         {
             duration = ParseDuration(rawDuration, $"{action.Name} option pointerDuration=");
         }
 
-        var speed = action.Options.TryGetValue("pointerSpeed", out var rawSpeed) ? rawSpeed : PointerSpeed;
-        var easing = PointerEasing;
+        speed = action.Options.TryGetValue("pointerSpeed", out var rawSpeed) ? rawSpeed : speed;
         if (action.Options.TryGetValue("pointerEasing", out var rawEasing) ||
             easingAlias is not null && action.Options.TryGetValue(easingAlias, out rawEasing))
         {
