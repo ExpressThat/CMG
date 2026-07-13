@@ -56,6 +56,7 @@ public sealed partial class BrowserControlCommandBuilder
             fileOption, inlineOption, gifOption, gifQualityOption,
             encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames,
             encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight, encodingOptions.Debug, encodingOptions.Accessibility, encodingOptions.EventCaptions,
+            encodingOptions.Intro, encodingOptions.Outro, encodingOptions.IntroDuration, encodingOptions.OutroDuration, encodingOptions.ResultOutro,
             pointerDurationOption, pointerSpeedOption,
             pointerEasingOption, pointerThemeOption, pointerColorOption, pointerSizeOption, pointerShadowOption,
             showPointerOption, reducedMotionOption, highContrastPointerOption, captionStyleOption, captionPositionOption, captionSeverityOption, captionSizeOption,

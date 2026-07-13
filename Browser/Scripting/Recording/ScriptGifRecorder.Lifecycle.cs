@@ -42,9 +42,9 @@ public sealed partial class ScriptGifRecorder
         CaptureHoldFrame(action, "postDropHold");
     }
 
-    public void Finish()
+    public void Finish(GifRecordingOutcome outcome = GifRecordingOutcome.Passed)
     {
-        CaptureConfiguredOutro();
+        CaptureConfiguredOutro(outcome);
         if (remoteDebuggingUrl is not null)
         {
             TryRemoveDomCursor();

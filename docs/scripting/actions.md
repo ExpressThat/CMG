@@ -1866,6 +1866,7 @@ Options:
 - `captionTemplate`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
 - `intro` / `outro`: Optional opening and final full-viewport title-card text.
 - `introDuration` / `outroDuration`: Optional title-card durations in milliseconds. Defaults to `1200`.
+- `resultOutro`: Optional `true`/`false` generated passed, failed, or skipped final card. Explicit outro text/actions take precedence.
 - `pressedPointer`: Default held-pointer visual compression during recorded drags. Defaults to `true`.
 - `dragTrail`: Default held-pointer trail line during recorded drags. Defaults to `false`.
 - `dragBreadcrumbs`: Default held-pointer breadcrumb dots during recorded drags. Defaults to `false`.
@@ -1964,6 +1965,7 @@ Options:
 - `captionSeverity`: Optional caption severity default for child captions.
 - `autoCaptions`: Optional `true`/`false` automatic narration for supported visual child actions.
 - `eventCaptions`, `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`: Optional recording-only event narration. The umbrella enables every category; child category options win.
+- `intro`, `outro`, `introDuration`, `outroDuration`, `resultOutro`: Optional title-card defaults. Durations must be greater than zero.
 - `captionTemplate`: Optional automatic-caption template inherited by child actions.
 - `intro` / `outro`: Optional opening and final title-card text.
 - `introDuration` / `outroDuration`: Optional title-card durations in milliseconds. Defaults to `1200`.

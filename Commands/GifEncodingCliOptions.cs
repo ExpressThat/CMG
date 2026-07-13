@@ -15,7 +15,12 @@ internal sealed record GifEncodingCliOptions(
     Option<int?> MaxHeight,
     Option<bool> Debug,
     Option<bool> Accessibility,
-    Option<bool> EventCaptions)
+    Option<bool> EventCaptions,
+    Option<string?> Intro,
+    Option<string?> Outro,
+    Option<int?> IntroDuration,
+    Option<int?> OutroDuration,
+    Option<bool> ResultOutro)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -31,7 +36,12 @@ internal sealed record GifEncodingCliOptions(
             new Option<int?>("--gif-max-height") { Description = "Maximum GIF height from 1 to 10000 pixels." },
             new Option<bool>("--gif-debug") { Description = "Show action, scope, target, pointer, and scroll diagnostics in GIF frames." },
             new Option<bool>("--gif-accessibility") { Description = "Show keyboard, focus, accessible-name, and contrast evidence in GIF frames." },
-            new Option<bool>("--gif-event-captions") { Description = "Show safe outcome captions for network, dialog, console, download, and upload events." });
+            new Option<bool>("--gif-event-captions") { Description = "Show safe outcome captions for network, dialog, console, download, and upload events." },
+            new Option<string?>("--gif-intro") { Description = "Opening title-card text for the whole GIF." },
+            new Option<string?>("--gif-outro") { Description = "Final title-card text for the whole GIF." },
+            new Option<int?>("--gif-intro-duration") { Description = "Opening title-card duration in milliseconds." },
+            new Option<int?>("--gif-outro-duration") { Description = "Final title-card duration in milliseconds." },
+            new Option<bool>("--gif-result-outro") { Description = "Generate a passed, failed, or skipped final title card." });
     }
 
     public bool TryParse(ParseResult result, out GifEncodingOptions encoding, out string? error)
@@ -46,12 +56,16 @@ internal sealed record GifEncodingCliOptions(
         if (!GifFramingOptions.TryParse(
             result.GetValue(Crop), result.GetValue(CropPadding), result.GetValue(Scale),
             result.GetValue(MaxWidth), result.GetValue(MaxHeight), out var framing, out error)) return false;
+        if (!GifTitleCardOptions.TryParse(
+            result.GetValue(Intro), result.GetValue(Outro), result.GetValue(IntroDuration), result.GetValue(OutroDuration),
+            result.GetValue(ResultOutro), out var titleCards, out error)) return false;
         encoding = encoding with
         {
             Framing = framing,
             Diagnostics = result.GetValue(Debug) ? new GifDebugOptions(true, true, true, true, true, true) : null,
             Accessibility = result.GetValue(Accessibility) ? new GifAccessibilityOptions(true, true, true, true, true) : null,
-            EventCaptions = result.GetValue(EventCaptions) ? new GifEventCaptionOptions(true, true, true, true, true) : null
+            EventCaptions = result.GetValue(EventCaptions) ? new GifEventCaptionOptions(true, true, true, true, true) : null,
+            TitleCards = titleCards
         };
         return true;
     }

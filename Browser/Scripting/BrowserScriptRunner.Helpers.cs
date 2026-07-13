@@ -163,7 +163,7 @@ public sealed partial class BrowserScriptRunner
         return value.Contains(' ', StringComparison.Ordinal) ? $"\"{value}\"" : value;
     }
 
-    private static void FinishRecording(ScriptGifRecorder? recorder, List<string> output, bool failure = false)
+    private static void FinishRecording(ScriptGifRecorder? recorder, List<string> output, bool failure = false, bool skipped = false)
     {
         if (recorder is null)
         {
@@ -175,7 +175,7 @@ public sealed partial class BrowserScriptRunner
             recorder.CaptureFailureHold();
         }
 
-        recorder.Finish();
+        recorder.Finish(failure ? GifRecordingOutcome.Failed : skipped ? GifRecordingOutcome.Skipped : GifRecordingOutcome.Passed);
         output.Add($"GIF {recorder.OutputPath}");
         if (recorder.RetainedFramesDirectory is not null)
         {

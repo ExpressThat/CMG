@@ -1,4 +1,5 @@
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Tests;
 
@@ -57,6 +58,61 @@ public sealed class BrowserScriptRunnerTitleCardTests
 
         Assert.False(result.Success);
         Assert.Contains("duration= must be greater than zero", result.Error);
+    }
+
+    [Theory]
+    [InlineData("caption Ready", "Test passed")]
+    [InlineData("fail broken", "Test failed")]
+    [InlineData("skip unavailable", "Test skipped")]
+    public void ResultOutro_UsesRunOutcome(string script, string expected)
+    {
+        var client = new FakeAutomationClient();
+        using var gif = new TempGifFile();
+        var encoding = new GifEncodingOptions(TitleCards: new GifTitleCardOptions(ResultOutro: true));
+
+        Runner().RunText(script, "debug", client, gif.File, gifEncoding: encoding);
+
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains($"textContent = \"{expected}\"", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void ExplicitOutro_TakesPrecedenceOverGeneratedResult()
+    {
+        var client = new FakeAutomationClient();
+        using var gif = new TempGifFile();
+        var titleCards = new GifTitleCardOptions(Outro: "Release complete", ResultOutro: true);
+
+        var result = Runner().RunText("caption Ready", "debug", client, gif.File,
+            gifEncoding: new GifEncodingOptions(TitleCards: titleCards));
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("textContent = \"Release complete\"", StringComparison.Ordinal));
+        Assert.DoesNotContain(client.EvaluatedExpressions, expression => expression.Contains("textContent = \"Test passed\"", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void ResultOutro_DslScopeOverridesCommandDefault()
+    {
+        var client = new FakeAutomationClient();
+        using var gif = new TempGifFile();
+
+        var result = Runner().RunText("recording resultOutro=true { caption Ready }", "debug", client, gif.File);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("textContent = \"Test passed\"", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void NestedGifResultOutro_PreservesRuntimeSkipOutcome()
+    {
+        var client = new FakeAutomationClient();
+        using var gif = new TempGifFile();
+        var script = $"gif result output=\"{gif.File.FullName.Replace("\\", "/", StringComparison.Ordinal)}\" resultOutro=true {{ skip unavailable }}";
+
+        var result = Runner().RunText(script, "debug", client);
+
+        Assert.True(result.Skipped);
+        Assert.Contains(client.EvaluatedExpressions, expression => expression.Contains("textContent = \"Test skipped\"", StringComparison.Ordinal));
     }
 
     private static BrowserScriptRunner Runner() => new(new BrowserScriptParser());

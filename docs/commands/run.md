@@ -40,6 +40,11 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-debug`: Add a frame-only diagnostics HUD and write one `<gif-name>.debug.json` sidecar per recorded test.
 - `--gif-accessibility`: Enable safe keystroke labels, amplified focus evidence, accessible role/name labels, high-contrast evidence styling, and WCAG contrast warnings for every whole-run GIF.
 - `--gif-event-captions`: Add privacy-safe outcome captions for network, dialog, console/page-error, download, and upload events in every whole-run GIF.
+- `--gif-intro <text>`: Opening full-viewport title-card text for each whole-run GIF.
+- `--gif-outro <text>`: Explicit final title-card text for each GIF. It takes precedence over generated result cards.
+- `--gif-intro-duration <milliseconds>`: Opening title-card duration. Must be greater than zero; defaults to `1200`.
+- `--gif-outro-duration <milliseconds>`: Explicit or generated final title-card duration. Must be greater than zero; defaults to `1200`.
+- `--gif-result-outro`: Generate a final `Test passed`, `Test failed`, or `Test skipped` card for each test without an explicit outro.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -150,6 +155,7 @@ GIF recording is optional.
 - `--caption-style`, `--caption-position`, `--caption-severity`, and `--caption-size` set whole-test caption defaults for `caption`, `showMessageBar`, `step`, and flattened `gif` / `recordVideo` / `screencast` block captions.
 - `--gif-accessibility` enables safe keyboard labels, focus and accessible-name evidence, high-contrast styling, and targeted-control contrast warnings for every retained frame. It is inert without `--gif`.
 - `--gif-event-captions` summarizes event outcomes without copying console text, page-error stacks, request URLs, download paths, or upload filenames into the GIF. It is inert without `--gif`.
+- Title-card flags are also inert without `--gif`. Explicit `--gif-outro` text wins over `--gif-result-outro`; generated cards use the real test outcome after soft failures, runtime failures, or skips are resolved.
 - `--click-pulse` sets the whole-test click/tap/drop pulse style when `--gif` is active.
 - `--gif-hold-after-action` sets the whole-test post-action hold duration when `--gif` is active.
 - `--pointer-pre-click-hold` and `--pointer-post-click-hold` set whole-test click/tap settle and post-pulse hold durations when `--gif` is active.
@@ -201,6 +207,7 @@ cmg run tests\flows --gif artifacts\gifs --show-pointer false
 cmg run demo-scripts\181-gif-accessible-presets-runner.cmgscript --gif artifacts\accessible --gif-reduced-motion --gif-high-contrast-pointer
 cmg run demo-scripts\185-gif-contrast-captions-runner.cmgscript --gif artifacts\accessibility-review --gif-accessibility --caption-size large
 cmg run demo-scripts\187-gif-event-captions-runner.cmgscript --gif artifacts\event-evidence --gif-event-captions
+cmg run demo-scripts\189-gif-result-cards-runner.cmgscript --gif artifacts\result-cards --gif-intro "Checkout review" --gif-result-outro
 cmg run tests\flows --gif artifacts\gifs --caption-style qa --caption-position bottom --caption-severity success
 cmg run tests\flows --gif artifacts\gifs --click-pulse ripple --pointer-pre-click-hold 120 --pointer-post-click-hold 450 --gif-hold-on-failure 1800
 cmg run tests\flows --gif artifacts\gifs --gif-timeline artifacts\timelines

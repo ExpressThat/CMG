@@ -1,0 +1,6 @@
+test "records a result card" {
+  setContent "<style>html,body{margin:0;background:#fff}main{padding:48px;font:16px system-ui}button{font:inherit;padding:12px 18px}</style><main><h1>Runner checkout</h1><button id='submit'>Submit</button><p id='status'>Ready</p></main>"
+  click "#submit"
+  evaluate "document.querySelector('#status').textContent = 'Complete'"
+  expectText "#status" "Complete"
+}

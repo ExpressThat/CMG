@@ -101,6 +101,7 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `debug=<true|false>`: Enables the complete frame diagnostics HUD and `.debug.json` sidecar.
 - `debugAction`, `debugContext`, `debugTarget`, `debugCoordinates`, `debugScroll`: Toggle individual HUD fields. Each accepts `true` or `false` and can override an inherited `debug=true`.
 - `intro=<text>` / `outro=<text>`: Full-viewport title cards captured before the first child and at finalization.
+- `resultOutro=<true|false>`: Generate a passed, failed, or skipped final card when no explicit `outro` text/action was captured.
 - `introDuration=<milliseconds>` / `outroDuration=<milliseconds>`: Title-card holds. Defaults to `1200` and must be greater than zero.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
@@ -387,6 +388,21 @@ Category options inherit and can be overridden on one child, for example `record
 CMG deliberately summarizes sensitive outcomes: console text, page-error stacks, request URLs, query strings, download paths, and upload filenames are not copied into automatic captions. Upload evidence reports only the selected file count. Use an explicit `caption` when reviewed evidence requires approved detail.
 
 Whole-run direct and runner recordings use `--gif-event-captions`. See demos 186 and 187.
+
+## Result Cards
+
+Use an explicit intro plus an outcome-aware final card:
+
+```text
+gif "checkout evidence" intro="Checkout review" introDuration=800 resultOutro=true outroDuration=900 {
+  click "#pay"
+  expectText "#status" "Paid"
+}
+```
+
+CMG resolves the final card after execution: `Test passed`, `Test failed`, or `Test skipped`. An explicit `outro="..."` default or `outro "..."` action takes precedence, so authored conclusions are never followed by a second generated card. The virtual pointer is removed before every title-card screenshot, and all options remain inert when no GIF recorder exists.
+
+Whole-run equivalents are `--gif-intro`, `--gif-outro`, `--gif-intro-duration`, `--gif-outro-duration`, and `--gif-result-outro`. See demos 188 and 189.
 
 For less animated, easier-to-track pointer evidence, combine the visual presets:
 

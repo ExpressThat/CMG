@@ -523,6 +523,17 @@ gif "event review" eventCaptions=true {
 
 Use `--gif-event-captions` for a whole direct script or runner test. See demos 186 and 187.
 
+## Outcome Cards
+
+```text
+gif "release check" intro="Release verification" resultOutro=true {
+  click "#deploy"
+  expectText "#status" "Live"
+}
+```
+
+Use explicit `outro="Approved for release"` when authored text should replace the generated result. Whole-run test GIFs can use `--gif-intro "Release verification" --gif-result-outro`. See demos 188 and 189.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

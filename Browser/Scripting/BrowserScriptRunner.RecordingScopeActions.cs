@@ -123,6 +123,7 @@ public sealed partial class BrowserScriptRunner
         "outro",
         "introDuration",
         "outroDuration",
+        "resultOutro",
         "pointerPath",
         "dragPath",
         "pressedPointer",

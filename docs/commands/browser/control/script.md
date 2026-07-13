@@ -55,6 +55,11 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-debug`: Add a frame-only diagnostics HUD and write `<gif-name>.debug.json` with one metadata record per captured frame.
 - `--gif-accessibility`: Enable safe keystroke labels, amplified focus evidence, accessible role/name labels, high-contrast evidence styling, and WCAG contrast warnings for the whole GIF.
 - `--gif-event-captions`: Add privacy-safe outcome captions for network, dialog, console/page-error, download, and upload events in the whole GIF.
+- `--gif-intro <text>`: Opening full-viewport title-card text for the whole GIF.
+- `--gif-outro <text>`: Explicit final full-viewport title-card text. It takes precedence over a generated result outro.
+- `--gif-intro-duration <milliseconds>`: Opening title-card duration. Must be greater than zero; defaults to `1200`.
+- `--gif-outro-duration <milliseconds>`: Explicit or generated final title-card duration. Must be greater than zero; defaults to `1200`.
+- `--gif-result-outro`: Generate a final `Test passed`, `Test failed`, or `Test skipped` card when no explicit outro is set.
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
@@ -213,6 +218,7 @@ cmg browser control script --file demo-scripts\149-gif-pointer-choreography.cmgs
 cmg browser control script --file demo-scripts\180-gif-accessible-presets.cmgscript --gif demo-output\accessible-presets.gif --gif-reduced-motion --gif-high-contrast-pointer
 cmg browser control script --file demo-scripts\184-gif-contrast-captions.cmgscript --gif demo-output\accessible-review.gif --gif-accessibility --caption-size x-large
 cmg browser control script --file demo-scripts\186-gif-event-captions.cmgscript
+cmg browser control script --file demo-scripts\188-gif-result-cards.cmgscript
 cmg browser control script --file demo-scripts\156-gif-pointer-styles.cmgscript --gif demo-output\pointer-styles-whole-run.gif --pointer-theme branded --pointer-color "#2563eb"
 cmg browser control script --file demo-scripts\157-gif-caption-styles.cmgscript --gif demo-output\caption-styles-whole-run.gif --caption-style bug-report --caption-position bottom
 cmg browser control script --file demo-scripts\150-gif-failure-hold.cmgscript --gif demo-output\failure-hold.gif --gif-hold-on-failure 1800 --gif-timeline demo-output\timelines

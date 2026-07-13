@@ -28,6 +28,7 @@ public sealed partial class BrowserScriptRunner
                 GifAccessibilityOptions.FromOptions(action.Options, "gif option")));
         var output = new List<string>();
         var failed = false;
+        var skipped = false;
         if (commandRecorder is null)
         {
             recorder.Start(remoteDebuggingUrl);
@@ -54,6 +55,11 @@ public sealed partial class BrowserScriptRunner
                 }
             });
         }
+        catch (ScriptSkipException)
+        {
+            skipped = true;
+            throw;
+        }
         catch
         {
             failed = true;
@@ -63,7 +69,7 @@ public sealed partial class BrowserScriptRunner
         {
             if (commandRecorder is null)
             {
-                FinishRecording(recorder, output, failed);
+                FinishRecording(recorder, output, failed, skipped);
                 recorder.Dispose();
             }
         }

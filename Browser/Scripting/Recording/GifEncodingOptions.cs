@@ -12,7 +12,8 @@ public sealed record GifEncodingOptions(
     GifFramingOptions? Framing = null,
     GifDebugOptions? Diagnostics = null,
     GifAccessibilityOptions? Accessibility = null,
-    GifEventCaptionOptions? EventCaptions = null)
+    GifEventCaptionOptions? EventCaptions = null,
+    GifTitleCardOptions? TitleCards = null)
 {
     public static GifEncodingOptions FromOptions(
         IReadOnlyDictionary<string, string> options,
@@ -26,7 +27,8 @@ public sealed record GifEncodingOptions(
         return new(dither, palette, colors, keepFrames,
             Diagnostics: GifDebugOptions.FromOptions(options, context),
             Accessibility: GifAccessibilityOptions.FromOptions(options, context),
-            EventCaptions: GifEventCaptionOptions.FromOptions(options, context));
+            EventCaptions: GifEventCaptionOptions.FromOptions(options, context),
+            TitleCards: new GifTitleCardOptions().WithOptions(options, context));
     }
 
     public GifEncodingOptions WithOptions(
@@ -43,7 +45,8 @@ public sealed record GifEncodingOptions(
             Framing,
             GifDebugOptions.FromOptions(options, context, Diagnostics),
             MergeAccessibility(options, context),
-            (EventCaptions ?? new()).WithOptions(options, context));
+            (EventCaptions ?? new()).WithOptions(options, context),
+            (TitleCards ?? new()).WithOptions(options, context));
     }
 
     private GifAccessibilityOptions MergeAccessibility(IReadOnlyDictionary<string, string> options, string context)

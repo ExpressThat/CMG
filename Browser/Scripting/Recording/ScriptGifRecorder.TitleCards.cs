@@ -4,8 +4,22 @@ public sealed partial class ScriptGifRecorder
 {
     private const int DefaultTitleCardDurationMilliseconds = 1200;
     private bool configuredIntroCaptured;
+    private bool explicitOutroCaptured;
+    private string? configuredIntro;
+    private int configuredIntroDuration = DefaultTitleCardDurationMilliseconds;
     private string? configuredOutro;
     private int configuredOutroDuration = DefaultTitleCardDurationMilliseconds;
+    private bool resultOutro;
+
+    private void InitializeTitleCards()
+    {
+        var defaults = options.EffectiveTitleCards;
+        configuredIntro = defaults.Intro;
+        configuredIntroDuration = defaults.IntroDuration;
+        configuredOutro = defaults.Outro;
+        configuredOutroDuration = defaults.OutroDuration;
+        resultOutro = defaults.ResultOutro;
+    }
 
     private void CaptureConfiguredTitleCards(BrowserScriptAction action)
     {
@@ -21,30 +35,51 @@ public sealed partial class ScriptGifRecorder
             configuredOutro = outro;
             configuredOutroDuration = DurationOption(action, "outroDuration", DefaultTitleCardDurationMilliseconds);
         }
+        if (action.Options.ContainsKey("resultOutro"))
+        {
+            resultOutro = options.EffectiveTitleCards.WithOptions(action.Options, action.Name).ResultOutro;
+        }
+
+        if (action.Options.TryGetValue("intro", out var actionIntro) && !string.IsNullOrWhiteSpace(actionIntro))
+        {
+            configuredIntro = actionIntro;
+            configuredIntroDuration = DurationOption(action, "introDuration", DefaultTitleCardDurationMilliseconds);
+        }
 
         if (configuredIntroCaptured ||
-            !action.Options.TryGetValue("intro", out var intro) || string.IsNullOrWhiteSpace(intro))
+            string.IsNullOrWhiteSpace(configuredIntro))
         {
             return;
         }
 
         configuredIntroCaptured = true;
-        CaptureTitleCard(intro, "intro", DurationOption(action, "introDuration", DefaultTitleCardDurationMilliseconds));
+        CaptureTitleCard(configuredIntro, "intro", configuredIntroDuration);
     }
 
-    private void CaptureConfiguredOutro()
+    private void CaptureConfiguredOutro(GifRecordingOutcome outcome)
     {
+        if (explicitOutroCaptured) return;
         if (!string.IsNullOrWhiteSpace(configuredOutro))
         {
             CaptureTitleCard(configuredOutro, "outro", configuredOutroDuration);
+            return;
         }
+        if (resultOutro) CaptureTitleCard(ResultText(outcome), "result", configuredOutroDuration);
     }
 
     public void CaptureTitleCard(BrowserScriptAction action, string kind)
     {
+        if (kind.Equals("outro", StringComparison.OrdinalIgnoreCase)) explicitOutroCaptured = true;
         var duration = DurationOption(action, "duration", DefaultTitleCardDurationMilliseconds);
         CaptureTitleCard(action.Arguments[0], kind, duration);
     }
+
+    private static string ResultText(GifRecordingOutcome outcome) => outcome switch
+    {
+        GifRecordingOutcome.Failed => "Test failed",
+        GifRecordingOutcome.Skipped => "Test skipped",
+        _ => "Test passed"
+    };
 
     private void CaptureTitleCard(string text, string kind, int durationMilliseconds)
     {

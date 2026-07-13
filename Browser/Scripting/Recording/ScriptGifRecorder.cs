@@ -50,6 +50,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
         activeAutoRedaction = options.EffectiveRedaction.Auto;
         activeStrictRedaction = options.EffectiveRedaction.Strict;
         frameSink = new GifFrameSink(options.Quality, options.EffectiveEncoding, options.EffectiveFraming);
+        InitializeTitleCards();
     }
 
     public string OutputPath => Path.GetFullPath(options.OutputPath);

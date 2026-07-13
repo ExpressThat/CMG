@@ -111,7 +111,7 @@ public sealed partial class BrowserScriptRunner
         catch (ScriptSkipException exception)
         {
             output.Add($"SKIP {exception.LineNumber:000} {exception.Reason}");
-            FinishRecording(recorder, output);
+            FinishRecording(recorder, output, skipped: true);
             FinishTrace(context, success: true, exception.Reason, output);
             return ScriptRunResult.Skip(exception.Reason, output, context.StepRecords);
         }

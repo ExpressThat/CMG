@@ -338,6 +338,8 @@ dotnet run -- --firefox browser close
 - `185-gif-contrast-captions-runner.cmgscript`: Demonstrates whole-run `--gif-accessibility` and `--caption-size` settings in the structured runner.
 - `186-gif-event-captions.cmgscript`: Demonstrates scoped network, dialog, console, and upload outcome captions without exposing payloads.
 - `187-gif-event-captions-runner.cmgscript`: Demonstrates whole-run event evidence through `--gif-event-captions` in structured tests.
+- `188-gif-result-cards.cmgscript`: Demonstrates DSL intro timing and an outcome-aware final card.
+- `189-gif-result-cards-runner.cmgscript`: Demonstrates whole-run CLI intro and result cards in structured tests.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.
