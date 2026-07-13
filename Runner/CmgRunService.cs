@@ -138,6 +138,7 @@ public sealed partial class CmgRunService : ICmgRunService
         var plannedTests = SelectFocusedTests(planner.Plan(parse.Document).Where(test => ShouldRun(test, options)).ToArray());
         var repeatedTests = RepeatTests(plannedTests, options.RepeatEach);
         var selectedTests = ApplyOnceHooks(ApplyShard(repeatedTests, options).ToArray());
+        output.AddRange(GifAuthoringWarnings(selectedTests, options));
         return RunSelectedTests(selectedTests.ToArray(), remoteDebuggingUrl, options, tests, output);
     }
 

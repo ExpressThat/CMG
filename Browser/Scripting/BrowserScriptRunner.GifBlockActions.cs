@@ -27,6 +27,9 @@ public sealed partial class BrowserScriptRunner
                 GifRedactionOptions.FromOptions(action.Options, "gif option"),
                 GifAccessibilityOptions.FromOptions(action.Options, "gif option")));
         var output = new List<string>();
+        if (action.Name.Equals("recordVideo", StringComparison.OrdinalIgnoreCase) ||
+            action.Name.Equals("screencast", StringComparison.OrdinalIgnoreCase))
+            output.Add($"GIF_ALIAS_WARN {action.LineNumber:000} action={action.Name} format=gif suggestion=use-gif");
         var failed = false;
         var skipped = false;
         string? baseline = null;

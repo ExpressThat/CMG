@@ -200,7 +200,11 @@ Preflight writes one line for each recording scope or artifact and any actionabl
 GIF_SETTINGS scope=recordingdefaults line=2 action=recordingDefaults options=captionStyle=qa,quality=highest
 GIF_SETTINGS scope=gif line=3 action=gif options=captionStyle=qa,pointerSpeed=slow,quality=highest
 GIF_SETTINGS_WARN line=8 action=evaluate option=pointerDuration reason=non-visual-action
+GIF_SETTINGS_WARN line=3 action=recordVideo reason=gif-alias format=gif suggestion=use-gif
+GIF_SETTINGS_WARN line=3 action=recordVideo reason=long-recording-block actions=21 threshold=20 suggestion=split-or-cut
 ```
+
+`reason=gif-alias` explains that `recordVideo` and `screencast` still produce animated GIFs. `reason=long-recording-block` counts all descendant actions and suggests splitting the focused evidence or using `hideFromGif` / `cutGif` around irrelevant work. These advisory stdout lines do not require a browser and do not change the exit code.
 
 During execution, `setRecording` writes `RECORDING_SETTINGS <line> options=<effective-settings>` and `previewRecordingSettings` writes `GIF_SETTINGS <line> options=<effective-settings>`.
 
@@ -208,7 +212,7 @@ During execution, `setRecording` writes `RECORDING_SETTINGS <line> options=<effe
 
 ## Stderr
 
-`--preview-gif-settings` writes parse, import, and invalid recording-option errors to stderr. It produces no browser connection errors because it never connects.
+`--preview-gif-settings` writes parse, import, and invalid recording-option errors to stderr. It produces no browser connection errors because it never connects. Authoring warnings remain on stdout and do not make a valid preview fail.
 
 Failure output includes the script line number, action, and reason:
 

@@ -824,3 +824,5 @@ Retention declarations fail before test actions when `gif=` is not `always`, `on
 CLI retention setup fails before browser connection when `--gif-sample-rate` is below `1`, a retention mode is unknown, or more than one of `--gif-retention`, `--gif-on-failure`, and `--gif-on-retry` is supplied. Run-config type errors name the exact `gifRetention`, `gifSampleRate`, or `gifCleanPassed` property.
 
 `showMouseButtons=` accepts only boolean values. Activity overlay blocks require a body and no positional arguments; child action failures propagate normally. Without an active recorder, the blocks do not validate or inject visual evidence, but their child browser actions still run.
+
+`GIF_SETTINGS_WARN ... reason=gif-alias`, `GIF_SETTINGS_WARN ... reason=long-recording-block`, runtime `GIF_ALIAS_WARN`, and runner `GIF_RETENTION_WARN` are authoring guidance, not errors. They are written to stdout, preserve otherwise successful exit code `0`, and never require a browser when produced by `--preview-gif-settings` or `cmg run --list`.

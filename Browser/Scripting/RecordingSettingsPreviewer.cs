@@ -70,6 +70,7 @@ public static class RecordingSettingsPreviewer
                 var effective = new Dictionary<string, string>(current, StringComparer.OrdinalIgnoreCase);
                 Merge(effective, own);
                 lines.Add(Line(name, action, effective));
+                WarnRecordingBlock(action, lines);
             }
             else if (name == "previewrecordingsettings") lines.Add(Line(scope, action, current));
             WarnIgnored(action, own, lines);
@@ -83,6 +84,20 @@ public static class RecordingSettingsPreviewer
         foreach (var option in options.Keys.Where(VisualOnlyOptions.Contains))
             lines.Add($"GIF_SETTINGS_WARN line={action.LineNumber} action={action.Name} option={option} reason=non-visual-action");
     }
+
+    private static void WarnRecordingBlock(BrowserScriptAction action, ICollection<string> lines)
+    {
+        if (action.Name.Equals("recordVideo", StringComparison.OrdinalIgnoreCase) ||
+            action.Name.Equals("screencast", StringComparison.OrdinalIgnoreCase))
+            lines.Add($"GIF_SETTINGS_WARN line={action.LineNumber} action={action.Name} reason=gif-alias format=gif suggestion=use-gif");
+
+        var count = DescendantCount(action);
+        if (count > LongBlockThreshold)
+            lines.Add($"GIF_SETTINGS_WARN line={action.LineNumber} action={action.Name} reason=long-recording-block actions={count} threshold={LongBlockThreshold} suggestion=split-or-cut");
+    }
+
+    private static int DescendantCount(BrowserScriptAction action) =>
+        action.Children.Sum(child => 1 + DescendantCount(child));
 
     private static Dictionary<string, string> RecordingOptions(IReadOnlyDictionary<string, string> options) =>
         options.Where(value => BrowserScriptRunner.IsRecordingOption(value.Key))
@@ -101,4 +116,5 @@ public static class RecordingSettingsPreviewer
         { "pointerDuration", "pointerSpeed", "pointerEasing", "pointerPath", "clickPulse", "showPointer", "holdAfterAction" };
     private static readonly HashSet<string> VisualActions = new(StringComparer.OrdinalIgnoreCase)
         { "gif", "recordVideo", "screencast", "gifIfChanged", "gif.ifChanged", "gifOnFailure", "gif.onFailure", "gifSnapshot", "gif.snapshot", "click", "hover", "fill", "type", "dragAndDrop", "moveMouse", "wheel", "scrollTo", "scrollBy", "pauseGif", "caption", "step", "pointerStyle", "annotateTarget", "highlightTarget", "recordVariable" };
+    private const int LongBlockThreshold = 20;
 }

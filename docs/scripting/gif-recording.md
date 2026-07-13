@@ -604,6 +604,15 @@ GIF_WARN_NON_VISUAL line=4 action=recordCheckpoint options=pointerDuration
 
 The checks do not query or inject anything when no GIF recorder is active. Diagnostic-probe failures are ignored so they cannot fail a valid browser action. `cmg run` relays the same warning lines for agent and CI parsing. See demos 204 and 205.
 
+Authoring diagnostics are available before browser execution:
+
+```powershell
+cmg browser control script --file demo-scripts\216-gif-authoring-warnings.cmgscript --preview-gif-settings
+cmg run demo-scripts\217-gif-large-suite-warning-runner.cmgscript --list --gif demo-output\large-suite
+```
+
+Static preview emits `reason=gif-alias` because `recordVideo` and `screencast` produce GIFs, and `reason=long-recording-block` when a focused block contains more than 20 descendant actions. A real alias run also emits `GIF_ALIAS_WARN`. Runner listing emits `GIF_RETENTION_WARN` when more than 20 selected tests would all retain command-level GIFs. These diagnostics are advisory stdout records: they do not connect to a browser, alter execution, or change the exit code. Split or cut long evidence, prefer `gif`, and select failure/retry/sampled retention when appropriate.
+
 ## Output
 
 On success, stdout includes:

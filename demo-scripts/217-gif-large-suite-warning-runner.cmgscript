@@ -1,0 +1,23 @@
+describe "large visual suite" {
+  test "evidence 01" { evaluate "true" }
+  test "evidence 02" { evaluate "true" }
+  test "evidence 03" { evaluate "true" }
+  test "evidence 04" { evaluate "true" }
+  test "evidence 05" { evaluate "true" }
+  test "evidence 06" { evaluate "true" }
+  test "evidence 07" { evaluate "true" }
+  test "evidence 08" { evaluate "true" }
+  test "evidence 09" { evaluate "true" }
+  test "evidence 10" { evaluate "true" }
+  test "evidence 11" { evaluate "true" }
+  test "evidence 12" { evaluate "true" }
+  test "evidence 13" { evaluate "true" }
+  test "evidence 14" { evaluate "true" }
+  test "evidence 15" { evaluate "true" }
+  test "evidence 16" { evaluate "true" }
+  test "evidence 17" { evaluate "true" }
+  test "evidence 18" { evaluate "true" }
+  test "evidence 19" { evaluate "true" }
+  test "evidence 20" { evaluate "true" }
+  test "evidence 21" { evaluate "true" }
+}

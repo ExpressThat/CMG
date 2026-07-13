@@ -366,6 +366,8 @@ dotnet run -- --firefox browser close
 - `213-gif-retention-cli-runner.cmgscript`: Demonstrates coarse whole-run retry retention through CLI options without DSL declarations.
 - `214-gif-activity-overlays.cmgscript`: Demonstrates scoped mouse-button, console, and network activity evidence in a focused recording.
 - `215-gif-activity-overlays-runner.cmgscript`: Demonstrates the same activity overlays in a whole-test runner GIF.
+- `216-gif-authoring-warnings.cmgscript`: Demonstrates browser-free alias and long-recording-block authoring diagnostics.
+- `217-gif-large-suite-warning-runner.cmgscript`: Demonstrates the browser-free large-suite retention suggestion with runner listing.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

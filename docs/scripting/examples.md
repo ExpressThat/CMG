@@ -691,6 +691,15 @@ cmg run tests --gif artifacts/gifs --gif-retention onFailure --gif-sample-rate 1
 
 Use `--gif-clean-passed` only when the report is the durable record and passing files should be removed afterward. See demo 213.
 
+## Check GIF Authoring Before Running
+
+```powershell
+cmg browser control script --file demo-scripts\216-gif-authoring-warnings.cmgscript --preview-gif-settings
+cmg run demo-scripts\217-gif-large-suite-warning-runner.cmgscript --list --gif demo-output\large-suite
+```
+
+Both commands run without a browser. The first identifies GIF-producing provider aliases and focused recording blocks with more than 20 descendant actions. The second suggests failure, retry, sampling, or cleanup retention when a command-level GIF would retain every test in a large selection. The warnings are advisory and preserve exit code `0` for otherwise valid input.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

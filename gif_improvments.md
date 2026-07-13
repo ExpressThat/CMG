@@ -410,12 +410,12 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add docs with side-by-side examples of quality presets.
 - Add generated sample GIFs to docs for visual comparison.
 - Add a quick-start command specifically for first GIF creation.
-- Add inline suggestions when users use `recordVideo` expecting MP4.
-- Add warnings that `recordVideo` and `screencast` are GIF aliases unless `format=` or a future whole-run format default changes that.
+- Implemented: inline preview and runtime suggestions explain that `recordVideo` output is GIF and recommend the explicit `gif` spelling.
+- Implemented: `recordVideo` and `screencast` emit parseable GIF-alias warnings without changing execution or exit status.
 - Add VS Code snippets for GIF blocks and recording settings.
 - Implemented: static preflight warns when explicit virtual-pointer/visual-only options are attached to non-visual actions.
-- Add lint rules for overly long GIF blocks.
-- Add lint rule suggesting `gif=onFailure` or the equivalent whole-run CLI default for large test suites.
+- Implemented: browser-free preflight warns when a focused recording block contains more than 20 descendant actions and suggests splitting or cutting it.
+- Implemented: browser-free runner listing suggests failure retention when command-level GIF mode would retain every selected test in a suite larger than 20 tests.
 - Add script style-guide section for readable visual evidence.
 
 ## Agent Browser Lifecycle Safety

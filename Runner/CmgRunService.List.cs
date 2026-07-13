@@ -16,7 +16,9 @@ public sealed partial class CmgRunService
                 continue;
             }
 
-            foreach (var test in SelectedTestsForList(planner.Plan(parse.Document), options))
+            var selected = SelectedTestsForList(planner.Plan(parse.Document), options);
+            output.AddRange(GifAuthoringWarnings(selected, options));
+            foreach (var test in selected)
             {
                 var status = IsSkipped(test) ? "skip" : "run";
                 output.Add(ListOutput(status, test.Name, options));

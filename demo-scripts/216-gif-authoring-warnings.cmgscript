@@ -1,0 +1,25 @@
+setContent "<main style='font:24px system-ui;padding:32px;color:#172033;background:#f4f7fb;min-height:100vh'><h1>GIF authoring diagnostics</h1><p>This provider-style alias still records pointer-accurate GIF evidence.</p></main>"
+
+recordVideo "long-alias-demo" output="demo-output/216-gif-authoring-warnings.gif" {
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+  pauseGif 50
+}

@@ -55,6 +55,7 @@ public sealed class BrowserScriptRunnerGifBlockTests
         Assert.True(result.Success);
         Assert.True(File.Exists(path));
         Assert.Contains(result.StdoutLines, line => line.Contains($"GIF {Path.GetFullPath(path)}", StringComparison.Ordinal));
+        Assert.Contains(result.StdoutLines, line => line.Contains($"GIF_ALIAS_WARN 001 action={action} format=gif", StringComparison.Ordinal));
     }
 
     [Fact]

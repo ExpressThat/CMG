@@ -2,6 +2,19 @@ namespace CMG.Runner;
 
 public sealed partial class CmgRunService
 {
+    internal static IReadOnlyList<string> GifAuthoringWarnings(
+        IReadOnlyList<CmgTestCase> tests,
+        CmgRunOptions options)
+    {
+        if (options.GifDirectory is null) return [];
+        var unbounded = tests.Count(test =>
+            CmgGifRetentionPolicy.TryParse(test, options, out var policy, out _) &&
+            policy.Mode is CmgGifRetentionMode.Always && policy.SampleRate is 1 && !policy.CleanPassed);
+        return unbounded > 20
+            ? [$"GIF_RETENTION_WARN tests={unbounded} threshold=20 reason=large-suite suggestion=--gif-on-failure"]
+            : [];
+    }
+
     internal static CmgTestResult ApplyGifRetention(
         CmgTestCase test,
         IReadOnlyList<CmgTestResult> attempts,

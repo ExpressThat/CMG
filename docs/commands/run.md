@@ -137,6 +137,7 @@ GIF_WARN_PALETTE test="<name>" path="<gif-path>" paletteColors=<count-or->256> t
 GIF_WARN_COLOR_PROFILE path="<gif-path>" profileChanges=<count>
 GIF_RETENTION test="<name>" path="<absolute-path>" action=deleted mode=<always|onFailure|onRetry|off>
 GIF_CLEAN_PASSED test="<name>" path="<absolute-path>" status=deleted
+GIF_RETENTION_WARN tests=<count> threshold=20 reason=large-suite suggestion=--gif-on-failure
 GIF_MAX_SIZE test="<name>" path="<gif-path>" sizeBytes=<bytes> thresholdBytes=<bytes>
 GIF_MAX_DURATION test="<name>" path="<gif-path>" durationMs=<milliseconds> thresholdMs=<milliseconds>
 RUN STOP maxFailures=<count>
@@ -149,6 +150,8 @@ Failures may include action output before the failing test line. Declaration-ski
 `GIF_CAPTURE_STATS` is emitted for every recorded test with source/retained frame counts, duplicate and sampled counts, blank-frame count, peak retained pixel bytes, and preprocessing milliseconds. `GIF_WARN_UNCHANGED` and `GIF_WARN_BLANK` are non-failing artifact-quality warnings. Timeline JSON stores the same values under `captureDiagnostics`.
 
 `GIF_RETENTION` reports artifacts removed while retry/failure policy is resolved. `GIF_CLEAN_PASSED` is emitted after report and trace generation. Both are stdout diagnostics and do not change the exit code. Reports receive the retained artifact metadata before `gifCleanPassed=true` cleanup occurs.
+
+`GIF_RETENTION_WARN` is an advisory stdout line emitted when command-level `--gif` would retain every selected test in a file and the post-filter, post-shard selection exceeds 20 tests. It is also emitted by browser-free `--list`. Use `--gif-on-failure`, `--gif-on-retry`, `--gif-sample-rate`, `--gif-clean-passed`, or equivalent suite/test declarations when that volume is unintended. The warning does not change selection, recording, or exit status.
 
 `GIF_FAILURE_CAPTION` confirms that CMG wrote an explicit visual failure explanation into the partial test GIF. The full failure reason remains available in stderr and structured reports.
 Parameterized tests print and report their expanded names, for example `TEST LIST run opens profile`. Project runs include the project name in brackets, for example `TEST LIST run [firefox-smoke] checkout`.

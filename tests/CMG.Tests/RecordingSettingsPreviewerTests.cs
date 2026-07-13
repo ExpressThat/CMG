@@ -40,6 +40,29 @@ public sealed class RecordingSettingsPreviewerTests
         Assert.Contains("pointerWiggle= is not a supported recording default", result.Error, StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("recordVideo")]
+    [InlineData("screencast")]
+    public void Preview_WarnsThatVideoAliasesStillProduceGif(string alias)
+    {
+        var result = RecordingSettingsPreviewer.PreviewText($"{alias} \"proof\" {{ click \"#save\" }}");
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(result.Lines, line => line.Contains($"action={alias}", StringComparison.Ordinal) &&
+            line.Contains("reason=gif-alias format=gif suggestion=use-gif", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Preview_WarnsWhenFocusedRecordingHasTooManyActions()
+    {
+        var actions = string.Join(Environment.NewLine, Enumerable.Range(1, 21).Select(index => $"click \"#item-{index}\""));
+
+        var result = RecordingSettingsPreviewer.PreviewText($"gif \"long\" {{{Environment.NewLine}{actions}{Environment.NewLine}}}");
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(result.Lines, line => line.Contains("reason=long-recording-block actions=21 threshold=20", StringComparison.Ordinal));
+    }
+
     [Fact]
     public void RuntimeSetRecordingChangesOnlyCurrentScopeAndIsInertWithoutGif()
     {
