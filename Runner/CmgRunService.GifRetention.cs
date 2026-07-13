@@ -129,7 +129,15 @@ public sealed partial class CmgRunService
             .Where(path => !string.IsNullOrWhiteSpace(path)).Cast<string>()
             .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 
-    private static bool ReferencesPath(string line, string path) =>
-        line.Replace("\\\\", "\\", StringComparison.Ordinal)
-            .Contains(path, StringComparison.OrdinalIgnoreCase);
+    private static bool ReferencesPath(string line, string path)
+    {
+        var normalized = line.Replace("\\\\", "\\", StringComparison.Ordinal);
+        return new[]
+        {
+            path,
+            Path.ChangeExtension(path, ".timeline.json"),
+            Path.ChangeExtension(path, ".debug.json"),
+            Path.ChangeExtension(path, null) + ".frames"
+        }.Any(candidate => normalized.Contains(candidate, StringComparison.OrdinalIgnoreCase));
+    }
 }

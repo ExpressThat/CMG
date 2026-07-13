@@ -39,6 +39,7 @@ public sealed partial class RunCommandBuilder
         var gifWarnSizeOption = new Option<string?>("--gif-warn-size") { Description = "Warn when a recorded GIF exceeds this size, for example 500KB or 2MB." };
         var gifMaxSizeOption = new Option<string?>("--gif-max-size") { Description = "Fail a test when a recorded GIF exceeds this size, for example 500KB or 2MB." };
         var gifMaxDurationOption = new Option<string?>("--gif-max-duration") { Description = "Fail a test when a recorded GIF exceeds this duration, for example 2500ms, 10s, or 1m." };
+        var retentionOptions = BuildGifRetentionOptions();
         var jsonOption = new Option<FileInfo?>("--report-json") { Description = "Write a JSON test report to this file." };
         var htmlOption = new Option<FileInfo?>("--report-html") { Description = "Write an HTML test report to this file." }; var junitOption = new Option<FileInfo?>("--report-junit") { Description = "Write a JUnit XML test report to this file." };
         var traceOption = new Option<DirectoryInfo?>("--trace") { Description = "Write per-test trace JSON files to this directory." };
@@ -83,6 +84,7 @@ public sealed partial class RunCommandBuilder
             gifWarnSizeOption,
             gifMaxSizeOption,
             gifMaxDurationOption,
+            retentionOptions.Mode, retentionOptions.OnFailure, retentionOptions.OnRetry, retentionOptions.SampleRate, retentionOptions.CleanPassed,
             jsonOption,
             htmlOption,
             junitOption,
@@ -116,10 +118,7 @@ public sealed partial class RunCommandBuilder
             if (!VariableOptionParser.TryParse(variableValues, out var variables, out var error))
             { Console.Error.WriteLine(error); return 1; }
             if (!GifQualityParser.TryParse(parseResult.GetValue(gifQualityOption), out var gifQuality))
-            {
-                Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}.");
-                return 1;
-            }
+            { Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}."); return 1; }
             if (!TryParseEncoding(parseResult, encodingOptions, out var gifEncoding)) return 1;
             if (!GifMotionOptionParser.TryParse(
                 parseResult.GetValue(pointerDurationOption),
@@ -140,10 +139,7 @@ public sealed partial class RunCommandBuilder
             }
             ApplyGifPresets(parseResult, presetOptions, parseResult.GetValue(pointerDurationOption), parseResult.GetValue(pointerSpeedOption), parseResult.GetValue(pointerEasingOption), parseResult.GetValue(pointerVisualOptions.Theme), parseResult.GetValue(pointerVisualOptions.Color), parseResult.GetValue(pointerVisualOptions.Size), parseResult.GetValue(pointerVisualOptions.Shadow), ref pointerMotion, ref pointerVisual);
             if (!PointerVisibilityOptions.TryParse(parseResult.GetValue(showPointerOption), out var showPointer, out var showPointerError))
-            {
-                Console.Error.WriteLine(showPointerError);
-                return 1;
-            }
+            { Console.Error.WriteLine(showPointerError); return 1; }
             if (!TryParseCaption(parseResult, captionOptions, out var caption, out var captionError))
             {
                 Console.Error.WriteLine(captionError);
@@ -187,6 +183,7 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(durationError);
                 return 1;
             }
+            if (!TryParseGifRetention(parseResult, retentionOptions, config, out var gifRetention)) return 1;
             if (!TryParseBrowserIdle(parseResult, browserIdleTimeoutOption, noBrowserIdleCleanupOption, config,
                 out var browserIdleTimeout, out var browserIdleDisabled, out var browserIdleError))
             {
@@ -200,7 +197,7 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine($"Run config project '{project?.Name}' has unknown browser '{project?.Browser}'.");
                 return 1;
             }
-            return handler.Run(
+            return handler.RunWithGifRetention(
                 projectBrowser ?? CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 parseResult.GetValue(pathArgument) ?? string.Empty,
                 DirectoryValue(parseResult, gifOption, config.Gif),
@@ -243,7 +240,10 @@ public sealed partial class RunCommandBuilder
                 gifMaxDurationMilliseconds,
                 gifEncoding,
                 browserIdleTimeout,
-                browserIdleDisabled);
+                browserIdleDisabled,
+                gifRetention.Mode,
+                gifRetention.SampleRate,
+                gifRetention.CleanPassed);
         });
         return command;
     }

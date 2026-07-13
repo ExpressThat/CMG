@@ -82,7 +82,10 @@ public sealed record CmgRunOptions(
     GifAccessibilityOptions? GifAccessibility = null,
     int? BrowserIdleTimeoutMilliseconds = null,
     bool NoBrowserIdleCleanup = false,
-    int GifSampleOrdinal = 1);
+    int GifSampleOrdinal = 1,
+    CmgGifRetentionMode GifRetentionMode = CmgGifRetentionMode.Always,
+    int GifRetentionSampleRate = 1,
+    bool GifCleanPassed = false);
 
 public sealed partial record CmgRunResult(
     bool Success,

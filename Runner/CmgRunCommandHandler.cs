@@ -27,15 +27,15 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         int holdAfterAssertionMilliseconds = ScriptRecordingOptions.DefaultHoldAfterActionMilliseconds,
         string? gifTimelinePath = null, int frameDelayMilliseconds = ScriptRecordingOptions.DefaultFrameDelayMilliseconds,
         long? gifWarnSizeBytes = null, long? gifMaxSizeBytes = null, int? gifMaxDurationMilliseconds = null) =>
-        Run(browserKind, path, artifacts, jsonReport, htmlReport, junitReport, traceDirectory, grep, tag, retries,
+        RunWithGifRetention(browserKind, path, artifacts, jsonReport, htmlReport, junitReport, traceDirectory, grep, tag, retries,
             maxFailures, repeatEach, listOnly, shard, timeout, navigationTimeout, assertionTimeout, baseUrl, variables,
             projectName, browserPort, autoLaunch, autoLaunchHeadless, gifQuality, pointerMotion, pointerVisual, showPointer,
             captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds,
             postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath,
             frameDelayMilliseconds, gifWarnSizeBytes, gifMaxSizeBytes, gifMaxDurationMilliseconds, gifEncoding: null,
-            browserIdleTimeoutMilliseconds: null, noBrowserIdleCleanup: false);
+            browserIdleTimeoutMilliseconds: null, noBrowserIdleCleanup: false, CmgGifRetentionMode.Always, 1, false);
 
-    public int Run(
+    public int RunWithGifRetention(
         BrowserKind browserKind,
         string path,
         DirectoryInfo? artifacts,
@@ -78,7 +78,10 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
         int? gifMaxDurationMilliseconds = null,
         GifEncodingOptions? gifEncoding = null,
         int? browserIdleTimeoutMilliseconds = null,
-        bool noBrowserIdleCleanup = false)
+        bool noBrowserIdleCleanup = false,
+        CmgGifRetentionMode gifRetentionMode = CmgGifRetentionMode.Always,
+        int gifRetentionSampleRate = 1,
+        bool gifCleanPassed = false)
     {
         if (browserKind is BrowserKind.InvalidSelection)
         {
@@ -141,7 +144,10 @@ public sealed class CmgRunCommandHandler : ICmgRunCommandHandler
             gifMaxDurationMilliseconds,
             gifEncoding,
             BrowserIdleTimeoutMilliseconds: browserIdleTimeoutMilliseconds,
-            NoBrowserIdleCleanup: noBrowserIdleCleanup));
+            NoBrowserIdleCleanup: noBrowserIdleCleanup,
+            GifRetentionMode: gifRetentionMode,
+            GifRetentionSampleRate: gifRetentionSampleRate,
+            GifCleanPassed: gifCleanPassed));
         foreach (var line in result.StdoutLines)
         {
             Console.WriteLine(line);

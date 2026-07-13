@@ -12,7 +12,14 @@ public sealed class CmgGifRetentionTests
         var attempts = new[]
         {
             Result(false, files.Paths[0]) with { Output = [$"GIF_CAPTURE_STATS path=\"{files.Paths[0]}\" attempt=1"] },
-            Result(true, files.Paths[1]) with { Output = [$"GIF_CAPTURE_STATS path=\"{files.Paths[1]}\" attempt=2"] }
+            Result(true, files.Paths[1]) with
+            {
+                Output =
+                [
+                    $"GIF_CAPTURE_STATS path=\"{files.Paths[1]}\" attempt=2",
+                    $"GIF_TIMELINE {Path.ChangeExtension(files.Paths[1], ".timeline.json")}"
+                ]
+            }
         };
 
         var result = CmgRunService.ApplyGifRetention(Test(), attempts,
@@ -24,6 +31,8 @@ public sealed class CmgGifRetentionTests
         Assert.Equal(files.Paths[0], result.GifPath);
         Assert.Contains(result.Output, line => line.Contains("attempt=1", StringComparison.Ordinal));
         Assert.DoesNotContain(result.Output, line => line.Contains("attempt=2", StringComparison.Ordinal));
+        Assert.DoesNotContain(result.Output, line =>
+            line.Contains(Path.ChangeExtension(files.Paths[1], ".timeline.json"), StringComparison.Ordinal));
         Assert.Contains(result.Output, line => line.Contains("mode=onRetry", StringComparison.Ordinal));
     }
 
@@ -101,6 +110,28 @@ public sealed class CmgGifRetentionTests
 
         Assert.False(success);
         Assert.Contains(expected, error, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Declarations_OverrideCommandRetentionDefaultsPropertyByProperty()
+    {
+        var options = Options() with
+        {
+            GifRetentionMode = CmgGifRetentionMode.OnFailure,
+            GifRetentionSampleRate = 5,
+            GifCleanPassed = true
+        };
+        var test = Test(new Dictionary<string, string>
+        {
+            ["gif"] = "off",
+            ["gifSampleRate"] = "2",
+            ["gifCleanPassed"] = "false"
+        });
+
+        var success = CmgGifRetentionPolicy.TryParse(test, options, out var policy, out var error);
+
+        Assert.True(success, error);
+        Assert.Equal(new(CmgGifRetentionMode.Off, 2, false), policy);
     }
 
     private static CmgTestResult Result(bool success, string path) =>

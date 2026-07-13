@@ -143,7 +143,7 @@ public sealed partial class CmgRunService : ICmgRunService
 
     private CmgTestResult RunTestWithRetries(CmgTestCase test, string remoteDebuggingUrl, CmgRunOptions options)
     {
-        if (!CmgGifRetentionPolicy.TryParse(test, out var retention, out var retentionError))
+        if (!CmgGifRetentionPolicy.TryParse(test, options, out var retention, out var retentionError))
             return new CmgTestResult(test.Name, test.SourcePath, false, [], retentionError, null, []);
         var attempts = new List<CmgTestResult>();
         for (var attempt = 0; attempt <= options.Retries; attempt++)

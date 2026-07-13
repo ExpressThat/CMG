@@ -40,4 +40,25 @@ public interface ICmgRunCommandHandler
             captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds,
             postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath,
             frameDelayMilliseconds, gifWarnSizeBytes, gifMaxSizeBytes, gifMaxDurationMilliseconds);
+
+    int RunWithGifRetention(
+        BrowserKind browserKind, string path, DirectoryInfo? artifacts, FileInfo? jsonReport, FileInfo? htmlReport,
+        FileInfo? junitReport, DirectoryInfo? traceDirectory, string? grep, string? tag, int retries, int maxFailures,
+        int repeatEach, bool listOnly, string? shard, int? timeout, int? navigationTimeout, int? assertionTimeout,
+        string? baseUrl, IReadOnlyDictionary<string, string> variables, string projectName, int? browserPort,
+        bool autoLaunch, bool autoLaunchHeadless, GifQuality gifQuality, ScriptPointerMotionOptions? pointerMotion,
+        PointerVisualOptions? pointerVisual, PointerVisibility showPointer, BrowserCaptionOptions? captionOptions,
+        ClickPulseStyle clickPulse, int holdAfterActionMilliseconds, int holdOnFailureMilliseconds,
+        int preClickHoldMilliseconds, int postClickHoldMilliseconds, int holdAfterNavigationMilliseconds,
+        int holdAfterAssertionMilliseconds, string? gifTimelinePath, int frameDelayMilliseconds,
+        long? gifWarnSizeBytes, long? gifMaxSizeBytes, int? gifMaxDurationMilliseconds, GifEncodingOptions? gifEncoding,
+        int? browserIdleTimeoutMilliseconds, bool noBrowserIdleCleanup, CmgGifRetentionMode gifRetentionMode,
+        int gifRetentionSampleRate, bool gifCleanPassed) =>
+        Run(browserKind, path, artifacts, jsonReport, htmlReport, junitReport, traceDirectory, grep, tag, retries,
+            maxFailures, repeatEach, listOnly, shard, timeout, navigationTimeout, assertionTimeout, baseUrl, variables,
+            projectName, browserPort, autoLaunch, autoLaunchHeadless, gifQuality, pointerMotion, pointerVisual, showPointer,
+            captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds,
+            postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath,
+            frameDelayMilliseconds, gifWarnSizeBytes, gifMaxSizeBytes, gifMaxDurationMilliseconds, gifEncoding,
+            browserIdleTimeoutMilliseconds, noBrowserIdleCleanup);
 }

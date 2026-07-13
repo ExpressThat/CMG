@@ -20,10 +20,13 @@ internal sealed record RunConfig(
     string? BaseUrl,
     string? BrowserIdleTimeout,
     bool? NoBrowserIdleCleanup,
+    string? GifRetention,
+    int? GifSampleRate,
+    bool? GifCleanPassed,
     IReadOnlyDictionary<string, string> Variables,
     IReadOnlyDictionary<string, RunProjectConfig> Projects)
 {
-    public static RunConfig Empty { get; } = new(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Dictionary<string, string>(), new Dictionary<string, RunProjectConfig>());
+    public static RunConfig Empty { get; } = new(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Dictionary<string, string>(), new Dictionary<string, RunProjectConfig>());
 }
 
 internal sealed record RunProjectConfig(
@@ -96,6 +99,9 @@ internal static class RunConfigReader
         StringOption(root, "baseUrl"),
         StringOption(root, "browserIdleTimeout"),
         BoolOption(root, "noBrowserIdleCleanup"),
+        StringOption(root, "gifRetention"),
+        IntOption(root, "gifSampleRate"),
+        BoolOption(root, "gifCleanPassed"),
         Variables(root),
         Projects(root));
 

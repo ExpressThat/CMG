@@ -42,7 +42,7 @@ public sealed partial class CmgVisualSegmentExecutor
         var steps = new List<CmgStepResult>();
         if (!TryApplyDeclaredGifDefaults(test, options, out options, out var declarationError))
             return Fail(test, output, declarationError, gifs, steps, gifQualities, null);
-        CmgGifRetentionPolicy.TryParse(test, out var retention, out _);
+        CmgGifRetentionPolicy.TryParse(test, options, out var retention, out _);
         var commandGif = retention.ShouldRecord(options.GifSampleOrdinal)
             ? BuildGifPath(test, options, attempt)
             : null;

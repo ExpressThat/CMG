@@ -820,3 +820,5 @@ Conditional recording blocks propagate their original child failure after retain
 Invalid runner GIF declarations fail the affected test before browser actions run. Errors name the declaration or mapped recording property, for example `test option gifQuality= must be one of: ...`, `test option fps= must be between 1 and 100`, or `test option scale= must be a number from 0.05 to 1`.
 
 Retention declarations fail before test actions when `gif=` is not `always`, `onFailure`, `onRetry`, or `off`; `gifSampleRate=` is below `1` or not an integer; or `gifCleanPassed=` is not boolean. Artifact deletion failures are reported as runner failures rather than silently claiming cleanup succeeded.
+
+CLI retention setup fails before browser connection when `--gif-sample-rate` is below `1`, a retention mode is unknown, or more than one of `--gif-retention`, `--gif-on-failure`, and `--gif-on-retry` is supplied. Run-config type errors name the exact `gifRetention`, `gifSampleRate`, or `gifCleanPassed` property.

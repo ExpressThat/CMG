@@ -363,6 +363,7 @@ dotnet run -- --firefox browser close
 - `210-gif-declared-defaults.cmgscript`: Direct-script equivalent of inherited quality, pointer speed, FPS, crop, and scale defaults.
 - `211-gif-declared-defaults-runner.cmgscript`: Demonstrates suite GIF declarations and a test-level quality override.
 - `212-gif-retention-runner.cmgscript`: Demonstrates failure/retry retention, deterministic test sampling, post-report cleanup, and independent focused blocks.
+- `213-gif-retention-cli-runner.cmgscript`: Demonstrates coarse whole-run retry retention through CLI options without DSL declarations.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

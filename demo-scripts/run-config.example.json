@@ -11,6 +11,9 @@
   "timeout": 10000,
   "navigationTimeout": 15000,
   "assertionTimeout": 5000,
+  "gifRetention": "onFailure",
+  "gifSampleRate": 1,
+  "gifCleanPassed": false,
   "projects": [
     {
       "name": "chrome-smoke",

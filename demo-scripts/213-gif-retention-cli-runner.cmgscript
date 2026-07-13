@@ -1,0 +1,16 @@
+beforeEach {
+  setContent "<style>html,body{margin:0;min-height:100%;background:#fff;color:#111}</style><main style='font:18px system-ui;padding:48px'><h1>CLI retention</h1><button id='run'>Run</button></main>"
+}
+
+test "passing setup evidence is removed" {
+  click "#run"
+}
+
+test "failed retry evidence is retained" {
+  click "#run"
+  assertEval "(window.__cmgCliRetentionAttempt = (window.__cmgCliRetentionAttempt || 0) + 1) >= 2"
+}
+
+test "another passing artifact is removed" {
+  click "#run"
+}

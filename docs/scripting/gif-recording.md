@@ -150,6 +150,8 @@ Structured runner tests and suites can override whole-test GIF defaults with `gi
 
 Runner declarations can keep only useful command-level evidence: `gif=onFailure` retains all attempts only when the final result fails, `gif=onRetry` retains failed attempts, `gif=off` disables command capture, and `gif=always` is the default. `gifSampleRate=<n>` records the first selected test and every nth test after it. `gifCleanPassed=true` lets reports and traces consume a passing artifact before its files are removed. Run these policies with `cmg run <file> -gif <directory>`; they do not disable focused recording blocks in the test body. See demo 212.
 
+Whole-run defaults are `--gif-retention`, `--gif-on-failure`, `--gif-on-retry`, `--gif-sample-rate`, and `--gif-clean-passed`, with equivalent `gifRetention`, `gifSampleRate`, and `gifCleanPassed` run-config fields. DSL declarations have final precedence. See demo 213.
+
 ```text
 recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfterAction=500 {
   gif "checkout evidence" {

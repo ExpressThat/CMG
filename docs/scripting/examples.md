@@ -669,6 +669,15 @@ describe "CI evidence" gif=onFailure {
 
 Use these declarations with `cmg run <file> -gif <directory>`. Retention is decided after retries; passing cleanup happens after reports and traces are written. Explicit focused recording blocks are unaffected. See demo 212.
 
+For a coarse CI default without declarations:
+
+```powershell
+cmg run tests --gif artifacts/gifs --gif-on-retry --retries 2
+cmg run tests --gif artifacts/gifs --gif-retention onFailure --gif-sample-rate 10 --report-json artifacts/report.json
+```
+
+Use `--gif-clean-passed` only when the report is the durable record and passing files should be removed afterward. See demo 213.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:
