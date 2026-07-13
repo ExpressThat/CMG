@@ -84,6 +84,8 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `captionSeverity=<info|success|warning|error>`: Caption color intent default.
 - `autoCaptions=<true|false>`: Narrate supported visual actions automatically. Defaults to `false`; children can override it.
 - `captionTemplate=<template>`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`.
+- `captionDuration=<milliseconds>`, `fadeIn=<milliseconds>`, `fadeOut=<milliseconds>`: Deterministic caption timeline defaults.
+- `assertionCaptions=<true|false>` / `failureCaptions=<true|false>`: Automatic evidence-caption defaults. Both default to enabled.
 - `intro=<text>` / `outro=<text>`: Full-viewport title cards captured before the first child and at finalization.
 - `introDuration=<milliseconds>` / `outroDuration=<milliseconds>`: Title-card holds. Defaults to `1200` and must be greater than zero.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
@@ -219,6 +221,10 @@ cmg run tests\flows --gif demo-output\runner-gifs --gif-max-duration 10s
 CMG also enables evidence-focused defaults when they make the GIF easier to understand. Click and tap actions show a visible pulse by default so the recording proves that an activation happened. Right-clicks default to a crosshair pulse, middle-clicks default to a dot pulse, and double-clicks capture two pulse frames so the GIF shows both activations. Use `clickPulse=` when a script needs a different pulse style or needs to suppress the pulse for one action.
 
 Automatic captions are opt-in because narration changes visual intent. CMG uses privacy-safe defaults: `fill` and `type` identify the target without copying the entered value into the GIF. With `captionPosition=auto`, captions appear below targets in the upper viewport half and above targets in the lower half. They exist only while recording; without `--gif` or a recording block, they do not touch the page.
+
+Successful assertions automatically replace the current recording caption with QA evidence containing expected and actual values. Password/token/secret-like selectors and values are shown as `[masked]`. Failed actions automatically capture a bounded bug-report caption before the final failure hold, and runner stdout emits `GIF_FAILURE_CAPTION`. Disable these independently with `assertionCaptions=false` or `failureCaptions=false`.
+
+Manual `caption` and `narrate` support `captionDuration=` / `duration=`, `fadeIn=`, and `fadeOut=`. Fades are encoded as deterministic opacity stages rather than relying on page animation timing. `narrate "message" { ... }` uses the teaching preset and adds a nested execution context.
 
 ```text
 gif "guided checkout" autoCaptions=true captionPosition=auto captionStyle=teaching {

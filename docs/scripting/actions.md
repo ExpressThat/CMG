@@ -524,6 +524,30 @@ Options:
 
 `step "name" { ... }` accepts the same caption options for its leading caption. `recording`, `withRecording`, `gif`, `recordVideo`, and `screencast` can set `captionStyle=`, `captionPosition=`, and `captionSeverity=` as scoped defaults; the caption action can override them locally.
 
+Recording timeline options:
+
+- `duration=<milliseconds>` / `captionDuration=<milliseconds>` keeps the caption fully visible for that encoded duration.
+- `fadeIn=<milliseconds>` captures two increasing-opacity frames before the hold.
+- `fadeOut=<milliseconds>` captures two decreasing-opacity frames and then removes the caption.
+- Scoped `captionDuration=`, `fadeIn=`, and `fadeOut=` apply to nested captions and `narrate` blocks.
+
+These timing options affect active GIF recording only. Without a recorder, `caption` keeps its existing page message-bar behavior and does not create screenshots or a virtual pointer.
+
+### `narrate`
+
+```text
+narrate "Explain this interaction" {
+  click "#save"
+  expectText "#status" "Saved"
+}
+```
+
+`narrate` is a nestable teaching-style caption block. It shows the message, emits `NARRATE <line> "<message>"`, executes children in a `narrate <message>` context, and accepts the caption style/position/severity/timing options above. It can be nested inside control flow, loops, macros, and other narration blocks.
+
+Successful assertions in active GIF recordings automatically replace the current caption with QA evidence containing expected and actual values. Sensitive selectors/values containing `password`, `token`, or `secret` are shown as `[masked]`. Set `assertionCaptions=false` on an assertion or recording scope to disable this.
+
+Failed actions automatically capture a bug-report caption with action, line, and a bounded failure reason before the partial GIF is finalized. Set `failureCaptions=false` to disable it. Successful runs are unaffected.
+
 ## `highlight`
 
 ```text

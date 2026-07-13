@@ -16,7 +16,7 @@ public sealed partial class CmgRunService
             var (result, durationOutput) = ApplyGifDurationGuard(sizedResult, options);
             tests.Add(result);
             output.Add(TestOutput(StatusWord(result), result.Name, options));
-            output.AddRange(result.Output.Where(line => line.StartsWith("GIF_FRAMES ", StringComparison.Ordinal)).Distinct(StringComparer.Ordinal));
+            output.AddRange(result.Output.Where(IsGifArtifactOutput).Distinct(StringComparer.Ordinal));
             output.AddRange(sizeOutput);
             output.AddRange(durationOutput);
             output.AddRange(GifSizeWarnings(result, options));
@@ -65,4 +65,8 @@ public sealed partial class CmgRunService
         string.IsNullOrWhiteSpace(options.ProjectName)
             ? $"TEST {status} {name}"
             : $"TEST {status} [{options.ProjectName}] {name}";
+
+    private static bool IsGifArtifactOutput(string line) =>
+        line.StartsWith("GIF_FRAMES ", StringComparison.Ordinal) ||
+        line.StartsWith("GIF_FAILURE_CAPTION ", StringComparison.Ordinal);
 }

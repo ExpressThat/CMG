@@ -46,7 +46,7 @@ public sealed partial class BrowserScriptRunner
                     var lines = ExecuteAction(remoteDebuggingUrl, automationClient, prepared, context, recorder);
                     if (ShouldCaptureAfterAction(prepared))
                     {
-                        recorder.AfterAction(prepared);
+                        recorder.AfterAction(prepared, lines);
                     }
                     output.AddRange(lines);
                 }

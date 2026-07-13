@@ -8,6 +8,7 @@ public sealed class CmgActionLowererControlTests
     [InlineData("if")]
     [InlineData("elseif")]
     [InlineData("else")]
+    [InlineData("narrate")]
     [InlineData("for")]
     [InlineData("foreach")]
     [InlineData("foreachJson")]

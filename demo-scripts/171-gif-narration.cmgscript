@@ -1,0 +1,10 @@
+navigate "about:blank"
+setContent "<style>html,body{margin:0;background:#f8fafc}main{padding:48px;font:16px system-ui}.panel{padding:28px;background:#fff;border:2px solid #0f172a}.result{margin-top:18px;padding:22px;background:#dcfce7;color:#14532d}</style><main><section class='panel'><h1>Narrated evidence</h1><button id='run'>Run check</button><p id='status' class='result' hidden>Complete</p></section></main><script>document.querySelector('#run').onclick=()=>document.querySelector('#status').hidden=false</script>"
+gif "narrated evidence" output="demo-output/gif-narration.gif" captionDuration=450 fadeIn=180 fadeOut=180 {
+  narrate "Run the user-visible check" {
+    click "#run"
+  }
+  caption "Verify the resulting state" captionStyle=teaching duration=500 fadeIn=200 fadeOut=200
+  expectText "#status" "Complete"
+  pauseGif 400
+}

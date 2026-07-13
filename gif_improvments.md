@@ -202,20 +202,20 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented for automatic action captions: `captionPosition=auto` places the caption opposite the active target's viewport half. Target-aware placement for standalone manual captions remains open.
 - Implemented in DSL recording scopes and recording blocks: `autoCaptions=true`. A whole-run CLI default remains open.
 - Implemented in DSL recording scopes, recording blocks, and action overrides: `captionTemplate=` with `{action}`, `{selector}`, `{target}`, `{line}`, and `{arguments}`. A whole-run CLI default and structural `{step}` / `{assertion}` context placeholders remain open.
-- Add `caption duration=<ms>` to control how long captions stay visible.
-- Add caption fade in/out.
+- Implemented: `caption duration=<ms>` / `captionDuration=<ms>` controls encoded visibility duration and can be inherited from recording scopes.
+- Implemented: `fadeIn=<ms>` and `fadeOut=<ms>` capture deterministic opacity stages and remove completed captions.
 - Add caption stacking for nested `step` blocks.
 - Add a persistent step title bar option.
 - Add optional source-line captions for debugging.
-- Add failure captions automatically when an action fails.
-- Add assertion captions that show expected vs actual values.
+- Implemented: automatic bounded failure captions with `failureCaptions=false` opt-out and parseable `GIF_FAILURE_CAPTION` diagnostics.
+- Implemented: automatic assertion captions show expected vs actual values, mask sensitive values, and support `assertionCaptions=false` opt-out.
 - Add network captions for request waits and mocks.
 - Add dialog captions for alert/confirm/prompt handling.
 - Add console/page-error captions when captured events occur.
 - Implemented: add caption severity styles: info, success, warning, error. CLI: `--caption-severity <severity>` for whole-run defaults.
 - Add caption localization hooks.
 - Add markdown-like caption formatting for bold/code snippets.
-- Add a `narrate "message" { ... }` alias for teaching-style recordings.
+- Implemented: nestable `narrate "message" { ... }` teaching-style blocks with scoped execution context and timing options.
 - Add automatic captions for `try/catch/finally` transitions.
 - Add automatic captions for loop iterations and macro calls when debug narration is enabled.
 
@@ -427,6 +427,17 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add lint rules for overly long GIF blocks.
 - Add lint rule suggesting `gif=onFailure` or the equivalent whole-run CLI default for large test suites.
 - Add script style-guide section for readable visual evidence.
+
+## Agent Browser Lifecycle Safety
+
+- Add opt-in cleanup for headless browsers abandoned by an agent. This must not eagerly close a browser merely because no command is currently running.
+- Use a long, configurable idle lease measured in minutes, with cleanup disabled by default until a caller or project enables it. CLI candidates: `browser launch --idle-timeout <duration>` and `run --browser-idle-timeout <duration>`.
+- Refresh the lease after every command sent to that browser and while a script or test run is active. Normal agent reasoning, file edits, report inspection, and other work between browser commands must fit comfortably inside the default enabled timeout.
+- Track CMG ownership, browser kind, port, process id, launch time, and last activity. Never terminate an attached browser or a process CMG did not launch unless the caller explicitly opts into that behavior.
+- Prefer graceful browser shutdown, then use bounded forced cleanup only when the owned process does not exit. Clean up child processes and temporary profiles without affecting another CMG browser on a different port.
+- Add a lease-renewal/keepalive command for long non-browser work and an explicit `--no-idle-cleanup` override. Agent-facing output must state the effective deadline and how to extend or disable it.
+- Emit structured diagnostics when cleanup is scheduled, renewed, skipped, or performed, and include the reason, browser port, process id, ownership status, and idle duration.
+- Cover active work, long pauses, concurrent ports, attached browsers, crashed agents, stale state files, process-id reuse, graceful close, forced fallback, and cleanup races with unit and end-to-end tests.
 
 ## Possible Milestones
 

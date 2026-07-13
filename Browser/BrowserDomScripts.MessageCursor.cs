@@ -60,6 +60,12 @@ public static partial class BrowserDomScripts
     public static string PromoteMessageBar() =>
         "(() => { const bar = document.getElementById('__cmg_message_bar'); if (!bar || typeof bar.showPopover !== 'function') return true; if (bar.matches(':popover-open')) bar.hidePopover(); bar.showPopover(); return true; })()";
 
+    public static string SetMessageBarOpacity(double opacity) =>
+        $"(() => {{ const bar=document.getElementById('__cmg_message_bar'); if(bar) bar.style.opacity='{Invariant(Math.Clamp(opacity, 0, 1))}'; return true; }})()";
+
+    public static string RemoveMessageBar() =>
+        "(() => { const bar=document.getElementById('__cmg_message_bar'); if(bar?.matches?.(':popover-open')) bar.hidePopover(); bar?.remove(); return true; })()";
+
     public static string MoveDomCursor(
         ElementPoint point,
         ClickPulseStyle? pulseStyle = null,

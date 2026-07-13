@@ -10,6 +10,7 @@ public sealed partial class CmgActionLowerer
         return name switch
         {
             "step" => LowerStep(action),
+            "narrate" => LowerControlBlock(action),
             "gif" or "recordvideo" or "screencast" => LowerRecordingBlock(action),
             "draganddrop" when action.Children.Count > 0 => LowerDragAndDropBlock(action),
             "recording" or "withrecording" => LowerRecordingBlock(action),

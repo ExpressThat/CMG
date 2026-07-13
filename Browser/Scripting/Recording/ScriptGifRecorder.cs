@@ -90,7 +90,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
         }
     }
 
-    public void AfterAction(BrowserScriptAction action)
+    public void AfterAction(BrowserScriptAction action, IReadOnlyList<string>? actionOutput = null)
     {
         if (remoteDebuggingUrl is null || IsCaptureSuspended)
         {
@@ -98,6 +98,11 @@ public sealed partial class ScriptGifRecorder : IDisposable
         }
 
         var name = action.Name.ToLowerInvariant();
+
+        if (name is "caption" or "showmessagebar" && CaptureCaptionTimeline(action))
+        {
+            return;
+        }
 
         if (name is "click" or "dblclick" or "doubleclick" or "rightclick" or "contextclick" or "tap" or "touchtap" or "download" or "frameclick")
         {
@@ -114,6 +119,7 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
         if (IsAssertionAction(name))
         {
+            CaptureAssertionCaption(action, actionOutput ?? []);
             CaptureAssertionHoldFrame(action);
             return;
         }

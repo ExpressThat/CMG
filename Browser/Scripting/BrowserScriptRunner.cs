@@ -175,7 +175,7 @@ public sealed partial class BrowserScriptRunner
             var stepOutput = ExecuteAction(remoteDebuggingUrl, automationClient, action, context, recorder);
             if (ShouldCaptureAfterAction(action))
             {
-                recorder?.AfterAction(action);
+                recorder?.AfterAction(action, stepOutput);
             }
             var stepLines = new List<string> { FormatStepLine("PASS", sequence, action, context, FormatActionForLog(action)) };
             stepLines.AddRange(FormatPayloadLines(stepOutput, sequence, action, context));
@@ -187,6 +187,10 @@ public sealed partial class BrowserScriptRunner
         {
             var contextText = string.IsNullOrWhiteSpace(context.CurrentContext) ? string.Empty : $" in {context.CurrentContext}";
             var error = $"Line {action.LineNumber}: {action.Name} failed{contextText}. {exception.Message}";
+            if (recorder?.CaptureFailureCaption(action, exception.Message) is true)
+            {
+                output.Add($"GIF_FAILURE_CAPTION {action.LineNumber:000} action={QuoteField(action.Name)} status=captured");
+            }
             var sequence = context.NextSequence();
             context.StepRecords.Add(new ScriptStepRecord(sequence, action.LineNumber, action.Name, context.CurrentContext, false, [], error));
             context.Trace?.Record(sequence, action, context.CurrentContext, success: false, error, []);

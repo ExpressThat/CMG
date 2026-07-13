@@ -114,6 +114,8 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - Whole-run encoder flags are inert without `--gif`; `--keep-frames` does not capture screenshots or inject a virtual pointer by itself.
 - Pointer-aware actions resolve rich locators to the same target used by browser dispatch, so pointer movement, pointer events, hover state, drag ghosts, screenshots, and captions stay aligned.
 - DSL recording scopes and blocks can set `autoCaptions=true` and `captionTemplate=`. Automatic captions use privacy-safe text-entry defaults and target-aware `captionPosition=auto`; without an active GIF they do not modify the page.
+- Active GIF recordings automatically caption successful assertions with expected/actual QA evidence and failed actions with bounded bug-report evidence. Sensitive assertion values are masked. DSL `assertionCaptions=false` and `failureCaptions=false` opt out.
+- `caption` and nestable `narrate` blocks support `captionDuration=` / `duration=`, `fadeIn=`, and `fadeOut=` deterministic encoded timing.
 - DSL recording scopes and blocks can set `intro=`, `outro=`, `introDuration=`, and `outroDuration=`. Explicit `intro` and `outro` actions capture chapter cards. All title-card forms are recording-only and never create a pointer or overlay in non-GIF runs.
 - `hideFromGif` / `cutGif` execute child actions without recording frames or pointer UI. `speedUpGif factor=` and `slowDownGif factor=` scale encoded delays locally. These blocks are nestable and execute normally with no pointer when GIF recording is inactive.
 - Whole-run pointer, caption, and timing defaults from `--pointer-duration`, `--pointer-speed`, `--pointer-easing`, `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, `--show-pointer`, `--caption-style`, `--caption-position`, `--caption-severity`, `--pointer-pre-click-hold`, `--pointer-post-click-hold`, `--gif-hold-after-action`, `--gif-hold-after-navigation`, `--gif-hold-after-assertion`, `--gif-hold-on-failure`, `--gif-fps`, and `--gif-frame-delay` apply when `--gif` is active. DSL `recording` / `withRecording`, `gif`, `recordVideo`, and `screencast` blocks can set `pointerDuration=`, `pointerSpeed=`, `pointerEasing=`, `pointerTheme=`, `pointerColor=`, `pointerSize=`, `pointerShadow=`, `showPointer=`, `captionStyle=`, `captionPosition=`, `captionSeverity=`, `clickPulse=`, `preClickHold=`, `postClickHold=`, `holdAfterAction=`, `holdAfterNavigation=`, `holdAfterAssertion=`, `holdOnFailure=`, `fps=`, and `frameDelay=` as scoped defaults for child actions; child actions can override action options locally.
@@ -145,6 +147,7 @@ GIF C:\Projects\CMG\demo-output\dialog-flow.gif
 GIF_FRAMES path="C:\\Projects\\CMG\\demo-output\\dialog-flow.frames" count=14
 GIF_TIMELINE C:\Projects\CMG\demo-output\dialog-flow.timeline.json
 GIF_PAUSE 008 milliseconds=800 status=captured
+GIF_FAILURE_CAPTION 009 action="expectText" status=captured
 TRACE C:\Projects\CMG\demo-output\dialog-flow.trace.json
 SKIP 007 Feature flag disabled
 ```

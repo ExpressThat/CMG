@@ -424,6 +424,25 @@ cmg run demo-scripts\170-command-gif-framing-runner.cmgscript --gif demo-output\
 
 See `demo-scripts/169-gif-framing.cmgscript` for block-level framing and demo 170 for whole-run structured tests.
 
+## Narrated Success And Failure Evidence
+
+```text
+gif "guided check" captionDuration=450 fadeIn=180 fadeOut=180 {
+  narrate "Submit the form" {
+    click "#submit"
+  }
+  expectText "#status" "Complete"
+}
+```
+
+Successful assertions receive an automatic QA caption. Failed actions receive an error caption before CMG finalizes the partial GIF. Use `assertionCaptions=false` or `failureCaptions=false` when those values should not appear in visual evidence.
+
+See `demo-scripts/171-gif-narration.cmgscript`. Demo 172 intentionally fails:
+
+```powershell
+cmg run demo-scripts\172-gif-failure-narration-runner.cmgscript --gif demo-output\failure-narration --gif-hold-on-failure 1400
+```
+
 ## Common Next Steps
 
 | Need | Where To Go |

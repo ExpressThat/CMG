@@ -15,6 +15,9 @@ public sealed partial class BrowserScriptRunner
             case "step":
                 ExecuteStep(remoteDebuggingUrl, automationClient, action, context, recorder, output);
                 return output;
+            case "narrate":
+                ExecuteNarrate(remoteDebuggingUrl, automationClient, action, context, recorder, output);
+                return output;
             case "macro":
                 RegisterMacro(action, context);
                 return [$"MACRO {action.LineNumber:000} {action.Arguments[0]}"];
@@ -113,6 +116,7 @@ public sealed partial class BrowserScriptRunner
 
     private static bool IsControlAction(string name) =>
         name.Equals("step", StringComparison.OrdinalIgnoreCase) ||
+        name.Equals("narrate", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("macro", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("call", StringComparison.OrdinalIgnoreCase) ||
         name.Equals("return", StringComparison.OrdinalIgnoreCase) ||
@@ -165,6 +169,28 @@ public sealed partial class BrowserScriptRunner
         RequireArgumentCount(action, 1, 1);
         automationClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0], BrowserCaptionOptions.FromOptions(action.Options, action.Name));
         context.PushExecutionContext($"step {action.Arguments[0]}", () =>
+            ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output));
+    }
+
+    private void ExecuteNarrate(
+        string remoteDebuggingUrl,
+        IBrowserAutomationClient automationClient,
+        BrowserScriptAction action,
+        ScriptExecutionContext context,
+        Recording.ScriptGifRecorder? recorder,
+        List<string> output)
+    {
+        RequireArgumentCount(action, 1, 1);
+        var options = new Dictionary<string, string>(action.Options, StringComparer.OrdinalIgnoreCase);
+        options.TryAdd("captionStyle", "teaching");
+        var captionAction = action with { Name = "caption", Options = options, Children = [] };
+        automationClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0], BrowserCaptionOptions.FromOptions(options, action.Name));
+        if (recorder is not null)
+        {
+            recorder.AfterAction(captionAction);
+        }
+        output.Add($"NARRATE {action.LineNumber:000} {QuoteField(action.Arguments[0])}");
+        context.PushExecutionContext($"narrate {action.Arguments[0]}", () =>
             ExecuteActions(remoteDebuggingUrl, automationClient, action.Children, context, recorder, output));
     }
 }

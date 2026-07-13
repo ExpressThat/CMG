@@ -1,0 +1,10 @@
+test "records a diagnosed failure" {
+  hideFromGif {
+    navigate "about:blank"
+    setContent "<style>html,body{margin:0;background:#f8fafc}main{padding:48px;font:16px system-ui}.panel{padding:28px;background:#fff;border:2px solid #991b1b}</style><main><section class='panel'><h1>Failure evidence</h1><button id='check'>Check status</button><p id='status'>Pending</p></section></main>"
+  }
+  narrate "Check the current application state" {
+    click "#check"
+  }
+  expectText "#status" "Complete"
+}

@@ -311,6 +311,8 @@ dotnet run -- --firefox browser close
 - `168-command-gif-color-controls-runner.cmgscript`: Demonstrates per-test retained-frame isolation for whole-run runner GIFs.
 - `169-gif-framing.cmgscript`: Demonstrates selector crop, crop padding, output scaling, maximum width, retained frames, and timeline framing metadata.
 - `170-command-gif-framing-runner.cmgscript`: Demonstrates whole-run framing defaults across multiple structured runner tests.
+- `171-gif-narration.cmgscript`: Demonstrates nested teaching narration, timed caption fades, and automatic successful-assertion evidence.
+- `172-gif-failure-narration-runner.cmgscript`: Intentionally fails to demonstrate automatic failure captions in runner GIF artifacts.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.
