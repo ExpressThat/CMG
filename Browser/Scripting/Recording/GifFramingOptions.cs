@@ -10,7 +10,9 @@ public sealed record GifFramingOptions(
     int? ViewportHeight = null,
     double PixelRatio = 1d,
     int SafeArea = 24,
-    int LayoutStabilityMilliseconds = 150)
+    int LayoutStabilityMilliseconds = 150,
+    int? SmartCropWidth = null,
+    int? SmartCropHeight = null)
 {
     public static GifFramingOptions FromOptions(IReadOnlyDictionary<string, string> options, string context)
     {
@@ -23,17 +25,25 @@ public sealed record GifFramingOptions(
         var pixelRatio = ParsePixelRatio(options.GetValueOrDefault("pixelRatio"), context);
         var safeArea = ParseInt(options.GetValueOrDefault("safeArea"), 24, 0, 500, context, "safeArea");
         var stability = ParseInt(options.GetValueOrDefault("layoutStability"), 150, 0, 5000, context, "layoutStability");
+        var (smartWidth, smartHeight) = ParseSmartCrop(options.GetValueOrDefault("smartCrop"), context);
         if (crop is null && options.ContainsKey("cropPadding"))
             throw new ScriptExecutionException($"{context} option cropPadding= requires crop=.");
+        if (!string.IsNullOrWhiteSpace(crop) && smartWidth is not null)
+            throw new ScriptExecutionException($"{context} options crop= and smartCrop= cannot be combined.");
         return new(string.IsNullOrWhiteSpace(crop) ? null : crop, padding, scale, maxWidth, maxHeight,
-            viewportWidth, viewportHeight, pixelRatio, safeArea, stability);
+            viewportWidth, viewportHeight, pixelRatio, safeArea, stability, smartWidth, smartHeight);
     }
 
     public GifFramingOptions WithOptions(IReadOnlyDictionary<string, string> options, string context)
     {
-        var parsed = FromOptions(options, context);
+        var parseOptions = new Dictionary<string, string>(options, StringComparer.OrdinalIgnoreCase);
+        if (parseOptions.ContainsKey("cropPadding") && !parseOptions.ContainsKey("crop") && !parseOptions.ContainsKey("smartCrop") && CropSelector is not null)
+            parseOptions["crop"] = CropSelector;
+        var parsed = FromOptions(parseOptions, context);
+        var switchesToSmart = options.ContainsKey("smartCrop") && parsed.SmartCropWidth is not null;
+        var switchesToSelector = options.ContainsKey("crop") && parsed.CropSelector is not null;
         return new(
-            options.ContainsKey("crop") ? parsed.CropSelector : CropSelector,
+            switchesToSmart ? null : options.ContainsKey("crop") ? parsed.CropSelector : CropSelector,
             options.ContainsKey("cropPadding") ? parsed.CropPadding : CropPadding,
             options.ContainsKey("scale") ? parsed.Scale : Scale,
             options.ContainsKey("maxWidth") ? parsed.MaxWidth : MaxWidth,
@@ -42,7 +52,9 @@ public sealed record GifFramingOptions(
             options.ContainsKey("viewport") ? parsed.ViewportHeight : ViewportHeight,
             options.ContainsKey("pixelRatio") ? parsed.PixelRatio : PixelRatio,
             options.ContainsKey("safeArea") ? parsed.SafeArea : SafeArea,
-            options.ContainsKey("layoutStability") ? parsed.LayoutStabilityMilliseconds : LayoutStabilityMilliseconds);
+            options.ContainsKey("layoutStability") ? parsed.LayoutStabilityMilliseconds : LayoutStabilityMilliseconds,
+            switchesToSelector ? null : options.ContainsKey("smartCrop") ? parsed.SmartCropWidth : SmartCropWidth,
+            switchesToSelector ? null : options.ContainsKey("smartCrop") ? parsed.SmartCropHeight : SmartCropHeight);
     }
 
     public static bool TryParse(
@@ -55,6 +67,7 @@ public sealed record GifFramingOptions(
         double? pixelRatio,
         int? safeArea,
         int? layoutStability,
+        string? smartCrop,
         out GifFramingOptions framing,
         out string? error)
     {
@@ -68,6 +81,7 @@ public sealed record GifFramingOptions(
         Add(options, "pixelRatio", pixelRatio);
         Add(options, "safeArea", safeArea);
         Add(options, "layoutStability", layoutStability);
+        Add(options, "smartCrop", smartCrop);
         try { framing = FromOptions(options, "GIF"); error = null; return true; }
         catch (ScriptExecutionException exception) { framing = new(); error = exception.Message; return false; }
     }
@@ -94,6 +108,18 @@ public sealed record GifFramingOptions(
         if (parts.Length == 2 && int.TryParse(parts[0], out var width) && int.TryParse(parts[1], out var height) &&
             width is >= 100 and <= 10000 && height is >= 100 and <= 10000) return (width, height);
         throw new ScriptExecutionException($"{context} option viewport= must use <width>x<height> with dimensions from 100 to 10000.");
+    }
+
+    private static (int? Width, int? Height) ParseSmartCrop(string? value, string context)
+    {
+        if (value is null || value.Equals("false", StringComparison.OrdinalIgnoreCase) || value.Equals("none", StringComparison.OrdinalIgnoreCase))
+            return (null, null);
+        if (value.Equals("true", StringComparison.OrdinalIgnoreCase) || value.Equals("auto", StringComparison.OrdinalIgnoreCase))
+            return (640, 480);
+        var parts = value.ToLowerInvariant().Split('x', StringSplitOptions.TrimEntries);
+        if (parts.Length == 2 && int.TryParse(parts[0], out var width) && int.TryParse(parts[1], out var height) &&
+            width is >= 100 and <= 10000 && height is >= 100 and <= 10000) return (width, height);
+        throw new ScriptExecutionException($"{context} option smartCrop= must be true, false, or <width>x<height> with dimensions from 100 to 10000.");
     }
 
     private static int ParseInt(string? value, int fallback, int min, int max, string context, string name) =>

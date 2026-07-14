@@ -778,6 +778,17 @@ gif "settings" targetZoom=auto targetZoomThreshold=24 pagePosition=auto {
 
 Target zoom copies the live rendered control into a non-interactive capture inset; the position rail shows the current viewport within a long document. Both default to `auto`, can be overridden on child actions, and are removed immediately after each frame. Whole runs use `--target-zoom`, `--target-zoom-threshold`, and `--page-position`; suites use `gifTargetZoom`, `gifTargetZoomThreshold`, and `gifPagePosition`. See demos 229 and 230.
 
+### Follow active targets with a stable crop
+
+```cmgscript
+gif "focused journey" smartCrop=640x480 {
+  click "#parent-action"
+  frame "#payment-frame" { click "#confirm" }
+}
+```
+
+`smartCrop` follows the virtual pointer and active element without changing output dimensions. Same-origin frame actions use their top-page coordinates, preserving surrounding page context. Use `--gif-smart-crop` for whole runs or `gifSmartCrop` on runner suites/tests. See demos 231 and 232.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

@@ -12,6 +12,9 @@ public sealed partial class ScriptGifRecorder
             if (applyRedactions) PrepareAccessibilityEvidence();
             if (applyRedactions) PrepareDebugEvidence();
             var framing = options.EffectiveFraming;
+            if (framing.SmartCropWidth is not null)
+                return devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar,
+                    options: new ScreenshotOptions(Clip: ResolveSmartCropClip(framing)));
             if (framing.CropSelector is null)
             {
                 if (framing.PixelRatio == 1d)
@@ -77,6 +80,29 @@ public sealed partial class ScriptGifRecorder
             throw new ScriptExecutionException($"GIF crop selector '{framing.CropSelector}' resolved outside the viewport.");
         var offset = ResolveViewportOffset();
         return lastCropClip = new ScreenshotClip(offset.X + localX, offset.Y + localY, width, height, framing.PixelRatio);
+    }
+
+    private ScreenshotClip ResolveSmartCropClip(GifFramingOptions framing)
+    {
+        var viewport = devToolsClient.GetViewportSize(remoteDebuggingUrl!);
+        var width = Math.Min(viewport.Width, framing.SmartCropWidth!.Value);
+        var height = Math.Min(viewport.Height, framing.SmartCropHeight!.Value);
+        var center = pointer.Position;
+        var action = frameAction ?? activeAction;
+        var selector = action is null ? null : AccessibilityTarget(action);
+        if (selector is not null)
+        {
+            try
+            {
+                var box = devToolsClient.GetElementBox(remoteDebuggingUrl!, selector);
+                center = new ElementPoint((center.X + box.X + box.Width / 2) / 2, (center.Y + box.Y + box.Height / 2) / 2);
+            }
+            catch (ChromeDevToolsException) { }
+        }
+        var localX = Math.Clamp(center.X - width / 2, 0, viewport.Width - width);
+        var localY = Math.Clamp(center.Y - height / 2, 0, viewport.Height - height);
+        var offset = ResolveViewportOffset();
+        return new ScreenshotClip(offset.X + localX, offset.Y + localY, width, height, framing.PixelRatio);
     }
 
     private void PrimeCropBounds()

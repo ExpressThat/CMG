@@ -89,6 +89,17 @@ public sealed class RunCommandBuilderGifConfigTests
     }
 
     [Fact]
+    public void RunCommand_AcceptsSmartCropConfig()
+    {
+        using var directory = new TempDirectory();
+        var config = directory.Write("""{ "gifSettings": { "smartCrop": "500x320" } }""");
+        var service = new CapturingRunService();
+
+        Assert.Equal(0, BuildRoot(service).Parse($"run flows --config \"{config}\"").Invoke());
+        Assert.Equal((500, 320), (service.Options?.GifEncoding?.Framing?.SmartCropWidth, service.Options?.GifEncoding?.Framing?.SmartCropHeight));
+    }
+
+    [Fact]
     public void RunCommand_RejectsUnknownGifSettingBeforeServiceCall()
     {
         using var directory = new TempDirectory();

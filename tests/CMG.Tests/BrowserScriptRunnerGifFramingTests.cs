@@ -73,6 +73,36 @@ public sealed class BrowserScriptRunnerGifFramingTests
         File.Delete(path);
     }
 
+    [Fact]
+    public void GifBlock_SmartCropFollowsPointerAndKeepsFixedDimensions()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        var client = new FakeAutomationClient();
+        foreach (var box in Enumerable.Repeat(new ElementBox(680, 480, 40, 40), 30)) client.ElementBoxes.Enqueue(box);
+        var result = Runner().RunText($"gif \"smart\" output=\"{Slash(path)}\" smartCrop=400x300 pointerDuration=0 {{ click \"#save\" x=20 y=20 }}", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(client.PageScreenshotOptions, item => item.Clip == new ScreenshotClip(400, 300, 400, 300));
+        File.Delete(path);
+    }
+
+    [Fact]
+    public void Recorder_SmartCropUsesIframeTargetCoordinatesWithPageContext()
+    {
+        var client = new FakeAutomationClient();
+        client.EvaluateResponses.Enqueue("{\"x\":700,\"y\":500}");
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        using var recorder = new CMG.Browser.Scripting.Recording.ScriptGifRecorder(client,
+            new CMG.Browser.Scripting.Recording.ScriptRecordingOptions(path,
+                Framing: new CMG.Browser.Scripting.Recording.GifFramingOptions(SmartCropWidth: 400, SmartCropHeight: 300),
+                PointerMotion: new CMG.Browser.Scripting.Recording.ScriptPointerMotionOptions(0)));
+        recorder.Start("debug");
+
+        recorder.BeforeAction(new BrowserScriptAction(1, "frameClick", "frameClick", ["#frame", "#save"], new Dictionary<string, string>(), []));
+
+        Assert.Contains(client.PageScreenshotOptions, item => item.Clip == new ScreenshotClip(400, 300, 400, 300));
+    }
+
     [Theory]
     [InlineData("scale=0", "scale=")]
     [InlineData("scale=1.1", "scale=")]
@@ -83,6 +113,8 @@ public sealed class BrowserScriptRunnerGifFramingTests
     [InlineData("pixelRatio=5", "pixelRatio=")]
     [InlineData("safeArea=501", "safeArea=")]
     [InlineData("layoutStability=5001", "layoutStability=")]
+    [InlineData("smartCrop=wide", "smartCrop=")]
+    [InlineData("crop=#panel smartCrop=400x300", "cannot be combined")]
     public void GifBlock_RejectsInvalidFraming(string option, string expected)
     {
         var result = Runner().RunText($"gif \"bad\" {option} {{ pauseGif 10 }}", "debug", new FakeAutomationClient());
@@ -103,6 +135,30 @@ public sealed class BrowserScriptRunnerGifFramingTests
         Assert.Empty(client.CursorStates);
         Assert.Empty(client.ViewportOptionsHistory);
         Assert.Empty(client.EvaluatedExpressions);
+    }
+
+    [Fact]
+    public void RecordingSmartCropWithoutGifDoesNotInspectOrCapturePage()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText("recording smartCrop=400x300 { click \"#save\" }", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(0, client.PageScreenshotCount);
+        Assert.Empty(client.EvaluatedExpressions);
+    }
+
+    [Fact]
+    public void FramingOverride_SwitchesBetweenSelectorAndSmartCropModes()
+    {
+        var selector = new CMG.Browser.Scripting.Recording.GifFramingOptions(CropSelector: "#panel", CropPadding: 12);
+        var smart = selector.WithOptions(new Dictionary<string, string> { ["smartCrop"] = "400x300" }, "test");
+        var restored = smart.WithOptions(new Dictionary<string, string> { ["crop"] = "#dialog" }, "test");
+
+        Assert.Null(smart.CropSelector);
+        Assert.Equal((400, 300), (smart.SmartCropWidth, smart.SmartCropHeight));
+        Assert.Equal("#dialog", restored.CropSelector);
+        Assert.Null(restored.SmartCropWidth);
     }
 
     [Fact]

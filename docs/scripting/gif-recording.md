@@ -195,8 +195,11 @@ Supported recording-scope and `setRecording` defaults:
 - `maxWidth=<1..10000>` / `maxHeight=<1..10000>`: Cap output dimensions while preserving aspect ratio.
 - `viewport=<width>x<height>`: Temporarily set the browser viewport for this recording and restore it afterward.
 - `pixelRatio=<1..4>`: Set the recording device pixel ratio for controlled high-DPI capture.
+- `smartCrop=<true|false|widthxheight>`: Follow the virtual pointer and active element with a stable-size crop. `true` uses `640x480`; explicit dimensions range from `100` to `10000`. It cannot be combined with `crop=`.
 
 Recording viewport controls are inert without an active GIF. While recording, CMG scrolls pointer-targeted elements to the viewport center before resolving pointer coordinates, which avoids offscreen/sticky-header targeting failures. Whole-run equivalents are `--gif-viewport` and `--gif-pixel-ratio`.
+
+Smart crop uses top-page pointer coordinates for same-origin `frame` actions, so the recorded frame includes the iframe target and surrounding parent-page context. It does not bypass cross-origin frame restrictions. See demos 231 and 232.
 - `pointerDuration=<milliseconds>`: Movement duration between pointer targets.
 - `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.

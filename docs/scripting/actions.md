@@ -2012,6 +2012,7 @@ Encoder options:
 - `layoutStability=<0..5000>` waits for settled target coordinates after scrolling; default `150`, disabled with `0`.
 - `targetZoom=<auto|always|none>` and `targetZoomThreshold=<8..100>` control the tiny-target inset; defaults are `auto` and `24`.
 - `pagePosition=<auto|always|none>` controls the long-page viewport rail; default `auto` activates above 1.5 viewports.
+- `smartCrop=<true|false|widthxheight>` follows the pointer and active target using stable frame dimensions; `true` means `640x480` and cannot be combined with `crop=`.
 - `scale=<0.05..1>` downscales the cropped or viewport frame before GIF quantization.
 - `maxWidth=<1..10000>` and `maxHeight=<1..10000>` add output dimension caps while preserving aspect ratio.
 - `viewport=<width>x<height>` temporarily sets recording viewport dimensions and restores the prior viewport afterward.

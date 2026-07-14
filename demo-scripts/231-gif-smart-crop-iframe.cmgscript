@@ -1,0 +1,8 @@
+setContent "<style>body{margin:0;background:#e5e7eb;font:16px system-ui}.stage{display:flex;justify-content:space-between;align-items:center;width:720px;height:560px;padding:20px}.outside{width:260px;height:260px}.outside,iframe{border:2px solid #172033;background:white}.outside{display:grid;place-items:center}iframe{width:360px;height:260px}button{padding:14px 24px}</style><main class='stage'><section class='outside'><button id='outside'>Parent action</button></section><iframe id='checkoutFrame'></iframe><script>const frame=document.querySelector('#checkoutFrame');const doc=frame.contentDocument;doc.open();doc.write(`<style>body{display:grid;place-items:center;height:240px;margin:0;font:16px system-ui}button{padding:14px 24px}</style><button id='save'>Save in frame</button>`);doc.close();</script></main>"
+gif "smart crop iframe context" output="demo-output/231-smart-crop-iframe.gif" keepFrames="demo-output/231.frames" smartCrop=500x360 pointerDuration=700 {
+  click "#outside"
+  frame "#checkoutFrame" {
+    click "#save"
+    assertText "#save" "Save in frame"
+  }
+}

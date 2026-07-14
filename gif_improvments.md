@@ -244,9 +244,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: inherited `pixelRatio=<1..4>` and CLI `--gif-pixel-ratio` provide controlled high-DPI capture.
 - Implemented: `crop="<selector-or-rich-locator>"` resolves live for every frame. CLI: `--gif-crop <selector>`.
 - Implemented: `gif "name" crop="#panel" { ... }` block support, with `cropPadding=` / `--gif-crop-padding` for context.
-- Add smart crop that follows the pointer and active element.
+- Implemented: `smartCrop=<true|widthxheight>` keeps a stable-size crop centered between the virtual pointer and active element; `true` uses 640x480. CLI: `--gif-smart-crop`.
 - Add split-screen recording for multi-tab or popup flows.
-- Add frame recording inside iframes with visible page context.
+- Implemented for same-origin frames: pointer-aware frame actions expose top-page coordinates, and `smartCrop=` follows them while retaining visible parent-page context. Cross-origin diagnostics remain tracked below.
 - Implemented: active recorders center pointer-targeted elements before coordinate resolution; non-recorded scripts are unchanged.
 - Implemented: inherited `safeArea=` and `--gif-safe-area` keep pointer targets clear of viewport edges/detected sticky blockers and expand tight crops; the evidence-oriented default is 24 CSS pixels and `0` disables it.
 - Implemented: blur, solid, and replacement DSL masks plus repeatable whole-run `--gif-redact`, `--gif-mask`, and `--gif-blur` coarse defaults.

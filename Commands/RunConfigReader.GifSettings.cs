@@ -24,6 +24,7 @@ internal static partial class RunConfigReader
             IntOption(value, "frameDelay"),
             StringOption(value, "crop"),
             IntOption(value, "cropPadding"),
+            StringOption(value, "smartCrop"),
             DoubleOption(value, "scale"),
             IntOption(value, "maxWidth"),
             IntOption(value, "maxHeight"),
@@ -65,7 +66,7 @@ internal static partial class RunConfigReader
     private static readonly HashSet<string> GifSettingNames = new(StringComparer.OrdinalIgnoreCase)
     {
         "quality", "pointerDuration", "pointerSpeed", "pointerEasing", "pointerPath", "dragPath", "clickPulse", "fps", "frameDelay",
-        "crop", "cropPadding", "scale", "maxWidth", "maxHeight", "viewport", "pixelRatio", "safeArea", "layoutStability",
+        "crop", "cropPadding", "smartCrop", "scale", "maxWidth", "maxHeight", "viewport", "pixelRatio", "safeArea", "layoutStability",
         "targetZoom", "targetZoomThreshold", "pagePosition",
         "captionStyle", "captionPosition", "captionSeverity", "captionSize", "autoCaptions", "captionTemplate",
         "redact", "mask", "blur", "autoRedact", "redactionSafety"

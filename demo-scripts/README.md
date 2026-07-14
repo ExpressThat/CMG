@@ -382,6 +382,8 @@ dotnet run -- --firefox browser close
 - `228-gif-auto-pointer-path-runner.cmgscript`: Runner declarations for automatic pointer and target-aware drag routes.
 - `229-gif-target-zoom-page-position.cmgscript`: Automatic tiny-target zoom and a long-page position rail in a focused recording.
 - `230-gif-target-zoom-page-position-runner.cmgscript`: Runner declarations for tiny-target zoom and page-position evidence.
+- `231-gif-smart-crop-iframe.cmgscript`: A fixed-size crop that follows parent-page and same-origin iframe targets.
+- `232-gif-smart-crop-iframe-runner.cmgscript`: Runner declaration form of smart crop across iframe actions.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

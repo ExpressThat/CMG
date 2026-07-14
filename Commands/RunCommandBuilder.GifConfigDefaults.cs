@@ -58,6 +58,7 @@ public sealed partial class RunCommandBuilder
             Value(result, encodingOptions.PixelRatio, settings.PixelRatio),
             Value(result, encodingOptions.SafeArea, settings.SafeArea),
             Value(result, encodingOptions.LayoutStability, settings.LayoutStability),
+            Value(result, encodingOptions.SmartCrop, settings.SmartCrop),
             out var framing, out var framingError)) return Error(framingError);
         encoding = encoding with { Framing = framing };
 

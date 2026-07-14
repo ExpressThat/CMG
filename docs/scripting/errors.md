@@ -831,6 +831,8 @@ Run-config `gifSettings` rejects unknown keys, incorrect JSON types, and invalid
 
 `targetZoom` and `pagePosition` must be `auto`, `always`, or `none`; `targetZoomThreshold` must be from `8` to `100`. These values are validated before capture and identify the responsible DSL, declaration, config, or CLI option.
 
+`smartCrop` accepts `true`, `false`, `auto`, `none`, or `<width>x<height>` dimensions from `100` to `10000`. It cannot be combined with selector `crop=` because those modes have different framing contracts.
+
 `pointerPath` and `dragPath` accept `auto`, `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`. Invalid values fail before browser connection for CLI/config settings and at the responsible DSL line for scoped/action settings.
 
 Automatic-caption templates reject unknown placeholders before browser connection for whole-run CLI/config defaults and at the responsible DSL action for scoped overrides. Supported placeholders are `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}`.

@@ -60,6 +60,16 @@ public sealed class CmgDeclaredGifDefaultsTests
         Assert.Equal(900, result.GifEncoding?.Framing?.MaxWidth);
     }
 
+    [Fact]
+    public void Apply_MapsSmartCropDeclaration()
+    {
+        var success = CmgVisualSegmentExecutor.TryApplyDeclaredGifDefaults(
+            Test(new Dictionary<string, string> { ["gifSmartCrop"] = "500x320" }), Options(), out var result, out var error);
+
+        Assert.True(success, error);
+        Assert.Equal((500, 320), (result.GifEncoding?.Framing?.SmartCropWidth, result.GifEncoding?.Framing?.SmartCropHeight));
+    }
+
     [Theory]
     [InlineData("gifQuality", "ultra", "gifQuality=")]
     [InlineData("gifFps", "0", "fps=")]
