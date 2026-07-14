@@ -16,6 +16,7 @@
   "gifCleanPassed": false,
   "gifSettings": {
     "quality": "highest",
+    "format": "gif",
     "pointerDuration": 500,
     "pointerSpeed": "normal",
     "fps": 10,

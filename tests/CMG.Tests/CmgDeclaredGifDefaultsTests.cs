@@ -23,7 +23,9 @@ public sealed class CmgDeclaredGifDefaultsTests
             ["gifTargetZoomThreshold"] = "18",
             ["gifPagePosition"] = "none",
             ["gifTabContext"] = "always",
-            ["gifScale"] = "0.75"
+            ["gifScale"] = "0.75",
+            ["gifFormat"] = "webp",
+            ["gifFfmpeg"] = "tools/ffmpeg"
         });
 
         var success = CmgVisualSegmentExecutor.TryApplyDeclaredGifDefaults(test, Options(), out var result, out var error);
@@ -42,6 +44,8 @@ public sealed class CmgDeclaredGifDefaultsTests
         Assert.Equal(18, result.GifEncoding?.PointerEvidence?.TargetZoomThreshold);
         Assert.Equal(PointerTargetCalloutMode.None, result.GifEncoding?.PointerEvidence?.PagePosition);
         Assert.Equal(PointerTargetCalloutMode.Always, result.GifEncoding?.PointerEvidence?.TabContext);
+        Assert.Equal(GifArtifactFormat.Webp, result.GifEncoding?.Format);
+        Assert.Equal("tools/ffmpeg", result.GifEncoding?.FfmpegPath);
     }
 
     [Fact]
@@ -89,6 +93,7 @@ public sealed class CmgDeclaredGifDefaultsTests
     [InlineData("gifPointerPath", "wobble", "pointerPath=")]
     [InlineData("gifTargetZoom", "near", "targetZoom=")]
     [InlineData("gifSplitTabs", "sideways", "splitTabs=")]
+    [InlineData("gifFormat", "avi", "format=")]
     public void Apply_RejectsInvalidDeclaration(string name, string value, string expected)
     {
         var success = CmgVisualSegmentExecutor.TryApplyDeclaredGifDefaults(

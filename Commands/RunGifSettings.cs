@@ -41,7 +41,9 @@ internal sealed record RunGifSettings(
     bool? BudgetDownscaleFallback = null,
     string? NarrationSidecar = null,
     string? AltText = null,
-    string? Description = null)
+    string? Description = null,
+    string? Format = null,
+    string? FfmpegPath = null)
 {
     public static RunGifSettings Empty { get; } = new();
 
@@ -86,5 +88,7 @@ internal sealed record RunGifSettings(
         child.BudgetDownscaleFallback ?? BudgetDownscaleFallback,
         child.NarrationSidecar ?? NarrationSidecar,
         child.AltText ?? AltText,
-        child.Description ?? Description);
+        child.Description ?? Description,
+        child.Format ?? Format,
+        child.FfmpegPath ?? FfmpegPath);
 }

@@ -24,7 +24,7 @@ public sealed record GifReviewOptions(
     public string? ResolveNarrationPath(string gifPath) => NarrationSidecar switch
     {
         null => null,
-        "auto" => Path.ChangeExtension(gifPath, ".narration.txt"),
+        "auto" => GifArtifactPaths.Narration(gifPath),
         _ when Path.IsPathRooted(NarrationSidecar) => NarrationSidecar,
         _ => Path.GetFullPath(NarrationSidecar)
     };

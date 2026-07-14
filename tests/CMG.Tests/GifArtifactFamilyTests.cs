@@ -1,4 +1,5 @@
 using System.Text.Json;
+using CMG.Browser.Scripting.Recording;
 using CMG.Runner;
 
 namespace CMG.Tests;
@@ -30,6 +31,34 @@ public sealed class GifArtifactFamilyTests
         {
             directory.Delete(recursive: true);
             File.Delete(outside);
+        }
+    }
+
+    [Fact]
+    public void AgeCleanup_RemovesCompleteNonGifArtifactFamily()
+    {
+        var directory = Directory.CreateTempSubdirectory();
+        try
+        {
+            var artifact = Path.Combine(directory.FullName, "review.webp");
+            File.WriteAllText(artifact, "webp");
+            File.SetLastWriteTimeUtc(artifact, DateTime.UtcNow.AddDays(-8));
+            File.WriteAllText(GifArtifactPaths.Timeline(artifact), "{}");
+            File.WriteAllText(GifArtifactPaths.Debug(artifact), "{}");
+            File.WriteAllText(GifArtifactPaths.Narration(artifact), "review");
+            Directory.CreateDirectory(GifArtifactPaths.Frames(artifact));
+
+            GifArtifactRetentionCleaner.Clean(directory, 7);
+
+            Assert.False(File.Exists(artifact));
+            Assert.False(File.Exists(GifArtifactPaths.Timeline(artifact)));
+            Assert.False(File.Exists(GifArtifactPaths.Debug(artifact)));
+            Assert.False(File.Exists(GifArtifactPaths.Narration(artifact)));
+            Assert.False(Directory.Exists(GifArtifactPaths.Frames(artifact)));
+        }
+        finally
+        {
+            directory.Delete(recursive: true);
         }
     }
 

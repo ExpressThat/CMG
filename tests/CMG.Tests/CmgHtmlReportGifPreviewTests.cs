@@ -29,6 +29,19 @@ public sealed class CmgHtmlReportGifPreviewTests
         Assert.Contains("artifacts/second.gif", report);
     }
 
+    [Fact]
+    public void HtmlReport_RendersMp4AsVideo()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.mp4");
+        var report = CmgHtmlReportWriter.Write([TestWithGif(path)]);
+
+        Assert.Contains("<video controls", report);
+        Assert.Contains("type=\"video/mp4\"", report);
+        Assert.Contains("Open MP4", report);
+        Assert.Contains("MP4: ", report);
+        Assert.DoesNotContain($"<img src=\"{new Uri(Path.GetFullPath(path)).AbsoluteUri}", report);
+    }
+
     private static CmgTestResult TestWithGif(string gifPath) =>
         new("checkout", "checkout.cmgscript", true, ["PASS 001 click"], null, gifPath, []);
 

@@ -36,9 +36,9 @@ public static class GifStoryboardExporter
         }
 
         var format = Image.DetectFormat(input.FullName);
-        if (!string.Equals(format.Name, "GIF", StringComparison.OrdinalIgnoreCase))
+        if (!new[] { "GIF", "PNG", "WEBP" }.Contains(format.Name, StringComparer.OrdinalIgnoreCase))
         {
-            throw new NotSupportedException($"Expected a GIF image, got {format.Name}.");
+            throw new NotSupportedException($"Expected GIF, APNG, or WebP visual evidence, got {format.Name}.");
         }
 
         using var gif = Image.Load<Rgba32>(input.FullName);

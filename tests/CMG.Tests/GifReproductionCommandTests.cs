@@ -47,4 +47,16 @@ public sealed class GifReproductionCommandTests
         Assert.StartsWith("cmg browser --port 9223 control script --file", command, StringComparison.Ordinal);
         Assert.Contains("--gif", command, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void CommandGifPath_UsesSelectedRecordingFormat()
+    {
+        var requested = new FileInfo(Path.Combine(Path.GetTempPath(), "flow.gif"));
+
+        var resolved = BrowserControlCommandHandler.ResolveCommandGif(
+            requested, new GifEncodingOptions { Format = GifArtifactFormat.Webp });
+
+        Assert.NotNull(resolved);
+        Assert.Equal(Path.ChangeExtension(requested.FullName, ".webp"), resolved.FullName);
+    }
 }

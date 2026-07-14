@@ -44,9 +44,11 @@ cmg --firefox browser control script --file <path>
 - `--preview-gif-settings`: Parse the script and print effective DSL recording settings without launching, selecting, or connecting to a browser. Command-level GIF options are still validated, but preview lines describe DSL scopes.
 
 For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--file -`. PowerShell parses quotes before CMG receives `--inline`, so nested DSL, CSS, and JavaScript quotes are inherently easier to preserve through a file or stdin.
-- `--gif <path>`: Optional output path for an animated GIF recording of the script run.
+- `--gif <path>`: Optional visual-recording output path. GIF is the default; use `--record-format` for APNG, WebP, or MP4.
 - `--no-gif`: Disable command-level GIF capture and every script recording block while still executing child actions. This prevents screenshots and virtual-pointer injection. `CMG_DISABLE_GIF=1` provides the same process-wide switch; enabled values are `1`, `true`, `yes`, and `on` (case-insensitive).
-- `--gif-quality <archival|highest|high|medium|low>`: GIF palette/encoding quality for `--gif`. `archival` prioritizes frame-local color fidelity over file size. Defaults to `highest`.
+- `--gif-quality <archival|highest|high|medium|low>`: Recording quality for `--gif`. It controls GIF palettes, WebP lossless/lossy quality, and MP4 CRF. Defaults to `highest`.
+- `--record-format <gif|apng|webp|mp4>`: Output format for command-level recording. Defaults to `gif`; a `.gif` output name is rewritten to the selected extension.
+- `--record-ffmpeg <path>`: FFmpeg executable for MP4 output. Otherwise CMG uses `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
 - `--gif-dither <none|floyd-steinberg|bayer|atkinson|sierra>`: Override the quality preset's dithering algorithm for command-level `--gif`.
 - `--gif-palette <global|local|adaptive>`: Override the GIF color table. `adaptive` currently uses frame-local tables.
 - `--gif-colors <2..256>`: Override the maximum GIF palette size.
@@ -183,6 +185,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - Every completed recording emits `GIF_CAPTURE_STATS` with frame, optimization, blank-frame, ICC/CICP/gamma, profile-change, memory, timing, and budget-decision counts. `GIF_WARN_UNCHANGED`, `GIF_WARN_BLANK`, and `GIF_WARN_COLOR_PROFILE` explain evidence-quality risks without changing the exit code.
 - Every retained artifact emits `GIF_REPRODUCE path="..." command="..."`. The JSON-escaped command preserves browser selection, `browser --port` placement, and the file/inline source. It includes `--gif` for command-level recording and omits it for focused DSL blocks so the block remains the recording boundary.
 - `narrationSidecar=`, `altText=`, and `description=` work on `gif`, `recordVideo`, `screencast`, and inherited recording scopes. A completed sidecar emits `GIF_NARRATION <absolute-path>`; no sidecar is created without an active recorder.
+- APNG and WebP use built-in encoders. MP4 uses FFmpeg with H.264, `yuv420p`, even-dimension padding, and an exact 100 fps centisecond evidence timeline. A missing executable fails with an actionable stderr reason and exit code `1`; CMG never writes GIF bytes under another extension.
 - Active recordings also emit `GIF_WARN_MULTIPLE_TARGETS`, `GIF_WARN_TINY_TARGET`, `GIF_WARN_SCROLLED`, and `GIF_WARN_NON_VISUAL` when selector or action choices weaken the resulting evidence. These warnings never fail the script and are not evaluated when GIF recording is inactive.
 - Suppressed nested recording blocks emit `GIF_BLOCK_SUPPRESSED <line> reason=command-level-recording` when `--gif` owns the whole run.
 

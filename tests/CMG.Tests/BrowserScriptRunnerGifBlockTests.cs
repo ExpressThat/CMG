@@ -6,6 +6,21 @@ namespace CMG.Tests;
 public sealed class BrowserScriptRunnerGifBlockTests
 {
     [Fact]
+    public void GifBlock_RemovesCaptionEvidenceAfterFinish()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif").Replace("\\", "/");
+        var client = new FakeAutomationClient();
+        client.TextResponses.Enqueue("Done");
+
+        var result = new BrowserScriptRunner(new BrowserScriptParser()).RunText($"gif output=\"{path}\" {{ expectText \"#status\" \"Done\" }}",
+            "http://127.0.0.1:9222", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(client.EvaluatedExpressions,
+            expression => expression.Contains("__cmg_message_bar", StringComparison.Ordinal) && expression.Contains("remove", StringComparison.Ordinal));
+        if (File.Exists(path)) File.Delete(path);
+    }
+    [Fact]
     public void RunText_GifBlockRecordsNestedScriptWhenNoCommandGifIsActive()
     {
         var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");

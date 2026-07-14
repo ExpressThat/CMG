@@ -42,7 +42,7 @@ public static partial class CmgHtmlReportWriter
         {
             var source = Encode(GifSource(path));
             builder.AppendLine("<figure class=\"gif-preview\">");
-            builder.AppendLine($"<a href=\"{source}\"><img src=\"{source}\" alt=\"{Encode($"Visual evidence for {test.Name}")}\"></a>");
+            builder.AppendLine(RecordingMedia(path, source, Encode($"Visual evidence for {test.Name}")));
             builder.AppendLine($"<figcaption>{Encode(test.Name)} - {Encode(Status(test))}</figcaption></figure>");
         }
         builder.AppendLine("</div></section>");

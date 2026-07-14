@@ -1,4 +1,5 @@
 using System.Text.Json;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Runner;
 
@@ -28,7 +29,7 @@ internal static class CmgGifEvidenceReader
             return evidencePath;
         }
 
-        var conventional = Path.ChangeExtension(gifPath, ".timeline.json");
+        var conventional = GifArtifactPaths.Timeline(gifPath);
         return File.Exists(conventional) ? conventional : null;
     }
 

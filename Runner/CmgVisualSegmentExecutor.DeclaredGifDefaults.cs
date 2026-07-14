@@ -28,7 +28,7 @@ public sealed partial class CmgVisualSegmentExecutor
             var framing = (source.GifEncoding?.Framing ?? new GifFramingOptions()).WithOptions(mapped, "test");
             var pointerEvidence = (source.GifEncoding?.PointerEvidence ?? new GifPointerEvidenceOptions()).WithOptions(mapped, "test");
             var review = GifReviewOptions.FromOptions(mapped, "test", source.GifEncoding?.Review);
-            var encoding = (source.GifEncoding ?? new GifEncodingOptions()) with
+            var encoding = (source.GifEncoding ?? new GifEncodingOptions()).WithOptions(mapped, "test", "recording.gif") with
             {
                 Framing = framing, PointerEvidence = pointerEvidence, Review = review
             };
@@ -77,6 +77,8 @@ public sealed partial class CmgVisualSegmentExecutor
         Add(options, mapped, "gifNarrationSidecar", "narrationSidecar");
         Add(options, mapped, "gifAltText", "altText");
         Add(options, mapped, "gifDescription", "description");
+        Add(options, mapped, "gifFormat", "format");
+        Add(options, mapped, "gifFfmpeg", "ffmpeg");
         return mapped;
     }
 

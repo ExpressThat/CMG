@@ -20,7 +20,7 @@ public static class GifTimelinePath
     }
 
     public static string DefaultFor(string gifPath) =>
-        Path.ChangeExtension(Path.GetFullPath(gifPath), ".timeline.json");
+        GifArtifactPaths.Timeline(gifPath);
 
     private static string ResolveRequested(string gifPath, string requestedPath)
     {
@@ -31,7 +31,7 @@ public static class GifTimelinePath
             return full;
         }
 
-        var name = $"{Path.GetFileNameWithoutExtension(gifPath)}.timeline.json";
+        var name = GifArtifactPaths.SidecarFileName(gifPath, ".timeline.json");
         return Path.Combine(full, name);
     }
 

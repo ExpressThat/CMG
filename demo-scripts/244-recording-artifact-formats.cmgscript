@@ -1,0 +1,11 @@
+setContent "<main style='min-height:520px;padding:48px;background:#f8fafc;color:#111827;font:20px system-ui'><h1>Artifact formats</h1><button id='approve' style='padding:14px 22px'>Approve release</button><p id='status'>Waiting</p><script>document.querySelector('#approve').onclick=()=>document.querySelector('#status').textContent='Approved'</script></main>"
+
+gif "244-pointer-evidence" format=apng timeline=true caption="Lossless APNG evidence" {
+  click "#approve"
+  expectText "#status" "Approved"
+}
+
+gif "244-pointer-evidence" format=webp timeline=true caption="Compact WebP evidence" {
+  click "#approve"
+  expectText "#status" "Approved"
+}

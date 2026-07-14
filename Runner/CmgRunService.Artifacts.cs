@@ -30,7 +30,8 @@ public sealed partial class CmgRunService
         var browser = options.BrowserKind.ToString().ToLowerInvariant();
         var shard = options.ShardCount > 1 ? $"-shard-{options.ShardIndex}-of-{options.ShardCount}" : string.Empty;
         var safeName = string.Concat(test.Name.Select(character => char.IsLetterOrDigit(character) ? character : '-'));
-        return new FileInfo(Path.Combine(options.GifDirectory.FullName, $"{project}{browser}{shard}-{safeName}.gif"));
+        var extension = (options.GifEncoding?.Format ?? GifArtifactFormat.Gif).Extension();
+        return new FileInfo(Path.Combine(options.GifDirectory.FullName, $"{project}{browser}{shard}-{safeName}{extension}"));
     }
 
     private static void WriteReports(CmgRunOptions options, IReadOnlyList<CmgTestResult> tests)
@@ -119,16 +120,19 @@ public sealed partial class CmgRunService
 
             try
             {
-                var metadata = GifInspector.Inspect(file);
-                if (metadata.DurationMilliseconds <= threshold)
+                var duration = file.Extension.Equals(".mp4", StringComparison.OrdinalIgnoreCase)
+                    ? CmgRecordingTimelineMetadataReader.Read(file.FullName)?.DurationMilliseconds
+                    : GifInspector.InspectRecording(file).DurationMilliseconds;
+                if (duration is null) throw new InvalidDataException("MP4 timeline metadata was not found.");
+                if (duration <= threshold)
                 {
                     continue;
                 }
 
                 output.Add(
                     $"GIF_MAX_DURATION test={Quote(test.Name)} path={Quote(file.FullName)} " +
-                    $"durationMs={metadata.DurationMilliseconds} thresholdMs={threshold}");
-                reasons.Add($"GIF '{file.FullName}' duration {metadata.DurationMilliseconds}ms exceeded max {threshold}ms.");
+                    $"durationMs={duration} thresholdMs={threshold}");
+                reasons.Add($"GIF '{file.FullName}' duration {duration}ms exceeded max {threshold}ms.");
             }
             catch (Exception exception)
             {

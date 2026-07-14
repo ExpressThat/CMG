@@ -40,6 +40,7 @@ public static class GifReproductionCommand
         {
             parts.Add("--gif");
             parts.Add(Quote(Path.GetDirectoryName(Path.GetFullPath(gifPath)) ?? "."));
+            AddFormat(parts, gifPath);
         }
         return string.Join(' ', parts);
     }
@@ -64,8 +65,23 @@ public static class GifReproductionCommand
             parts.Add(selectedPort.ToString(System.Globalization.CultureInfo.InvariantCulture));
         }
         parts.AddRange(["control", "script", sourceOption, Quote(source)]);
-        if (commandLevel) parts.AddRange(["--gif", Quote(Path.GetFullPath(gifPath))]);
+        if (commandLevel)
+        {
+            parts.AddRange(["--gif", Quote(Path.GetFullPath(gifPath))]);
+            AddFormat(parts, gifPath);
+        }
         return string.Join(' ', parts);
+    }
+
+    private static void AddFormat(ICollection<string> parts, string path)
+    {
+        var format = Path.GetExtension(path).ToLowerInvariant() switch
+        {
+            ".apng" => "apng", ".webp" => "webp", ".mp4" => "mp4", _ => null
+        };
+        if (format is null) return;
+        parts.Add("--record-format");
+        parts.Add(format);
     }
 
     private static void AddBrowser(ICollection<string> parts, BrowserKind browser)

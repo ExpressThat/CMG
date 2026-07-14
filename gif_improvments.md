@@ -136,11 +136,11 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `palette=<global|local|adaptive>` and whole-run CLI `--gif-palette <mode>`; adaptive currently selects frame-local tables.
 - Implemented: `colors=<2..256>` and whole-run CLI `--gif-colors <count>`.
 - Implemented: add automatic runner palette diagnostics that emit `GIF_WARN_PALETTE` when recorded artifacts approach the GIF color limit.
-- Add DSL `format=<gif|apng|webp|mp4>` on recording blocks while keeping GIF as the default visual-evidence format.
-- Add CLI `--record-format <gif|apng|webp|mp4>` only for whole-run output defaults.
-- Add APNG output for lossless color when users do not need old GIF compatibility.
-- Add animated WebP output for smaller files with better color.
-- Add MP4/H.264 or WebM export for long recordings where GIF is too large.
+- Implemented: DSL `format=<gif|apng|webp|mp4>` on recording blocks keeps GIF as the default visual-evidence format.
+- Implemented: CLI `--record-format <gif|apng|webp|mp4>` sets whole-run output defaults.
+- Implemented: native APNG output preserves lossless true color and exact recorder timing.
+- Implemented: native animated WebP output provides smaller true-color evidence.
+- Implemented: FFmpeg-backed MP4/H.264 export supports long recordings, exact centisecond timing, even-dimension compatibility padding, explicit executable selection, and actionable failure diagnostics.
 - Implemented for DSL recording blocks: sidecar PNG frame export preserves final pre-quantization frames; without crop, scale, or color transforms these remain the exact browser PNG bytes.
 - Implemented: DSL `keepFrames=<directory|true|false>` and whole-run CLI `--keep-frames <directory>`. Runner output is isolated per GIF for parallel safety.
 - Implemented: `cmg gif color-diff <source.png> <encoded.gif> --frame <n>` reports parseable MAE, RMS, maximum-channel, and changed-pixel encoder drift.

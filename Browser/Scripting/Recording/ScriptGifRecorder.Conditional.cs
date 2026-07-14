@@ -5,8 +5,7 @@ public sealed partial class ScriptGifRecorder
     public string VisualSignature()
     {
         if (remoteDebuggingUrl is null) return string.Empty;
-        TryRemoveDomCursor();
-        devToolsClient.Evaluate(remoteDebuggingUrl, BrowserDomScripts.RemoveMessageBar());
+        CleanupDomEvidence();
         var screenshot = devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar: true);
         return Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(screenshot));
     }
@@ -25,8 +24,7 @@ public sealed partial class ScriptGifRecorder
     {
         if (remoteDebuggingUrl is not null)
         {
-            TryRemoveDomCursor();
-            devToolsClient.Evaluate(remoteDebuggingUrl, BrowserDomScripts.RemoveMessageBar());
+            CleanupDomEvidence();
         }
         RestoreRecordingViewport();
     }

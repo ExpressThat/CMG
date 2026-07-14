@@ -12,6 +12,7 @@ public static partial class CmgJsonReportWriter
         {
             writer.WriteStartObject();
             writer.WriteString("path", path);
+            writer.WriteString("format", RecordingFormat(path));
             writer.WriteString("quality", QualityFor(test, path));
             var timeline = CmgGifEvidenceReader.TimelineFor(test, path);
             if (timeline is null) writer.WriteNull("timelinePath"); else writer.WriteString("timelinePath", timeline);
@@ -31,6 +32,11 @@ public static partial class CmgJsonReportWriter
 
         writer.WriteEndArray();
     }
+
+    private static string RecordingFormat(string path) => Path.GetExtension(path).ToLowerInvariant() switch
+    {
+        ".apng" => "apng", ".webp" => "webp", ".mp4" => "mp4", _ => "gif"
+    };
 
     private static IEnumerable<string> GifPaths(string? gifPath)
     {
@@ -57,7 +63,7 @@ public static partial class CmgJsonReportWriter
 
     private static string? TimelineQuality(string gifPath)
     {
-        var timeline = Path.ChangeExtension(gifPath, ".timeline.json");
+        var timeline = GifArtifactPaths.Timeline(gifPath);
         if (!File.Exists(timeline))
         {
             return null;
@@ -78,9 +84,14 @@ public static partial class CmgJsonReportWriter
 
     private static void WriteInspection(Utf8JsonWriter writer, FileInfo file)
     {
+        if (file.Extension.Equals(".mp4", StringComparison.OrdinalIgnoreCase))
+        {
+            WriteVideoInspection(writer, file);
+            return;
+        }
         try
         {
-            var metadata = GifInspector.Inspect(file);
+            var metadata = GifInspector.InspectRecording(file);
             writer.WriteNumber("frames", metadata.FrameCount);
             writer.WriteNumber("durationMs", metadata.DurationMilliseconds);
             writer.WriteNumber("width", metadata.Width);
@@ -96,5 +107,18 @@ public static partial class CmgJsonReportWriter
         {
             writer.WriteString("error", exception.Message);
         }
+    }
+
+    private static void WriteVideoInspection(Utf8JsonWriter writer, FileInfo file)
+    {
+        var metadata = CmgRecordingTimelineMetadataReader.Read(file.FullName);
+        if (metadata is null) { writer.WriteNumber("sizeBytes", file.Length); return; }
+        writer.WriteNumber("frames", metadata.Frames);
+        writer.WriteNumber("durationMs", metadata.DurationMilliseconds);
+        writer.WriteNumber("width", metadata.Width);
+        writer.WriteNumber("height", metadata.Height);
+        writer.WriteNumber("sizeBytes", metadata.SizeBytes);
+        writer.WriteNumber("fps", metadata.DurationMilliseconds > 0
+            ? Math.Round(metadata.Frames * 1000d / metadata.DurationMilliseconds, 2) : 0);
     }
 }

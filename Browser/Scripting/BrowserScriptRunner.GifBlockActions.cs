@@ -19,7 +19,8 @@ public sealed partial class BrowserScriptRunner
         if (GifRecordingPolicy.IsDisabled)
             return ExecuteDisabledGifBlock(remoteDebuggingUrl, automationClient, action, context);
 
-        var gifPath = GifBlockPath(action);
+        var format = GifArtifactFormatParser.Parse(action.Options.GetValueOrDefault("format"), "gif");
+        var gifPath = GifArtifactFormatParser.WithExtension(GifBlockPath(action), format);
         var recorder = commandRecorder ?? new ScriptGifRecorder(
             automationClient,
             new ScriptRecordingOptions(gifPath, GifBlockQuality(action), GifBlockMotion(action), GifBlockVisual(action), GifBlockPointerVisibility(action), GifBlockPulse(action),
@@ -32,7 +33,7 @@ public sealed partial class BrowserScriptRunner
         var output = new List<string>();
         if (action.Name.Equals("recordVideo", StringComparison.OrdinalIgnoreCase) ||
             action.Name.Equals("screencast", StringComparison.OrdinalIgnoreCase))
-            output.Add($"GIF_ALIAS_WARN {action.LineNumber:000} action={action.Name} format=gif suggestion=use-gif");
+            output.Add($"GIF_ALIAS_WARN {action.LineNumber:000} action={action.Name} format={format.ToString().ToLowerInvariant()} suggestion=use-gif");
         var failed = false;
         var skipped = false;
         string? baseline = null;

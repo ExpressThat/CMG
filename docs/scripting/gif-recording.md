@@ -28,6 +28,18 @@ Whole-run privacy defaults use repeatable `--gif-redact`, `--gif-mask`, and `--g
 - Navigation waits such as `waitForNetworkIdle` are logged and traced but do not move the virtual pointer or add pointer motion frames.
 - Environment actions such as `emulateMedia` are also non-visual by themselves; later page changes and visual actions are recorded normally with the same virtual pointer.
 - Explicit `screenshot` and `screenshotPage` actions can write PNG or JPEG artifacts with `type=` and `quality=`. They can apply temporary artifact-only CSS with `style=` or `stylePath=`, artifact-only masks with `mask=` and `maskColor=`, disabled artifact animations with `animations=disabled`, and hidden artifact carets with `caret=hide`. `screenshotPage` can also write clipped artifacts with `clipX=`, `clipY=`, `clipWidth=`, and `clipHeight=`. GIF recorder frames always use CMG's internal PNG capture path so virtual pointer compositing and frame encoding stay consistent.
+
+## Artifact formats
+
+All formats consume the same final CMG frames after virtual pointer, pointer-event, drag-ghost, caption, redaction, crop, and color processing. `gif` is the compatibility default. `apng` preserves lossless true color, `webp` provides smaller animated true-color evidence, and `mp4` exports H.264 for long recordings. APNG and WebP require no external tool. MP4 resolves FFmpeg from `ffmpeg=<path>`, `--record-ffmpeg`, `gifSettings.ffmpegPath`, `CMG_FFMPEG`, then `PATH`; failure names every remedy and does not leave a partial artifact.
+
+```cmgscript
+gif "lossless-review" format=apng { click "#approve" }
+gif "compact-review" format=webp { click "#approve" }
+gif "long-review" format=mp4 ffmpeg="C:\\tools\\ffmpeg.exe" { click "#approve" }
+```
+
+For whole-run capture use `--record-format`; command-level mode still suppresses nested block recordings. Runner declarations use `gifFormat=` and `gifFfmpeg=`. Root/project config uses `gifSettings.format` and `gifSettings.ffmpegPath`. Output continues to emit `GIF <absolute-path>`, `GIF_CAPTURE_STATS`, sidecar lines, and `GIF_REPRODUCE`; non-GIF reproduction commands include `--record-format`. HTML reports render MP4 with a video control and the animated image formats with an image preview.
 - Visual assertions can use `fullPage=true` and `mask=` for comparison artifacts. Masking changes only the captured assertion image; selector assertions still move the virtual pointer before the comparison frame, and page-level assertions still do not move it.
 - Screenshot artifact masks, animation disabling, and caret hiding do not change GIF frames. If the viewer should see a redaction, frozen animation, or highlight in the GIF itself, change the page with `evaluate`, `highlight`, `caption`, or normal page actions before recording that frame.
 - Click, type, clear, hover, select, wheel, and drag actions move the virtual pointer to the target selector when possible. User-like movement actions do not scroll automatically; add `scrollIntoView`, `scrollTo`, `scrollBy`, or `wheel` steps when the pointer should move to content outside the current viewport.
@@ -179,6 +191,8 @@ recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfter
 Supported recording-scope and `setRecording` defaults:
 
 - `quality=<archival|highest|high|medium|low>`: Encoder preset for nested recording blocks that create their own artifact. `archival` uses a full 256-color frame-local palette and maximum preset dithering strength.
+- `format=<gif|apng|webp|mp4>`: Artifact format. GIF remains the default; a generated name receives the selected format's extension.
+- `ffmpeg=<path>`: FFmpeg executable for MP4. Fallback order is `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
 - `dither=<none|floyd-steinberg|bayer|atkinson|sierra>`: Explicit palette dithering algorithm.
 - `palette=<global|local|adaptive>`: GIF color-table strategy. The default and `adaptive` use frame-local tables so moving pointer/overlay evidence composes reliably and each frame can adapt to its colors. Explicit `global` remains available for controlled sources.
 - `narrationSidecar=<true|false|path>`: Write a UTF-8 screen-reader narration containing description, rendered alt text, duration, outcome, and ordered steps.

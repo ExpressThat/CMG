@@ -5,6 +5,12 @@ namespace CMG.Browser;
 
 public sealed partial class BrowserControlCommandHandler
 {
+    internal static FileInfo? ResolveCommandGif(FileInfo? commandGif, GifEncodingOptions? encoding)
+    {
+        if (commandGif is null) return null;
+        return new FileInfo((encoding ?? new GifEncodingOptions()).ResolveOutputPath(commandGif.FullName));
+    }
+
     private static ScriptRunResult AddGifReproduction(
         ScriptRunResult result,
         FileInfo? commandGif,

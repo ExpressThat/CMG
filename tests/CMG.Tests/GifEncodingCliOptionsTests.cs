@@ -18,7 +18,8 @@ public sealed class GifEncodingCliOptionsTests
             "--gif-no-coalesce", "--gif-sample-every", "3", "--pointer-contrast", "fixed", "--pointer-callout", "always",
             "--pointer-callout-threshold", "32", "--target-zoom", "none", "--target-zoom-threshold", "18", "--page-position", "always", "--tab-context", "always", "--no-pointer-focus-pulse", "--pointer-idle", "none",
             "--pointer-idle-threshold", "900", "--no-pointer-teleport-marker", "--mouse-down-hold", "250",
-            "--gif-background", "#112233", "--gif-gradient-mode", "smooth", "--gif-high-contrast-palette"]);
+            "--gif-background", "#112233", "--gif-gradient-mode", "smooth", "--gif-high-contrast-palette",
+            "--record-format", "webp", "--record-ffmpeg", "C:\\tools\\ffmpeg.exe"]);
 
         Assert.True(options.TryParse(result, out var encoding, out var error), error);
         Assert.Equal(GifDitherMode.Sierra, encoding.Dither);
@@ -53,6 +54,8 @@ public sealed class GifEncodingCliOptionsTests
         Assert.Equal("#112233", encoding.Color?.Background);
         Assert.Equal(GifGradientMode.Smooth, encoding.Color?.GradientMode);
         Assert.True(encoding.Color?.HighContrastPalette);
+        Assert.Equal(GifArtifactFormat.Webp, encoding.Format);
+        Assert.Equal(Path.GetFullPath("C:\\tools\\ffmpeg.exe"), encoding.FfmpegPath);
     }
 
     [Theory]
@@ -87,6 +90,7 @@ public sealed class GifEncodingCliOptionsTests
     [InlineData("--mouse-down-hold", "60001", "mouseDownHold=")]
     [InlineData("--gif-background", "not-a-color", "background=")]
     [InlineData("--gif-gradient-mode", "photographic", "gradientMode=")]
+    [InlineData("--record-format", "avi", "format=")]
     public void TryParse_RejectsInvalidValues(string option, string value, string expected)
     {
         var options = GifEncodingCliOptions.Build();
@@ -123,6 +127,6 @@ public sealed class GifEncodingCliOptionsTests
             options.Intro, options.Outro, options.IntroDuration, options.OutroDuration, options.ResultOutro, options.DisableCoalescing, options.SampleEvery,
             options.PointerContrast, options.PointerCallout, options.PointerCalloutThreshold, options.TargetZoom, options.TargetZoomThreshold, options.PagePosition, options.TabContext, options.DisableFocusPulse,
             options.PointerIdle, options.PointerIdleThreshold, options.DisableTeleportMarker, options.MouseDownHold,
-            options.Background, options.GradientMode, options.HighContrastPalette }
+            options.Background, options.GradientMode, options.HighContrastPalette, options.Format, options.Ffmpeg }
     };
 }

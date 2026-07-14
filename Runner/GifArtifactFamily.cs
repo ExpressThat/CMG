@@ -6,9 +6,9 @@ internal static class GifArtifactFamily
 {
     public static IReadOnlyList<string> NarrationPaths(string gifPath)
     {
-        var conventional = Path.ChangeExtension(gifPath, ".narration.txt");
+        var conventional = CMG.Browser.Scripting.Recording.GifArtifactPaths.Narration(gifPath);
         var paths = new List<string> { conventional };
-        var timeline = Path.ChangeExtension(gifPath, ".timeline.json");
+        var timeline = CMG.Browser.Scripting.Recording.GifArtifactPaths.Timeline(gifPath);
         if (!File.Exists(timeline)) return paths;
         try
         {

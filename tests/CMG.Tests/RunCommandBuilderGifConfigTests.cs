@@ -23,7 +23,8 @@ public sealed class RunCommandBuilderGifConfigTests
             "captionSeverity": "warning", "captionSize": "large",
             "autoCaptions": true, "captionTemplate": "{step}: {action}",
             "redact": ["#root-secret"], "blur": [".token"],
-            "autoRedact": "sensitive", "redactionSafety": "strict"
+            "autoRedact": "sensitive", "redactionSafety": "strict",
+            "format": "webp", "ffmpegPath": "tools/ffmpeg"
           },
           "projects": [{
             "name": "visual", "gifSettings": {
@@ -74,6 +75,8 @@ public sealed class RunCommandBuilderGifConfigTests
         Assert.True(redaction.Strict);
         Assert.Equal(["#cli-secret", "#project-secret", ".token"], redaction.EffectiveRules.Select(rule => rule.Locator).ToArray());
         Assert.Equal(CMG.Browser.Scripting.Recording.GifRedactionStyle.Blur, redaction.EffectiveRules[2].Style);
+        Assert.Equal(CMG.Browser.Scripting.Recording.GifArtifactFormat.Webp, options.GifEncoding?.Format);
+        Assert.Equal("tools/ffmpeg", options.GifEncoding?.FfmpegPath);
     }
 
     [Fact]

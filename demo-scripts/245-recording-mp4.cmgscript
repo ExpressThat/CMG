@@ -1,0 +1,6 @@
+setContent "<main style='min-height:520px;padding:48px;background:#f8fafc;color:#111827;font:20px system-ui'><h1>Long-form evidence</h1><button id='run' style='padding:14px 22px'>Run workflow</button><p id='status'>Ready</p><script>document.querySelector('#run').onclick=()=>document.querySelector('#status').textContent='Complete'</script></main>"
+
+gif "245-pointer-evidence" format=mp4 timeline=true description="H.264 evidence with CMG pointer choreography." {
+  click "#run"
+  expectText "#status" "Complete"
+}

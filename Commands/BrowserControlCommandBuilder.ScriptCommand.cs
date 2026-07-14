@@ -12,11 +12,11 @@ public sealed partial class BrowserControlCommandBuilder
         var fileOption = new Option<string>("--file") { Description = "Path to a .cmgscript file, or '-' to read from stdin." };
         var inlineOption = new Option<string>("--inline") { Description = "Inline .cmgscript text to run." };
         var previewOption = new Option<bool>("--preview-gif-settings") { Description = "Parse and print effective GIF settings without launching or connecting to a browser." };
-        var gifOption = new Option<FileInfo?>("--gif") { Description = "Write an animated GIF recording of the script to this path." };
+        var gifOption = new Option<FileInfo?>("--gif") { Description = "Write visual evidence for the script to this path." };
         var noGifOption = new Option<bool>("--no-gif") { Description = "Disable all GIF recording, including script recording blocks." };
         var gifQualityOption = new Option<string>("--gif-quality")
         {
-            Description = "GIF quality: archival, highest, high, medium, or low.",
+            Description = "Recording quality: archival, highest, high, medium, or low.",
             DefaultValueFactory = _ => "highest"
         };
         var encodingOptions = GifEncodingCliOptions.Build();
@@ -68,6 +68,7 @@ public sealed partial class BrowserControlCommandBuilder
             encodingOptions.Background, encodingOptions.GradientMode, encodingOptions.HighContrastPalette, encodingOptions.Redact, encodingOptions.Mask, encodingOptions.Blur, encodingOptions.AutoRedact, encodingOptions.RedactionSafety,
             encodingOptions.SizeBudget, encodingOptions.DisableBudgetQualityFallback, encodingOptions.DisableBudgetDownscale,
             encodingOptions.NarrationSidecar, encodingOptions.AltText, encodingOptions.Description,
+            encodingOptions.Format, encodingOptions.Ffmpeg,
             pointerDurationOption, pointerSpeedOption,
             pointerEasingOption, pointerPathOption, dragPathOption, pointerThemeOption, pointerColorOption, pointerSizeOption, pointerShadowOption,
             showPointerOption, reducedMotionOption, highContrastPointerOption, captionStyleOption, captionPositionOption, captionSeverityOption, captionSizeOption, autoCaptionsOption, captionTemplateOption,

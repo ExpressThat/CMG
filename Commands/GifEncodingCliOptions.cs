@@ -54,7 +54,9 @@ internal sealed record GifEncodingCliOptions(
     Option<bool> DisableBudgetDownscale,
     Option<string?> NarrationSidecar,
     Option<string?> AltText,
-    Option<string?> Description)
+    Option<string?> Description,
+    Option<string?> Format,
+    Option<FileInfo?> Ffmpeg)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -109,7 +111,9 @@ internal sealed record GifEncodingCliOptions(
             new Option<bool>("--no-gif-budget-downscale") { Description = "Do not reduce dimensions to meet --gif-budget." },
             new Option<string?>("--gif-narration") { Description = "Write a screen-reader narration sidecar: true, false, or a file path." },
             new Option<string?>("--gif-alt-text") { Description = "GIF alt-text template with optional name, steps, duration, and outcome placeholders." },
-            new Option<string?>("--gif-description") { Description = "Human-written GIF description for timelines and reports." });
+            new Option<string?>("--gif-description") { Description = "Human-written visual-evidence description for timelines and reports." },
+            new Option<string?>("--record-format") { Description = $"Whole-run recording format: {GifArtifactFormatParser.Values}." },
+            new Option<FileInfo?>("--record-ffmpeg") { Description = "FFmpeg executable used for MP4 recording output." });
     }
 
     public bool TryParse(ParseResult result, RunGifSettings? settings, out GifEncodingOptions encoding, out string? error)
@@ -173,6 +177,7 @@ internal sealed record GifEncodingCliOptions(
             error = exception.Message;
             return false;
         }
+        if (!GifCliFormatParser.TryParse(result, this, settings, out var format, out var ffmpeg, out error)) return false;
         encoding = encoding with
         {
             Framing = framing,
@@ -185,7 +190,9 @@ internal sealed record GifEncodingCliOptions(
             Color = color,
             Redaction = redaction,
             SizeBudget = budget,
-            Review = review
+            Review = review,
+            Format = format,
+            FfmpegPath = ffmpeg
         };
         return true;
     }

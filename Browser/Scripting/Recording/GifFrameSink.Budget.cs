@@ -21,8 +21,9 @@ public sealed partial class GifFrameSink
     {
         var budget = encoding.SizeBudget;
         var candidates = Candidates(budget).ToArray();
-        var temporary = $"{path}.{Guid.NewGuid():N}.tmp";
-        var best = $"{path}.{Guid.NewGuid():N}.best";
+        var extension = Path.GetExtension(path);
+        var temporary = $"{path}.{Guid.NewGuid():N}.tmp{extension}";
+        var best = $"{path}.{Guid.NewGuid():N}.best{extension}";
         var bestSize = long.MaxValue;
         try
         {
@@ -58,7 +59,7 @@ public sealed partial class GifFrameSink
     {
         yield return (quality, 1);
         if (budget?.Bytes is null) yield break;
-        if (budget.QualityFallback)
+        if (budget.QualityFallback && encoding.Format is not GifArtifactFormat.Apng)
         {
             foreach (var fallback in QualityFallbacks(quality)) yield return (fallback, 1);
         }
@@ -83,13 +84,13 @@ public sealed partial class GifFrameSink
         var width = Math.Max(1, (int)Math.Round(sourceWidth * scale));
         var height = Math.Max(1, (int)Math.Round(sourceHeight * scale));
         using var gif = BudgetFrame(frames[0], sourceWidth, sourceHeight, width, height);
-        gif.Metadata.GetGifMetadata().RepeatCount = 0;
+        SetAnimationMetadata(gif, encoding.Format);
         for (var index = 1; index < frames.Count; index++)
         {
             using var normalized = BudgetFrame(frames[index], sourceWidth, sourceHeight, width, height);
             gif.Frames.AddFrame(normalized.Frames.RootFrame);
         }
-        gif.SaveAsGif(path, CreateEncoder(selectedQuality, encoding));
+        EncodeArtifact(gif, path, selectedQuality);
     }
 
     private static Image<Rgba32> BudgetFrame(

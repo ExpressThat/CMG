@@ -1,4 +1,5 @@
 using System.Text.Json;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Runner;
 
@@ -24,7 +25,7 @@ internal static class CmgGifReviewMetadataReader
             {
             }
         }
-        var narration = Path.ChangeExtension(gifPath, ".narration.txt");
+        var narration = GifArtifactPaths.Narration(gifPath);
         return new(File.Exists(narration) ? narration : null, null, null);
     }
 

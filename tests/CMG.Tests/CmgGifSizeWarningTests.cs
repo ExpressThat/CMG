@@ -129,6 +129,30 @@ public sealed class CmgGifSizeWarningTests
         }
     }
 
+    [Fact]
+    public void GifDurationGuard_UsesMandatoryMp4Timeline()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.mp4");
+        try
+        {
+            File.WriteAllBytes(path, [0]);
+            File.WriteAllText(GifArtifactPaths.Timeline(path),
+                """{"frameCount":12,"durationMilliseconds":2300,"width":762,"height":484,"fileSizeBytes":1}""");
+            var test = new CmgTestResult("checkout", "flow.cmgscript", true, [], null, path, []);
+
+            var (result, output) = CmgRunService.ApplyGifDurationGuard(
+                test, Options(threshold: null, maxDuration: 2000));
+
+            Assert.False(result.Success);
+            Assert.Contains("durationMs=2300", Assert.Single(output), StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(path);
+            File.Delete(GifArtifactPaths.Timeline(path));
+        }
+    }
+
     private static CmgRunOptions Options(long? threshold, int? maxDuration = null, long? maxSize = null) =>
         new(
             BrowserKind.Chrome,

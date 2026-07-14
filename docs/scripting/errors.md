@@ -157,6 +157,8 @@ When the reason is an invalid GIF or recording option, JSON reports also add a `
 
 `narrationSidecar=` accepts `true`, `false`, or a non-empty file path. An empty value fails before recording with `option narrationSidecar= must be true, false, or a file path.` Sidecar directory creation or writes fail the recording with the exact path and operating-system reason rather than claiming accessible evidence exists.
 
+`format=` accepts `gif`, `apng`, `webp`, or `mp4`. An unsupported value fails before browser recording with `option format= must be one of: gif, apng, webp, mp4.` An explicit non-GIF extension must match the selected format. MP4 requires FFmpeg; resolution failure identifies `ffmpeg=<path>`, `--record-ffmpeg`, `CMG_FFMPEG`, and `PATH`, while encoder failures include the exit code and bounded stderr. Partial and temporary artifacts are removed.
+
 Use `cmg run --trace <directory>` to write per-test trace JSON with every recorded step and failure reason.
 
 `RUN STOP maxFailures=<count>` means `cmg run --max-failures <count>` reached its failure threshold and stopped scheduling more tests. Reports, traces, and GIF output include tests that ran before the stop.

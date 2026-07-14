@@ -1,0 +1,19 @@
+describe "artifact formats" {
+  test "lossless review" gifFormat=apng {
+    setContent "<main style='min-height:520px;padding:48px;background:#f8fafc;color:#111827;font:20px system-ui'><button id='go'>Run APNG</button><p id='status'>Ready</p><script>document.querySelector('#go').onclick=()=>document.querySelector('#status').textContent='Complete'</script></main>"
+    click "#go"
+    expectText "#status" "Complete"
+  }
+
+  test "compact review" gifFormat=webp {
+    setContent "<main style='min-height:520px;padding:48px;background:#f8fafc;color:#111827;font:20px system-ui'><button id='go'>Run WebP</button><p id='status'>Ready</p><script>document.querySelector('#go').onclick=()=>document.querySelector('#status').textContent='Complete'</script></main>"
+    click "#go"
+    expectText "#status" "Complete"
+  }
+
+  test "long review" gifFormat=mp4 {
+    setContent "<main style='min-height:520px;padding:48px;background:#f8fafc;color:#111827;font:20px system-ui'><button id='go'>Run MP4</button><p id='status'>Ready</p><script>document.querySelector('#go').onclick=()=>document.querySelector('#status').textContent='Complete'</script></main>"
+    click "#go"
+    expectText "#status" "Complete"
+  }
+}

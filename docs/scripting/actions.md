@@ -1998,6 +1998,8 @@ screencast "compact" quality=medium {
 Encoder options:
 
 - `quality=<archival|highest|high|medium|low>` selects a preset. `archival` prioritizes frame-local color fidelity over file size.
+- `format=<gif|apng|webp|mp4>` selects the artifact encoder. GIF is the default; APNG is lossless true color, WebP is compact true color, and MP4 is H.264 through FFmpeg.
+- `ffmpeg=<path>` selects an FFmpeg executable for MP4. Otherwise CMG uses `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
 - `dither=<none|floyd-steinberg|bayer|atkinson|sierra>` overrides the preset dithering algorithm.
 - `palette=<global|local|adaptive>` controls the GIF color table. `adaptive` currently uses frame-local tables.
 - `colors=<2..256>` overrides the maximum color count.
@@ -2034,7 +2036,7 @@ Crop bounds are re-resolved before every frame, so a moving or resizing panel re
 
 Records only the wrapped actions when direct `browser control script` or `cmg run` is used without command-level `--gif`. If command-level `--gif` is used, the entire script or test is recorded and nested `gif` blocks do not create separate GIFs.
 With command-level `--no-gif` or enabled `CMG_DISABLE_GIF`, every recording-block alias executes its children with no recorder and emits `GIF_SKIPPED <line> status=skipped reason=recording-disabled source=<cli|environment>`. No screenshot, artifact, recording overlay, or virtual pointer is created.
-`recordVideo` and `screencast` are provider-style aliases for the same CMG GIF recorder. Output is still an animated GIF so the virtual pointer, pointer events, drag ghost behavior, and captions remain consistent. At runtime either alias emits `GIF_ALIAS_WARN <line> action=<alias> format=gif suggestion=use-gif`; the warning is advisory and does not alter the artifact or exit code. Use `gif` when GIF output is intended.
+`recordVideo` and `screencast` are aliases for the same CMG visual recorder. They honor `format=` while preserving identical virtual pointer events, drag ghosts, captions, redaction, and step timing. At runtime either alias emits `GIF_ALIAS_WARN <line> action=<alias> format=<format> suggestion=use-gif`; the warning is advisory and does not alter the artifact or exit code.
 
 Options:
 

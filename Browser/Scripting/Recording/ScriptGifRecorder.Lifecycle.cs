@@ -47,7 +47,7 @@ public sealed partial class ScriptGifRecorder
         CaptureConfiguredOutro(outcome);
         if (remoteDebuggingUrl is not null)
         {
-            TryRemoveDomCursor();
+            CleanupDomEvidence();
         }
 
         frameSink.Save(OutputPath);
@@ -57,13 +57,15 @@ public sealed partial class ScriptGifRecorder
             NarrationPath = GifNarrationWriter.Write(
                 narrationPath, OutputPath, options.EffectiveReview, frameSink, timelineSteps, outcome);
         }
-        if (frameSink.FrameCount > 0 && !string.IsNullOrWhiteSpace(options.TimelinePath))
+        var timelinePath = options.TimelinePath ?? (options.EffectiveEncoding.Format is GifArtifactFormat.Mp4
+            ? GifArtifactPaths.Timeline(OutputPath) : null);
+        if (frameSink.FrameCount > 0 && !string.IsNullOrWhiteSpace(timelinePath))
         {
-            TimelinePath = GifTimelineWriter.Write(options.TimelinePath, OutputPath, options, frameSink, checkpoints, timelineSteps, redactionAudit, debugFrames, outcome);
+            TimelinePath = GifTimelineWriter.Write(timelinePath, OutputPath, options, frameSink, checkpoints, timelineSteps, redactionAudit, debugFrames, outcome);
         }
         if (frameSink.FrameCount > 0 && debugFrames.Count > 0)
         {
-            DebugPath = GifTimelineWriter.Write(Path.ChangeExtension(OutputPath, ".debug.json"), OutputPath, options,
+            DebugPath = GifTimelineWriter.Write(GifArtifactPaths.Debug(OutputPath), OutputPath, options,
                 frameSink, checkpoints, timelineSteps, redactionAudit, debugFrames, outcome);
         }
         RestoreRecordingViewport();

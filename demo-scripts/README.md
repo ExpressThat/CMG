@@ -395,6 +395,9 @@ dotnet run -- --firefox browser close
 - `241-gif-invalid-setting-report.cmgscript`: Intentionally fails validation to demonstrate structured JSON/HTML recording-setting diagnostics.
 - `242-gif-accessible-review.cmgscript`: Focused GIF with generated alt text, an authored description, and a screen-reader narration sidecar.
 - `243-gif-accessible-review-runner.cmgscript`: Runner declarations for the same accessible review metadata and narration output.
+- `244-recording-artifact-formats.cmgscript`: Runs the same virtual-pointer journey through native lossless APNG and animated WebP output.
+- `245-recording-mp4.cmgscript`: Exports the same recorder timeline as H.264 MP4 through FFmpeg (`ffmpeg`, `CMG_FFMPEG`, or `ffmpeg=<path>`).
+- `246-recording-artifact-formats-runner.cmgscript`: Structured tests selecting APNG, WebP, and MP4 through inherited `gifFormat=` declarations.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

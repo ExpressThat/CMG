@@ -8,6 +8,7 @@ public static partial class GifTimelineWriter
     {
         var encoding = options.EffectiveEncoding;
         writer.WriteStartObject("encoding");
+        writer.WriteString("format", encoding.Format.ToString().ToLowerInvariant());
         writer.WriteString("dither", encoding.Dither.ToString().ToLowerInvariant());
         writer.WriteString("palette", encoding.Palette.ToString().ToLowerInvariant());
         if (encoding.Colors is int colors) writer.WriteNumber("colors", colors); else writer.WriteNull("colors");

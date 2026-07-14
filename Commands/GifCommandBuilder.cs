@@ -98,12 +98,12 @@ public sealed partial class GifCommandBuilder
 
     private static Command BuildStoryboardCommand()
     {
-        var file = new Argument<FileInfo>("file") { Description = "GIF file to export as a storyboard contact sheet." };
+        var file = new Argument<FileInfo>("file") { Description = "GIF, APNG, or WebP file to export as a storyboard contact sheet." };
         var output = new Option<FileInfo?>("--output") { Description = "PNG output path for the storyboard contact sheet." };
         var columns = new Option<int>("--columns") { Description = "Number of frame columns in the contact sheet. Default is 4." };
         columns.DefaultValueFactory = _ => 4;
         var maxFrames = new Option<int?>("--max-frames") { Description = "Maximum number of frames to sample into the storyboard." };
-        var command = new Command("storyboard", "Export GIF frames to a PNG contact sheet.") { file, output, columns, maxFrames };
+        var command = new Command("storyboard", "Export GIF, APNG, or WebP frames to a PNG contact sheet.") { file, output, columns, maxFrames };
         command.SetAction(parseResult =>
         {
             var input = parseResult.GetValue(file);

@@ -24,6 +24,7 @@ public sealed class CmgReportGifMetadataTests
             using var document = JsonDocument.Parse(report);
             var metadata = document.RootElement[0].GetProperty("gifMetadata")[0];
             Assert.Equal(path, metadata.GetProperty("path").GetString());
+            Assert.Equal("gif", metadata.GetProperty("format").GetString());
             Assert.Equal("medium", metadata.GetProperty("quality").GetString());
             Assert.Equal(2, metadata.GetProperty("frames").GetInt32());
             Assert.Equal(350, metadata.GetProperty("durationMs").GetInt32());
@@ -35,6 +36,30 @@ public sealed class CmgReportGifMetadataTests
         finally
         {
             File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public void JsonReport_ReadsMp4MetadataFromMandatoryTimeline()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.mp4");
+        try
+        {
+            File.WriteAllBytes(path, [0, 1, 2]);
+            File.WriteAllText(GifArtifactPaths.Timeline(path),
+                """{"frameCount":12,"durationMilliseconds":2300,"width":762,"height":484,"fileSizeBytes":3}""");
+
+            using var document = JsonDocument.Parse(CmgJsonReportWriter.Write([Test(path)]));
+            var metadata = document.RootElement[0].GetProperty("gifMetadata")[0];
+            Assert.Equal("mp4", metadata.GetProperty("format").GetString());
+            Assert.Equal(12, metadata.GetProperty("frames").GetInt32());
+            Assert.Equal(2300, metadata.GetProperty("durationMs").GetInt32());
+            Assert.False(metadata.TryGetProperty("error", out _));
+        }
+        finally
+        {
+            File.Delete(path);
+            File.Delete(GifArtifactPaths.Timeline(path));
         }
     }
 

@@ -1,6 +1,6 @@
 # `gif storyboard`
 
-Export an existing GIF artifact to a PNG contact sheet without launching or controlling a browser.
+Export an existing GIF, APNG, or animated WebP artifact to a PNG contact sheet without launching or controlling a browser.
 
 Frames are alpha-composited onto a white review background, so transparent pixels do not appear as black or transparent evidence gaps.
 
@@ -10,7 +10,7 @@ cmg gif storyboard <file> --output <png> [--columns <count>] [--max-frames <coun
 
 ## Arguments
 
-- `<file>`: GIF file to export.
+- `<file>`: GIF, APNG, or animated WebP file to export. MP4 is not accepted.
 
 ## Options
 
@@ -23,12 +23,12 @@ cmg gif storyboard <file> --output <png> [--columns <count>] [--max-frames <coun
 On success, writes one parseable line:
 
 ```text
-GIF_STORYBOARD input="<absolute-gif-path>" output="<png-path>" frames=<exported>/<total> columns=<count> width=<pixels> height=<pixels>
+GIF_STORYBOARD input="<absolute-artifact-path>" output="<png-path>" frames=<exported>/<total> columns=<count> width=<pixels> height=<pixels>
 ```
 
 Fields:
 
-- `frames`: Exported frame count followed by total GIF frame count.
+- `frames`: Exported frame count followed by total animation frame count.
 - `columns`: Contact sheet column count.
 - `width` / `height`: Final PNG dimensions.
 
@@ -41,11 +41,12 @@ Fields:
 ## Exit Codes
 
 - `0`: Storyboard PNG was written.
-- `1`: File was missing, output was missing, options were invalid, or the input was not a valid GIF.
+- `1`: File was missing, output was missing, options were invalid, or the input was not a valid GIF/APNG/WebP artifact.
 
 ## Examples
 
 ```powershell
 cmg gif storyboard demo-output\dialog-flow.gif --output demo-output\dialog-flow-storyboard.png
 cmg gif storyboard artifacts\gifs\checkout.gif --output artifacts\checkout-storyboard.png --columns 5 --max-frames 20
+cmg gif storyboard demo-output\review.webp --output demo-output\review-storyboard.png --max-frames 12
 ```

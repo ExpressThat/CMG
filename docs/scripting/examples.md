@@ -12,6 +12,7 @@ For the full catalogue of advanced examples, see the [cookbook reference](cookbo
 | Write a first test | [First Test](#first-test) | `demo-scripts\20-runner-flow.cmgscript` |
 | Show pointer behavior | [Visual Evidence](#visual-evidence) | `demo-scripts\10-css-hover-states.cmgscript` |
 | Tune GIF quality | [Visual Evidence](#visual-evidence) | `demo-scripts\148-gif-quality.cmgscript` |
+| Choose APNG, WebP, or MP4 | [Choose an artifact format](#choose-an-artifact-format) | `demo-scripts\244-recording-artifact-formats.cmgscript` |
 | Choreograph GIF pointer movement | [Visual Evidence](#visual-evidence) | `demo-scripts\149-gif-pointer-choreography.cmgscript` |
 | Protect sensitive GIF evidence | [GIF Privacy](#gif-privacy) | `demo-scripts\174-gif-redaction.cmgscript` |
 | Show touch pointer and hide/show controls | [Visual Evidence](#visual-evidence) | `demo-scripts\155-touch-pointer-visibility.cmgscript` |
@@ -870,6 +871,16 @@ gif "compact evidence" quality=highest sizeBudget=750KB timeline=true {
 ```
 
 CMG preserves the requested highest-quality encoding when it fits. Otherwise it deterministically tries quality fallback and then bounded downscaling without changing the recorded actions, virtual pointer, events, drag ghosts, captions, or timing. Set `budgetQualityFallback=false` or `budgetDownscaleFallback=false` to forbid either fallback. Whole-run equivalents are `--gif-budget`, `--no-gif-budget-quality-fallback`, and `--no-gif-budget-downscale`. See demo 240.
+
+### Choose an artifact format
+
+```cmgscript
+gif "lossless evidence" format=apng { click "#approve" }
+gif "compact evidence" format=webp { click "#approve" }
+gif "long evidence" format=mp4 { click "#approve" }
+```
+
+The capture and choreography are identical; only final encoding changes. APNG and WebP are built in. MP4 requires FFmpeg on `PATH` or through `ffmpeg=`, `--record-ffmpeg`, config, or `CMG_FFMPEG`. Run demo 244 for APNG/WebP, demo 245 for direct MP4, and demo 246 for structured tests in all formats. Whole-run equivalents use `--record-format`.
 
 ## Common Next Steps
 

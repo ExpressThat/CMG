@@ -19,7 +19,9 @@ public sealed record GifEncodingOptions(
     GifColorOptions? Color = null,
     GifRedactionOptions? Redaction = null,
     GifSizeBudgetOptions? SizeBudget = null,
-    GifReviewOptions? Review = null)
+    GifReviewOptions? Review = null,
+    GifArtifactFormat Format = GifArtifactFormat.Gif,
+    string? FfmpegPath = null)
 {
     public static GifEncodingOptions FromOptions(
         IReadOnlyDictionary<string, string> options,
@@ -40,7 +42,9 @@ public sealed record GifEncodingOptions(
             Color: GifColorOptions.FromOptions(options, context),
             Redaction: GifRedactionOptions.FromOptions(options, context),
             SizeBudget: GifSizeBudgetOptions.FromOptions(options, context),
-            Review: GifReviewOptions.FromOptions(options, context));
+            Review: GifReviewOptions.FromOptions(options, context),
+            Format: GifArtifactFormatParser.Parse(options.GetValueOrDefault("format"), context),
+            FfmpegPath: ParseFfmpeg(options.GetValueOrDefault("ffmpeg")));
     }
 
     public GifEncodingOptions WithOptions(
@@ -64,7 +68,9 @@ public sealed record GifEncodingOptions(
             (Color ?? new()).WithOptions(options, context),
             Redaction,
             GifSizeBudgetOptions.FromOptions(options, context, SizeBudget),
-            GifReviewOptions.FromOptions(options, context, Review));
+            GifReviewOptions.FromOptions(options, context, Review),
+            options.ContainsKey("format") ? parsed.Format : Format,
+            options.ContainsKey("ffmpeg") ? parsed.FfmpegPath : FfmpegPath);
     }
 
     private GifAccessibilityOptions MergeAccessibility(IReadOnlyDictionary<string, string> options, string context)
@@ -89,6 +95,11 @@ public sealed record GifEncodingOptions(
         var name = Path.GetFileNameWithoutExtension(outputPath);
         return this with { KeepFramesDirectory = Path.Combine(KeepFramesDirectory, name) };
     }
+
+    public string ResolveOutputPath(string outputPath) => GifArtifactFormatParser.WithExtension(outputPath, Format);
+
+    private static string? ParseFfmpeg(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     public static string DitherValues => "none, floyd-steinberg, bayer, atkinson, sierra";
     public static string PaletteValues => "global, local, adaptive";

@@ -80,9 +80,10 @@ public sealed partial class BrowserScriptRunner
             context.AddRecordingDefaults(captionOptions.ToRecordingDefaults());
         }
         var output = new List<string>();
+        var recordingPath = gif is null ? null : (gifEncoding ?? new()).ResolveOutputPath(gif.FullName);
         using var recorder = gif is null
             ? null
-            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(gif.FullName, gifQuality, pointerMotion, pointerVisual, showPointer, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, GifTimelinePath.Resolve(gif.FullName, gifTimelinePath), frameDelayMilliseconds, gifEncoding, Redaction: gifRedaction, Accessibility: gifAccessibility));
+            : new ScriptGifRecorder(automationClient, new ScriptRecordingOptions(recordingPath!, gifQuality, pointerMotion, pointerVisual, showPointer, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, GifTimelinePath.Resolve(recordingPath!, gifTimelinePath), frameDelayMilliseconds, gifEncoding, Redaction: gifRedaction, Accessibility: gifAccessibility));
 
         recorder?.Start(remoteDebuggingUrl);
 

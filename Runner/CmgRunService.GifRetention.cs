@@ -106,10 +106,10 @@ public sealed partial class CmgRunService
         {
             var narrations = GifArtifactFamily.NarrationPaths(path);
             DeleteFile(path);
-            DeleteFile(Path.ChangeExtension(path, ".timeline.json"));
-            DeleteFile(Path.ChangeExtension(path, ".debug.json"));
+            DeleteFile(GifArtifactPaths.Timeline(path));
+            DeleteFile(GifArtifactPaths.Debug(path));
             foreach (var narration in narrations) DeleteFile(narration);
-            var frames = Path.ChangeExtension(path, null) + ".frames";
+            var frames = GifArtifactPaths.Frames(path);
             if (Directory.Exists(frames)) Directory.Delete(frames, recursive: true);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
@@ -126,10 +126,10 @@ public sealed partial class CmgRunService
 
     private static bool GifFamilyExists(string path) =>
         File.Exists(path) ||
-        File.Exists(Path.ChangeExtension(path, ".timeline.json")) ||
-        File.Exists(Path.ChangeExtension(path, ".debug.json")) ||
+        File.Exists(GifArtifactPaths.Timeline(path)) ||
+        File.Exists(GifArtifactPaths.Debug(path)) ||
         GifArtifactFamily.NarrationPaths(path).Any(File.Exists) ||
-        Directory.Exists(Path.ChangeExtension(path, null) + ".frames");
+        Directory.Exists(GifArtifactPaths.Frames(path));
 
     private static string Mode(CmgGifRetentionMode mode) => mode switch
     {
@@ -153,9 +153,9 @@ public sealed partial class CmgRunService
         return new[]
         {
             path,
-            Path.ChangeExtension(path, ".timeline.json"),
-            Path.ChangeExtension(path, ".debug.json"),
-            Path.ChangeExtension(path, null) + ".frames"
+            GifArtifactPaths.Timeline(path),
+            GifArtifactPaths.Debug(path),
+            GifArtifactPaths.Frames(path)
         }.Concat(GifArtifactFamily.NarrationPaths(path))
             .Any(candidate => normalized.Contains(candidate, StringComparison.OrdinalIgnoreCase));
     }

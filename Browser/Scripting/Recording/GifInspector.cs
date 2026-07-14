@@ -1,5 +1,7 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace CMG.Browser.Scripting.Recording;
@@ -33,33 +35,51 @@ public static class GifInspector
     {
         var format = Image.DetectFormat(file.FullName);
         if (!string.Equals(format.Name, "GIF", StringComparison.OrdinalIgnoreCase))
-        {
             throw new NotSupportedException($"Expected a GIF image, got {format.Name}.");
+        return InspectRecording(file, format.Name);
+    }
+
+    public static GifInspection InspectRecording(FileInfo file)
+    {
+        var format = Image.DetectFormat(file.FullName);
+        return InspectRecording(file, format.Name);
+    }
+
+    private static GifInspection InspectRecording(FileInfo file, string formatName)
+    {
+        if (!new[] { "GIF", "PNG", "WEBP" }.Contains(formatName, StringComparer.OrdinalIgnoreCase))
+        {
+            throw new NotSupportedException($"Expected GIF, APNG, or WebP visual evidence, got {formatName}.");
         }
 
         using var image = Image.Load<Rgba32>(file.FullName);
-        var metadata = image.Metadata.GetGifMetadata();
-        var palette = PaletteMode(image);
+        var gif = formatName.Equals("GIF", StringComparison.OrdinalIgnoreCase);
+        var palette = gif ? PaletteMode(image) : "truecolor";
         var colors = CountColors(image);
         return new GifInspection(
             file.FullName,
             image.Width,
             image.Height,
             image.Frames.Count,
-            DurationMilliseconds(image),
+            DurationMilliseconds(image, formatName),
             file.Length,
             palette,
             colors >= PaletteOverflowThreshold ? ">256" : colors.ToString(System.Globalization.CultureInfo.InvariantCulture),
             HasTransparency(image),
-            metadata.RepeatCount);
+            RepeatCount(image, formatName));
     }
 
-    private static int DurationMilliseconds(Image<Rgba32> image)
+    private static int DurationMilliseconds(Image<Rgba32> image, string format)
     {
         var duration = 0;
         foreach (var frame in image.Frames)
         {
-            duration += frame.Metadata.GetGifMetadata().FrameDelay * 10;
+            duration += format.ToUpperInvariant() switch
+            {
+                "PNG" => (int)Math.Round(frame.Metadata.GetPngMetadata().FrameDelay.ToDouble() * 1000),
+                "WEBP" => (int)frame.Metadata.GetWebpMetadata().FrameDelay,
+                _ => frame.Metadata.GetGifMetadata().FrameDelay * 10
+            };
         }
 
         return duration;
@@ -69,7 +89,14 @@ public static class GifInspector
     {
         foreach (var frame in image.Frames)
         {
-            if (frame.Metadata.GetGifMetadata().HasTransparency)
+            var transparent = false;
+            frame.ProcessPixelRows(accessor =>
+            {
+                for (var y = 0; y < accessor.Height && !transparent; y++)
+                    foreach (var pixel in accessor.GetRowSpan(y))
+                        if (pixel.A < 255) { transparent = true; break; }
+            });
+            if (transparent)
             {
                 return true;
             }
@@ -77,6 +104,13 @@ public static class GifInspector
 
         return false;
     }
+
+    private static ushort RepeatCount(Image<Rgba32> image, string format) => format.ToUpperInvariant() switch
+    {
+        "PNG" => (ushort)Math.Min(ushort.MaxValue, image.Metadata.GetPngMetadata().RepeatCount),
+        "WEBP" => (ushort)Math.Min(ushort.MaxValue, image.Metadata.GetWebpMetadata().RepeatCount),
+        _ => image.Metadata.GetGifMetadata().RepeatCount
+    };
 
     private static string PaletteMode(Image<Rgba32> image)
     {
