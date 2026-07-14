@@ -7,6 +7,8 @@
     "pointerSpeed": "slow",
     "pointerPath": "auto",
     "fps": 8,
+    "typingDelay": 55,
+    "postHoverHold": 450,
     "crop": "#evidence",
     "cropPadding": 16,
     "scale": 0.9,

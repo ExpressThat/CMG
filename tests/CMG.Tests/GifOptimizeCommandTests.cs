@@ -68,6 +68,37 @@ public sealed class GifOptimizeCommandTests
         }
     }
 
+    [Fact]
+    public void Optimize_ComposesStreamingDeltaFramesBeforeEncoding()
+    {
+        var input = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        var output = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}-optimized.gif");
+        try
+        {
+            using var first = new Image<Rgba32>(20, 12, Color.White);
+            first[2, 2] = Color.Red;
+            using var second = first.Clone();
+            second[15, 8] = Color.Blue;
+            using var sink = new GifFrameSink();
+            sink.AddFrame(Png(first), 10);
+            sink.AddFrame(Png(second), 10);
+            sink.Save(input);
+
+            GifOptimizer.RemoveDuplicateFrames(new(input), new(output));
+
+            using var optimized = Image.Load<Rgba32>(output);
+            using var frame = optimized.Frames.CloneFrame(1);
+            Assert.Equal(new Rgba32(255, 255, 255, 255), frame[0, 0]);
+            Assert.True(frame[2, 2].R > 200);
+            Assert.True(frame[15, 8].B > 200);
+        }
+        finally
+        {
+            File.Delete(input);
+            File.Delete(output);
+        }
+    }
+
     private static RootCommand BuildRoot()
     {
         var root = new RootCommand();
@@ -78,6 +109,13 @@ public sealed class GifOptimizeCommandTests
     private static byte[] Png(Color color)
     {
         using var image = new Image<Rgba32>(8, 8, color);
+        using var stream = new MemoryStream();
+        image.SaveAsPng(stream);
+        return stream.ToArray();
+    }
+
+    private static byte[] Png(Image<Rgba32> image)
+    {
         using var stream = new MemoryStream();
         image.SaveAsPng(stream);
         return stream.ToArray();

@@ -3,7 +3,7 @@ using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Commands;
 
-internal sealed record GifEncodingCliOptions(
+internal sealed partial record GifEncodingCliOptions(
     Option<string?> Dither,
     Option<string?> Palette,
     Option<int?> Colors,
@@ -56,6 +56,8 @@ internal sealed record GifEncodingCliOptions(
     Option<string?> StillPdf,
     Option<string?> AltText,
     Option<string?> Description,
+    Option<int?> TypingDelay,
+    Option<int?> PostHoverHold,
     Option<string?> Format,
     Option<FileInfo?> Ffmpeg)
 {
@@ -114,6 +116,8 @@ internal sealed record GifEncodingCliOptions(
             new Option<string?>("--gif-still-pdf") { Description = "Write a step-by-step still-image PDF: true, false, or a file path." },
             new Option<string?>("--gif-alt-text") { Description = "GIF alt-text template with optional name, steps, duration, and outcome placeholders." },
             new Option<string?>("--gif-description") { Description = "Human-written visual-evidence description for timelines and reports." },
+            new Option<int?>("--gif-typing-delay") { Description = "Default visible typing delay in milliseconds for recorded actions." },
+            new Option<int?>("--gif-post-hover-hold") { Description = "Default encoded hold after hover actions in milliseconds." },
             new Option<string?>("--record-format") { Description = $"Whole-run recording format: {GifArtifactFormatParser.Values}." },
             new Option<FileInfo?>("--record-ffmpeg") { Description = "FFmpeg executable used for MP4 recording output." });
     }
@@ -182,6 +186,7 @@ internal sealed record GifEncodingCliOptions(
             return false;
         }
         if (!GifCliFormatParser.TryParse(result, this, settings, out var format, out var ffmpeg, out error)) return false;
+        if (!TryActionDefaults(result, settings, out var actionDefaults, out error)) return false;
         encoding = encoding with
         {
             Framing = framing,
@@ -195,6 +200,7 @@ internal sealed record GifEncodingCliOptions(
             Redaction = redaction,
             SizeBudget = budget,
             Review = review,
+            ActionDefaults = actionDefaults,
             Format = format,
             FfmpegPath = ffmpeg
         };

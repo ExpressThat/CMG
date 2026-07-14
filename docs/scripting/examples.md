@@ -528,6 +528,25 @@ gif "approval" typingDelay=55 postHoverHold=400 {
 
 The target only guides caption placement; it does not move the virtual pointer. See demo 251.
 
+Apply the same cadence to an entire direct-script recording:
+
+```powershell
+cmg browser control script --file demo-scripts\252-gif-cli-action-defaults.cmgscript --gif demo-output\252-cli-defaults.gif --gif-typing-delay 55 --gif-post-hover-hold 500
+```
+
+Omit `--gif` and those GIF-prefixed defaults are inert; the script uses its ordinary input path and creates no virtual pointer.
+
+The runner form keeps defaults with the test declaration:
+
+```text
+test "runner action cadence" gifTypingDelay=55 gifPostHoverHold=500 {
+  type "#reviewer" "CMG"
+  hover "#approve"
+}
+```
+
+Run demo 253 with `cmg run demo-scripts\253-gif-runner-action-defaults.cmgscript --gif demo-output\runner-action-defaults`.
+
 For a whole run, use `--gif-accessibility --caption-size large`. See demos 184 and 185.
 
 Use reduced motion and a high-contrast pointer together when motion itself would make evidence harder to review:

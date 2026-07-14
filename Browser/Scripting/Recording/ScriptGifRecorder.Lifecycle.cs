@@ -54,7 +54,15 @@ public sealed partial class ScriptGifRecorder
         var stillPdfPath = options.EffectiveReview.ResolveStillPdfPath(OutputPath);
         if (frameSink.FrameCount > 0 && stillPdfPath is not null)
         {
-            StillPdfPath = GifStillPdfWriter.Write(stillPdfPath, OutputPath, frameSink, timelineSteps);
+            try
+            {
+                StillPdfPath = GifStillPdfWriter.Write(stillPdfPath, OutputPath, frameSink, timelineSteps);
+            }
+            catch (Exception exception)
+            {
+                throw new ScriptExecutionException(
+                    $"Could not write still PDF '{Path.GetFullPath(stillPdfPath)}'. {exception.Message}");
+            }
         }
         var narrationPath = options.EffectiveReview.ResolveNarrationPath(OutputPath);
         if (frameSink.FrameCount > 0 && narrationPath is not null)

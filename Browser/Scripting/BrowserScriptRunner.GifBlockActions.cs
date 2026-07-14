@@ -82,8 +82,8 @@ public sealed partial class BrowserScriptRunner
         catch (Exception exception)
         {
             failed = true;
-            if (currentAction is not null && recorder.CaptureFailureCaption(currentAction, exception.Message))
-                output.Add($"GIF_FAILURE_CAPTION {currentAction.LineNumber:000} action={QuoteField(currentAction.Name)} status=captured");
+            if (currentAction is not null)
+                RecordFailureCaption(recorder, currentAction, exception.Message, output);
             throw;
         }
         finally

@@ -48,9 +48,15 @@ public sealed class BrowserScriptRunnerEventActionTests
     {
         var directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
-        File.WriteAllText(Path.Combine(directory, "report.csv"), "ok");
+        var writer = new Thread(() =>
+        {
+            Thread.Sleep(60);
+            File.WriteAllText(Path.Combine(directory, "report.csv"), "ok");
+        });
+        writer.Start();
 
-        var result = Runner().RunText($"waitForEvent download directory=\"{Slash(directory)}\" pattern=\"*.csv\"", "debug", new FakeAutomationClient());
+        var result = Runner().RunText($"waitForEvent download directory=\"{Slash(directory)}\" pattern=\"*.csv\" timeout=1000", "debug", new FakeAutomationClient());
+        writer.Join();
 
         Assert.True(result.Success);
         Assert.Contains(result.StdoutLines, line => line.Contains("DOWNLOAD", StringComparison.Ordinal));

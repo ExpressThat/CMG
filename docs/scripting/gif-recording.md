@@ -206,7 +206,13 @@ Shared scopes accept artifact defaults (`format`, `ffmpeg`), general motion/evid
 - `typingDelay=<milliseconds>`: Default visible typing cadence for nested `type`, `pressSequentially`, and `fill`; child actions can override it.
 - `postHoverHold=<milliseconds>`: Default post-hover evidence hold; child hovers can override it.
 
+Whole-run direct scripts use `--gif-typing-delay` and `--gif-post-hover-hold`. Runner tests use `gifTypingDelay=` and `gifPostHoverHold=` declarations, while root/project configuration uses `gifSettings.typingDelay` and `gifSettings.postHoverHold`. CLI values overlay project config; suite/test declarations and DSL scopes/actions remain more specific.
+
+Command-level action defaults are applied only when that run/test actually has an active GIF recorder. Without recording they are inert: ordinary scripts retain fast native typing and CMG does not inject a virtual pointer or visual hold.
+
 Default narration and still-PDF paths participate in retry, passing-test, and age retention. Custom paths under the recording artifact directory are also cleaned with their recording family. CMG does not follow an old timeline to delete a path outside that directory. A requested PDF forces timeline creation so reports can discover custom paths.
+
+Still-PDF pages use high-quality JPEG image streams. CMG explicitly composites transparent source pixels onto white before JPEG encoding, so transparency cannot appear as black reviewer evidence. Write failures fail the recording with the absolute PDF path and do not emit `GIF_STILL_PDF`.
 - `colors=<2..256>`: Explicit maximum palette size.
 - `keepFrames=<true|false|directory>`: Keep final pre-quantization PNG inputs. `true` writes `<gif-name>.frames/frame-NNNN.png`; a directory writes there instead. Cropping and scaling are already applied.
 - `background=<color|transparent|none>`: Flatten alpha onto a CSS color before duplicate detection and quantization. `transparent` and `none` clear an inherited background.
@@ -335,7 +341,7 @@ CMG also enables evidence-focused defaults when they make the GIF easier to unde
 
 Automatic captions are opt-in because narration changes visual intent. CMG uses privacy-safe defaults: `fill` and `type` identify the target without copying the entered value into the GIF. With `captionPosition=auto`, captions appear below targets in the upper viewport half and above targets in the lower half. They exist only while recording; without `--gif` or a recording block, they do not touch the page.
 
-Successful assertions automatically replace the current recording caption with QA evidence containing expected and actual values. Password/token/secret-like selectors and values are shown as `[masked]`. Failed actions automatically capture a bounded bug-report caption before the final failure hold, and runner stdout emits `GIF_FAILURE_CAPTION`. Disable these independently with `assertionCaptions=false` or `failureCaptions=false`.
+Successful assertions automatically replace the current recording caption with QA evidence containing expected and actual values. Password/token/secret-like selectors and values are shown as `[masked]`. Failed actions automatically capture a bounded bug-report caption before the final failure hold, and runner stdout emits `GIF_FAILURE_CAPTION`. If a transient or DOM-less page cannot accept that overlay, the diagnostic uses `status=skipped reason="..."` and CMG preserves the original action failure. Disable these independently with `assertionCaptions=false` or `failureCaptions=false`.
 
 Manual `caption` and `narrate` support `captionDuration=` / `duration=`, `fadeIn=`, and `fadeOut=`. Fades are encoded as deterministic opacity stages rather than relying on page animation timing. `narrate "message" { ... }` uses the teaching preset and adds a nested execution context.
 

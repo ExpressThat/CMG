@@ -2,7 +2,7 @@
 
 Optimize an existing GIF artifact without launching or controlling a browser.
 
-The current optimizer coalesces consecutive duplicate decoded frames and preserves their timing by adding duplicate frame delays to the previous kept frame.
+The current optimizer reconstructs image-descriptor deltas, coalesces consecutive duplicate visual frames, and preserves their timing by adding duplicate frame delays to the previous kept frame. Unchanged regions remain intact when optimizing CMG's disk-streamed GIFs.
 
 ```powershell
 cmg gif optimize <file> --output <gif>

@@ -45,9 +45,27 @@ public static class GifStoryboardExporter
         var indexes = SelectedFrameIndexes(gif.Frames.Count, maxFrames).ToArray();
         var rows = (int)Math.Ceiling(indexes.Length / (double)columns);
         using var storyboard = new Image<Rgba32>(gif.Width * columns, gif.Height * rows, Color.White);
-        for (var index = 0; index < indexes.Length; index++)
+        if (string.Equals(format.Name, "GIF", StringComparison.OrdinalIgnoreCase))
         {
-            CopyFrame(gif, indexes[index], storyboard, index % columns * gif.Width, index / columns * gif.Height);
+            var descriptors = GifFrameDescriptorReader.Read(input.FullName);
+            var frames = GifFrameCompositor.SelectedFrames(gif, descriptors, indexes.ToHashSet());
+            try
+            {
+                for (var index = 0; index < frames.Count; index++)
+                    CopyFrame(frames[index], storyboard, index, columns, gif.Width, gif.Height);
+            }
+            finally
+            {
+                foreach (var frame in frames) frame.Dispose();
+            }
+        }
+        else
+        {
+            for (var index = 0; index < indexes.Length; index++)
+            {
+                using var frame = gif.Frames.CloneFrame(indexes[index]);
+                CopyFrame(frame, storyboard, index, columns, gif.Width, gif.Height);
+            }
         }
 
         output.Directory?.Create();
@@ -75,9 +93,8 @@ public static class GifStoryboardExporter
             .Distinct();
     }
 
-    private static void CopyFrame(Image<Rgba32> gif, int frameIndex, Image<Rgba32> storyboard, int offsetX, int offsetY)
-    {
-        using var frame = gif.Frames.CloneFrame(frameIndex);
-        storyboard.Mutate(context => context.DrawImage(frame, new Point(offsetX, offsetY), 1f));
-    }
+    private static void CopyFrame(
+        Image<Rgba32> frame, Image<Rgba32> storyboard, int index, int columns, int width, int height) =>
+        storyboard.Mutate(context => context.DrawImage(
+            frame, new Point(index % columns * width, index / columns * height), 1f));
 }

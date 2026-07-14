@@ -67,6 +67,24 @@ public sealed class BrowserScriptRunnerCaptionTimelineTests
     }
 
     [Fact]
+    public void FailureCaptionError_DoesNotReplaceOriginalActionFailure()
+    {
+        using var gif = new TempGifFile();
+        var client = new FakeAutomationClient
+        {
+            ShowMessageBarException = new InvalidOperationException("No DOM root is available.")
+        };
+
+        var result = Runner().RunText("fail \"Original action reason\"", "debug", client, gif.File);
+
+        Assert.False(result.Success);
+        Assert.Contains("Original action reason", result.Error, StringComparison.Ordinal);
+        Assert.Contains(result.StdoutLines, line =>
+            line.Contains("status=skipped", StringComparison.Ordinal) &&
+            line.Contains("No DOM root is available", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void EvidenceCaptions_CanBeDisabledPerAction()
     {
         using var gif = new TempGifFile();

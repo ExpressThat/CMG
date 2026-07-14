@@ -403,6 +403,8 @@ dotnet run -- --firefox browser close
 - `249-streaming-gif-storage.cmgscript`: Demonstrates disk-delta frame storage and streaming GIF diagnostics.
 - `250-gif-still-pdf.cmgscript`: Writes a step-by-step still-image PDF beside animated evidence.
 - `251-target-aware-caption-overrides.cmgscript`: Positions manual captions opposite their targets and demonstrates typing/hover child overrides.
+- `252-gif-cli-action-defaults.cmgscript`: Whole-run fixture for `--gif-typing-delay` and `--gif-post-hover-hold`; without `--gif`, it leaves no virtual pointer.
+- `253-gif-runner-action-defaults.cmgscript`: Runner declarations for whole-test typing cadence and post-hover evidence holds.
 - `242-gif-accessible-review.cmgscript`: Focused GIF with generated alt text, an authored description, and a screen-reader narration sidecar.
 - `243-gif-accessible-review-runner.cmgscript`: Runner declarations for the same accessible review metadata and narration output.
 - `244-recording-artifact-formats.cmgscript`: Runs the same virtual-pointer journey through native lossless APNG and animated WebP output.

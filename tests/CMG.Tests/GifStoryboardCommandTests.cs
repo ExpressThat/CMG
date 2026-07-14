@@ -123,6 +123,36 @@ public sealed class GifStoryboardCommandTests
         }
     }
 
+    [Fact]
+    public void Storyboard_CompositesStreamingDeltaFramesWithoutBlackFiller()
+    {
+        var input = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        var output = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.png");
+        try
+        {
+            using var first = new Image<Rgba32>(20, 12, Color.White);
+            first[2, 2] = Color.Red;
+            using var second = first.Clone();
+            second[15, 8] = Color.Blue;
+            using var sink = new GifFrameSink();
+            sink.AddFrame(Png(first), 10);
+            sink.AddFrame(Png(second), 10);
+            sink.Save(input);
+
+            GifStoryboardExporter.Export(new(input), new(output), columns: 2, maxFrames: null);
+
+            using var storyboard = Image.Load<Rgba32>(output);
+            Assert.Equal(new Rgba32(255, 255, 255, 255), storyboard[20, 0]);
+            Assert.True(storyboard[35, 8].B > 200);
+            Assert.True(storyboard[22, 2].R > 200);
+        }
+        finally
+        {
+            File.Delete(input);
+            File.Delete(output);
+        }
+    }
+
     private static RootCommand BuildRoot()
     {
         var root = new RootCommand();
@@ -133,6 +163,13 @@ public sealed class GifStoryboardCommandTests
     private static byte[] Png(Color color)
     {
         using var image = new Image<Rgba32>(8, 8, color);
+        using var stream = new MemoryStream();
+        image.SaveAsPng(stream);
+        return stream.ToArray();
+    }
+
+    private static byte[] Png(Image<Rgba32> image)
+    {
         using var stream = new MemoryStream();
         image.SaveAsPng(stream);
         return stream.ToArray();

@@ -1226,7 +1226,7 @@ download "#export" directory="demo-output" pattern="*.csv" timeout=10000
 waitForDownload directory="demo-output" pattern="*.zip" timeout=10000
 ```
 
-`download` clicks a selector and then waits for a matching file. In GIF recordings, the virtual pointer moves to the selector and records the click that triggers the download. `waitForDownload` only polls the filesystem and does not move the pointer.
+`download` snapshots matching files, clicks a selector, then waits for a new or changed file to become stable across two polls. In GIF recordings, the virtual pointer moves to the selector and records the click that triggers the download. `waitForDownload` takes the same baseline when it starts, only polls the filesystem, and does not move the pointer. Both ignore Chrome `.crdownload`, Firefox `.part`, and other recognized partial-download suffixes; stale files cannot satisfy a new wait.
 
 Options:
 

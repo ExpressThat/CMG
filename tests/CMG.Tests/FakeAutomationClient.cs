@@ -22,6 +22,7 @@ internal sealed partial class FakeAutomationClient : IBrowserAutomationClient
     public string LastSelectedSelector { get; private set; } = string.Empty;
     public string LastSelectedValue { get; private set; } = string.Empty;
     public string LastMessageBar { get; private set; } = string.Empty;
+    public Exception? ShowMessageBarException { get; set; }
     public List<string> MessageBars { get; } = [];
     public BrowserCaptionOptions? LastCaptionOptions { get; private set; }
     public string LastElementTextSelector { get; private set; } = string.Empty;
@@ -126,6 +127,7 @@ internal sealed partial class FakeAutomationClient : IBrowserAutomationClient
     }
     public void ShowMessageBar(string remoteDebuggingUrl, string message, BrowserCaptionOptions? options = null)
     {
+        if (ShowMessageBarException is not null) throw ShowMessageBarException;
         LastMessageBar = message;
         MessageBars.Add(message);
         LastCaptionOptions = options;

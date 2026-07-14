@@ -49,8 +49,39 @@ public sealed class GifStillPdfWriterTests
         Assert.Contains("stillPdf= must be true, false, or a file path", exception.Message, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Write_FlattensTransparentPixelsToWhite()
+    {
+        var directory = Directory.CreateTempSubdirectory();
+        var path = Path.Combine(directory.FullName, "transparent.pdf");
+        try
+        {
+            using var image = new Image<Rgba32>(10, 10, Color.Transparent);
+            image[5, 5] = Color.Red;
+            using var png = new MemoryStream();
+            image.SaveAsPng(png);
+            using var sink = new GifFrameSink();
+            sink.AddFrame(png.ToArray(), 10);
+            GifStillPdfWriter.Write(path, "transparent.gif", sink, []);
+
+            var bytes = File.ReadAllBytes(path);
+            var start = Find(bytes, [0xff, 0xd8], 0);
+            var end = Find(bytes, [0xff, 0xd9], start) + 2;
+            using var decoded = Image.Load<Rgb24>(bytes[start..end]);
+            Assert.True(decoded[0, 0].R > 240 && decoded[0, 0].G > 240 && decoded[0, 0].B > 240);
+        }
+        finally { directory.Delete(recursive: true); }
+    }
+
     private static int Count(string value, string token) =>
         value.Split(token, StringSplitOptions.None).Length - 1;
+
+    private static int Find(byte[] source, byte[] value, int offset)
+    {
+        for (var index = Math.Max(0, offset); index <= source.Length - value.Length; index++)
+            if (source.AsSpan(index, value.Length).SequenceEqual(value)) return index;
+        throw new InvalidOperationException("Expected byte sequence was not found.");
+    }
 
     private static byte[] Png(Color color)
     {

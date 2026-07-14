@@ -16,6 +16,8 @@ public sealed class CmgDeclaredGifDefaultsTests
             ["gifPointerPath"] = "avoid-target",
             ["gifDragPath"] = "arc",
             ["gifFps"] = "20",
+            ["gifTypingDelay"] = "30",
+            ["gifPostHoverHold"] = "650",
             ["gifCrop"] = "#panel",
             ["gifSafeArea"] = "40",
             ["gifLayoutStability"] = "350",
@@ -36,6 +38,8 @@ public sealed class CmgDeclaredGifDefaultsTests
         Assert.Equal(ScriptPointerPath.AvoidTarget, result.PointerMotion?.PointerPath);
         Assert.Equal(ScriptPointerPath.Arc, result.PointerMotion?.DragPath);
         Assert.Equal(50, result.FrameDelayMilliseconds);
+        Assert.Equal(30, result.GifEncoding?.ActionDefaults?.TypingDelayMilliseconds);
+        Assert.Equal(650, result.GifEncoding?.ActionDefaults?.PostHoverHoldMilliseconds);
         Assert.Equal("#panel", result.GifEncoding?.Framing?.CropSelector);
         Assert.Equal(40, result.GifEncoding?.Framing?.SafeArea);
         Assert.Equal(350, result.GifEncoding?.Framing?.LayoutStabilityMilliseconds);
@@ -94,6 +98,7 @@ public sealed class CmgDeclaredGifDefaultsTests
     [InlineData("gifTargetZoom", "near", "targetZoom=")]
     [InlineData("gifSplitTabs", "sideways", "splitTabs=")]
     [InlineData("gifFormat", "avi", "format=")]
+    [InlineData("gifTypingDelay", "-1", "typingDelay=")]
     public void Apply_RejectsInvalidDeclaration(string name, string value, string expected)
     {
         var success = CmgVisualSegmentExecutor.TryApplyDeclaredGifDefaults(

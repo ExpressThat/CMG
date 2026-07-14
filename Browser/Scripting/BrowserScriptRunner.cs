@@ -79,6 +79,10 @@ public sealed partial class BrowserScriptRunner
         {
             context.AddRecordingDefaults(captionOptions.ToRecordingDefaults());
         }
+        if (gif is not null && gifEncoding?.ActionDefaults is not null)
+        {
+            context.AddRecordingDefaults(gifEncoding.ActionDefaults.ToOptions());
+        }
         var output = new List<string>();
         var recordingPath = gif is null ? null : (gifEncoding ?? new()).ResolveOutputPath(gif.FullName);
         using var recorder = gif is null
@@ -191,10 +195,7 @@ public sealed partial class BrowserScriptRunner
         {
             var contextText = string.IsNullOrWhiteSpace(context.CurrentContext) ? string.Empty : $" in {context.CurrentContext}";
             var error = $"Line {action.LineNumber}: {action.Name} failed{contextText}. {exception.Message}";
-            if (recorder?.CaptureFailureCaption(action, exception.Message) is true)
-            {
-                output.Add($"GIF_FAILURE_CAPTION {action.LineNumber:000} action={QuoteField(action.Name)} status=captured");
-            }
+            RecordFailureCaption(recorder, action, exception.Message, output);
             recorder?.CompleteAction(sequence, success: false, exception.Message);
             context.StepRecords.Add(new ScriptStepRecord(sequence, action.LineNumber, action.Name, context.CurrentContext, false, [], error));
             context.Trace?.Record(sequence, action, context.CurrentContext, success: false, error, []);
@@ -210,6 +211,20 @@ public sealed partial class BrowserScriptRunner
             recorder?.CompleteAction(sequence, success: false, exception.Message);
             throw;
         }
+    }
+
+    private static void RecordFailureCaption(
+        ScriptGifRecorder? recorder,
+        BrowserScriptAction action,
+        string reason,
+        ICollection<string> output)
+    {
+        if (recorder is null) return;
+        if (recorder.CaptureFailureCaption(action, reason, out var failure))
+            output.Add($"GIF_FAILURE_CAPTION {action.LineNumber:000} action={QuoteField(action.Name)} status=captured");
+        else if (failure is not null)
+            output.Add($"GIF_FAILURE_CAPTION {action.LineNumber:000} action={QuoteField(action.Name)} " +
+                $"status=skipped reason={QuoteField(failure)}");
     }
 
     private static bool ShouldSkipRecordingOnlyAction(BrowserScriptAction action, ScriptGifRecorder? recorder) =>

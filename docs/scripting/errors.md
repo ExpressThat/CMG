@@ -327,10 +327,10 @@ Provide both viewport dimensions together, pass media options from the documente
 ## Download Timeout
 
 ```text
-Line 6: download failed. No download matching '*.csv' appeared in 'C:\Projects\CMG\demo-output' within 10000ms.
+Line 6: download failed. No new completed download matching '*.csv' appeared in 'C:\Projects\CMG\demo-output' within 10000ms.
 ```
 
-Check the browser download directory, file pattern, and timeout. `download` ignores in-progress Chrome `.crdownload` files.
+Check the browser download directory, file pattern, and timeout. Download waits require a new or changed stable file after the wait starts and ignore `.crdownload`, `.part`, `.partial`, and `.download` files. Remove stale assumptions from fixtures rather than reusing an old matching artifact.
 
 ## Screenshot Failure
 

@@ -3,6 +3,7 @@ using System.Text;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace CMG.Browser.Scripting.Recording;
 
@@ -24,7 +25,7 @@ public static class GifStillPdfWriter
         }
         catch
         {
-            if (File.Exists(fullPath)) File.Delete(fullPath);
+            try { if (File.Exists(fullPath)) File.Delete(fullPath); } catch { }
             throw;
         }
     }
@@ -73,7 +74,9 @@ public static class GifStillPdfWriter
         WriteObject(stream, offsets, pageId,
             $"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {width} {height}] /Resources << /XObject << /Im {imageId} 0 R >> >> /Contents {contentId} 0 R >>");
         using var jpeg = new MemoryStream();
-        image.Save(jpeg, new JpegEncoder { Quality = 95 });
+        using var flattened = new Image<Rgb24>(image.Width, image.Height, Color.White);
+        flattened.Mutate(context => context.DrawImage(image, 1f));
+        flattened.Save(jpeg, new JpegEncoder { Quality = 95 });
         WriteStreamObject(stream, offsets, imageId,
             $"/Type /XObject /Subtype /Image /Width {width} /Height {height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode",
             jpeg.ToArray());

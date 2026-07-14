@@ -21,7 +21,8 @@ public sealed record GifEncodingOptions(
     GifSizeBudgetOptions? SizeBudget = null,
     GifReviewOptions? Review = null,
     GifArtifactFormat Format = GifArtifactFormat.Gif,
-    string? FfmpegPath = null)
+    string? FfmpegPath = null,
+    GifActionDefaults? ActionDefaults = null)
 {
     public static GifEncodingOptions FromOptions(
         IReadOnlyDictionary<string, string> options,
@@ -44,7 +45,8 @@ public sealed record GifEncodingOptions(
             SizeBudget: GifSizeBudgetOptions.FromOptions(options, context),
             Review: GifReviewOptions.FromOptions(options, context),
             Format: GifArtifactFormatParser.Parse(options.GetValueOrDefault("format"), context),
-            FfmpegPath: ParseFfmpeg(options.GetValueOrDefault("ffmpeg")));
+            FfmpegPath: ParseFfmpeg(options.GetValueOrDefault("ffmpeg")),
+            ActionDefaults: GifActionDefaults.FromOptions(options, context));
     }
 
     public GifEncodingOptions WithOptions(
@@ -70,7 +72,8 @@ public sealed record GifEncodingOptions(
             GifSizeBudgetOptions.FromOptions(options, context, SizeBudget),
             GifReviewOptions.FromOptions(options, context, Review),
             options.ContainsKey("format") ? parsed.Format : Format,
-            options.ContainsKey("ffmpeg") ? parsed.FfmpegPath : FfmpegPath);
+            options.ContainsKey("ffmpeg") ? parsed.FfmpegPath : FfmpegPath,
+            GifActionDefaults.FromOptions(options, context, ActionDefaults));
     }
 
     private GifAccessibilityOptions MergeAccessibility(IReadOnlyDictionary<string, string> options, string context)

@@ -24,7 +24,8 @@ public sealed class RunCommandBuilderGifConfigTests
             "autoCaptions": true, "captionTemplate": "{step}: {action}",
             "redact": ["#root-secret"], "blur": [".token"],
             "autoRedact": "sensitive", "redactionSafety": "strict",
-            "stillPdf": "reviews/visual.pdf", "format": "webp", "ffmpegPath": "tools/ffmpeg"
+            "stillPdf": "reviews/visual.pdf", "typingDelay": 45, "postHoverHold": 550,
+            "format": "webp", "ffmpegPath": "tools/ffmpeg"
           },
           "projects": [{
             "name": "visual", "gifSettings": {
@@ -77,6 +78,8 @@ public sealed class RunCommandBuilderGifConfigTests
         Assert.Equal(CMG.Browser.Scripting.Recording.GifRedactionStyle.Blur, redaction.EffectiveRules[2].Style);
         Assert.Equal(CMG.Browser.Scripting.Recording.GifArtifactFormat.Webp, options.GifEncoding?.Format);
         Assert.Equal("reviews/visual.pdf", options.GifEncoding?.Review?.StillPdf);
+        Assert.Equal(45, options.GifEncoding?.ActionDefaults?.TypingDelayMilliseconds);
+        Assert.Equal(550, options.GifEncoding?.ActionDefaults?.PostHoverHoldMilliseconds);
         Assert.Equal("tools/ffmpeg", options.GifEncoding?.FfmpegPath);
     }
 

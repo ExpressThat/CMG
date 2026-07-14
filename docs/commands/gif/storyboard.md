@@ -2,7 +2,7 @@
 
 Export an existing GIF, APNG, or animated WebP artifact to a PNG contact sheet without launching or controlling a browser.
 
-Frames are alpha-composited onto a white review background, so transparent pixels do not appear as black or transparent evidence gaps.
+GIF image-descriptor deltas are composed in timeline order before export. Frames are then alpha-composited onto a white review background, so unchanged or transparent pixels do not appear as black or transparent evidence gaps.
 
 ```powershell
 cmg gif storyboard <file> --output <png> [--columns <count>] [--max-frames <count>]

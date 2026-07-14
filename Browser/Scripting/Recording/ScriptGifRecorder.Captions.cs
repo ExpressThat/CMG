@@ -36,18 +36,27 @@ public sealed partial class ScriptGifRecorder
         return true;
     }
 
-    public bool CaptureFailureCaption(BrowserScriptAction action, string reason)
+    public bool CaptureFailureCaption(BrowserScriptAction action, string reason, out string? failure)
     {
+        failure = null;
         if (redactionCaptureBlocked)
         {
             return false;
         }
         if (remoteDebuggingUrl is null || IsCaptureSuspended || IsFalse(action, "failureCaptions")) return false;
-        var message = $"{Label(action, "captionFailedLabel", "FAILED")}: {action.Name} (line {action.LineNumber})\n{Trim(reason, 220)}";
-        devToolsClient.ShowMessageBar(remoteDebuggingUrl, message,
-            new BrowserCaptionOptions(CaptionStyle.BugReport, CaptionPosition.Bottom, CaptionSeverity.Error));
-        CaptureHoldFrame(Math.Min(700, options.HoldOnFailureMilliseconds));
-        return true;
+        try
+        {
+            var message = $"{Label(action, "captionFailedLabel", "FAILED")}: {action.Name} (line {action.LineNumber})\n{Trim(reason, 220)}";
+            devToolsClient.ShowMessageBar(remoteDebuggingUrl, message,
+                new BrowserCaptionOptions(CaptionStyle.BugReport, CaptionPosition.Bottom, CaptionSeverity.Error));
+            CaptureHoldFrame(Math.Min(700, options.HoldOnFailureMilliseconds));
+            return true;
+        }
+        catch (Exception exception)
+        {
+            failure = exception.Message;
+            return false;
+        }
     }
 
     public void CaptureAssertionCaption(BrowserScriptAction action, IReadOnlyList<string> output)

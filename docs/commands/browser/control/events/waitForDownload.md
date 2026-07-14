@@ -2,6 +2,8 @@
 
 Waits for a matching downloaded file without clicking first.
 
+The command snapshots existing matches when it starts, then waits for a new or changed file that is stable across two polls. It ignores stale files plus `.crdownload`, `.part`, `.partial`, and `.download` files.
+
 ```powershell
 cmg browser control events waitForDownload [options]
 ```
@@ -24,5 +26,5 @@ Writes file or timeout errors.
 
 ## Exit Codes
 
-- `0`: A matching download was found.
+- `0`: A new or changed matching download reached a stable completed state.
 - `1`: The action failed.

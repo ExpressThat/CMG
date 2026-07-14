@@ -1,0 +1,5 @@
+setContent "<style>body{margin:0;padding:48px;font:18px system-ui;background:#f8fafc;color:#111827}label{display:grid;gap:8px;width:300px}input,button{font:inherit;padding:10px 14px}button{margin-top:32px}</style><main><label>Reviewer<input id='reviewer'></label><button id='approve' onclick=\"this.textContent='Approved'\">Approve</button></main>"
+type "#reviewer" "CMG"
+hover "#approve"
+click "#approve"
+expectText "#approve" "Approved"

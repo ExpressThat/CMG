@@ -272,6 +272,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
   - `fill "#name" typingDelay=50 pointerDuration=300`
   - `wheel "#list" pointerDuration=250 holdAfterAction=400`
   - `dragAndDrop ".card" ".done" pointerDuration=1200 dragEasing=ease-in-out`
+  - `typingDelay` and `postHoverHold` also have whole-run CLI, root/project config, and runner declaration defaults; child actions remain authoritative.
 - Implemented nested complex-action overrides consistently:
   - `dragAndDrop { moveMouse ... pointerDuration=800; drop ... pointerDuration=400 }`
   - future multi-step gestures should follow the same child override model.

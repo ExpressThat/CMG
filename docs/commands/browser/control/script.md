@@ -89,6 +89,10 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-still-pdf <true|false|path>`: Write a step-by-step still-image PDF. `true` uses `<gif-name>.steps.pdf`.
 - `--gif-alt-text <template>`: Alt text stored in timelines/reports and used by HTML previews. Supports `{name}`, `{steps}`, `{duration}`, and `{outcome}`.
 - `--gif-description <text>`: Human-written artifact description stored in timelines and JSON/HTML reports.
+- `--gif-typing-delay <milliseconds>`: Default visible typing cadence for `type`, `pressSequentially`, and `fill`. Must be zero or greater.
+- `--gif-post-hover-hold <milliseconds>`: Default encoded hold after `hover`. Must be zero or greater.
+
+The `--gif-typing-delay` and `--gif-post-hover-hold` defaults are inert unless command-level `--gif` recording is active. They do not change ordinary non-recorded script execution.
 - `--pointer-contrast <auto|fixed>`: Adapt an uncolored pointer to the page beneath it. Defaults to `auto`.
 - `--pointer-callout <auto|always|none>`: Control active-target outlines/callouts. Defaults to `auto` for tiny targets.
 - `--pointer-callout-threshold <8..100>`: Tiny-target threshold in CSS pixels. Defaults to `24`.
@@ -223,6 +227,8 @@ GIF_WARN_NON_VISUAL line=12 action=recordCheckpoint options=pointerDuration
 TRACE C:\Projects\CMG\demo-output\dialog-flow.trace.json
 SKIP 007 Feature flag disabled
 ```
+
+If the page cannot accept a visual failure overlay, CMG preserves the original action failure and emits `GIF_FAILURE_CAPTION <line> action="<action>" status=skipped reason="<overlay reason>"` instead of replacing it with a caption error.
 
 `PASS` sequence numbers increase globally for the whole script and include `line=<line> action=<action>`. Nested output from a macro, loop, `step`, retry, or handled branch also includes `context="..."`. Payload lines stay compact at top level and use the same sequence as their action when nested context metadata is present. Runner JSON/HTML reports expose sequence, source line, context, and action as structured fields for every step.
 

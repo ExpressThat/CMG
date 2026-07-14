@@ -80,6 +80,10 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-still-pdf <true|false|path>`: Write a step-by-step still-image PDF for every recorded test. `true` uses `<gif-name>.steps.pdf`.
 - `--gif-alt-text <template>`: Set whole-run alt text with `{name}`, `{steps}`, `{duration}`, and `{outcome}` placeholders.
 - `--gif-description <text>`: Set a human-written description for timelines and JSON/HTML reports.
+- `--gif-typing-delay <milliseconds>`: Default visible typing cadence for recorded `type`, `pressSequentially`, and `fill` actions.
+- `--gif-post-hover-hold <milliseconds>`: Default encoded hold after recorded `hover` actions.
+
+These two action-cadence defaults only apply to tests selected for command-level GIF recording. Retention-disabled or unsampled tests keep their normal input timing.
 - `--pointer-contrast <auto|fixed>`: Adapt an uncolored pointer to its page background. Defaults to `auto`.
 - `--pointer-callout <auto|always|none>` / `--pointer-callout-threshold <8..100>`: Configure target callouts. Auto mode defaults to targets smaller than `24px` in either dimension.
 - `--target-zoom <auto|always|none>` / `--target-zoom-threshold <8..100>`: Configure capture-only tiny-target zoom. Auto mode defaults to targets smaller than `24px` in either dimension.
@@ -157,7 +161,7 @@ TEST PASS <name>
 TEST FAIL <name>
 TEST SKIP <name>
 GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>
-GIF_FAILURE_CAPTION <line> action="<action>" status=captured
+GIF_FAILURE_CAPTION <line> action="<action>" status=<captured|skipped> [reason="<overlay reason>"]
 GIF_WARN_SIZE test="<name>" path="<gif-path>" sizeBytes=<bytes> thresholdBytes=<bytes>
 GIF_WARN_PALETTE test="<name>" path="<gif-path>" paletteColors=<count-or->256> thresholdColors=240 palette=<mode>
 GIF_WARN_COLOR_PROFILE path="<gif-path>" profileChanges=<count>
@@ -178,7 +182,7 @@ Failures may include action output before the failing test line. Declaration-ski
 
 Each retained artifact emits `GIF_REPRODUCE path="..." command="..."`. Commands preserve the selected browser, browser port, project, source file, and test grep. Command-level artifacts include `--gif <directory>`; focused DSL artifacts omit it so their `gif` block remains authoritative.
 
-Requested reviewer artifacts emit `GIF_NARRATION <absolute-path>` and `GIF_STILL_PDF <absolute-path>`. Runner declarations are `gifNarrationSidecar=`, `gifStillPdf=`, `gifAltText=`, `gifDescription=`, `gifFormat=`, and `gifFfmpeg=`; suite values cascade and test values override them. Root/project `gifSettings.narrationSidecar`, `stillPdf`, `altText`, `description`, `format`, and `ffmpegPath` provide coarse defaults, with CLI and DSL declarations remaining more specific.
+Requested reviewer artifacts emit `GIF_NARRATION <absolute-path>` and `GIF_STILL_PDF <absolute-path>`. Runner declarations include `gifNarrationSidecar=`, `gifStillPdf=`, `gifAltText=`, `gifDescription=`, `gifTypingDelay=`, `gifPostHoverHold=`, `gifFormat=`, and `gifFfmpeg=`; suite values cascade and test values override them. Root/project `gifSettings.narrationSidecar`, `stillPdf`, `altText`, `description`, `typingDelay`, `postHoverHold`, `format`, and `ffmpegPath` provide coarse defaults, with CLI and DSL declarations remaining more specific.
 
 Retention treats conventional narration files and custom narration paths inside the selected GIF artifact directory as part of the GIF family. For safety, age cleanup does not follow a timeline path outside that directory; externally located narration is caller-managed.
 
@@ -188,7 +192,7 @@ Retention treats conventional narration files and custom narration paths inside 
 
 `GIF_DISABLED source=<cli|environment>` confirms the privacy kill switch is active. Explicit recording blocks emit `GIF_SKIPPED <line> status=skipped reason=recording-disabled source=<cli|environment>` but execute their children. Suppression creates no GIF paths, screenshots, recording UI, or virtual pointer and silences retention-volume warnings. It does not change test status or exit code.
 
-`GIF_FAILURE_CAPTION` confirms that CMG wrote an explicit visual failure explanation into the partial test GIF. The full failure reason remains available in stderr and structured reports.
+`GIF_FAILURE_CAPTION status=captured` confirms that CMG wrote an explicit visual failure explanation into the partial test GIF. If the page cannot accept the overlay, `status=skipped` includes the overlay reason while the original action failure remains in stderr and structured reports.
 Parameterized tests print and report their expanded names, for example `TEST LIST run opens profile`. Project runs include the project name in brackets, for example `TEST LIST run [firefox-smoke] checkout`.
 
 When a step fails, stderr also includes:
@@ -211,7 +215,7 @@ If no selected CMG browser is running, stderr tells the caller which launch comm
 
 Run config supports `gifRetention` (`always`, `onFailure`, `onRetry`, or `off`), positive integer `gifSampleRate`, and boolean `gifCleanPassed`. Explicit CLI retention values override config. Suite/test declarations then override the effective run default one property at a time.
 
-Root config and individual projects may define a `gifSettings` object. Supported properties are `quality`, `format`, `ffmpegPath`, `pointerDuration`, `pointerSpeed`, `pointerEasing`, `pointerPath`, `dragPath`, `clickPulse`, `fps`, `frameDelay`, `crop`, `cropPadding`, `smartCrop`, `splitTabs`, `scale`, `maxWidth`, `maxHeight`, `viewport`, `pixelRatio`, `safeArea`, `layoutStability`, `targetZoom`, `targetZoomThreshold`, `pagePosition`, `tabContext`, `captionStyle`, `captionPosition`, `captionSeverity`, `captionSize`, `autoCaptions`, `captionTemplate`, `narrationSidecar`, `stillPdf`, `altText`, `description`, string arrays `redact`, `mask`, and `blur`, plus `autoRedact` and `redactionSafety`. Project properties overlay root properties individually; explicit CLI options overlay project properties individually; suite/test declarations and DSL recording/action overrides remain more specific. Unknown properties and invalid types fail during config loading; invalid values fail before browser connection or `--list` output with the responsible setting in stderr.
+Root config and individual projects may define a `gifSettings` object. Supported properties are `quality`, `format`, `ffmpegPath`, `pointerDuration`, `pointerSpeed`, `pointerEasing`, `pointerPath`, `dragPath`, `clickPulse`, `fps`, `frameDelay`, `typingDelay`, `postHoverHold`, `crop`, `cropPadding`, `smartCrop`, `splitTabs`, `scale`, `maxWidth`, `maxHeight`, `viewport`, `pixelRatio`, `safeArea`, `layoutStability`, `targetZoom`, `targetZoomThreshold`, `pagePosition`, `tabContext`, `captionStyle`, `captionPosition`, `captionSeverity`, `captionSize`, `autoCaptions`, `captionTemplate`, `narrationSidecar`, `stillPdf`, `altText`, `description`, string arrays `redact`, `mask`, and `blur`, plus `autoRedact` and `redactionSafety`. Project properties overlay root properties individually; explicit CLI options overlay project properties individually; suite/test declarations and DSL recording/action overrides remain more specific. Unknown properties and invalid types fail during config loading; invalid values fail before browser connection or `--list` output with the responsible setting in stderr.
 
 ```json
 {
@@ -348,6 +352,8 @@ Example config:
     "budgetQualityFallback": true,
     "budgetDownscaleFallback": true,
     "narrationSidecar": "true",
+    "typingDelay": 45,
+    "postHoverHold": 500,
     "altText": "{name}: {steps} automation steps, {outcome}",
     "description": "Automated browser evidence."
   },

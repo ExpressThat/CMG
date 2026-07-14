@@ -2,6 +2,8 @@
 
 Clicks an element and waits for a matching downloaded file.
 
+The wait requires a new or changed file after the command starts and requires its size/write timestamp to remain stable across two polls. Existing matching files and recognized partial-download files do not satisfy the command.
+
 ```powershell
 cmg browser control events download "<selector>" [options]
 ```
@@ -29,5 +31,5 @@ Writes browser, selector, file, or timeout errors.
 
 ## Exit Codes
 
-- `0`: The click ran and a matching download was found.
+- `0`: The click ran and a new or changed download reached a stable completed state.
 - `1`: Browser is not running or the action failed.
