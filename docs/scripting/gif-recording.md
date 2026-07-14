@@ -701,6 +701,8 @@ These samples use the exact same gradient, text, control, pointer position, view
 
 File size depends on how each palette and dithering mode interacts with the source pixels; a lower preset is not guaranteed to be smaller for every image. Use `cmg gif inspect` and `cmg gif color-diff` when size or fidelity must be measured rather than judged visually.
 
+CMG promotes the virtual pointer, click pulse, and caption into the browser top layer before capture. If a supported overlay cannot remain promoted, stdout includes `GIF_WARN_POINTER_PROMOTION overlays=<ids> reason=top-layer-promotion-failed`; capture continues with the fixed-position, maximum-z-index fallback.
+
 Use command-level quality for whole-run recordings:
 
 ```powershell

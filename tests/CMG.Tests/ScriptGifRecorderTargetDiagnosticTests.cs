@@ -49,6 +49,18 @@ public sealed class ScriptGifRecorderTargetDiagnosticTests
         Assert.DoesNotContain(recorder.CaptureDiagnosticLines(), line => line.StartsWith("GIF_WARN_", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void PromotionFailure_EmitsOneParseableWarning()
+    {
+        using var recorder = Recorder(new FakeAutomationClient());
+
+        recorder.RecordPromotionDiagnostic("{\"failed\":[\"__cmg_virtual_cursor\"]}");
+        recorder.RecordPromotionDiagnostic("{\"failed\":[\"__cmg_virtual_cursor\"]}");
+
+        Assert.Single(recorder.CaptureDiagnosticLines(), line =>
+            line == "GIF_WARN_POINTER_PROMOTION overlays=__cmg_virtual_cursor reason=top-layer-promotion-failed");
+    }
+
     private static ScriptGifRecorder Recorder(FakeAutomationClient client) =>
         new(client, new ScriptRecordingOptions(Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif"),
             PointerMotion: new ScriptPointerMotionOptions(PointerDurationMilliseconds: 0)));

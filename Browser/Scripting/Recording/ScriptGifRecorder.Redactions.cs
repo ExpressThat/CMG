@@ -1,4 +1,5 @@
 using CMG.Runner;
+using System.Text.Json;
 
 namespace CMG.Browser.Scripting.Recording;
 
@@ -93,7 +94,7 @@ public sealed partial class ScriptGifRecorder
             }
         }
 
-        devToolsClient.Evaluate(remoteDebuggingUrl, BrowserDomScripts.PromoteGifEvidence());
+        RecordPromotionDiagnostic(devToolsClient.Evaluate(remoteDebuggingUrl, BrowserDomScripts.PromoteGifEvidence()));
     }
 
     private void RemoveRedactionOverlays()
@@ -105,6 +106,22 @@ public sealed partial class ScriptGifRecorder
         }
         catch (ChromeDevToolsException)
         {
+        }
+    }
+
+    internal void RecordPromotionDiagnostic(string result)
+    {
+        try
+        {
+            using var document = ParseResult(result);
+            if (!document.RootElement.TryGetProperty("failed", out var failed) || failed.GetArrayLength() == 0) return;
+            var overlays = string.Join(',', failed.EnumerateArray().Select(node => node.GetString()).Where(value => value is not null));
+            var warning = $"GIF_WARN_POINTER_PROMOTION overlays={overlays} reason=top-layer-promotion-failed";
+            if (!evidenceWarnings.Contains(warning, StringComparer.Ordinal)) evidenceWarnings.Add(warning);
+        }
+        catch (JsonException)
+        {
+            // Promotion diagnostics cannot make capture fail.
         }
     }
 

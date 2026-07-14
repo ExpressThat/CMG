@@ -99,7 +99,7 @@ public static partial class BrowserDomScripts
         """;
 
     public static string PromoteGifEvidence() =>
-        "(() => { for (const id of ['__cmg_message_bar','__cmg_virtual_cursor','__cmg_cursor_pulse']) { const e=document.getElementById(id); if(e?.matches?.(':popover-open')) e.hidePopover(); e?.showPopover?.(); } return true; })()";
+        "(() => { const failed=[]; for (const id of ['__cmg_message_bar','__cmg_virtual_cursor','__cmg_cursor_pulse']) { const e=document.getElementById(id); if(!e || typeof e.showPopover!=='function') continue; try { if(e.matches(':popover-open')) e.hidePopover(); e.showPopover(); if(!e.matches(':popover-open')) failed.push(id); } catch { failed.push(id); } } return JSON.stringify({failed}); })()";
 
     public static string RemoveGifRedactions() =>
         "(() => { document.querySelectorAll('[data-cmg-gif-redaction]').forEach(node => { if(node.matches?.(':popover-open')) node.hidePopover(); node.remove(); }); delete window.__cmgAddGifRedaction; return true; })()";

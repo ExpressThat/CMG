@@ -152,6 +152,7 @@ GIF_FAILURE_CAPTION <line> action="<action>" status=captured
 GIF_WARN_SIZE test="<name>" path="<gif-path>" sizeBytes=<bytes> thresholdBytes=<bytes>
 GIF_WARN_PALETTE test="<name>" path="<gif-path>" paletteColors=<count-or->256> thresholdColors=240 palette=<mode>
 GIF_WARN_COLOR_PROFILE path="<gif-path>" profileChanges=<count>
+GIF_WARN_POINTER_PROMOTION overlays=<comma-separated-overlay-ids> reason=top-layer-promotion-failed
 GIF_RETENTION test="<name>" path="<absolute-path>" action=deleted mode=<always|onFailure|onRetry|off>
 GIF_CLEAN_PASSED test="<name>" path="<absolute-path>" status=deleted
 GIF_RETENTION_WARN tests=<count> threshold=20 reason=large-suite suggestion=--gif-on-failure

@@ -79,6 +79,7 @@ public sealed partial class CmgRunService
         line.StartsWith("GIF_WARN_TINY_TARGET ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_WARN_SCROLLED ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_WARN_NON_VISUAL ", StringComparison.Ordinal) ||
+        line.StartsWith("GIF_WARN_POINTER_PROMOTION ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_WAIT_COMPRESSION ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_FAILURE_CAPTION ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_RETENTION ", StringComparison.Ordinal);
