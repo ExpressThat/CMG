@@ -371,8 +371,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: emit non-failing `GIF_WARN_UNCHANGED` when at least 60% of source frames are exact consecutive duplicates.
 - Implemented: existing pointer/caption/pulse overlays verify browser top-layer promotion and emit `GIF_WARN_POINTER_PROMOTION` without failing capture when promotion does not stick.
 - Implemented: nested GIF aliases emit `GIF_BLOCK_SUPPRESSED ... reason=command-level-recording` when whole-run recording owns capture.
-- Add diagnostics for invalid recording settings in runner reports.
-- Add a generated reproduction command for every GIF.
+- Implemented: JSON/HTML runner reports expose invalid recording settings as structured `gifDiagnostics` errors and preserve GIF authoring/runtime warnings as warning entries.
+- Implemented: every retained direct-script and runner GIF emits a parseable `GIF_REPRODUCE` command; JSON/HTML reports preserve browser, port, project, source, test selection, and focused-vs-whole-run recording boundaries.
 
 ## Accessibility And Review Use Cases
 

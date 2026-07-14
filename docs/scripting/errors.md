@@ -153,6 +153,8 @@ RUN STOP maxFailures=1
 
 JSON and HTML reports include the same reason, the test name, output lines, and any GIF path connected to the failure.
 
+When the reason is an invalid GIF or recording option, JSON reports also add a `gifDiagnostics[]` entry with `severity: "error"`; HTML reports show it under **GIF diagnostics**. Non-failing `GIF_SETTINGS_WARN` and `GIF_WARN_*` lines are retained as `severity: "warning"` entries. This lets agents distinguish recording configuration failures from application failures without parsing prose.
+
 Use `cmg run --trace <directory>` to write per-test trace JSON with every recorded step and failure reason.
 
 `RUN STOP maxFailures=<count>` means `cmg run --max-failures <count>` reached its failure threshold and stopped scheduling more tests. Reports, traces, and GIF output include tests that ran before the stop.

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using CMG.Browser.Scripting.Recording;
+using CMG.Browser;
 using CMG.Runner;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -22,6 +23,9 @@ public sealed class CmgReportGifEvidenceTests
         Assert.Equal(4, evidence.GetProperty("capturedFrameCount").GetInt32());
         Assert.Equal(600, evidence.GetProperty("capturedDurationMilliseconds").GetInt32());
         Assert.Equal(4096, evidence.GetProperty("estimatedRgbaBytes").GetInt64());
+        var reproduction = Assert.Single(document.RootElement[0].GetProperty("gifReproductionCommands").EnumerateArray());
+        Assert.Contains("--edge run", reproduction.GetProperty("command").GetString(), StringComparison.Ordinal);
+        Assert.Contains("--browser-port 9444", reproduction.GetProperty("command").GetString(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -39,11 +43,27 @@ public sealed class CmgReportGifEvidenceTests
             Assert.Contains("data:image/png;base64,", report, StringComparison.Ordinal);
             Assert.Contains("Step Evidence", report, StringComparison.Ordinal);
             Assert.Contains("cost 4 frame(s), 600ms, 4096 retained RGBA bytes", report, StringComparison.Ordinal);
+            Assert.Contains("Reproduce: <code>cmg --edge run", report, StringComparison.Ordinal);
         }
         finally
         {
             File.Delete(path);
         }
+    }
+
+    [Fact]
+    public void Reports_ExposeInvalidRecordingSettingsAsStructuredDiagnostics()
+    {
+        var test = new CmgTestResult("invalid", "flow.cmgscript", false, [],
+            "test option gifQuality= must be highest, high, medium, or low.", null, []);
+
+        using var json = JsonDocument.Parse(CmgJsonReportWriter.Write([test]));
+        var diagnostic = Assert.Single(json.RootElement[0].GetProperty("gifDiagnostics").EnumerateArray());
+        Assert.Equal("error", diagnostic.GetProperty("severity").GetString());
+        Assert.Contains("gifQuality", diagnostic.GetProperty("message").GetString(), StringComparison.Ordinal);
+        var html = CmgHtmlReportWriter.Write([test]);
+        Assert.Contains("GIF diagnostics", html, StringComparison.Ordinal);
+        Assert.Contains("gifQuality", html, StringComparison.Ordinal);
     }
 
     private static CmgTestResult TestWithEvidence(string gifPath, string timelinePath, bool success)
@@ -53,7 +73,11 @@ public sealed class CmgReportGifEvidenceTests
         {
             GifEvidence = [evidence]
         };
-        return new CmgTestResult("checkout", "flow.cmgscript", success, [], step.Error, gifPath, [step]);
+        return new CmgTestResult("checkout", "flow.cmgscript", success, [], step.Error, gifPath, [step])
+        {
+            Browser = BrowserKind.Edge,
+            BrowserPort = 9444
+        };
     }
 
     private static void WriteGif(string path)

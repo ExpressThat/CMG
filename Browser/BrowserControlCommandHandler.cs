@@ -140,6 +140,8 @@ public sealed partial class BrowserControlCommandHandler : IBrowserControlComman
 
         var result = browserControlService.RunScript(browserKind, port, file, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding);
 
+        result = AddGifReproduction(result, gif,
+            (path, wholeRun) => GifReproductionCommand.DirectFile(browserKind, port, file, path, wholeRun));
         return WriteScriptResult(result);
     }
 
@@ -173,6 +175,8 @@ public sealed partial class BrowserControlCommandHandler : IBrowserControlComman
 
         var result = browserControlService.RunScriptText(browserKind, port, script, gif, trace, timeouts, baseUrl, variables, gifQuality, pointerMotion, pointerVisual, showPointer, captionOptions, clickPulse, holdAfterActionMilliseconds, holdOnFailureMilliseconds, preClickHoldMilliseconds, postClickHoldMilliseconds, holdAfterNavigationMilliseconds, holdAfterAssertionMilliseconds, gifTimelinePath, frameDelayMilliseconds, gifEncoding);
 
+        result = AddGifReproduction(result, gif,
+            (path, wholeRun) => GifReproductionCommand.DirectInline(browserKind, port, script, path, wholeRun));
         return WriteScriptResult(result);
     }
 

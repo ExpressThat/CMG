@@ -29,6 +29,8 @@ public static partial class CmgHtmlReportWriter
                 builder.AppendLine($"<p>{Encode(test.Error)}</p>");
             }
 
+            WriteGifDiagnostics(builder, test);
+
             WriteGifPreviews(builder, test);
             WriteFailureFrame(builder, test, testIndex);
 
@@ -83,6 +85,16 @@ public static partial class CmgHtmlReportWriter
 
     private static string Encode(string value) => WebUtility.HtmlEncode(value);
 
+    private static void WriteGifDiagnostics(StringBuilder builder, CmgTestResult test)
+    {
+        var diagnostics = CmgGifDiagnostics.For(test);
+        if (diagnostics.Count == 0) return;
+        builder.AppendLine("<section class=\"gif-diagnostics\"><h3>GIF diagnostics</h3><ul>");
+        foreach (var diagnostic in diagnostics)
+            builder.AppendLine($"<li class=\"{Encode(diagnostic.Severity)}\">{Encode(diagnostic.Message)}</li>");
+        builder.AppendLine("</ul></section>");
+    }
+
     private static void WriteGifPreviews(StringBuilder builder, CmgTestResult test)
     {
         var paths = GifPaths(test.GifPath).ToArray();
@@ -92,6 +104,8 @@ public static partial class CmgHtmlReportWriter
         }
 
         builder.AppendLine("<div class=\"gif-previews\">");
+        var reproduction = CmgGifReproductions.For(test)
+            .ToDictionary(item => Path.GetFullPath(item.GifPath), item => item.Command, StringComparer.OrdinalIgnoreCase);
         foreach (var path in paths)
         {
             var source = Encode(GifSource(path));
@@ -100,6 +114,8 @@ public static partial class CmgHtmlReportWriter
             builder.AppendLine("<figure class=\"gif-preview\">");
             builder.AppendLine($"<a href=\"{source}\"><img src=\"{source}\" alt=\"{alt}\"></a>");
             builder.AppendLine($"<figcaption>GIF: {label}</figcaption>");
+            if (reproduction.TryGetValue(Path.GetFullPath(path), out var command))
+                builder.AppendLine($"<figcaption>Reproduce: <code>{Encode(command)}</code></figcaption>");
             builder.AppendLine("</figure>");
         }
 

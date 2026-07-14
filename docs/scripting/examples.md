@@ -146,7 +146,15 @@ Runner JSON/HTML reports retain timelines automatically when GIFs are enabled, s
 cmg run demo-scripts\173-gif-report-frame-evidence.cmgscript --gif demo-output\report-frame-gifs --report-json demo-output\report-frame-evidence.json --report-html demo-output\report-frame-evidence.html
 ```
 
-The demo intentionally exits `1` for its second test. The JSON report exposes `steps[].gifEvidence`; the HTML report embeds each visual start frame and the final failure frame.
+The demo intentionally exits `1` for its second test. The JSON report exposes `steps[].gifEvidence` and `gifReproductionCommands[]`; the HTML report embeds each visual start frame, the final failure frame, and a browser/port-aware reproduction command for every retained GIF.
+
+To verify structured recording-setting failures, run the intentionally invalid demo:
+
+```powershell
+cmg run demo-scripts\241-gif-invalid-setting-report.cmgscript --report-json demo-output\invalid-gif-setting.json --report-html demo-output\invalid-gif-setting.html
+```
+
+Both reports expose the `gifQuality=ultra` failure under `gifDiagnostics` with error severity. No test action or GIF recording starts.
 
 Pointer visuals can be styled with `pointerTheme=`, `pointerColor=`, `pointerSize=`, `pointerShadow=`, and `showPointer=` on `recording`, `gif`, `recordVideo`, `screencast`, and individual pointer-aware actions. Use this when a GIF needs a ring pointer for review, a branded pointer for demos, a touch pointer for tap flows, or clean page-state frames without the DOM pointer. Command-level `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, and `--show-pointer` set whole-run defaults for `--gif` recordings.
 

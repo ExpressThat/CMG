@@ -1,0 +1,4 @@
+# Intentionally fails so JSON/HTML reports expose a structured GIF settings diagnostic.
+test "reports invalid GIF settings" gifQuality=ultra {
+  setContent "<main><h1>This action must not run</h1></main>"
+}

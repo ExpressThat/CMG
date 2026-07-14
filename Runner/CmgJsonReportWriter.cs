@@ -15,11 +15,15 @@ public static partial class CmgJsonReportWriter
             writer.WriteStartObject();
             writer.WriteString("name", test.Name);
             writer.WriteString("project", test.Project);
+            writer.WriteString("browser", test.Browser.ToString().ToLowerInvariant());
+            if (test.BrowserPort is int browserPort) writer.WriteNumber("browserPort", browserPort); else writer.WriteNull("browserPort");
             writer.WriteString("sourcePath", test.SourcePath);
             writer.WriteString("status", Status(test));
             writer.WriteBoolean("success", test.Success);
             writer.WriteString("error", test.Error);
             writer.WriteString("gifPath", test.GifPath);
+            WriteGifReproductionCommands(writer, test);
+            WriteGifDiagnostics(writer, test);
             WriteGifMetadata(writer, test);
             writer.WriteString("tags", test.Tags);
             writer.WriteStartArray("annotations");

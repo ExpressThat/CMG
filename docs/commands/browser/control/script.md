@@ -178,6 +178,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-debug` emits `GIF_DEBUG <path>` after writing the debug sidecar. Each frame record includes timing, action, source line, nested scope, target selector, and virtual-pointer coordinates.
 - `--gif-budget <size>` targets an encoded size using quality fallback and then bounded downscaling; `--no-gif-budget-quality-fallback` and `--no-gif-budget-downscale` disable either fallback. The smallest candidate is retained when the target is impossible.
 - Every completed recording emits `GIF_CAPTURE_STATS` with frame, optimization, blank-frame, ICC/CICP/gamma, profile-change, memory, timing, and budget-decision counts. `GIF_WARN_UNCHANGED`, `GIF_WARN_BLANK`, and `GIF_WARN_COLOR_PROFILE` explain evidence-quality risks without changing the exit code.
+- Every retained artifact emits `GIF_REPRODUCE path="..." command="..."`. The JSON-escaped command preserves browser selection, `browser --port` placement, and the file/inline source. It includes `--gif` for command-level recording and omits it for focused DSL blocks so the block remains the recording boundary.
 - Active recordings also emit `GIF_WARN_MULTIPLE_TARGETS`, `GIF_WARN_TINY_TARGET`, `GIF_WARN_SCROLLED`, and `GIF_WARN_NON_VISUAL` when selector or action choices weaken the resulting evidence. These warnings never fail the script and are not evaluated when GIF recording is inactive.
 - Suppressed nested recording blocks emit `GIF_BLOCK_SUPPRESSED <line> reason=command-level-recording` when `--gif` owns the whole run.
 
@@ -234,6 +235,8 @@ GIF_SETTINGS_WARN line=3 action=recordVideo reason=long-recording-block actions=
 During execution, `setRecording` writes `RECORDING_SETTINGS <line> options=<effective-settings>` and `previewRecordingSettings` writes `GIF_SETTINGS <line> options=<effective-settings>`.
 
 `GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>` is emitted only when source-frame retention is active. The retained PNGs contain the same visible page and CMG recording UI as their corresponding GIF frames and should be handled as sensitive artifacts.
+
+`GIF_REPRODUCE path="<JSON-escaped-absolute-gif>" command="<JSON-escaped-command>"` is emitted once per retained GIF. The command is a deterministic minimal reproduction route; script-owned recording options remain in the source file.
 
 ## Stderr
 

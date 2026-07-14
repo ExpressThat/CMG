@@ -27,10 +27,11 @@ public sealed class BrowserDomScriptsGifOverlayTests
     [Fact]
     public void DragGhost_UsesStableTopLayerPositionAndPromotion()
     {
-        var script = BrowserDomScripts.DragAndDrop("#source", "#target");
+        var begin = BrowserDomScripts.BeginDrag("#source", new ElementPoint(20, 30));
+        var move = BrowserDomScripts.MoveDrag(new ElementPoint(40, 50));
 
-        Assert.Contains("ghost.style.inset = 'auto'", script, StringComparison.Ordinal);
-        Assert.Contains("!state.defaultGhost.matches(':popover-open')", script, StringComparison.Ordinal);
-        Assert.DoesNotContain("state.defaultGhost.hidePopover()", script, StringComparison.Ordinal);
+        Assert.Contains("ghost.style.inset = 'auto'", begin, StringComparison.Ordinal);
+        Assert.Contains("!state.defaultGhost.matches(':popover-open')", move, StringComparison.Ordinal);
+        Assert.DoesNotContain("state.defaultGhost.hidePopover()", move, StringComparison.Ordinal);
     }
 }

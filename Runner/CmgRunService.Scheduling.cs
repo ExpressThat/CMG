@@ -52,11 +52,20 @@ public sealed partial class CmgRunService
             {
                 Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty,
                 Annotations = test.Annotations,
-                Project = options.ProjectName
+                Project = options.ProjectName,
+                Browser = options.BrowserKind,
+                BrowserPort = options.BrowserPort
             };
         }
 
-        return RunTestWithRetries(test, remoteDebuggingUrl, options);
+        return RunTestWithRetries(test, remoteDebuggingUrl, options) with
+        {
+            Tags = test.Options.TryGetValue("tag", out var retryTag) ? retryTag : string.Empty,
+            Annotations = test.Annotations,
+            Project = options.ProjectName,
+            Browser = options.BrowserKind,
+            BrowserPort = options.BrowserPort
+        };
     }
 
     private static string StatusWord(CmgTestResult result) =>

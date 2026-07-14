@@ -118,6 +118,7 @@ public sealed partial class CmgRunService : ICmgRunService
             }
         }
 
+        output.AddRange(CmgGifReproductions.Diagnostics(tests));
         WriteReports(options, tests);
         CmgTraceWriter.Write(options.TraceDirectory, tests);
         var cleanupError = TryCleanPassedGifsAfterReports(tests, output);
@@ -130,7 +131,7 @@ public sealed partial class CmgRunService : ICmgRunService
         var parse = parser.Parse(file, File.ReadAllText(file));
         if (!parse.Success || parse.Document is null)
         {
-            tests.Add(new CmgTestResult(Path.GetFileName(file), file, false, [], parse.Error, null, []) { Project = options.ProjectName });
+            tests.Add(ParseFailure(file, parse.Error, options));
             output.Add(TestOutput("FAIL", Path.GetFileName(file), options));
             return ContinueAfterFailureLimit(options, tests, output);
         }
@@ -174,29 +175,11 @@ public sealed partial class CmgRunService : ICmgRunService
         {
             Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty,
             Annotations = test.Annotations,
-            Project = options.ProjectName
-        };
-    }
-
-    private static CmgTestResult SkippedTest(CmgTestCase test, CmgRunOptions options)
-    {
-        var reason = test.Options.TryGetValue("reason", out var value) ? value : "Skipped by test option.";
-        return new CmgTestResult(test.Name, test.SourcePath, true, [], reason, null, [])
-        {
-            Tags = test.Options.TryGetValue("tag", out var tag) ? tag : string.Empty,
-            Status = "skipped",
             Project = options.ProjectName,
-            Annotations = test.Annotations
+            Browser = options.BrowserKind,
+            BrowserPort = options.BrowserPort
         };
     }
-
-    private static bool IsSkipped(CmgTestCase test) => IsTruthyOption(test, "skip");
-
-    private static bool IsTruthyOption(CmgTestCase test, string name) =>
-        test.Options.TryGetValue(name, out var value) &&
-        (value.Equals("true", StringComparison.OrdinalIgnoreCase) ||
-        value.Equals("1", StringComparison.OrdinalIgnoreCase) ||
-        value.Equals("yes", StringComparison.OrdinalIgnoreCase));
 
     private static bool ShouldRun(CmgTestCase test, CmgRunOptions options)
     {

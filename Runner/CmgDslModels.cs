@@ -105,6 +105,8 @@ public sealed record CmgTestResult(
     public string Tags { get; init; } = string.Empty;
     public string Status { get; init; } = string.Empty;
     public string Project { get; init; } = string.Empty;
+    public BrowserKind Browser { get; init; } = BrowserKind.Chrome;
+    public int? BrowserPort { get; init; }
     public IReadOnlyDictionary<string, string> GifQualities { get; init; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     public IReadOnlyList<CmgAnnotation> Annotations { get; init; } = [];
     public string? CommandGifPath { get; init; }
