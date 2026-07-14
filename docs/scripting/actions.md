@@ -391,7 +391,7 @@ Options:
 - `pointerEasing`: Optional GIF pointer movement easing. Supports `linear`, `ease-in`, `ease-out`, `ease-in-out`, and `spring`.
 - `easing`: Alias for `pointerEasing`.
 - `pointerSpeed`: Optional GIF pointer speed. Supports `slow`, `normal`, `fast`, `instant`, or a multiplier such as `1.5x`.
-- `pointerPath`: Optional GIF pointer route. Supports `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
+- `pointerPath`: Optional GIF pointer route. Supports `auto`, `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
 - `clickPulse`: Optional GIF pulse style for click/tap/drop actions. Supports `ring`, `ripple`, `dot`, `crosshair`, or `none`.
 - `holdAfterAction`: Optional post-action GIF hold duration in milliseconds. Use `0` to suppress the hold for this action.
 - `holdAfterMove`: Optional GIF-only hold duration after the pointer finishes this `moveMouse` movement. Use it when the pointer should visibly settle before the next action.
@@ -1134,7 +1134,7 @@ Child recording options:
 
 - `hover` and `moveMouse` can set `pointerDuration=`, `pointerSpeed=`, and `pointerEasing=`.
 - `moveMouse` can also use `duration=` and `easing=` aliases.
-- `hover` and `moveMouse` can set `pointerPath=direct|arc|manhattan|avoid-target|avoid-center`.
+- `hover` and `moveMouse` can set `pointerPath=auto|direct|arc|manhattan|avoid-target|avoid-center`.
 - `hover`, `moveMouse`, `delay`, and `drop` can set `pressedPointer=`, `dragTrail=`, and `dragBreadcrumbs=`.
 - `moveMouse` can set `holdAfterMove=` to keep the held pointer visibly settled after that movement.
 - `drop` can set `dropPointerDuration=`, `dragPath=`, `postDropHold=`, and `clickPulse=`.
@@ -1903,7 +1903,7 @@ Options:
 - `pointerDuration`: Default pointer movement duration in milliseconds.
 - `pointerSpeed`: Default pointer speed: `slow`, `normal`, `fast`, `instant`, or a multiplier such as `1.5x`.
 - `pointerEasing`: Default easing: `linear`, `ease-in`, `ease-out`, `ease-in-out`, or `spring`.
-- `pointerPath`: Default pointer route: `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
+- `pointerPath`: Default pointer route: `auto`, `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`. `auto` is the geometry-aware default.
 - `dragPath`: Default route while the pointer is held during drag movement.
 - `pointerTheme`: Default pointer theme: `arrow`, `hand`, `dot`, `ring`, `branded`, or `touch`.
 - `pointerColor`: Default pointer CSS color. Use one CSS color value, not a declaration.
@@ -2031,7 +2031,7 @@ Options:
 - `reducedMotion`, `highContrastPointer`: Optional accessible choreography presets. Child pointer, fade, and pulse options override preset properties locally.
 - `debug`, `debugAction`, `debugContext`, `debugTarget`, `debugCoordinates`, `debugScroll`: Optional frame diagnostics. Invalid booleans fail with the exact option name; `debug=false` disables inherited diagnostics for that child.
 - `quality`: Optional GIF quality: `highest`, `high`, `medium`, or `low`. Defaults to `highest`. This affects palette generation and dithering only; virtual pointer movement, pointer events, drag ghosts, captions, timing, and captured frames stay the same.
-- `pointerPath`: Optional default pointer route: `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
+- `pointerPath`: Optional default pointer route: `auto`, `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`.
 - `dragPath`: Optional default route while the pointer is held during drag movement.
 - `pointerTheme`: Optional default pointer theme: `arrow`, `hand`, `dot`, `ring`, `branded`, or `touch`.
 - `pointerColor`: Optional default pointer CSS color.

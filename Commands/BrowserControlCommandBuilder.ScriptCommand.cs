@@ -23,6 +23,8 @@ public sealed partial class BrowserControlCommandBuilder
         var pointerDurationOption = new Option<int?>("--pointer-duration") { Description = "Default virtual pointer movement duration in milliseconds for --gif recordings." };
         var pointerSpeedOption = new Option<string?>("--pointer-speed") { Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x." };
         var pointerEasingOption = new Option<string?>("--pointer-easing") { Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring." };
+        var pointerPathOption = new Option<string?>("--pointer-path") { Description = $"Default virtual pointer route: {ScriptPointerPathParser.Values}." };
+        var dragPathOption = new Option<string?>("--drag-path") { Description = $"Default virtual drag route: {ScriptPointerPathParser.Values}." };
         var pointerThemeOption = new Option<string?>("--pointer-theme") { Description = $"Default virtual pointer theme for --gif recordings: {PointerVisualOptions.ThemeValues}." };
         var pointerColorOption = new Option<string?>("--pointer-color") { Description = "Default virtual pointer CSS color for --gif recordings." };
         var pointerSizeOption = new Option<int?>("--pointer-size") { Description = "Default virtual pointer size in CSS pixels for --gif recordings. Valid range is 8 to 96." };
@@ -65,7 +67,7 @@ public sealed partial class BrowserControlCommandBuilder
             encodingOptions.PointerContrast, encodingOptions.PointerCallout, encodingOptions.PointerCalloutThreshold, encodingOptions.DisableFocusPulse, encodingOptions.PointerIdle, encodingOptions.PointerIdleThreshold, encodingOptions.DisableTeleportMarker, encodingOptions.MouseDownHold,
             encodingOptions.Background, encodingOptions.GradientMode, encodingOptions.HighContrastPalette, encodingOptions.Redact, encodingOptions.Mask, encodingOptions.Blur, encodingOptions.AutoRedact, encodingOptions.RedactionSafety,
             pointerDurationOption, pointerSpeedOption,
-            pointerEasingOption, pointerThemeOption, pointerColorOption, pointerSizeOption, pointerShadowOption,
+            pointerEasingOption, pointerPathOption, dragPathOption, pointerThemeOption, pointerColorOption, pointerSizeOption, pointerShadowOption,
             showPointerOption, reducedMotionOption, highContrastPointerOption, captionStyleOption, captionPositionOption, captionSeverityOption, captionSizeOption, autoCaptionsOption, captionTemplateOption,
             clickPulseOption, holdAfterActionOption, holdOnFailureOption, preClickHoldOption, postClickHoldOption,
             holdAfterNavigationOption, holdAfterAssertionOption, gifFpsOption, gifFrameDelayOption, gifTimelineOption,
@@ -120,7 +122,7 @@ public sealed partial class BrowserControlCommandBuilder
                 Console.Error.WriteLine($"--gif-quality must be one of: {GifQualityParser.Values}.");
                 return false;
             }
-            if (!GifMotionOptionParser.TryParse(parseResult.GetValue(pointerDurationOption), parseResult.GetValue(pointerSpeedOption), parseResult.GetValue(pointerEasingOption), parseResult.GetValue(clickPulseOption), out var pointerMotion, out var clickPulse, out var motionError))
+            if (!GifMotionOptionParser.TryParse(parseResult.GetValue(pointerDurationOption), parseResult.GetValue(pointerSpeedOption), parseResult.GetValue(pointerEasingOption), parseResult.GetValue(pointerPathOption), parseResult.GetValue(dragPathOption), parseResult.GetValue(clickPulseOption), out var pointerMotion, out var clickPulse, out var motionError))
             {
                 Console.Error.WriteLine(motionError);
                 return false;

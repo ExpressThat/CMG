@@ -2,6 +2,7 @@ namespace CMG.Browser.Scripting.Recording;
 
 public enum ScriptPointerPath
 {
+    Auto,
     Direct,
     Arc,
     Manhattan,
@@ -11,12 +12,13 @@ public enum ScriptPointerPath
 
 public static class ScriptPointerPathParser
 {
-    public const string Values = "direct, arc, manhattan, avoid-target, avoid-center";
+    public const string Values = "auto, direct, arc, manhattan, avoid-target, avoid-center";
 
     public static bool TryParse(string value, out ScriptPointerPath path)
     {
         path = value.Trim().ToLowerInvariant() switch
         {
+            "auto" or "automatic" => ScriptPointerPath.Auto,
             "direct" or "line" => ScriptPointerPath.Direct,
             "arc" or "curved" or "curve" => ScriptPointerPath.Arc,
             "manhattan" or "orthogonal" => ScriptPointerPath.Manhattan,

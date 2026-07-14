@@ -827,6 +827,8 @@ Run-config `gifSettings` rejects unknown keys, incorrect JSON types, and invalid
 
 `safeArea` must be from `0` to `500`; `layoutStability` must be from `0` to `5000`. Invalid CLI, config, suite/test, recording-scope, or GIF-block values identify the responsible option. Set either to `0` when exact edge framing or immediate coordinates are intentional.
 
+`pointerPath` and `dragPath` accept `auto`, `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`. Invalid values fail before browser connection for CLI/config settings and at the responsible DSL line for scoped/action settings.
+
 Automatic-caption templates reject unknown placeholders before browser connection for whole-run CLI/config defaults and at the responsible DSL action for scoped overrides. Supported placeholders are `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}`.
 
 Whole-run redaction rejects empty selectors, non-string config array entries, unknown `autoRedact` or `redactionSafety` values, and strict safety failures with an exact reason. Strict capture failures fail the responsible action rather than writing an unmasked frame.

@@ -15,7 +15,7 @@ public sealed class RunCommandBuilderGifConfigTests
         {
           "gifSettings": {
             "quality": "medium", "pointerDuration": 700, "pointerSpeed": "slow",
-            "pointerEasing": "linear", "clickPulse": "dot", "fps": 8,
+            "pointerEasing": "linear", "pointerPath": "avoid-target", "clickPulse": "dot", "fps": 8,
             "crop": "#panel", "cropPadding": 16, "scale": 0.9,
             "maxWidth": 900, "maxHeight": 700, "viewport": "800x600", "pixelRatio": 1, "safeArea": 20,
             "captionStyle": "teaching", "captionPosition": "top",
@@ -26,7 +26,7 @@ public sealed class RunCommandBuilderGifConfigTests
           },
           "projects": [{
             "name": "visual", "gifSettings": {
-              "quality": "highest", "pointerSpeed": "fast", "frameDelay": 120,
+              "quality": "highest", "pointerSpeed": "fast", "dragPath": "arc", "frameDelay": 120,
               "cropPadding": 24, "layoutStability": 350, "captionPosition": "bottom", "mask": ["#project-secret"]
             }
           }]
@@ -43,6 +43,8 @@ public sealed class RunCommandBuilderGifConfigTests
         Assert.Equal(CMG.Browser.Scripting.Recording.GifQuality.Highest, options.GifQuality);
         Assert.Equal(250, options.PointerMotion?.PointerDurationMilliseconds);
         Assert.Equal("fast", options.PointerMotion?.PointerSpeed);
+        Assert.Equal(CMG.Browser.Scripting.Recording.ScriptPointerPath.AvoidTarget, options.PointerMotion?.PointerPath);
+        Assert.Equal(CMG.Browser.Scripting.Recording.ScriptPointerPath.Arc, options.PointerMotion?.DragPath);
         Assert.Equal(120, options.FrameDelayMilliseconds);
         Assert.Equal(CaptionStyle.Qa, options.CaptionOptions?.Style);
         Assert.Equal(CaptionPosition.Bottom, options.CaptionOptions?.Position);

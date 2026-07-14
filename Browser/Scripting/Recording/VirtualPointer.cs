@@ -8,7 +8,8 @@ public sealed class VirtualPointer
         ElementPoint target,
         int frameCount,
         ScriptPointerEasing easing = ScriptPointerEasing.EaseInOut,
-        ScriptPointerPath path = ScriptPointerPath.Direct)
+        ScriptPointerPath path = ScriptPointerPath.Auto,
+        ElementBox? targetBounds = null)
     {
         var start = Position;
         var frames = Math.Max(1, frameCount);
@@ -17,7 +18,9 @@ public sealed class VirtualPointer
         {
             var progress = (double)index / frames;
             var eased = Ease(progress, easing);
-            var point = PathPoint(start, target, eased, path);
+            var point = index == frames
+                ? target
+                : PathPoint(start, target, eased, ResolvePath(path, targetBounds), targetBounds);
 
             Position = point;
             yield return point;
@@ -52,11 +55,16 @@ public sealed class VirtualPointer
         return Math.Clamp(eased, 0, 1);
     }
 
-    private static ElementPoint PathPoint(ElementPoint start, ElementPoint target, double progress, ScriptPointerPath path) =>
+    private static ScriptPointerPath ResolvePath(ScriptPointerPath path, ElementBox? bounds) =>
+        path is not ScriptPointerPath.Auto ? path :
+        bounds is { Width: >= 48, Height: >= 20 } ? ScriptPointerPath.AvoidTarget : ScriptPointerPath.Arc;
+
+    private static ElementPoint PathPoint(ElementPoint start, ElementPoint target, double progress, ScriptPointerPath path, ElementBox? bounds) =>
         path switch
         {
             ScriptPointerPath.Arc or ScriptPointerPath.AvoidCenter => ArcPoint(start, target, progress),
-            ScriptPointerPath.Manhattan or ScriptPointerPath.AvoidTarget => ManhattanPoint(start, target, progress),
+            ScriptPointerPath.AvoidTarget when bounds is not null => AvoidTargetPoint(start, target, progress, bounds),
+            ScriptPointerPath.Manhattan => ManhattanPoint(start, target, progress),
             _ => Lerp(start, target, progress)
         };
 
@@ -87,4 +95,24 @@ public sealed class VirtualPointer
 
         return new(target.X, start.Y + (target.Y - start.Y) * ((progress - 0.5) * 2));
     }
+
+    private static ElementPoint AvoidTargetPoint(ElementPoint start, ElementPoint target, double progress, ElementBox bounds)
+    {
+        const double margin = 16;
+        var candidates = new[]
+        {
+            new ElementPoint(bounds.X - margin, target.Y),
+            new ElementPoint(bounds.X + bounds.Width + margin, target.Y),
+            new ElementPoint(target.X, bounds.Y - margin),
+            new ElementPoint(target.X, bounds.Y + bounds.Height + margin)
+        };
+        var approach = candidates.MinBy(point => DistanceSquared(start, point))!;
+        const double approachAt = 0.9;
+        return progress < approachAt
+            ? ArcPoint(start, approach, progress / approachAt)
+            : Lerp(approach, target, (progress - approachAt) / (1 - approachAt));
+    }
+
+    private static double DistanceSquared(ElementPoint left, ElementPoint right) =>
+        Math.Pow(left.X - right.X, 2) + Math.Pow(left.Y - right.Y, 2);
 }

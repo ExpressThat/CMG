@@ -378,6 +378,8 @@ dotnet run -- --firefox browser close
 - `224-gif-privacy-preset.cmgscript`: Combined password, token, email, and payment-card-like automatic masking with `autoRedact=privacy`.
 - `225-gif-framing-resilience.cmgscript`: Stabilizes a moving target and keeps it clear of a large sticky header.
 - `226-gif-framing-resilience-runner.cmgscript`: Runner declarations for target safe area, stable coordinates, and a protected crop.
+- `227-gif-auto-pointer-path.cmgscript`: Geometry-aware automatic pointer routing around a wide target label.
+- `228-gif-auto-pointer-path-runner.cmgscript`: Runner declarations for automatic pointer and target-aware drag routes.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

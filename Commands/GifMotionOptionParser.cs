@@ -10,6 +10,8 @@ internal static class GifMotionOptionParser
         int? pointerDuration,
         string? pointerSpeed,
         string? pointerEasing,
+        string? pointerPath,
+        string? dragPath,
         string? clickPulse,
         out ScriptPointerMotionOptions motion,
         out ClickPulseStyle pulse,
@@ -34,7 +36,9 @@ internal static class GifMotionOptionParser
                 return false;
             }
 
-            motion = new ScriptPointerMotionOptions(pointerDuration, pointerSpeed, easing).Validate("--pointer-speed");
+            var path = ParsePath(pointerPath, "--pointer-path");
+            var drag = ParseOptionalPath(dragPath, "--drag-path");
+            motion = new ScriptPointerMotionOptions(pointerDuration, pointerSpeed, easing, path, drag).Validate("--pointer-speed");
             if (!string.IsNullOrWhiteSpace(clickPulse) &&
                 !ClickPulseStyleParser.TryParse(clickPulse, out pulse))
             {
@@ -50,4 +54,12 @@ internal static class GifMotionOptionParser
             return false;
         }
     }
+
+    private static ScriptPointerPath ParsePath(string? value, string option) =>
+        string.IsNullOrWhiteSpace(value) ? ScriptPointerPath.Auto :
+        ScriptPointerPathParser.TryParse(value, out var path) ? path :
+        throw new ScriptExecutionException($"{option} must be one of: {ScriptPointerPathParser.Values}.");
+
+    private static ScriptPointerPath? ParseOptionalPath(string? value, string option) =>
+        string.IsNullOrWhiteSpace(value) ? null : ParsePath(value, option);
 }

@@ -13,6 +13,8 @@ public sealed class CmgDeclaredGifDefaultsTests
         {
             ["gifQuality"] = "medium",
             ["gifPointerSpeed"] = "fast",
+            ["gifPointerPath"] = "avoid-target",
+            ["gifDragPath"] = "arc",
             ["gifFps"] = "20",
             ["gifCrop"] = "#panel",
             ["gifSafeArea"] = "40",
@@ -25,6 +27,8 @@ public sealed class CmgDeclaredGifDefaultsTests
         Assert.True(success, error);
         Assert.Equal(GifQuality.Medium, result.GifQuality);
         Assert.Equal("fast", result.PointerMotion?.PointerSpeed);
+        Assert.Equal(ScriptPointerPath.AvoidTarget, result.PointerMotion?.PointerPath);
+        Assert.Equal(ScriptPointerPath.Arc, result.PointerMotion?.DragPath);
         Assert.Equal(50, result.FrameDelayMilliseconds);
         Assert.Equal("#panel", result.GifEncoding?.Framing?.CropSelector);
         Assert.Equal(40, result.GifEncoding?.Framing?.SafeArea);
@@ -54,6 +58,7 @@ public sealed class CmgDeclaredGifDefaultsTests
     [InlineData("gifQuality", "ultra", "gifQuality=")]
     [InlineData("gifFps", "0", "fps=")]
     [InlineData("gifScale", "2", "scale=")]
+    [InlineData("gifPointerPath", "wobble", "pointerPath=")]
     public void Apply_RejectsInvalidDeclaration(string name, string value, string expected)
     {
         var success = CmgVisualSegmentExecutor.TryApplyDeclaredGifDefaults(

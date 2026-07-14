@@ -18,9 +18,8 @@ public sealed partial class RunCommandBuilder
             Description = "GIF quality for --gif recordings: archival, highest, high, medium, or low.",
             DefaultValueFactory = _ => "highest"
         }; var encodingOptions = GifEncodingCliOptions.Build();
-        var pointerDurationOption = new Option<int?>("--pointer-duration") { Description = "Default virtual pointer movement duration in milliseconds for --gif recordings." };
-        var pointerSpeedOption = new Option<string?>("--pointer-speed") { Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x." };
-        var pointerEasingOption = new Option<string?>("--pointer-easing") { Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring." };
+        var pointerDurationOption = new Option<int?>("--pointer-duration") { Description = "Default virtual pointer movement duration in milliseconds for --gif recordings." }; var pointerSpeedOption = new Option<string?>("--pointer-speed") { Description = "Default virtual pointer speed for --gif recordings: slow, normal, fast, instant, or a multiplier like 1.5x." };
+        var pointerEasingOption = new Option<string?>("--pointer-easing") { Description = "Default virtual pointer easing for --gif recordings: linear, ease-in, ease-out, ease-in-out, or spring." }; var pointerPathOption = new Option<string?>("--pointer-path") { Description = $"Default virtual pointer route: {ScriptPointerPathParser.Values}." }; var dragPathOption = new Option<string?>("--drag-path") { Description = $"Default virtual drag route: {ScriptPointerPathParser.Values}." };
         var pointerVisualOptions = BuildPointerVisualOptions();
         var presetOptions = BuildGifPresetOptions();
         var showPointerOption = new Option<string?>("--show-pointer") { Description = $"Default virtual pointer visibility for --gif recordings: {PointerVisibilityOptions.Values}." };
@@ -63,9 +62,7 @@ public sealed partial class RunCommandBuilder
             pathArgument, configOption, projectOption, gifOption, noGifOption, gifQualityOption,
             encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames,
             encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight, encodingOptions.Viewport, encodingOptions.PixelRatio, encodingOptions.SafeArea, encodingOptions.LayoutStability, encodingOptions.Debug, encodingOptions.Accessibility, encodingOptions.EventCaptions, encodingOptions.Intro, encodingOptions.Outro, encodingOptions.IntroDuration, encodingOptions.OutroDuration, encodingOptions.ResultOutro, encodingOptions.DisableCoalescing, encodingOptions.SampleEvery, encodingOptions.PointerContrast, encodingOptions.PointerCallout, encodingOptions.PointerCalloutThreshold, encodingOptions.DisableFocusPulse, encodingOptions.PointerIdle, encodingOptions.PointerIdleThreshold, encodingOptions.DisableTeleportMarker, encodingOptions.MouseDownHold, encodingOptions.Background, encodingOptions.GradientMode, encodingOptions.HighContrastPalette, encodingOptions.Redact, encodingOptions.Mask, encodingOptions.Blur, encodingOptions.AutoRedact, encodingOptions.RedactionSafety,
-            pointerDurationOption,
-            pointerSpeedOption,
-            pointerEasingOption,
+            pointerDurationOption, pointerSpeedOption, pointerEasingOption, pointerPathOption, dragPathOption,
             pointerVisualOptions.Theme, pointerVisualOptions.Color, pointerVisualOptions.Size, pointerVisualOptions.Shadow,
             presetOptions.ReducedMotion, presetOptions.HighContrastPointer,
             showPointerOption,
@@ -124,6 +121,8 @@ public sealed partial class RunCommandBuilder
                 parseResult.GetValue(pointerDurationOption),
                 parseResult.GetValue(pointerSpeedOption),
                 parseResult.GetValue(pointerEasingOption),
+                parseResult.GetValue(pointerPathOption),
+                parseResult.GetValue(dragPathOption),
                 parseResult.GetValue(clickPulseOption),
                 out var pointerMotion,
                 out var clickPulse,
@@ -183,7 +182,7 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine(durationError);
                 return 1;
             }
-            if (!ApplyRunGifSettings(parseResult, config.GifSettings.Overlay(project?.GifSettings), gifQualityOption, pointerDurationOption, pointerSpeedOption, pointerEasingOption, clickPulseOption, gifFpsOption, gifFrameDelayOption, encodingOptions, captionOptions, presetOptions, ref gifQuality, ref pointerMotion, ref clickPulse, ref frameDelay, ref gifEncoding, ref caption) || !TryParseGifRetention(parseResult, retentionOptions, config, out var gifRetention)) return 1;
+            if (!ApplyRunGifSettings(parseResult, config.GifSettings.Overlay(project?.GifSettings), gifQualityOption, pointerDurationOption, pointerSpeedOption, pointerEasingOption, pointerPathOption, dragPathOption, clickPulseOption, gifFpsOption, gifFrameDelayOption, encodingOptions, captionOptions, presetOptions, ref gifQuality, ref pointerMotion, ref clickPulse, ref frameDelay, ref gifEncoding, ref caption) || !TryParseGifRetention(parseResult, retentionOptions, config, out var gifRetention)) return 1;
             if (!TryParseBrowserIdle(parseResult, browserIdleTimeoutOption, noBrowserIdleCleanupOption, config,
                 out var browserIdleTimeout, out var browserIdleDisabled, out var browserIdleError))
             {

@@ -13,6 +13,8 @@ public sealed partial class RunCommandBuilder
         Option<int?> durationOption,
         Option<string?> speedOption,
         Option<string?> easingOption,
+        Option<string?> pathOption,
+        Option<string?> dragPathOption,
         Option<string?> pulseOption,
         Option<int?> fpsOption,
         Option<int?> frameDelayOption,
@@ -33,8 +35,10 @@ public sealed partial class RunCommandBuilder
         var duration = Value(result, durationOption, settings.PointerDuration);
         var speed = Value(result, speedOption, settings.PointerSpeed);
         var easing = Value(result, easingOption, settings.PointerEasing);
+        var path = Value(result, pathOption, settings.PointerPath);
+        var dragPath = Value(result, dragPathOption, settings.DragPath);
         var pulseValue = Value(result, pulseOption, settings.ClickPulse);
-        if (!GifMotionOptionParser.TryParse(duration, speed, easing, pulseValue, out var configuredMotion, out pulse, out var motionError))
+        if (!GifMotionOptionParser.TryParse(duration, speed, easing, path, dragPath, pulseValue, out var configuredMotion, out pulse, out var motionError))
             return Error(motionError);
         if (!result.GetValue(presetOptions.ReducedMotion)) motion = configuredMotion;
 

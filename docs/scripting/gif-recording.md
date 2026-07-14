@@ -79,8 +79,8 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerDuration=<milliseconds>`: Movement duration between pointer targets. Must be zero or greater.
 - `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
-- `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Pointer route between targets. Defaults to `direct`.
-- `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Drag route while the pointer is held. Defaults to `pointerPath` when omitted.
+- `pointerPath=<auto|direct|arc|manhattan|avoid-target|avoid-center>`: Pointer route between targets. Geometry-aware `auto` is the default: large target bounds are approached from outside so labels remain readable until the final truthful center-click movement; small or non-element targets use an arc.
+- `dragPath=<auto|direct|arc|manhattan|avoid-target|avoid-center>`: Drag route while the pointer is held. Defaults to `pointerPath` when omitted.
 - `pointerTheme=<arrow|hand|dot|ring|branded|touch>`: Virtual pointer visual theme. `tap` and `touchTap` use `touch` automatically when the inherited theme is the default arrow.
 - `pointerColor=<css-color>`: Pointer color. Use a single CSS color value, not a declaration.
 - `pointerSize=<auto|8..96>`: Pointer size in CSS pixels. `auto` uses the theme's designed size.
@@ -153,7 +153,7 @@ Use `pointerStyle` for a visual-only mid-flow pointer change, `annotateTarget` /
 
 Use `gifIfChanged` / `gif.ifChanged` to keep an artifact only when the final page differs from the block baseline, and `gifOnFailure` / `gif.onFailure` to retain only failed-block evidence. Both still buffer pointer-accurate frames while running. `gifSnapshot` / `gif.snapshot` adds a named still hold to any active recorder and skips without one. See demos 208 and 209.
 
-Structured runner tests and suites can override whole-test GIF defaults with `gifQuality`, `gifPointerDuration`, `gifPointerSpeed`, `gifPointerEasing`, `gifFps`, `gifFrameDelay`, and `gif`-prefixed framing declarations. Suite defaults cascade; test values replace only the named properties. See demos 210 and 211.
+Structured runner tests and suites can override whole-test GIF defaults with `gifQuality`, `gifPointerDuration`, `gifPointerSpeed`, `gifPointerEasing`, `gifPointerPath`, `gifDragPath`, `gifFps`, `gifFrameDelay`, and `gif`-prefixed framing declarations. Suite defaults cascade; test values replace only the named properties. See demos 210, 211, and 228.
 
 Runner declarations can keep only useful command-level evidence: `gif=onFailure` retains all attempts only when the final result fails, `gif=onRetry` retains failed attempts, `gif=off` disables command capture, and `gif=always` is the default. `gifSampleRate=<n>` records the first selected test and every nth test after it. `gifCleanPassed=true` lets reports and traces consume a passing artifact before its files are removed. Run these policies with `cmg run <file> -gif <directory>`; they do not disable focused recording blocks in the test body. See demo 212.
 
@@ -197,8 +197,8 @@ Recording viewport controls are inert without an active GIF. While recording, CM
 - `pointerDuration=<milliseconds>`: Movement duration between pointer targets.
 - `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.
-- `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Pointer route between targets.
-- `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>`: Drag route while the pointer is held.
+- `pointerPath=<auto|direct|arc|manhattan|avoid-target|avoid-center>`: Pointer route between targets.
+- `dragPath=<auto|direct|arc|manhattan|avoid-target|avoid-center>`: Drag route while the pointer is held.
 - `pointerTheme=<arrow|hand|dot|ring|branded|touch>`: Default pointer visual theme.
 - `pointerColor=<css-color>`: Default pointer color.
 - `pointerSize=<auto|8..96>`: Default pointer size in CSS pixels.
@@ -652,7 +652,7 @@ The JSON sidecar contains:
 - `frameDelaysMilliseconds`
 - `checkpoints`: named markers with `name`, `lineNumber`, `frameIndex`, and `timeMilliseconds`
 - `steps`: runtime action spans with raw `sequence`, source `lineNumber`, `action`, nested `context`, `success`, zero-based start/end frame indexes, start/end times, optional `failureFrameIndex`, and the failure reason. `endFrameIndex` is `null` when an action produced no visual frame.
-- `timing.pointerDurationMilliseconds`, `timing.pointerSpeed`, `timing.pointerEasing`, `timing.clickPulse`, `timing.holdAfterActionMilliseconds`, `timing.preClickHoldMilliseconds`, `timing.postClickHoldMilliseconds`, `timing.holdAfterNavigationMilliseconds`, `timing.holdAfterAssertionMilliseconds`, `timing.holdOnFailureMilliseconds`
+- `timing.pointerDurationMilliseconds`, `timing.pointerSpeed`, `timing.pointerEasing`, `timing.pointerPath`, `timing.dragPath`, `timing.clickPulse`, `timing.holdAfterActionMilliseconds`, `timing.preClickHoldMilliseconds`, `timing.postClickHoldMilliseconds`, `timing.holdAfterNavigationMilliseconds`, `timing.holdAfterAssertionMilliseconds`, `timing.holdOnFailureMilliseconds`
 - `pointerEvidence.contrast`, `targetCallout`, `targetCalloutThreshold`, `focusPulse`, `idle`, `idleThresholdMilliseconds`, `teleportMarker`, and `mouseDownHoldMilliseconds`
 
 Use this file when reports, CI artifacts, or agent feedback need machine-readable timing without parsing the GIF binary. Timeline schema version `2` adds nested/repeated runtime step spans and failure bookmarks. JSON run reports include a `gifMetadata` array with `timelinePath` and artifact inspection data, while each visual step has a `gifEvidence` array containing exact frame/time boundaries. HTML reports show the animated artifact, link visual steps to embedded static start frames, and pin the final diagnostic failure frame as a static thumbnail. JUnit reports add `cmg.gif.path` properties for recorded artifacts; failed tests with an inspectable GIF also include `cmg.gif.failureFrameIndex`.

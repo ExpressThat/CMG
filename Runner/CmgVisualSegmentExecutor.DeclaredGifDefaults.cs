@@ -50,6 +50,8 @@ public sealed partial class CmgVisualSegmentExecutor
         Add(options, mapped, "gifPointerDuration", "pointerDuration");
         Add(options, mapped, "gifPointerSpeed", "pointerSpeed");
         Add(options, mapped, "gifPointerEasing", "pointerEasing");
+        Add(options, mapped, "gifPointerPath", "pointerPath");
+        Add(options, mapped, "gifDragPath", "dragPath");
         Add(options, mapped, "gifFps", "fps");
         Add(options, mapped, "gifFrameDelay", "frameDelay");
         Add(options, mapped, "gifCrop", "crop");

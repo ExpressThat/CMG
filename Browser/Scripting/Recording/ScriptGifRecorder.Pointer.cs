@@ -35,9 +35,10 @@ public sealed partial class ScriptGifRecorder
         var resolved = ResolveLocator(selector, lineNumber: 0);
         devToolsClient.ScrollElementIntoView(remoteDebuggingUrl, resolved);
         StabilizeTarget(resolved);
-        var target = devToolsClient.GetElementCenter(remoteDebuggingUrl, resolved);
+        var bounds = devToolsClient.GetElementBox(remoteDebuggingUrl, resolved);
+        var target = Center(bounds);
 
-        MovePointerTo(target, dragging: false);
+        MovePointerTo(target, dragging: false, targetBounds: bounds);
     }
 
     private void MoveToSelector(BrowserScriptAction action)
@@ -51,16 +52,16 @@ public sealed partial class ScriptGifRecorder
         InspectTarget(action, selector);
         devToolsClient.ScrollElementIntoView(remoteDebuggingUrl, selector);
         StabilizeTarget(selector);
+        var bounds = devToolsClient.GetElementBox(remoteDebuggingUrl, selector);
         var target = action.Options.ContainsKey("x") || action.Options.ContainsKey("y")
-            ? ResolveElementOffsetTarget(action, selector)
+            ? ResolveElementOffsetTarget(action, bounds)
             : devToolsClient.GetElementCenter(remoteDebuggingUrl, selector);
 
-        MovePointerTo(target, dragging: false, action);
+        MovePointerTo(target, dragging: false, action, targetBounds: bounds);
     }
 
-    private ElementPoint ResolveElementOffsetTarget(BrowserScriptAction action, string selector)
+    private static ElementPoint ResolveElementOffsetTarget(BrowserScriptAction action, ElementBox box)
     {
-        var box = devToolsClient.GetElementBox(remoteDebuggingUrl!, selector);
         var x = action.Options.TryGetValue("x", out var rawX)
             ? ParseElementOffset(rawX, action.Name, "x")
             : box.Width / 2;
@@ -84,9 +85,10 @@ public sealed partial class ScriptGifRecorder
         }
 
         StabilizeTarget(selector);
-        var target = devToolsClient.GetElementCenter(remoteDebuggingUrl, selector);
+        var bounds = devToolsClient.GetElementBox(remoteDebuggingUrl, selector);
+        var target = Center(bounds);
 
-        MovePointerTo(target, dragging: true, action, durationOption, easingOption);
+        MovePointerTo(target, dragging: true, action, durationOption, easingOption, targetBounds: bounds);
     }
 
     private void StabilizeTarget(string selector)
@@ -102,7 +104,8 @@ public sealed partial class ScriptGifRecorder
         BrowserScriptAction? action = null,
         string? durationOption = null,
         string? easingOption = null,
-        bool pressed = false)
+        bool pressed = false,
+        ElementBox? targetBounds = null)
     {
         if (remoteDebuggingUrl is null)
         {
@@ -112,11 +115,11 @@ public sealed partial class ScriptGifRecorder
         var frameDelay = FrameDelayMillisecondsFor(action);
         var frameDelayCentiseconds = Math.Max(1, (frameDelay + 9) / 10);
         var motion = MotionFor(action, durationOption, easingOption);
-        var path = PathFor(action, dragging);
+        var path = dragging ? motion.DragPath ?? motion.PointerPath : motion.PointerPath;
         SetCursorState(action, dragging || pressed);
         var source = pointer.Position;
         var actionName = action?.Name ?? "recording";
-        var points = pointer.MoveTo(target, motion.FrameCount(actionName, frameDelay), motion.PointerEasing, path).ToArray();
+        var points = pointer.MoveTo(target, motion.FrameCount(actionName, frameDelay), motion.PointerEasing, path, targetBounds).ToArray();
         var evidence = PointerEvidenceFor(action);
         teleportOrigin = evidence.TeleportMarker && motion.DurationMilliseconds(actionName) is 0 && source != target ? source : null;
         try
@@ -124,6 +127,7 @@ public sealed partial class ScriptGifRecorder
             for (var index = 0; index < points.Length; index++)
             {
                 var point = points[index];
+                pointer.Set(point);
                 devToolsClient.MoveMouse(remoteDebuggingUrl, point, dragging || pressed ? 1 : 0);
                 if (dragging)
                 {
@@ -184,25 +188,6 @@ public sealed partial class ScriptGifRecorder
         return easingOption is null ? motion : motion.WithEasingOption(action, easingOption);
     }
 
-    private static ScriptPointerPath PathFor(BrowserScriptAction? action, bool dragging)
-    {
-        if (action is null)
-        {
-            return ScriptPointerPath.Direct;
-        }
-
-        if (dragging && action.Options.TryGetValue("dragPath", out var dragPath))
-        {
-            return ParsePath(action, dragPath, "dragPath");
-        }
-
-        return action.Options.TryGetValue("pointerPath", out var pointerPath)
-            ? ParsePath(action, pointerPath, "pointerPath")
-            : ScriptPointerPath.Direct;
-    }
-
-    private static ScriptPointerPath ParsePath(BrowserScriptAction action, string value, string optionName) =>
-        ScriptPointerPathParser.TryParse(value, out var path)
-            ? path
-            : throw new ScriptExecutionException($"{action.Name} option {optionName}= must be one of: {ScriptPointerPathParser.Values}.");
+    private static ElementPoint Center(ElementBox box) =>
+        new(box.X + box.Width / 2, box.Y + box.Height / 2);
 }

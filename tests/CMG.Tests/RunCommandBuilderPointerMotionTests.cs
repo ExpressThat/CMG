@@ -13,12 +13,14 @@ public sealed class RunCommandBuilderPointerMotionTests
     {
         var handler = new CapturingHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "run flows --gif artifacts --pointer-duration 600 --pointer-speed slow --pointer-easing spring").Invoke();
+            "run flows --gif artifacts --pointer-duration 600 --pointer-speed slow --pointer-easing spring --pointer-path auto --drag-path manhattan").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal(600, handler.PointerMotion?.PointerDurationMilliseconds);
         Assert.Equal("slow", handler.PointerMotion?.PointerSpeed);
         Assert.Equal(ScriptPointerEasing.Spring, handler.PointerMotion?.PointerEasing);
+        Assert.Equal(ScriptPointerPath.Auto, handler.PointerMotion?.PointerPath);
+        Assert.Equal(ScriptPointerPath.Manhattan, handler.PointerMotion?.DragPath);
     }
 
     [Fact]

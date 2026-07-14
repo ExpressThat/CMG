@@ -38,4 +38,23 @@ public sealed class VirtualPointerTests
         Assert.Contains(points, point => point.Y == 32 && point.X > 32);
         Assert.Contains(points, point => point.X == 132 && point.Y > 32);
     }
+
+    [Theory]
+    [InlineData(ScriptPointerPath.Auto)]
+    [InlineData(ScriptPointerPath.AvoidTarget)]
+    public void MoveTo_TargetAwarePathAvoidsLabelUntilFinalApproach(ScriptPointerPath path)
+    {
+        var pointer = new VirtualPointer();
+        var bounds = new ElementBox(200, 100, 160, 60);
+        var target = new ElementPoint(280, 130);
+
+        var points = pointer.MoveTo(target, 10, path: path, targetBounds: bounds).ToArray();
+
+        Assert.Equal(target, points[^1]);
+        Assert.All(points[..7], point => Assert.False(Inside(point, bounds)));
+    }
+
+    private static bool Inside(ElementPoint point, ElementBox bounds) =>
+        point.X > bounds.X && point.X < bounds.X + bounds.Width &&
+        point.Y > bounds.Y && point.Y < bounds.Y + bounds.Height;
 }

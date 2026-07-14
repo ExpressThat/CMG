@@ -22,7 +22,7 @@ Runner declarations can include report annotations with `owner=`, `issue=`, `lin
 
 Runner declarations can also include initial variables as `var.<name>=<value>`. Suite variables cascade to child tests, and test-level variables override suite values. Command-line `--var` and `--env` values are injected before declaration variables, so a test declaration can intentionally override a command-provided default.
 
-Runner declarations can set per-test GIF defaults with `gifQuality=`, `gifPointerDuration=`, `gifPointerSpeed=`, `gifPointerEasing=`, `gifFps=`, `gifFrameDelay=`, `gifCrop=`, `gifCropPadding=`, `gifScale=`, `gifMaxWidth=`, `gifMaxHeight=`, `gifViewport=`, `gifPixelRatio=`, `gifSafeArea=`, and `gifLayoutStability=`. `describe` / `suite` / `context` values cascade to child tests; test values override individual properties while unrelated command-line defaults remain intact. These defaults affect command-level `-gif` artifacts and are validated even when GIF output is disabled.
+Runner declarations can set per-test GIF defaults with `gifQuality=`, `gifPointerDuration=`, `gifPointerSpeed=`, `gifPointerEasing=`, `gifPointerPath=`, `gifDragPath=`, `gifFps=`, `gifFrameDelay=`, `gifCrop=`, `gifCropPadding=`, `gifScale=`, `gifMaxWidth=`, `gifMaxHeight=`, `gifViewport=`, `gifPixelRatio=`, `gifSafeArea=`, and `gifLayoutStability=`. `describe` / `suite` / `context` values cascade to child tests; test values override individual properties while unrelated command-line defaults remain intact. These defaults affect command-level `-gif` artifacts and are validated even when GIF output is disabled.
 
 Artifact declarations control which command-level test GIFs are retained. `gif=always` is the default, `gif=onFailure` retains all attempts only when the test finally fails, `gif=onRetry` retains failed attempts but removes a passing attempt, and `gif=off` disables command-level capture for that test. `gifSampleRate=<n>` records the first selected test and every nth test after it. `gifCleanPassed=true` removes a passing GIF only after reports and traces are written. These declarations require `-gif` to create whole-test artifacts and do not suppress explicit `gif` / `gifIfChanged` / `gifOnFailure` blocks authored inside a script.
 
@@ -78,6 +78,8 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--pointer-duration <milliseconds>`: Default virtual pointer movement duration for command-level `--gif` recordings. Must be zero or greater.
 - `--pointer-speed <slow|normal|fast|instant|multiplier>`: Default virtual pointer speed for command-level `--gif` recordings. Multipliers use the `1.5x` form. DSL block and action options can still override this.
 - `--pointer-easing <linear|ease-in|ease-out|ease-in-out|spring>`: Default virtual pointer easing for command-level `--gif` recordings.
+- `--pointer-path <auto|direct|arc|manhattan|avoid-target|avoid-center>`: Default virtual pointer route. Defaults to geometry-aware `auto`.
+- `--drag-path <auto|direct|arc|manhattan|avoid-target|avoid-center>`: Held-pointer route; inherits the pointer path when omitted.
 - `--pointer-theme <arrow|hand|dot|ring|branded|touch>`: Default virtual pointer theme for command-level `--gif` recordings.
 - `--pointer-color <css-color>`: Default virtual pointer color for command-level `--gif` recordings. Pass one CSS color value, not a CSS declaration.
 - `--pointer-size <8..96>`: Default virtual pointer size in CSS pixels for command-level `--gif` recordings.
@@ -188,7 +190,7 @@ If no selected CMG browser is running, stderr tells the caller which launch comm
 
 Run config supports `gifRetention` (`always`, `onFailure`, `onRetry`, or `off`), positive integer `gifSampleRate`, and boolean `gifCleanPassed`. Explicit CLI retention values override config. Suite/test declarations then override the effective run default one property at a time.
 
-Root config and individual projects may define a `gifSettings` object. Supported properties are `quality`, `pointerDuration`, `pointerSpeed`, `pointerEasing`, `clickPulse`, `fps`, `frameDelay`, `crop`, `cropPadding`, `scale`, `maxWidth`, `maxHeight`, `viewport`, `pixelRatio`, `safeArea`, `layoutStability`, `captionStyle`, `captionPosition`, `captionSeverity`, `captionSize`, `autoCaptions`, `captionTemplate`, string arrays `redact`, `mask`, and `blur`, plus `autoRedact` and `redactionSafety`. Project properties overlay root properties individually; explicit CLI options overlay project properties individually; suite/test declarations and DSL recording/action overrides remain more specific. Unknown properties and invalid types fail during config loading; invalid values fail before browser connection or `--list` output with the responsible setting in stderr.
+Root config and individual projects may define a `gifSettings` object. Supported properties are `quality`, `pointerDuration`, `pointerSpeed`, `pointerEasing`, `pointerPath`, `dragPath`, `clickPulse`, `fps`, `frameDelay`, `crop`, `cropPadding`, `scale`, `maxWidth`, `maxHeight`, `viewport`, `pixelRatio`, `safeArea`, `layoutStability`, `captionStyle`, `captionPosition`, `captionSeverity`, `captionSize`, `autoCaptions`, `captionTemplate`, string arrays `redact`, `mask`, and `blur`, plus `autoRedact` and `redactionSafety`. Project properties overlay root properties individually; explicit CLI options overlay project properties individually; suite/test declarations and DSL recording/action overrides remain more specific. Unknown properties and invalid types fail during config loading; invalid values fail before browser connection or `--list` output with the responsible setting in stderr.
 
 ```json
 {
@@ -260,6 +262,7 @@ cmg run tests\flows --gif artifacts\gifs --gif-quality highest
 cmg run tests\flows --gif artifacts\gifs --gif-dither sierra --gif-palette local --gif-colors 192 --keep-frames artifacts\source-frames
 cmg run demo-scripts\183-gif-debug-runner.cmgscript --gif artifacts\debug --gif-debug
 cmg run tests\flows --gif artifacts\gifs --gif-crop "#stage" --gif-crop-padding 24 --gif-scale 0.75 --gif-max-width 700
+cmg run demo-scripts\228-gif-auto-pointer-path-runner.cmgscript --gif artifacts\paths --pointer-path auto --drag-path avoid-target
 cmg run tests\flows --gif artifacts\gifs --pointer-duration 600 --pointer-easing spring
 cmg run tests\flows --gif artifacts\gifs --pointer-theme ring --pointer-color "#dc2626" --pointer-size 44 --pointer-shadow strong
 cmg run tests\flows --gif artifacts\gifs --show-pointer false

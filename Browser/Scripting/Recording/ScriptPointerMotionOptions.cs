@@ -6,7 +6,9 @@ namespace CMG.Browser.Scripting.Recording;
 public sealed record ScriptPointerMotionOptions(
     int? PointerDurationMilliseconds = null,
     string? PointerSpeed = null,
-    ScriptPointerEasing PointerEasing = ScriptPointerEasing.EaseInOut)
+    ScriptPointerEasing PointerEasing = ScriptPointerEasing.EaseInOut,
+    ScriptPointerPath PointerPath = ScriptPointerPath.Auto,
+    ScriptPointerPath? DragPath = null)
 {
     public static readonly ScriptPointerMotionOptions Default = new();
 
@@ -18,6 +20,8 @@ public sealed record ScriptPointerMotionOptions(
         var duration = reduced ? 0 : PointerDurationMilliseconds;
         var speed = reduced ? null : PointerSpeed;
         var easing = reduced ? ScriptPointerEasing.Linear : PointerEasing;
+        var pointerPath = PointerPath;
+        var dragPath = DragPath;
         if (action.Options.ContainsKey("reducedMotion") && !reduced)
         {
             duration = null;
@@ -37,7 +41,12 @@ public sealed record ScriptPointerMotionOptions(
             easing = ParseEasing(rawEasing, $"{action.Name} option pointerEasing=");
         }
 
-        return new ScriptPointerMotionOptions(duration, speed, easing).Validate(action.Name);
+        if (action.Options.TryGetValue("pointerPath", out var rawPath))
+            pointerPath = ParsePath(rawPath, $"{action.Name} option pointerPath=");
+        if (action.Options.TryGetValue("dragPath", out var rawDragPath))
+            dragPath = ParsePath(rawDragPath, $"{action.Name} option dragPath=");
+
+        return new ScriptPointerMotionOptions(duration, speed, easing, pointerPath, dragPath).Validate(action.Name);
     }
 
     public ScriptPointerMotionOptions WithDurationOption(BrowserScriptAction action, string optionName)
@@ -103,6 +112,11 @@ public sealed record ScriptPointerMotionOptions(
         ScriptPointerEasingParser.TryParse(value, out var easing)
             ? easing
             : throw new ScriptExecutionException($"{label} must be one of: {ScriptPointerEasingParser.Values}.");
+
+    public static ScriptPointerPath ParsePath(string value, string label) =>
+        ScriptPointerPathParser.TryParse(value, out var path)
+            ? path
+            : throw new ScriptExecutionException($"{label} must be one of: {ScriptPointerPathParser.Values}.");
 
     private static bool TryParseMultiplier(string value, out double multiplier)
     {

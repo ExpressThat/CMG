@@ -160,7 +160,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add pointer path styles: direct line, curved arc, Manhattan path, avoid-target, and avoid-center.
 - Implemented: add `pointerPath=<direct|arc|manhattan|avoid-target|avoid-center>` on recording blocks and pointer-aware actions.
 - Implemented: add `dragPath=<direct|arc|manhattan|avoid-target|avoid-center>` on `dragAndDrop`.
-- Add auto pathing that avoids covering the target text or button label.
+- Implemented: geometry-aware `pointerPath=auto` is the default, uses resolved target bounds to stay outside large labels until the final truthful center-click approach, and falls back to an arc for small/non-element targets. Whole-run CLI/config and suite/test declarations support pointer and drag paths.
 - Implemented: add `preClickHold=<ms>` and `postClickHold=<ms>` at recording-block and action level. CLI: `--pointer-pre-click-hold <ms>` and `--pointer-post-click-hold <ms>`.
 - Implemented: add `preDragHold=<ms>`, `dragHold=<ms>`, and `postDropHold=<ms>` on `dragAndDrop`.
 - Implemented: add `holdAfterMove=<ms>` on `moveMouse` for demonstrations where the pointer should settle before the next action.

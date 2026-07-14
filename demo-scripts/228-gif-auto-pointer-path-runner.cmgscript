@@ -1,0 +1,7 @@
+describe "geometry-aware pointer evidence" gifPointerPath=auto gifDragPath=avoid-target gifPointerDuration=1400 {
+  test "approaches label only for click" {
+    setContent "<style>html,body{margin:0;background:#e2e8f0;color:#172033}main{min-height:520px;padding:40px}.stage{margin:110px auto 0;max-width:640px;padding:36px;background:white;border:2px solid #172033}button{display:block;width:420px;height:72px;margin:auto;font:600 20px system-ui}</style><main><section class='stage'><h1>Runner pointer path</h1><button id='approve' onclick='this.textContent=\"Approved\"'>Approve production deployment</button></section></main>"
+    click "#approve"
+    assertText "#approve" "Approved"
+  }
+}

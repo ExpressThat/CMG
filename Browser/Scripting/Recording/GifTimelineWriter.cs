@@ -192,6 +192,8 @@ public static partial class GifTimelineWriter
         }
         writer.WriteString("pointerSpeed", options.EffectivePointerMotion.PointerSpeed);
         writer.WriteString("pointerEasing", options.EffectivePointerMotion.PointerEasing.ToString().ToLowerInvariant());
+        writer.WriteString("pointerPath", options.EffectivePointerMotion.PointerPath.ToString().ToLowerInvariant());
+        writer.WriteString("dragPath", (options.EffectivePointerMotion.DragPath ?? options.EffectivePointerMotion.PointerPath).ToString().ToLowerInvariant());
         writer.WriteString("clickPulse", options.ClickPulse.ToString().ToLowerInvariant());
         writer.WriteNumber("holdAfterActionMilliseconds", options.HoldAfterActionMilliseconds);
         writer.WriteNumber("holdOnFailureMilliseconds", options.HoldOnFailureMilliseconds);

@@ -195,6 +195,8 @@ public sealed partial class GifFrameSinkTests
         Assert.Equal(2, root.GetProperty("captureDiagnostics").GetProperty("sourceFrameCount").GetInt32());
         Assert.Equal(350, root.GetProperty("durationMilliseconds").GetInt32());
         Assert.Equal(1500, root.GetProperty("timing").GetProperty("holdOnFailureMilliseconds").GetInt32());
+        Assert.Equal("auto", root.GetProperty("timing").GetProperty("pointerPath").GetString());
+        Assert.Equal("auto", root.GetProperty("timing").GetProperty("dragPath").GetString());
         var encoding = root.GetProperty("encoding");
         Assert.Equal("none", encoding.GetProperty("dither").GetString());
         Assert.Equal("local", encoding.GetProperty("palette").GetString());

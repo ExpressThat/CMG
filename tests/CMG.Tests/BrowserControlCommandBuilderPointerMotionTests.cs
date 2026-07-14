@@ -13,12 +13,14 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
     {
         var handler = new CapturingHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --pointer-duration 450 --pointer-speed 1.5x --pointer-easing linear").Invoke();
+            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --pointer-duration 450 --pointer-speed 1.5x --pointer-easing linear --pointer-path avoid-target --drag-path arc").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal(450, handler.PointerMotion?.PointerDurationMilliseconds);
         Assert.Equal("1.5x", handler.PointerMotion?.PointerSpeed);
         Assert.Equal(ScriptPointerEasing.Linear, handler.PointerMotion?.PointerEasing);
+        Assert.Equal(ScriptPointerPath.AvoidTarget, handler.PointerMotion?.PointerPath);
+        Assert.Equal(ScriptPointerPath.Arc, handler.PointerMotion?.DragPath);
     }
 
     [Fact]
@@ -157,12 +159,12 @@ public sealed class BrowserControlCommandBuilderPointerMotionTests
         Assert.Equal(50, handler.FrameDelayMilliseconds);
     }
 
-    [Fact]
-    public void ScriptCommand_RejectsInvalidPointerEasing()
+    [Theory, InlineData("--pointer-easing wobbly"), InlineData("--pointer-path wobble"), InlineData("--drag-path wobble")]
+    public void ScriptCommand_RejectsInvalidPointerMotionOption(string option)
     {
         var handler = new CapturingHandler();
         var exitCode = BuildRoot(handler).Parse(
-            "control script --file flow.cmgscript --gif C:\\temp\\flow.gif --pointer-easing wobbly").Invoke();
+            $"control script --file flow.cmgscript --gif C:\\temp\\flow.gif {option}").Invoke();
 
         Assert.Equal(1, exitCode);
         Assert.Null(handler.File);

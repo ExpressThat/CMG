@@ -63,6 +63,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public int PageScreenshotCount { get; private set; }
     public ClickPulseStyle? LastCursorPulseStyle { get; private set; }
     public List<ClickPulseStyle?> CursorPulseStyles { get; } = [];
+    public List<ElementPoint> CursorPoints { get; } = [];
     public bool LastCursorPressed { get; private set; }
     public bool LastCursorTrail { get; private set; }
     public bool LastCursorBreadcrumb { get; private set; }
@@ -199,6 +200,7 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     }
     public void MoveDomCursor(string remoteDebuggingUrl, ElementPoint point, ClickPulseStyle? pulseStyle = null, bool pressed = false, bool trail = false, bool breadcrumb = false, PointerVisualOptions? visual = null)
     {
+        CursorPoints.Add(point);
         LastCursorPulseStyle = pulseStyle;
         CursorPulseStyles.Add(pulseStyle);
         LastCursorPressed = pressed;
