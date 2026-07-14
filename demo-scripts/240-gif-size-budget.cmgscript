@@ -1,0 +1,4 @@
+gif "budget constrained" output="demo-output/240-budget-constrained.gif" quality=highest sizeBudget=55KB timeline=true autoCaptions=true {
+  setContent "<main style='box-sizing:border-box;min-height:calc(100vh - 16px);padding:44px;background:linear-gradient(125deg,#111827,#2563eb 46%,#f59e0b);color:white;font-family:system-ui'><h1>Budget-aware visual evidence</h1><p id='status' style='font-size:20px'>Ready to record</p><button id='run' onclick=\"document.querySelector('#status').textContent='Recorded with pointer evidence'\" style='padding:12px 18px;background:#22c55e;border:2px solid white'>Run journey</button></main>"
+  click "#run"
+}

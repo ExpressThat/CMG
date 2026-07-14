@@ -2019,8 +2019,13 @@ Encoder options:
 - `maxWidth=<1..10000>` and `maxHeight=<1..10000>` add output dimension caps while preserving aspect ratio.
 - `viewport=<width>x<height>` temporarily sets recording viewport dimensions and restores the prior viewport afterward.
 - `pixelRatio=<1..4>` controls high-DPI recording capture.
+- `sizeBudget=<bytes|KB|MB|GB>` targets a maximum encoded artifact size, such as `750KB` or `2MB`.
+- `budgetQualityFallback=<true|false>` permits deterministic quality reduction when the requested encoding exceeds `sizeBudget`; default `true`.
+- `budgetDownscaleFallback=<true|false>` permits bounded dimension reduction after quality fallback; default `true`.
 
 These options may be inherited from `recording` / `withRecording` when a nested GIF block creates the artifact. Invalid names or ranges fail with the exact option and accepted values. Retained PNGs contain the page and CMG recording UI after requested crop, scale, background, and contrast transforms, so treat them with the same privacy controls as the GIF.
+
+Budget fallback never changes browser actions, virtual-pointer events, drag ghosts, captions, or source-frame timing. CMG tries the requested encoding first, then lower quality and smaller dimensions only when enabled. It retains the smallest valid candidate when the requested target is impossible and reports the decision through `GIF_CAPTURE_STATS` and timeline `captureDiagnostics`.
 
 Crop bounds are re-resolved before every frame, so a moving or resizing panel remains framed. CMG clips the browser capture after placing the virtual pointer and overlays, then scales the resulting bitmap; pointer coordinates therefore stay aligned. Title cards reuse the most recent crop bounds while their temporary card hides page content.
 

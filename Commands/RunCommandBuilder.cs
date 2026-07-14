@@ -5,8 +5,6 @@ using CMG.Runner;
 namespace CMG.Commands;
 public sealed partial class RunCommandBuilder
 {
-    private readonly ICmgRunCommandHandler handler;
-    public RunCommandBuilder(ICmgRunCommandHandler handler) => this.handler = handler;
     public Command Build(BrowserSelectionOptions browserOptions)
     {
         var pathArgument = new Argument<string>("path") { Description = "A CMG script file or folder containing .cmgscript files." };
@@ -61,7 +59,7 @@ public sealed partial class RunCommandBuilder
         {
             pathArgument, configOption, projectOption, gifOption, noGifOption, gifQualityOption,
             encodingOptions.Dither, encodingOptions.Palette, encodingOptions.Colors, encodingOptions.KeepFrames,
-            encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.SmartCrop, encodingOptions.SplitTabs, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight, encodingOptions.Viewport, encodingOptions.PixelRatio, encodingOptions.SafeArea, encodingOptions.LayoutStability, encodingOptions.Debug, encodingOptions.Accessibility, encodingOptions.EventCaptions, encodingOptions.Intro, encodingOptions.Outro, encodingOptions.IntroDuration, encodingOptions.OutroDuration, encodingOptions.ResultOutro, encodingOptions.DisableCoalescing, encodingOptions.SampleEvery, encodingOptions.PointerContrast, encodingOptions.PointerCallout, encodingOptions.PointerCalloutThreshold, encodingOptions.TargetZoom, encodingOptions.TargetZoomThreshold, encodingOptions.PagePosition, encodingOptions.TabContext, encodingOptions.DisableFocusPulse, encodingOptions.PointerIdle, encodingOptions.PointerIdleThreshold, encodingOptions.DisableTeleportMarker, encodingOptions.MouseDownHold, encodingOptions.Background, encodingOptions.GradientMode, encodingOptions.HighContrastPalette, encodingOptions.Redact, encodingOptions.Mask, encodingOptions.Blur, encodingOptions.AutoRedact, encodingOptions.RedactionSafety,
+            encodingOptions.Crop, encodingOptions.CropPadding, encodingOptions.SmartCrop, encodingOptions.SplitTabs, encodingOptions.Scale, encodingOptions.MaxWidth, encodingOptions.MaxHeight, encodingOptions.Viewport, encodingOptions.PixelRatio, encodingOptions.SafeArea, encodingOptions.LayoutStability, encodingOptions.Debug, encodingOptions.Accessibility, encodingOptions.EventCaptions, encodingOptions.Intro, encodingOptions.Outro, encodingOptions.IntroDuration, encodingOptions.OutroDuration, encodingOptions.ResultOutro, encodingOptions.DisableCoalescing, encodingOptions.SampleEvery, encodingOptions.PointerContrast, encodingOptions.PointerCallout, encodingOptions.PointerCalloutThreshold, encodingOptions.TargetZoom, encodingOptions.TargetZoomThreshold, encodingOptions.PagePosition, encodingOptions.TabContext, encodingOptions.DisableFocusPulse, encodingOptions.PointerIdle, encodingOptions.PointerIdleThreshold, encodingOptions.DisableTeleportMarker, encodingOptions.MouseDownHold, encodingOptions.Background, encodingOptions.GradientMode, encodingOptions.HighContrastPalette, encodingOptions.Redact, encodingOptions.Mask, encodingOptions.Blur, encodingOptions.AutoRedact, encodingOptions.RedactionSafety, encodingOptions.SizeBudget, encodingOptions.DisableBudgetQualityFallback, encodingOptions.DisableBudgetDownscale,
             pointerDurationOption, pointerSpeedOption, pointerEasingOption, pointerPathOption, dragPathOption,
             pointerVisualOptions.Theme, pointerVisualOptions.Color, pointerVisualOptions.Size, pointerVisualOptions.Shadow,
             presetOptions.ReducedMotion, presetOptions.HighContrastPointer,
@@ -196,10 +194,12 @@ public sealed partial class RunCommandBuilder
                 Console.Error.WriteLine($"Run config project '{project?.Name}' has unknown browser '{project?.Browser}'.");
                 return 1;
             }
+            var gifDirectory = DirectoryValue(parseResult, gifOption, config.Gif);
+            if (!TryCleanExpiredGifArtifacts(parseResult.GetValue(listOption), gifDirectory, gifRetention.CleanupDays)) return 1;
             return handler.RunWithGifRetention(
                 projectBrowser ?? CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
                 parseResult.GetValue(pathArgument) ?? string.Empty,
-                DirectoryValue(parseResult, gifOption, config.Gif),
+                gifDirectory,
                 FileValue(parseResult, jsonOption, config.ReportJson),
                 FileValue(parseResult, htmlOption, config.ReportHtml),
                 FileValue(parseResult, junitOption, config.ReportJunit),

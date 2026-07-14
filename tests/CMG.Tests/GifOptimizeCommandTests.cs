@@ -32,7 +32,7 @@ public sealed class GifOptimizeCommandTests
             var text = writer.ToString();
             Assert.Contains("GIF_OPTIMIZE", text, StringComparison.Ordinal);
             Assert.Contains("framesBefore=4", text, StringComparison.Ordinal);
-            Assert.Contains("framesAfter=2", text, StringComparison.Ordinal);
+            Assert.True(text.Contains("framesAfter=2", StringComparison.Ordinal), $"{text}\n{FrameDiagnostics(input)}");
             Assert.Contains("duplicateFramesRemoved=2", text, StringComparison.Ordinal);
             Assert.Equal(400, GifInspector.Inspect(new FileInfo(output)).DurationMilliseconds);
         }
@@ -81,5 +81,20 @@ public sealed class GifOptimizeCommandTests
         using var stream = new MemoryStream();
         image.SaveAsPng(stream);
         return stream.ToArray();
+    }
+
+    private static string FrameDiagnostics(string path)
+    {
+        using var gif = Image.Load<Rgba32>(path);
+        return string.Join("; ", Enumerable.Range(0, gif.Frames.Count).Select(index =>
+        {
+            using var image = gif.Frames.CloneFrame(index);
+            var pixels = new Rgba32[image.Width * image.Height];
+            image.CopyPixelDataTo(pixels);
+            var first = pixels[0];
+            var colors = string.Join("|", pixels.GroupBy(pixel => pixel).Select(group =>
+                $"{group.Key.R},{group.Key.G},{group.Key.B},{group.Key.A}x{group.Count()}"));
+            return $"frame={index} first={first.R},{first.G},{first.B},{first.A} colors={colors}";
+        }));
     }
 }

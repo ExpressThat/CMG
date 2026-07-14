@@ -66,7 +66,10 @@ internal static class CmgGifEvidenceReader
                     NullableInt(step, "endFrameIndex"),
                     step.GetProperty("startTimeMilliseconds").GetInt32(),
                     step.GetProperty("endTimeMilliseconds").GetInt32(),
-                    NullableInt(step, "failureFrameIndex"));
+                    NullableInt(step, "failureFrameIndex"),
+                    NullableInt(step, "capturedFrameCount") ?? 0,
+                    NullableInt(step, "capturedDurationMilliseconds") ?? 0,
+                    NullableLong(step, "estimatedRgbaBytes") ?? 0);
                 var existing = result.GetValueOrDefault(sequence) ?? [];
                 result[sequence] = existing.Concat([evidence]).ToArray();
             }
@@ -79,6 +82,11 @@ internal static class CmgGifEvidenceReader
     private static int? NullableInt(JsonElement element, string property) =>
         element.TryGetProperty(property, out var value) && value.ValueKind is JsonValueKind.Number
             ? value.GetInt32()
+            : null;
+
+    private static long? NullableLong(JsonElement element, string property) =>
+        element.TryGetProperty(property, out var value) && value.ValueKind is JsonValueKind.Number
+            ? value.GetInt64()
             : null;
 
     private static bool PathsEqual(string left, string right) =>

@@ -84,7 +84,8 @@ public static partial class CmgHtmlReportWriter
                 var action = WebUtility.HtmlEncode(string.IsNullOrWhiteSpace(step.Action) ? step.Name : step.Action);
                 builder.AppendLine($"<figure class=\"evidence-frame\" id=\"evidence-{testIndex}-{step.Sequence}-{index}\">");
                 builder.AppendLine($"<img src=\"{source}\" alt=\"Start frame for {action}\">");
-                builder.AppendLine($"<figcaption>Step {step.Sequence}, {action}: frame {evidence.StartFrameIndex} at {evidence.StartTimeMilliseconds}ms</figcaption>");
+                builder.AppendLine($"<figcaption>Step {step.Sequence}, {action}: frame {evidence.StartFrameIndex} at {evidence.StartTimeMilliseconds}ms; " +
+                    $"cost {evidence.CapturedFrameCount} frame(s), {evidence.CapturedDurationMilliseconds}ms, {evidence.EstimatedRgbaBytes} retained RGBA bytes</figcaption>");
                 builder.AppendLine("</figure>");
             }
         }

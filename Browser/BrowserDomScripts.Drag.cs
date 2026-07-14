@@ -87,6 +87,9 @@ public static partial class BrowserDomScripts
             ghost.setAttribute('popover', 'manual');
             ghost.style.all = 'initial';
             ghost.style.position = 'fixed';
+            ghost.style.inset = 'auto';
+            ghost.style.right = 'auto';
+            ghost.style.bottom = 'auto';
             ghost.style.left = `${eventOptions.clientX}px`;
             ghost.style.top = `${eventOptions.clientY}px`;
             ghost.style.zIndex = '2147483645';
@@ -136,8 +139,7 @@ public static partial class BrowserDomScripts
             state.defaultGhost.style.left = `${eventOptions.clientX}px`;
             state.defaultGhost.style.top = `${eventOptions.clientY}px`;
             if (typeof state.defaultGhost.showPopover === 'function') {
-              if (state.defaultGhost.matches(':popover-open')) state.defaultGhost.hidePopover();
-              state.defaultGhost.showPopover();
+              if (!state.defaultGhost.matches(':popover-open')) state.defaultGhost.showPopover();
             }
           }
           state.source.dispatchEvent(new DragEvent('drag', eventOptions));

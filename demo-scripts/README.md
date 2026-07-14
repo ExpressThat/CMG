@@ -363,6 +363,7 @@ dotnet run -- --firefox browser close
 - `210-gif-declared-defaults.cmgscript`: Direct-script equivalent of inherited quality, pointer speed, FPS, crop, and scale defaults.
 - `211-gif-declared-defaults-runner.cmgscript`: Demonstrates suite GIF declarations and a test-level quality override.
 - `212-gif-retention-runner.cmgscript`: Demonstrates failure/retry retention, deterministic test sampling, post-report cleanup, and independent focused blocks.
+- `240-gif-size-budget.cmgscript`: Demonstrates a highest-quality focused recording with a deterministic encoded-size budget and timeline diagnostics.
 - `213-gif-retention-cli-runner.cmgscript`: Demonstrates coarse whole-run retry retention through CLI options without DSL declarations.
 - `214-gif-activity-overlays.cmgscript`: Demonstrates scoped mouse-button, console, and network activity evidence in a focused recording.
 - `215-gif-activity-overlays-runner.cmgscript`: Demonstrates the same activity overlays in a whole-test runner GIF.
@@ -391,6 +392,7 @@ dotnet run -- --firefox browser close
 - `237-gif-protocol-evidence.cmgscript`: Privacy-safe WebSocket, service-worker, and worker outcome captions in a focused GIF.
 - `238-gif-protocol-evidence-runner.cmgscript`: Runner form of privacy-safe protocol activity evidence.
 - `239-gif-quality-comparison.cmgscript`: Generates identical highest, high, medium, and low quality artifacts for visual comparison.
+- `240-gif-size-budget.cmgscript`: Records a pointer-accurate journey with automatic quality/downscale budget fallback and timeline diagnostics.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

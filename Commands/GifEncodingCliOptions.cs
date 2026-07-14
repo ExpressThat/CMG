@@ -48,7 +48,10 @@ internal sealed record GifEncodingCliOptions(
     Option<string[]> Mask,
     Option<string[]> Blur,
     Option<string?> AutoRedact,
-    Option<string?> RedactionSafety)
+    Option<string?> RedactionSafety,
+    Option<string?> SizeBudget,
+    Option<bool> DisableBudgetQualityFallback,
+    Option<bool> DisableBudgetDownscale)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -97,7 +100,10 @@ internal sealed record GifEncodingCliOptions(
             new Option<string[]>("--gif-mask") { Description = "Alias-style solid mask selector. Repeatable." },
             new Option<string[]>("--gif-blur") { Description = "Blur a selector in every GIF frame. Repeatable." },
             new Option<string?>("--gif-auto-redact") { Description = "Automatic redaction: passwords, tokens, emails, payment, privacy, or none." },
-            new Option<string?>("--gif-redaction-safety") { Description = "Redaction safety: standard or strict." });
+            new Option<string?>("--gif-redaction-safety") { Description = "Redaction safety: standard or strict." },
+            new Option<string?>("--gif-budget") { Description = "Target maximum GIF size, for example 500KB or 2MB." },
+            new Option<bool>("--no-gif-budget-quality-fallback") { Description = "Do not reduce encoding quality to meet --gif-budget." },
+            new Option<bool>("--no-gif-budget-downscale") { Description = "Do not reduce dimensions to meet --gif-budget." });
     }
 
     public bool TryParse(ParseResult result, RunGifSettings? settings, out GifEncodingOptions encoding, out string? error)
@@ -130,6 +136,20 @@ internal sealed record GifEncodingCliOptions(
             result.GetValue(Background), result.GetValue(GradientMode), result.GetValue(HighContrastPalette),
             out var color, out error)) return false;
         if (!TryRedaction(result, settings, out var redaction, out error)) return false;
+        GifSizeBudgetOptions budget;
+        try
+        {
+            var size = Provided(result, SizeBudget) ? result.GetValue(SizeBudget) : settings?.SizeBudget;
+            budget = new(
+                size is not null ? GifSizeBudgetOptions.ParseSize(size, "GIF") : null,
+                Provided(result, DisableBudgetQualityFallback) ? !result.GetValue(DisableBudgetQualityFallback) : settings?.BudgetQualityFallback ?? true,
+                Provided(result, DisableBudgetDownscale) ? !result.GetValue(DisableBudgetDownscale) : settings?.BudgetDownscaleFallback ?? true);
+        }
+        catch (CMG.Browser.Scripting.ScriptExecutionException exception)
+        {
+            error = exception.Message;
+            return false;
+        }
         encoding = encoding with
         {
             Framing = framing,
@@ -140,7 +160,8 @@ internal sealed record GifEncodingCliOptions(
             CaptureOptimization = captureOptimization,
             PointerEvidence = pointerEvidence,
             Color = color,
-            Redaction = redaction
+            Redaction = redaction,
+            SizeBudget = budget
         };
         return true;
     }

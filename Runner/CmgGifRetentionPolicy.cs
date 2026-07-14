@@ -5,7 +5,8 @@ public enum CmgGifRetentionMode { Always, OnFailure, OnRetry, Off }
 internal sealed record CmgGifRetentionPolicy(
     CmgGifRetentionMode Mode,
     int SampleRate,
-    bool CleanPassed)
+    bool CleanPassed,
+    int? CleanupDays = null)
 {
     public bool ShouldRecord(int ordinal) =>
         Mode is not CmgGifRetentionMode.Off && (ordinal - 1) % SampleRate == 0;

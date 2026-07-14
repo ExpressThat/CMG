@@ -26,6 +26,7 @@ public sealed class RunCommandBuilderGifRetentionTests
     [InlineData("--gif-on-failure --gif-on-retry")]
     [InlineData("--gif-retention always --gif-on-retry")]
     [InlineData("--gif-retention sometimes")]
+    [InlineData("--gif-retention days:0")]
     [InlineData("--gif-sample-rate 0")]
     public void RunCommand_RejectsInvalidGifRetentionOptions(string options)
     {
@@ -55,6 +56,49 @@ public sealed class RunCommandBuilderGifRetentionTests
         Assert.True(handler.CleanPassed);
     }
 
+    [Fact]
+    public void RunCommand_DaysRetentionDeletesOnlyExpiredGifFamilies()
+    {
+        var directory = Directory.CreateTempSubdirectory();
+        try
+        {
+            var expired = Path.Combine(directory.FullName, "expired.gif");
+            var current = Path.Combine(directory.FullName, "current.gif");
+            File.WriteAllText(expired, "gif");
+            File.WriteAllText(Path.ChangeExtension(expired, ".timeline.json"), "{}");
+            File.WriteAllText(current, "gif");
+            File.SetLastWriteTimeUtc(expired, DateTime.UtcNow.AddDays(-8));
+            var handler = new Handler();
+
+            var exitCode = Root(handler).Parse(
+                $"run flows --gif \"{directory.FullName}\" --gif-retention days:7").Invoke();
+
+            Assert.Equal(0, exitCode);
+            Assert.True(handler.Called);
+            Assert.False(File.Exists(expired));
+            Assert.False(File.Exists(Path.ChangeExtension(expired, ".timeline.json")));
+            Assert.True(File.Exists(current));
+        }
+        finally
+        {
+            directory.Delete(recursive: true);
+        }
+    }
+
+    [Fact]
+    public void RunCommand_MapsGifBudgetFallbackOptions()
+    {
+        var handler = new Handler();
+
+        var exitCode = Root(handler).Parse(
+            "run flows --gif artifacts --gif-budget 750KB --no-gif-budget-downscale").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(750 * 1024, handler.Encoding?.SizeBudget?.Bytes);
+        Assert.True(handler.Encoding?.SizeBudget?.QualityFallback);
+        Assert.False(handler.Encoding?.SizeBudget?.DownscaleFallback);
+    }
+
     private static RootCommand Root(Handler handler)
     {
         var chrome = new Option<bool>("--chrome");
@@ -72,6 +116,7 @@ public sealed class RunCommandBuilderGifRetentionTests
         public CmgGifRetentionMode Mode { get; private set; }
         public int SampleRate { get; private set; }
         public bool CleanPassed { get; private set; }
+        public GifEncodingOptions? Encoding { get; private set; }
 
         public int Run(
             BrowserKind browserKind, string path, DirectoryInfo? artifacts, FileInfo? jsonReport, FileInfo? htmlReport,
@@ -109,6 +154,7 @@ public sealed class RunCommandBuilderGifRetentionTests
             Mode = gifRetentionMode;
             SampleRate = gifRetentionSampleRate;
             CleanPassed = gifCleanPassed;
+            Encoding = gifEncoding;
             return 0;
         }
     }

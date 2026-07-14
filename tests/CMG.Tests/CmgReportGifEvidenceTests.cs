@@ -19,6 +19,9 @@ public sealed class CmgReportGifEvidenceTests
         Assert.Equal(2, evidence.GetProperty("startFrameIndex").GetInt32());
         Assert.Equal(5, evidence.GetProperty("endFrameIndex").GetInt32());
         Assert.Equal(300, evidence.GetProperty("startTimeMilliseconds").GetInt32());
+        Assert.Equal(4, evidence.GetProperty("capturedFrameCount").GetInt32());
+        Assert.Equal(600, evidence.GetProperty("capturedDurationMilliseconds").GetInt32());
+        Assert.Equal(4096, evidence.GetProperty("estimatedRgbaBytes").GetInt64());
     }
 
     [Fact]
@@ -35,6 +38,7 @@ public sealed class CmgReportGifEvidenceTests
             Assert.Contains("Failure frame 1", report, StringComparison.Ordinal);
             Assert.Contains("data:image/png;base64,", report, StringComparison.Ordinal);
             Assert.Contains("Step Evidence", report, StringComparison.Ordinal);
+            Assert.Contains("cost 4 frame(s), 600ms, 4096 retained RGBA bytes", report, StringComparison.Ordinal);
         }
         finally
         {
@@ -44,7 +48,7 @@ public sealed class CmgReportGifEvidenceTests
 
     private static CmgTestResult TestWithEvidence(string gifPath, string timelinePath, bool success)
     {
-        var evidence = new CmgStepGifEvidence(gifPath, timelinePath, 2, 5, 300, 900, success ? null : 1);
+        var evidence = new CmgStepGifEvidence(gifPath, timelinePath, 2, 5, 300, 900, success ? null : 1, 4, 600, 4096);
         var step = new CmgStepResult(7, "click", success, [], success ? null : "failed", gifPath, 4, "step checkout", "click")
         {
             GifEvidence = [evidence]

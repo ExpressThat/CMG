@@ -344,12 +344,12 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: emit peak retained RGBA pixel bytes and preprocessing time in `GIF_CAPTURE_STATS` and timeline `captureDiagnostics`.
 - Implemented: add max duration guard with clear failure reason. CLI: `--gif-max-duration <duration>` emits `GIF_MAX_DURATION`, fails the test, and writes the reason into reports.
 - Implemented: add max file size guard with clear failure reason. CLI: `--gif-max-size <size>` emits `GIF_MAX_SIZE`, fails the test, and writes the reason into reports.
-- Add automatic downscale when file size exceeds a threshold.
-- Add automatic quality fallback when file size exceeds a threshold.
-- Add `sizeBudget=<size>` to target a file size. CLI: `--gif-budget <size>`.
-- Add recording cache cleanup policy.
-- Add artifact retention settings for CI. CLI: `--gif-retention <all|failed|none|days:n>`.
-- Add per-step capture cost metrics.
+- Implemented: `sizeBudget=` and `--gif-budget` use bounded automatic downscales after encoding-quality fallback while preserving the recorded action and pointer timeline.
+- Implemented: automatic quality fallback walks requested quality toward `low`; `budgetQualityFallback=false` and `--no-gif-budget-quality-fallback` preserve the requested preset.
+- Implemented: DSL/config/CLI size budgets accept bytes plus KB/MB/GB and report requested budget, attempts, selected quality/scale, final size, and whether the target was met.
+- Implemented: budget attempts use unique temporary files and deterministic `finally` cleanup; retained PNG frame directories remain governed by `keepFrames`.
+- Implemented: `--gif-retention days:n` removes complete expired artifact families only from the selected GIF directory; all/failed/none/onRetry current-run policies remain supported.
+- Implemented: timeline and JSON/HTML report evidence expose per-step frame count, encoded duration, and estimated retained RGBA bytes.
 - Implemented: add a `cmg gif inspect <file>` command for frame count, palette color pressure, duration, dimensions, transparency, repeat metadata, and size.
 - Implemented: add a `cmg gif optimize <file> --output <gif>` command for duplicate-frame coalescing.
 - Implemented: add a `cmg gif compare <before> <after>` command for frame, duration, dimension, palette, transparency, repeat, and size deltas.

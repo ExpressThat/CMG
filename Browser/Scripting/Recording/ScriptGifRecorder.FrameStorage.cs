@@ -19,7 +19,9 @@ public sealed partial class ScriptGifRecorder
             $"GIF_CAPTURE_STATS path={path} sourceFrames={SourceFrameCount} retainedFrames={FrameCount} " +
             $"duplicateFrames={DuplicateFramesCoalesced} sampledFrames={SampledFramesSkipped} blankFrames={BlankFrameCount} " +
             $"iccFrames={frameSink.IccProfileFrameCount} cicpFrames={frameSink.CicpProfileFrameCount} gammaFrames={frameSink.GammaMetadataFrameCount} " +
-            $"profileChanges={ColorProfileChangeCount} peakRetainedPixelBytes={PeakRetainedPixelBytes} processingMs={FrameProcessingMilliseconds.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)}"
+            $"profileChanges={ColorProfileChangeCount} peakRetainedPixelBytes={PeakRetainedPixelBytes} processingMs={FrameProcessingMilliseconds.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)} " +
+            $"budgetBytes={frameSink.BudgetBytes?.ToString() ?? "none"} budgetApplied={frameSink.BudgetApplied.ToString().ToLowerInvariant()} budgetMet={frameSink.BudgetMet.ToString().ToLowerInvariant()} " +
+            $"budgetAttempts={frameSink.BudgetAttempts} finalSizeBytes={frameSink.FinalSizeBytes} finalQuality={frameSink.FinalBudgetQuality.ToString().ToLowerInvariant()} finalScale={frameSink.FinalBudgetScale.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}"
         };
         if (LongWaitCount > 0) lines.Add($"GIF_WAIT_COMPRESSION path={path} waits={LongWaitCount} savedMs={LongWaitMillisecondsSaved}");
         if (SourceFrameCount >= 5 && DuplicateFramesCoalesced / (double)SourceFrameCount >= .6)

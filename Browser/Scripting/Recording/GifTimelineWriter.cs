@@ -61,7 +61,7 @@ public static partial class GifTimelineWriter
         }
         writer.WriteEndArray();
         WriteCheckpoints(writer, checkpoints);
-        WriteSteps(writer, steps);
+        WriteSteps(writer, steps, sink);
         WriteRedactions(writer, options.EffectiveRedaction, redactionAudit);
         WriteDebugFrames(writer, debugFrames);
         WriteTiming(writer, options);
@@ -82,6 +82,13 @@ public static partial class GifTimelineWriter
         writer.WriteNumber("colorProfileChangeCount", sink.ColorProfileChangeCount);
         writer.WriteNumber("peakRetainedPixelBytes", sink.PeakRetainedPixelBytes);
         writer.WriteNumber("processingMilliseconds", Math.Round(sink.ProcessingMilliseconds, 2));
+        if (sink.BudgetBytes is long budget) writer.WriteNumber("sizeBudgetBytes", budget); else writer.WriteNull("sizeBudgetBytes");
+        writer.WriteBoolean("sizeBudgetApplied", sink.BudgetApplied);
+        writer.WriteBoolean("sizeBudgetMet", sink.BudgetMet);
+        writer.WriteNumber("sizeBudgetAttempts", sink.BudgetAttempts);
+        writer.WriteNumber("finalSizeBytes", sink.FinalSizeBytes);
+        writer.WriteString("finalQuality", sink.FinalBudgetQuality.ToString().ToLowerInvariant());
+        writer.WriteNumber("finalScale", sink.FinalBudgetScale);
         writer.WriteEndObject();
     }
 
@@ -139,7 +146,7 @@ public static partial class GifTimelineWriter
         writer.WriteEndObject();
     }
 
-    private static void WriteSteps(Utf8JsonWriter writer, IReadOnlyList<GifTimelineStep> steps)
+    private static void WriteSteps(Utf8JsonWriter writer, IReadOnlyList<GifTimelineStep> steps, GifFrameSink sink)
     {
         writer.WritePropertyName("steps");
         writer.WriteStartArray();
@@ -155,6 +162,12 @@ public static partial class GifTimelineWriter
             if (step.EndFrameIndex is int end) writer.WriteNumber("endFrameIndex", end); else writer.WriteNull("endFrameIndex");
             writer.WriteNumber("startTimeMilliseconds", step.StartTimeMilliseconds);
             writer.WriteNumber("endTimeMilliseconds", step.EndTimeMilliseconds);
+            var capturedFrames = step.EndFrameIndex is int endFrame
+                ? Math.Max(0, endFrame - step.StartFrameIndex + 1)
+                : 0;
+            writer.WriteNumber("capturedFrameCount", capturedFrames);
+            writer.WriteNumber("capturedDurationMilliseconds", Math.Max(0, step.EndTimeMilliseconds - step.StartTimeMilliseconds));
+            writer.WriteNumber("estimatedRgbaBytes", capturedFrames == 0 ? 0 : sink.EstimatedRgbaBytes(step.StartFrameIndex, step.EndFrameIndex));
             if (step.FailureFrameIndex is int failure) writer.WriteNumber("failureFrameIndex", failure); else writer.WriteNull("failureFrameIndex");
             if (step.Error is null) writer.WriteNull("error"); else writer.WriteString("error", step.Error);
             writer.WriteEndObject();
@@ -203,21 +216,6 @@ public static partial class GifTimelineWriter
         writer.WriteNumber("holdAfterAssertionMilliseconds", options.HoldAfterAssertionMilliseconds);
         writer.WriteNumber("frameDelayMilliseconds", options.FrameDelayMilliseconds);
         writer.WriteNumber("fps", Math.Round(1000d / Math.Max(1, options.FrameDelayMilliseconds), 2));
-        writer.WriteEndObject();
-    }
-
-    private static void WriteEncoding(Utf8JsonWriter writer, ScriptRecordingOptions options)
-    {
-        var encoding = options.EffectiveEncoding;
-        writer.WritePropertyName("encoding");
-        writer.WriteStartObject();
-        writer.WriteString("dither", encoding.Dither.ToString().ToLowerInvariant());
-        writer.WriteString("palette", encoding.Palette.ToString().ToLowerInvariant());
-        if (encoding.Colors is int colors) writer.WriteNumber("colors", colors); else writer.WriteNull("colors");
-        if (encoding.KeepFramesDirectory is not null)
-            writer.WriteString("keepFramesDirectory", Path.GetFullPath(encoding.KeepFramesDirectory));
-        else
-            writer.WriteNull("keepFramesDirectory");
         writer.WriteEndObject();
     }
 

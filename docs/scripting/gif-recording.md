@@ -123,6 +123,9 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `resultOutro=<true|false>`: Generate a passed, failed, or skipped final card when no explicit `outro` text/action was captured.
 - `coalesceDuplicates=<true|false>`: Merge consecutive pixel-identical frames while adding their delay to the retained frame. Defaults to `true`.
 - `sampleEvery=<1..100>`: Keep every Nth intermediate pointer/drag movement frame. Defaults to `1`; child pointer-aware actions can override it.
+- `sizeBudget=<size>`: Target a maximum artifact size, for example `500KB` or `2MB`. The recorder preserves all real browser and virtual-pointer events, then retries encoding with lower quality and bounded downscales.
+- `budgetQualityFallback=<true|false>`: Allow lower quality presets when the first encode exceeds `sizeBudget`. Defaults to `true`.
+- `budgetDownscaleFallback=<true|false>`: Allow dimension fallback after quality fallback. Defaults to `true`.
 - `introDuration=<milliseconds>` / `outroDuration=<milliseconds>`: Title-card holds. Defaults to `1200` and must be greater than zero.
 - `clickPulse=<ring|ripple|dot|crosshair|none>`: Click/tap/drop pulse style. Defaults to `ring` because clicks should be visible evidence by default.
 - `holdAfterAction=<milliseconds>`: Post-action hold duration. Defaults to `350`; use `0` to suppress the hold for a block or action.
@@ -177,7 +180,7 @@ Supported recording-scope and `setRecording` defaults:
 
 - `quality=<archival|highest|high|medium|low>`: Encoder preset for nested recording blocks that create their own artifact. `archival` uses a full 256-color frame-local palette and maximum preset dithering strength.
 - `dither=<none|floyd-steinberg|bayer|atkinson|sierra>`: Explicit palette dithering algorithm.
-- `palette=<global|local|adaptive>`: GIF color-table strategy. `adaptive` currently selects frame-local tables so each frame can adapt to its own colors.
+- `palette=<global|local|adaptive>`: GIF color-table strategy. The default and `adaptive` use frame-local tables so moving pointer/overlay evidence composes reliably and each frame can adapt to its colors. Explicit `global` remains available for controlled sources.
 - `colors=<2..256>`: Explicit maximum palette size.
 - `keepFrames=<true|false|directory>`: Keep final pre-quantization PNG inputs. `true` writes `<gif-name>.frames/frame-NNNN.png`; a directory writes there instead. Cropping and scaling are already applied.
 - `background=<color|transparent|none>`: Flatten alpha onto a CSS color before duplicate detection and quantization. `transparent` and `none` clear an inherited background.

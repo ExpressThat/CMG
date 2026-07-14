@@ -1,6 +1,7 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace CMG.Browser.Scripting.Recording;
 
@@ -55,22 +56,28 @@ public static class GifOptimizer
     {
         var kept = new List<Image<Rgba32>>();
         var previous = Array.Empty<Rgba32>();
+        using var canvas = new Image<Rgba32>(gif.Width, gif.Height, Color.Transparent);
         try
         {
             for (var frameIndex = 0; frameIndex < gif.Frames.Count; frameIndex++)
             {
                 var frame = gif.Frames[frameIndex];
                 using var image = gif.Frames.CloneFrame(frameIndex);
-                var pixels = PixelData(image);
-                var delay = frame.Metadata.GetGifMetadata().FrameDelay;
+                var metadata = frame.Metadata.GetGifMetadata();
+                using var priorCanvas = canvas.Clone();
+                canvas.Mutate(context => context.DrawImage(image, 1f));
+                var pixels = PixelData(canvas);
+                var delay = metadata.FrameDelay;
                 if (kept.Count > 0 && PixelsEqual(previous, pixels))
                 {
                     AddDelay(kept[^1], delay);
-                    continue;
                 }
-
-                previous = pixels;
-                kept.Add(CloneWithDelay(image, delay));
+                else
+                {
+                    previous = pixels;
+                    kept.Add(CloneWithDelay(canvas, delay));
+                }
+                ApplyDisposal(canvas, priorCanvas, metadata.DisposalMethod);
             }
 
             return BuildGif(kept, gif.Metadata.GetGifMetadata().RepeatCount);
@@ -99,8 +106,28 @@ public static class GifOptimizer
     private static Image<Rgba32> CloneWithDelay(Image<Rgba32> image, int delay)
     {
         var clone = image.Clone();
-        clone.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay = delay;
+        var metadata = clone.Frames.RootFrame.Metadata.GetGifMetadata();
+        metadata.FrameDelay = delay;
+        metadata.DisposalMethod = GifDisposalMethod.RestoreToBackground;
         return clone;
+    }
+
+    private static void ApplyDisposal(
+        Image<Rgba32> canvas,
+        Image<Rgba32> priorCanvas,
+        GifDisposalMethod disposal)
+    {
+        if (disposal == GifDisposalMethod.RestoreToPrevious)
+        {
+            canvas.Mutate(context => context.DrawImage(priorCanvas, PixelColorBlendingMode.Normal, PixelAlphaCompositionMode.Src, 1f));
+        }
+        else if (disposal == GifDisposalMethod.RestoreToBackground)
+        {
+            canvas.ProcessPixelRows(accessor =>
+            {
+                for (var row = 0; row < accessor.Height; row++) accessor.GetRowSpan(row).Clear();
+            });
+        }
     }
 
     private static void AddDelay(Image<Rgba32> image, int delay)

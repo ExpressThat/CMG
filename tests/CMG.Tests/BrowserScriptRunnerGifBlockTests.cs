@@ -45,12 +45,13 @@ public sealed class BrowserScriptRunnerGifBlockTests
     public void RunText_ProviderRecordingAliasesUseGifRecorder(string action)
     {
         var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        var client = new FakeAutomationClient();
 
         var result = Runner().RunText($$"""
         {{action}} "block" output="{{Slash(path)}}" quality=high {
           showMessageBar "Inside block"
         }
-        """, "debug", new FakeAutomationClient());
+        """, "debug", client);
 
         Assert.True(result.Success);
         Assert.True(File.Exists(path));
@@ -113,6 +114,32 @@ public sealed class BrowserScriptRunnerGifBlockTests
         Assert.Equal("smooth", color.GetProperty("gradientMode").GetString());
         Assert.True(color.GetProperty("highContrastPalette").GetBoolean());
         directory.Delete(recursive: true);
+    }
+
+    [Fact]
+    public void RunText_GifBlockWritesChildStepCostsToTimeline()
+    {
+        var directory = Directory.CreateTempSubdirectory("cmg-gif-step-cost-");
+        var path = Path.Combine(directory.FullName, "steps.gif");
+        try
+        {
+            var result = Runner().RunText($$"""
+            gif "steps" output="{{Slash(path)}}" timeline=true {
+              showMessageBar "Inside block"
+            }
+            """, "debug", new FakeAutomationClient());
+
+            Assert.True(result.Success, result.Error);
+            using var timeline = JsonDocument.Parse(File.ReadAllText(Path.ChangeExtension(path, ".timeline.json")));
+            var step = Assert.Single(timeline.RootElement.GetProperty("steps").EnumerateArray());
+            Assert.Equal("showMessageBar", step.GetProperty("action").GetString(), ignoreCase: true);
+            Assert.True(step.GetProperty("capturedFrameCount").GetInt32() > 0);
+            Assert.True(step.GetProperty("estimatedRgbaBytes").GetInt64() > 0);
+        }
+        finally
+        {
+            directory.Delete(recursive: true);
+        }
     }
 
     [Theory]

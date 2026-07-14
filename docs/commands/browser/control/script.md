@@ -24,6 +24,7 @@ cmg browser control script --file <path> --gif <path> --gif-hold-after-navigatio
 cmg browser control script --file <path> --gif <path> --gif-hold-on-failure 1800
 cmg browser control script --file <path> --gif <path> --gif-fps 20
 cmg browser control script --file <path> --gif <path> --gif-frame-delay 80
+cmg browser control script --file <path> --gif <path> --gif-budget 500KB
 cmg browser control script --file <path> --gif <path> --gif-timeline <file-or-directory>
 cmg browser control script --file <path> --trace <path>
 cmg browser control script --file <path> --timeout 10000 --assertion-timeout 5000
@@ -79,6 +80,9 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-result-outro`: Generate a final `Test passed`, `Test failed`, or `Test skipped` card when no explicit outro is set.
 - `--gif-no-coalesce`: Keep consecutive pixel-identical frames instead of merging their encoded delays. Coalescing is enabled by default.
 - `--gif-sample-every <1..100>`: Keep every Nth intermediate pointer/drag movement frame. Final targets, click evidence, holds, captions, failures, and title cards are always retained.
+- `--gif-budget <size>`: Target a maximum encoded size using units such as `500KB` or `2MB`. CMG retains the smallest candidate when no allowed fallback can meet the target.
+- `--no-gif-budget-quality-fallback`: Preserve the requested quality while applying `--gif-budget`.
+- `--no-gif-budget-downscale`: Preserve captured dimensions while applying `--gif-budget`.
 - `--pointer-contrast <auto|fixed>`: Adapt an uncolored pointer to the page beneath it. Defaults to `auto`.
 - `--pointer-callout <auto|always|none>`: Control active-target outlines/callouts. Defaults to `auto` for tiny targets.
 - `--pointer-callout-threshold <8..100>`: Tiny-target threshold in CSS pixels. Defaults to `24`.
@@ -172,7 +176,8 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-timeline` writes a JSON sidecar after the GIF is saved and emits `GIF_TIMELINE <path>` on stdout. The sidecar includes the GIF path, file size, dimensions, frame count, frame delays, total duration, quality, encoder controls, framing controls, and recorder timing settings.
 - Whole-run redaction defaults apply before every screenshot and are removed immediately afterward. Timeline `redactions` records configured rules and audit events without recording secret values. Redaction options are inert without `--gif` and never inject a virtual pointer by themselves.
 - `--gif-debug` emits `GIF_DEBUG <path>` after writing the debug sidecar. Each frame record includes timing, action, source line, nested scope, target selector, and virtual-pointer coordinates.
-- Every completed recording emits `GIF_CAPTURE_STATS` with frame, optimization, blank-frame, ICC/CICP/gamma, profile-change, memory, and timing counts. `GIF_WARN_UNCHANGED`, `GIF_WARN_BLANK`, and `GIF_WARN_COLOR_PROFILE` explain evidence-quality risks without changing the exit code.
+- `--gif-budget <size>` targets an encoded size using quality fallback and then bounded downscaling; `--no-gif-budget-quality-fallback` and `--no-gif-budget-downscale` disable either fallback. The smallest candidate is retained when the target is impossible.
+- Every completed recording emits `GIF_CAPTURE_STATS` with frame, optimization, blank-frame, ICC/CICP/gamma, profile-change, memory, timing, and budget-decision counts. `GIF_WARN_UNCHANGED`, `GIF_WARN_BLANK`, and `GIF_WARN_COLOR_PROFILE` explain evidence-quality risks without changing the exit code.
 - Active recordings also emit `GIF_WARN_MULTIPLE_TARGETS`, `GIF_WARN_TINY_TARGET`, `GIF_WARN_SCROLLED`, and `GIF_WARN_NON_VISUAL` when selector or action choices weaken the resulting evidence. These warnings never fail the script and are not evaluated when GIF recording is inactive.
 - Suppressed nested recording blocks emit `GIF_BLOCK_SUPPRESSED <line> reason=command-level-recording` when `--gif` owns the whole run.
 

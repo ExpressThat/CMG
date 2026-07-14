@@ -17,7 +17,8 @@ public sealed record GifEncodingOptions(
     GifCaptureOptimizationOptions? CaptureOptimization = null,
     GifPointerEvidenceOptions? PointerEvidence = null,
     GifColorOptions? Color = null,
-    GifRedactionOptions? Redaction = null)
+    GifRedactionOptions? Redaction = null,
+    GifSizeBudgetOptions? SizeBudget = null)
 {
     public static GifEncodingOptions FromOptions(
         IReadOnlyDictionary<string, string> options,
@@ -36,7 +37,8 @@ public sealed record GifEncodingOptions(
             CaptureOptimization: new GifCaptureOptimizationOptions().WithOptions(options, context),
             PointerEvidence: GifPointerEvidenceOptions.FromOptions(options, context),
             Color: GifColorOptions.FromOptions(options, context),
-            Redaction: GifRedactionOptions.FromOptions(options, context));
+            Redaction: GifRedactionOptions.FromOptions(options, context),
+            SizeBudget: GifSizeBudgetOptions.FromOptions(options, context));
     }
 
     public GifEncodingOptions WithOptions(
@@ -58,7 +60,8 @@ public sealed record GifEncodingOptions(
             (CaptureOptimization ?? new()).WithOptions(options, context),
             (PointerEvidence ?? new()).WithOptions(options, context),
             (Color ?? new()).WithOptions(options, context),
-            Redaction);
+            Redaction,
+            GifSizeBudgetOptions.FromOptions(options, context, SizeBudget));
     }
 
     private GifAccessibilityOptions MergeAccessibility(IReadOnlyDictionary<string, string> options, string context)

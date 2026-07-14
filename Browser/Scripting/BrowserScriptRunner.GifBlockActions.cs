@@ -37,6 +37,7 @@ public sealed partial class BrowserScriptRunner
         var skipped = false;
         string? baseline = null;
         BrowserScriptAction? currentAction = null;
+        var blockSequence = 0;
         if (commandRecorder is null)
         {
             recorder.Start(remoteDebuggingUrl);
@@ -55,13 +56,20 @@ public sealed partial class BrowserScriptRunner
                 {
                     var prepared = PrepareActionForDispatch(child, context);
                     currentAction = prepared;
-                    recorder.BeforeAction(prepared, context: context.CurrentContext);
-                    var lines = ExecuteAction(remoteDebuggingUrl, automationClient, prepared, context, recorder);
-                    if (ShouldCaptureAfterAction(prepared))
+                    var sequence = ++blockSequence;
+                    recorder.BeforeAction(prepared, sequence, context.CurrentContext);
+                    try
                     {
-                        recorder.AfterAction(prepared, lines);
+                        var lines = ExecuteAction(remoteDebuggingUrl, automationClient, prepared, context, recorder);
+                        if (ShouldCaptureAfterAction(prepared)) recorder.AfterAction(prepared, lines);
+                        recorder.CompleteAction(sequence, success: true);
+                        output.AddRange(lines);
                     }
-                    output.AddRange(lines);
+                    catch (Exception exception)
+                    {
+                        recorder.CompleteAction(sequence, success: false, exception.Message);
+                        throw;
+                    }
                 }
             });
         }

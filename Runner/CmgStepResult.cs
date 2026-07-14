@@ -21,4 +21,7 @@ public sealed record CmgStepGifEvidence(
     int? EndFrameIndex,
     int StartTimeMilliseconds,
     int EndTimeMilliseconds,
-    int? FailureFrameIndex);
+    int? FailureFrameIndex,
+    int CapturedFrameCount = 0,
+    int CapturedDurationMilliseconds = 0,
+    long EstimatedRgbaBytes = 0);

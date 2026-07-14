@@ -10,10 +10,7 @@ public static partial class BrowserDomScripts
         (() => {
           const styleText = {{JsonString(CaptionStyleText(options))}};
           const promote = element => {
-            if (typeof element.showPopover === 'function') {
-              if (element.matches(':popover-open')) element.hidePopover();
-              element.showPopover();
-            }
+            if (typeof element.showPopover === 'function' && !element.matches(':popover-open')) element.showPopover();
           };
           let bar = document.getElementById('__cmg_message_bar');
           if (!bar) {
@@ -73,7 +70,7 @@ public static partial class BrowserDomScripts
         """;
 
     public static string PromoteMessageBar() =>
-        "(() => { const bar = document.getElementById('__cmg_message_bar'); if (!bar || typeof bar.showPopover !== 'function') return true; if (bar.matches(':popover-open')) bar.hidePopover(); bar.showPopover(); return true; })()";
+        "(() => { const bar = document.getElementById('__cmg_message_bar'); if (!bar || typeof bar.showPopover !== 'function' || bar.matches(':popover-open')) return true; bar.showPopover(); return true; })()";
 
     public static string SetMessageBarOpacity(double opacity) =>
         $"(() => {{ const bar=document.getElementById('__cmg_message_bar'); if(bar) bar.style.opacity='{Invariant(Math.Clamp(opacity, 0, 1))}'; return true; }})()";
@@ -92,10 +89,7 @@ public static partial class BrowserDomScripts
         (() => {
           const mode = {{JsonString(ModeFor(visual))}};
           const promote = element => {
-            if (typeof element.showPopover === 'function') {
-              if (element.matches(':popover-open')) element.hidePopover();
-              element.showPopover();
-            }
+            if (typeof element.showPopover === 'function' && !element.matches(':popover-open')) element.showPopover();
           };
           let cursor = document.getElementById('__cmg_virtual_cursor');
           if (!cursor) {
@@ -104,6 +98,9 @@ public static partial class BrowserDomScripts
             cursor.setAttribute('popover', 'manual');
             cursor.style.all = 'initial';
             cursor.style.position = 'fixed';
+            cursor.style.inset = 'auto';
+            cursor.style.right = 'auto';
+            cursor.style.bottom = 'auto';
             cursor.style.left = '0px';
             cursor.style.top = '0px';
             cursor.style.width = '26px';
@@ -128,7 +125,8 @@ public static partial class BrowserDomScripts
           cursor.style.left = '{{Invariant(point.X)}}px';
           cursor.style.top = '{{Invariant(point.Y)}}px';
           cursor.style.transform = '{{CursorTransform(visual, pressed)}}';
-          cursor.style.filter = '{{CursorFilter(visual, pressed)}}';
+          cursor.style.filter = 'none';
+          if (cursor.firstElementChild) cursor.firstElementChild.style.filter = '{{CursorFilter(visual, pressed)}}';
           {{PulseScript(point, pulseStyle)}}
           {{TrailScript(point, trail)}}
           {{BreadcrumbScript(point, breadcrumb)}}
@@ -163,6 +161,9 @@ public static partial class BrowserDomScripts
                 pulse.setAttribute('popover', 'manual');
                 pulse.style.all = 'initial';
                 pulse.style.position = 'fixed';
+                pulse.style.inset = 'auto';
+                pulse.style.right = 'auto';
+                pulse.style.bottom = 'auto';
                 pulse.style.margin = '0';
                 pulse.style.padding = '0';
                 pulse.style.border = '0';
@@ -200,7 +201,7 @@ public static partial class BrowserDomScripts
                 trail = document.createElement('div');
                 trail.id = '__cmg_cursor_trail';
                 trail.setAttribute('popover', 'manual');
-                trail.style.cssText = 'all:initial;position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483645;overflow:visible;';
+                trail.style.cssText = 'all:initial;position:fixed;inset:auto;right:auto;bottom:auto;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483645;overflow:visible;';
                 trail.innerHTML = '<svg width="100%" height="100%" style="position:fixed;left:0;top:0;overflow:visible" aria-hidden="true"><polyline id="__cmg_cursor_trail_line" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".48"/></svg>';
                 document.documentElement.appendChild(trail);
               }
@@ -219,7 +220,7 @@ public static partial class BrowserDomScripts
               const crumb = document.createElement('div');
               crumb.setAttribute('data-cmg-cursor-breadcrumb', 'true');
               crumb.setAttribute('popover', 'manual');
-              crumb.style.cssText = 'all:initial;position:fixed;left:{{Invariant(point.X)}}px;top:{{Invariant(point.Y)}}px;width:7px;height:7px;transform:translate(-50%,-50%);border-radius:999px;background:#2563eb;box-shadow:0 0 0 2px rgba(255,255,255,.85);pointer-events:none;z-index:2147483645;';
+              crumb.style.cssText = 'all:initial;position:fixed;inset:auto;right:auto;bottom:auto;left:{{Invariant(point.X)}}px;top:{{Invariant(point.Y)}}px;width:7px;height:7px;transform:translate(-50%,-50%);border-radius:999px;background:#2563eb;box-shadow:0 0 0 2px rgba(255,255,255,.85);pointer-events:none;z-index:2147483645;';
               document.documentElement.appendChild(crumb);
               promote(crumb);
               const crumbs = Array.from(document.querySelectorAll('[data-cmg-cursor-breadcrumb]'));

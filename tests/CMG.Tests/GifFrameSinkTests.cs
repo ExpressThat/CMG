@@ -16,7 +16,7 @@ public sealed partial class GifFrameSinkTests
     {
         var encoder = GifFrameSink.CreateEncoder();
 
-        Assert.Equal(GifColorTableMode.Global, encoder.ColorTableMode);
+        Assert.Equal(GifColorTableMode.Local, encoder.ColorTableMode);
         var quantizer = Assert.IsType<WuQuantizer>(encoder.Quantizer);
         Assert.Equal(256, quantizer.Options.MaxColors);
         Assert.Equal(ColorMatchingMode.Exact, quantizer.Options.ColorMatchingMode);

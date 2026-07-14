@@ -66,6 +66,7 @@ public sealed partial class BrowserControlCommandBuilder
             encodingOptions.DisableCoalescing, encodingOptions.SampleEvery,
             encodingOptions.PointerContrast, encodingOptions.PointerCallout, encodingOptions.PointerCalloutThreshold, encodingOptions.TargetZoom, encodingOptions.TargetZoomThreshold, encodingOptions.PagePosition, encodingOptions.TabContext, encodingOptions.DisableFocusPulse, encodingOptions.PointerIdle, encodingOptions.PointerIdleThreshold, encodingOptions.DisableTeleportMarker, encodingOptions.MouseDownHold,
             encodingOptions.Background, encodingOptions.GradientMode, encodingOptions.HighContrastPalette, encodingOptions.Redact, encodingOptions.Mask, encodingOptions.Blur, encodingOptions.AutoRedact, encodingOptions.RedactionSafety,
+            encodingOptions.SizeBudget, encodingOptions.DisableBudgetQualityFallback, encodingOptions.DisableBudgetDownscale,
             pointerDurationOption, pointerSpeedOption,
             pointerEasingOption, pointerPathOption, dragPathOption, pointerThemeOption, pointerColorOption, pointerSizeOption, pointerShadowOption,
             showPointerOption, reducedMotionOption, highContrastPointerOption, captionStyleOption, captionPositionOption, captionSeverityOption, captionSizeOption, autoCaptionsOption, captionTemplateOption,

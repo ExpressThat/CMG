@@ -47,7 +47,10 @@ internal static partial class RunConfigReader
             StringArrayOption(value, "mask"),
             StringArrayOption(value, "blur"),
             StringOption(value, "autoRedact"),
-            StringOption(value, "redactionSafety"));
+            StringOption(value, "redactionSafety"),
+            StringOption(value, "sizeBudget"),
+            BoolOption(value, "budgetQualityFallback"),
+            BoolOption(value, "budgetDownscaleFallback"));
     }
 
     private static double? DoubleOption(JsonElement root, string name) =>
@@ -71,6 +74,7 @@ internal static partial class RunConfigReader
         "crop", "cropPadding", "smartCrop", "splitTabs", "scale", "maxWidth", "maxHeight", "viewport", "pixelRatio", "safeArea", "layoutStability",
         "targetZoom", "targetZoomThreshold", "pagePosition", "tabContext",
         "captionStyle", "captionPosition", "captionSeverity", "captionSize", "autoCaptions", "captionTemplate",
-        "redact", "mask", "blur", "autoRedact", "redactionSafety"
+        "redact", "mask", "blur", "autoRedact", "redactionSafety",
+        "sizeBudget", "budgetQualityFallback", "budgetDownscaleFallback"
     };
 }

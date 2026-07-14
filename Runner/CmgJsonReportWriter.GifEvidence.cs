@@ -16,6 +16,9 @@ public static partial class CmgJsonReportWriter
             if (evidence.EndFrameIndex is int end) writer.WriteNumber("endFrameIndex", end); else writer.WriteNull("endFrameIndex");
             writer.WriteNumber("startTimeMilliseconds", evidence.StartTimeMilliseconds);
             writer.WriteNumber("endTimeMilliseconds", evidence.EndTimeMilliseconds);
+            writer.WriteNumber("capturedFrameCount", evidence.CapturedFrameCount);
+            writer.WriteNumber("capturedDurationMilliseconds", evidence.CapturedDurationMilliseconds);
+            writer.WriteNumber("estimatedRgbaBytes", evidence.EstimatedRgbaBytes);
             if (evidence.FailureFrameIndex is int failure) writer.WriteNumber("failureFrameIndex", failure); else writer.WriteNull("failureFrameIndex");
             writer.WriteEndObject();
         }

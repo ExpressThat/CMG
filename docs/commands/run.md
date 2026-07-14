@@ -32,7 +32,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 
 - `--gif <directory>` / `-gif <directory>`: Record GIFs for the entire execution of each test.
 - `--no-gif`: Privacy kill switch that disables command-level and nested script GIFs without skipping test actions. `CMG_DISABLE_GIF=1` is the environment equivalent and also accepts `true`, `yes`, or `on` case-insensitively.
-- `--gif-retention <always|onFailure|onRetry|off>`: Coarse whole-run retention default. `always` keeps every attempted command GIF, `onFailure` keeps attempts only when the final test result fails, `onRetry` keeps failed attempts, and `off` disables command-level capture while leaving explicit focused blocks active.
+- `--gif-retention <all|failed|none|onRetry|days:n>`: Coarse retention policy. `all` keeps every attempted command GIF, `failed` keeps attempts only when the final test fails, `onRetry` keeps failed attempts, and `none` disables command-level capture while leaving explicit focused blocks active. `days:n` keeps the current run and, before execution, deletes complete GIF artifact families older than `n` days from the selected `--gif` directory only. Existing `always`, `onFailure`, and `off` spellings remain accepted.
 - `--gif-on-failure`: Alias-style intent flag for `--gif-retention onFailure`. It cannot be combined with `--gif-retention` or `--gif-on-retry`.
 - `--gif-on-retry`: Alias-style intent flag for `--gif-retention onRetry`. It cannot be combined with `--gif-retention` or `--gif-on-failure`.
 - `--gif-sample-rate <n>`: Record the first selected test and every nth test after it. Must be at least `1`; defaults to `1`.
@@ -71,6 +71,9 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-result-outro`: Generate a final `Test passed`, `Test failed`, or `Test skipped` card for each test without an explicit outro.
 - `--gif-no-coalesce`: Keep consecutive pixel-identical frames instead of merging their delays. Coalescing is enabled by default.
 - `--gif-sample-every <1..100>`: Keep every Nth intermediate pointer/drag movement frame. Final targets and semantic evidence frames are never sampled.
+- `--gif-budget <size>`: Target a maximum encoded size using units such as `500KB` or `2MB`. CMG first tries the requested settings, then lower quality presets, then bounded downscales. If no candidate meets the budget, it retains the smallest candidate and reports `budgetMet=false`.
+- `--no-gif-budget-quality-fallback`: Preserve the requested quality while enforcing `--gif-budget`.
+- `--no-gif-budget-downscale`: Preserve captured dimensions while enforcing `--gif-budget`.
 - `--pointer-contrast <auto|fixed>`: Adapt an uncolored pointer to its page background. Defaults to `auto`.
 - `--pointer-callout <auto|always|none>` / `--pointer-callout-threshold <8..100>`: Configure target callouts. Auto mode defaults to targets smaller than `24px` in either dimension.
 - `--target-zoom <auto|always|none>` / `--target-zoom-threshold <8..100>`: Configure capture-only tiny-target zoom. Auto mode defaults to targets smaller than `24px` in either dimension.
@@ -165,7 +168,7 @@ BROWSER_IDLE_LEASE status=<scheduled|disabled> browser=<browser> port=<port> pid
 
 Failures may include action output before the failing test line. Declaration-skipped tests do not run actions or produce GIFs. Runtime `skip "reason"` stops the current test, preserves output and GIF frames captured before the skip, and records `TEST SKIP <name>`. `GIF_FRAMES` identifies each retained-frame directory and count; it is emitted only when recording and `--keep-frames` are both active. `GIF_DEBUG <path>` identifies a per-frame diagnostics sidecar created by `--gif-debug`. Encoder/debug flags without `--gif` do not capture frames or inject a virtual pointer. `GIF_WARN_SIZE` lines are emitted only when `--gif-warn-size` is set and a recorded GIF exists above the threshold; they do not change the run exit code. `GIF_WARN_PALETTE` lines are emitted automatically when a recorded GIF uses at least 240 decoded colors or exceeds the 256-color counting cap, which tells agents that the artifact may show color pressure or dithering. `GIF_MAX_SIZE` and `GIF_MAX_DURATION` lines are emitted when their matching guard is set and a recorded GIF exceeds the threshold; the test is marked failed and the run exits `1`. `RUN STOP maxFailures=<count>` means `--max-failures` stopped the run after the threshold was reached. `TEST LIST` lines are emitted by `--list` and show the selected schedule without browser execution. Stderr contains the final error when one is available.
 
-`GIF_CAPTURE_STATS` is emitted for every recorded test with source/retained frame counts, duplicate and sampled counts, blank-frame count, peak retained pixel bytes, and preprocessing milliseconds. `GIF_WARN_UNCHANGED` and `GIF_WARN_BLANK` are non-failing artifact-quality warnings. Timeline JSON stores the same values under `captureDiagnostics`.
+`GIF_CAPTURE_STATS` is emitted for every recorded test with source/retained frame counts, duplicate and sampled counts, blank-frame count, peak retained pixel bytes, preprocessing milliseconds, and requested/final budget decisions. `GIF_WARN_UNCHANGED` and `GIF_WARN_BLANK` are non-failing artifact-quality warnings. Timeline JSON stores the same values under `captureDiagnostics`; each timeline/report evidence step also records captured frame count, encoded duration, and estimated retained RGBA bytes. Age cleanup emits one `GIF_RETENTION_CLEANUP path="..." ageDays=<n> action=deleted` line per family.
 
 `GIF_RETENTION` reports artifacts removed while retry/failure policy is resolved. `GIF_CLEAN_PASSED` is emitted after report and trace generation. Both are stdout diagnostics and do not change the exit code. Reports receive the retained artifact metadata before `gifCleanPassed=true` cleanup occurs.
 
@@ -326,6 +329,11 @@ Example config:
   "gifRetention": "onFailure",
   "gifSampleRate": 1,
   "gifCleanPassed": false,
+  "gifSettings": {
+    "sizeBudget": "750KB",
+    "budgetQualityFallback": true,
+    "budgetDownscaleFallback": true
+  },
   "projects": [
     {
       "name": "chrome-smoke",

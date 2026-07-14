@@ -35,7 +35,10 @@ internal sealed record RunGifSettings(
     IReadOnlyList<string>? Mask = null,
     IReadOnlyList<string>? Blur = null,
     string? AutoRedact = null,
-    string? RedactionSafety = null)
+    string? RedactionSafety = null,
+    string? SizeBudget = null,
+    bool? BudgetQualityFallback = null,
+    bool? BudgetDownscaleFallback = null)
 {
     public static RunGifSettings Empty { get; } = new();
 
@@ -74,5 +77,8 @@ internal sealed record RunGifSettings(
         child.Mask ?? Mask,
         child.Blur ?? Blur,
         child.AutoRedact ?? AutoRedact,
-        child.RedactionSafety ?? RedactionSafety);
+        child.RedactionSafety ?? RedactionSafety,
+        child.SizeBudget ?? SizeBudget,
+        child.BudgetQualityFallback ?? BudgetQualityFallback,
+        child.BudgetDownscaleFallback ?? BudgetDownscaleFallback);
 }

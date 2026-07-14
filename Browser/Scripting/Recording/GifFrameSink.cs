@@ -50,9 +50,9 @@ public sealed partial class GifFrameSink : IDisposable
 
     public int FrameCount => frames.Count;
 
-    public int Width => frames.Count is 0 ? 0 : frames.Max(frame => frame.Width);
+    public int Width => EncodedWidth > 0 ? EncodedWidth : frames.Count is 0 ? 0 : frames.Max(frame => frame.Width);
 
-    public int Height => frames.Count is 0 ? 0 : frames.Max(frame => frame.Height);
+    public int Height => EncodedHeight > 0 ? EncodedHeight : frames.Count is 0 ? 0 : frames.Max(frame => frame.Height);
 
     public int DurationMilliseconds => FrameDelaysCentiseconds.Sum() * 10;
 
@@ -75,18 +75,7 @@ public sealed partial class GifFrameSink : IDisposable
             Directory.CreateDirectory(directory);
         }
 
-        var width = frames.Max(frame => frame.Width);
-        var height = frames.Max(frame => frame.Height);
-        using var gif = NormalizeFrame(frames[0], width, height);
-        gif.Metadata.GetGifMetadata().RepeatCount = 0;
-
-        for (var index = 1; index < frames.Count; index++)
-        {
-            using var normalized = NormalizeFrame(frames[index], width, height);
-            gif.Frames.AddFrame(normalized.Frames.RootFrame);
-        }
-
-        gif.SaveAsGif(fullPath, CreateEncoder(quality, encoding));
+        SaveWithBudget(fullPath);
     }
 
     internal static GifEncoder CreateEncoder(GifQuality quality = GifQuality.Highest, GifEncodingOptions? encoding = null)
@@ -153,7 +142,7 @@ public sealed partial class GifFrameSink : IDisposable
         GifPaletteMode.Local or GifPaletteMode.Adaptive => GifColorTableMode.Local,
         _ when color is { HighContrastPalette: true } or { GradientMode: GifGradientMode.Smooth } => GifColorTableMode.Local,
         _ when color is { GradientMode: GifGradientMode.Text } => GifColorTableMode.Global,
-        _ => quality is GifQuality.Low or GifQuality.Archival ? GifColorTableMode.Local : GifColorTableMode.Global
+        _ => GifColorTableMode.Local
     };
 
     private void RetainSourceFrame(byte[] pngBytes, int index)

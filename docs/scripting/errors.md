@@ -823,7 +823,7 @@ Invalid runner GIF declarations fail the affected test before browser actions ru
 
 Retention declarations fail before test actions when `gif=` is not `always`, `onFailure`, `onRetry`, or `off`; `gifSampleRate=` is below `1` or not an integer; or `gifCleanPassed=` is not boolean. Artifact deletion failures are reported as runner failures rather than silently claiming cleanup succeeded.
 
-CLI retention setup fails before browser connection when `--gif-sample-rate` is below `1`, a retention mode is unknown, or more than one of `--gif-retention`, `--gif-on-failure`, and `--gif-on-retry` is supplied. Run-config type errors name the exact `gifRetention`, `gifSampleRate`, or `gifCleanPassed` property.
+CLI retention setup fails before browser connection when `--gif-sample-rate` is below `1`, a retention mode is unknown, `days:n` is not positive, or more than one of `--gif-retention`, `--gif-on-failure`, and `--gif-on-retry` is supplied. Run-config type errors name the exact `gifRetention`, `gifSampleRate`, or `gifCleanPassed` property. Invalid `sizeBudget` / `--gif-budget` values identify the option and require a positive byte size such as `500KB` or `2MB`.
 
 Run-config `gifSettings` rejects unknown keys, incorrect JSON types, and invalid recording values before browser connection or `--list` output. Root settings are validated even when no project is selected; selected project settings overlay root values before validation and CLI precedence is applied per property.
 
