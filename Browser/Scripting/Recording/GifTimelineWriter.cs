@@ -228,6 +228,7 @@ public static partial class GifTimelineWriter
         writer.WriteStartObject();
         if (framing.CropSelector is null) writer.WriteNull("crop"); else writer.WriteString("crop", framing.CropSelector);
         if (framing.SmartCropWidth is int smartWidth) writer.WriteString("smartCrop", $"{smartWidth}x{framing.SmartCropHeight}"); else writer.WriteNull("smartCrop");
+        writer.WriteString("splitTabs", framing.SplitTabs.ToString().ToLowerInvariant());
         writer.WriteNumber("cropPadding", framing.CropPadding);
         writer.WriteNumber("safeArea", framing.SafeArea);
         writer.WriteNumber("layoutStabilityMilliseconds", framing.LayoutStabilityMilliseconds);

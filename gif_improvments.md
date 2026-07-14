@@ -245,7 +245,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `crop="<selector-or-rich-locator>"` resolves live for every frame. CLI: `--gif-crop <selector>`.
 - Implemented: `gif "name" crop="#panel" { ... }` block support, with `cropPadding=` / `--gif-crop-padding` for context.
 - Implemented: `smartCrop=<true|widthxheight>` keeps a stable-size crop centered between the virtual pointer and active element; `true` uses 640x480. CLI: `--gif-smart-crop`.
-- Add split-screen recording for multi-tab or popup flows.
+- Implemented: `splitTabs=<auto|always|none>` composes labeled tab screenshots, restores the selected tab after capture, preserves active-tab pointer truth, applies redaction to every tile, and offers a stable reserved popup tile in `always` mode. CLI: `--gif-split-tabs`; config: `splitTabs`; runner declaration: `gifSplitTabs`.
 - Implemented for same-origin frames: pointer-aware frame actions expose top-page coordinates, and `smartCrop=` follows them while retaining visible parent-page context. Cross-origin diagnostics remain tracked below.
 - Implemented: active recorders center pointer-targeted elements before coordinate resolution; non-recorded scripts are unchanged.
 - Implemented: inherited `safeArea=` and `--gif-safe-area` keep pointer targets clear of viewport edges/detected sticky blockers and expand tight crops; the evidence-oriented default is 24 CSS pixels and `0` disables it.

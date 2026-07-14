@@ -834,6 +834,8 @@ Run-config `gifSettings` rejects unknown keys, incorrect JSON types, and invalid
 
 `smartCrop` accepts `true`, `false`, `auto`, `none`, or `<width>x<height>` dimensions from `100` to `10000`. It cannot be combined with selector `crop=` because those modes have different framing contracts.
 
+`splitTabs` accepts `auto`, `always`, `none`, and boolean-style aliases. It cannot be combined with `crop=` or `smartCrop=`. Invalid values fail before recording with `option splitTabs= must be one of: auto, always, none.` A per-tab capture, preparation, redaction-safety, or cleanup failure identifies the browser operation and fails the recording instead of emitting unredacted evidence.
+
 `pointerPath` and `dragPath` accept `auto`, `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`. Invalid values fail before browser connection for CLI/config settings and at the responsible DSL line for scoped/action settings.
 
 Automatic-caption templates reject unknown placeholders before browser connection for whole-run CLI/config defaults and at the responsible DSL action for scoped overrides. Supported placeholders are `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}`.

@@ -36,6 +36,10 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
     public Queue<string> EvaluateResponses { get; } = new();
     public Queue<ElementBox> ElementBoxes { get; } = new();
     public Queue<byte[]> PageScreenshotResponses { get; } = new();
+    public Queue<IReadOnlyList<byte[]>> TabScreenshotResponses { get; } = new();
+    public int TabScreenshotCount { get; private set; }
+    public IReadOnlyList<string> LastTabPreparationScripts { get; private set; } = [];
+    public IReadOnlyList<string> LastTabCleanupScripts { get; private set; } = [];
     public Queue<IReadOnlyList<ChromePageTab>> TabResponses { get; } = new();
     public string LastOpenedTab { get; private set; } = string.Empty;
     public List<BrowserContextInfo> BrowserContexts { get; } = [];
@@ -182,6 +186,13 @@ internal sealed class FakeAutomationClient : IBrowserAutomationClient
         using var stream = new MemoryStream();
         image.SaveAsPng(stream);
         return stream.ToArray();
+    }
+    public IReadOnlyList<byte[]> GetTabScreenshots(string remoteDebuggingUrl, IReadOnlyList<string>? preparationScripts = null, IReadOnlyList<string>? cleanupScripts = null)
+    {
+        TabScreenshotCount++;
+        LastTabPreparationScripts = preparationScripts ?? [];
+        LastTabCleanupScripts = cleanupScripts ?? [];
+        return TabScreenshotResponses.Count > 0 ? TabScreenshotResponses.Dequeue() : [GetPageScreenshot(remoteDebuggingUrl)];
     }
     public byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options)
     {

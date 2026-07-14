@@ -12,7 +12,8 @@ public sealed record GifFramingOptions(
     int SafeArea = 24,
     int LayoutStabilityMilliseconds = 150,
     int? SmartCropWidth = null,
-    int? SmartCropHeight = null)
+    int? SmartCropHeight = null,
+    PointerTargetCalloutMode SplitTabs = PointerTargetCalloutMode.None)
 {
     public static GifFramingOptions FromOptions(IReadOnlyDictionary<string, string> options, string context)
     {
@@ -26,12 +27,15 @@ public sealed record GifFramingOptions(
         var safeArea = ParseInt(options.GetValueOrDefault("safeArea"), 24, 0, 500, context, "safeArea");
         var stability = ParseInt(options.GetValueOrDefault("layoutStability"), 150, 0, 5000, context, "layoutStability");
         var (smartWidth, smartHeight) = ParseSmartCrop(options.GetValueOrDefault("smartCrop"), context);
+        var splitTabs = ParseSplitTabs(options.GetValueOrDefault("splitTabs"), context);
         if (crop is null && options.ContainsKey("cropPadding"))
             throw new ScriptExecutionException($"{context} option cropPadding= requires crop=.");
         if (!string.IsNullOrWhiteSpace(crop) && smartWidth is not null)
             throw new ScriptExecutionException($"{context} options crop= and smartCrop= cannot be combined.");
+        if ((!string.IsNullOrWhiteSpace(crop) || smartWidth is not null) && splitTabs is not PointerTargetCalloutMode.None)
+            throw new ScriptExecutionException($"{context} option splitTabs= cannot be combined with crop= or smartCrop=.");
         return new(string.IsNullOrWhiteSpace(crop) ? null : crop, padding, scale, maxWidth, maxHeight,
-            viewportWidth, viewportHeight, pixelRatio, safeArea, stability, smartWidth, smartHeight);
+            viewportWidth, viewportHeight, pixelRatio, safeArea, stability, smartWidth, smartHeight, splitTabs);
     }
 
     public GifFramingOptions WithOptions(IReadOnlyDictionary<string, string> options, string context)
@@ -42,8 +46,9 @@ public sealed record GifFramingOptions(
         var parsed = FromOptions(parseOptions, context);
         var switchesToSmart = options.ContainsKey("smartCrop") && parsed.SmartCropWidth is not null;
         var switchesToSelector = options.ContainsKey("crop") && parsed.CropSelector is not null;
+        var switchesToSplit = options.ContainsKey("splitTabs") && parsed.SplitTabs is not PointerTargetCalloutMode.None;
         return new(
-            switchesToSmart ? null : options.ContainsKey("crop") ? parsed.CropSelector : CropSelector,
+            switchesToSmart || switchesToSplit ? null : options.ContainsKey("crop") ? parsed.CropSelector : CropSelector,
             options.ContainsKey("cropPadding") ? parsed.CropPadding : CropPadding,
             options.ContainsKey("scale") ? parsed.Scale : Scale,
             options.ContainsKey("maxWidth") ? parsed.MaxWidth : MaxWidth,
@@ -53,8 +58,9 @@ public sealed record GifFramingOptions(
             options.ContainsKey("pixelRatio") ? parsed.PixelRatio : PixelRatio,
             options.ContainsKey("safeArea") ? parsed.SafeArea : SafeArea,
             options.ContainsKey("layoutStability") ? parsed.LayoutStabilityMilliseconds : LayoutStabilityMilliseconds,
-            switchesToSelector ? null : options.ContainsKey("smartCrop") ? parsed.SmartCropWidth : SmartCropWidth,
-            switchesToSelector ? null : options.ContainsKey("smartCrop") ? parsed.SmartCropHeight : SmartCropHeight);
+            switchesToSelector || switchesToSplit ? null : options.ContainsKey("smartCrop") ? parsed.SmartCropWidth : SmartCropWidth,
+            switchesToSelector || switchesToSplit ? null : options.ContainsKey("smartCrop") ? parsed.SmartCropHeight : SmartCropHeight,
+            switchesToSelector || switchesToSmart ? PointerTargetCalloutMode.None : options.ContainsKey("splitTabs") ? parsed.SplitTabs : SplitTabs);
     }
 
     public static bool TryParse(
@@ -68,6 +74,7 @@ public sealed record GifFramingOptions(
         int? safeArea,
         int? layoutStability,
         string? smartCrop,
+        string? splitTabs,
         out GifFramingOptions framing,
         out string? error)
     {
@@ -82,6 +89,7 @@ public sealed record GifFramingOptions(
         Add(options, "safeArea", safeArea);
         Add(options, "layoutStability", layoutStability);
         Add(options, "smartCrop", smartCrop);
+        Add(options, "splitTabs", splitTabs);
         try { framing = FromOptions(options, "GIF"); error = null; return true; }
         catch (ScriptExecutionException exception) { framing = new(); error = exception.Message; return false; }
     }
@@ -121,6 +129,14 @@ public sealed record GifFramingOptions(
             width is >= 100 and <= 10000 && height is >= 100 and <= 10000) return (width, height);
         throw new ScriptExecutionException($"{context} option smartCrop= must be true, false, or <width>x<height> with dimensions from 100 to 10000.");
     }
+
+    private static PointerTargetCalloutMode ParseSplitTabs(string? value, string context) => value?.Trim().ToLowerInvariant() switch
+    {
+        null or "false" or "none" or "off" => PointerTargetCalloutMode.None,
+        "true" or "always" or "on" => PointerTargetCalloutMode.Always,
+        "auto" => PointerTargetCalloutMode.Auto,
+        _ => throw new ScriptExecutionException($"{context} option splitTabs= must be one of: auto, always, none.")
+    };
 
     private static int ParseInt(string? value, int fallback, int min, int max, string context, string name) =>
         value is null ? fallback : int.TryParse(value, out var parsed) && parsed >= min && parsed <= max

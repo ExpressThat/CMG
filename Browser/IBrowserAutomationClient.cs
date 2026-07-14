@@ -73,6 +73,11 @@ public interface IBrowserAutomationClient
 
     byte[] GetPageScreenshot(string remoteDebuggingUrl, bool promoteMessageBar = true, bool fullPage = false, ScreenshotOptions? options = null);
 
+    IReadOnlyList<byte[]> GetTabScreenshots(
+        string remoteDebuggingUrl,
+        IReadOnlyList<string>? preparationScripts = null,
+        IReadOnlyList<string>? cleanupScripts = null);
+
     byte[] PrintPdf(string remoteDebuggingUrl, PdfPrintOptions options);
 
     ElementBox GetElementBox(string remoteDebuggingUrl, string selector);

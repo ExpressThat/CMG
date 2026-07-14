@@ -24,6 +24,9 @@ public sealed partial class FirefoxBiDiClient
             if (TryReadString(response, ["result", "url"], out var url) &&
                 !string.IsNullOrWhiteSpace(url))
             {
+                var contexts = await session.GetTopLevelContexts();
+                var selected = contexts.First(candidate => candidate.Id == context.Id);
+                SetFirefoxActiveContext(remoteDebuggingUrl, selected, contexts);
                 return url;
             }
 

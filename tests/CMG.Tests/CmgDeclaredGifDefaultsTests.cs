@@ -72,12 +72,23 @@ public sealed class CmgDeclaredGifDefaultsTests
         Assert.Equal((500, 320), (result.GifEncoding?.Framing?.SmartCropWidth, result.GifEncoding?.Framing?.SmartCropHeight));
     }
 
+    [Fact]
+    public void Apply_MapsSplitTabsDeclaration()
+    {
+        var success = CmgVisualSegmentExecutor.TryApplyDeclaredGifDefaults(
+            Test(new Dictionary<string, string> { ["gifSplitTabs"] = "always" }), Options(), out var result, out var error);
+
+        Assert.True(success, error);
+        Assert.Equal(PointerTargetCalloutMode.Always, result.GifEncoding?.Framing?.SplitTabs);
+    }
+
     [Theory]
     [InlineData("gifQuality", "ultra", "gifQuality=")]
     [InlineData("gifFps", "0", "fps=")]
     [InlineData("gifScale", "2", "scale=")]
     [InlineData("gifPointerPath", "wobble", "pointerPath=")]
     [InlineData("gifTargetZoom", "near", "targetZoom=")]
+    [InlineData("gifSplitTabs", "sideways", "splitTabs=")]
     public void Apply_RejectsInvalidDeclaration(string name, string value, string expected)
     {
         var success = CmgVisualSegmentExecutor.TryApplyDeclaredGifDefaults(

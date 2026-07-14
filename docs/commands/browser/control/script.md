@@ -61,6 +61,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-crop <selector-or-rich-locator>`: Clip each command-level GIF frame to current target bounds.
 - `--gif-crop-padding <0..2000>`: Add CSS-pixel context around `--gif-crop`; requires `--gif-crop`.
 - `--gif-smart-crop <true|false|widthxheight>`: Use a stable-size crop that follows the virtual pointer and active element. `true` uses `640x480`; cannot be combined with `--gif-crop`.
+- `--gif-split-tabs <auto|always|none>`: Compose labeled screenshots of every tab. `always` reserves two tiles for stable popup recordings; `auto` expands when another tab exists. Cannot be combined with `--gif-crop` or `--gif-smart-crop`.
 - `--gif-safe-area <0..500>`: Minimum CSS-pixel margin around pointer targets and tight crops. Defaults to `24`; use `0` to disable.
 - `--gif-layout-stability <0..5000>`: Maximum target-settling window in milliseconds. CMG waits for two stable animation frames after scrolling and sticky-overlay correction. Defaults to `150`; use `0` to disable.
 - `--gif-scale <0.05..1>`: Downscale the captured frame before quantization.

@@ -2014,6 +2014,7 @@ Encoder options:
 - `pagePosition=<auto|always|none>` controls the long-page viewport rail; default `auto` activates above 1.5 viewports.
 - `tabContext=<auto|always|none>` controls a capture-only active-title/tab-count badge; default `auto` activates with multiple tabs.
 - `smartCrop=<true|false|widthxheight>` follows the pointer and active target using stable frame dimensions; `true` means `640x480` and cannot be combined with `crop=`.
+- `splitTabs=<auto|always|none>` composes labeled screenshots of every open tab. `always` reserves two tiles for stable popup evidence; `auto` expands only after another tab exists. It cannot be combined with `crop=` or `smartCrop=`. Redactions apply independently to every tab, while pointer events and overlays remain limited to the active tab.
 - `scale=<0.05..1>` downscales the cropped or viewport frame before GIF quantization.
 - `maxWidth=<1..10000>` and `maxHeight=<1..10000>` add output dimension caps while preserving aspect ratio.
 - `viewport=<width>x<height>` temporarily sets recording viewport dimensions and restores the prior viewport afterward.

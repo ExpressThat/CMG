@@ -101,6 +101,17 @@ public sealed class RunCommandBuilderGifConfigTests
     }
 
     [Fact]
+    public void RunCommand_AcceptsSplitTabsConfig()
+    {
+        using var directory = new TempDirectory();
+        var config = directory.Write("""{ "gifSettings": { "splitTabs": "auto" } }""");
+        var service = new CapturingRunService();
+
+        Assert.Equal(0, BuildRoot(service).Parse($"run flows --config \"{config}\"").Invoke());
+        Assert.Equal(CMG.Browser.Scripting.Recording.PointerTargetCalloutMode.Auto, service.Options?.GifEncoding?.Framing?.SplitTabs);
+    }
+
+    [Fact]
     public void RunCommand_RejectsUnknownGifSettingBeforeServiceCall()
     {
         using var directory = new TempDirectory();

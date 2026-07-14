@@ -92,6 +92,7 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `targetZoomThreshold=<8..100>`: Tiny-target zoom threshold in CSS pixels. Defaults to `24`.
 - `pagePosition=<auto|always|none>`: Show a compact viewport-position rail. `auto` is the default and activates when page height exceeds 1.5 viewports.
 - `tabContext=<auto|always|none>`: Show the active page title and tab count. `auto` is the default and activates when more than one tab exists.
+- `splitTabs=<auto|always|none>`: Capture every open tab in a labeled two-column evidence grid. `always` reserves two tiles before a popup opens so frame dimensions stay stable; `auto` uses a normal single-tab frame until another tab exists. Split view cannot be combined with `crop=` or `smartCrop=`.
 - `focusPulse=<true|false>`: Pulse the actual focused control after focus-producing pointer or keyboard actions. Defaults to `true`.
 - `pointerIdle=<pulse|none>` / `pointerIdleThreshold=<100..60000>`: Show three readable pointer-halo stages during long holds. Defaults to `pulse` after `1200ms`; encoded hold duration is preserved.
 - `teleportMarker=<true|false>`: Show the origin and dashed travel path for `pointerSpeed=instant` or zero-duration moves. Defaults to `true`.
@@ -157,7 +158,7 @@ Use `pointerStyle` for a visual-only mid-flow pointer change, `annotateTarget` /
 
 Use `gifIfChanged` / `gif.ifChanged` to keep an artifact only when the final page differs from the block baseline, and `gifOnFailure` / `gif.onFailure` to retain only failed-block evidence. Both still buffer pointer-accurate frames while running. `gifSnapshot` / `gif.snapshot` adds a named still hold to any active recorder and skips without one. See demos 208 and 209.
 
-Structured runner tests and suites can override whole-test GIF defaults with `gifQuality`, `gifPointerDuration`, `gifPointerSpeed`, `gifPointerEasing`, `gifPointerPath`, `gifDragPath`, `gifFps`, `gifFrameDelay`, framing declarations, `gifTargetZoom`, `gifTargetZoomThreshold`, `gifPagePosition`, and `gifTabContext`. Suite defaults cascade; test values replace only the named properties. See demos 210, 211, 228, 230, and 234.
+Structured runner tests and suites can override whole-test GIF defaults with `gifQuality`, `gifPointerDuration`, `gifPointerSpeed`, `gifPointerEasing`, `gifPointerPath`, `gifDragPath`, `gifFps`, `gifFrameDelay`, framing declarations, `gifTargetZoom`, `gifTargetZoomThreshold`, `gifPagePosition`, `gifTabContext`, and `gifSplitTabs`. Suite defaults cascade; test values replace only the named properties. See demos 210, 211, 228, 230, 234, and 236.
 
 Runner declarations can keep only useful command-level evidence: `gif=onFailure` retains all attempts only when the final result fails, `gif=onRetry` retains failed attempts, `gif=off` disables command capture, and `gif=always` is the default. `gifSampleRate=<n>` records the first selected test and every nth test after it. `gifCleanPassed=true` lets reports and traces consume a passing artifact before its files are removed. Run these policies with `cmg run <file> -gif <directory>`; they do not disable focused recording blocks in the test body. See demo 212.
 
@@ -197,10 +198,13 @@ Supported recording-scope and `setRecording` defaults:
 - `viewport=<width>x<height>`: Temporarily set the browser viewport for this recording and restore it afterward.
 - `pixelRatio=<1..4>`: Set the recording device pixel ratio for controlled high-DPI capture.
 - `smartCrop=<true|false|widthxheight>`: Follow the virtual pointer and active element with a stable-size crop. `true` uses `640x480`; explicit dimensions range from `100` to `10000`. It cannot be combined with `crop=`.
+- `splitTabs=<auto|always|none>`: Compose all open tabs while preserving the selected tab. The active tab is the first yellow-labeled tile and is the only tile that receives the virtual pointer, captions, and browser actions; other tiles are passive evidence. Chromium may briefly render each background tab in front for its screenshot, then CMG restores the selected tab before continuing. Every tab receives the same capture-only redaction rules before its screenshot and is cleaned afterward. Use `always` for popup flows with a stable two-tile canvas or `auto` when compact single-tab frames matter more. It cannot be combined with `crop=` or `smartCrop=`.
 
 Recording viewport controls are inert without an active GIF. While recording, CMG scrolls pointer-targeted elements to the viewport center before resolving pointer coordinates, which avoids offscreen/sticky-header targeting failures. Whole-run equivalents are `--gif-viewport` and `--gif-pixel-ratio`.
 
 Smart crop uses top-page pointer coordinates for same-origin `frame` actions, so the recorded frame includes the iframe target and surrounding parent-page context. It does not bypass cross-origin frame restrictions. See demos 231 and 232.
+
+Split view captures Chrome, Edge, and Firefox tabs directly and restores the selected tab before the next action. A six-pixel gutter separates tiles, additional tabs add rows, and each tile includes its tab position and document title. Whole-run equivalents are `--gif-split-tabs`; run-config uses `splitTabs`; runner declarations use `gifSplitTabs`. See demos 235 and 236.
 - `pointerDuration=<milliseconds>`: Movement duration between pointer targets.
 - `pointerSpeed=<slow|normal|fast|instant|multiplier>`: Preset or multiplier such as `1.5x`.
 - `pointerEasing=<linear|ease-in|ease-out|ease-in-out|spring>`: Movement curve.

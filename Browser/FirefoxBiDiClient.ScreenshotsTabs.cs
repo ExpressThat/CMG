@@ -84,44 +84,11 @@ public sealed partial class FirefoxBiDiClient
             return tabs;
         });
 
-    public void OpenTab(string remoteDebuggingUrl, string target) =>
-        Run(async () =>
-        {
-            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var created = await session.SendCommand("browsingContext.create", writer => writer.WriteString("type", "tab"));
-            var contextId = ReadRequired(created, ["result", "context"]);
-            await session.SendCommand("browsingContext.navigate", writer =>
-            {
-                writer.WriteString("context", contextId);
-                writer.WriteString("url", target);
-                writer.WriteString("wait", "complete");
-            });
-            return true;
-        });
-
-    public void ActivateTab(string remoteDebuggingUrl, int index) =>
-        Run(async () =>
-        {
-            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetContextAt(remoteDebuggingUrl, index);
-            await session.SendCommand("browsingContext.activate", writer => writer.WriteString("context", context.Id));
-            return true;
-        });
-
-    public void CloseTab(string remoteDebuggingUrl, int index) =>
-        Run(async () =>
-        {
-            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
-            var context = await session.GetContextAt(remoteDebuggingUrl, index);
-            await session.SendCommand("browsingContext.close", writer => writer.WriteString("context", context.Id));
-            return true;
-        });
-
     public IReadOnlyList<BrowserContextInfo> ListBrowserContexts(string remoteDebuggingUrl)
     {
         var contexts = SnapshotFirefoxContexts(remoteDebuggingUrl);
-        var active = FirefoxActiveContexts.GetValueOrDefault(Key(remoteDebuggingUrl));
-        return contexts.Select(context => context with { Active = context.TargetId == active }).ToArray();
+        _ = TryGetFirefoxSelection(remoteDebuggingUrl, out var active);
+        return contexts.Select(context => context with { Active = context.Url == active?.Url }).ToArray();
     }
 
     public BrowserContextInfo NewBrowserContext(string remoteDebuggingUrl, string initialUrl) =>
@@ -145,7 +112,9 @@ public sealed partial class FirefoxBiDiClient
                 });
             }
 
-            SetFirefoxActiveContext(remoteDebuggingUrl, contextId);
+            var contexts = await session.GetTopLevelContexts();
+            var selected = contexts.First(context => context.Id == contextId);
+            SetFirefoxActiveContext(remoteDebuggingUrl, selected, contexts);
             var info = new BrowserContextInfo(userContext, contextId, initialUrl, Active: true);
             StoreFirefoxContext(remoteDebuggingUrl, info);
             return info;
@@ -155,7 +124,15 @@ public sealed partial class FirefoxBiDiClient
     {
         var context = FindFirefoxContext(remoteDebuggingUrl, id) ??
             throw new ChromeDevToolsException($"Browser context '{id}' was not found.");
-        SetFirefoxActiveContext(remoteDebuggingUrl, context.TargetId);
+        Run(async () =>
+        {
+            await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            var contexts = await session.GetTopLevelContexts();
+            var selected = contexts.FirstOrDefault(candidate => candidate.Url == context.Url) ??
+                throw new ChromeDevToolsException($"Browser context '{id}' has no active tab.");
+            SetFirefoxActiveContext(remoteDebuggingUrl, selected, contexts);
+            return true;
+        });
     }
 
     public void CloseBrowserContext(string remoteDebuggingUrl, string id)
@@ -165,9 +142,11 @@ public sealed partial class FirefoxBiDiClient
         Run(async () =>
         {
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
+            var contexts = await session.GetTopLevelContexts();
+            var selected = contexts.FirstOrDefault(candidate => candidate.Url == context.Url);
             await session.SendCommand("browser.removeUserContext", writer => writer.WriteString("userContext", context.Id));
             RemoveFirefoxContext(remoteDebuggingUrl, context.Id);
-            ClearFirefoxActiveContext(remoteDebuggingUrl, context.TargetId);
+            if (selected is not null) RemoveFirefoxTabSelection(remoteDebuggingUrl, selected, contexts);
             return true;
         });
     }
@@ -236,5 +215,4 @@ public sealed partial class FirefoxBiDiClient
         _ = TryReadString(realm, "origin", out var origin);
         return new BrowserWorkerInfo(id, type, type, origin ?? string.Empty);
     }
-
 }

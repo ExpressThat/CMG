@@ -800,6 +800,18 @@ gif "popup review" tabContext=auto {
 
 The badge is capture-only and combines the current page title with the tab count. Whole runs use `--tab-context`; runner suites/tests use `gifTabContext`. See demos 233 and 234.
 
+## Stable Multi-Tab Evidence
+
+```text
+gif "popup approval" splitTabs=always autoRedact=passwords {
+  openTab "data:text/html,<title>Review</title><button id='approve'>Approve</button>"
+  waitForTab count=2
+  click "#approve"
+}
+```
+
+`splitTabs=always` reserves a second tile before the popup exists, then captures every tab and restores the selected tab before the next action. Chromium may briefly bring a background tab forward so it can render a screenshot. The active tile keeps CMG's pointer-accurate interaction evidence; all tiles receive capture-only privacy masks and labels. Use `auto` for an initially compact frame that expands when a second tab appears. Whole runs use `--gif-split-tabs`; config uses `splitTabs`; runner suites/tests use `gifSplitTabs`. See demos 235 and 236.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

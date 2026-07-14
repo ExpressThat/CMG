@@ -386,6 +386,8 @@ dotnet run -- --firefox browser close
 - `232-gif-smart-crop-iframe-runner.cmgscript`: Runner declaration form of smart crop across iframe actions.
 - `233-gif-tab-context.cmgscript`: Automatic active-tab title evidence after opening a second tab.
 - `234-gif-tab-context-runner.cmgscript`: Runner declaration form of active-tab recording evidence.
+- `235-gif-split-tabs.cmgscript`: Stable two-tile popup evidence with active-tab pointer truth and password redaction on every tab.
+- `236-gif-split-tabs-runner.cmgscript`: Runner declaration form of privacy-safe split-tab evidence.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

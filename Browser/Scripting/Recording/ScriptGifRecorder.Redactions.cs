@@ -1,3 +1,5 @@
+using CMG.Runner;
+
 namespace CMG.Browser.Scripting.Recording;
 
 public sealed partial class ScriptGifRecorder
@@ -104,6 +106,22 @@ public sealed partial class ScriptGifRecorder
         catch (ChromeDevToolsException)
         {
         }
+    }
+
+    private IReadOnlyList<string> SplitTabRedactionScripts()
+    {
+        var scripts = new List<string> { BrowserDomScripts.PrepareGifRedactions() };
+        foreach (var rule in redactions.Concat(actionRedactions))
+        {
+            scripts.AddRange(CmgLocator.PrefixExpressions(rule.Locator, 0));
+            var selector = CmgLocator.Resolve(rule.Locator, 0).Selector;
+            scripts.Add(BrowserDomScripts.AddGifRedaction(selector, rule.Id,
+                rule.Style.ToString().ToLowerInvariant(), rule.Color, rule.Replacement, rule.Padding));
+        }
+        if (activeAutoRedaction is not GifAutoRedactionMode.None)
+            scripts.Add(BrowserDomScripts.AddAutomaticGifRedactions(activeAutoRedaction.ToString().ToLowerInvariant()));
+        if (activeStrictRedaction) scripts.Add(BrowserDomScripts.EnforceGifRedactionSafety());
+        return scripts;
     }
 
     private void AuditRedaction(string operation, GifRedactionRule rule) =>

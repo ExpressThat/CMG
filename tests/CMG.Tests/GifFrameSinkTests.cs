@@ -207,7 +207,7 @@ public sealed partial class GifFrameSinkTests
         Assert.False(color.GetProperty("highContrastPalette").GetBoolean());
         Assert.Equal(0, root.GetProperty("captureDiagnostics").GetProperty("colorProfileChangeCount").GetInt32());
         var framing = root.GetProperty("framing");
-        Assert.Equal("#panel", framing.GetProperty("crop").GetString());
+        Assert.Equal(("#panel", "none"), (framing.GetProperty("crop").GetString(), framing.GetProperty("splitTabs").GetString()));
         Assert.Equal(12, framing.GetProperty("cropPadding").GetInt32());
         Assert.Equal(0.5, framing.GetProperty("scale").GetDouble());
         Assert.Equal(640, framing.GetProperty("maxWidth").GetInt32());

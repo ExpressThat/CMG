@@ -11,6 +11,7 @@ internal sealed record GifEncodingCliOptions(
     Option<string?> Crop,
     Option<int?> CropPadding,
     Option<string?> SmartCrop,
+    Option<string?> SplitTabs,
     Option<double?> Scale,
     Option<int?> MaxWidth,
     Option<int?> MaxHeight,
@@ -59,6 +60,7 @@ internal sealed record GifEncodingCliOptions(
             new Option<string?>("--gif-crop") { Description = "Crop GIF frames to this selector or rich locator." },
             new Option<int?>("--gif-crop-padding") { Description = "Padding around --gif-crop in CSS pixels, from 0 to 2000." },
             new Option<string?>("--gif-smart-crop") { Description = "Follow the pointer and active target using true or a fixed <width>x<height> crop." },
+            new Option<string?>("--gif-split-tabs") { Description = "Multi-tab split view: auto, always, or none." },
             new Option<double?>("--gif-scale") { Description = "Output scale from 0.05 to 1." },
             new Option<int?>("--gif-max-width") { Description = "Maximum GIF width from 1 to 10000 pixels." },
             new Option<int?>("--gif-max-height") { Description = "Maximum GIF height from 1 to 10000 pixels." },
@@ -112,6 +114,7 @@ internal sealed record GifEncodingCliOptions(
             Value(result, MaxWidth, settings?.MaxWidth), Value(result, MaxHeight, settings?.MaxHeight), Value(result, Viewport, settings?.Viewport), Value(result, PixelRatio, settings?.PixelRatio),
             Value(result, SafeArea, settings?.SafeArea), Value(result, LayoutStability, settings?.LayoutStability),
             Value(result, SmartCrop, settings?.SmartCrop),
+            Value(result, SplitTabs, settings?.SplitTabs),
             out var framing, out error)) return false;
         if (!GifTitleCardOptions.TryParse(
             result.GetValue(Intro), result.GetValue(Outro), result.GetValue(IntroDuration), result.GetValue(OutroDuration),

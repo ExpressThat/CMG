@@ -1,5 +1,6 @@
 using CMG.Browser;
 using CMG.Browser.Scripting;
+using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Tests;
 
@@ -115,6 +116,8 @@ public sealed class BrowserScriptRunnerGifFramingTests
     [InlineData("layoutStability=5001", "layoutStability=")]
     [InlineData("smartCrop=wide", "smartCrop=")]
     [InlineData("crop=#panel smartCrop=400x300", "cannot be combined")]
+    [InlineData("splitTabs=sideways", "splitTabs=")]
+    [InlineData("crop=#panel splitTabs=always", "cannot be combined")]
     public void GifBlock_RejectsInvalidFraming(string option, string expected)
     {
         var result = Runner().RunText($"gif \"bad\" {option} {{ pauseGif 10 }}", "debug", new FakeAutomationClient());
@@ -159,6 +162,19 @@ public sealed class BrowserScriptRunnerGifFramingTests
         Assert.Equal((400, 300), (smart.SmartCropWidth, smart.SmartCropHeight));
         Assert.Equal("#dialog", restored.CropSelector);
         Assert.Null(restored.SmartCropWidth);
+    }
+
+    [Fact]
+    public void FramingOverride_SwitchesBetweenCropAndSplitModes()
+    {
+        var crop = new CMG.Browser.Scripting.Recording.GifFramingOptions(CropSelector: "#panel");
+        var split = crop.WithOptions(new Dictionary<string, string> { ["splitTabs"] = "always" }, "test");
+        var restored = split.WithOptions(new Dictionary<string, string> { ["smartCrop"] = "400x300" }, "test");
+
+        Assert.Null(split.CropSelector);
+        Assert.Equal(PointerTargetCalloutMode.Always, split.SplitTabs);
+        Assert.Equal(PointerTargetCalloutMode.None, restored.SplitTabs);
+        Assert.Equal(400, restored.SmartCropWidth);
     }
 
     [Fact]

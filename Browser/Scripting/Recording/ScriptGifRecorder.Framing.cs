@@ -12,6 +12,16 @@ public sealed partial class ScriptGifRecorder
             if (applyRedactions) PrepareAccessibilityEvidence();
             if (applyRedactions) PrepareDebugEvidence();
             var framing = options.EffectiveFraming;
+            if (framing.SplitTabs is not PointerTargetCalloutMode.None)
+            {
+                var count = devToolsClient.ListTabs(remoteDebuggingUrl).Count;
+                if (framing.SplitTabs is PointerTargetCalloutMode.Always || count > 1)
+                {
+                    var captures = devToolsClient.GetTabScreenshots(remoteDebuggingUrl,
+                        SplitTabRedactionScripts(), [BrowserDomScripts.RemoveGifRedactions()]);
+                    return GifSplitViewComposer.Compose(captures, framing.SplitTabs is PointerTargetCalloutMode.Always);
+                }
+            }
             if (framing.SmartCropWidth is not null)
                 return devToolsClient.GetPageScreenshot(remoteDebuggingUrl, promoteMessageBar,
                     options: new ScreenshotOptions(Clip: ResolveSmartCropClip(framing)));

@@ -70,6 +70,7 @@ public sealed class GifEncodingCliOptionsTests
     [InlineData("--gif-layout-stability", "5001", "layoutStability=")]
     [InlineData("--gif-crop-padding", "4", "requires crop=")]
     [InlineData("--gif-smart-crop", "wide", "smartCrop=")]
+    [InlineData("--gif-split-tabs", "sideways", "splitTabs=")]
     [InlineData("--gif-intro-duration", "0", "introDuration= must be greater than zero")]
     [InlineData("--gif-outro-duration", "-1", "outroDuration= must be greater than zero")]
     [InlineData("--gif-sample-every", "0", "sampleEvery= must be an integer from 1 to 100")]
@@ -105,10 +106,20 @@ public sealed class GifEncodingCliOptionsTests
         Assert.Equal((500, 320), (encoding.Framing?.SmartCropWidth, encoding.Framing?.SmartCropHeight));
     }
 
+    [Fact]
+    public void TryParse_MapsSplitTabs()
+    {
+        var options = GifEncodingCliOptions.Build();
+        var result = Root(options).Parse(["--gif-split-tabs", "auto"]);
+
+        Assert.True(options.TryParse(result, out var encoding, out var error), error);
+        Assert.Equal(PointerTargetCalloutMode.Auto, encoding.Framing?.SplitTabs);
+    }
+
     private static RootCommand Root(GifEncodingCliOptions options) => new()
     {
         Options = { options.Dither, options.Palette, options.Colors, options.KeepFrames, options.Crop,
-            options.CropPadding, options.SmartCrop, options.Scale, options.MaxWidth, options.MaxHeight, options.Viewport, options.PixelRatio, options.SafeArea, options.LayoutStability, options.Debug, options.Accessibility, options.EventCaptions,
+            options.CropPadding, options.SmartCrop, options.SplitTabs, options.Scale, options.MaxWidth, options.MaxHeight, options.Viewport, options.PixelRatio, options.SafeArea, options.LayoutStability, options.Debug, options.Accessibility, options.EventCaptions,
             options.Intro, options.Outro, options.IntroDuration, options.OutroDuration, options.ResultOutro, options.DisableCoalescing, options.SampleEvery,
             options.PointerContrast, options.PointerCallout, options.PointerCalloutThreshold, options.TargetZoom, options.TargetZoomThreshold, options.PagePosition, options.TabContext, options.DisableFocusPulse,
             options.PointerIdle, options.PointerIdleThreshold, options.DisableTeleportMarker, options.MouseDownHold,

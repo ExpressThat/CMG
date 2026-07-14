@@ -1,0 +1,8 @@
+describe "split tab evidence" gifSplitTabs=always gifTabContext=none {
+  test "records a private popup journey" {
+    setContent "<title>Primary account</title><main style='box-sizing:border-box;min-height:100vh;padding:32px;background:#fff;color:#111827'><h1>Primary account</h1><label>Access key <input type='password' value='primary-secret'></label></main>"
+    openTab "data:text/html,<title>Review tab</title><main style='box-sizing:border-box;min-height:100vh;padding:32px;background:%23fff;color:%23111827'><h1>Review tab</h1><label>Token <input type='password' value='review-secret'></label><button id='approve' onclick='history.pushState({},%22%22,%22%23approved%22);document.title=%22Approved%22;this.textContent=%22Approved%22'>Approve</button></main>"
+    waitForTab count=2
+    click "#approve"
+  }
+}

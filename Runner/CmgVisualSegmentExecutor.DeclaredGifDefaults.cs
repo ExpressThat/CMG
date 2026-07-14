@@ -58,6 +58,7 @@ public sealed partial class CmgVisualSegmentExecutor
         Add(options, mapped, "gifCrop", "crop");
         Add(options, mapped, "gifCropPadding", "cropPadding");
         Add(options, mapped, "gifSmartCrop", "smartCrop");
+        Add(options, mapped, "gifSplitTabs", "splitTabs");
         Add(options, mapped, "gifScale", "scale");
         Add(options, mapped, "gifMaxWidth", "maxWidth");
         Add(options, mapped, "gifMaxHeight", "maxHeight");
