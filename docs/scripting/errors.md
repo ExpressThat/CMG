@@ -155,6 +155,8 @@ JSON and HTML reports include the same reason, the test name, output lines, and 
 
 When the reason is an invalid GIF or recording option, JSON reports also add a `gifDiagnostics[]` entry with `severity: "error"`; HTML reports show it under **GIF diagnostics**. Non-failing `GIF_SETTINGS_WARN` and `GIF_WARN_*` lines are retained as `severity: "warning"` entries. This lets agents distinguish recording configuration failures from application failures without parsing prose.
 
+`narrationSidecar=` accepts `true`, `false`, or a non-empty file path. An empty value fails before recording with `option narrationSidecar= must be true, false, or a file path.` Sidecar directory creation or writes fail the recording with the exact path and operating-system reason rather than claiming accessible evidence exists.
+
 Use `cmg run --trace <directory>` to write per-test trace JSON with every recorded step and failure reason.
 
 `RUN STOP maxFailures=<count>` means `cmg run --max-failures <count>` reached its failure threshold and stopped scheduling more tests. Reports, traces, and GIF output include tests that ran before the stop.

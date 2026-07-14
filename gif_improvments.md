@@ -383,10 +383,10 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add `reducedMotion=true` plus `--gif-reduced-motion`, with static pointer travel/click evidence, suppressed inherited caption fades, and child overrides.
 - Implemented: add `highContrastPointer=true` plus `--gif-high-contrast-pointer`, with a large yellow ring, strong edge, and per-property child overrides.
 - Implemented: add `captionSize=<normal|large|x-large>` on recording scopes and child captions, plus `--caption-size` for whole-run GIFs.
-- Add screen-reader narration sidecar text file.
+- Implemented: `narrationSidecar=<true|false|path>`, runner declarations, root/project settings, and `--gif-narration` write a privacy-safe ordered UTF-8 narration and emit `GIF_NARRATION`.
 - Implemented: add an `accessibilityEvidence=true` preset that captures keyboard labels, focused-element evidence, accessible role/name callouts, high-contrast styling, and contrast warnings.
-- Add alt text generation template for GIF artifacts.
-- Add report field for human-written GIF description.
+- Implemented: `altText=` and `--gif-alt-text` render `{name}`, `{steps}`, `{duration}`, and `{outcome}` into timeline/JSON metadata and HTML preview alt attributes.
+- Implemented: `description=` / `gifDescription=` / `--gif-description` retain human-authored descriptions in narration, timeline, JSON, and HTML output.
 - Add option to export a step-by-step still image PDF for reviewers who cannot view GIFs.
 
 ## Privacy And Security

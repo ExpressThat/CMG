@@ -83,6 +83,9 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-budget <size>`: Target a maximum encoded size using units such as `500KB` or `2MB`. CMG retains the smallest candidate when no allowed fallback can meet the target.
 - `--no-gif-budget-quality-fallback`: Preserve the requested quality while applying `--gif-budget`.
 - `--no-gif-budget-downscale`: Preserve captured dimensions while applying `--gif-budget`.
+- `--gif-narration <true|false|path>`: Write a UTF-8 screen-reader narration sidecar. `true` uses `<gif-name>.narration.txt`.
+- `--gif-alt-text <template>`: Alt text stored in timelines/reports and used by HTML previews. Supports `{name}`, `{steps}`, `{duration}`, and `{outcome}`.
+- `--gif-description <text>`: Human-written artifact description stored in timelines and JSON/HTML reports.
 - `--pointer-contrast <auto|fixed>`: Adapt an uncolored pointer to the page beneath it. Defaults to `auto`.
 - `--pointer-callout <auto|always|none>`: Control active-target outlines/callouts. Defaults to `auto` for tiny targets.
 - `--pointer-callout-threshold <8..100>`: Tiny-target threshold in CSS pixels. Defaults to `24`.
@@ -179,6 +182,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-budget <size>` targets an encoded size using quality fallback and then bounded downscaling; `--no-gif-budget-quality-fallback` and `--no-gif-budget-downscale` disable either fallback. The smallest candidate is retained when the target is impossible.
 - Every completed recording emits `GIF_CAPTURE_STATS` with frame, optimization, blank-frame, ICC/CICP/gamma, profile-change, memory, timing, and budget-decision counts. `GIF_WARN_UNCHANGED`, `GIF_WARN_BLANK`, and `GIF_WARN_COLOR_PROFILE` explain evidence-quality risks without changing the exit code.
 - Every retained artifact emits `GIF_REPRODUCE path="..." command="..."`. The JSON-escaped command preserves browser selection, `browser --port` placement, and the file/inline source. It includes `--gif` for command-level recording and omits it for focused DSL blocks so the block remains the recording boundary.
+- `narrationSidecar=`, `altText=`, and `description=` work on `gif`, `recordVideo`, `screencast`, and inherited recording scopes. A completed sidecar emits `GIF_NARRATION <absolute-path>`; no sidecar is created without an active recorder.
 - Active recordings also emit `GIF_WARN_MULTIPLE_TARGETS`, `GIF_WARN_TINY_TARGET`, `GIF_WARN_SCROLLED`, and `GIF_WARN_NON_VISUAL` when selector or action choices weaken the resulting evidence. These warnings never fail the script and are not evaluated when GIF recording is inactive.
 - Suppressed nested recording blocks emit `GIF_BLOCK_SUPPRESSED <line> reason=command-level-recording` when `--gif` owns the whole run.
 
@@ -237,6 +241,8 @@ During execution, `setRecording` writes `RECORDING_SETTINGS <line> options=<effe
 `GIF_FRAMES path="<JSON-escaped-absolute-directory>" count=<frames>` is emitted only when source-frame retention is active. The retained PNGs contain the same visible page and CMG recording UI as their corresponding GIF frames and should be handled as sensitive artifacts.
 
 `GIF_REPRODUCE path="<JSON-escaped-absolute-gif>" command="<JSON-escaped-command>"` is emitted once per retained GIF. The command is a deterministic minimal reproduction route; script-owned recording options remain in the source file.
+
+`GIF_NARRATION <absolute-path>` is emitted after a requested screen-reader narration file is written. The UTF-8 file contains the authored description, rendered alt text, duration, outcome, and ordered runtime steps without page values or entered secrets.
 
 ## Stderr
 

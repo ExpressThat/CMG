@@ -60,6 +60,33 @@ public sealed class BrowserScriptRunnerGifBlockTests
     }
 
     [Fact]
+    public void RunText_GifBlockWritesAccessibleReviewSidecarAndTimelineMetadata()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
+        var timeline = Path.ChangeExtension(path, ".timeline.json");
+        var narration = Path.ChangeExtension(path, ".narration.txt");
+        try
+        {
+            var result = Runner().RunText($$"""
+            gif "review" output="{{Slash(path)}}" timeline=true narrationSidecar=true altText="{name}: {steps} steps, {outcome}" description="Checkout review" {
+              showMessageBar "Ready"
+            }
+            """, "debug", new FakeAutomationClient());
+
+            Assert.True(result.Success);
+            Assert.Contains(result.StdoutLines, line => line == $"GIF_NARRATION {Path.GetFullPath(narration)}");
+            Assert.Contains("Description: Checkout review", File.ReadAllText(narration), StringComparison.Ordinal);
+            using var document = JsonDocument.Parse(File.ReadAllText(timeline));
+            Assert.Equal("Checkout review", document.RootElement.GetProperty("review").GetProperty("description").GetString());
+            Assert.Contains("1 steps, passed", document.RootElement.GetProperty("review").GetProperty("altText").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(path); File.Delete(timeline); File.Delete(narration);
+        }
+    }
+
+    [Fact]
     public void RunText_GifBlockRejectsInvalidQuality()
     {
         var result = Runner().RunText("""

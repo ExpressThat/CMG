@@ -1,0 +1,5 @@
+test "records accessible review evidence" gifNarrationSidecar=true gifAltText="{name}: {steps} automation steps, {outcome}, {duration} milliseconds" gifDescription="A runner-recorded release approval journey." {
+  setContent "<style>html,body{margin:0;background:#f8fafc;color:#111827}</style><main style='box-sizing:border-box;min-height:100vh;padding:40px;font:18px system-ui'><h1>Release approval</h1><button id='approve' onclick=\"document.querySelector('#status').textContent='Approved'\">Approve</button><p id='status'>Pending</p></main>"
+  click "#approve"
+  expectText "#status" "Approved"
+}

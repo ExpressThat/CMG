@@ -110,10 +110,15 @@ public static partial class CmgHtmlReportWriter
         {
             var source = Encode(GifSource(path));
             var label = Encode(path);
-            var alt = Encode($"GIF preview for {test.Name}");
+            var review = CmgGifReviewMetadataReader.Read(test, path);
+            var alt = Encode(review.AltText ?? $"GIF preview for {test.Name}");
             builder.AppendLine("<figure class=\"gif-preview\">");
             builder.AppendLine($"<a href=\"{source}\"><img src=\"{source}\" alt=\"{alt}\"></a>");
             builder.AppendLine($"<figcaption>GIF: {label}</figcaption>");
+            if (!string.IsNullOrWhiteSpace(review.Description))
+                builder.AppendLine($"<figcaption>Description: {Encode(review.Description)}</figcaption>");
+            if (!string.IsNullOrWhiteSpace(review.NarrationPath))
+                builder.AppendLine($"<figcaption><a href=\"{Encode(GifSource(review.NarrationPath))}\">Screen-reader narration</a></figcaption>");
             if (reproduction.TryGetValue(Path.GetFullPath(path), out var command))
                 builder.AppendLine($"<figcaption>Reproduce: <code>{Encode(command)}</code></figcaption>");
             builder.AppendLine("</figure>");

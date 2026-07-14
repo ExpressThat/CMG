@@ -104,9 +104,11 @@ public sealed partial class CmgRunService
     {
         try
         {
+            var narrations = GifArtifactFamily.NarrationPaths(path);
             DeleteFile(path);
             DeleteFile(Path.ChangeExtension(path, ".timeline.json"));
             DeleteFile(Path.ChangeExtension(path, ".debug.json"));
+            foreach (var narration in narrations) DeleteFile(narration);
             var frames = Path.ChangeExtension(path, null) + ".frames";
             if (Directory.Exists(frames)) Directory.Delete(frames, recursive: true);
         }
@@ -126,6 +128,7 @@ public sealed partial class CmgRunService
         File.Exists(path) ||
         File.Exists(Path.ChangeExtension(path, ".timeline.json")) ||
         File.Exists(Path.ChangeExtension(path, ".debug.json")) ||
+        GifArtifactFamily.NarrationPaths(path).Any(File.Exists) ||
         Directory.Exists(Path.ChangeExtension(path, null) + ".frames");
 
     private static string Mode(CmgGifRetentionMode mode) => mode switch
@@ -153,6 +156,7 @@ public sealed partial class CmgRunService
             Path.ChangeExtension(path, ".timeline.json"),
             Path.ChangeExtension(path, ".debug.json"),
             Path.ChangeExtension(path, null) + ".frames"
-        }.Any(candidate => normalized.Contains(candidate, StringComparison.OrdinalIgnoreCase));
+        }.Concat(GifArtifactFamily.NarrationPaths(path))
+            .Any(candidate => normalized.Contains(candidate, StringComparison.OrdinalIgnoreCase));
     }
 }

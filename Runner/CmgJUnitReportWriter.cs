@@ -66,6 +66,13 @@ public static class CmgJUnitReportWriter
         {
             var suffix = paths.Length is 1 ? string.Empty : $".{index + 1}";
             yield return new($"cmg.gif.path{suffix}", paths[index]);
+            var review = CmgGifReviewMetadataReader.Read(test, paths[index]);
+            if (!string.IsNullOrWhiteSpace(review.NarrationPath))
+                yield return new($"cmg.gif.narrationPath{suffix}", review.NarrationPath);
+            if (!string.IsNullOrWhiteSpace(review.AltText))
+                yield return new($"cmg.gif.altText{suffix}", review.AltText);
+            if (!string.IsNullOrWhiteSpace(review.Description))
+                yield return new($"cmg.gif.description{suffix}", review.Description);
             if (!test.Success && FailureFrameIndex(paths[index]) is int frameIndex)
             {
                 yield return new($"cmg.gif.failureFrameIndex{suffix}", frameIndex.ToString(System.Globalization.CultureInfo.InvariantCulture));

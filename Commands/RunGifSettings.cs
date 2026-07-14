@@ -38,7 +38,10 @@ internal sealed record RunGifSettings(
     string? RedactionSafety = null,
     string? SizeBudget = null,
     bool? BudgetQualityFallback = null,
-    bool? BudgetDownscaleFallback = null)
+    bool? BudgetDownscaleFallback = null,
+    string? NarrationSidecar = null,
+    string? AltText = null,
+    string? Description = null)
 {
     public static RunGifSettings Empty { get; } = new();
 
@@ -80,5 +83,8 @@ internal sealed record RunGifSettings(
         child.RedactionSafety ?? RedactionSafety,
         child.SizeBudget ?? SizeBudget,
         child.BudgetQualityFallback ?? BudgetQualityFallback,
-        child.BudgetDownscaleFallback ?? BudgetDownscaleFallback);
+        child.BudgetDownscaleFallback ?? BudgetDownscaleFallback,
+        child.NarrationSidecar ?? NarrationSidecar,
+        child.AltText ?? AltText,
+        child.Description ?? Description);
 }

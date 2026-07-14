@@ -50,7 +50,10 @@ internal static partial class RunConfigReader
             StringOption(value, "redactionSafety"),
             StringOption(value, "sizeBudget"),
             BoolOption(value, "budgetQualityFallback"),
-            BoolOption(value, "budgetDownscaleFallback"));
+            BoolOption(value, "budgetDownscaleFallback"),
+            StringOption(value, "narrationSidecar"),
+            StringOption(value, "altText"),
+            StringOption(value, "description"));
     }
 
     private static double? DoubleOption(JsonElement root, string name) =>
@@ -75,6 +78,7 @@ internal static partial class RunConfigReader
         "targetZoom", "targetZoomThreshold", "pagePosition", "tabContext",
         "captionStyle", "captionPosition", "captionSeverity", "captionSize", "autoCaptions", "captionTemplate",
         "redact", "mask", "blur", "autoRedact", "redactionSafety",
-        "sizeBudget", "budgetQualityFallback", "budgetDownscaleFallback"
+        "sizeBudget", "budgetQualityFallback", "budgetDownscaleFallback",
+        "narrationSidecar", "altText", "description"
     };
 }

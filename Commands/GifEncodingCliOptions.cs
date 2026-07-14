@@ -51,7 +51,10 @@ internal sealed record GifEncodingCliOptions(
     Option<string?> RedactionSafety,
     Option<string?> SizeBudget,
     Option<bool> DisableBudgetQualityFallback,
-    Option<bool> DisableBudgetDownscale)
+    Option<bool> DisableBudgetDownscale,
+    Option<string?> NarrationSidecar,
+    Option<string?> AltText,
+    Option<string?> Description)
 {
     public static GifEncodingCliOptions Build()
     {
@@ -103,7 +106,10 @@ internal sealed record GifEncodingCliOptions(
             new Option<string?>("--gif-redaction-safety") { Description = "Redaction safety: standard or strict." },
             new Option<string?>("--gif-budget") { Description = "Target maximum GIF size, for example 500KB or 2MB." },
             new Option<bool>("--no-gif-budget-quality-fallback") { Description = "Do not reduce encoding quality to meet --gif-budget." },
-            new Option<bool>("--no-gif-budget-downscale") { Description = "Do not reduce dimensions to meet --gif-budget." });
+            new Option<bool>("--no-gif-budget-downscale") { Description = "Do not reduce dimensions to meet --gif-budget." },
+            new Option<string?>("--gif-narration") { Description = "Write a screen-reader narration sidecar: true, false, or a file path." },
+            new Option<string?>("--gif-alt-text") { Description = "GIF alt-text template with optional name, steps, duration, and outcome placeholders." },
+            new Option<string?>("--gif-description") { Description = "Human-written GIF description for timelines and reports." });
     }
 
     public bool TryParse(ParseResult result, RunGifSettings? settings, out GifEncodingOptions encoding, out string? error)
@@ -150,6 +156,23 @@ internal sealed record GifEncodingCliOptions(
             error = exception.Message;
             return false;
         }
+        GifReviewOptions review;
+        try
+        {
+            var values = new Dictionary<string, string>();
+            var narration = Provided(result, NarrationSidecar) ? result.GetValue(NarrationSidecar) : settings?.NarrationSidecar;
+            var altText = Provided(result, AltText) ? result.GetValue(AltText) : settings?.AltText;
+            var description = Provided(result, Description) ? result.GetValue(Description) : settings?.Description;
+            if (narration is not null) values["narrationSidecar"] = narration;
+            if (altText is not null) values["altText"] = altText;
+            if (description is not null) values["description"] = description;
+            review = GifReviewOptions.FromOptions(values, "GIF");
+        }
+        catch (CMG.Browser.Scripting.ScriptExecutionException exception)
+        {
+            error = exception.Message;
+            return false;
+        }
         encoding = encoding with
         {
             Framing = framing,
@@ -161,7 +184,8 @@ internal sealed record GifEncodingCliOptions(
             PointerEvidence = pointerEvidence,
             Color = color,
             Redaction = redaction,
-            SizeBudget = budget
+            SizeBudget = budget,
+            Review = review
         };
         return true;
     }

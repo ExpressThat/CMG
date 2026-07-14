@@ -12,7 +12,8 @@ public static partial class GifTimelineWriter
         IReadOnlyList<GifTimelineCheckpoint>? checkpoints = null,
         IReadOnlyList<GifTimelineStep>? steps = null,
         IReadOnlyList<GifRedactionAuditEntry>? redactionAudit = null,
-        IReadOnlyList<GifDebugFrame>? debugFrames = null)
+        IReadOnlyList<GifDebugFrame>? debugFrames = null,
+        GifRecordingOutcome? outcome = null)
     {
         var fullPath = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(fullPath);
@@ -24,7 +25,7 @@ public static partial class GifTimelineWriter
         var gif = new FileInfo(gifPath);
         using var stream = File.Create(fullPath);
         using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
-        WritePayload(writer, gif, options, sink, checkpoints ?? [], steps ?? [], redactionAudit ?? [], debugFrames ?? []);
+        WritePayload(writer, gif, options, sink, checkpoints ?? [], steps ?? [], redactionAudit ?? [], debugFrames ?? [], outcome);
         return fullPath;
     }
 
@@ -36,7 +37,8 @@ public static partial class GifTimelineWriter
         IReadOnlyList<GifTimelineCheckpoint> checkpoints,
         IReadOnlyList<GifTimelineStep> steps,
         IReadOnlyList<GifRedactionAuditEntry> redactionAudit,
-        IReadOnlyList<GifDebugFrame> debugFrames)
+        IReadOnlyList<GifDebugFrame> debugFrames,
+        GifRecordingOutcome? outcome)
     {
         writer.WriteStartObject();
         writer.WriteNumber("version", 2);
@@ -53,6 +55,7 @@ public static partial class GifTimelineWriter
         WriteColor(writer, options.EffectiveColor);
         WriteFraming(writer, options);
         WritePointerEvidence(writer, options.EffectivePointerEvidence);
+        WriteReview(writer, gif.FullName, options.EffectiveReview, sink, steps, outcome);
         writer.WritePropertyName("frameDelaysMilliseconds");
         writer.WriteStartArray();
         foreach (var delay in sink.FrameDelaysMilliseconds)

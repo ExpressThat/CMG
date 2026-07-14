@@ -11,9 +11,11 @@ internal static class GifArtifactRetentionCleaner
         foreach (var gif in directory.EnumerateFiles("*.gif", SearchOption.TopDirectoryOnly)
                      .Where(file => file.LastWriteTimeUtc < cutoff))
         {
+            var narrations = GifArtifactFamily.NarrationPaths(gif.FullName);
             Delete(gif.FullName);
             Delete(Path.ChangeExtension(gif.FullName, ".timeline.json"));
             Delete(Path.ChangeExtension(gif.FullName, ".debug.json"));
+            foreach (var narration in narrations) Delete(narration);
             var frames = Path.ChangeExtension(gif.FullName, null) + ".frames";
             if (Directory.Exists(frames)) Directory.Delete(frames, recursive: true);
             output.Add($"GIF_RETENTION_CLEANUP path={Quote(gif.FullName)} ageDays={days} action=deleted");

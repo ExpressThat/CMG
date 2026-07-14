@@ -66,6 +66,7 @@ public sealed class RunCommandBuilderGifRetentionTests
             var current = Path.Combine(directory.FullName, "current.gif");
             File.WriteAllText(expired, "gif");
             File.WriteAllText(Path.ChangeExtension(expired, ".timeline.json"), "{}");
+            File.WriteAllText(Path.ChangeExtension(expired, ".narration.txt"), "narration");
             File.WriteAllText(current, "gif");
             File.SetLastWriteTimeUtc(expired, DateTime.UtcNow.AddDays(-8));
             var handler = new Handler();
@@ -77,6 +78,7 @@ public sealed class RunCommandBuilderGifRetentionTests
             Assert.True(handler.Called);
             Assert.False(File.Exists(expired));
             Assert.False(File.Exists(Path.ChangeExtension(expired, ".timeline.json")));
+            Assert.False(File.Exists(Path.ChangeExtension(expired, ".narration.txt")));
             Assert.True(File.Exists(current));
         }
         finally
@@ -97,6 +99,20 @@ public sealed class RunCommandBuilderGifRetentionTests
         Assert.Equal(750 * 1024, handler.Encoding?.SizeBudget?.Bytes);
         Assert.True(handler.Encoding?.SizeBudget?.QualityFallback);
         Assert.False(handler.Encoding?.SizeBudget?.DownscaleFallback);
+    }
+
+    [Fact]
+    public void RunCommand_MapsGifReviewOptions()
+    {
+        var handler = new Handler();
+
+        var exitCode = Root(handler).Parse(
+            "run flows --gif artifacts --gif-narration true --gif-alt-text \"{name}: {outcome}\" --gif-description \"Release evidence\"").Invoke();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal("auto", handler.Encoding?.Review?.NarrationSidecar);
+        Assert.Equal("{name}: {outcome}", handler.Encoding?.Review?.AltText);
+        Assert.Equal("Release evidence", handler.Encoding?.Review?.Description);
     }
 
     private static RootCommand Root(Handler handler)

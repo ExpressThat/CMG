@@ -393,6 +393,8 @@ dotnet run -- --firefox browser close
 - `239-gif-quality-comparison.cmgscript`: Generates identical highest, high, medium, and low quality artifacts for visual comparison.
 - `240-gif-size-budget.cmgscript`: Records a pointer-accurate journey with automatic quality/downscale budget fallback, timeline diagnostics, and a focused-block reproduction command.
 - `241-gif-invalid-setting-report.cmgscript`: Intentionally fails validation to demonstrate structured JSON/HTML recording-setting diagnostics.
+- `242-gif-accessible-review.cmgscript`: Focused GIF with generated alt text, an authored description, and a screen-reader narration sidecar.
+- `243-gif-accessible-review-runner.cmgscript`: Runner declarations for the same accessible review metadata and narration output.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

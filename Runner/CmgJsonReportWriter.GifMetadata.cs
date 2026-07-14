@@ -15,6 +15,10 @@ public static partial class CmgJsonReportWriter
             writer.WriteString("quality", QualityFor(test, path));
             var timeline = CmgGifEvidenceReader.TimelineFor(test, path);
             if (timeline is null) writer.WriteNull("timelinePath"); else writer.WriteString("timelinePath", timeline);
+            var review = CmgGifReviewMetadataReader.Read(test, path);
+            if (review.NarrationPath is null) writer.WriteNull("narrationPath"); else writer.WriteString("narrationPath", review.NarrationPath);
+            if (review.AltText is null) writer.WriteNull("altText"); else writer.WriteString("altText", review.AltText);
+            if (review.Description is null) writer.WriteNull("description"); else writer.WriteString("description", review.Description);
             var file = new FileInfo(path);
             writer.WriteBoolean("exists", file.Exists);
             if (file.Exists)

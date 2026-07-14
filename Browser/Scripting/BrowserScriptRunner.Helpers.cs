@@ -191,6 +191,10 @@ public sealed partial class BrowserScriptRunner
         {
             output.Add($"GIF_DEBUG {recorder.DebugPath}");
         }
+        if (!string.IsNullOrWhiteSpace(recorder.NarrationPath))
+        {
+            output.Add($"GIF_NARRATION {recorder.NarrationPath}");
+        }
     }
 
     private static void FinishTrace(ScriptExecutionContext context, bool success, string? error, List<string> output)

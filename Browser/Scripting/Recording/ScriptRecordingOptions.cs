@@ -52,5 +52,7 @@ public sealed record ScriptRecordingOptions(
 
     public GifColorOptions EffectiveColor => Encoding?.Color ?? new();
 
+    public GifReviewOptions EffectiveReview => Encoding?.Review ?? new();
+
     public int FrameDelayCentiseconds => Math.Max(1, (FrameDelayMilliseconds + 9) / 10);
 }
