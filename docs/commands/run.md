@@ -39,7 +39,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-clean-passed`: Delete command-level GIF families for passing tests after reports and traces are written. Explicit focused block artifacts are preserved.
 - `--gif-quality <archival|highest|high|medium|low>`: Recording quality for `--gif`; format-specific encoding changes never alter browser or virtual-pointer events. Defaults to `highest`.
 - `--record-format <gif|apng|webp|mp4>`: Per-test whole-run artifact format. Generated names use `.gif`, `.apng`, `.webp`, or `.mp4`.
-- `--record-ffmpeg <path>`: FFmpeg executable for MP4 output; fallback order is `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
+- `--record-ffmpeg <path>`: Explicit FFmpeg executable for MP4 output. Otherwise CMG uses `ffmpeg.exe` beside `CMG.exe`, then `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
 - `--gif-dither <none|floyd-steinberg|bayer|atkinson|sierra>`: Override the quality preset's dithering algorithm for every command-level test GIF.
 - `--gif-palette <global|local|adaptive>`: Override the GIF color table. `adaptive` currently uses frame-local tables.
 - `--gif-colors <2..256>`: Override the maximum GIF palette size.

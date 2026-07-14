@@ -2004,7 +2004,7 @@ Encoder options:
 
 - `quality=<archival|highest|high|medium|low>` selects a preset. `archival` prioritizes frame-local color fidelity over file size.
 - `format=<gif|apng|webp|mp4>` selects the artifact encoder. GIF is the default; APNG is lossless true color, WebP is compact true color, and MP4 is H.264 through FFmpeg.
-- `ffmpeg=<path>` selects an FFmpeg executable for MP4. Otherwise CMG uses `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
+- `ffmpeg=<path>` explicitly selects an FFmpeg executable for MP4. Otherwise CMG uses a bundled sibling `ffmpeg.exe`, then `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
 - `dither=<none|floyd-steinberg|bayer|atkinson|sierra>` overrides the preset dithering algorithm.
 - `palette=<global|local|adaptive>` controls the GIF color table. `adaptive` currently uses frame-local tables.
 - `colors=<2..256>` overrides the maximum color count.

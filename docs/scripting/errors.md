@@ -161,7 +161,7 @@ When the reason is an invalid GIF or recording option, JSON reports also add a `
 
 Target-aware manual captions validate `captionPosition=` before browser interaction. With `captionPosition=auto target=<locator>`, locator syntax and element-resolution failures identify the caption line and target; CMG does not silently position against a missing element. Other positions do not require `target=`.
 
-`format=` accepts `gif`, `apng`, `webp`, or `mp4`. An unsupported value fails before browser recording with `option format= must be one of: gif, apng, webp, mp4.` An explicit non-GIF extension must match the selected format. MP4 requires FFmpeg; resolution failure identifies `ffmpeg=<path>`, `--record-ffmpeg`, `CMG_FFMPEG`, and `PATH`, while encoder failures include the exit code and bounded stderr. Partial and temporary artifacts are removed.
+`format=` accepts `gif`, `apng`, `webp`, or `mp4`. An unsupported value fails before browser recording with `option format= must be one of: gif, apng, webp, mp4.` An explicit non-GIF extension must match the selected format. MP4 requires FFmpeg; official Windows releases include it beside `CMG.exe`. Resolution failure identifies the sibling runtime, `ffmpeg=<path>`, `--record-ffmpeg`, `CMG_FFMPEG`, and `PATH`, while encoder failures include the exit code and bounded stderr. Partial and temporary artifacts are removed.
 
 Use `cmg run --trace <directory>` to write per-test trace JSON with every recorded step and failure reason.
 

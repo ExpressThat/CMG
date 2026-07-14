@@ -10,6 +10,10 @@ That is why GIF recording is a first-class workflow. Pointer-aware actions move 
 
 Use CMG when the output should be evidence, not just a pass/fail result.
 
+## Requirements
+
+Install Chrome, Edge, or Firefox. CMG talks directly to the installed browser and does not need a separate WebDriver. The official Windows release includes the .NET runtime and a licensed FFmpeg/OpenH264 executable for MP4 recording, so neither needs a separate installation. Repository builds only require external FFmpeg when MP4 output is requested. Electron and WebView2 commands use the caller-provided desktop app.
+
 ## Path 1: Make A GIF
 
 Use this when you want a visual proof of what happened.

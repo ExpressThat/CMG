@@ -48,7 +48,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--no-gif`: Disable command-level GIF capture and every script recording block while still executing child actions. This prevents screenshots and virtual-pointer injection. `CMG_DISABLE_GIF=1` provides the same process-wide switch; enabled values are `1`, `true`, `yes`, and `on` (case-insensitive).
 - `--gif-quality <archival|highest|high|medium|low>`: Recording quality for `--gif`. It controls GIF palettes, WebP lossless/lossy quality, and MP4 CRF. Defaults to `highest`.
 - `--record-format <gif|apng|webp|mp4>`: Output format for command-level recording. Defaults to `gif`; a `.gif` output name is rewritten to the selected extension.
-- `--record-ffmpeg <path>`: FFmpeg executable for MP4 output. Otherwise CMG uses `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
+- `--record-ffmpeg <path>`: Explicit FFmpeg executable for MP4 output. Otherwise CMG uses `ffmpeg.exe` beside `CMG.exe`, then `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
 - `--gif-dither <none|floyd-steinberg|bayer|atkinson|sierra>`: Override the quality preset's dithering algorithm for command-level `--gif`.
 - `--gif-palette <global|local|adaptive>`: Override the GIF color table. `adaptive` currently uses frame-local tables.
 - `--gif-colors <2..256>`: Override the maximum GIF palette size.
@@ -190,7 +190,7 @@ The `--gif-typing-delay` and `--gif-post-hover-hold` defaults are inert unless c
 - Every completed recording emits `GIF_CAPTURE_STATS` with frame, optimization, blank-frame, ICC/CICP/gamma, profile-change, memory, timing, and budget-decision counts. `GIF_WARN_UNCHANGED`, `GIF_WARN_BLANK`, and `GIF_WARN_COLOR_PROFILE` explain evidence-quality risks without changing the exit code.
 - Every retained artifact emits `GIF_REPRODUCE path="..." command="..."`. The JSON-escaped command preserves browser selection, `browser --port` placement, and the file/inline source. It includes `--gif` for command-level recording and omits it for focused DSL blocks so the block remains the recording boundary.
 - `narrationSidecar=`, `stillPdf=`, `altText=`, and `description=` work on `gif`, `recordVideo`, `screencast`, and inherited recording scopes. Completed artifacts emit `GIF_NARRATION <absolute-path>` and `GIF_STILL_PDF <absolute-path>` respectively; neither is created without an active recorder. The PDF contains semantic step-result pages and the final visual state.
-- APNG and WebP use built-in encoders. MP4 uses FFmpeg with H.264, `yuv420p`, even-dimension padding, and an exact 100 fps centisecond evidence timeline. A missing executable fails with an actionable stderr reason and exit code `1`; CMG never writes GIF bytes under another extension.
+- APNG and WebP use built-in encoders. MP4 uses FFmpeg with H.264, `yuv420p`, even-dimension padding, and an exact 100 fps centisecond evidence timeline. Official Windows releases bundle an LGPL/OpenH264 FFmpeg runtime beside `CMG.exe`; explicitly configured or environment/PATH builds retain libx264 encoding. A missing executable fails with an actionable stderr reason and exit code `1`; CMG never writes GIF bytes under another extension.
 - Active recordings also emit `GIF_WARN_MULTIPLE_TARGETS`, `GIF_WARN_TINY_TARGET`, `GIF_WARN_SCROLLED`, and `GIF_WARN_NON_VISUAL` when selector or action choices weaken the resulting evidence. These warnings never fail the script and are not evaluated when GIF recording is inactive.
 - Suppressed nested recording blocks emit `GIF_BLOCK_SUPPRESSED <line> reason=command-level-recording` when `--gif` owns the whole run.
 

@@ -912,7 +912,7 @@ gif "compact evidence" format=webp { click "#approve" }
 gif "long evidence" format=mp4 { click "#approve" }
 ```
 
-The capture and choreography are identical; only final encoding changes. APNG and WebP are built in. MP4 requires FFmpeg on `PATH` or through `ffmpeg=`, `--record-ffmpeg`, config, or `CMG_FFMPEG`. Run demo 244 for APNG/WebP, demo 245 for direct MP4, and demo 246 for structured tests in all formats. Whole-run equivalents use `--record-format`.
+The capture and choreography are identical; only final encoding changes. APNG and WebP are built in. Official Windows releases bundle FFmpeg beside `CMG.exe`; source builds can use `ffmpeg=`, `--record-ffmpeg`, config, `CMG_FFMPEG`, or `PATH`. Run demo 244 for APNG/WebP, demo 245 for direct MP4, and demo 246 for structured tests in all formats. Whole-run equivalents use `--record-format`.
 
 ### Calibrate geometry and browser color
 

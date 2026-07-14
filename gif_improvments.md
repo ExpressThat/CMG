@@ -141,6 +141,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: native APNG output preserves lossless true color and exact recorder timing.
 - Implemented: native animated WebP output provides smaller true-color evidence.
 - Implemented: FFmpeg-backed MP4/H.264 export supports long recordings, exact centisecond timing, even-dimension compatibility padding, explicit executable selection, and actionable failure diagnostics.
+- Implemented: official Windows releases checksum-pin and bundle an LGPL FFmpeg/OpenH264 runtime beside `CMG.exe`, include CMG/FFmpeg/OpenH264/build licenses plus exact source notices, and keep explicit/configured FFmpeg paths authoritative.
 - Implemented for DSL recording blocks: sidecar PNG frame export preserves final pre-quantization frames; without crop, scale, or color transforms these remain the exact browser PNG bytes.
 - Implemented: DSL `keepFrames=<directory|true|false>` and whole-run CLI `--keep-frames <directory>`. Runner output is isolated per GIF for parallel safety.
 - Implemented: `cmg gif color-diff <source.png> <encoded.gif> --frame <n>` reports parseable MAE, RMS, maximum-channel, and changed-pixel encoder drift.

@@ -27,6 +27,8 @@ jobs:
       RELEASE_DIR: artifacts\release
       RELEASE_PACKAGE_DIR: artifacts\package
       NUGET_PACKAGES: ${{ github.workspace }}\.nuget\packages
+      FFMPEG_URL: https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-06-30-13-34/ffmpeg-n8.1.2-21-gce3c09c101-win64-lgpl-8.1.zip
+      FFMPEG_SHA256: 3b9eceb438016b647e0755a51ce3a388cd4ed5679e2427cb83a01e1ae2cd0eba
 
     steps:
       - name: Checkout
@@ -119,6 +121,65 @@ jobs:
             exit 1
           }
 
+      - name: Bundle licensed FFmpeg runtime
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP "cmg-ffmpeg.zip"
+          $extracted = Join-Path $env:RUNNER_TEMP "cmg-ffmpeg"
+          Invoke-WebRequest -Uri $env:FFMPEG_URL -OutFile $archive
+          $actualHash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actualHash -ne $env:FFMPEG_SHA256) {
+            Write-Error "FFmpeg archive SHA-256 was '$actualHash', expected '$env:FFMPEG_SHA256'."
+            exit 1
+          }
+
+          Expand-Archive -LiteralPath $archive -DestinationPath $extracted
+          $ffmpeg = @(Get-ChildItem -LiteralPath $extracted -Recurse -File -Filter ffmpeg.exe)
+          $ffmpegLicense = @(Get-ChildItem -LiteralPath $extracted -Recurse -File -Filter LICENSE.txt)
+          if ($ffmpeg.Count -ne 1 -or $ffmpegLicense.Count -ne 1) {
+            Write-Error "Expected exactly one FFmpeg executable and license in the verified archive."
+            exit 1
+          }
+
+          $publish = Join-Path $env:GITHUB_WORKSPACE "${{ env.PUBLISH_DIR }}"
+          $licenses = Join-Path $publish "licenses"
+          New-Item -ItemType Directory -Force -Path $licenses | Out-Null
+          Copy-Item -LiteralPath $ffmpeg[0].FullName -Destination (Join-Path $publish "ffmpeg.exe") -Force
+          Copy-Item -LiteralPath $ffmpegLicense[0].FullName -Destination (Join-Path $licenses "FFmpeg-LGPLv3.txt") -Force
+          Copy-Item -LiteralPath "LICENSE" -Destination (Join-Path $licenses "CMG-LICENSE.txt") -Force
+
+          $buildLicense = Join-Path $licenses "FFmpeg-Builds-MIT.txt"
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/BtbN/FFmpeg-Builds/7a83528ea3431e9eca982a712bc3a7cd0789d5d0/LICENSE" -OutFile $buildLicense
+          if ((Get-FileHash $buildLicense -Algorithm SHA256).Hash -ne "C1B3CC7EEC42BD9C4F6247169BB887B4A9BC904ABFD2A7F7F9231ED357844993") {
+            Write-Error "BtbN license SHA-256 did not match."
+            exit 1
+          }
+
+          $openH264License = Join-Path $licenses "OpenH264-BSD.txt"
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/cisco/openh264/e3f5b10438e2bacc155cf54578222bd4236c9f06/LICENSE" -OutFile $openH264License
+          if ((Get-FileHash $openH264License -Algorithm SHA256).Hash -ne "DD5C1C9668512530FA5A96E4C29AC4033D70A7EEB0EED7A42FDDB6DD794EBDBB") {
+            Write-Error "OpenH264 license SHA-256 did not match."
+            exit 1
+          }
+
+          @'
+          CMG bundles a separate FFmpeg executable for MP4 visual-evidence export.
+
+          FFmpeg build: n8.1.2-21-gce3c09c101-20260630, LGPLv3, GPL components disabled.
+          FFmpeg source: https://github.com/FFmpeg/FFmpeg/archive/ce3c09c101c83add623774d414a9f9498caf5c25.zip
+          Build scripts: https://github.com/BtbN/FFmpeg-Builds/tree/7a83528ea3431e9eca982a712bc3a7cd0789d5d0
+          OpenH264 source: https://github.com/cisco/openh264/archive/e3f5b10438e2bacc155cf54578222bd4236c9f06.zip
+
+          License texts are in the licenses directory. CMG invokes ffmpeg.exe as a separate process.
+          FFmpeg and OpenH264 are not owned by the CMG project. No warranty is provided for them.
+          '@ | Set-Content -LiteralPath (Join-Path $publish "THIRD-PARTY-NOTICES.txt") -Encoding utf8NoBOM
+
+          $encoders = & (Join-Path $publish "ffmpeg.exe") -hide_banner -encoders 2>&1 | Out-String
+          if ($LASTEXITCODE -ne 0 -or $encoders -notmatch '\blibopenh264\b' -or $encoders -match '\blibx264\b') {
+            Write-Error "Bundled FFmpeg must expose libopenh264 and exclude libx264."
+            exit 1
+          }
+
       - name: Generate SKILL.md
         shell: pwsh
         run: |
@@ -132,6 +193,9 @@ jobs:
           New-Item -ItemType Directory -Force -Path "${{ env.RELEASE_PACKAGE_DIR }}" | Out-Null
 
           Copy-Item -Path "${{ env.PUBLISH_DIR }}\CMG.exe" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\CMG.exe" -Force
+          Copy-Item -Path "${{ env.PUBLISH_DIR }}\ffmpeg.exe" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\ffmpeg.exe" -Force
+          Copy-Item -Path "${{ env.PUBLISH_DIR }}\THIRD-PARTY-NOTICES.txt" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\THIRD-PARTY-NOTICES.txt" -Force
+          Copy-Item -Path "${{ env.PUBLISH_DIR }}\licenses" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\licenses" -Recurse -Force
           Copy-Item -Path "${{ env.RELEASE_DIR }}\SKILL.md" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\SKILL.md" -Force
           Copy-Item -Path "${{ env.RELEASE_DIR }}\agents" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\agents" -Recurse -Force
           Copy-Item -Path "${{ env.RELEASE_DIR }}\references" -Destination "${{ env.RELEASE_PACKAGE_DIR }}\references" -Recurse -Force

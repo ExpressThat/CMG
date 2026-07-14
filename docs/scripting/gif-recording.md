@@ -31,7 +31,7 @@ Whole-run privacy defaults use repeatable `--gif-redact`, `--gif-mask`, and `--g
 
 ## Artifact formats
 
-All formats consume the same final CMG frames after virtual pointer, pointer-event, drag-ghost, caption, redaction, crop, and color processing. `gif` is the compatibility default. `apng` preserves lossless true color, `webp` provides smaller animated true-color evidence, and `mp4` exports H.264 for long recordings. APNG and WebP require no external tool. MP4 resolves FFmpeg from `ffmpeg=<path>`, `--record-ffmpeg`, `gifSettings.ffmpegPath`, `CMG_FFMPEG`, then `PATH`; failure names every remedy and does not leave a partial artifact.
+All formats consume the same final CMG frames after virtual pointer, pointer-event, drag-ghost, caption, redaction, crop, and color processing. `gif` is the compatibility default. `apng` preserves lossless true color, `webp` provides smaller animated true-color evidence, and `mp4` exports H.264 for long recordings. APNG and WebP require no external tool. Official Windows release ZIPs include a checksum-pinned LGPL FFmpeg/OpenH264 runtime beside `CMG.exe`, plus license and source notices. Resolution order is `ffmpeg=<path>` / `--record-ffmpeg` / `gifSettings.ffmpegPath`, sibling `ffmpeg.exe`, `CMG_FFMPEG`, then `PATH`; failure names every remedy and does not leave a partial artifact.
 
 ```cmgscript
 gif "lossless-review" format=apng { click "#approve" }
@@ -196,7 +196,7 @@ Shared scopes accept artifact defaults (`format`, `ffmpeg`), general motion/evid
 
 - `quality=<archival|highest|high|medium|low>`: Encoder preset for nested recording blocks that create their own artifact. `archival` uses a full 256-color frame-local palette and maximum preset dithering strength.
 - `format=<gif|apng|webp|mp4>`: Artifact format. GIF remains the default; a generated name receives the selected format's extension.
-- `ffmpeg=<path>`: FFmpeg executable for MP4. Fallback order is `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
+- `ffmpeg=<path>`: Explicit FFmpeg executable for MP4. Fallback order is sibling `ffmpeg.exe`, `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
 - `dither=<none|floyd-steinberg|bayer|atkinson|sierra>`: Explicit palette dithering algorithm.
 - `palette=<global|local|adaptive>`: GIF color-table strategy. The default and `adaptive` use frame-local tables so moving pointer/overlay evidence composes reliably and each frame can adapt to its colors. Explicit `global` remains available for controlled sources.
 - `narrationSidecar=<true|false|path>`: Write a UTF-8 screen-reader narration containing description, rendered alt text, duration, outcome, and ordered steps.

@@ -58,6 +58,15 @@ Published command examples use `cmg`:
 cmg browser launch
 ```
 
+The official Windows release is self-contained: it includes the .NET runtime and a checksum-pinned LGPL FFmpeg executable beside `CMG.exe` for MP4 evidence export. Its CMG, FFmpeg, OpenH264, and build-system licenses are included under `licenses/`, with exact source links in `THIRD-PARTY-NOTICES.txt`. Repository builds do not download third-party binaries; they use a configured FFmpeg path, `CMG_FFMPEG`, or `PATH` when MP4 output is requested.
+
+Runtime dependencies are deliberately narrow:
+
+- Install at least one supported browser: Chrome, Edge, or Firefox. CMG controls the installed browser directly and does not require a separate WebDriver.
+- The official Windows ZIP needs no separate .NET or FFmpeg installation.
+- Electron or WebView2 automation requires the target desktop app and its normal runtime; CMG does not bundle third-party applications.
+- PowerShell, Git, Node.js, Python, ImageMagick, and Azure tooling are not CMG runtime requirements.
+
 While developing in this repo, replace `cmg` with `dotnet run --`.
 
 ## 60-Second Happy Path
