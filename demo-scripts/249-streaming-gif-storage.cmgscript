@@ -1,0 +1,12 @@
+setContent "<main style='min-height:520px;padding:42px;background:#f8fafc;color:#111827;font:18px system-ui'><h1>Streaming GIF storage</h1><div style='width:680px;height:300px;border:2px solid #0f766e;background:white'></div></main>"
+
+gif "streaming pointer evidence" output="demo-output/249-streaming-gif-storage.gif" timeline=true coalesceDuplicates=false frameDelay=20 {
+  moveMouse x=80 y=160 duration=120
+  moveMouse x=160 y=220 duration=120
+  moveMouse x=240 y=140 duration=120
+  moveMouse x=320 y=240 duration=120
+  moveMouse x=400 y=120 duration=120
+  moveMouse x=480 y=230 duration=120
+  moveMouse x=560 y=150 duration=120
+  moveMouse x=640 y=210 duration=120
+}

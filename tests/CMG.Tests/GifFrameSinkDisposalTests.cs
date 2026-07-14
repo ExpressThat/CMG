@@ -8,7 +8,7 @@ namespace CMG.Tests;
 public sealed class GifFrameSinkDisposalTests
 {
     [Fact]
-    public void Save_UsesFullFrameDisposalForMovingPointerFrames()
+    public void Save_UsesOverlayDisposalForChangedRegionFrames()
     {
         var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
         try
@@ -18,12 +18,14 @@ public sealed class GifFrameSinkDisposalTests
                 sink.AddFrame(Frame(pointerX: 8), 10);
                 sink.AddFrame(Frame(pointerX: 32), 10);
                 sink.Save(path);
+                Assert.Equal(1, sink.ChangedRegionFrameCount);
+                Assert.True(sink.UsesStreamingGif);
             }
 
             using var gif = Image.Load<Rgba32>(path);
             Assert.Equal(2, gif.Frames.Count);
             for (var index = 0; index < gif.Frames.Count; index++)
-                Assert.Equal(GifDisposalMethod.RestoreToBackground, gif.Frames[index].Metadata.GetGifMetadata().DisposalMethod);
+                Assert.Equal(GifDisposalMethod.NotDispose, gif.Frames[index].Metadata.GetGifMetadata().DisposalMethod);
             Assert.True(gif.Frames[1][4, 30].B > 150);
         }
         finally

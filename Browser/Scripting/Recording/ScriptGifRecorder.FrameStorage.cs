@@ -20,6 +20,8 @@ public sealed partial class ScriptGifRecorder
             $"duplicateFrames={DuplicateFramesCoalesced} sampledFrames={SampledFramesSkipped} blankFrames={BlankFrameCount} " +
             $"iccFrames={frameSink.IccProfileFrameCount} cicpFrames={frameSink.CicpProfileFrameCount} gammaFrames={frameSink.GammaMetadataFrameCount} " +
             $"profileChanges={ColorProfileChangeCount} peakRetainedPixelBytes={PeakRetainedPixelBytes} processingMs={FrameProcessingMilliseconds.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)} " +
+            $"storage=disk-delta changedRegionFrames={frameSink.ChangedRegionFrameCount} spoolBytes={frameSink.SpoolBytes} " +
+            $"streamingGif={frameSink.UsesStreamingGif.ToString().ToLowerInvariant()} parallelPreprocessedFrames={frameSink.ParallelPreprocessedFrameCount} " +
             $"budgetBytes={frameSink.BudgetBytes?.ToString() ?? "none"} budgetApplied={frameSink.BudgetApplied.ToString().ToLowerInvariant()} budgetMet={frameSink.BudgetMet.ToString().ToLowerInvariant()} " +
                 $"budgetAttempts={frameSink.BudgetAttempts} finalSizeBytes={frameSink.FinalSizeBytes} finalQuality={frameSink.FinalBudgetQuality.ToString().ToLowerInvariant()} finalScale={frameSink.FinalBudgetScale.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}"
         };

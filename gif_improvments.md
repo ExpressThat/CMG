@@ -336,11 +336,11 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Performance And Storage
 
-- Add streaming GIF encoding to avoid holding every frame in memory.
-- Add frame diffing to store only changed regions where the encoder supports it.
+- Implemented: default/local/adaptive GIF output quantizes spooled frames in parallel and writes each frame directly through CMG's bounded LZW stream; explicit global palettes use the whole-animation fallback their contract requires.
+- Implemented: capture storage keeps a full first frame then disk-spools minimal changed rectangles; native streaming GIFs emit those regions with offsets and overlay disposal, while other formats reconstruct them for their encoder.
 - Implemented: detect and coalesce exact duplicate frames before encoding and report source/retained counts.
 - Implemented: add `sampleEvery=<1..100>` and `--gif-sample-every` for intermediate pointer/drag frames while preserving final semantic frames and all pointer events.
-- Add parallel frame preprocessing before final encode.
+- Implemented: retained GIF regions are independently quantized in parallel before ordered streaming output, bounded to at most eight workers.
 - Implemented: emit peak retained RGBA pixel bytes and preprocessing time in `GIF_CAPTURE_STATS` and timeline `captureDiagnostics`.
 - Implemented: add max duration guard with clear failure reason. CLI: `--gif-max-duration <duration>` emits `GIF_MAX_DURATION`, fails the test, and writes the reason into reports.
 - Implemented: add max file size guard with clear failure reason. CLI: `--gif-max-size <size>` emits `GIF_MAX_SIZE`, fails the test, and writes the reason into reports.

@@ -20,7 +20,8 @@ public sealed class BrowserScriptRunnerCaptureDiagnosticsTests
         Assert.Equal(1, GifInspector.Inspect(gif.File).FrameCount);
         Assert.Equal(800, GifInspector.Inspect(gif.File).DurationMilliseconds);
         Assert.Contains(result.StdoutLines, line => line.Contains("GIF_CAPTURE_STATS", StringComparison.Ordinal) &&
-            line.Contains("sourceFrames=5", StringComparison.Ordinal) && line.Contains("retainedFrames=1", StringComparison.Ordinal));
+            line.Contains("sourceFrames=5", StringComparison.Ordinal) && line.Contains("retainedFrames=1", StringComparison.Ordinal) &&
+            line.Contains("storage=disk-delta", StringComparison.Ordinal) && line.Contains("streamingGif=true", StringComparison.Ordinal));
         Assert.Contains(result.StdoutLines, line => line.StartsWith("GIF_WARN_UNCHANGED", StringComparison.Ordinal));
         Assert.Contains(result.StdoutLines, line => line.StartsWith("GIF_WARN_BLANK", StringComparison.Ordinal));
     }

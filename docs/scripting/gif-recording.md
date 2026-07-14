@@ -522,6 +522,12 @@ Every artifact emits parseable `GIF_CAPTURE_STATS`, including ICC, CICP, gamma, 
 
 Use demos 247 and 248 as geometry and browser-color calibration fixtures. Record demo 248 unchanged in each browser so source PNG and encoded-color differences remain attributable to the browser/capture path rather than different content.
 
+### Bounded capture storage and streaming GIFs
+
+Retained frames are spooled to a private temporary directory as a full first frame followed by the smallest changed rectangle. Capture keeps at most the current and previous full RGBA canvases for duplicate/delta analysis; disposal removes the spool even after an encoding failure. `GIF_CAPTURE_STATS` and timeline `captureDiagnostics` report `storage=disk-delta`, `changedRegionFrames`, `spoolBytes`, `peakRetainedPixelBytes`, `streamingGif`, and `parallelPreprocessedFrames`.
+
+Default/local/adaptive GIF palettes use CMG's native streaming writer. Changed rectangles are quantized in parallel with the selected quality, dither, and color limit, then emitted directly with GIF frame offsets, overlay disposal, exact delays, looping metadata, and bounded LZW state. An explicit `palette=global` requires a whole-animation palette and therefore uses the disk-spooled ImageSharp fallback. APNG and WebP reconstruct spooled deltas for their native encoders; MP4 reconstructs them for FFmpeg. Demo 249 provides a pointer-heavy storage and streaming fixture.
+
 Whole-run controls are `--gif-sample-every` and `--gif-no-coalesce`. See demos 190 and 191.
 
 ## Pointer Evidence Defaults
@@ -553,6 +559,8 @@ recording reducedMotion=true highContrastPointer=true {
 Whole-run recordings can use `--gif-reduced-motion` and `--gif-high-contrast-pointer`. These flags only alter a recorder already created by `--gif`; they never start recording or inject a pointer themselves.
 
 ## Privacy And Redaction
+
+The disk-delta frame spool lives under the current user's temporary directory, uses a unique per-recording name, contains already-redacted capture frames, and is deleted when the recorder is disposed, including normal encoding failures. It is not a retained artifact. A machine or process crash can bypass normal disposal, so sensitive automation should also use the operating system's encrypted/profile-isolated temporary storage and routine temp-file hygiene.
 
 GIF recordings automatically mask visible password inputs. Use `autoRedact=tokens`, `emails`, or `payment` for focused presets, or `autoRedact=privacy` to combine password, token, email, and payment-card-like detection. Token detection covers Bearer/JWT values and common GitHub, Slack, and API-key prefixes; `sensitive` remains an alias for `tokens`. Set `autoRedact=none` only when the recording is known to contain no secrets. Automatic matching masks the containing element, so explicit selectors remain preferable when a page mixes sensitive and public text in one element.
 

@@ -61,6 +61,9 @@ public sealed class GifFrameSinkBudgetTests
             using var document = JsonDocument.Parse(File.ReadAllText(timeline));
             var root = document.RootElement;
             Assert.Equal(1_000_000, root.GetProperty("captureDiagnostics").GetProperty("sizeBudgetBytes").GetInt64());
+            Assert.Equal("disk-delta", root.GetProperty("captureDiagnostics").GetProperty("storage").GetString());
+            Assert.True(root.GetProperty("captureDiagnostics").GetProperty("streamingGif").GetBoolean());
+            Assert.Equal(1, root.GetProperty("captureDiagnostics").GetProperty("parallelPreprocessedFrameCount").GetInt32());
             var step = root.GetProperty("steps")[0];
             Assert.Equal(1, step.GetProperty("capturedFrameCount").GetInt32());
             Assert.Equal(100, step.GetProperty("capturedDurationMilliseconds").GetInt32());

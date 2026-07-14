@@ -400,6 +400,7 @@ dotnet run -- --firefox browser close
 - `246-recording-artifact-formats-runner.cmgscript`: Structured tests selecting APNG, WebP, and MP4 through inherited `gifFormat=` declarations.
 - `247-recording-geometry-fidelity.cmgscript`: CSS zoom, transformed targets, and nested-scroll pointer fidelity.
 - `248-browser-color-calibration.cmgscript`: Stable color and pointer-compositing fixture for browser comparison.
+- `249-streaming-gif-storage.cmgscript`: Disk-spooled changed regions, parallel palette preprocessing, and native streaming GIF output.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

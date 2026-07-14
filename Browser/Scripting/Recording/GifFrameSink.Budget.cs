@@ -45,8 +45,8 @@ public sealed partial class GifFrameSink
             File.Move(best, path, overwrite: true);
             FinalSizeBytes = bestSize;
             BudgetMet = budget?.Bytes is not long bytes || bestSize <= bytes;
-            EncodedWidth = Math.Max(1, (int)Math.Round(frames.Max(frame => frame.Width) * FinalBudgetScale));
-            EncodedHeight = Math.Max(1, (int)Math.Round(frames.Max(frame => frame.Height) * FinalBudgetScale));
+            EncodedWidth = Math.Max(1, (int)Math.Round(frames.Max(frame => frame.CanvasWidth) * FinalBudgetScale));
+            EncodedHeight = Math.Max(1, (int)Math.Round(frames.Max(frame => frame.CanvasHeight) * FinalBudgetScale));
         }
         finally
         {
@@ -79,17 +79,28 @@ public sealed partial class GifFrameSink
 
     private void Encode(string path, GifQuality selectedQuality, double scale)
     {
-        var sourceWidth = frames.Max(frame => frame.Width);
-        var sourceHeight = frames.Max(frame => frame.Height);
+        if (encoding.Format is GifArtifactFormat.Gif && encoding.Palette is not GifPaletteMode.Global)
+        {
+            EncodeStreamingGif(path, selectedQuality, scale);
+            return;
+        }
+        var sourceWidth = frames.Max(frame => frame.CanvasWidth);
+        var sourceHeight = frames.Max(frame => frame.CanvasHeight);
         var width = Math.Max(1, (int)Math.Round(sourceWidth * scale));
         var height = Math.Max(1, (int)Math.Round(sourceHeight * scale));
-        using var gif = BudgetFrame(frames[0], sourceWidth, sourceHeight, width, height);
+        using var first = LoadCanvas(0, previous: null);
+        using var gif = BudgetFrame(first, sourceWidth, sourceHeight, width, height);
         SetAnimationMetadata(gif, encoding.Format);
+        Image<Rgba32>? previous = first.Clone();
         for (var index = 1; index < frames.Count; index++)
         {
-            using var normalized = BudgetFrame(frames[index], sourceWidth, sourceHeight, width, height);
+            using var current = LoadCanvas(index, previous);
+            previous.Dispose();
+            previous = current.Clone();
+            using var normalized = BudgetFrame(current, sourceWidth, sourceHeight, width, height);
             gif.Frames.AddFrame(normalized.Frames.RootFrame);
         }
+        previous?.Dispose();
         EncodeArtifact(gif, path, selectedQuality);
     }
 
@@ -116,6 +127,6 @@ public sealed partial class GifFrameSink
         if (frames.Count == 0) return 0;
         var start = Math.Clamp(startFrameIndex, 0, frames.Count - 1);
         var end = Math.Clamp(endFrameIndex ?? start, start, frames.Count - 1);
-        return frames.Skip(start).Take(end - start + 1).Sum(frame => (long)frame.Width * frame.Height * 4);
+        return frames.Skip(start).Take(end - start + 1).Sum(frame => frame.PixelBytes);
     }
 }

@@ -8,7 +8,9 @@ namespace CMG.Browser.Scripting.Recording;
 
 public sealed partial class GifFrameSink : IDisposable
 {
-    private readonly List<Image<Rgba32>> frames = [];
+    private readonly List<GifStoredFrame> frames = [];
+    private readonly string spoolDirectory = Path.Combine(Path.GetTempPath(), $"cmg-frames-{Guid.NewGuid():N}");
+    private Image<Rgba32>? previousFrame;
     private readonly GifQuality quality;
     private readonly GifEncodingOptions encoding;
     private readonly GifFramingOptions framing;
@@ -27,7 +29,7 @@ public sealed partial class GifFrameSink : IDisposable
     {
         SourceFrameCount++;
         var started = System.Diagnostics.Stopwatch.GetTimestamp();
-        var image = Image.Load<Rgba32>(pngBytes);
+        using var image = Image.Load<Rgba32>(pngBytes);
         TrackColorMetadata(image);
         var resized = ResizeFrame(image);
         var colorAdjusted = ApplyColorOptions(image);
@@ -36,30 +38,27 @@ public sealed partial class GifFrameSink : IDisposable
         if (coalesce && IsDuplicate(image) && TryMergeDelay(delayCentiseconds))
         {
             DuplicateFramesCoalesced++;
-            image.Dispose();
             AddProcessingTime(started);
             return new(false, true, frames.Count - 1);
         }
         RetainSourceFrame(retainedPng, frames.Count);
-        SetFrameMetadata(image.Frames.RootFrame.Metadata.GetGifMetadata(), delayCentiseconds);
-        frames.Add(image);
-        TrackRetainedFrame(image);
+        StoreFrame(image, delayCentiseconds);
         AddProcessingTime(started);
         return new(true, false, frames.Count - 1);
     }
 
     public int FrameCount => frames.Count;
 
-    public int Width => EncodedWidth > 0 ? EncodedWidth : frames.Count is 0 ? 0 : frames.Max(frame => frame.Width);
+    public int Width => EncodedWidth > 0 ? EncodedWidth : frames.Count is 0 ? 0 : frames.Max(frame => frame.CanvasWidth);
 
-    public int Height => EncodedHeight > 0 ? EncodedHeight : frames.Count is 0 ? 0 : frames.Max(frame => frame.Height);
+    public int Height => EncodedHeight > 0 ? EncodedHeight : frames.Count is 0 ? 0 : frames.Max(frame => frame.CanvasHeight);
 
     public int DurationMilliseconds => FrameDelaysCentiseconds.Sum() * 10;
 
     public IReadOnlyList<int> FrameDelaysMilliseconds => FrameDelaysCentiseconds.Select(delay => delay * 10).ToArray();
 
     private IEnumerable<int> FrameDelaysCentiseconds =>
-        frames.Select(frame => frame.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay);
+        frames.Select(frame => frame.Delay);
 
     public void Save(string path)
     {
@@ -206,9 +205,8 @@ public sealed partial class GifFrameSink : IDisposable
 
     public void Dispose()
     {
-        foreach (var frame in frames)
-        {
-            frame.Dispose();
-        }
+        previousFrame?.Dispose();
+        previousFrame = null;
+        if (Directory.Exists(spoolDirectory)) Directory.Delete(spoolDirectory, recursive: true);
     }
 }

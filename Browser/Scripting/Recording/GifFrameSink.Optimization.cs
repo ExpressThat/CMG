@@ -29,15 +29,14 @@ public sealed partial class GifFrameSink
     private bool TryMergeDelay(int delay)
     {
         if (frames.Count is 0) return false;
-        var metadata = frames[^1].Frames.RootFrame.Metadata.GetGifMetadata();
-        if (metadata.FrameDelay > MaximumGifDelayCentiseconds - delay) return false;
-        metadata.FrameDelay += delay;
+        if (frames[^1].Delay > MaximumGifDelayCentiseconds - delay) return false;
+        frames[^1].Delay += delay;
         return true;
     }
 
     private bool IsDuplicate(Image<Rgba32> image)
     {
-        if (frames.Count is 0 || frames[^1].Width != image.Width || frames[^1].Height != image.Height) return false;
+        if (previousFrame is null || previousFrame.Width != image.Width || previousFrame.Height != image.Height) return false;
         var signature = PixelSignature(image);
         return previousSignature is not null && signature.AsSpan().SequenceEqual(previousSignature);
     }
@@ -45,8 +44,8 @@ public sealed partial class GifFrameSink
     private void TrackRetainedFrame(Image<Rgba32> image)
     {
         previousSignature = PixelSignature(image);
-        retainedPixelBytes += (long)image.Width * image.Height * 4;
-        PeakRetainedPixelBytes = Math.Max(PeakRetainedPixelBytes, retainedPixelBytes);
+        retainedPixelBytes = (long)image.Width * image.Height * 4;
+        PeakRetainedPixelBytes = Math.Max(PeakRetainedPixelBytes, retainedPixelBytes * 2);
         if (IsMostlyBlank(image)) BlankFrameCount++;
     }
 

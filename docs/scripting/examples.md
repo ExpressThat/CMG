@@ -888,6 +888,8 @@ Demo 247 places a transformed, CSS-zoomed button deep inside nested overflow. CM
 
 Run demo 248 unchanged against Chrome, Edge, and Firefox to compare retained browser PNG frames, palette output, and pointer compositing. Its fixed red/green/blue/gradient scene is the browser calibration fixture; `keepFrames=` preserves pre-encoding source frames.
 
+Demo 249 drives the virtual pointer through a long route to exercise disk-spooled changed rectangles and native streaming GIF output. Inspect `GIF_CAPTURE_STATS` or the timeline to compare source frames, changed-region frames, spool bytes, bounded peak RGBA memory, and parallel preprocessing work.
+
 ## Common Next Steps
 
 | Need | Where To Go |

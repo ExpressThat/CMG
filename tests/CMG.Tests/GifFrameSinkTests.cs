@@ -149,7 +149,7 @@ public sealed partial class GifFrameSinkTests
     }
 
     [Fact]
-    public void Save_WritesFullFrameDisposalMetadata()
+    public void Save_WritesStreamingOverlayDisposalMetadata()
     {
         var path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.gif");
         using var sink = new GifFrameSink();
@@ -162,7 +162,7 @@ public sealed partial class GifFrameSinkTests
         foreach (var frame in gif.Frames)
         {
             var metadata = frame.Metadata.GetGifMetadata();
-            Assert.Equal(GifDisposalMethod.RestoreToBackground, metadata.DisposalMethod);
+            Assert.Equal(GifDisposalMethod.NotDispose, metadata.DisposalMethod);
         }
         File.Delete(path);
     }
