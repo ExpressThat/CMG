@@ -29,11 +29,40 @@ public static partial class BrowserDomScripts
           const element = {{Query(selector)}};
           if (!element) return null;
           const rect = element.getBoundingClientRect();
+          const owns = point => {
+            const hit = document.elementFromPoint(point.x, point.y);
+            return !!hit && (hit === element || element.contains(hit));
+          };
+          const quad = element.getBoxQuads?.({ box: 'border' })?.[0];
+          const candidates = [];
+          if (quad) candidates.push({
+            x: (quad.p1.x + quad.p2.x + quad.p3.x + quad.p4.x) / 4,
+            y: (quad.p1.y + quad.p2.y + quad.p3.y + quad.p4.y) / 4
+          });
+          candidates.push(
+            { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
+            { x: rect.left + rect.width * .25, y: rect.top + rect.height * .25 },
+            { x: rect.left + rect.width * .75, y: rect.top + rect.height * .25 },
+            { x: rect.left + rect.width * .25, y: rect.top + rect.height * .75 },
+            { x: rect.left + rect.width * .75, y: rect.top + rect.height * .75 });
+          const point = candidates.find(candidate =>
+            candidate.x >= 0 && candidate.y >= 0 && candidate.x <= innerWidth && candidate.y <= innerHeight && owns(candidate))
+            ?? candidates[0];
+          const style = getComputedStyle(element);
+          const visual = window.visualViewport;
           return JSON.stringify({
             x: rect.left,
             y: rect.top,
             width: rect.width,
-            height: rect.height
+            height: rect.height,
+            interactionX: point.x,
+            interactionY: point.y,
+            devicePixelRatio: window.devicePixelRatio || 1,
+            visualScale: visual?.scale || 1,
+            visualOffsetX: visual?.offsetLeft || 0,
+            visualOffsetY: visual?.offsetTop || 0,
+            cssZoom: Number(element.currentCSSZoom || style.zoom || 1) || 1,
+            transformed: style.transform !== 'none'
           });
         })()
         """;

@@ -398,6 +398,8 @@ dotnet run -- --firefox browser close
 - `244-recording-artifact-formats.cmgscript`: Runs the same virtual-pointer journey through native lossless APNG and animated WebP output.
 - `245-recording-mp4.cmgscript`: Exports the same recorder timeline as H.264 MP4 through FFmpeg (`ffmpeg`, `CMG_FFMPEG`, or `ffmpeg=<path>`).
 - `246-recording-artifact-formats-runner.cmgscript`: Structured tests selecting APNG, WebP, and MP4 through inherited `gifFormat=` declarations.
+- `247-recording-geometry-fidelity.cmgscript`: CSS zoom, transformed targets, and nested-scroll pointer fidelity.
+- `248-browser-color-calibration.cmgscript`: Stable color and pointer-compositing fixture for browser comparison.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

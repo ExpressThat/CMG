@@ -1,0 +1,6 @@
+setContent "<main style='min-height:640px;padding:36px;background:#f8fafc;color:#111827;font:18px system-ui'><h1>Geometry fidelity</h1><div id='scroller' style='width:420px;height:220px;overflow:auto;border:3px solid #0f766e;background:white'><div style='width:900px;height:650px;padding:360px 0 0 560px'><div style='zoom:1.2'><button id='target' style='transform:rotate(-8deg) scale(1.08);padding:18px 26px;background:#2563eb;color:white;border:0'>Approve transformed target</button></div></div></div><p id='status'>Waiting</p><script>document.querySelector('#target').onclick=()=>document.querySelector('#status').textContent='Approved'</script></main>"
+
+gif "geometry fidelity" output="demo-output/247-recording-geometry-fidelity.gif" timeline=true pointerDuration=900 debug=true {
+  click "#target"
+  expectText "#status" "Approved"
+}

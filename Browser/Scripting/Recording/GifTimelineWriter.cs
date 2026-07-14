@@ -92,6 +92,7 @@ public static partial class GifTimelineWriter
         writer.WriteNumber("finalSizeBytes", sink.FinalSizeBytes);
         writer.WriteString("finalQuality", sink.FinalBudgetQuality.ToString().ToLowerInvariant());
         writer.WriteNumber("finalScale", sink.FinalBudgetScale);
+        WriteGeometry(writer, sink.Geometry);
         writer.WriteEndObject();
     }
 

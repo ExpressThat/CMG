@@ -315,8 +315,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 ## Browser And Protocol Fidelity
 
 - Implemented: Chrome/Edge recorder frames are captured as PNG before GIF preprocessing and encoding.
-- Add Firefox-specific capture parity tests for color and pointer compositing.
-- Add browser-specific calibration pages for screenshot color differences.
+- Implemented: Firefox/Chromium calibration demo 248 retains an identical source scene for color and virtual-pointer compositing comparison, with unit coverage for the shared geometry pipeline.
+- Implemented: browser-specific calibration pages cover fixed RGB/gradient colors plus transformed, zoomed, and nested-scroll target geometry in demos 247 and 248.
 - Implemented: browser screenshot ICC/CICP/gamma profile changes are detected, counted, written to timelines, and reported with `GIF_WARN_COLOR_PROFILE`.
 - Implemented: pointer, caption, pulse, drag-ghost, mask, and evidence nodes use the browser top layer where available and are re-promoted before capture.
 - Implemented: navigation and reload captures recreate the virtual pointer at its retained coordinates before the first post-navigation frame.
@@ -329,9 +329,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented as capture-only captions: show browser dialog capture and accepted/dismissed handling state without re-dispatching dialogs.
 - Implemented for event evidence: show download completion without exposing its path. Report artifact links remain open.
 - Implemented for event evidence: show selected upload file counts without exposing filenames or file contents.
-- Add support for browser zoom level detection and correction.
+- Implemented: recordings detect protocol page zoom where exposed plus visual scale, DPR, and offsets; CDP/BiDi CSS-viewport pointer coordinates are preserved and reported through `GIF_CAPTURE_GEOMETRY` and timeline metadata.
 - Implemented: `reducedMotion=true` and `--gif-reduced-motion` remove inherited travel/fades while retaining static pointer origins, targets, click evidence, and child overrides.
-- Add support for pages using CSS transforms, zoom, and nested scrolling containers.
+- Implemented: hit-tested rendered-quad interaction points support transformed/CSS-zoomed targets, while recorder stabilization corrects every clipping scroll ancestor before safe-area positioning.
 - Implemented: opt-in conservative cleanup for CMG-launched headless browsers tracks browser/port/PID/start-time/launch-token ownership, renews activity throughout control and runner operations, uses configurable renewable leases, warns and rechecks before expiry, leaves visible/attached/user-launched/replaced browsers alone, isolates concurrent ports, emits parseable persisted diagnostics, and supports launch/run/config/environment enablement plus keepalive/disable commands.
 
 ## Performance And Storage

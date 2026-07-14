@@ -1,0 +1,6 @@
+setContent "<main style='min-height:520px;padding:36px;background:#f8fafc;color:#111827;font:18px system-ui'><h1>Browser calibration</h1><div style='display:grid;grid-template-columns:repeat(4,120px);gap:14px'><button id='red' style='height:90px;background:#ef4444;color:#fff;border:0'>Red</button><div style='background:#22c55e'>Green</div><div style='background:#3b82f6'>Blue</div><div style='background:linear-gradient(135deg,#f59e0b,#8b5cf6)'>Gradient</div></div><p id='status'>Waiting</p><script>document.querySelector('#red').onclick=()=>document.querySelector('#status').textContent='Selected red'</script></main>"
+
+gif "browser calibration" output="demo-output/248-browser-color-calibration.gif" keepFrames="demo-output/248-browser-color-calibration.frames" timeline=true pointerDuration=700 {
+  click "#red"
+  expectText "#status" "Selected red"
+}

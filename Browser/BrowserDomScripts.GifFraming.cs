@@ -8,6 +8,23 @@ public static partial class BrowserDomScripts
           const element = window.__cmgQuery?.({{JsonString(selector)}}) ?? document.querySelector({{JsonString(selector)}});
           if (!element) return false;
           const safe = {{safeArea}};
+          const scrollable = node => {
+            const style = getComputedStyle(node);
+            return /(auto|scroll|overlay)/.test(style.overflow + style.overflowX + style.overflowY);
+          };
+          const ancestors = [];
+          for (let node = element.parentElement; node && node !== document.documentElement; node = node.parentElement)
+            if (scrollable(node)) ancestors.push(node);
+          for (const ancestor of ancestors) {
+            const outer = ancestor.getBoundingClientRect();
+            const inner = element.getBoundingClientRect();
+            const dx = inner.left < outer.left + safe ? inner.left - outer.left - safe :
+              inner.right > outer.right - safe ? inner.right - outer.right + safe : 0;
+            const dy = inner.top < outer.top + safe ? inner.top - outer.top - safe :
+              inner.bottom > outer.bottom - safe ? inner.bottom - outer.bottom + safe : 0;
+            if (dx) ancestor.scrollLeft += dx;
+            if (dy) ancestor.scrollTop += dy;
+          }
           let rect = element.getBoundingClientRect();
           const cx = Math.max(0, Math.min(innerWidth - 1, rect.left + rect.width / 2));
           const cy = Math.max(0, Math.min(innerHeight - 1, rect.top + rect.height / 2));

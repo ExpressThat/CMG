@@ -51,19 +51,7 @@ public sealed partial class ChromeDevToolsClient
         {
             writer.WriteString(
                 "expression",
-                $$"""
-                (() => {
-                  const element = {{BrowserDomScripts.Query(selector)}};
-                  if (!element) return null;
-                  const rect = element.getBoundingClientRect();
-                  return {
-                    x: rect.left,
-                    y: rect.top,
-                    width: rect.width,
-                    height: rect.height
-                  };
-                })()
-                """);
+                $"JSON.parse({BrowserDomScripts.ElementRect(selector)})");
             writer.WriteBoolean("returnByValue", true);
         });
 
@@ -80,7 +68,9 @@ public sealed partial class ChromeDevToolsClient
             throw new ChromeDevToolsException($"Chrome did not return a viewport rectangle for element '{selector}'.");
         }
 
-        var clip = new ElementClip(x, y, width, height);
+        var interactionX = TryReadDouble(value, "interactionX", out var ix) ? ix : (double?)null;
+        var interactionY = TryReadDouble(value, "interactionY", out var iy) ? iy : (double?)null;
+        var clip = new ElementClip(x, y, width, height, interactionX, interactionY);
         if (clip.Width <= 0 || clip.Height <= 0)
         {
             throw new ChromeDevToolsException($"Element '{selector}' has no visible area.");

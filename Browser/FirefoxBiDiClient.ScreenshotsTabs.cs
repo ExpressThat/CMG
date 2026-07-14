@@ -50,8 +50,8 @@ public sealed partial class FirefoxBiDiClient
             await using var session = await FirefoxBiDiSession.Connect(remoteDebuggingUrl);
             var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             var rect = await GetElementRect(session, context.Id, selector);
-            await EnsurePointInViewport(session, context.Id, selector, rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
-            return new ElementPoint(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+            await EnsurePointInViewport(session, context.Id, selector, rect.CenterX, rect.CenterY);
+            return new ElementPoint(rect.CenterX, rect.CenterY);
         });
 
     public ElementBox GetElementBox(string remoteDebuggingUrl, string selector) =>

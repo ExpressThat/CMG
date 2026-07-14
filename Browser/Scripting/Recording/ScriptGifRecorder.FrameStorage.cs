@@ -21,8 +21,13 @@ public sealed partial class ScriptGifRecorder
             $"iccFrames={frameSink.IccProfileFrameCount} cicpFrames={frameSink.CicpProfileFrameCount} gammaFrames={frameSink.GammaMetadataFrameCount} " +
             $"profileChanges={ColorProfileChangeCount} peakRetainedPixelBytes={PeakRetainedPixelBytes} processingMs={FrameProcessingMilliseconds.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)} " +
             $"budgetBytes={frameSink.BudgetBytes?.ToString() ?? "none"} budgetApplied={frameSink.BudgetApplied.ToString().ToLowerInvariant()} budgetMet={frameSink.BudgetMet.ToString().ToLowerInvariant()} " +
-            $"budgetAttempts={frameSink.BudgetAttempts} finalSizeBytes={frameSink.FinalSizeBytes} finalQuality={frameSink.FinalBudgetQuality.ToString().ToLowerInvariant()} finalScale={frameSink.FinalBudgetScale.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}"
+                $"budgetAttempts={frameSink.BudgetAttempts} finalSizeBytes={frameSink.FinalSizeBytes} finalQuality={frameSink.FinalBudgetQuality.ToString().ToLowerInvariant()} finalScale={frameSink.FinalBudgetScale.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}"
         };
+        if (frameSink.Geometry is { } geometry)
+            lines.Add($"GIF_CAPTURE_GEOMETRY path={path} coordinateSpace={geometry.CoordinateSpace} " +
+                $"pageZoom={Number(geometry.PageZoom)} visualScale={Number(geometry.VisualScale)} " +
+                $"devicePixelRatio={Number(geometry.DevicePixelRatio)} visualOffsetX={Number(geometry.VisualOffsetX)} " +
+                $"visualOffsetY={Number(geometry.VisualOffsetY)} correction=css-pixel-preserving");
         if (LongWaitCount > 0) lines.Add($"GIF_WAIT_COMPRESSION path={path} waits={LongWaitCount} savedMs={LongWaitMillisecondsSaved}");
         if (SourceFrameCount >= 5 && DuplicateFramesCoalesced / (double)SourceFrameCount >= .6)
             lines.Add($"GIF_WARN_UNCHANGED path={path} sourceFrames={SourceFrameCount} duplicateFrames={DuplicateFramesCoalesced}");
@@ -86,4 +91,7 @@ public sealed partial class ScriptGifRecorder
 
     private static string Quote(string value) =>
         $"\"{value.Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal)}\"";
+
+    private static string Number(double value) =>
+        value.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
 }

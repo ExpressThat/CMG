@@ -61,12 +61,6 @@ public sealed partial class ScriptGifRecorder : IDisposable
 
     public int FrameCount => frameSink.FrameCount;
 
-    public void Start(string remoteDebuggingUrl)
-    {
-        this.remoteDebuggingUrl = remoteDebuggingUrl;
-        ApplyRecordingViewport();
-    }
-
     public void BeforeAction(BrowserScriptAction action, int? sequence = null, string context = "")
     {
         if (remoteDebuggingUrl is null || IsCaptureSuspended)

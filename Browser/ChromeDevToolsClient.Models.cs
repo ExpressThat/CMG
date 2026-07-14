@@ -6,11 +6,12 @@ namespace CMG.Browser;
 
 public sealed partial class ChromeDevToolsClient
 {
-    private readonly record struct ElementClip(double X, double Y, double Width, double Height)
+    private readonly record struct ElementClip(
+        double X, double Y, double Width, double Height, double? InteractionX = null, double? InteractionY = null)
     {
-        public double CenterX => X + Width / 2;
+        public double CenterX => InteractionX ?? X + Width / 2;
 
-        public double CenterY => Y + Height / 2;
+        public double CenterY => InteractionY ?? Y + Height / 2;
 
         public static ElementClip FromBoxModel(JsonElement boxModel)
         {

@@ -518,6 +518,10 @@ gif "efficient review" sampleEvery=3 {
 
 Every artifact emits parseable `GIF_CAPTURE_STATS`, including ICC, CICP, gamma, and profile-change counts from captured browser PNGs. High duplicate ratios emit `GIF_WARN_UNCHANGED`; mostly white, black, or transparent frames emit `GIF_WARN_BLANK`; changing color metadata emits `GIF_WARN_COLOR_PROFILE`. These warnings do not fail the run. Timeline sidecars include the same diagnostics and resolved `color` options. All controls are inert without an active recorder.
 
+`GIF_CAPTURE_GEOMETRY` reports protocol page zoom where available, visual-viewport scale and offsets, device pixel ratio, and `coordinateSpace=css-viewport`. CMG preserves CSS-pixel coordinates because CDP and BiDi pointer input uses viewport CSS pixels. Transformed targets use rendered box-quad candidates plus DOM hit testing; nested targets are corrected through each clipping scroll container before the window safe-area check. Timeline sidecars store the same values under `captureDiagnostics.geometry`.
+
+Use demos 247 and 248 as geometry and browser-color calibration fixtures. Record demo 248 unchanged in each browser so source PNG and encoded-color differences remain attributable to the browser/capture path rather than different content.
+
 Whole-run controls are `--gif-sample-every` and `--gif-no-coalesce`. See demos 190 and 191.
 
 ## Pointer Evidence Defaults

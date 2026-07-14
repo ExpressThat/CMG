@@ -48,7 +48,9 @@ public sealed partial class FirefoxBiDiClient
             root.GetProperty("x").GetDouble(),
             root.GetProperty("y").GetDouble(),
             root.GetProperty("width").GetDouble(),
-            root.GetProperty("height").GetDouble());
+            root.GetProperty("height").GetDouble(),
+            root.TryGetProperty("interactionX", out var interactionX) ? interactionX.GetDouble() : null,
+            root.TryGetProperty("interactionY", out var interactionY) ? interactionY.GetDouble() : null);
     }
 
     private static async Task EnsurePointInViewport(FirefoxBiDiSession session, string contextId, string selector, double x, double y)

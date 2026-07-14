@@ -13,8 +13,8 @@ public sealed partial class FirefoxBiDiClient
             var context = await session.GetPrimaryContext(remoteDebuggingUrl);
             var source = await GetElementRect(session, context.Id, sourceSelector);
             var target = await GetElementRect(session, context.Id, targetSelector);
-            await EnsurePointInViewport(session, context.Id, sourceSelector, source.X + source.Width / 2, source.Y + source.Height / 2);
-            await EnsurePointInViewport(session, context.Id, targetSelector, target.X + target.Width / 2, target.Y + target.Height / 2);
+            await EnsurePointInViewport(session, context.Id, sourceSelector, source.CenterX, source.CenterY);
+            await EnsurePointInViewport(session, context.Id, targetSelector, target.CenterX, target.CenterY);
             _ = ReadScriptResultValue(await Evaluate(session, context.Id, BrowserDomScripts.DragAndDrop(sourceSelector, targetSelector)));
             return true;
         });

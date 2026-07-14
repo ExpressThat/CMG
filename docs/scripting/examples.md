@@ -882,6 +882,12 @@ gif "long evidence" format=mp4 { click "#approve" }
 
 The capture and choreography are identical; only final encoding changes. APNG and WebP are built in. MP4 requires FFmpeg on `PATH` or through `ffmpeg=`, `--record-ffmpeg`, config, or `CMG_FFMPEG`. Run demo 244 for APNG/WebP, demo 245 for direct MP4, and demo 246 for structured tests in all formats. Whole-run equivalents use `--record-format`.
 
+### Calibrate geometry and browser color
+
+Demo 247 places a transformed, CSS-zoomed button deep inside nested overflow. CMG scrolls each clipping ancestor, chooses a hit-tested point inside the rendered target, and sends both the real browser event and virtual pointer to that CSS-viewport coordinate. `GIF_CAPTURE_GEOMETRY` and timeline `captureDiagnostics.geometry` report page zoom, visual scale, DPR, offsets, and the CSS-pixel-preserving coordinate policy.
+
+Run demo 248 unchanged against Chrome, Edge, and Firefox to compare retained browser PNG frames, palette output, and pointer compositing. Its fixed red/green/blue/gradient scene is the browser calibration fixture; `keepFrames=` preserves pre-encoding source frames.
+
 ## Common Next Steps
 
 | Need | Where To Go |

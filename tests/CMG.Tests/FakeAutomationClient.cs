@@ -4,7 +4,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace CMG.Tests;
 
-internal sealed class FakeAutomationClient : IBrowserAutomationClient
+internal sealed partial class FakeAutomationClient : IBrowserAutomationClient
 {
     public string LastExpression { get; private set; } = string.Empty;
     public List<string> EvaluatedExpressions { get; } = [];

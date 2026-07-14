@@ -48,6 +48,8 @@ public interface IBrowserAutomationClient
 
     ViewportSize GetViewportSize(string remoteDebuggingUrl);
 
+    BrowserGeometryMetrics GetGeometryMetrics(string remoteDebuggingUrl) => new();
+
     void DragAndDrop(string remoteDebuggingUrl, string sourceSelector, string targetSelector);
 
     void MouseDragAndDrop(
@@ -133,6 +135,14 @@ public sealed class BrowserAutomationClientFactory
 }
 
 public sealed record ViewportSize(double Width, double Height);
+
+public sealed record BrowserGeometryMetrics(
+    double PageZoom = 1,
+    double VisualScale = 1,
+    double DevicePixelRatio = 1,
+    double VisualOffsetX = 0,
+    double VisualOffsetY = 0,
+    string CoordinateSpace = "css-viewport");
 
 public sealed record ViewportOptions(
     int Width,
