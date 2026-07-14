@@ -11,6 +11,9 @@ public static partial class CmgHtmlReportWriter
         builder.AppendLine("<!doctype html><html><head><meta charset=\"utf-8\"><title>CMG Report</title>");
         builder.AppendLine("<style>body{font:14px system-ui;margin:24px} .pass{color:#047857}.fail{color:#b91c1c} table{border-collapse:collapse;width:100%;margin-top:12px} th,td{border-bottom:1px solid #e5e7eb;padding:6px;text-align:left;vertical-align:top} code,pre{background:#f3f4f6;padding:2px 4px} pre{padding:8px;overflow:auto;white-space:pre-wrap}.gif-previews,.gif-evidence{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0}.gif-preview,.evidence-frame{margin:0}.gif-preview img,.evidence-frame img{display:block;max-width:360px;max-height:240px;border:1px solid #e5e7eb}.gif-preview figcaption,.evidence-frame figcaption{font-size:12px;color:#4b5563;max-width:360px;overflow-wrap:anywhere}.failure-frame img{border-color:#b91c1c}.evidence-links{white-space:nowrap}</style>");
         builder.AppendLine("</head><body><h1>CMG Report</h1>");
+        WriteRunSummary(builder, tests);
+        WriteFailureGroups(builder, tests);
+        WriteRunFilmstrip(builder, tests);
         var testIndex = 0;
         foreach (var test in tests)
         {

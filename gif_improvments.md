@@ -308,8 +308,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: runner `gifSampleRate=` and CLI `--gif-sample-rate <n>` deterministically capture the first selected test and every nth test.
 - Implemented: runner declaration `gifCleanPassed=true` exposes passing GIF metadata to reports/traces, then deletes the artifact family.
 - Implemented: CLI `--gif-clean-passed` and run-config retention defaults, with DSL declarations taking final precedence.
-- Add CI summary page that groups GIFs by failure reason.
-- Add test-run filmstrip report across all selected tests.
+- Implemented: HTML reports include a CI run summary and group failed tests and their GIF evidence by the exact reported failure reason.
+- Implemented: HTML reports include an ordered test-run filmstrip across every retained GIF in the selected run.
 - Implemented: command-level runner GIF names include project, browser, shard index/count, repeat identity, and retry attempt so shared matrix artifact directories do not collide.
 
 ## Browser And Protocol Fidelity

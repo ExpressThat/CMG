@@ -17,13 +17,14 @@ public sealed class CmgHtmlReportGifPreviewTests
     }
 
     [Fact]
-    public void HtmlReport_RendersMultipleGifPreviewImages()
+    public void HtmlReport_RendersMultipleGifsInFilmstripAndTestDetail()
     {
         var first = "artifacts\\first.gif";
         var second = "artifacts\\second.gif";
         var report = CmgHtmlReportWriter.Write([TestWithGif($"{first};{second}")]);
 
-        Assert.Equal(2, Count(report, "<figure class=\"gif-preview\">"));
+        Assert.Equal(4, Count(report, "<figure class=\"gif-preview\">"));
+        Assert.Contains("run-filmstrip", report);
         Assert.Contains("artifacts/first.gif", report);
         Assert.Contains("artifacts/second.gif", report);
     }
