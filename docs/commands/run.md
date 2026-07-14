@@ -240,6 +240,7 @@ GIF recording is optional.
 - Without command-level GIF recording or an active script-level recording block, CMG does not inject the virtual pointer. Recording-only actions such as `pauseGif`, `moveMouse`, `recordCheckpoint`, `showPointer`, and `hidePointer` are skipped and do not create pointer frames or timeline entries.
 - If `--max-failures` stops the run, GIFs and reports include only tests that actually ran before the stop.
 - With `--repeat-each`, each repeat is a separate scheduled test with a distinct name such as `checkout [repeat 2/3]`, so per-test GIFs, traces, reports, retries, and sharding remain deterministic.
+- Command-level GIF filenames include the selected project (when present), browser, shard identity (when sharded), sanitized test/repeat name, and `-attempt-N` for retries after the first. For example: `firefox-smoke-firefox-shard-2-of-4-checkout--repeat-2-3--attempt-2.gif`. This prevents parallel matrix jobs that share an artifact directory from overwriting one another.
 
 All recorded actions use CMG's virtual pointer, pointer/mouse event dispatch, captions, and drag ghost behavior. Selector actions accept CMG rich locators and provider-style aliases. Every non-CSS locator resolves to the same temporary element marker used by the GIF recorder, so virtual pointer movement, pointer events, drag ghosts, and captions remain aligned with the chosen element.
 

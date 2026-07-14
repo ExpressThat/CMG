@@ -27,8 +27,10 @@ public sealed partial class CmgRunService
 
         options.GifDirectory.Create();
         var project = string.IsNullOrWhiteSpace(options.ProjectName) ? string.Empty : $"{SafeName(options.ProjectName)}-";
+        var browser = options.BrowserKind.ToString().ToLowerInvariant();
+        var shard = options.ShardCount > 1 ? $"-shard-{options.ShardIndex}-of-{options.ShardCount}" : string.Empty;
         var safeName = string.Concat(test.Name.Select(character => char.IsLetterOrDigit(character) ? character : '-'));
-        return new FileInfo(Path.Combine(options.GifDirectory.FullName, $"{project}{safeName}.gif"));
+        return new FileInfo(Path.Combine(options.GifDirectory.FullName, $"{project}{browser}{shard}-{safeName}.gif"));
     }
 
     private static void WriteReports(CmgRunOptions options, IReadOnlyList<CmgTestResult> tests)

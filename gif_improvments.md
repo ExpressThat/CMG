@@ -310,7 +310,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: CLI `--gif-clean-passed` and run-config retention defaults, with DSL declarations taking final precedence.
 - Add CI summary page that groups GIFs by failure reason.
 - Add test-run filmstrip report across all selected tests.
-- Add shard-safe GIF naming with project/browser/retry/repeat metadata.
+- Implemented: command-level runner GIF names include project, browser, shard index/count, repeat identity, and retry attempt so shared matrix artifact directories do not collide.
 
 ## Browser And Protocol Fidelity
 

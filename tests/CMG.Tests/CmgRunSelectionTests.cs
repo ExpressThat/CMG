@@ -78,7 +78,21 @@ public sealed class CmgRunSelectionTests
             GifDirectory = new DirectoryInfo(Path.GetTempPath())
         });
 
-        Assert.StartsWith("firefox-smoke-checkout", Path.GetFileName(path!.FullName));
+        Assert.Equal("firefox-smoke-chrome-checkout.gif", Path.GetFileName(path!.FullName));
+    }
+
+    [Fact]
+    public void BuildGifPath_IncludesBrowserShardAndRepeatIdentity()
+    {
+        var path = CmgRunService.BuildGifPath(
+            Test("checkout [repeat 2/3]"),
+            Options(shardIndex: 2, shardCount: 4) with
+            {
+                BrowserKind = Browser.BrowserKind.Firefox,
+                GifDirectory = new DirectoryInfo(Path.GetTempPath())
+            });
+
+        Assert.Equal("firefox-shard-2-of-4-checkout--repeat-2-3-.gif", Path.GetFileName(path!.FullName));
     }
 
     [Fact]
