@@ -105,10 +105,12 @@ public sealed partial class CmgRunService
         try
         {
             var narrations = GifArtifactFamily.NarrationPaths(path);
+            var stillPdfs = GifArtifactFamily.StillPdfPaths(path);
             DeleteFile(path);
             DeleteFile(GifArtifactPaths.Timeline(path));
             DeleteFile(GifArtifactPaths.Debug(path));
             foreach (var narration in narrations) DeleteFile(narration);
+            foreach (var stillPdf in stillPdfs) DeleteFile(stillPdf);
             var frames = GifArtifactPaths.Frames(path);
             if (Directory.Exists(frames)) Directory.Delete(frames, recursive: true);
         }
@@ -129,6 +131,7 @@ public sealed partial class CmgRunService
         File.Exists(GifArtifactPaths.Timeline(path)) ||
         File.Exists(GifArtifactPaths.Debug(path)) ||
         GifArtifactFamily.NarrationPaths(path).Any(File.Exists) ||
+        GifArtifactFamily.StillPdfPaths(path).Any(File.Exists) ||
         Directory.Exists(GifArtifactPaths.Frames(path));
 
     private static string Mode(CmgGifRetentionMode mode) => mode switch
@@ -157,6 +160,7 @@ public sealed partial class CmgRunService
             GifArtifactPaths.Debug(path),
             GifArtifactPaths.Frames(path)
         }.Concat(GifArtifactFamily.NarrationPaths(path))
+            .Concat(GifArtifactFamily.StillPdfPaths(path))
             .Any(candidate => normalized.Contains(candidate, StringComparison.OrdinalIgnoreCase));
     }
 }

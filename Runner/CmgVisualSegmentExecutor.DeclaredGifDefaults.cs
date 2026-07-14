@@ -75,6 +75,7 @@ public sealed partial class CmgVisualSegmentExecutor
         Add(options, mapped, "gifPagePosition", "pagePosition");
         Add(options, mapped, "gifTabContext", "tabContext");
         Add(options, mapped, "gifNarrationSidecar", "narrationSidecar");
+        Add(options, mapped, "gifStillPdf", "stillPdf");
         Add(options, mapped, "gifAltText", "altText");
         Add(options, mapped, "gifDescription", "description");
         Add(options, mapped, "gifFormat", "format");

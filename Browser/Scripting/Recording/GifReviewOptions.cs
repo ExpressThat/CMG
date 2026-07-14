@@ -3,7 +3,8 @@ namespace CMG.Browser.Scripting.Recording;
 public sealed record GifReviewOptions(
     string? NarrationSidecar = null,
     string? AltText = null,
-    string? Description = null)
+    string? Description = null,
+    string? StillPdf = null)
 {
     public static GifReviewOptions FromOptions(
         IReadOnlyDictionary<string, string> options,
@@ -16,7 +17,10 @@ public sealed record GifReviewOptions(
                 ? ParseNarration(narration, context)
                 : defaults.NarrationSidecar,
             options.GetValueOrDefault("altText") ?? defaults.AltText,
-            options.GetValueOrDefault("description") ?? defaults.Description);
+            options.GetValueOrDefault("description") ?? defaults.Description,
+            options.TryGetValue("stillPdf", out var stillPdf)
+                ? ParseArtifactOption(stillPdf, context, "stillPdf")
+                : defaults.StillPdf);
         ValidateAltText(result.AltText, context);
         return result;
     }
@@ -27,6 +31,14 @@ public sealed record GifReviewOptions(
         "auto" => GifArtifactPaths.Narration(gifPath),
         _ when Path.IsPathRooted(NarrationSidecar) => NarrationSidecar,
         _ => Path.GetFullPath(NarrationSidecar)
+    };
+
+    public string? ResolveStillPdfPath(string gifPath) => StillPdf switch
+    {
+        null => null,
+        "auto" => GifArtifactPaths.StillPdf(gifPath),
+        _ when Path.IsPathRooted(StillPdf) => StillPdf,
+        _ => Path.GetFullPath(StillPdf)
     };
 
     public string? RenderAltText(
@@ -45,10 +57,13 @@ public sealed record GifReviewOptions(
     }
 
     private static string? ParseNarration(string value, string context)
+        => ParseArtifactOption(value, context, "narrationSidecar");
+
+    private static string? ParseArtifactOption(string value, string context, string name)
     {
         if (bool.TryParse(value, out var enabled)) return enabled ? "auto" : null;
         if (!string.IsNullOrWhiteSpace(value)) return value;
-        throw new ScriptExecutionException($"{context} option narrationSidecar= must be true, false, or a file path.");
+        throw new ScriptExecutionException($"{context} option {name}= must be true, false, or a file path.");
     }
 
     private static void ValidateAltText(string? template, string context)

@@ -2025,6 +2025,7 @@ Encoder options:
 - `budgetQualityFallback=<true|false>` permits deterministic quality reduction when the requested encoding exceeds `sizeBudget`; default `true`.
 - `budgetDownscaleFallback=<true|false>` permits bounded dimension reduction after quality fallback; default `true`.
 - `narrationSidecar=<true|false|path>` writes ordered, privacy-safe screen-reader text beside the GIF or at the selected path.
+- `stillPdf=<true|false|path>` writes a static step-by-step reviewer PDF beside the recording or at the selected path.
 - `altText=<template>` stores rendered review text using `{name}`, `{steps}`, `{duration}`, and `{outcome}` placeholders.
 - `description=<text>` stores a human-authored artifact description for timelines and reports.
 

@@ -1,0 +1,5 @@
+gif "reviewer packet" output="demo-output/250-reviewer-packet.gif" timeline=true stillPdf=true description="Pointer-accurate approval evidence with a static reviewer packet." {
+  setContent "<style>body{margin:0;padding:48px;font:18px system-ui;background:#f8fafc;color:#111827}button{padding:12px 20px}</style><main><h1>Release review</h1><p id='status'>Awaiting approval</p><button id='approve' onclick=\"document.querySelector('#status').textContent='Approved for release'\">Approve</button></main>"
+  click "#approve"
+  expectText "#status" "Approved for release"
+}

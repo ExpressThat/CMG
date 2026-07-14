@@ -107,10 +107,11 @@ public sealed class RunCommandBuilderGifRetentionTests
         var handler = new Handler();
 
         var exitCode = Root(handler).Parse(
-            "run flows --gif artifacts --gif-narration true --gif-alt-text \"{name}: {outcome}\" --gif-description \"Release evidence\"").Invoke();
+            "run flows --gif artifacts --gif-narration true --gif-still-pdf true --gif-alt-text \"{name}: {outcome}\" --gif-description \"Release evidence\"").Invoke();
 
         Assert.Equal(0, exitCode);
         Assert.Equal("auto", handler.Encoding?.Review?.NarrationSidecar);
+        Assert.Equal("auto", handler.Encoding?.Review?.StillPdf);
         Assert.Equal("{name}: {outcome}", handler.Encoding?.Review?.AltText);
         Assert.Equal("Release evidence", handler.Encoding?.Review?.Description);
     }

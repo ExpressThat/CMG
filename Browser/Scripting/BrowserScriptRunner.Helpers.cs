@@ -195,6 +195,10 @@ public sealed partial class BrowserScriptRunner
         {
             output.Add($"GIF_NARRATION {recorder.NarrationPath}");
         }
+        if (!string.IsNullOrWhiteSpace(recorder.StillPdfPath))
+        {
+            output.Add($"GIF_STILL_PDF {recorder.StillPdfPath}");
+        }
     }
 
     private static void FinishTrace(ScriptExecutionContext context, bool success, string? error, List<string> output)

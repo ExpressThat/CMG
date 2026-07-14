@@ -53,6 +53,7 @@ internal sealed record GifEncodingCliOptions(
     Option<bool> DisableBudgetQualityFallback,
     Option<bool> DisableBudgetDownscale,
     Option<string?> NarrationSidecar,
+    Option<string?> StillPdf,
     Option<string?> AltText,
     Option<string?> Description,
     Option<string?> Format,
@@ -110,6 +111,7 @@ internal sealed record GifEncodingCliOptions(
             new Option<bool>("--no-gif-budget-quality-fallback") { Description = "Do not reduce encoding quality to meet --gif-budget." },
             new Option<bool>("--no-gif-budget-downscale") { Description = "Do not reduce dimensions to meet --gif-budget." },
             new Option<string?>("--gif-narration") { Description = "Write a screen-reader narration sidecar: true, false, or a file path." },
+            new Option<string?>("--gif-still-pdf") { Description = "Write a step-by-step still-image PDF: true, false, or a file path." },
             new Option<string?>("--gif-alt-text") { Description = "GIF alt-text template with optional name, steps, duration, and outcome placeholders." },
             new Option<string?>("--gif-description") { Description = "Human-written visual-evidence description for timelines and reports." },
             new Option<string?>("--record-format") { Description = $"Whole-run recording format: {GifArtifactFormatParser.Values}." },
@@ -165,9 +167,11 @@ internal sealed record GifEncodingCliOptions(
         {
             var values = new Dictionary<string, string>();
             var narration = Provided(result, NarrationSidecar) ? result.GetValue(NarrationSidecar) : settings?.NarrationSidecar;
+            var stillPdf = Provided(result, StillPdf) ? result.GetValue(StillPdf) : settings?.StillPdf;
             var altText = Provided(result, AltText) ? result.GetValue(AltText) : settings?.AltText;
             var description = Provided(result, Description) ? result.GetValue(Description) : settings?.Description;
             if (narration is not null) values["narrationSidecar"] = narration;
+            if (stillPdf is not null) values["stillPdf"] = stillPdf;
             if (altText is not null) values["altText"] = altText;
             if (description is not null) values["description"] = description;
             review = GifReviewOptions.FromOptions(values, "GIF");

@@ -160,13 +160,13 @@ Both reports expose the `gifQuality=ultra` failure under `gifDiagnostics` with e
 ## Accessible GIF Review Output
 
 ```cmgscript
-gif "release approval" narrationSidecar=true altText="{name}: {steps} steps, {outcome}" description="A pointer-accurate approval journey." {
+gif "release approval" narrationSidecar=true stillPdf=true altText="{name}: {steps} steps, {outcome}" description="A pointer-accurate approval journey." {
   click "#approve"
   expectText "#status" "Approved"
 }
 ```
 
-`true` writes `<gif-name>.narration.txt`; a path selects another UTF-8 file. Timelines and JSON reports expose `narrationPath`, rendered `altText`, and `description`; HTML uses the alt text on the GIF preview and links the narration. Run demos 242 and 243 for focused and whole-test forms.
+`narrationSidecar=true` writes `<gif-name>.narration.txt`; `stillPdf=true` writes `<gif-name>.steps.pdf`, with one page per semantic step and the final state. Either option accepts an explicit path. Timelines and reports expose both artifacts; HTML links them from the recording preview. Run demos 242, 243, and 250.
 
 Pointer visuals can be styled with `pointerTheme=`, `pointerColor=`, `pointerSize=`, `pointerShadow=`, and `showPointer=` on `recording`, `gif`, `recordVideo`, `screencast`, and individual pointer-aware actions. Use this when a GIF needs a ring pointer for review, a branded pointer for demos, a touch pointer for tap flows, or clean page-state frames without the DOM pointer. Command-level `--pointer-theme`, `--pointer-color`, `--pointer-size`, `--pointer-shadow`, and `--show-pointer` set whole-run defaults for `--gif` recordings.
 

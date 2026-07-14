@@ -20,6 +20,9 @@ public static partial class GifTimelineWriter
         if (altText is null) writer.WriteNull("altText"); else writer.WriteString("altText", altText);
         if (review.Description is null) writer.WriteNull("description");
         else writer.WriteString("description", review.Description);
+        var stillPdf = review.ResolveStillPdfPath(gifPath);
+        if (stillPdf is null) writer.WriteNull("stillPdfPath");
+        else writer.WriteString("stillPdfPath", Path.GetFullPath(stillPdf));
         writer.WriteEndObject();
     }
 }

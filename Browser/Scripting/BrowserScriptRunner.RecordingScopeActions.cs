@@ -184,6 +184,7 @@ public sealed partial class BrowserScriptRunner
         "budgetQualityFallback",
         "budgetDownscaleFallback",
         "narrationSidecar",
+        "stillPdf",
         "altText",
         "description",
         "pointerContrast",

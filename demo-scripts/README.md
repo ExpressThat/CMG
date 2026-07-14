@@ -393,6 +393,15 @@ dotnet run -- --firefox browser close
 - `239-gif-quality-comparison.cmgscript`: Generates identical highest, high, medium, and low quality artifacts for visual comparison.
 - `240-gif-size-budget.cmgscript`: Records a pointer-accurate journey with automatic quality/downscale budget fallback, timeline diagnostics, and a focused-block reproduction command.
 - `241-gif-invalid-setting-report.cmgscript`: Intentionally fails validation to demonstrate structured JSON/HTML recording-setting diagnostics.
+- `242-gif-accessible-review.cmgscript`: Writes authored alt text, a narration sidecar, and review metadata.
+- `243-gif-accessible-review-runner.cmgscript`: Runner declaration form of accessible visual evidence.
+- `244-recording-artifact-formats.cmgscript`: Exports the same choreography as GIF, APNG, and WebP.
+- `245-recording-mp4.cmgscript`: Exports pointer-accurate MP4 evidence through FFmpeg.
+- `246-recording-artifact-formats-runner.cmgscript`: Runner declaration form of multi-format recording.
+- `247-recording-geometry-fidelity.cmgscript`: Exercises CSS zoom, transforms, and nested overflow geometry.
+- `248-browser-color-calibration.cmgscript`: Fixed RGB and gradient calibration for cross-browser review.
+- `249-streaming-gif-storage.cmgscript`: Demonstrates disk-delta frame storage and streaming GIF diagnostics.
+- `250-gif-still-pdf.cmgscript`: Writes a step-by-step still-image PDF beside animated evidence.
 - `242-gif-accessible-review.cmgscript`: Focused GIF with generated alt text, an authored description, and a screen-reader narration sidecar.
 - `243-gif-accessible-review-runner.cmgscript`: Runner declarations for the same accessible review metadata and narration output.
 - `244-recording-artifact-formats.cmgscript`: Runs the same virtual-pointer journey through native lossless APNG and animated WebP output.

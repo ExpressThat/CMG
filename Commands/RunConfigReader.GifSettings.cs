@@ -52,6 +52,7 @@ internal static partial class RunConfigReader
             BoolOption(value, "budgetQualityFallback"),
             BoolOption(value, "budgetDownscaleFallback"),
             StringOption(value, "narrationSidecar"),
+            StringOption(value, "stillPdf"),
             StringOption(value, "altText"),
             StringOption(value, "description"),
             StringOption(value, "format"),
@@ -81,6 +82,6 @@ internal static partial class RunConfigReader
         "captionStyle", "captionPosition", "captionSeverity", "captionSize", "autoCaptions", "captionTemplate",
         "redact", "mask", "blur", "autoRedact", "redactionSafety",
         "sizeBudget", "budgetQualityFallback", "budgetDownscaleFallback",
-        "narrationSidecar", "altText", "description", "format", "ffmpegPath"
+        "narrationSidecar", "stillPdf", "altText", "description", "format", "ffmpegPath"
     };
 }

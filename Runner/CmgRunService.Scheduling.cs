@@ -81,6 +81,7 @@ public sealed partial class CmgRunService
         line.StartsWith("GIF_TIMELINE ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_DEBUG ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_NARRATION ", StringComparison.Ordinal) ||
+        line.StartsWith("GIF_STILL_PDF ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_CAPTURE_STATS ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_WARN_UNCHANGED ", StringComparison.Ordinal) ||
         line.StartsWith("GIF_WARN_BLANK ", StringComparison.Ordinal) ||

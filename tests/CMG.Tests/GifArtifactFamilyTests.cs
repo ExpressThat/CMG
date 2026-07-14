@@ -46,6 +46,7 @@ public sealed class GifArtifactFamilyTests
             File.WriteAllText(GifArtifactPaths.Timeline(artifact), "{}");
             File.WriteAllText(GifArtifactPaths.Debug(artifact), "{}");
             File.WriteAllText(GifArtifactPaths.Narration(artifact), "review");
+            File.WriteAllText(GifArtifactPaths.StillPdf(artifact), "pdf");
             Directory.CreateDirectory(GifArtifactPaths.Frames(artifact));
 
             GifArtifactRetentionCleaner.Clean(directory, 7);
@@ -54,6 +55,7 @@ public sealed class GifArtifactFamilyTests
             Assert.False(File.Exists(GifArtifactPaths.Timeline(artifact)));
             Assert.False(File.Exists(GifArtifactPaths.Debug(artifact)));
             Assert.False(File.Exists(GifArtifactPaths.Narration(artifact)));
+            Assert.False(File.Exists(GifArtifactPaths.StillPdf(artifact)));
             Assert.False(Directory.Exists(GifArtifactPaths.Frames(artifact)));
         }
         finally

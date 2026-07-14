@@ -74,4 +74,23 @@ public sealed partial class GifFrameSink
         SetFrameMetadata(canvas.Frames.RootFrame.Metadata.GetGifMetadata(), frame.Delay);
         return canvas;
     }
+
+    internal void VisitCanvases(IReadOnlySet<int> selected, Action<int, Image<Rgba32>> visit)
+    {
+        Image<Rgba32>? previous = null;
+        try
+        {
+            for (var index = 0; index < frames.Count; index++)
+            {
+                var canvas = LoadCanvas(index, previous);
+                previous?.Dispose();
+                previous = canvas;
+                if (selected.Contains(index)) visit(index, canvas);
+            }
+        }
+        finally
+        {
+            previous?.Dispose();
+        }
+    }
 }

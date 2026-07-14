@@ -3,7 +3,11 @@ using CMG.Browser.Scripting.Recording;
 
 namespace CMG.Runner;
 
-internal sealed record CmgGifReviewMetadata(string? NarrationPath, string? AltText, string? Description);
+internal sealed record CmgGifReviewMetadata(
+    string? NarrationPath,
+    string? StillPdfPath,
+    string? AltText,
+    string? Description);
 
 internal static class CmgGifReviewMetadataReader
 {
@@ -18,6 +22,7 @@ internal static class CmgGifReviewMetadataReader
                 if (document.RootElement.TryGetProperty("review", out var review))
                     return new(
                         String(review, "narrationPath"),
+                        String(review, "stillPdfPath"),
                         String(review, "altText"),
                         String(review, "description"));
             }
@@ -26,7 +31,12 @@ internal static class CmgGifReviewMetadataReader
             }
         }
         var narration = GifArtifactPaths.Narration(gifPath);
-        return new(File.Exists(narration) ? narration : null, null, null);
+        var stillPdf = GifArtifactPaths.StillPdf(gifPath);
+        return new(
+            File.Exists(narration) ? narration : null,
+            File.Exists(stillPdf) ? stillPdf : null,
+            null,
+            null);
     }
 
     private static string? String(JsonElement element, string name) =>

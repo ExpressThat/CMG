@@ -86,6 +86,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--no-gif-budget-quality-fallback`: Preserve the requested quality while applying `--gif-budget`.
 - `--no-gif-budget-downscale`: Preserve captured dimensions while applying `--gif-budget`.
 - `--gif-narration <true|false|path>`: Write a UTF-8 screen-reader narration sidecar. `true` uses `<gif-name>.narration.txt`.
+- `--gif-still-pdf <true|false|path>`: Write a step-by-step still-image PDF. `true` uses `<gif-name>.steps.pdf`.
 - `--gif-alt-text <template>`: Alt text stored in timelines/reports and used by HTML previews. Supports `{name}`, `{steps}`, `{duration}`, and `{outcome}`.
 - `--gif-description <text>`: Human-written artifact description stored in timelines and JSON/HTML reports.
 - `--pointer-contrast <auto|fixed>`: Adapt an uncolored pointer to the page beneath it. Defaults to `auto`.
@@ -184,7 +185,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-budget <size>` targets an encoded size using quality fallback and then bounded downscaling; `--no-gif-budget-quality-fallback` and `--no-gif-budget-downscale` disable either fallback. The smallest candidate is retained when the target is impossible.
 - Every completed recording emits `GIF_CAPTURE_STATS` with frame, optimization, blank-frame, ICC/CICP/gamma, profile-change, memory, timing, and budget-decision counts. `GIF_WARN_UNCHANGED`, `GIF_WARN_BLANK`, and `GIF_WARN_COLOR_PROFILE` explain evidence-quality risks without changing the exit code.
 - Every retained artifact emits `GIF_REPRODUCE path="..." command="..."`. The JSON-escaped command preserves browser selection, `browser --port` placement, and the file/inline source. It includes `--gif` for command-level recording and omits it for focused DSL blocks so the block remains the recording boundary.
-- `narrationSidecar=`, `altText=`, and `description=` work on `gif`, `recordVideo`, `screencast`, and inherited recording scopes. A completed sidecar emits `GIF_NARRATION <absolute-path>`; no sidecar is created without an active recorder.
+- `narrationSidecar=`, `stillPdf=`, `altText=`, and `description=` work on `gif`, `recordVideo`, `screencast`, and inherited recording scopes. Completed artifacts emit `GIF_NARRATION <absolute-path>` and `GIF_STILL_PDF <absolute-path>` respectively; neither is created without an active recorder. The PDF contains semantic step-result pages and the final visual state.
 - APNG and WebP use built-in encoders. MP4 uses FFmpeg with H.264, `yuv420p`, even-dimension padding, and an exact 100 fps centisecond evidence timeline. A missing executable fails with an actionable stderr reason and exit code `1`; CMG never writes GIF bytes under another extension.
 - Active recordings also emit `GIF_WARN_MULTIPLE_TARGETS`, `GIF_WARN_TINY_TARGET`, `GIF_WARN_SCROLLED`, and `GIF_WARN_NON_VISUAL` when selector or action choices weaken the resulting evidence. These warnings never fail the script and are not evaluated when GIF recording is inactive.
 - Suppressed nested recording blocks emit `GIF_BLOCK_SUPPRESSED <line> reason=command-level-recording` when `--gif` owns the whole run.

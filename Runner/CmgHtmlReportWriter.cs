@@ -32,6 +32,7 @@ public static partial class CmgHtmlReportWriter
             WriteGifDiagnostics(builder, test);
 
             WriteGifPreviews(builder, test);
+            WriteDownloadArtifacts(builder, test);
             WriteFailureFrame(builder, test, testIndex);
 
             if (test.Annotations.Count > 0)
@@ -119,12 +120,24 @@ public static partial class CmgHtmlReportWriter
                 builder.AppendLine($"<figcaption>Description: {Encode(review.Description)}</figcaption>");
             if (!string.IsNullOrWhiteSpace(review.NarrationPath))
                 builder.AppendLine($"<figcaption><a href=\"{Encode(GifSource(review.NarrationPath))}\">Screen-reader narration</a></figcaption>");
+            if (!string.IsNullOrWhiteSpace(review.StillPdfPath))
+                builder.AppendLine($"<figcaption><a href=\"{Encode(GifSource(review.StillPdfPath))}\">Step-by-step still PDF</a></figcaption>");
             if (reproduction.TryGetValue(Path.GetFullPath(path), out var command))
                 builder.AppendLine($"<figcaption>Reproduce: <code>{Encode(command)}</code></figcaption>");
             builder.AppendLine("</figure>");
         }
 
         builder.AppendLine("</div>");
+    }
+
+    private static void WriteDownloadArtifacts(StringBuilder builder, CmgTestResult test)
+    {
+        var artifacts = CmgDownloadArtifacts.For(test);
+        if (artifacts.Count is 0) return;
+        builder.AppendLine("<section class=\"download-artifacts\"><h3>Downloads</h3><ul>");
+        foreach (var artifact in artifacts)
+            builder.AppendLine($"<li><a href=\"{Encode(GifSource(artifact.Path))}\">{Encode(artifact.Name)}</a> ({artifact.SizeBytes} bytes)</li>");
+        builder.AppendLine("</ul></section>");
     }
 
     private static IEnumerable<string> GifPaths(string? gifPath)

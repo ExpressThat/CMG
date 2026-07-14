@@ -15,10 +15,12 @@ internal static class GifArtifactRetentionCleaner
                      .Where(file => file.LastWriteTimeUtc < cutoff))
         {
             var narrations = GifArtifactFamily.NarrationPaths(gif.FullName);
+            var stillPdfs = GifArtifactFamily.StillPdfPaths(gif.FullName);
             Delete(gif.FullName);
             Delete(GifArtifactPaths.Timeline(gif.FullName));
             Delete(GifArtifactPaths.Debug(gif.FullName));
             foreach (var narration in narrations) Delete(narration);
+            foreach (var stillPdf in stillPdfs) Delete(stillPdf);
             var frames = GifArtifactPaths.Frames(gif.FullName);
             if (Directory.Exists(frames)) Directory.Delete(frames, recursive: true);
             output.Add($"GIF_RETENTION_CLEANUP path={Quote(gif.FullName)} ageDays={days} action=deleted");

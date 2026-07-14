@@ -25,6 +25,7 @@ public static partial class CmgJsonReportWriter
             WriteGifReproductionCommands(writer, test);
             WriteGifDiagnostics(writer, test);
             WriteGifMetadata(writer, test);
+            WriteDownloadArtifacts(writer, test);
             writer.WriteString("tags", test.Tags);
             writer.WriteStartArray("annotations");
             foreach (var annotation in test.Annotations)
@@ -78,6 +79,20 @@ public static partial class CmgJsonReportWriter
 
     private static string Status(CmgTestResult test) =>
         string.IsNullOrWhiteSpace(test.Status) ? test.Success ? "passed" : "failed" : test.Status;
+
+    private static void WriteDownloadArtifacts(Utf8JsonWriter writer, CmgTestResult test)
+    {
+        writer.WriteStartArray("downloadArtifacts");
+        foreach (var artifact in CmgDownloadArtifacts.For(test))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("path", artifact.Path);
+            writer.WriteString("name", artifact.Name);
+            writer.WriteNumber("sizeBytes", artifact.SizeBytes);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+    }
 
     public static IEnumerable<string> CleanOutputForReports(IEnumerable<string> lines)
     {

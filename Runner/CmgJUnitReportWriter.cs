@@ -61,6 +61,14 @@ public static class CmgJUnitReportWriter
             yield return new($"cmg.annotation.{annotation.Type}", annotation.Description);
         }
 
+        var downloads = CmgDownloadArtifacts.For(test);
+        for (var index = 0; index < downloads.Count; index++)
+        {
+            var suffix = downloads.Count is 1 ? string.Empty : $".{index + 1}";
+            yield return new($"cmg.download.path{suffix}", downloads[index].Path);
+            yield return new($"cmg.download.sizeBytes{suffix}", downloads[index].SizeBytes.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        }
+
         var paths = GifPaths(test.GifPath).ToArray();
         for (var index = 0; index < paths.Length; index++)
         {
@@ -69,6 +77,8 @@ public static class CmgJUnitReportWriter
             var review = CmgGifReviewMetadataReader.Read(test, paths[index]);
             if (!string.IsNullOrWhiteSpace(review.NarrationPath))
                 yield return new($"cmg.gif.narrationPath{suffix}", review.NarrationPath);
+            if (!string.IsNullOrWhiteSpace(review.StillPdfPath))
+                yield return new($"cmg.gif.stillPdfPath{suffix}", review.StillPdfPath);
             if (!string.IsNullOrWhiteSpace(review.AltText))
                 yield return new($"cmg.gif.altText{suffix}", review.AltText);
             if (!string.IsNullOrWhiteSpace(review.Description))

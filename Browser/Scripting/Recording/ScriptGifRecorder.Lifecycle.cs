@@ -51,13 +51,18 @@ public sealed partial class ScriptGifRecorder
         }
 
         frameSink.Save(OutputPath);
+        var stillPdfPath = options.EffectiveReview.ResolveStillPdfPath(OutputPath);
+        if (frameSink.FrameCount > 0 && stillPdfPath is not null)
+        {
+            StillPdfPath = GifStillPdfWriter.Write(stillPdfPath, OutputPath, frameSink, timelineSteps);
+        }
         var narrationPath = options.EffectiveReview.ResolveNarrationPath(OutputPath);
         if (frameSink.FrameCount > 0 && narrationPath is not null)
         {
             NarrationPath = GifNarrationWriter.Write(
                 narrationPath, OutputPath, options.EffectiveReview, frameSink, timelineSteps, outcome);
         }
-        var timelinePath = options.TimelinePath ?? (options.EffectiveEncoding.Format is GifArtifactFormat.Mp4
+        var timelinePath = options.TimelinePath ?? (options.EffectiveEncoding.Format is GifArtifactFormat.Mp4 || stillPdfPath is not null
             ? GifArtifactPaths.Timeline(OutputPath) : null);
         if (frameSink.FrameCount > 0 && !string.IsNullOrWhiteSpace(timelinePath))
         {
@@ -76,6 +81,8 @@ public sealed partial class ScriptGifRecorder
     public string? DebugPath { get; private set; }
 
     public string? NarrationPath { get; private set; }
+
+    public string? StillPdfPath { get; private set; }
 
     public void Dispose()
     {

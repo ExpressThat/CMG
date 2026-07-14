@@ -102,6 +102,31 @@ public sealed class BrowserScriptRunnerGifBlockTests
     }
 
     [Fact]
+    public void RunText_GifBlockWritesStillPdfAndReportsItsPath()
+    {
+        var directory = Directory.CreateTempSubdirectory();
+        var path = Path.Combine(directory.FullName, "review.gif");
+        try
+        {
+            var result = Runner().RunText($$"""
+            gif "review" output="{{Slash(path)}}" stillPdf=true {
+              showMessageBar "Ready"
+              caption "Complete"
+            }
+            """, "debug", new FakeAutomationClient());
+
+            var pdf = Path.ChangeExtension(path, ".steps.pdf");
+            Assert.True(result.Success, result.Error);
+            Assert.True(File.Exists(pdf));
+            Assert.Contains(result.StdoutLines, line => line == $"GIF_STILL_PDF {Path.GetFullPath(pdf)}");
+        }
+        finally
+        {
+            directory.Delete(recursive: true);
+        }
+    }
+
+    [Fact]
     public void RunText_GifBlockRejectsInvalidQuality()
     {
         var result = Runner().RunText("""

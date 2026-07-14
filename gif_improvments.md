@@ -327,7 +327,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `webSocketCaptions=true` adds privacy-safe connection, message, route, and cleanup evidence without payloads.
 - Implemented: `workerCaptions=true` adds privacy-safe discovery, evaluation, and interception outcomes without expressions, results, URLs, or bodies.
 - Implemented as capture-only captions: show browser dialog capture and accepted/dismissed handling state without re-dispatching dialogs.
-- Implemented for event evidence: show download completion without exposing its path. Report artifact links remain open.
+- Implemented for event evidence and reports: GIF captions show completion without exposing the path; JSON/HTML/JUnit link completed files after validating that they still exist.
 - Implemented for event evidence: show selected upload file counts without exposing filenames or file contents.
 - Implemented: recordings detect protocol page zoom where exposed plus visual scale, DPR, and offsets; CDP/BiDi CSS-viewport pointer coordinates are preserved and reported through `GIF_CAPTURE_GEOMETRY` and timeline metadata.
 - Implemented: `reducedMotion=true` and `--gif-reduced-motion` remove inherited travel/fades while retaining static pointer origins, targets, click evidence, and child overrides.
@@ -386,6 +386,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `narrationSidecar=<true|false|path>`, runner declarations, root/project settings, and `--gif-narration` write a privacy-safe ordered UTF-8 narration and emit `GIF_NARRATION`.
 - Implemented: add an `accessibilityEvidence=true` preset that captures keyboard labels, focused-element evidence, accessible role/name callouts, high-contrast styling, and contrast warnings.
 - Implemented: `altText=` and `--gif-alt-text` render `{name}`, `{steps}`, `{duration}`, and `{outcome}` into timeline/JSON metadata and HTML preview alt attributes.
+- Implemented: `stillPdf=<true|false|path>`, `--gif-still-pdf`, runner declarations, and config defaults export semantic step frames plus the final state as a reviewer PDF; timeline/report metadata, retention, and stdout include it.
 - Implemented: `description=` / `gifDescription=` / `--gif-description` retain human-authored descriptions in narration, timeline, JSON, and HTML output.
 - Add option to export a step-by-step still image PDF for reviewers who cannot view GIFs.
 
