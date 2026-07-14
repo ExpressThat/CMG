@@ -380,6 +380,8 @@ dotnet run -- --firefox browser close
 - `226-gif-framing-resilience-runner.cmgscript`: Runner declarations for target safe area, stable coordinates, and a protected crop.
 - `227-gif-auto-pointer-path.cmgscript`: Geometry-aware automatic pointer routing around a wide target label.
 - `228-gif-auto-pointer-path-runner.cmgscript`: Runner declarations for automatic pointer and target-aware drag routes.
+- `229-gif-target-zoom-page-position.cmgscript`: Automatic tiny-target zoom and a long-page position rail in a focused recording.
+- `230-gif-target-zoom-page-position-runner.cmgscript`: Runner declarations for tiny-target zoom and page-position evidence.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

@@ -39,13 +39,17 @@ public sealed class BrowserScriptRunnerPointerEvidenceTests
     {
         using var fixture = new Fixture();
 
-        var result = fixture.Run("fill #tiny value targetCallout=always focusPulse=true pointerDuration=0 holdAfterAction=100");
+        var result = fixture.Run("fill #tiny value targetCallout=always targetZoom=always pagePosition=always focusPulse=true pointerDuration=0 holdAfterAction=100");
 
         Assert.True(result.Success, result.Error);
         Assert.Contains(fixture.Client.EvaluatedExpressions, expression =>
             expression.Contains("const calloutMode = 'always'", StringComparison.Ordinal));
         Assert.Contains(fixture.Client.EvaluatedExpressions, expression =>
             expression.Contains("const focused = true ? document.activeElement", StringComparison.Ordinal));
+        Assert.Contains(fixture.Client.EvaluatedExpressions, expression =>
+            expression.Contains("const zoomMode = 'always'", StringComparison.Ordinal) &&
+            expression.Contains("const positionMode = 'always'", StringComparison.Ordinal) &&
+            expression.Contains("innerWidth - 32", StringComparison.Ordinal));
     }
 
     [Fact]

@@ -252,9 +252,9 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: blur, solid, and replacement DSL masks plus repeatable whole-run `--gif-redact`, `--gif-mask`, and `--gif-blur` coarse defaults.
 - Implemented: `maskGif` / `redactGif` / `redactText` and `unmaskGif` / `unredactGif` recording-only actions with live locator resolution.
 - Implemented: `autoRedact` presets cover passwords, tokens, emails, payment-card-like text, and combined privacy masking through DSL, CLI, and project settings.
-- Add live element highlight outlines that follow the target through the action.
-- Add target zoom inset, like a magnifying glass, for tiny controls.
-- Add mini-map or viewport position indicator for long pages.
+- Implemented: `targetCallout=` resolves the active locator on every captured frame, so its outline follows targets that move during an action.
+- Implemented: `targetZoom=<auto|always|none>` adds a capture-only enlarged inset for tiny controls; `targetZoomThreshold=` defaults to 24 CSS pixels. CLI: `--target-zoom` and `--target-zoom-threshold`.
+- Implemented: `pagePosition=<auto|always|none>` adds a capture-only viewport rail for long pages. CLI: `--page-position`.
 - Implemented: inherited `layoutStability=` and `--gif-layout-stability` wait for two settled animation frames before pointer coordinate capture.
 - Implemented: recorder target positioning detects obstructing fixed/sticky elements, corrects scroll position, then rechecks safe-area bounds before pointer movement.
 

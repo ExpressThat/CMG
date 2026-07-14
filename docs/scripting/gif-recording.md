@@ -88,6 +88,9 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `pointerContrast=<auto|fixed>`: Adapt the default pointer foreground and edge to the pixels beneath it. Defaults to `auto`; an explicit `pointerColor=` remains authoritative.
 - `targetCallout=<auto|always|none>`: Outline and call out the active target. `auto` is the default and activates when either target dimension is below `targetCalloutThreshold`.
 - `targetCalloutThreshold=<8..100>`: Tiny-target threshold in CSS pixels. Defaults to `24`.
+- `targetZoom=<auto|always|none>`: Enlarge the live target in a capture-only inset. `auto` is the default and activates below `targetZoomThreshold`.
+- `targetZoomThreshold=<8..100>`: Tiny-target zoom threshold in CSS pixels. Defaults to `24`.
+- `pagePosition=<auto|always|none>`: Show a compact viewport-position rail. `auto` is the default and activates when page height exceeds 1.5 viewports.
 - `focusPulse=<true|false>`: Pulse the actual focused control after focus-producing pointer or keyboard actions. Defaults to `true`.
 - `pointerIdle=<pulse|none>` / `pointerIdleThreshold=<100..60000>`: Show three readable pointer-halo stages during long holds. Defaults to `pulse` after `1200ms`; encoded hold duration is preserved.
 - `teleportMarker=<true|false>`: Show the origin and dashed travel path for `pointerSpeed=instant` or zero-duration moves. Defaults to `true`.
@@ -153,7 +156,7 @@ Use `pointerStyle` for a visual-only mid-flow pointer change, `annotateTarget` /
 
 Use `gifIfChanged` / `gif.ifChanged` to keep an artifact only when the final page differs from the block baseline, and `gifOnFailure` / `gif.onFailure` to retain only failed-block evidence. Both still buffer pointer-accurate frames while running. `gifSnapshot` / `gif.snapshot` adds a named still hold to any active recorder and skips without one. See demos 208 and 209.
 
-Structured runner tests and suites can override whole-test GIF defaults with `gifQuality`, `gifPointerDuration`, `gifPointerSpeed`, `gifPointerEasing`, `gifPointerPath`, `gifDragPath`, `gifFps`, `gifFrameDelay`, and `gif`-prefixed framing declarations. Suite defaults cascade; test values replace only the named properties. See demos 210, 211, and 228.
+Structured runner tests and suites can override whole-test GIF defaults with `gifQuality`, `gifPointerDuration`, `gifPointerSpeed`, `gifPointerEasing`, `gifPointerPath`, `gifDragPath`, `gifFps`, `gifFrameDelay`, framing declarations, `gifTargetZoom`, `gifTargetZoomThreshold`, and `gifPagePosition`. Suite defaults cascade; test values replace only the named properties. See demos 210, 211, 228, and 230.
 
 Runner declarations can keep only useful command-level evidence: `gif=onFailure` retains all attempts only when the final result fails, `gif=onRetry` retains failed attempts, `gif=off` disables command capture, and `gif=always` is the default. `gifSampleRate=<n>` records the first selected test and every nth test after it. `gifCleanPassed=true` lets reports and traces consume a passing artifact before its files are removed. Run these policies with `cmg run <file> -gif <directory>`; they do not disable focused recording blocks in the test body. See demo 212.
 
@@ -203,7 +206,7 @@ Recording viewport controls are inert without an active GIF. While recording, CM
 - `pointerColor=<css-color>`: Default pointer color.
 - `pointerSize=<auto|8..96>`: Default pointer size in CSS pixels.
 - `pointerShadow=<none|light|medium|strong>`: Default pointer shadow.
-- `pointerContrast`, `targetCallout`, `targetCalloutThreshold`, `focusPulse`, `pointerIdle`, `pointerIdleThreshold`, `teleportMarker`, `mouseDownHold`: Inherited pointer-evidence defaults described above.
+- `pointerContrast`, `targetCallout`, `targetCalloutThreshold`, `targetZoom`, `targetZoomThreshold`, `pagePosition`, `focusPulse`, `pointerIdle`, `pointerIdleThreshold`, `teleportMarker`, `mouseDownHold`: Inherited pointer-evidence defaults described above.
 - `showPointer=<true|false|auto>`: Default pointer visibility for captured frames.
 - `captionStyle=<subtle|teaching|qa|bug-report|compact>`: Default caption style.
 - `captionPosition=<top|bottom|left|right|auto>`: Default caption position.

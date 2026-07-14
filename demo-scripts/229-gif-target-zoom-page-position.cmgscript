@@ -1,0 +1,5 @@
+setContent "<style>html,body{margin:0;background:#e5e7eb;color:#172033;font:16px system-ui}main{min-height:1500px;padding:40px}.panel{margin-top:1080px;padding:32px;background:white;border:2px solid #172033}.tiny{width:18px;height:18px;padding:0;border:2px solid #172033;background:#fbbf24}.status{margin-left:12px;font-weight:700}</style><main><p>Long-page recording evidence</p><section class='panel'><button class='tiny' id='confirm' aria-label='Confirm' onclick='document.querySelector(\".status\").textContent=\"Confirmed\"'></button><span class='status'>Waiting</span></section></main>"
+gif "tiny target on long page" output="demo-output/229-target-zoom-page-position.gif" keepFrames="demo-output/229.frames" targetZoom=auto targetZoomThreshold=24 pagePosition=auto pointerDuration=900 {
+  click "#confirm"
+  assertText ".status" "Confirmed"
+}

@@ -768,6 +768,16 @@ gif "approval" pointerPath=auto pointerDuration=1400 {
 
 `auto` is the default. For large elements, CMG uses the resolved target rectangle to travel toward the nearest outside edge, then enters only for the final center click. This preserves pointer accuracy without covering the label throughout the journey. Use `direct`, `arc`, or `manhattan` for authored routes; `avoid-target` forces the target-aware approach. Whole runs use `--pointer-path` and `--drag-path`; suites use `gifPointerPath` and `gifDragPath`. See demos 227 and 228.
 
+### Keep tiny targets and long pages readable
+
+```cmgscript
+gif "settings" targetZoom=auto targetZoomThreshold=24 pagePosition=auto {
+  click "#compact-control"
+}
+```
+
+Target zoom copies the live rendered control into a non-interactive capture inset; the position rail shows the current viewport within a long document. Both default to `auto`, can be overridden on child actions, and are removed immediately after each frame. Whole runs use `--target-zoom`, `--target-zoom-threshold`, and `--page-position`; suites use `gifTargetZoom`, `gifTargetZoomThreshold`, and `gifPagePosition`. See demos 229 and 230.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

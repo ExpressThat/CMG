@@ -80,6 +80,9 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--pointer-contrast <auto|fixed>`: Adapt an uncolored pointer to the page beneath it. Defaults to `auto`.
 - `--pointer-callout <auto|always|none>`: Control active-target outlines/callouts. Defaults to `auto` for tiny targets.
 - `--pointer-callout-threshold <8..100>`: Tiny-target threshold in CSS pixels. Defaults to `24`.
+- `--target-zoom <auto|always|none>`: Control the capture-only enlarged inset for tiny active targets. Defaults to `auto`.
+- `--target-zoom-threshold <8..100>`: Auto-zoom target threshold in CSS pixels. Defaults to `24`.
+- `--page-position <auto|always|none>`: Control the capture-only viewport rail for long pages. Defaults to `auto`.
 - `--no-pointer-focus-pulse`: Disable focused-control evidence after focus-producing actions.
 - `--pointer-idle <pulse|none>`: Control pointer evidence during long holds. Defaults to `pulse`.
 - `--pointer-idle-threshold <100..60000>`: Long-hold threshold in milliseconds. Defaults to `1200`.

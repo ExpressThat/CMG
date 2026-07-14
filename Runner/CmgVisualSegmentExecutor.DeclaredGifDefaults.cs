@@ -26,7 +26,8 @@ public sealed partial class CmgVisualSegmentExecutor
             var action = new BrowserScriptAction(0, "test", "test", [], mapped, []);
             var motion = (source.PointerMotion ?? ScriptPointerMotionOptions.Default).WithAction(action).Validate("test");
             var framing = (source.GifEncoding?.Framing ?? new GifFramingOptions()).WithOptions(mapped, "test");
-            var encoding = (source.GifEncoding ?? new GifEncodingOptions()) with { Framing = framing };
+            var pointerEvidence = (source.GifEncoding?.PointerEvidence ?? new GifPointerEvidenceOptions()).WithOptions(mapped, "test");
+            var encoding = (source.GifEncoding ?? new GifEncodingOptions()) with { Framing = framing, PointerEvidence = pointerEvidence };
             var frameDelay = ScriptFrameTimingOptions.FromOptions(mapped, "test", source.FrameDelayMilliseconds);
             effective = source with
             {
@@ -63,6 +64,9 @@ public sealed partial class CmgVisualSegmentExecutor
         Add(options, mapped, "gifPixelRatio", "pixelRatio");
         Add(options, mapped, "gifSafeArea", "safeArea");
         Add(options, mapped, "gifLayoutStability", "layoutStability");
+        Add(options, mapped, "gifTargetZoom", "targetZoom");
+        Add(options, mapped, "gifTargetZoomThreshold", "targetZoomThreshold");
+        Add(options, mapped, "gifPagePosition", "pagePosition");
         return mapped;
     }
 

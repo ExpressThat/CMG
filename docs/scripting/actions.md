@@ -441,7 +441,7 @@ Targets use the same forms as `moveMouse`:
 - `x=<pixels> y=<pixels>` viewport coordinates;
 - selector-edge targeting with `selector=<selector> edge=<edge> inset=<pixels>`.
 
-Recording options include `pointerDuration`, `pointerSpeed`, `pointerEasing`, `pointerContrast`, `targetCallout`, `targetCalloutThreshold`, `focusPulse`, `teleportMarker`, and `mouseDownHold`. Parent recording defaults are inherited and action options override them locally.
+Recording options include `pointerDuration`, `pointerSpeed`, `pointerEasing`, `pointerContrast`, `targetCallout`, `targetCalloutThreshold`, `targetZoom`, `targetZoomThreshold`, `pagePosition`, `focusPulse`, `teleportMarker`, and `mouseDownHold`. Parent recording defaults are inherited and action options override them locally.
 
 Output:
 
@@ -2010,6 +2010,8 @@ Encoder options:
 - `cropPadding=<0..2000>` adds CSS-pixel context around `crop=` and requires it.
 - `safeArea=<0..500>` keeps pointer targets and tight crops clear of clipping; default `24`, disabled with `0`.
 - `layoutStability=<0..5000>` waits for settled target coordinates after scrolling; default `150`, disabled with `0`.
+- `targetZoom=<auto|always|none>` and `targetZoomThreshold=<8..100>` control the tiny-target inset; defaults are `auto` and `24`.
+- `pagePosition=<auto|always|none>` controls the long-page viewport rail; default `auto` activates above 1.5 viewports.
 - `scale=<0.05..1>` downscales the cropped or viewport frame before GIF quantization.
 - `maxWidth=<1..10000>` and `maxHeight=<1..10000>` add output dimension caps while preserving aspect ratio.
 - `viewport=<width>x<height>` temporarily sets recording viewport dimensions and restores the prior viewport afterward.

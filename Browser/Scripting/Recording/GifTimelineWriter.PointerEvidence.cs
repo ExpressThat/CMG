@@ -10,6 +10,9 @@ public static partial class GifTimelineWriter
         writer.WriteString("contrast", options.Contrast.ToString().ToLowerInvariant());
         writer.WriteString("targetCallout", options.TargetCallout.ToString().ToLowerInvariant());
         writer.WriteNumber("targetCalloutThreshold", options.TargetCalloutThreshold);
+        writer.WriteString("targetZoom", options.TargetZoom.ToString().ToLowerInvariant());
+        writer.WriteNumber("targetZoomThreshold", options.TargetZoomThreshold);
+        writer.WriteString("pagePosition", options.PagePosition.ToString().ToLowerInvariant());
         writer.WriteBoolean("focusPulse", options.FocusPulse);
         writer.WriteString("idle", options.Idle.ToString().ToLowerInvariant());
         writer.WriteNumber("idleThresholdMilliseconds", options.IdleThresholdMilliseconds);

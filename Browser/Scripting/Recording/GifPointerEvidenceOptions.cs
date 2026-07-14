@@ -10,6 +10,9 @@ public sealed record GifPointerEvidenceOptions(
     PointerContrastMode Contrast = PointerContrastMode.Auto,
     PointerTargetCalloutMode TargetCallout = PointerTargetCalloutMode.Auto,
     int TargetCalloutThreshold = 24,
+    PointerTargetCalloutMode TargetZoom = PointerTargetCalloutMode.Auto,
+    int TargetZoomThreshold = 24,
+    PointerTargetCalloutMode PagePosition = PointerTargetCalloutMode.Auto,
     bool FocusPulse = true,
     PointerIdleMode Idle = PointerIdleMode.Pulse,
     int IdleThresholdMilliseconds = 1200,
@@ -25,6 +28,9 @@ public sealed record GifPointerEvidenceOptions(
             Contrast = options.TryGetValue("pointerContrast", out var contrast) ? ParseContrast(contrast, source) : Contrast,
             TargetCallout = options.TryGetValue("targetCallout", out var callout) ? ParseCallout(callout, source) : TargetCallout,
             TargetCalloutThreshold = ParseInt(options, "targetCalloutThreshold", TargetCalloutThreshold, 8, 100, source),
+            TargetZoom = options.TryGetValue("targetZoom", out var zoom) ? ParseMode(zoom, "targetZoom", source) : TargetZoom,
+            TargetZoomThreshold = ParseInt(options, "targetZoomThreshold", TargetZoomThreshold, 8, 100, source),
+            PagePosition = options.TryGetValue("pagePosition", out var position) ? ParseMode(position, "pagePosition", source) : PagePosition,
             FocusPulse = ParseBool(options, "focusPulse", FocusPulse, source),
             Idle = options.TryGetValue("pointerIdle", out var idle) ? ParseIdle(idle, source) : Idle,
             IdleThresholdMilliseconds = ParseInt(options, "pointerIdleThreshold", IdleThresholdMilliseconds, 100, 60_000, source),
@@ -40,6 +46,9 @@ public sealed record GifPointerEvidenceOptions(
         string? contrast,
         string? callout,
         int? calloutThreshold,
+        string? targetZoom,
+        int? targetZoomThreshold,
+        string? pagePosition,
         bool disableFocusPulse,
         string? idle,
         int? idleThreshold,
@@ -52,6 +61,9 @@ public sealed record GifPointerEvidenceOptions(
         Add(values, "pointerContrast", contrast);
         Add(values, "targetCallout", callout);
         Add(values, "targetCalloutThreshold", calloutThreshold);
+        Add(values, "targetZoom", targetZoom);
+        Add(values, "targetZoomThreshold", targetZoomThreshold);
+        Add(values, "pagePosition", pagePosition);
         Add(values, "focusPulse", disableFocusPulse ? false : null);
         Add(values, "pointerIdle", idle);
         Add(values, "pointerIdleThreshold", idleThreshold);
@@ -78,6 +90,14 @@ public sealed record GifPointerEvidenceOptions(
         "always" or "true" or "on" => PointerTargetCalloutMode.Always,
         "none" or "false" or "off" => PointerTargetCalloutMode.None,
         _ => throw new ScriptExecutionException($"{source} option targetCallout= must be one of: {CalloutValues}.")
+    };
+
+    private static PointerTargetCalloutMode ParseMode(string value, string name, string source) => value.Trim().ToLowerInvariant() switch
+    {
+        "auto" => PointerTargetCalloutMode.Auto,
+        "always" or "true" or "on" => PointerTargetCalloutMode.Always,
+        "none" or "false" or "off" => PointerTargetCalloutMode.None,
+        _ => throw new ScriptExecutionException($"{source} option {name}= must be one of: {CalloutValues}.")
     };
 
     private static PointerIdleMode ParseIdle(string value, string source) => value.Trim().ToLowerInvariant() switch

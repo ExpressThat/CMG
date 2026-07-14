@@ -58,11 +58,17 @@ public static partial class BrowserDomScripts
           const calloutMode = '{{options.TargetCallout.ToString().ToLowerInvariant()}}';
           const tiny = visible && (rect.width < {{options.TargetCalloutThreshold}} || rect.height < {{options.TargetCalloutThreshold}});
           const callout = visible && (calloutMode === 'always' || (calloutMode === 'auto' && tiny));
+          const zoomMode = '{{options.TargetZoom.ToString().ToLowerInvariant()}}';
+          const zoomTiny = visible && (rect.width < {{options.TargetZoomThreshold}} || rect.height < {{options.TargetZoomThreshold}});
+          const targetZoom = visible && (zoomMode === 'always' || (zoomMode === 'auto' && zoomTiny));
+          const positionMode = '{{options.PagePosition.ToString().ToLowerInvariant()}}';
+          const pageHeight = Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0);
+          const pagePosition = positionMode === 'always' || (positionMode === 'auto' && pageHeight > innerHeight * 1.5);
           const origin = {{(teleportOrigin is null ? "null" : $"{{ x: {Invariant(teleportOrigin.X)}, y: {Invariant(teleportOrigin.Y)} }}")}};
           const idlePhase = {{idlePhase}};
           const focused = {{focusPulse.ToString().ToLowerInvariant()}} ? document.activeElement : null;
           const focusRect = focused && focused !== document.body && focused !== document.documentElement ? focused.getBoundingClientRect() : null;
-          if (!callout && !origin && !idlePhase && !focusRect) return true;
+          if (!callout && !targetZoom && !pagePosition && !origin && !idlePhase && !focusRect) return true;
           const overlay = document.createElement('div');
           overlay.id = '__cmg_pointer_evidence';
           overlay.setAttribute('popover', 'manual');
@@ -88,7 +94,45 @@ public static partial class BrowserDomScripts
             const radius = 18 + idlePhase * 7, opacity = .72 - idlePhase * .14;
             parts.push(`<circle cx="${point.x}" cy="${point.y}" r="${radius}" fill="none" stroke="#2563eb" stroke-width="3" opacity="${opacity}"/>`);
           }
+          if (pagePosition) {
+            const trackHeight = Math.min(160, Math.max(80, innerHeight * .28));
+            const trackY = (innerHeight - trackHeight) / 2;
+            const ratio = Math.min(1, innerHeight / Math.max(innerHeight, pageHeight));
+            const thumbHeight = Math.max(18, trackHeight * ratio);
+            const progress = Math.max(0, Math.min(1, scrollY / Math.max(1, pageHeight - innerHeight)));
+            const thumbY = trackY + (trackHeight - thumbHeight) * progress;
+            parts.push(`<rect x="${innerWidth - 32}" y="${trackY}" width="7" height="${trackHeight}" rx="3.5" fill="#111827" opacity=".42"/>`);
+            parts.push(`<rect x="${innerWidth - 34}" y="${thumbY}" width="11" height="${thumbHeight}" rx="5.5" fill="#fbbf24" stroke="#111827" stroke-width="2"/>`);
+          }
           overlay.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 ${innerWidth} ${innerHeight}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${parts.join('')}</svg>`;
+          if (targetZoom) {
+            const inset = document.createElement('div');
+            inset.style.cssText = 'all:initial;position:absolute;right:30px;bottom:20px;width:168px;height:112px;overflow:hidden;border:3px solid #fbbf24;border-radius:7px;background:#fff;box-shadow:0 2px 10px #0008;box-sizing:border-box;';
+            const stage = document.createElement('div');
+            stage.style.cssText = 'all:initial;position:absolute;inset:0;overflow:hidden;';
+            const clone = target.cloneNode(true);
+            const originals = [target, ...target.querySelectorAll('*')];
+            const clones = [clone, ...clone.querySelectorAll('*')];
+            originals.forEach((source, index) => {
+              const copy = clones[index];
+              if (!copy) return;
+              const computed = getComputedStyle(source);
+              copy.style.cssText = Array.from(computed).map(name => `${name}:${computed.getPropertyValue(name)};`).join('');
+              copy.removeAttribute('id');
+              if ('value' in source) copy.value = source.value;
+              if ('checked' in source) copy.checked = source.checked;
+            });
+            const scale = Math.max(1, Math.min(4, 136 / rect.width, 78 / rect.height));
+            clone.style.position = 'absolute';
+            clone.style.margin = '0';
+            clone.style.left = `${(168 - rect.width * scale) / 2}px`;
+            clone.style.top = `${(112 - rect.height * scale) / 2}px`;
+            clone.style.transform = `scale(${scale})`;
+            clone.style.transformOrigin = 'top left';
+            stage.appendChild(clone);
+            inset.appendChild(stage);
+            overlay.appendChild(inset);
+          }
           document.documentElement.appendChild(overlay);
           if (typeof overlay.showPopover === 'function') overlay.showPopover();
           return true;

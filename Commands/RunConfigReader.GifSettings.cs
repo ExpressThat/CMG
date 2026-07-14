@@ -31,6 +31,9 @@ internal static partial class RunConfigReader
             DoubleOption(value, "pixelRatio"),
             IntOption(value, "safeArea"),
             IntOption(value, "layoutStability"),
+            StringOption(value, "targetZoom"),
+            IntOption(value, "targetZoomThreshold"),
+            StringOption(value, "pagePosition"),
             StringOption(value, "captionStyle"),
             StringOption(value, "captionPosition"),
             StringOption(value, "captionSeverity"),
@@ -63,6 +66,7 @@ internal static partial class RunConfigReader
     {
         "quality", "pointerDuration", "pointerSpeed", "pointerEasing", "pointerPath", "dragPath", "clickPulse", "fps", "frameDelay",
         "crop", "cropPadding", "scale", "maxWidth", "maxHeight", "viewport", "pixelRatio", "safeArea", "layoutStability",
+        "targetZoom", "targetZoomThreshold", "pagePosition",
         "captionStyle", "captionPosition", "captionSeverity", "captionSize", "autoCaptions", "captionTemplate",
         "redact", "mask", "blur", "autoRedact", "redactionSafety"
     };

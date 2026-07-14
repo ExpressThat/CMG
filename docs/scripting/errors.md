@@ -292,6 +292,8 @@ Line 3: moveMouse failed. moveMouse element-edge targeting requires edge=<top|bo
 ```text
 Line 3: click failed. click option pointerContrast= must be one of: auto, fixed.
 Line 4: hover failed. hover option targetCallout= must be one of: auto, always, none.
+
+Line 4: hover failed. hover option targetZoom= must be one of: auto, always, none.
 Line 5: pauseGif failed. pauseGif option pointerIdleThreshold= must be an integer from 100 to 60000.
 Line 6: mouseDown failed. mouseDown option mouseDownHold= must be an integer from 0 to 60000.
 ```
@@ -826,6 +828,8 @@ CLI retention setup fails before browser connection when `--gif-sample-rate` is 
 Run-config `gifSettings` rejects unknown keys, incorrect JSON types, and invalid recording values before browser connection or `--list` output. Root settings are validated even when no project is selected; selected project settings overlay root values before validation and CLI precedence is applied per property.
 
 `safeArea` must be from `0` to `500`; `layoutStability` must be from `0` to `5000`. Invalid CLI, config, suite/test, recording-scope, or GIF-block values identify the responsible option. Set either to `0` when exact edge framing or immediate coordinates are intentional.
+
+`targetZoom` and `pagePosition` must be `auto`, `always`, or `none`; `targetZoomThreshold` must be from `8` to `100`. These values are validated before capture and identify the responsible DSL, declaration, config, or CLI option.
 
 `pointerPath` and `dragPath` accept `auto`, `direct`, `arc`, `manhattan`, `avoid-target`, or `avoid-center`. Invalid values fail before browser connection for CLI/config settings and at the responsible DSL line for scoped/action settings.
 

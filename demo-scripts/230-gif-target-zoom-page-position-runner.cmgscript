@@ -1,0 +1,7 @@
+describe "long-page visual evidence" gifTargetZoom=auto gifTargetZoomThreshold=24 gifPagePosition=always {
+  test "keeps a tiny target readable" {
+    setContent "<style>html,body{margin:0;background:#e5e7eb;color:#172033;font:16px system-ui}main{min-height:1500px;padding:40px}.panel{margin-top:1080px;padding:32px;background:white;border:2px solid #172033}.tiny{width:18px;height:18px;padding:0;border:2px solid #172033;background:#fbbf24}.status{margin-left:12px;font-weight:700}</style><main><p>Runner long-page evidence</p><section class='panel'><button class='tiny' id='confirm' aria-label='Confirm' onclick='document.querySelector(\".status\").textContent=\"Confirmed\"'></button><span class='status'>Waiting</span></section></main>"
+    click "#confirm"
+    assertText ".status" "Confirmed"
+  }
+}

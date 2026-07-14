@@ -18,6 +18,7 @@ public sealed class RunCommandBuilderGifConfigTests
             "pointerEasing": "linear", "pointerPath": "avoid-target", "clickPulse": "dot", "fps": 8,
             "crop": "#panel", "cropPadding": 16, "scale": 0.9,
             "maxWidth": 900, "maxHeight": 700, "viewport": "800x600", "pixelRatio": 1, "safeArea": 20,
+            "targetZoom": "none", "targetZoomThreshold": 20, "pagePosition": "always",
             "captionStyle": "teaching", "captionPosition": "top",
             "captionSeverity": "warning", "captionSize": "large",
             "autoCaptions": true, "captionTemplate": "{step}: {action}",
@@ -63,6 +64,10 @@ public sealed class RunCommandBuilderGifConfigTests
         Assert.Equal(1, framing.PixelRatio);
         Assert.Equal(40, framing.SafeArea);
         Assert.Equal(350, framing.LayoutStabilityMilliseconds);
+        var evidence = Assert.IsType<CMG.Browser.Scripting.Recording.GifPointerEvidenceOptions>(options.GifEncoding?.PointerEvidence);
+        Assert.Equal(CMG.Browser.Scripting.Recording.PointerTargetCalloutMode.None, evidence.TargetZoom);
+        Assert.Equal(20, evidence.TargetZoomThreshold);
+        Assert.Equal(CMG.Browser.Scripting.Recording.PointerTargetCalloutMode.Always, evidence.PagePosition);
         var redaction = Assert.IsType<CMG.Browser.Scripting.Recording.GifRedactionOptions>(options.GifEncoding?.Redaction);
         Assert.Equal(CMG.Browser.Scripting.Recording.GifAutoRedactionMode.None, redaction.Auto);
         Assert.True(redaction.Strict);
