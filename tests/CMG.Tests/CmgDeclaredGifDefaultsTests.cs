@@ -22,6 +22,7 @@ public sealed class CmgDeclaredGifDefaultsTests
             ["gifTargetZoom"] = "always",
             ["gifTargetZoomThreshold"] = "18",
             ["gifPagePosition"] = "none",
+            ["gifTabContext"] = "always",
             ["gifScale"] = "0.75"
         });
 
@@ -40,6 +41,7 @@ public sealed class CmgDeclaredGifDefaultsTests
         Assert.Equal(PointerTargetCalloutMode.Always, result.GifEncoding?.PointerEvidence?.TargetZoom);
         Assert.Equal(18, result.GifEncoding?.PointerEvidence?.TargetZoomThreshold);
         Assert.Equal(PointerTargetCalloutMode.None, result.GifEncoding?.PointerEvidence?.PagePosition);
+        Assert.Equal(PointerTargetCalloutMode.Always, result.GifEncoding?.PointerEvidence?.TabContext);
     }
 
     [Fact]

@@ -19,6 +19,7 @@ public sealed partial class ScriptGifRecorder
         var evidence = PointerEvidenceFor(action);
         var focusPulse = captureAfterAction && evidence.FocusPulse && action is not null && IsFocusProducingAction(action.Name);
         var selector = action is null ? null : AccessibilityTarget(action);
+        var tabs = TabContextLabel(evidence);
         devToolsClient.Evaluate(remoteDebuggingUrl, BrowserDomScripts.ShowGifPointerEvidence(
             pointer.Position,
             selector,
@@ -26,7 +27,17 @@ public sealed partial class ScriptGifRecorder
             focusPulse,
             evidence.TeleportMarker ? teleportOrigin : null,
             evidence.Idle is PointerIdleMode.Pulse ? pointerIdlePhase : 0,
-            evidence.Contrast is PointerContrastMode.Auto && cursorVisual.Color is null));
+            evidence.Contrast is PointerContrastMode.Auto && cursorVisual.Color is null,
+            tabs));
+    }
+
+    private string? TabContextLabel(GifPointerEvidenceOptions evidence)
+    {
+        if (evidence.TabContext is PointerTargetCalloutMode.None) return null;
+        var count = devToolsClient.ListTabs(remoteDebuggingUrl!).Count;
+        return evidence.TabContext is PointerTargetCalloutMode.Always || count > 1
+            ? count <= 1 ? "Current tab" : $"{count} tabs"
+            : null;
     }
 
     private static bool IsFocusProducingAction(string name) => name.ToLowerInvariant() is

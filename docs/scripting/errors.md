@@ -830,6 +830,7 @@ Run-config `gifSettings` rejects unknown keys, incorrect JSON types, and invalid
 `safeArea` must be from `0` to `500`; `layoutStability` must be from `0` to `5000`. Invalid CLI, config, suite/test, recording-scope, or GIF-block values identify the responsible option. Set either to `0` when exact edge framing or immediate coordinates are intentional.
 
 `targetZoom` and `pagePosition` must be `auto`, `always`, or `none`; `targetZoomThreshold` must be from `8` to `100`. These values are validated before capture and identify the responsible DSL, declaration, config, or CLI option.
+`tabContext` also accepts `auto`, `always`, or `none` and reports the responsible option when invalid.
 
 `smartCrop` accepts `true`, `false`, `auto`, `none`, or `<width>x<height>` dimensions from `100` to `10000`. It cannot be combined with selector `crop=` because those modes have different framing contracts.
 

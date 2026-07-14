@@ -84,6 +84,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--target-zoom <auto|always|none>`: Control the capture-only enlarged inset for tiny active targets. Defaults to `auto`.
 - `--target-zoom-threshold <8..100>`: Auto-zoom target threshold in CSS pixels. Defaults to `24`.
 - `--page-position <auto|always|none>`: Control the capture-only viewport rail for long pages. Defaults to `auto`.
+- `--tab-context <auto|always|none>`: Control the capture-only active-title/tab-count badge. Defaults to `auto` for multi-tab runs.
 - `--no-pointer-focus-pulse`: Disable focused-control evidence after focus-producing actions.
 - `--pointer-idle <pulse|none>`: Control pointer evidence during long holds. Defaults to `pulse`.
 - `--pointer-idle-threshold <100..60000>`: Long-hold threshold in milliseconds. Defaults to `1200`.

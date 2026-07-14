@@ -13,6 +13,7 @@ public sealed record GifPointerEvidenceOptions(
     PointerTargetCalloutMode TargetZoom = PointerTargetCalloutMode.Auto,
     int TargetZoomThreshold = 24,
     PointerTargetCalloutMode PagePosition = PointerTargetCalloutMode.Auto,
+    PointerTargetCalloutMode TabContext = PointerTargetCalloutMode.Auto,
     bool FocusPulse = true,
     PointerIdleMode Idle = PointerIdleMode.Pulse,
     int IdleThresholdMilliseconds = 1200,
@@ -31,6 +32,7 @@ public sealed record GifPointerEvidenceOptions(
             TargetZoom = options.TryGetValue("targetZoom", out var zoom) ? ParseMode(zoom, "targetZoom", source) : TargetZoom,
             TargetZoomThreshold = ParseInt(options, "targetZoomThreshold", TargetZoomThreshold, 8, 100, source),
             PagePosition = options.TryGetValue("pagePosition", out var position) ? ParseMode(position, "pagePosition", source) : PagePosition,
+            TabContext = options.TryGetValue("tabContext", out var tabs) ? ParseMode(tabs, "tabContext", source) : TabContext,
             FocusPulse = ParseBool(options, "focusPulse", FocusPulse, source),
             Idle = options.TryGetValue("pointerIdle", out var idle) ? ParseIdle(idle, source) : Idle,
             IdleThresholdMilliseconds = ParseInt(options, "pointerIdleThreshold", IdleThresholdMilliseconds, 100, 60_000, source),
@@ -49,6 +51,7 @@ public sealed record GifPointerEvidenceOptions(
         string? targetZoom,
         int? targetZoomThreshold,
         string? pagePosition,
+        string? tabContext,
         bool disableFocusPulse,
         string? idle,
         int? idleThreshold,
@@ -64,6 +67,7 @@ public sealed record GifPointerEvidenceOptions(
         Add(values, "targetZoom", targetZoom);
         Add(values, "targetZoomThreshold", targetZoomThreshold);
         Add(values, "pagePosition", pagePosition);
+        Add(values, "tabContext", tabContext);
         Add(values, "focusPulse", disableFocusPulse ? false : null);
         Add(values, "pointerIdle", idle);
         Add(values, "pointerIdleThreshold", idleThreshold);

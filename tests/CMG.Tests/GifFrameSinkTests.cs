@@ -215,7 +215,7 @@ public sealed partial class GifFrameSinkTests
         var pointerEvidence = root.GetProperty("pointerEvidence");
         Assert.Equal("auto", pointerEvidence.GetProperty("contrast").GetString());
         Assert.Equal("auto", pointerEvidence.GetProperty("targetCallout").GetString());
-        Assert.Equal(("auto", 24, "auto"), (pointerEvidence.GetProperty("targetZoom").GetString(), pointerEvidence.GetProperty("targetZoomThreshold").GetInt32(), pointerEvidence.GetProperty("pagePosition").GetString()));
+        Assert.Equal(("auto", 24, "auto", "auto"), (pointerEvidence.GetProperty("targetZoom").GetString(), pointerEvidence.GetProperty("targetZoomThreshold").GetInt32(), pointerEvidence.GetProperty("pagePosition").GetString(), pointerEvidence.GetProperty("tabContext").GetString()));
         Assert.Equal(1200, pointerEvidence.GetProperty("idleThresholdMilliseconds").GetInt32());
         Assert.True(pointerEvidence.GetProperty("teleportMarker").GetBoolean());
         Assert.Equal([100, 250], root.GetProperty("frameDelaysMilliseconds").EnumerateArray().Select(value => value.GetInt32()).ToArray());

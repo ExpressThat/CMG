@@ -1,0 +1,8 @@
+describe "tab context evidence" gifTabContext=auto {
+  test "labels the active review tab" {
+    setContent "<title>Primary workspace</title><main><h1>Primary workspace</h1></main>"
+    openTab "data:text/html,<title>Review tab</title><main><h1>Review tab</h1><button id='approve'>Approve</button></main>"
+    waitForTab count=2
+    click "#approve"
+  }
+}

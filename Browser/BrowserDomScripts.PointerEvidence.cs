@@ -11,7 +11,8 @@ public static partial class BrowserDomScripts
         bool focusPulse,
         ElementPoint? teleportOrigin,
         int idlePhase,
-        bool useAutomaticContrast) =>
+        bool useAutomaticContrast,
+        string? tabContextLabel) =>
         $$"""
         (() => {
           document.getElementById('__cmg_pointer_evidence')?.remove();
@@ -64,11 +65,12 @@ public static partial class BrowserDomScripts
           const positionMode = '{{options.PagePosition.ToString().ToLowerInvariant()}}';
           const pageHeight = Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0);
           const pagePosition = positionMode === 'always' || (positionMode === 'auto' && pageHeight > innerHeight * 1.5);
+          const tabContextLabel = {{JsonString(tabContextLabel ?? string.Empty)}};
           const origin = {{(teleportOrigin is null ? "null" : $"{{ x: {Invariant(teleportOrigin.X)}, y: {Invariant(teleportOrigin.Y)} }}")}};
           const idlePhase = {{idlePhase}};
           const focused = {{focusPulse.ToString().ToLowerInvariant()}} ? document.activeElement : null;
           const focusRect = focused && focused !== document.body && focused !== document.documentElement ? focused.getBoundingClientRect() : null;
-          if (!callout && !targetZoom && !pagePosition && !origin && !idlePhase && !focusRect) return true;
+          if (!callout && !targetZoom && !pagePosition && !tabContextLabel && !origin && !idlePhase && !focusRect) return true;
           const overlay = document.createElement('div');
           overlay.id = '__cmg_pointer_evidence';
           overlay.setAttribute('popover', 'manual');
@@ -132,6 +134,12 @@ public static partial class BrowserDomScripts
             stage.appendChild(clone);
             inset.appendChild(stage);
             overlay.appendChild(inset);
+          }
+          if (tabContextLabel) {
+            const badge = document.createElement('div');
+            badge.style.cssText = 'all:initial;position:absolute;top:16px;right:24px;max-width:320px;padding:7px 10px;border:2px solid #111827;border-radius:5px;background:#fff;color:#111827;box-shadow:0 2px 8px #0005;font:600 13px/1.2 system-ui;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+            badge.textContent = `${tabContextLabel}${document.title ? ` | ${document.title}` : ''}`;
+            overlay.appendChild(badge);
           }
           document.documentElement.appendChild(overlay);
           if (typeof overlay.showPopover === 'function') overlay.showPopover();

@@ -182,6 +182,7 @@ public sealed partial class BrowserScriptRunner
         "targetZoom",
         "targetZoomThreshold",
         "pagePosition",
+        "tabContext",
         "focusPulse",
         "pointerIdle",
         "pointerIdleThreshold",

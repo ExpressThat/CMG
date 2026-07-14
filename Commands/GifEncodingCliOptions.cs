@@ -34,6 +34,7 @@ internal sealed record GifEncodingCliOptions(
     Option<string?> TargetZoom,
     Option<int?> TargetZoomThreshold,
     Option<string?> PagePosition,
+    Option<string?> TabContext,
     Option<bool> DisableFocusPulse,
     Option<string?> PointerIdle,
     Option<int?> PointerIdleThreshold,
@@ -81,6 +82,7 @@ internal sealed record GifEncodingCliOptions(
             new Option<string?>("--target-zoom") { Description = $"Tiny-target zoom inset: {GifPointerEvidenceOptions.CalloutValues}." },
             new Option<int?>("--target-zoom-threshold") { Description = "Auto-zoom target size threshold from 8 to 100 CSS pixels." },
             new Option<string?>("--page-position") { Description = $"Long-page position indicator: {GifPointerEvidenceOptions.CalloutValues}." },
+            new Option<string?>("--tab-context") { Description = $"Active-tab recording badge: {GifPointerEvidenceOptions.CalloutValues}." },
             new Option<bool>("--no-pointer-focus-pulse") { Description = "Disable focused-control pulses after keyboard/focus actions." },
             new Option<string?>("--pointer-idle") { Description = $"Long-hold pointer evidence: {GifPointerEvidenceOptions.IdleValues}." },
             new Option<int?>("--pointer-idle-threshold") { Description = "Long-hold pointer pulse threshold from 100 to 60000 milliseconds." },
@@ -118,7 +120,7 @@ internal sealed record GifEncodingCliOptions(
             result.GetValue(DisableCoalescing), result.GetValue(SampleEvery), out var captureOptimization, out error)) return false;
         if (!GifPointerEvidenceOptions.TryParse(
             result.GetValue(PointerContrast), result.GetValue(PointerCallout), result.GetValue(PointerCalloutThreshold),
-            Value(result, TargetZoom, settings?.TargetZoom), Value(result, TargetZoomThreshold, settings?.TargetZoomThreshold), Value(result, PagePosition, settings?.PagePosition),
+            Value(result, TargetZoom, settings?.TargetZoom), Value(result, TargetZoomThreshold, settings?.TargetZoomThreshold), Value(result, PagePosition, settings?.PagePosition), Value(result, TabContext, settings?.TabContext),
             result.GetValue(DisableFocusPulse), result.GetValue(PointerIdle), result.GetValue(PointerIdleThreshold),
             result.GetValue(DisableTeleportMarker), result.GetValue(MouseDownHold), out var pointerEvidence, out error)) return false;
         if (!GifColorOptions.TryParse(

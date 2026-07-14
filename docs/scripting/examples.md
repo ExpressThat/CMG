@@ -789,6 +789,17 @@ gif "focused journey" smartCrop=640x480 {
 
 `smartCrop` follows the virtual pointer and active element without changing output dimensions. Same-origin frame actions use their top-page coordinates, preserving surrounding page context. Use `--gif-smart-crop` for whole runs or `gifSmartCrop` on runner suites/tests. See demos 231 and 232.
 
+### Identify the active tab
+
+```cmgscript
+gif "popup review" tabContext=auto {
+  openTab "https://example.test/review"
+  waitForTab count=2
+}
+```
+
+The badge is capture-only and combines the current page title with the tab count. Whole runs use `--tab-context`; runner suites/tests use `gifTabContext`. See demos 233 and 234.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:

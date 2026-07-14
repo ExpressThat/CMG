@@ -384,6 +384,8 @@ dotnet run -- --firefox browser close
 - `230-gif-target-zoom-page-position-runner.cmgscript`: Runner declarations for tiny-target zoom and page-position evidence.
 - `231-gif-smart-crop-iframe.cmgscript`: A fixed-size crop that follows parent-page and same-origin iframe targets.
 - `232-gif-smart-crop-iframe-runner.cmgscript`: Runner declaration form of smart crop across iframe actions.
+- `233-gif-tab-context.cmgscript`: Automatic active-tab title evidence after opening a second tab.
+- `234-gif-tab-context-runner.cmgscript`: Runner declaration form of active-tab recording evidence.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

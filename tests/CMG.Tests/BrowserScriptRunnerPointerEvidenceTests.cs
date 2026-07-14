@@ -67,6 +67,17 @@ public sealed class BrowserScriptRunnerPointerEvidenceTests
     }
 
     [Fact]
+    public void RunText_TabContextAlwaysAddsCaptureOnlyTitleBadge()
+    {
+        using var fixture = new Fixture();
+        var result = fixture.Run("pauseGif 100 tabContext=always");
+
+        Assert.True(result.Success, result.Error);
+        Assert.Contains(fixture.Client.EvaluatedExpressions, expression =>
+            expression.Contains("const tabContextLabel = \"Current tab\"", StringComparison.Ordinal) && expression.Contains("document.title", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void RunText_WithoutGifDoesNotCreatePointerEvidence()
     {
         var client = new FakeAutomationClient();

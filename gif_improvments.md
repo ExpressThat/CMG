@@ -320,7 +320,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Add detection for browser screenshot color profile changes.
 - Add robust top-layer pointer handling for dialogs, popovers, fullscreen, and high-z-index overlays.
 - Add pointer survival across navigation and reload.
-- Add pointer survival across context switches and tabs.
+- Implemented: each captured frame reinjects the virtual pointer into CMG's active target, including after tab/context switches.
 - Add pointer survival across same-origin iframe actions.
 - Add explicit cross-origin iframe recording diagnostics.
 - Add service-worker/network overlay support when recording network flows.
@@ -362,7 +362,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add current selector metadata and a resolved target rectangle.
 - Implemented: add virtual-pointer coordinates to the diagnostics HUD and sidecar.
 - Implemented: add scroll position to the diagnostics HUD.
-- Add overlay showing active browser tab/context.
+- Implemented: `tabContext=<auto|always|none>` adds a capture-only tab-count/title badge; `auto` appears when multiple tabs exist. CLI: `--tab-context`.
 - Implemented: active recorders emit `GIF_WARN_NON_VISUAL` when explicit recording options produce no meaningful frame.
 - Implemented: active recorders emit `GIF_WARN_SCROLLED` when a pointer target begins offscreen and requires recorder scrolling.
 - Implemented: active recorders emit `GIF_WARN_MULTIPLE_TARGETS` with the match count before using the first selector match.

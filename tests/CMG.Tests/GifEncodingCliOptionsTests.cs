@@ -16,7 +16,7 @@ public sealed class GifEncodingCliOptionsTests
             "--gif-crop", "#panel", "--gif-crop-padding", "16", "--gif-scale", "0.5", "--gif-max-width", "640", "--gif-max-height", "480", "--gif-viewport", "1280x720", "--gif-pixel-ratio", "2", "--gif-safe-area", "32", "--gif-layout-stability", "400", "--gif-debug", "--gif-accessibility", "--gif-event-captions",
             "--gif-intro", "Start", "--gif-outro", "Done", "--gif-intro-duration", "500", "--gif-outro-duration", "700", "--gif-result-outro",
             "--gif-no-coalesce", "--gif-sample-every", "3", "--pointer-contrast", "fixed", "--pointer-callout", "always",
-            "--pointer-callout-threshold", "32", "--target-zoom", "none", "--target-zoom-threshold", "18", "--page-position", "always", "--no-pointer-focus-pulse", "--pointer-idle", "none",
+            "--pointer-callout-threshold", "32", "--target-zoom", "none", "--target-zoom-threshold", "18", "--page-position", "always", "--tab-context", "always", "--no-pointer-focus-pulse", "--pointer-idle", "none",
             "--pointer-idle-threshold", "900", "--no-pointer-teleport-marker", "--mouse-down-hold", "250",
             "--gif-background", "#112233", "--gif-gradient-mode", "smooth", "--gif-high-contrast-palette"]);
 
@@ -44,6 +44,7 @@ public sealed class GifEncodingCliOptionsTests
         Assert.Equal(PointerTargetCalloutMode.None, encoding.PointerEvidence?.TargetZoom);
         Assert.Equal(18, encoding.PointerEvidence?.TargetZoomThreshold);
         Assert.Equal(PointerTargetCalloutMode.Always, encoding.PointerEvidence?.PagePosition);
+        Assert.Equal(PointerTargetCalloutMode.Always, encoding.PointerEvidence?.TabContext);
         Assert.False(encoding.PointerEvidence?.FocusPulse);
         Assert.Equal(PointerIdleMode.None, encoding.PointerEvidence?.Idle);
         Assert.Equal(900, encoding.PointerEvidence?.IdleThresholdMilliseconds);
@@ -79,6 +80,7 @@ public sealed class GifEncodingCliOptionsTests
     [InlineData("--target-zoom", "near", "targetZoom=")]
     [InlineData("--target-zoom-threshold", "101", "targetZoomThreshold=")]
     [InlineData("--page-position", "sometimes", "pagePosition=")]
+    [InlineData("--tab-context", "sometimes", "tabContext=")]
     [InlineData("--pointer-idle", "spin", "pointerIdle=")]
     [InlineData("--pointer-idle-threshold", "99", "pointerIdleThreshold=")]
     [InlineData("--mouse-down-hold", "60001", "mouseDownHold=")]
@@ -108,7 +110,7 @@ public sealed class GifEncodingCliOptionsTests
         Options = { options.Dither, options.Palette, options.Colors, options.KeepFrames, options.Crop,
             options.CropPadding, options.SmartCrop, options.Scale, options.MaxWidth, options.MaxHeight, options.Viewport, options.PixelRatio, options.SafeArea, options.LayoutStability, options.Debug, options.Accessibility, options.EventCaptions,
             options.Intro, options.Outro, options.IntroDuration, options.OutroDuration, options.ResultOutro, options.DisableCoalescing, options.SampleEvery,
-            options.PointerContrast, options.PointerCallout, options.PointerCalloutThreshold, options.TargetZoom, options.TargetZoomThreshold, options.PagePosition, options.DisableFocusPulse,
+            options.PointerContrast, options.PointerCallout, options.PointerCalloutThreshold, options.TargetZoom, options.TargetZoomThreshold, options.PagePosition, options.TabContext, options.DisableFocusPulse,
             options.PointerIdle, options.PointerIdleThreshold, options.DisableTeleportMarker, options.MouseDownHold,
             options.Background, options.GradientMode, options.HighContrastPalette }
     };

@@ -1,0 +1,6 @@
+setContent "<title>Primary workspace</title><main><h1>Primary workspace</h1></main>"
+gif "tab context" output="demo-output/233-tab-context.gif" keepFrames="demo-output/233.frames" tabContext=auto {
+  openTab "data:text/html,<title>Review tab</title><main><h1>Review tab</h1><button id='approve'>Approve</button></main>"
+  waitForTab count=2
+  click "#approve"
+}

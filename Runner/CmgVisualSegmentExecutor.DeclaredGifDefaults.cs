@@ -68,6 +68,7 @@ public sealed partial class CmgVisualSegmentExecutor
         Add(options, mapped, "gifTargetZoom", "targetZoom");
         Add(options, mapped, "gifTargetZoomThreshold", "targetZoomThreshold");
         Add(options, mapped, "gifPagePosition", "pagePosition");
+        Add(options, mapped, "gifTabContext", "tabContext");
         return mapped;
     }
 
