@@ -693,6 +693,14 @@ GIF quality controls palette generation and dithering. It does not change the br
 - `medium`: Uses a smaller palette and faster matching for smaller artifacts.
 - `low`: Uses a much smaller palette with no dithering for the smallest/fastest artifacts.
 
+These samples use the exact same gradient, text, control, pointer position, viewport, and 600ms hold. Run `demo-scripts/239-gif-quality-comparison.cmgscript` to reproduce them.
+
+| Highest | High | Medium | Low |
+| --- | --- | --- | --- |
+| <img src="../assets/gif-quality/highest.gif" alt="CMG highest quality gradient sample" width="220"> | <img src="../assets/gif-quality/high.gif" alt="CMG high quality gradient sample" width="220"> | <img src="../assets/gif-quality/medium.gif" alt="CMG medium quality gradient sample" width="220"> | <img src="../assets/gif-quality/low.gif" alt="CMG low quality gradient sample" width="220"> |
+
+File size depends on how each palette and dithering mode interacts with the source pixels; a lower preset is not guaranteed to be smaller for every image. Use `cmg gif inspect` and `cmg gif color-diff` when size or fidelity must be measured rather than judged visually.
+
 Use command-level quality for whole-run recordings:
 
 ```powershell

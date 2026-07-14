@@ -390,6 +390,7 @@ dotnet run -- --firefox browser close
 - `236-gif-split-tabs-runner.cmgscript`: Runner declaration form of privacy-safe split-tab evidence.
 - `237-gif-protocol-evidence.cmgscript`: Privacy-safe WebSocket, service-worker, and worker outcome captions in a focused GIF.
 - `238-gif-protocol-evidence-runner.cmgscript`: Runner form of privacy-safe protocol activity evidence.
+- `239-gif-quality-comparison.cmgscript`: Generates identical highest, high, medium, and low quality artifacts for visual comparison.
 - `run-config.example.json`: Example JSON config for `cmg run --config` and `--project`.
 
 Generated screenshots are written to `demo-output/`.

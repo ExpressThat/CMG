@@ -14,6 +14,15 @@ Use CMG when the output should be evidence, not just a pass/fail result.
 
 Use this when you want a visual proof of what happened.
 
+From the repository, the shortest first-GIF path uses the included dialog demo:
+
+```powershell
+cmg browser launch
+cmg browser control script --file demo-scripts\01-dialog-flow.cmgscript --gif demo-output\first.gif
+```
+
+The second command records the complete script. It does not require editing the demo, and it emits `GIF <path>` on success.
+
 Create `demo.cmgscript`:
 
 ```text

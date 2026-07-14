@@ -159,3 +159,7 @@ Write the simplest readable journey before adding abstraction:
 - Prefer `timeout=` on waits and assertions where page timing matters.
 
 Dense spacing is accepted by the parser, but tidy scripts are easier for agents and people to edit safely.
+
+## Use The Editor Snippets
+
+The repository ships `.vscode/cmg.code-snippets`. In a CMG script, type `cmg-gif` for a focused recording, `cmg-recording` for inherited visual defaults, or `cmg-test` for a structured runner test. Treat the generated text as a starting point: replace selectors, names, assertions, and evidence settings with journey-specific intent.

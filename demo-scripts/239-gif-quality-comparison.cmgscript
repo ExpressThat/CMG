@@ -1,0 +1,5 @@
+setContent "<main style='box-sizing:border-box;min-height:calc(100vh - 16px);padding:48px;background:linear-gradient(120deg,#0f172a,#2563eb 45%,#f59e0b);color:#fff;font-family:system-ui'><h1>CMG color fidelity</h1><p style='font-size:20px'>Gradient, brand color, sharp text, and pointer evidence.</p><button id='sample' style='padding:12px 18px;background:#22c55e;color:#052e16;border:2px solid #fff'>Sample action</button></main>"
+gif "quality highest" output="demo-output/239-quality-highest.gif" quality=highest { pauseGif 600 }
+gif "quality high" output="demo-output/239-quality-high.gif" quality=high { pauseGif 600 }
+gif "quality medium" output="demo-output/239-quality-medium.gif" quality=medium { pauseGif 600 }
+gif "quality low" output="demo-output/239-quality-low.gif" quality=low { pauseGif 600 }

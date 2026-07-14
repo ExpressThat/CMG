@@ -407,16 +407,16 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `previewRecordingSettings` prints effective runtime DSL recording settings without requiring active capture.
 - Implemented: `cmg browser control script --preview-gif-settings` performs browser-free static analysis of imports, syntax, scoped settings, and relevant warnings.
 - Implemented: add `cmg gif presets` to list quality, pointer speed, pointer easing, click pulse, and timing presets.
-- Add docs with side-by-side examples of quality presets.
-- Add generated sample GIFs to docs for visual comparison.
-- Add a quick-start command specifically for first GIF creation.
+- Implemented: the quality guide includes a side-by-side highest/high/medium/low comparison generated from identical source frames.
+- Implemented: generated quality sample GIFs live under `docs/assets/gif-quality/` and can be reproduced with demo 239.
+- Implemented: the quick start provides a copy-paste launch plus first-GIF command using the included dialog demo.
 - Implemented: inline preview and runtime suggestions explain that `recordVideo` output is GIF and recommend the explicit `gif` spelling.
 - Implemented: `recordVideo` and `screencast` emit parseable GIF-alias warnings without changing execution or exit status.
-- Add VS Code snippets for GIF blocks and recording settings.
+- Implemented: `.vscode/cmg.code-snippets` provides `cmg-gif`, `cmg-recording`, and `cmg-test` authoring templates.
 - Implemented: static preflight warns when explicit virtual-pointer/visual-only options are attached to non-visual actions.
 - Implemented: browser-free preflight warns when a focused recording block contains more than 20 descendant actions and suggests splitting or cutting it.
 - Implemented: browser-free runner listing suggests failure retention when command-level GIF mode would retain every selected test in a suite larger than 20 tests.
-- Add script style-guide section for readable visual evidence.
+- Implemented: `docs/scripting/style-guide.md` covers focused evidence, stable locators, useful failure reasons, watchable GIFs, macro structure, linear stories, diff-friendly formatting, and editor snippets.
 
 ## Agent Browser Lifecycle Safety
 

@@ -1,0 +1,35 @@
+{
+  "CMG focused GIF": {
+    "scope": "plaintext",
+    "prefix": "cmg-gif",
+    "body": [
+      "gif \"${1:evidence name}\" output=\"${2:demo-output/evidence.gif}\" quality=${3|highest,high,medium,low|} {",
+      "  step \"${4:Describe the evidence}\" {",
+      "    ${5:click \"#target\"}",
+      "  }",
+      "}"
+    ],
+    "description": "Create a focused CMG GIF block."
+  },
+  "CMG recording defaults": {
+    "scope": "plaintext",
+    "prefix": "cmg-recording",
+    "body": [
+      "recording quality=${1|highest,high,medium,low|} pointerSpeed=${2|normal,slow,fast,instant|} autoCaptions=${3|false,true|} {",
+      "  $0",
+      "}"
+    ],
+    "description": "Create inherited CMG recording defaults."
+  },
+  "CMG runner test": {
+    "scope": "plaintext",
+    "prefix": "cmg-test",
+    "body": [
+      "test \"${1:behavior}\" {",
+      "  ${2:click \"#target\"}",
+      "  ${3:expectVisible \"#result\"}",
+      "}"
+    ],
+    "description": "Create a structured CMG runner test."
+  }
+}
