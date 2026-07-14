@@ -1,0 +1,8 @@
+gif "target-aware captions" output="demo-output/251-target-aware-captions.gif" timeline=true pointerDuration=250 holdAfterAction=200 typingDelay=55 postHoverHold=400 {
+  setContent "<style>body{margin:0;padding:40px;font:18px system-ui;background:#f8fafc;color:#111827}.stack{min-height:560px;display:flex;flex-direction:column;justify-content:space-between}label{display:grid;gap:8px;width:320px}input,button{font:inherit;padding:10px 14px}</style><main class='stack'><label>Name<input id='name'></label><button id='approve' onclick=\"this.textContent='Approved'\">Approve release</button></main>"
+  caption "Type the reviewer name" target="#name" captionPosition=auto captionStyle=teaching duration=500
+  fill "#name" "Ada" typingDelay=35
+  caption "Approve the release" target="#approve" captionPosition=auto captionSeverity=warning duration=500
+  hover "#approve" postHoverHold=650
+  click "#approve"
+}

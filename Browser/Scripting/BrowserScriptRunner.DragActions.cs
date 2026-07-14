@@ -79,7 +79,7 @@ public sealed partial class BrowserScriptRunner
     private static IReadOnlyList<string> ExecuteDragAndDropBlock(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action, ScriptGifRecorder? recorder)
     {
         RequireArgumentCount(action, 1, 1);
-        if (action.Options.Keys.Any(key => !IsDragRecordingOption(key)))
+        if (action.Options.Keys.Any(key => !IsDragRecordingOption(key) && !IsRecordingOption(key)))
         {
             throw new ScriptExecutionException("Block dragAndDrop accepts only recording choreography options.");
         }
@@ -224,7 +224,7 @@ public sealed partial class BrowserScriptRunner
             "pointerContrast" or "targetCallout" or "targetCalloutThreshold" or "focusPulse" or
             "pointerIdle" or "pointerIdleThreshold" or "teleportMarker" or "mouseDownHold" or
             "pressedPointer" or "dragTrail" or "dragBreadcrumbs" or
-            "sourcePointerDuration" or "targetPointerDuration" or "dragEasing" or
+            "sourcePointerDuration" or "targetPointerDuration" or "dropPointerDuration" or "dragEasing" or
             "preDragHold" or "dragHold" or "postDropHold" or
             "quality" or "clickPulse" or "pulse" or "holdAfterAction" or "holdOnFailure" or "holdAfterMove" or
             "preClickHold" or "postClickHold" or "holdAfterNavigation" or "holdAfterAssertion" or

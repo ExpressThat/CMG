@@ -19,6 +19,7 @@ public sealed class BrowserScriptRunnerTypingOptionTests
     [Theory]
     [InlineData("type #name CMG delay=25")]
     [InlineData("pressSequentially #name CMG delay=25")]
+    [InlineData("type #name CMG typingDelay=25")]
     public void RunText_TypeDelayUsesProgressiveTyping(string script)
     {
         var client = new FakeAutomationClient();
@@ -41,6 +42,17 @@ public sealed class BrowserScriptRunnerTypingOptionTests
         Assert.Equal("#name", client.LastTypedSelector);
         Assert.Equal("CMG", client.LastTypedText);
         Assert.Equal(10, client.LastTypeDelay);
+    }
+
+    [Fact]
+    public void RunText_RecordingScopeSuppliesTypingDelayAndChildOverridesIt()
+    {
+        var client = new FakeAutomationClient();
+        var result = Runner().RunText(
+            "recording typingDelay=40 { fill #name CMG typingDelay=12 }", "debug", client);
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(12, client.LastTypeDelay);
     }
 
     [Fact]

@@ -201,6 +201,25 @@ public sealed class BrowserScriptRunnerRecordingScopeTests
     }
 
     [Fact]
+    public void RecordingScope_AppliesArtifactFormatToNestedGif()
+    {
+        var directory = Directory.CreateTempSubdirectory();
+        try
+        {
+            var requested = Path.Combine(directory.FullName, "review.gif").Replace("\\", "/");
+            var result = Runner().RunText($$"""
+            recording format=webp {
+              gif output="{{requested}}" { caption "Review" }
+            }
+            """, "debug", new FakeAutomationClient());
+
+            Assert.True(result.Success, result.Error);
+            Assert.True(File.Exists(Path.Combine(directory.FullName, "review.webp")));
+        }
+        finally { directory.Delete(recursive: true); }
+    }
+
+    [Fact]
     public void RecordingScope_RejectsUnknownDefaults()
     {
         var result = Runner().RunText("""

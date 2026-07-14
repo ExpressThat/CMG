@@ -3,7 +3,7 @@
 Runs the scripting `caption` action once from the command line.
 
 ```powershell
-cmg browser control page caption "<message>"
+cmg browser control page caption "<message>" [options]
 ```
 
 This is an exact-name alias for [`showMessageBar`](showMessageBar.md). It is intended for visual GIF narration and updates the same CMG-owned caption bar used by script GIF recording.
@@ -11,6 +11,10 @@ This is an exact-name alias for [`showMessageBar`](showMessageBar.md). It is int
 ## Arguments
 
 - `<message>`: Message text to show in a fixed bar at the top of the page.
+
+## Options
+
+Supports the same `--target`, `--position`, `--style`, `--severity`, and `--size` options as [`showMessageBar`](showMessageBar.md#options). In particular, `--target <selector-or-rich-locator> --position auto` places the caption opposite the target without moving a virtual pointer.
 
 ## Behavior
 
@@ -37,6 +41,7 @@ Writes browser or action errors.
 
 ```powershell
 cmg browser control page caption "Opening the profile dialog"
+cmg browser control page caption "Approve the release" --target "#approve" --position auto
 ```
 
 Multi-line captions can use escaped newlines in scripts:

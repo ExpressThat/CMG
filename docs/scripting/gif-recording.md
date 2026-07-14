@@ -190,6 +190,10 @@ recording pointerDuration=300 pointerEasing=ease-in-out clickPulse=dot holdAfter
 
 Supported recording-scope and `setRecording` defaults:
 
+Every property is inherited independently. A child action that names the same property wins for that action only. Complex blocks use the same rule: a `dragAndDrop {}` parent supplies recording defaults to each `hover`, `moveMouse`, and `drop` child, and each child can override them without changing its siblings or outer scope.
+
+Shared scopes accept artifact defaults (`format`, `ffmpeg`), general motion/evidence defaults, and drag phase defaults (`sourcePointerDuration`, `targetPointerDuration`, `dropPointerDuration`, `dragEasing`, `preDragHold`, `dragHold`, `postDropHold`). This makes the same setting valid at the outer recording scope, complex-action parent, or relevant child action.
+
 - `quality=<archival|highest|high|medium|low>`: Encoder preset for nested recording blocks that create their own artifact. `archival` uses a full 256-color frame-local palette and maximum preset dithering strength.
 - `format=<gif|apng|webp|mp4>`: Artifact format. GIF remains the default; a generated name receives the selected format's extension.
 - `ffmpeg=<path>`: FFmpeg executable for MP4. Fallback order is `CMG_FFMPEG`, then `ffmpeg` on `PATH`.
@@ -199,6 +203,8 @@ Supported recording-scope and `setRecording` defaults:
 - `stillPdf=<true|false|path>`: Write one full-resolution PDF page per completed semantic step, plus the final recording state. `true` writes `<recording-name>.steps.pdf`.
 - `altText=<template>`: Review alt text with `{name}`, `{steps}`, `{duration}`, and `{outcome}` placeholders. HTML reports use the rendered value on the GIF preview.
 - `description=<text>`: Human-written artifact description retained in timeline and report metadata.
+- `typingDelay=<milliseconds>`: Default visible typing cadence for nested `type`, `pressSequentially`, and `fill`; child actions can override it.
+- `postHoverHold=<milliseconds>`: Default post-hover evidence hold; child hovers can override it.
 
 Default narration and still-PDF paths participate in retry, passing-test, and age retention. Custom paths under the recording artifact directory are also cleaned with their recording family. CMG does not follow an old timeline to delete a path outside that directory. A requested PDF forces timeline creation so reports can discover custom paths.
 - `colors=<2..256>`: Explicit maximum palette size.

@@ -131,7 +131,7 @@ public sealed partial class BrowserScriptRunner
         BrowserScriptAction action,
         string selector)
     {
-        if (action.Options.ContainsKey("delay"))
+        if (action.Options.ContainsKey("delay") || action.Options.ContainsKey("typingDelay"))
         {
             automationClient.TypeProgressively(remoteDebuggingUrl, selector, action.Arguments[1], GetTypingDelay(action));
             return;
@@ -142,16 +142,24 @@ public sealed partial class BrowserScriptRunner
 
     private static int GetTypingDelay(BrowserScriptAction action)
     {
-        var delay = GetIntOption(action, "delay", 80);
-        return delay >= 0
-            ? delay
-            : throw new ScriptExecutionException($"{action.Name} option delay= must be zero or greater.");
+        var name = action.Options.ContainsKey("typingDelay") ? "typingDelay" : "delay";
+        return action.Options.TryGetValue(name, out var value)
+            ? ParsePositiveInt(value, $"{action.Name} option {name}")
+            : 80;
     }
 
     private static IReadOnlyList<string> ExecuteShowMessageBar(string remoteDebuggingUrl, IBrowserAutomationClient automationClient, BrowserScriptAction action)
     {
         RequireArgumentCount(action, 1, 1);
-        automationClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0], BrowserCaptionOptions.FromOptions(action.Options, action.Name));
+        var options = BrowserCaptionOptions.FromOptions(action.Options, action.Name);
+        automationClient.ShowMessageBar(remoteDebuggingUrl, action.Arguments[0], options);
+        if (options.Position is CaptionPosition.Auto && action.Options.TryGetValue("target", out var target))
+        {
+            var targetAction = action with { Arguments = [target] };
+            var selector = ResolveSelector(remoteDebuggingUrl, automationClient, targetAction);
+            automationClient.GetElementBox(remoteDebuggingUrl, selector);
+            automationClient.Evaluate(remoteDebuggingUrl, BrowserDomScripts.AutoPositionMessageBar(selector));
+        }
         return [];
     }
 

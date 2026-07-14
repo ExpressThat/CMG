@@ -240,13 +240,14 @@ In GIF recordings, `tap` and `touchTap` use CMG's touch pointer ring instead of 
 type "<selector>" "text"
 pressSequentially "<selector>" "text"
 type "<selector>" "text" delay=25
+fill "<selector>" "text" typingDelay=25
 ```
 
 Focuses the element without scrolling, appends text to its current value, and dispatches `input` and `change` events. `pressSequentially` is a Playwright-style alias for the same visible typing path. The element center must already be inside the current viewport. Use `scrollIntoView` first when the script should move the page.
 
 Options:
 
-- `delay`: Optional milliseconds between typed characters. Must be zero or greater. Without GIF recording, omitting `delay` uses the fast native type path. With GIF recording, typing is progressive so every character can produce a frame; omitting `delay` uses the default visual typing delay.
+- `delay` / `typingDelay`: Optional milliseconds between typed characters. `typingDelay` is the explicit choreography spelling and wins when both are present. Must be zero or greater. Without GIF recording, omitting both uses the fast native type path. With GIF recording, typing is progressive so every character can produce a frame; omitting both uses the default visual typing delay.
 
 Example:
 
@@ -336,6 +337,7 @@ Clipboard actions do not move the virtual pointer. In GIF recordings, wrap them 
 ```text
 hover "<selector>"
 hover "<selector>" modifiers=Control+Shift x=8 y=12
+hover "<selector>" pointerDuration=700 postHoverHold=500
 ```
 
 Dispatches mouseover and mousemove events at the element center. With `x=`, `y=`, or `modifiers=`, CMG dispatches a page-facing pointer/mouse hover sequence at the configured element-relative point with the requested modifier flags. `hover` does not scroll automatically; the target point must already be inside the current viewport.
@@ -344,6 +346,8 @@ Options:
 
 - `modifiers`: Optional comma- or plus-separated modifiers: `Alt`, `Control`, `Meta`, and `Shift`.
 - `x` / `y`: Optional offsets inside the target element. Defaults to the element center. GIF recordings move the virtual pointer to the same offset.
+- `pointerDuration`: Virtual-pointer travel duration inherited from the active recording scope and overrideable on this hover.
+- `postHoverHold`: Encoded hold after hover completion. It inherits from recording scopes and overrides `holdAfterAction` for this hover only.
 
 Example:
 
@@ -517,16 +521,17 @@ Example:
 ```text
 showMessageBar "Opening the profile dialog"
 showMessageBar "Opening profile dialog\nWaiting for dialog content"
-caption "Assertion passed" captionStyle=qa captionPosition=bottom captionSeverity=success
+caption "Approve this release" target="#approve" captionStyle=qa captionPosition=auto captionSeverity=warning
 ```
 
 Options:
 
 - `captionStyle` / `style`: Optional caption preset: `subtle`, `teaching`, `qa`, `bug-report`, or `compact`.
 - `captionPosition` / `position`: Optional placement: `top`, `bottom`, `left`, `right`, or `auto`.
+- `target`: Optional selector or rich locator used by `auto` placement. CMG places the caption opposite the target's vertical viewport half so it does not cover the control. The target is resolved without moving or injecting the virtual pointer.
 - `captionSeverity` / `severity`: Optional color intent: `info`, `success`, `warning`, or `error`.
 
-`step "name" { ... }` accepts the same caption options for its leading caption. `recording`, `withRecording`, `gif`, `recordVideo`, and `screencast` can set `captionStyle=`, `captionPosition=`, and `captionSeverity=` as scoped defaults; the caption action can override them locally.
+`step "name" { ... }` accepts the same visual caption options for its leading caption. `recording`, `withRecording`, `gif`, `recordVideo`, and `screencast` can set caption defaults; the child caption overrides named properties locally. `target=` belongs to the manual caption action because each caption can describe a different element.
 
 Recording timeline options:
 

@@ -26,14 +26,28 @@ public sealed partial class BrowserControlCommandBuilder
         {
             Description = "Message to show in a fixed bar at the top of the page."
         };
+        var target = CliStringOption("--target", "Selector or rich locator used by automatic placement.");
+        var position = CliStringOption("--position", $"Caption placement: {BrowserCaptionOptions.PositionValues}.");
+        var style = CliStringOption("--style", $"Caption style: {BrowserCaptionOptions.StyleValues}.");
+        var severity = CliStringOption("--severity", $"Caption severity: {BrowserCaptionOptions.SeverityValues}.");
+        var size = CliStringOption("--size", $"Caption size: {BrowserCaptionOptions.SizeValues}.");
 
         var command = new Command(action, "Inject or update a fixed message bar at the top of the page.")
         {
-            messageArgument
+            messageArgument, target, position, style, severity, size
         };
 
         command.SetAction(parseResult =>
-            browserControlCommandHandler.RunScriptAction(CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions), CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions), ToScriptLine(action, parseResult.GetValue(messageArgument) ?? string.Empty)));
+            browserControlCommandHandler.RunScriptAction(
+                CommandTreeBuilder.GetBrowserKind(parseResult, browserOptions),
+                CommandTreeBuilder.GetBrowserPort(parseResult, browserOptions),
+                ToScriptLine(action, [parseResult.GetValue(messageArgument) ?? string.Empty], CompactOptions([
+                    StringOption("target", parseResult.GetValue(target)),
+                    StringOption("captionPosition", parseResult.GetValue(position)),
+                    StringOption("captionStyle", parseResult.GetValue(style)),
+                    StringOption("captionSeverity", parseResult.GetValue(severity)),
+                    StringOption("captionSize", parseResult.GetValue(size))
+                ]))));
 
         return command;
     }

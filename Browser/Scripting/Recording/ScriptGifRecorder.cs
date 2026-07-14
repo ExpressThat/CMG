@@ -163,6 +163,12 @@ public sealed partial class ScriptGifRecorder : IDisposable
                 return;
             }
 
+            if (name is "hover" && action.Options.ContainsKey("postHoverHold"))
+            {
+                CaptureHoldFrame(action, "postHoverHold");
+                return;
+            }
+
             CaptureHoldFrame(action);
         }
         finally

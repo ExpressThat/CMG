@@ -9,6 +9,7 @@ public sealed class BrowserControlCommandBuilderPageTests
     [Theory]
     [InlineData("showMessageBar Working", "showMessageBar \"Working\"")]
     [InlineData("caption Working", "caption \"Working\"")]
+    [InlineData("caption Review --target #approve --position auto --style teaching --severity warning --size large", "caption \"Review\" target=\"#approve\" captionPosition=\"auto\" captionStyle=\"teaching\" captionSeverity=\"warning\" captionSize=\"large\"")]
     [InlineData("highlight #save --color #2563eb --message Save --duration 250", "highlight \"#save\" color=\"#2563eb\" message=\"Save\" duration=\"250\"")]
     public void PageCommands_MapToScriptActions(string commandTail, string expectedScript)
     {

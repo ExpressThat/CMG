@@ -144,8 +144,8 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented for DSL recording blocks: sidecar PNG frame export preserves final pre-quantization frames; without crop, scale, or color transforms these remain the exact browser PNG bytes.
 - Implemented: DSL `keepFrames=<directory|true|false>` and whole-run CLI `--keep-frames <directory>`. Runner output is isolated per GIF for parallel safety.
 - Implemented: `cmg gif color-diff <source.png> <encoded.gif> --frame <n>` reports parseable MAE, RMS, maximum-channel, and changed-pixel encoder drift.
-- Implemented for gradients, exact source-byte retention, transparent-background flattening, and color-metadata transitions: automated color tests. Broader browser shadow baselines remain open.
-- Implemented: direct and structured-runner gradient/brand-color fidelity fixtures in demos 165 and 166. Broader browser visual baselines remain open.
+- Implemented for gradients, exact source-byte retention, transparent-background flattening, color-metadata transitions, and pointer shadow presets: automated color/CSS tests plus Chrome and Firefox storyboard verification.
+- Implemented: direct and structured-runner gradient/brand-color fidelity fixtures in demos 165 and 166, cross-browser calibration in demo 248, and target/caption/pointer visual verification in demo 251.
 - Implemented: inherited `background=<color|transparent|none>` and CLI `--gif-background <color>` flatten transparent captures before quantization.
 - Implemented: inspect ICC, CICP, and gamma metadata on browser PNGs; timeline/stats expose counts and profile changes emit `GIF_WARN_COLOR_PROFILE`.
 - Implemented: inherited `highContrastPalette=<true|false>` and CLI `--gif-high-contrast-palette` deliberately increase contrast and saturation for accessibility review.
@@ -187,7 +187,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add caption style presets: subtle, teaching, QA evidence, bug report, compact.
 - Implemented: add `captionStyle=<subtle|teaching|qa|bug-report|compact>` on recording blocks, `step`, and captions. CLI: `--caption-style <style>`.
 - Implemented: add `captionPosition=<top|bottom|left|right|auto>` on recording blocks, `step`, and captions. CLI: `--caption-position <position>`.
-- Implemented for automatic action captions: `captionPosition=auto` places the caption opposite the active target's viewport half. Target-aware placement for standalone manual captions remains open.
+- Implemented for automatic and manual captions: `captionPosition=auto` places the caption opposite the active target's viewport half; manual `caption` / `showMessageBar` use `target=<selector-or-rich-locator>` without moving the virtual pointer.
 - Implemented: DSL `autoCaptions=true`, whole-run `--auto-captions`, and root/project `gifSettings.autoCaptions` share recorder-only automatic narration.
 - Implemented: DSL, CLI `--caption-template`, and root/project config templates support `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}` with pre-browser validation for whole-run defaults.
 - Implemented: `caption duration=<ms>` / `captionDuration=<ms>` controls encoded visibility duration and can be inherited from recording scopes.
@@ -266,13 +266,13 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: add scoped recording settings that restore after the block.
 - Implemented: add `withRecording quality=highest pointerDuration=500 { ... }` as a readable alias if `recording { ... }` feels too much like it must record by itself.
 - Implemented: `recordingDefaults { ... }` provides lexical house style, while root/project `gifSettings` provides shared quality, motion, timing, framing, and caption defaults for runner matrices.
-- Add action-level recording overrides consistently:
+- Implemented action-level recording overrides consistently:
   - `click "#save" pointerDuration=250 clickPulse=ripple`
   - `hover "#menu" pointerDuration=700 postHoverHold=500`
   - `fill "#name" typingDelay=50 pointerDuration=300`
   - `wheel "#list" pointerDuration=250 holdAfterAction=400`
   - `dragAndDrop ".card" ".done" pointerDuration=1200 dragEasing=ease-in-out`
-- Add nested complex-action overrides consistently:
+- Implemented nested complex-action overrides consistently:
   - `dragAndDrop { moveMouse ... pointerDuration=800; drop ... pointerDuration=400 }`
   - future multi-step gestures should follow the same child override model.
 - Implemented: `gifIfChanged` / `gif.ifChanged` writes only when recorder-free final page pixels differ from the block baseline; failures always retain partial evidence.
@@ -388,7 +388,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: `altText=` and `--gif-alt-text` render `{name}`, `{steps}`, `{duration}`, and `{outcome}` into timeline/JSON metadata and HTML preview alt attributes.
 - Implemented: `stillPdf=<true|false|path>`, `--gif-still-pdf`, runner declarations, and config defaults export semantic step frames plus the final state as a reviewer PDF; timeline/report metadata, retention, and stdout include it.
 - Implemented: `description=` / `gifDescription=` / `--gif-description` retain human-authored descriptions in narration, timeline, JSON, and HTML output.
-- Add option to export a step-by-step still image PDF for reviewers who cannot view GIFs.
+- Implemented: export a step-by-step still image PDF for reviewers who cannot view animated evidence.
 
 ## Privacy And Security
 
@@ -400,7 +400,7 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 - Implemented: timeline JSON includes redaction configuration and frame/time audit entries without secret content.
 - Implemented: `redactionSafety=strict` refuses unsafe password-field capture without retrying an unsafe failure frame.
 - Implemented: blur, solid mask, and replacement text redaction styles.
-- Add option to hide URL bar or browser chrome if future capture includes chrome surfaces.
+- Not applicable to the current capture contract: CDP/BiDi page screenshots exclude the URL bar and browser chrome by construction. If CMG later adds browser-surface capture, hiding browser chrome is a required privacy default before that mode ships.
 - Implemented: `--no-gif` and `CMG_DISABLE_GIF=1|true|yes|on` suppress command-level and nested recording for sensitive runs while executing child actions without screenshots, overlays, artifacts, or a virtual pointer.
 
 ## Authoring Experience

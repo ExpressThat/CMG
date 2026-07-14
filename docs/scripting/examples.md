@@ -515,6 +515,19 @@ gif "accessibility review" accessibilityEvidence=true captionSize=x-large {
 }
 ```
 
+Position a manual caption against the control it describes and override inherited action choreography locally:
+
+```text
+gif "approval" typingDelay=55 postHoverHold=400 {
+  caption "Enter the reviewer" target="#reviewer" captionPosition=auto duration=500
+  fill "#reviewer" "Ada" typingDelay=30
+  hover "#approve" postHoverHold=700
+  click "#approve" pointerDuration=250 clickPulse=ripple
+}
+```
+
+The target only guides caption placement; it does not move the virtual pointer. See demo 251.
+
 For a whole run, use `--gif-accessibility --caption-size large`. See demos 184 and 185.
 
 Use reduced motion and a high-contrast pointer together when motion itself would make evidence harder to review:
