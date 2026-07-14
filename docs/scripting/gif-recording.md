@@ -106,8 +106,8 @@ Supported scoped recording options on `gif`, `recordVideo`, and `screencast` blo
 - `captionTemplate=<template>`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}`.
 - `captionDuration=<milliseconds>`, `fadeIn=<milliseconds>`, `fadeOut=<milliseconds>`: Deterministic caption timeline defaults.
 - `assertionCaptions=<true|false>` / `failureCaptions=<true|false>`: Automatic evidence-caption defaults. Both default to enabled.
-- `eventCaptions=<true|false>`: Enables safe network, dialog, console/page-error, download, and upload outcome captions together.
-- `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`: Category switches that override `eventCaptions` for a scope or child action.
+- `eventCaptions=<true|false>`: Enables safe network, dialog, console/page-error, download, upload, service-worker, WebSocket, and worker outcome captions together.
+- `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`, `serviceWorkerCaptions`, `webSocketCaptions`, `workerCaptions`: Category switches that override `eventCaptions` for a scope or child action.
 - `accessibilityEvidence=<true|false>`: Enables keystroke, focus, accessible-name, high-contrast, and contrast-warning evidence together. Defaults to `false`.
 - `showKeystrokes=<true|false>`: Shows keys and shortcuts. Text-entry actions show `Text input`; CMG never copies the entered value into the overlay.
 - `showMouseButtons=<true|false>`: Labels low-level `mouseDown` and `mouseUp` frames without replacing the real pointer event or pressed pointer state.
@@ -456,11 +456,11 @@ gif "integration evidence" eventCaptions=true {
 }
 ```
 
-Category options inherit and can be overridden on one child, for example `recording eventCaptions=true consoleCaptions=false { ... }` or `waitForResponse "/health" networkCaptions=false`. Event captions are capture-only and are removed immediately after their evidence frame. They never create a virtual pointer without an active recorder.
+Category options inherit and can be overridden on one child, for example `recording eventCaptions=true consoleCaptions=false { ... }` or `waitForResponse "/health" networkCaptions=false`. The complete category set also includes `serviceWorkerCaptions`, `webSocketCaptions`, and `workerCaptions`. Event captions are capture-only and are removed immediately after their evidence frame. They never create a virtual pointer without an active recorder.
 
-CMG deliberately summarizes sensitive outcomes: console text, page-error stacks, request URLs, query strings, download paths, and upload filenames are not copied into automatic captions. Upload evidence reports only the selected file count. Use an explicit `caption` when reviewed evidence requires approved detail.
+CMG deliberately summarizes sensitive outcomes: console text, page-error stacks, request URLs, query strings, WebSocket payloads, worker expressions/results, download paths, and upload filenames are not copied into automatic captions. Protocol evidence reports only outcomes such as `WebSocket message observed`, `Worker expression evaluated`, or `Service workers blocked`. Upload evidence reports only the selected file count. Use an explicit `caption` when reviewed evidence requires approved detail.
 
-Whole-run direct and runner recordings use `--gif-event-captions`. See demos 186 and 187.
+Whole-run direct and runner recordings use `--gif-event-captions`. See demos 186, 187, 237, and 238.
 
 Use the narrower activity blocks when only part of a journey needs event evidence. Demos 214 and 215 combine mouse-button, console, and network overlays in direct and runner scripts.
 

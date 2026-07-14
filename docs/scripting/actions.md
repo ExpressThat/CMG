@@ -1915,7 +1915,7 @@ Options:
 - `captionSeverity`: Default caption severity: `info`, `success`, `warning`, or `error`.
 - `autoCaptions`: Automatic narration for supported visual child actions. Defaults to `false`.
 - `eventCaptions`: Enables all privacy-safe event outcome captions.
-- `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`: Override individual event categories for inherited frames.
+- `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`, `serviceWorkerCaptions`, `webSocketCaptions`, `workerCaptions`: Override individual event categories for inherited frames.
 - `captionTemplate`: Automatic-caption template with `{action}`, `{selector}`, `{target}`, `{line}`, `{arguments}`, `{step}`, and `{assertion}`. `{step}` is the lexical execution context (or action name); `{assertion}` is the assertion action name or empty text.
 - `intro` / `outro`: Optional opening and final full-viewport title-card text.
 - `introDuration` / `outroDuration`: Optional title-card durations in milliseconds. Defaults to `1200`.
@@ -2048,7 +2048,7 @@ Options:
 - `captionPosition`: Optional caption position default for child captions.
 - `captionSeverity`: Optional caption severity default for child captions.
 - `autoCaptions`: Optional `true`/`false` automatic narration for supported visual child actions.
-- `eventCaptions`, `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`: Optional recording-only event narration. The umbrella enables every category; child category options win.
+- `eventCaptions`, `networkCaptions`, `dialogCaptions`, `consoleCaptions`, `downloadCaptions`, `uploadCaptions`, `serviceWorkerCaptions`, `webSocketCaptions`, `workerCaptions`: Optional recording-only event narration. The umbrella enables every category; child category options win.
 - `intro`, `outro`, `introDuration`, `outroDuration`, `resultOutro`: Optional title-card defaults. Durations must be greater than zero.
 - `coalesceDuplicates`, `sampleEvery`: Optional capture-efficiency defaults inherited by child actions. Child actions can override either value.
 - `captionTemplate`: Optional automatic-caption template inherited by child actions.
@@ -2588,7 +2588,7 @@ Output:
 - `WORKER_EVALUATE <line> <result>` for worker evaluation.
 - `WORKER_INTERCEPT <line> routes=<count> <pattern>` when a worker intercept is installed.
 
-Worker actions do not move the virtual pointer. They are included in reports and traces, and can be wrapped with `step` or captions when GIF narration is useful.
+Worker actions do not move the virtual pointer. They are included in reports and traces. Active recordings with `eventCaptions=true` or `workerCaptions=true` add privacy-safe outcome evidence without exposing worker expressions, results, URLs, or intercepted bodies.
 
 ### `startCoverage` And `stopCoverage`
 

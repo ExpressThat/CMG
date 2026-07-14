@@ -13,6 +13,10 @@ public sealed class ScriptGifRecorderEventCaptionTests
     [InlineData("waitForPageError", "Page error observed", CaptionSeverity.Error)]
     [InlineData("waitForDownload", "Download completed", CaptionSeverity.Info)]
     [InlineData("uploadFiles", "Selected 2 files", CaptionSeverity.Info)]
+    [InlineData("waitForServiceWorker", "Service worker available", CaptionSeverity.Info)]
+    [InlineData("waitForWebSocket", "WebSocket connected", CaptionSeverity.Info)]
+    [InlineData("waitForWebSocketMessage", "WebSocket message observed", CaptionSeverity.Info)]
+    [InlineData("workerEvaluate", "Worker expression evaluated", CaptionSeverity.Info)]
     public void AfterAction_ShowsSafeEventOutcome(string name, string expected, CaptionSeverity severity)
     {
         using var fixture = new RecorderFixture();
@@ -126,7 +130,7 @@ public sealed class ScriptGifRecorderEventCaptionTests
         public RecorderFixture()
         {
             Client = new FakeAutomationClient();
-            var encoding = new GifEncodingOptions(EventCaptions: new GifEventCaptionOptions(true, true, true, true, true));
+            var encoding = new GifEncodingOptions(EventCaptions: new GifEventCaptionOptions(true, true, true, true, true, true, true, true));
             Recorder = new ScriptGifRecorder(Client, new ScriptRecordingOptions(path, Encoding: encoding));
             Recorder.Start("debug");
         }

@@ -1,0 +1,12 @@
+setContent "<main style='box-sizing:border-box;min-height:100vh;padding:32px;background:#fff;color:#111827'><h1>Protocol evidence</h1><p>Background activity is summarized without payloads.</p></main>"
+gif "protocol activity" output="demo-output/237-protocol-evidence.gif" eventCaptions=true {
+  routeWebSocket "/SOCKET" match=contains ignoreCase=true message="ready"
+  evaluate "window.__socket = new WebSocket('wss://example.com/socket')"
+  waitForWebSocket "wss://example.com/socket" match=exact timeout=5000
+  clearWebSocketRoutes
+  serviceWorkers block
+  listWorkers
+  evaluate "window.__worker = new Worker(URL.createObjectURL(new Blob(['self.onmessage = () => postMessage(1)'], { type: 'text/javascript' })))"
+  waitForEvent worker "blob:" timeout=5000
+  listWorkers
+}

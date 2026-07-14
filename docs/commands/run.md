@@ -63,7 +63,7 @@ Relative navigation targets can be resolved with command-line `--base-url` or de
 - `--gif-pixel-ratio <1..4>`: Capture whole-run GIF evidence at a controlled device pixel ratio.
 - `--gif-debug`: Add a frame-only diagnostics HUD and write one `<gif-name>.debug.json` sidecar per recorded test.
 - `--gif-accessibility`: Enable safe keystroke labels, amplified focus evidence, accessible role/name labels, high-contrast evidence styling, and WCAG contrast warnings for every whole-run GIF.
-- `--gif-event-captions`: Add privacy-safe outcome captions for network, dialog, console/page-error, download, and upload events in every whole-run GIF.
+- `--gif-event-captions`: Add privacy-safe outcome captions for network, dialog, console/page-error, download, upload, service-worker, WebSocket, and worker events in every whole-run GIF.
 - `--gif-intro <text>`: Opening full-viewport title-card text for each whole-run GIF.
 - `--gif-outro <text>`: Explicit final title-card text for each GIF. It takes precedence over generated result cards.
 - `--gif-intro-duration <milliseconds>`: Opening title-card duration. Must be greater than zero; defaults to `1200`.
@@ -220,7 +220,7 @@ GIF recording is optional.
 - Pointer motion, styling, contrast, target callout, focus, idle, teleport, pressed-state, and visibility options set whole-test virtual-pointer defaults only when `--gif` is active.
 - `--caption-style`, `--caption-position`, `--caption-severity`, and `--caption-size` set whole-test caption defaults for `caption`, `showMessageBar`, `step`, and flattened `gif` / `recordVideo` / `screencast` block captions.
 - `--gif-accessibility` enables safe keyboard labels, focus and accessible-name evidence, high-contrast styling, and targeted-control contrast warnings for every retained frame. It is inert without `--gif`.
-- `--gif-event-captions` summarizes event outcomes without copying console text, page-error stacks, request URLs, download paths, or upload filenames into the GIF. It is inert without `--gif`.
+- `--gif-event-captions` summarizes event outcomes without copying console text, page-error stacks, request URLs, WebSocket payloads, worker expressions/results, download paths, or upload filenames into the GIF. It is inert without `--gif`.
 - Title-card flags are also inert without `--gif`. Explicit `--gif-outro` text wins over `--gif-result-outro`; generated cards use the real test outcome after soft failures, runtime failures, or skips are resolved.
 - `--click-pulse` sets the whole-test click/tap/drop pulse style when `--gif` is active.
 - `--gif-hold-after-action` sets the whole-test post-action hold duration when `--gif` is active.

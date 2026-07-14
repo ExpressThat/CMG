@@ -17,12 +17,15 @@ public sealed class GifEventCaptionOptionsTests
         Assert.False(options.Console);
         Assert.True(options.Downloads);
         Assert.True(options.Uploads);
+        Assert.True(options.ServiceWorkers);
+        Assert.True(options.WebSockets);
+        Assert.True(options.Workers);
     }
 
     [Fact]
     public void WithOptions_PreservesUnchangedParentCategories()
     {
-        var parent = new GifEventCaptionOptions(true, true, true, true, true);
+        var parent = new GifEventCaptionOptions(true, true, true, true, true, true, true, true);
 
         var child = parent.WithOptions(
             new Dictionary<string, string> { ["networkCaptions"] = "false" },
@@ -33,6 +36,9 @@ public sealed class GifEventCaptionOptionsTests
         Assert.True(child.Console);
         Assert.True(child.Downloads);
         Assert.True(child.Uploads);
+        Assert.True(child.ServiceWorkers);
+        Assert.True(child.WebSockets);
+        Assert.True(child.Workers);
     }
 
     [Theory]
@@ -42,6 +48,9 @@ public sealed class GifEventCaptionOptionsTests
     [InlineData("consoleCaptions")]
     [InlineData("downloadCaptions")]
     [InlineData("uploadCaptions")]
+    [InlineData("serviceWorkerCaptions")]
+    [InlineData("webSocketCaptions")]
+    [InlineData("workerCaptions")]
     public void FromOptions_RejectsInvalidBoolean(string option)
     {
         var error = Assert.Throws<ScriptExecutionException>(() => GifEventCaptionOptions.FromOptions(

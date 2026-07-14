@@ -5,7 +5,10 @@ public sealed record GifEventCaptionOptions(
     bool Dialogs = false,
     bool Console = false,
     bool Downloads = false,
-    bool Uploads = false)
+    bool Uploads = false,
+    bool ServiceWorkers = false,
+    bool WebSockets = false,
+    bool Workers = false)
 {
     public static GifEventCaptionOptions FromOptions(
         IReadOnlyDictionary<string, string> options,
@@ -17,7 +20,10 @@ public sealed record GifEventCaptionOptions(
             Parse(options.GetValueOrDefault("dialogCaptions"), preset, "dialogCaptions", source),
             Parse(options.GetValueOrDefault("consoleCaptions"), preset, "consoleCaptions", source),
             Parse(options.GetValueOrDefault("downloadCaptions"), preset, "downloadCaptions", source),
-            Parse(options.GetValueOrDefault("uploadCaptions"), preset, "uploadCaptions", source));
+            Parse(options.GetValueOrDefault("uploadCaptions"), preset, "uploadCaptions", source),
+            Parse(options.GetValueOrDefault("serviceWorkerCaptions"), preset, "serviceWorkerCaptions", source),
+            Parse(options.GetValueOrDefault("webSocketCaptions"), preset, "webSocketCaptions", source),
+            Parse(options.GetValueOrDefault("workerCaptions"), preset, "workerCaptions", source));
     }
 
     public GifEventCaptionOptions WithOptions(IReadOnlyDictionary<string, string> options, string source)
@@ -30,7 +36,10 @@ public sealed record GifEventCaptionOptions(
             Dialogs = options.ContainsKey("dialogCaptions") ? parsed.Dialogs : Dialogs,
             Console = options.ContainsKey("consoleCaptions") ? parsed.Console : Console,
             Downloads = options.ContainsKey("downloadCaptions") ? parsed.Downloads : Downloads,
-            Uploads = options.ContainsKey("uploadCaptions") ? parsed.Uploads : Uploads
+            Uploads = options.ContainsKey("uploadCaptions") ? parsed.Uploads : Uploads,
+            ServiceWorkers = options.ContainsKey("serviceWorkerCaptions") ? parsed.ServiceWorkers : ServiceWorkers,
+            WebSockets = options.ContainsKey("webSocketCaptions") ? parsed.WebSockets : WebSockets,
+            Workers = options.ContainsKey("workerCaptions") ? parsed.Workers : Workers
         };
     }
 

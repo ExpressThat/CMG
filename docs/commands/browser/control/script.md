@@ -71,7 +71,7 @@ For PowerShell automation, prefer `--file <path>` or pipe a here-string to `--fi
 - `--gif-pixel-ratio <1..4>`: Capture at a controlled device pixel ratio for high-DPI evidence.
 - `--gif-debug`: Add a frame-only diagnostics HUD and write `<gif-name>.debug.json` with one metadata record per captured frame.
 - `--gif-accessibility`: Enable safe keystroke labels, amplified focus evidence, accessible role/name labels, high-contrast evidence styling, and WCAG contrast warnings for the whole GIF.
-- `--gif-event-captions`: Add privacy-safe outcome captions for network, dialog, console/page-error, download, and upload events in the whole GIF.
+- `--gif-event-captions`: Add privacy-safe outcome captions for network, dialog, console/page-error, download, upload, service-worker, WebSocket, and worker events in the whole GIF. Payloads, URLs, expressions, results, and file paths are not copied into captions.
 - `--gif-intro <text>`: Opening full-viewport title-card text for the whole GIF.
 - `--gif-outro <text>`: Explicit final full-viewport title-card text. It takes precedence over a generated result outro.
 - `--gif-intro-duration <milliseconds>`: Opening title-card duration. Must be greater than zero; defaults to `1200`.

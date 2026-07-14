@@ -35,6 +35,14 @@ public sealed class BrowserFrameScriptsTests
     }
 
     [Fact]
+    public void FrameActions_ExplainCrossOriginRestriction()
+    {
+        var script = BrowserFrameScripts.Click("#payment-frame", "#pay");
+
+        Assert.Contains("is not same-origin or is not ready", script, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void AssertText_UsesMatchModeAndIgnoreCase()
     {
         var script = BrowserFrameScripts.AssertText("#frame", "#status", "Saved", "regex", ignoreCase: true);

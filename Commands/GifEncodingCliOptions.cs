@@ -135,7 +135,7 @@ internal sealed record GifEncodingCliOptions(
             Framing = framing,
             Diagnostics = result.GetValue(Debug) ? new GifDebugOptions(true, true, true, true, true, true) : null,
             Accessibility = result.GetValue(Accessibility) ? new GifAccessibilityOptions(true, true, true, true, true) : null,
-            EventCaptions = result.GetValue(EventCaptions) ? new GifEventCaptionOptions(true, true, true, true, true) : null,
+            EventCaptions = result.GetValue(EventCaptions) ? new GifEventCaptionOptions(true, true, true, true, true, true, true, true) : null,
             TitleCards = titleCards,
             CaptureOptimization = captureOptimization,
             PointerEvidence = pointerEvidence,

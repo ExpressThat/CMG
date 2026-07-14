@@ -800,7 +800,7 @@ Line 2: gif failed. gif option viewport= must use <width>x<height> with dimensio
 Line 3: recording failed. recording option pixelRatio= must be a number from 1 to 4.
 ```
 
-Caption booleans reject values other than `true` or `false`. `captionFormat=` accepts `plain` or `markdown`; markdown supports only safe bold and inline-code spans, not arbitrary HTML.
+Caption booleans, including `serviceWorkerCaptions`, `webSocketCaptions`, and `workerCaptions`, reject values other than `true` or `false`. `captionFormat=` accepts `plain` or `markdown`; markdown supports only safe bold and inline-code spans, not arbitrary HTML.
 
 Long-wait duration options must be positive durations. Compression never changes execution time and `GIF_WAIT_COMPRESSION` is a diagnostic, not a failure.
 

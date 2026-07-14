@@ -314,23 +314,23 @@ For each backlog item below, prefer documenting all sensible levels explicitly.
 
 ## Browser And Protocol Fidelity
 
-- Capture Chrome/Edge screenshots through PNG by default before GIF encoding.
+- Implemented: Chrome/Edge recorder frames are captured as PNG before GIF preprocessing and encoding.
 - Add Firefox-specific capture parity tests for color and pointer compositing.
 - Add browser-specific calibration pages for screenshot color differences.
-- Add detection for browser screenshot color profile changes.
-- Add robust top-layer pointer handling for dialogs, popovers, fullscreen, and high-z-index overlays.
-- Add pointer survival across navigation and reload.
+- Implemented: browser screenshot ICC/CICP/gamma profile changes are detected, counted, written to timelines, and reported with `GIF_WARN_COLOR_PROFILE`.
+- Implemented: pointer, caption, pulse, drag-ghost, mask, and evidence nodes use the browser top layer where available and are re-promoted before capture.
+- Implemented: navigation and reload captures recreate the virtual pointer at its retained coordinates before the first post-navigation frame.
 - Implemented: each captured frame reinjects the virtual pointer into CMG's active target, including after tab/context switches.
-- Add pointer survival across same-origin iframe actions.
-- Add explicit cross-origin iframe recording diagnostics.
-- Add service-worker/network overlay support when recording network flows.
-- Add WebSocket event overlays.
-- Add worker action overlays.
+- Implemented: same-origin iframe actions translate child target coordinates to the top page and retain normal pointer choreography.
+- Implemented: cross-origin or unready frame actions fail with an explicit same-origin diagnostic instead of producing misleading pointer evidence.
+- Implemented: `serviceWorkerCaptions=true` adds privacy-safe service-worker policy/availability evidence; `eventCaptions=true` and `--gif-event-captions` include it.
+- Implemented: `webSocketCaptions=true` adds privacy-safe connection, message, route, and cleanup evidence without payloads.
+- Implemented: `workerCaptions=true` adds privacy-safe discovery, evaluation, and interception outcomes without expressions, results, URLs, or bodies.
 - Implemented as capture-only captions: show browser dialog capture and accepted/dismissed handling state without re-dispatching dialogs.
 - Implemented for event evidence: show download completion without exposing its path. Report artifact links remain open.
 - Implemented for event evidence: show selected upload file counts without exposing filenames or file contents.
 - Add support for browser zoom level detection and correction.
-- Add support for prefers-reduced-motion testing while still making GIFs understandable.
+- Implemented: `reducedMotion=true` and `--gif-reduced-motion` remove inherited travel/fades while retaining static pointer origins, targets, click evidence, and child overrides.
 - Add support for pages using CSS transforms, zoom, and nested scrolling containers.
 - Implemented: opt-in conservative cleanup for CMG-launched headless browsers tracks browser/port/PID/start-time/launch-token ownership, renews activity throughout control and runner operations, uses configurable renewable leases, warns and rechecks before expiry, leaves visible/attached/user-launched/replaced browsers alone, isolates concurrent ports, emits parseable persisted diagnostics, and supports launch/run/config/environment enablement plus keepalive/disable commands.
 

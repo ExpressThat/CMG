@@ -33,6 +33,9 @@ public sealed partial class ScriptGifRecorder
             "network" when enabled.Network => NetworkMessage(action),
             "download" when enabled.Downloads => "Download completed",
             "upload" when enabled.Uploads => UploadMessage(output),
+            "serviceworker" when enabled.ServiceWorkers => ServiceWorkerMessage(action, output),
+            "websocket" when enabled.WebSockets => WebSocketMessage(action),
+            "worker" when enabled.Workers => WorkerMessage(action, output),
             _ => string.Empty
         };
         return message.Length > 0;
@@ -47,6 +50,9 @@ public sealed partial class ScriptGifRecorder
         if (name.Contains("console")) return "console";
         if (name.Contains("download")) return "download";
         if (name is "uploadfiles" or "setinputfiles" or "selectfile") return "upload";
+        if (name.Contains("serviceworker") || name.Contains("service-worker")) return "serviceworker";
+        if (name.Contains("websocket") || name.Contains("web-socket")) return "websocket";
+        if (name.Contains("worker")) return "worker";
         return name.Contains("request") || name.Contains("response") || name.Contains("network") ? "network" : string.Empty;
     }
 
@@ -99,6 +105,33 @@ public sealed partial class ScriptGifRecorder
     {
         var count = output.Select(line => line.Split(' ').LastOrDefault()).FirstOrDefault(value => int.TryParse(value, out _));
         return count is null ? "Files selected" : $"Selected {count} file{(count == "1" ? string.Empty : "s")}";
+    }
+
+    private static string ServiceWorkerMessage(BrowserScriptAction action, IReadOnlyList<string> output)
+    {
+        var combined = string.Join(' ', output);
+        if (combined.Contains("block", StringComparison.OrdinalIgnoreCase)) return "Service workers blocked";
+        if (combined.Contains("allow", StringComparison.OrdinalIgnoreCase)) return "Service workers allowed";
+        return action.Name.Contains("wait", StringComparison.OrdinalIgnoreCase)
+            ? "Service worker available" : "Service worker setting updated";
+    }
+
+    private static string WebSocketMessage(BrowserScriptAction action)
+    {
+        var name = action.Name.ToLowerInvariant();
+        if (name.Contains("message")) return "WebSocket message observed";
+        if (name.Contains("clear")) return "WebSocket routes cleared";
+        if (name.Contains("route")) return "WebSocket route installed";
+        return "WebSocket connected";
+    }
+
+    private static string WorkerMessage(BrowserScriptAction action, IReadOnlyList<string> output)
+    {
+        var name = action.Name.ToLowerInvariant();
+        if (name.Contains("evaluate")) return "Worker expression evaluated";
+        if (name.Contains("intercept")) return "Worker interception configured";
+        if (name.Contains("list")) return $"Workers listed: {output.Count(line => line.StartsWith("WORKER ", StringComparison.Ordinal))}";
+        return "Worker available";
     }
 
     private static string? ReadCount(IReadOnlyList<string> output, string prefix) =>

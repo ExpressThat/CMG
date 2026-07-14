@@ -812,6 +812,19 @@ gif "popup approval" splitTabs=always autoRedact=passwords {
 
 `splitTabs=always` reserves a second tile before the popup exists, then captures every tab and restores the selected tab before the next action. Chromium may briefly bring a background tab forward so it can render a screenshot. The active tile keeps CMG's pointer-accurate interaction evidence; all tiles receive capture-only privacy masks and labels. Use `auto` for an initially compact frame that expands when a second tab appears. Whole runs use `--gif-split-tabs`; config uses `splitTabs`; runner suites/tests use `gifSplitTabs`. See demos 235 and 236.
 
+## Protocol Activity Evidence
+
+```text
+gif "protocol activity" eventCaptions=true {
+  routeWebSocket "/socket" message="ready"
+  waitForWebSocketMessage "ready"
+  serviceWorkers block
+  waitForEvent worker "blob:"
+}
+```
+
+The automatic captions report safe outcomes without copying socket payloads, worker expressions/results, request URLs, or service-worker script details. Override one family with `serviceWorkerCaptions`, `webSocketCaptions`, or `workerCaptions`; whole runs use `--gif-event-captions`. Navigation and reload frames recreate the same virtual pointer at its retained page coordinates, and same-origin frame actions translate child coordinates into the top page. Cross-origin frame actions fail explicitly instead of drawing misleading pointer evidence. See demos 237 and 238.
+
 ## GIF Diagnostics
 
 Use a frame-only HUD and machine-readable sidecar when pointer or selector choreography needs investigation:
